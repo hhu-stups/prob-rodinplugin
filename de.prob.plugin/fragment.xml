@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<fragment>
+   <extension
+         point="org.eclipse.ui.perspectives">
+      <perspective
+            class="de.prob.ui.PerspectiveFactory"
+            icon="icons/prob.png"
+            id="de.prob.ui.perspective"
+            name="ProB"> 
+      </perspective>
+   </extension>
+ <!--  <extension
+         point="org.eclipse.ui.splashHandlers">
+      <splashHandler
+            class="de.prob.plugin.Splash"
+            id="de.prob.plugin.splash">
+      </splashHandler>
+      <splashHandlerProductBinding
+            productId="org.rodinp.platform.product"
+            splashId="de.prob.plugin.splash">
+      </splashHandlerProductBinding>
+   </extension> -->
+   
+     <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            locationURI="menu:org.eclipse.ui.main.menu">
+         <menu
+               id="prob"
+               label="ProB"
+               mnemonic="P">
+            <menu
+                  id="contact"
+                  label="Contact"
+                  mnemonic="C">
+               <separator
+                     name="bugs">
+               </separator>
+               <separator
+                     name="contact">
+               </separator>
+            </menu>
+            <menu
+                  id="analyze"
+                  label="Analyze">
+               <separator
+                     name="analyze">
+               </separator>
+            </menu>
+         </menu>
+      </menuContribution>
+      <menuContribution
+            locationURI="toolbar:org.eclipse.ui.main.toolbar">
+         <toolbar
+               id="probtoolbar">
+         </toolbar>
+      </menuContribution>
+   </extension>
+   
+   
+
+</fragment>

@@ -1,0 +1,72 @@
+/**
+ * (c) 2009 Lehrstuhl fuer Softwaretechnik und Programmiersprachen, Heinrich
+ * Heine Universitaet Duesseldorf This software is licenced under EPL 1.0
+ * (http://www.eclipse.org/org/documents/epl-v10.html)
+ * */
+
+package de.prob.core.command;
+
+import java.util.List;
+
+import de.prob.core.Animator;
+import de.prob.exceptions.ProBException;
+import de.prob.parser.ISimplifiedROMap;
+import de.prob.prolog.output.IPrologTermOutput;
+import de.prob.prolog.term.CompoundPrologTerm;
+import de.prob.prolog.term.PrologTerm;
+
+public final class ConsistencyCheckingCommand implements IComposableCommand {
+	private final int time;
+	private final List<String> options;
+	private ModelCheckingResult<Result> result;
+
+	public static enum Result {
+		ok(true), ok_not_all_nodes_considered(true), deadlock(true), invariant_violation(
+				true), assertion_violation(true), not_yet_finished(false), state_error(
+				true), well_definedness_error(true), general_error(true);
+		// I assume true means we can stop the model checking
+		private final boolean abort;
+
+		private Result(final boolean abort) {
+			this.abort = abort;
+		}
+
+		public boolean isAbort() {
+			return abort;
+		}
+	}
+
+	ConsistencyCheckingCommand(final int time, final List<String> options) {
+		this.time = time;
+		this.options = options;
+	}
+
+	public static ModelCheckingResult<Result> modelcheck(final Animator a,
+			final int time, final List<String> options) throws ProBException {
+		ConsistencyCheckingCommand command = new ConsistencyCheckingCommand(
+				time, options);
+		a.execute(command);
+		return command.getResult();
+	}
+
+	private ModelCheckingResult<Result> getResult() {
+		return result;
+	}
+
+	public void processResult(
+			final ISimplifiedROMap<String, PrologTerm> bindings)
+			throws CommandException {
+
+		CompoundPrologTerm term = (CompoundPrologTerm) bindings.get("Result");
+		result = new ModelCheckingResult<Result>(Result.class, term);
+
+	}
+
+	public void writeCommand(final IPrologTermOutput pto) {
+		pto.openTerm("do_modelchecking").printNumber(time).openList();
+		for (String o : options) {
+			pto.printAtom(o);
+		}
+		pto.closeList().printVariable("Result").closeTerm();
+	}
+}

@@ -1,0 +1,445 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+   <extension-point id="de.bmotionstudio.gef.editor.installActions" name="Install Actions for Editor" schema="schema/de.bmotionstudio.gef.editor.installActions.exsd"/>
+   <extension-point id="de.bmotionstudio.gef.editor.installMenu" name="Context Menu" schema="schema/de.bmotionstudio.gef.editor.installMenu.exsd"/>
+   <extension-point id="de.bmotionstudio.gef.editor.control" name="Control" schema="schema/de.bmotionstudio.gef.editor.control.exsd"/>
+   <extension-point id="de.bmotionstudio.gef.editor.registerImages" name="Register Images" schema="schema/de.bmotionstudio.gef.editor.registerImages.exsd"/>
+   <extension-point id="de.bmotionstudio.gef.editor.language" name="BMotion Studio Language Loader" schema="schema/de.bmotionstudio.gef.editor.language.exsd"/>
+   <extension-point id="de.bmotionstudio.gef.editor.schedulerEvent" name="Scheduler Event" schema="schema/de.bmotionstudio.gef.editor.schedulerEvent.exsd"/>
+   <extension-point id="de.bmotionstudio.gef.editor.observer" name="BMotion Studio Observer" schema="schema/de.bmotionstudio.gef.editor.observer.exsd"/>
+   <extension-point id="de.bmotionstudio.gef.editor.paletteEntry" name="Add a custom Palette Entry" schema="schema/de.bmotionstudio.gef.editor.paletteEntry.exsd"/>
+   <extension-point id="de.bmotionstudio.gef.editor.includeObserver" name="Include Observer Extension Point" schema="schema/de.bmotionstudio.gef.editor.includeObserver.exsd"/>
+   <extension
+         point="org.eclipse.ui.editors">
+      <editor
+            class="de.bmotionstudio.gef.editor.BMotionStudioEditor"
+            contributorClass="de.bmotionstudio.gef.editor.BMotionStudioContributor"
+            default="true"
+            extensions="bmso"
+            icon="icons/logo_bmotion.png"
+            id="de.bmotionstudio.gef.editor.BMotionStudioEditor"
+            name="BMotion Studio Editor">
+      </editor>
+   </extension>
+   <extension
+         point="org.eclipse.ui.newWizards">
+      <category
+            id="de.bmotionstudio.gef.editor.wizards"
+            name="BMotion Studio">
+      </category>
+      <wizard
+            category="de.bmotionstudio.gef.editor.wizards"
+            class="de.bmotionstudio.gef.editor.internal.NewBMotionProjectWizard"
+            icon="icons/logo_bmotion.png"
+            id="de.prob.bmotionstudio.NewBMotionProject"
+            name="BMotion Studio Visualization"
+            project="false">
+      </wizard>
+   </extension>
+   <extension
+         point="org.eclipse.ui.views">
+      <category
+            id="de.bmotionstudio.views"
+            name="BMotion Studio">
+      </category>
+      <view
+            allowMultiple="false"
+            category="de.bmotionstudio.views"
+            class="de.bmotionstudio.gef.editor.library.LibraryView"
+            icon="icons/icon_library.gif"
+            id="de.bmotionstudio.gef.editor.LibraryView"
+            name="BMS Library">
+      </view>
+   </extension>
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            locationURI="menu:org.eclipse.ui.main.menu">
+         <menu
+               id="de.bmotionstudio.gef.editor.menu"
+               label="BMotion Studio">
+            <command
+                  commandId="de.bmotionstudio.gef.editor.command.openBMotionStudioWebsite"
+                  label="Open website"
+                  style="push">
+            </command>
+            <separator
+                  name="group.filter"
+                  visible="true">
+            </separator>
+            <command
+                  commandId="de.bmotionstudio.command.startVisualizationFromEditor"
+                  icon="icons/icon_run.png"
+                  label="Start Visualization"
+                  style="push">
+               <visibleWhen
+                     checkEnabled="true">
+                  <with
+                        variable="activeEditorId">
+                     <equals
+                           value="de.bmotionstudio.gef.editor.BMotionStudioEditor">
+                     </equals>
+                  </with>
+               </visibleWhen>
+            </command>
+         </menu>
+      </menuContribution>
+      <menuContribution
+            locationURI="toolbar:org.eclipse.ui.main.toolbar">
+         <toolbar
+               id="de.bmotionstudio.gef.editor.toolbar">
+            <command
+                  commandId="de.bmotionstudio.command.startVisualizationFromEditor"
+                  icon="icons/icon_run.png"
+                  label="Start Visualization"
+                  style="push">
+               <visibleWhen
+                     checkEnabled="true">
+                  <with
+                        variable="activeEditorId">
+                     <equals
+                           value="de.bmotionstudio.gef.editor.BMotionStudioEditor">
+                     </equals>
+                  </with>
+               </visibleWhen>
+            </command>
+         </toolbar>
+      </menuContribution>
+   </extension>
+   <extension
+         point="org.eclipse.ui.commands">
+      <command
+            defaultHandler="de.bmotionstudio.gef.editor.internal.OpenWebsiteHandler"
+            id="de.bmotionstudio.gef.editor.command.openBMotionStudioWebsite"
+            name="Open website">
+      </command>
+      <command
+            id="de.bmotionstudio.command.startVisualizationFromEditor"
+            name="Start Visualization from Editor">
+      </command>
+      <command
+            defaultHandler="de.bmotionstudio.gef.editor.internal.StartVisualizationFileHandler"
+            id="de.bmotionstudio.command.startVisualizationFromFile"
+            name="Start Visualization from File">
+      </command>
+   </extension>
+   <extension
+         point="org.eclipse.ui.handlers">
+      <handler
+            class="de.bmotionstudio.gef.editor.internal.StartVisualizationEditorHandler"
+            commandId="de.bmotionstudio.command.startVisualizationFromEditor">
+         <enabledWhen>
+            <with
+                  variable="activeEditorId">
+               <equals
+                     value="de.bmotionstudio.gef.editor.BMotionStudioEditor">
+               </equals>
+            </with>
+         </enabledWhen>
+      </handler>
+   </extension>
+   <extension
+         point="de.prob.core.animation">
+      <listener
+            class="de.bmotionstudio.gef.editor.animation.StaticListenerRegistry">
+      </listener>
+   </extension>
+   <extension
+         point="de.prob.core.lifecycle">
+      <listener
+            class="de.bmotionstudio.gef.editor.animation.StaticListenerRegistry">
+      </listener>
+   </extension>
+   <extension
+         point="de.bmotionstudio.gef.editor.registerImages">
+      <registerImages
+            class="de.bmotionstudio.gef.editor.EditorImageRegistry">
+      </registerImages>
+   </extension>
+   
+ <extension
+         point="de.bmotionstudio.gef.editor.control">
+      <group
+            id="de.bmotionstudio.gef.editor.group.main"
+            name="Main">
+      </group>
+      <control
+            groupid="de.bmotionstudio.gef.editor.group.main"
+            icon="icons/icon_image.gif"
+            id="de.bmotionstudio.gef.editor.image"
+            name="Image"
+            service="de.bmotionstudio.gef.editor.service.BImageService">
+      </control>
+      <control
+            groupid="de.bmotionstudio.gef.editor.group.main"
+            icon="icons/icon_button.gif"
+            id="de.bmotionstudio.gef.editor.button"
+            name="Button"
+            service="de.bmotionstudio.gef.editor.service.BButtonService">
+      </control>
+      <control
+            groupid="de.bmotionstudio.gef.editor.group.main"
+            icon="icons/icon_radiobutton_c.gif"
+            id="de.bmotionstudio.gef.editor.radiobutton"
+            name="Radiobutton"
+            service="de.bmotionstudio.gef.editor.service.BRadioButtonService">
+      </control>
+      <control
+            groupid="de.bmotionstudio.gef.editor.group.main"
+            icon="icons/icon_checked.gif"
+            id="de.bmotionstudio.gef.editor.checkbox"
+            name="Checkbox"
+            service="de.bmotionstudio.gef.editor.service.BCheckboxService">
+      </control>
+      <control
+            groupid="de.bmotionstudio.gef.editor.group.main"
+            icon="icons/icon_composite.gif"
+            id="de.bmotionstudio.gef.editor.composite"
+            name="Composite"
+            service="de.bmotionstudio.gef.editor.service.BCompositeService">
+      </control>
+      <control
+            groupid="de.bmotionstudio.gef.editor.group.main"
+            icon="icons/icon_text.gif"
+            id="de.bmotionstudio.gef.editor.text"
+            name="Text"
+            service="de.bmotionstudio.gef.editor.service.BTextService">
+      </control>
+      <control
+            groupid="de.bmotionstudio.gef.editor.group.main"
+            icon="icons/icon_textfield.gif"
+            id="de.bmotionstudio.gef.editor.textfield"
+            name="Textfield"
+            service="de.bmotionstudio.gef.editor.service.BTextfieldService">
+      </control>
+      <control
+            groupid="de.bmotionstudio.gef.editor.group.main"
+            icon="icons/icon_rectangle.gif"
+            id="de.bmotionstudio.gef.editor.shape"
+            name="Shape"
+            service="de.bmotionstudio.gef.editor.service.BShapeService">
+      </control>
+      <control
+            groupid="de.bmotionstudio.gef.editor.group.main"
+            icon="icons/icon_connection16.gif"
+            id="de.bmotionstudio.gef.editor.connection"
+            name="Connection"
+            service="de.bmotionstudio.gef.editor.service.BConnectionService">
+      </control>
+   </extension>
+   <extension
+         point="de.bmotionstudio.gef.editor.observer">
+      <observer
+            class="de.bmotionstudio.gef.editor.observer.SimpleValueDisplay"
+            description="Observer for setting up the text value"
+            name="Simple Value Display">
+      </observer>
+      <observer
+            class="de.bmotionstudio.gef.editor.observer.SwitchImage"
+            description="Observer for switching the image of the control"
+            name="Switch Image">
+      </observer>
+      <observer
+            class="de.bmotionstudio.gef.editor.observer.SwitchChildCoordinates"
+            name="Switch Child Coordinates">
+      </observer>
+      <observer
+            class="de.bmotionstudio.gef.editor.observer.SetAttribute"
+            description="General observer to set any attribute of the control"
+            name="Set Attribute">
+      </observer>
+      <observer
+            class="de.bmotionstudio.gef.editor.observer.ListenOperationByPredicate"
+            name="Listen Operation">
+      </observer>
+      <observer
+            class="de.bmotionstudio.gef.editor.observer.SwitchCoordinates"
+            description="Observer for switching the coordinates of the control"
+            name="Switch Coordinates">
+      </observer>
+      <observer
+            class="de.bmotionstudio.gef.editor.observer.CloneObserver"
+            description="This observer clones the control depending on an expression rule"
+            name="Clone Observer">
+      </observer>
+   </extension>
+   <extension
+         point="de.bmotionstudio.gef.editor.schedulerEvent">
+      <schedulerEvent
+            class="de.bmotionstudio.gef.editor.scheduler.ExecuteOperationByPredicate"
+            description="Execute an operation"
+            menu="true"
+            name="Execute Operation">
+      </schedulerEvent>
+      <schedulerEvent
+            class="de.bmotionstudio.gef.editor.scheduler.ExecuteAnimationScript"
+            description="Execute an animation script"
+            menu="true"
+            name="Execute Scheduler (Multi)">
+      </schedulerEvent>
+      <schedulerEvent
+            class="de.bmotionstudio.gef.editor.scheduler.ExecuteOperationByPredicateMulti"
+            description="Execute an operation by a predicate"
+            menu="true"
+            name="Execute Operation (Multi)">
+      </schedulerEvent>
+   </extension>
+   <extension
+         point="de.bmotionstudio.gef.editor.installActions">
+      <action
+            class="de.bmotionstudio.gef.editor.InstallActions">
+      </action>
+   </extension>
+   <extension
+         point="de.bmotionstudio.gef.editor.installMenu">
+      <menu
+            class="de.bmotionstudio.gef.editor.InstallMenu">
+      </menu>
+   </extension>
+   <extension
+         point="de.bmotionstudio.gef.editor.registerImages">
+      <registerImages
+            class="de.bmotionstudio.gef.editor.ImageRegistry">
+      </registerImages>
+   </extension>
+   <extension
+         point="de.bmotionstudio.gef.editor.language">
+      <language
+	        service="de.bmotionstudio.gef.editor.eventb.EventBLanguageService"
+            id="EventB">
+      </language>
+   </extension>
+   <extension
+         point="de.bmotionstudio.gef.editor.includeObserver">
+      <include
+            language="EventB">
+         <observer
+               id="de.bmotionstudio.gef.editor.observer.ListenOperationByPredicate">
+            <control
+                  id="de.bmotionstudio.gef.editor.image">
+            </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.button">
+            </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.composite">
+            </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.text">
+            </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.ellipse">
+            </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.shape">
+            </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.radiobutton">
+            </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.checkbox">
+            </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.connection">
+            </control>
+         </observer>
+         <observer
+               id="de.bmotionstudio.gef.editor.observer.CloneObserver">
+            <control
+                  id="de.bmotionstudio.gef.editor.composite">
+            </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.visualization">
+            </control>
+         </observer>
+         <observer
+               id="de.bmotionstudio.gef.editor.observer.SwitchCoordinates">
+            <control
+                  id="de.bmotionstudio.gef.editor.image">
+            </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.button">
+            </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.composite">
+            </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.text">
+            </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.shape">
+            </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.radiobutton">
+            </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.textfield">
+            </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.checkbox">
+            </control>
+         </observer>
+         <observer
+               id="de.bmotionstudio.gef.editor.observer.SimpleValueDisplay">
+            <control
+                  id="de.bmotionstudio.gef.editor.text">
+            </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.radiobutton">
+            </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.textfield">
+            </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.button">
+            </control>
+         </observer>
+         <observer
+               id="de.bmotionstudio.gef.editor.observer.SwitchImage">
+            <control
+                  id="de.bmotionstudio.gef.editor.image">
+            </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.composite">
+            </control>
+         </observer>
+         <observer
+               id="de.bmotionstudio.gef.editor.observer.SetAttribute">
+            <control
+                  id="de.bmotionstudio.gef.editor.image">
+            </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.button">
+            </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.composite">
+            </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.text">
+            </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.shape">
+            </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.radiobutton">
+            </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.checkbox">
+            </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.connection">
+            </control>
+         </observer>
+         <observer
+               id="de.bmotionstudio.gef.editor.observer.SwitchChildCoordinates">
+            <control
+                  id="de.bmotionstudio.gef.editor.composite">
+            </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.visualization">
+            </control>
+         </observer>
+      </include>
+   </extension>   
+</plugin>

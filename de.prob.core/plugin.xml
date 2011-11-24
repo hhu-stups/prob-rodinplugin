@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+   <extension-point id="de.prob.core.lifecycle" name="Lifecycle Events" schema="schema/de.prob.core.lifecycle.exsd"/>
+   <extension-point id="de.prob.core.computation" name="Computation Events" schema="schema/de.prob.core.computation.exsd"/>
+   <extension-point id="de.prob.core.animation" name="Animation Events" schema="schema/de.prob.core.animation.exsd"/>
+   <extension
+         point="de.prob.core.animation">
+      <listener
+            class="de.prob.core.StaticListenerRegistry">
+      </listener>
+   </extension>
+   <extension
+         point="de.prob.core.computation">
+      <listener
+            class="de.prob.core.StaticListenerRegistry">
+      </listener>
+   </extension>
+   <extension
+         point="de.prob.core.lifecycle">
+      <listener
+            class="de.prob.core.StaticListenerRegistry">
+      </listener>
+   </extension>
+</plugin>

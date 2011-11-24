@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Compile de.prob.standalone.feature" default="main">
+	<target name="main">
+		<ant antfile="build.xml" dir="../de.prob.standalone" target="build.jars"/>
+	</target>
+</project>

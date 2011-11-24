@@ -1,0 +1,1037 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+ 
+
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            class="de.prob.ui.eventb.ClassicPreferences"
+            id="de.prob.ui.probclassic"
+            name="ProB Classic"
+            category="probpreferences">
+      </page>
+   </extension>
+   
+<!--   <extension
+         point="org.eclipse.ui.actionSets">
+      <actionSet
+            id="probConfigurationActions"
+            label="ProBConfiguration Action"
+            visible="true">
+         <action
+               class="de.prob.ui.eventb.ShowProBConfigurations"
+               icon="icons/new_prob_mini.png"
+               id="showProBConfigurations"
+               label="Show ProB Configurations"
+               style="pulldown"
+               toolbarPath="org.eclipse.debug.ui.launchActionSet">
+         </action>
+      </actionSet>
+   </extension>
+-->
+   <extension
+         point="org.eclipse.ui.views">
+      <category
+            id="de.hhu.stups.prob"
+            name="ProB"/>
+      <view
+            allowMultiple="false"
+            category="de.hhu.stups.prob"
+            class="de.prob.ui.operationview.OperationViewPart"
+            id="de.prob.ui.OperationView"
+            name="Events"/>
+      <view
+            allowMultiple="false"
+            category="de.hhu.stups.prob"
+            class="de.prob.ui.stateview.StateViewPart"
+            id="de.prob.ui.StateView"
+            name="State"/>
+      <view
+            allowMultiple="false"
+            category="de.hhu.stups.prob"
+            class="de.prob.ui.errorview.StateErrorView"
+            id="de.prob.ui.EventErrorView"
+            name="Event Error View"
+            restorable="true">
+      </view>
+      <view
+            allowMultiple="true"
+            category="de.hhu.stups.prob"
+            class="de.prob.ui.LimitedLogView"
+            id="de.prob.ui.TemplogView"
+            name="ProB Performance Log"
+            restorable="true">
+      </view>
+      <view
+            allowMultiple="false"
+            category="de.hhu.stups.prob"
+            class="de.prob.ui.historyview.HistoryView"
+            id="de.prob.ui.HistoryView"
+            name="History"
+            restorable="true">
+      </view>
+      <view
+            category="de.hhu.stups.prob"
+            class="de.prob.ui.ticket.LogView"
+            id="de.prob.ui.log"
+            name="ProB Log View"
+            restorable="true">
+      </view>
+      <view
+            category="de.hhu.stups.prob"
+            class="de.prob.ui.ltl.CounterExampleView"
+            id="de.prob.ui.ltl.CounterExampleView"
+            name="Ltl Counter-Example"
+            restorable="true">
+      </view>
+   </extension>
+   <extension
+         point="de.prob.core.animation">
+      <listener
+            class="de.prob.ui.StaticListenerRegistry">
+      </listener>
+   </extension>
+   <extension
+         point="de.prob.core.lifecycle">
+      <listener
+            class="de.prob.ui.StaticListenerRegistry">
+      </listener>
+   </extension>
+
+
+   <extension
+         point="org.eclipse.ui.preferencePages">
+           <page
+            class="de.prob.ui.ProBGeneralPreferences"
+            id="probpreferences"
+            name="ProB">
+      </page>
+   </extension>
+    <!--  
+    <extension
+         point="org.eclipse.ui.actionSets">
+      <actionSet
+            description="Web Action Set"
+            id="de.prob.core.ticket.actionSet"
+            label="Web Action Set"
+            visible="true">
+      <menu
+               id="probMenu"
+               label="ProB">
+            <separator
+                  name="bugReport">
+            </separator>
+         </menu>
+         
+         <action
+               class="de.prob.ui.ticket.OpenBugReportWebsite"
+               id="OpenBugReportWebsite"
+               label="Open Bugreport Website"
+               menubarPath="probMenu/bugReport">
+         </action>
+         <action
+               class="de.prob.ui.ticket.NewBugReportAction"
+               id="NewBugReportAction"
+               label="Submit Bugreport"
+               menubarPath="probMenu/bugReport">
+         </action>
+      </actionSet>
+   </extension>
+   -->
+   
+   <extension
+         point="org.eclipse.ui.commands">
+      <category
+            description="ProB commands"
+            id="de.prob.ui.commands.category"
+            name="ProB">
+      </category>
+      <command
+            categoryId="de.prob.ui.commands.category"
+            id="de.prob.ui.openWebsite"
+            name="Open Website">
+         <commandParameter
+               id="de.prob.ui.openwebsite.url"
+               name="URL"
+               optional="false">
+         </commandParameter>
+      </command>
+      <command
+            categoryId="de.prob.ui.commands.category"
+            id="de.prob.ui.bugreport"
+            name="Submit Bugreport">
+      </command>
+      <command
+            categoryId="de.prob.ui.commands.category"
+            id="de.prob.ui.probconfiguration"
+            name="ProB Configuration Wizard">
+      </command>
+      <command
+            description="Show a state item in the history view"
+            id="de.prob.ui.command.showInHistory"
+            name="ShowInHistory">
+      </command>
+      <command
+            categoryId="de.prob.ui.commands.category"
+            id="de.prob.ui.ltl_modelchecking"
+            name="LTL Modelchecking">
+      </command>
+      <command
+            categoryId="de.prob.ui.commands.category"
+            id="de.prob.ui.consistency_checking"
+            name="Consistencychecking">
+      </command>
+      
+      
+      <command
+      defaultHandler="de.prob.ui.operationview.DoubleClickBehaviorHandler"
+      id="de.prob.ui.doubleclickbehaviour"
+      name="Double Click Behaviour">
+   <commandParameter
+         id="org.eclipse.ui.commands.radioStateParameter"
+         name="State"
+         optional="false">
+   </commandParameter>
+   <state
+         class="org.eclipse.ui.handlers.RadioState:NORMAL"
+         id="org.eclipse.ui.commands.radioState">
+   </state>
+</command>
+      <command
+            id="de.prob.ui.randomoperation"
+            name="Execute Random Events">
+         <commandParameter
+               id="de.prob.ui.randomoperation.steps"
+               name="Number of Steps"
+               optional="false">
+         </commandParameter>
+      </command>
+      <command
+            id="de.prob.ui.filtermenu"
+            name="Filter Operations Menu">
+      </command>
+      <command
+            id="de.prob.ui.filter_enabled_only"
+            name="Show only enabled Events">
+        <state
+         class="org.eclipse.ui.handlers.RegistryToggleState:false"
+         id="org.eclipse.ui.commands.toggleState">
+   </state> 
+      </command>
+      <command
+            id="de.prob.ui.restart"
+            name="Restart Animation">
+      </command>
+      <command
+            id="de.prob.ui.load_shortest_trace"
+            name="Load shortest Trace">
+      </command>
+      <command
+            id="de.prob.ui.add_formula"
+            name="Add new watched formula">
+      </command>
+      <command
+            id="de.prob.ui.history.back"
+            name="History Back">
+         <commandParameter
+               id="de.prob.ui.history.pos"
+               name="Position"
+               optional="true">
+         </commandParameter>
+      </command>
+      <command
+            id="de.prob.ui.history.forward"
+            name="History Forward">
+         <commandParameter
+               id="de.prob.ui.history.pos"
+               name="Position"
+               optional="true">
+         </commandParameter>
+      </command>
+      <command
+            id="de.prob.ui.starteventbanimation"
+            name="Event-B Animate / Model Check">
+      </command>
+      <command
+            id="de.prob.ui.navigator.context"
+            name="Project Explorer Context Menu">
+      </command>
+      <command
+            id="de.prob.ui.create_config"
+            name="Create Configuration">
+      </command>
+      <command
+            id="de.prob.ui.classic.export"
+            name="Export for Classic ProB">
+      </command>
+      <command
+            id="de.prob.ui.classic.open"
+            name="Open in Classic ProB">
+      </command>
+      <command
+            id="de.prob.ui.execute_event"
+            name="Execute an event">
+         <commandParameter
+               id="de.prob.ui.operation"
+               name="Operation id"
+               optional="true">
+         </commandParameter>
+      </command>
+      <command
+            id="de.prob.ui.stateview.toggleShowDuplicates"
+            name="Toggle Show Duplicates">
+         <state class="org.eclipse.jface.commands.ToggleState"
+            id="de.prob.ui.stateview.duplicateFilterState" />
+      </command>
+      <command
+            id="de.prob.ui.show_parameter_dialog"
+            name="Show Parameter Dialog">
+      </command>
+      <command
+            categoryId="de.prob.ui.commands.category"
+            id="de.prob.ui.deadlock_check"
+            name="Check for Deadlock Freedom">
+      </command>
+      <command
+            categoryId="de.prob.ui.commands.category"
+            id="de.prob.ui.invariant_check"
+            name="Check for Invariant Preservation">
+      </command>
+      <command
+            categoryId="de.prob.ui.commands.category"
+            id="de.prob.ui.opview.checks"
+            name="Checks">
+      </command>
+      <command
+            categoryId="de.prob.ui.commands.category"
+            id="de.prob.ui.exampleanalyzecommand"
+            name="Example for Analyze Commands">
+      </command>
+ <!--     <command
+            id="de.prob.ui.startdmc"
+            name="Start Distributed Modelcheck">
+      </command>
+ -->     
+      <command defaultHandler="de.prob.ui.ltl.CounterExampleViewMenuHandler"
+          id="de.prob.ui.ltl.counterexampleviewmenuhandler"
+          name="CounterExampleView Menu Command">
+          <commandParameter
+              id="org.eclipse.ui.commands.radioStateParameter"
+              name="org.eclipse.ui.commands.radiostateparameter">
+          </commandParameter>
+          <state
+              class="org.eclipse.ui.handlers.RadioState"
+              id="org.eclipse.ui.commands.radioState">
+          </state>
+      </command>
+      <command defaultHandler="de.prob.ui.ltl.CEHistoryHandler"
+          id="de.prob.ui.ltl.showCounterexampleInHistory"
+          name="Show counter-example in history">
+      </command>
+   </extension>
+   <extension
+         point="org.eclipse.ui.handlers">
+      <handler
+            commandId="de.prob.ui.openWebsite">
+         <class
+               class="de.prob.ui.internal.OpenWebsiteCommand">
+         </class>
+      </handler>
+      <handler
+            commandId="de.prob.ui.bugreport">
+         <class
+               class="de.prob.ui.ticket.SubmitBugreportCommand">
+         </class>
+      </handler>
+      <handler
+            commandId="de.prob.ui.probconfiguration">
+         <class
+               class="de.prob.ui.internal.ShowProBConfigCommand">
+         </class>
+      </handler>
+      <handler
+            commandId="de.prob.ui.command.showInHistory">
+         <class
+               class="de.prob.ui.stateview.ShowInHistoryHandler">
+         </class>
+      </handler>
+      <handler
+            commandId="de.prob.ui.ltl_modelchecking">
+         <enabledWhen>
+           <with variable="de.prob.core.model_loaded">
+                  <equals
+                        value="enabled">
+                  </equals>
+               </with>
+         </enabledWhen>
+         <class
+               class="de.prob.ui.ltl.LtlCommand">
+         </class>
+      </handler>
+      <handler
+            commandId="de.prob.ui.consistency_checking">
+         <enabledWhen>
+           <with variable="de.prob.core.model_loaded">
+                  <equals
+                        value="enabled">
+                  </equals>
+               </with>
+         </enabledWhen>
+         <class
+               class="de.prob.ui.eventb.ConsistencyCheckCommand">
+         </class>
+      </handler>
+      <handler
+            commandId="de.prob.ui.randomoperation">
+             <enabledWhen>
+           <with variable="de.prob.core.model_loaded">
+                  <equals
+                        value="enabled">
+                  </equals>
+               </with>
+         </enabledWhen>
+             <class
+                   class="de.prob.ui.operationview.ExecuteRandomHandler">
+             </class>
+      </handler>
+      <handler
+            commandId="de.prob.ui.filter_enabled_only">
+                         <class
+                               class="de.prob.ui.operationview.ShowOnlyEnabledOpsHandler">
+                         </class>
+      </handler>
+      <handler
+            commandId="de.prob.ui.filtermenu">
+         <class
+               class="de.prob.ui.operationview.NullHandler">
+         </class>
+                      
+      </handler>
+      <handler
+            commandId="de.prob.ui.restart">
+         <class
+               class="de.prob.ui.operationview.RestartHandler">
+         </class>
+         <enabledWhen>
+            <with
+                  variable="de.prob.core.model_loaded">
+               <equals
+                     value="enabled">
+               </equals>
+            </with>
+         </enabledWhen>
+      </handler>
+      <handler
+            commandId="de.prob.ui.load_shortest_trace">
+         <enabledWhen>
+            <with
+                  variable="de.prob.core.model_loaded">
+               <equals
+                     value="enabled">
+               </equals>
+            </with>
+         </enabledWhen>
+         <class
+               class="de.prob.ui.stateview.LoadShortestTraceHandler">
+         </class>
+      </handler>
+      <handler
+            commandId="de.prob.ui.add_formula">
+         <class
+               class="de.prob.ui.stateview.AddFormulaHandler">
+         </class>
+         <enabledWhen>
+            <with
+                  variable="de.prob.core.model_loaded">
+               <equals
+                     value="enabled">
+               </equals>
+            </with>
+         </enabledWhen>
+      </handler>
+      <handler
+            commandId="de.prob.ui.history.back">
+         <class
+               class="de.prob.ui.operationview.HistoryBackHandler">
+         </class>
+         <enabledWhen>
+            <and>
+               <with
+                     variable="de.prob.core.model_loaded">
+                  <equals
+                        value="enabled">
+                  </equals>
+               </with>
+               <with
+                     variable="de.prob.core.history.backward_service">
+                  <equals
+                        value="enabled">
+                  </equals>
+               </with>
+            </and>
+         </enabledWhen>
+      </handler>
+      <handler
+            commandId="de.prob.ui.history.forward">
+         <class
+               class="de.prob.ui.operationview.HistoryForwardHandler">
+         </class>
+         <enabledWhen>
+            <and>
+               <with
+                     variable="de.prob.core.model_loaded">
+                  <equals
+                        value="enabled">
+                  </equals>
+               </with>
+                              <with
+                     variable="de.prob.core.history.forward_service">
+                  <equals
+                        value="enabled">
+                  </equals>
+               </with>
+            </and>
+         </enabledWhen>
+      </handler>
+      <handler
+            commandId="de.prob.ui.starteventbanimation">
+         <class
+               class="de.prob.ui.eventb.StartAnimationHandler">
+         </class>
+                     <enabledWhen>
+      <with
+            variable="selection">
+         <iterate
+               operator="or">
+               <or>
+            <instanceof
+                  value="org.eventb.core.IEventBRoot">
+            </instanceof>
+            <and>
+                 <instanceof
+                       value="org.eclipse.core.resources.IResource">
+                 </instanceof>
+                 <or>
+                 <test
+                       forcePluginActivation="true"
+                       property="org.eclipse.core.resources.extension"
+                       value="bum">
+                 </test>
+                 <test
+                       forcePluginActivation="true"
+                       property="org.eclipse.core.resources.extension"
+                       value="buc">
+                 </test>
+                 </or>
+              </and>
+              </or>
+         </iterate>
+      </with>
+            </enabledWhen>
+      </handler>
+      <handler
+            commandId="de.prob.ui.create_config">
+         <class
+               class="de.prob.ui.eventb.CreateConfigurationHandler">
+         </class>
+                              <enabledWhen>
+      <with
+            variable="selection">
+         <iterate
+               operator="or">
+            <instanceof
+                  value="org.eventb.core.IEventBRoot">
+            </instanceof>
+         </iterate>
+      </with>
+            </enabledWhen>
+      </handler>
+      <handler
+            commandId="de.prob.ui.classic.export">
+         <class
+               class="de.prob.ui.eventb.ExportClassicHandler">
+         </class>
+                              <enabledWhen>
+      <with
+            variable="selection">
+         <iterate
+               operator="or">
+            <instanceof
+                  value="org.eventb.core.IEventBRoot">
+            </instanceof>
+         </iterate>
+      </with>
+            </enabledWhen>
+      </handler>
+      <handler
+            commandId="de.prob.ui.classic.open">
+         <class
+               class="de.prob.ui.eventb.OpenClassicHandler">
+         </class>
+                              <enabledWhen>
+      <with
+            variable="selection">
+         <iterate
+               operator="or">
+            <instanceof
+                  value="org.eventb.core.IEventBRoot">
+            </instanceof>
+         </iterate>
+      </with>
+            </enabledWhen>
+      </handler>
+      <handler
+            commandId="de.prob.ui.execute_event">
+         <class
+               class="de.prob.ui.operationview.ExecuteEventHandler">
+         </class>
+         <enabledWhen>
+            <with
+                  variable="de.prob.core.model_loaded">
+               <equals
+                     value="enabled">
+               </equals>
+            </with>
+         </enabledWhen>
+      </handler>
+      <handler
+            commandId="de.prob.ui.stateview.toggleShowDuplicates">
+         <class
+               class="de.prob.ui.stateview.ToggleShowDuplicatesHandler">
+         </class>
+         <enabledWhen>
+            <with
+                  variable="de.prob.core.model_loaded">
+               <equals
+                     value="enabled">
+               </equals>
+            </with>
+         </enabledWhen>
+      </handler>
+      <handler
+            commandId="de.prob.ui.show_parameter_dialog">
+         <class
+               class="de.prob.ui.operationview.ShowParameterDialogHandler">
+         </class>
+      </handler>
+      <handler
+            commandId="de.prob.ui.deadlock_check">
+         <class class="de.prob.ui.deadlock.DeadlockCheckHandler"/>
+                  <enabledWhen>
+           <with variable="de.prob.core.model_loaded">
+                  <equals
+                        value="enabled">
+                  </equals>
+               </with>
+         </enabledWhen>
+      </handler>
+      <handler
+            commandId="de.prob.ui.invariant_check">
+         <class class="de.prob.ui.invcheck.InvariantCheckHandler"/>
+                  <enabledWhen>
+           <with variable="de.prob.core.model_loaded">
+                  <equals
+                        value="enabled">
+                  </equals>
+               </with>
+         </enabledWhen>
+      </handler>
+      <handler
+            commandId="de.prob.ui.opview.checks">
+            <class class="de.prob.ui.eventb.ConsistencyCheckCommand" />
+                     <enabledWhen>
+           <with variable="de.prob.core.model_loaded">
+                  <equals
+                        value="enabled">
+                  </equals>
+               </with>
+         </enabledWhen>
+            
+      </handler>
+      <handler
+            commandId="de.prob.ui.exampleanalyzecommand">
+         <class
+               class="de.prob.ui.internal.InvariantAnalyzeHandler">
+         </class>
+      </handler>
+<!--      <handler
+            commandId="de.prob.ui.startdmc">
+         <class
+               class="de.prob.ui.eventb.StartDistributedModelcheckHandler">
+         </class>
+         <enabledWhen>
+            <with
+                  variable="selection">
+               <iterate
+                     operator="or">
+                  <instanceof
+                        value="org.eventb.core.IEventBRoot">
+                  </instanceof>
+               </iterate>
+            </with>
+         </enabledWhen>
+      </handler> -->
+   </extension>
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            locationURI="menu:contact">
+         <command
+               commandId="de.prob.ui.openWebsite"
+               label="Open ProB Website"
+               mnemonic="W"
+               style="push">  
+            <parameter
+                  name="de.prob.ui.openwebsite.url"
+                  value="http://www.stups.uni-duesseldorf.de/ProB">
+            </parameter>
+         </command>
+         <command
+               commandId="de.prob.ui.openWebsite"
+               label="Open Bugtracker Website"
+               mnemonic="W"
+               style="push">
+            <parameter
+                  name="de.prob.ui.openwebsite.url"
+                  value="https://cobra.cs.uni-duesseldorf.de/trac/newticket?type=bug&amp;priority=major&amp;component=Eclipse%20Plugin&amp;keywords=user%20discovered%20bug">
+            </parameter>
+         </command>
+         <command
+               commandId="de.prob.ui.bugreport"
+               label="Submit bugreport"
+               mnemonic="B"
+               style="push">
+         </command>
+      </menuContribution>
+
+      <menuContribution
+            locationURI="toolbar:de.prob.ui.StateView">
+         <command
+               commandId="de.prob.ui.load_shortest_trace"
+               icon="icons/search_src.gif"
+               label="Load shortest trace"
+               style="push">
+         </command>
+         <command
+               commandId="de.prob.ui.add_formula"
+               icon="icons/add_att.gif"
+               label="Add new Formula"
+               style="push">
+         </command>
+         <command
+               commandId="de.prob.ui.stateview.toggleShowDuplicates"
+               icon="icons/filter_ps.gif"
+               label="Filter Duplicate Variables"
+               style="toggle">
+         </command>
+      </menuContribution>
+      <menuContribution
+            locationURI="popup:de.prob.ui.StateView">
+         <command
+               commandId="de.prob.ui.command.showInHistory"
+               label="Show item in history"
+               style="push">
+         </command>
+      </menuContribution>
+      
+      <menuContribution
+      locationURI="toolbar:de.prob.ui.OperationView">
+         <command
+               commandId="de.prob.ui.opview.checks"
+               label="Checks"
+               style="pulldown">
+         </command>
+   <command
+         commandId="de.prob.ui.doubleclickbehaviour"
+         icon="icons/doubleclick.png"
+         label="Double Click Behaviour"
+         style="pulldown">
+   </command>
+   <command
+         commandId="de.prob.ui.randomoperation"
+         icon="icons/resume.gif"
+         label="Execute Random Operations"
+         style="pulldown">
+   </command>
+   <command
+         commandId="de.prob.ui.filtermenu"
+         icon="icons/filter_ps.gif"
+         label="Filter"
+         style="pulldown">
+   </command>
+   <command
+         commandId="de.prob.ui.restart"
+         icon="icons/refresh.gif"
+         label="Restart Animation"
+         style="push">
+   </command>
+   <command
+         commandId="de.prob.ui.history.back"
+         icon="icons/back.gif"
+         label="History Back"
+         style="pulldown">
+   </command>
+   <command
+         commandId="de.prob.ui.history.forward"
+         icon="icons/forward.gif"
+         label="History Forward"
+         style="pulldown">
+   </command>
+   </menuContribution>
+      <menuContribution
+            locationURI="menu:de.prob.ui.doubleclickbehaviour">
+                  <command
+            commandId="de.prob.ui.doubleclickbehaviour"
+            label="First solution for Parameters"
+            style="radio">
+         <parameter
+               name="org.eclipse.ui.commands.radioStateParameter"
+               value="NORMAL">
+         </parameter>
+      </command>
+      <command
+            commandId="de.prob.ui.doubleclickbehaviour"
+            label="Random solution for Parameters"
+            style="radio">
+         <parameter
+               name="org.eclipse.ui.commands.radioStateParameter"
+               value="RANDOM">
+         </parameter>
+      </command>
+      <command
+            commandId="de.prob.ui.doubleclickbehaviour"
+            label="Open Dialog"
+            style="radio">
+         <parameter
+               name="org.eclipse.ui.commands.radioStateParameter"
+               value="DIALOG">
+         </parameter>
+      </command>
+      </menuContribution>
+      <menuContribution
+            locationURI="menu:de.prob.ui.randomoperation">
+         <command
+               commandId="de.prob.ui.randomoperation"
+               label="Execute 1 Step"
+               style="push">
+            <parameter
+                  name="de.prob.ui.randomoperation.steps"
+                  value="1">
+            </parameter>
+         </command>
+         <command
+               commandId="de.prob.ui.randomoperation"
+               label="Execute 5 Steps"
+               style="push">
+            <parameter
+                  name="de.prob.ui.randomoperation.steps"
+                  value="5">
+            </parameter>
+         </command>
+         <command
+               commandId="de.prob.ui.randomoperation"
+               label="Execute 10 Steps"
+               style="push">
+            <parameter
+                  name="de.prob.ui.randomoperation.steps"
+                  value="10">
+            </parameter>
+         </command>
+         <command
+               commandId="de.prob.ui.randomoperation"
+               label=" Enter Number of Steps"
+               style="push">
+            <parameter
+                  name="de.prob.ui.randomoperation.steps"
+                  value="-1">
+            </parameter>
+         </command>
+      </menuContribution>
+      <menuContribution
+            locationURI="menu:de.prob.ui.filtermenu">
+         <command
+               commandId="de.prob.ui.filter_enabled_only"
+               label="Show only enabled Events"
+               style="toggle">
+         </command>
+      </menuContribution>
+      <menuContribution
+            class="de.prob.ui.operationview.HistoryBackwardMenu"
+            locationURI="menu:de.prob.ui.history.back">
+      </menuContribution>
+      <menuContribution
+            class="de.prob.ui.operationview.HistoryForwardMenu"
+            locationURI="menu:de.prob.ui.history.forward">
+      </menuContribution>
+      <menuContribution
+            locationURI="popup:fr.systerel.explorer.navigator.view">
+         <separator
+               name="de.prob.ui.separator2"
+               visible="true">
+         </separator>
+         <command
+               commandId="de.prob.ui.starteventbanimation"
+               icon="icons/prob.png"
+               label="Start Animation / Model Checking"
+               style="push">
+            <visibleWhen>
+      <with
+            variable="selection">
+         <iterate
+               operator="or">
+            <instanceof
+                  value="org.eventb.core.IEventBRoot">
+            </instanceof>
+         </iterate>
+      </with>
+            </visibleWhen>
+         </command>
+  <!--       <command
+               commandId="de.prob.ui.startdmc"
+               icon="icons/prob.png"
+               label="Start Distributed Modelcheck"
+               style="push">
+            <visibleWhen>
+      <with
+            variable="selection">
+         <iterate
+               operator="or">
+            <instanceof
+                  value="org.eventb.core.IEventBRoot">
+            </instanceof>
+         </iterate>
+      </with>
+            </visibleWhen>
+         </command>
+  -->
+         <menu
+               commandId="de.prob.ui.navigator.context"
+               icon="icons/new_prob_mini.png"
+               id="more_commands"
+               label="ProB Classic ...">
+            <visibleWhen>
+               <with
+                     variable="selection">
+                  <iterate
+                        operator="or">
+                     <instanceof
+                           value="org.eventb.core.IEventBRoot">
+                     </instanceof>
+                  </iterate>
+               </with>
+            </visibleWhen>
+            <command
+                  commandId="de.prob.ui.classic.export"
+                  icon="icons/prob_mini_logo.gif"
+                  label="Export for use in ProB classic"
+                  style="push">
+            </command>
+            <command
+                  commandId="de.prob.ui.classic.open"
+                  icon="icons/prob_mini_logo.gif"
+                  label="Open in ProB classic"
+                  style="push">
+            </command>
+         </menu>
+         <separator
+               name="de.prob.ui.separator1"
+               visible="true">
+         </separator>
+      </menuContribution>
+      <menuContribution
+            class="de.prob.ui.operationview.ParameterMenu"
+            locationURI="popup:de.prob.ui.OperationView">
+      </menuContribution>
+      <menuContribution
+            allPopups="false"
+            locationURI="menu:prob">
+      </menuContribution>
+      <menuContribution
+            locationURI="menu:de.prob.ui.opview.checks">
+         <command
+               commandId="de.prob.ui.consistency_checking"
+               icon="icons/Consistency.png"
+               label="Model Checking"
+               mnemonic="C"
+               style="push">
+         </command>
+         <command
+               commandId="de.prob.ui.ltl_modelchecking"
+               icon="icons/LTL_Modelcheck.png"
+               label="LTL Model Checking"
+               mnemonic="L"
+               style="push">
+         </command>
+         <command
+               commandId="de.prob.ui.deadlock_check"
+               icon="icons/DeadlockCheck.png"
+               label="Deadlock Freedom Checking"
+               mnemonic="D"
+               style="push">
+         </command>
+         <command
+               commandId="de.prob.ui.invariant_check"
+               icon="icons/CBCInvariantCheck.png"
+               label="Invariant Preservation Checking"
+               mnemonic="I"
+               style="push">
+         </command>
+      </menuContribution>
+      <!--
+      <menuContribution
+            allPopups="false"
+            locationURI="menu:analyze">
+         <command
+               commandId="de.prob.ui.exampleanalyzecommand"
+               label="Analyze Invariant"
+               mnemonic="I"
+               style="toggle">
+         </command>
+      </menuContribution>
+      -->
+      <menuContribution locationURI="menu:de.prob.ui.ltl.CounterExampleView">
+          <command commandId="de.prob.ui.ltl.counterexampleviewmenuhandler"
+              label="Show as a table view"
+              style="radio">
+         	  <parameter
+                  name="org.eclipse.ui.commands.radioStateParameter"
+               	  value="Table"> 
+              </parameter>
+          </command>
+          <command commandId="de.prob.ui.ltl.counterexampleviewmenuhandler"
+              label="Show as a tree view"
+              style="radio">
+         	  <parameter 
+                  name="org.eclipse.ui.commands.radioStateParameter"
+               	  value="Tree">
+              </parameter>
+          </command>
+          <command commandId="de.prob.ui.ltl.showCounterexampleInHistory"
+              label="Show the counter-example in the history">
+          </command>
+      </menuContribution>
+      
+   </extension>
+   <extension
+         point="org.eclipse.ui.services">
+      <sourceProvider
+            provider="de.prob.ui.services.ModelLoadedProvider">
+         <variable
+               name="de.prob.core.model_loaded"
+               priorityLevel="workbench">
+         </variable>
+      </sourceProvider>
+      <sourceProvider
+            provider="de.prob.ui.services.HistoryActiveProvider">
+         <variable
+               name="de.prob.core.history.forward_service"
+               priorityLevel="workbench">
+         </variable>
+         <variable
+               name="de.prob.core.history.backward_service"
+               priorityLevel="workbench">
+         </variable>
+      </sourceProvider>
+        </extension>
+</plugin>
