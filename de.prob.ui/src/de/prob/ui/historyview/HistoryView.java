@@ -31,6 +31,7 @@ import org.eclipse.swt.widgets.TableColumn;
 import de.prob.core.Animator;
 import de.prob.core.domainobjects.History;
 import de.prob.core.domainobjects.HistoryItem;
+import de.prob.core.domainobjects.MachineDescription;
 import de.prob.core.domainobjects.Operation;
 import de.prob.core.domainobjects.State;
 import de.prob.exceptions.ProBException;
@@ -113,16 +114,20 @@ public class HistoryView extends StateBasedViewPart {
 
 	private void createColumns(final Composite composite) {
 		final Animator animator = Animator.getAnimator();
-		final String[] events = animator.getMachineDescription()
-				.getModelNames().toArray(new String[0]);
-		ArrayUtils.reverse(events);
+		MachineDescription machineDescription = animator.getMachineDescription();
+		String[] models = new String[0];
+		if (machineDescription != null) {
+			models = machineDescription
+					.getModelNames().toArray(new String[0]);
+			ArrayUtils.reverse(models);
+		}
 		final TableColumnLayout layout = new TableColumnLayout();
 		composite.setLayout(layout);
-		if (events.length > 0) {
+		if (models.length > 0) {
 			int pos = 0;
-			for (final String event : events) {
+			for (final String model : models) {
 				final boolean isFirst = pos == 0;
-				createColumn(layout, event, new HistoryEventLabelProvider(pos),
+				createColumn(layout, model, new HistoryEventLabelProvider(pos),
 						isFirst);
 				pos++;
 			}
