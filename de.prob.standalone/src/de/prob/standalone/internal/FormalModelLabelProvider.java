@@ -24,7 +24,10 @@ public class FormalModelLabelProvider implements ILabelProvider {
 			} else if (file.getFileExtension().equals("buc")) {
 				return Activator.getImageDescriptor("icons/eventb/ctx_obj.png")
 						.createImage();
-			} else if (file.getFileExtension().equals("mch")) {
+			} else if (file.getFileExtension().equals("csp")) {
+				return Activator.getImageDescriptor("icons/csp.png")
+						.createImage();
+			} else {
 				return Activator.getImageDescriptor("icons/icon16.png")
 						.createImage();
 			}

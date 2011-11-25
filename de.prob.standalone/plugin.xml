@@ -57,6 +57,30 @@
             </visibleWhen>
          </command>
          <command
+               commandId="de.prob.command.startCspAnimation"
+               icon="icons/icon16.png"
+               label="Start Animation / Model Checking"
+               style="push">
+            <visibleWhen>
+               <with
+                     variable="selection">
+                  <iterate
+                        operator="or">
+                     <and>
+                        <instanceof
+                              value="org.eclipse.core.resources.IResource">
+                        </instanceof>
+                        <test
+                              forcePluginActivation="true"
+                              property="org.eclipse.core.resources.extension"
+                              value="csp">
+                        </test>
+                     </and>
+                  </iterate>
+               </with>
+            </visibleWhen>
+         </command>
+         <command
                commandId="de.prob.command.startClassicalBAnimation"
                icon="icons/icon16.png"
                label="Start Animation / Model Checking"
@@ -354,11 +378,28 @@
                  <instanceof
                        value="org.eclipse.core.resources.IResource">
                  </instanceof>
+                 <or>
                  <test
                        forcePluginActivation="true"
                        property="org.eclipse.core.resources.extension"
                        value="mch">
                  </test>
+                 <test
+                       forcePluginActivation="true"
+                       property="org.eclipse.core.resources.extension"
+                       value="ref">
+                 </test>
+                 <test
+                       forcePluginActivation="true"
+                       property="org.eclipse.core.resources.extension"
+                       value="imp">
+                 </test>
+                 <test
+                       forcePluginActivation="true"
+                       property="org.eclipse.core.resources.extension"
+                       value="csp">
+                 </test>
+                 </or>
               </and>
               <and>
                  <instanceof
@@ -430,6 +471,42 @@
                        <test
                              forcePluginActivation="true"
                              property="org.eclipse.core.resources.extension"
+                             value="ref">
+                       </test>
+                    </and>
+                 </not>
+                 <not>
+                    <and>
+                       <instanceof
+                             value="org.eclipse.core.resources.IFile">
+                       </instanceof>
+                       <test
+                             forcePluginActivation="true"
+                             property="org.eclipse.core.resources.extension"
+                             value="imp">
+                       </test>
+                    </and>
+                 </not>
+                 <not>
+                    <and>
+                       <instanceof
+                             value="org.eclipse.core.resources.IFile">
+                       </instanceof>
+                       <test
+                             forcePluginActivation="true"
+                             property="org.eclipse.core.resources.extension"
+                             value="csp">
+                       </test>
+                    </and>
+                 </not>
+                 <not>
+                    <and>
+                       <instanceof
+                             value="org.eclipse.core.resources.IFile">
+                       </instanceof>
+                       <test
+                             forcePluginActivation="true"
+                             property="org.eclipse.core.resources.extension"
                              value="mch">
                        </test>
                     </and>
@@ -444,6 +521,10 @@
      <command
            id="de.prob.command.startClassicalBAnimation"
            name="Classical-B Animate / Model Check">
+     </command>
+     <command
+           id="de.prob.command.startCspAnimation"
+           name="CSP Animate / Model Check">
      </command>
   </extension>
   <extension
@@ -466,6 +547,30 @@
                           forcePluginActivation="true"
                           property="org.eclipse.core.resources.extension"
                           value="mch">
+                    </test>
+                 </and>
+              </iterate>
+           </with>
+        </enabledWhen>
+     </handler>
+     <handler
+           commandId="de.prob.command.startCspAnimation">
+        <class
+              class="de.prob.standalone.handler.StartCspAnimationHandler">
+        </class>
+        <enabledWhen>
+           <with
+                 variable="selection">
+              <iterate
+                    operator="or">
+                 <and>
+                    <instanceof
+                          value="org.eclipse.core.resources.IResource">
+                    </instanceof>
+                    <test
+                          forcePluginActivation="true"
+                          property="org.eclipse.core.resources.extension"
+                          value="csp">
                     </test>
                  </and>
               </iterate>
