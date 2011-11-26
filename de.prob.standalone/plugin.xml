@@ -70,11 +70,18 @@
                         <instanceof
                               value="org.eclipse.core.resources.IResource">
                         </instanceof>
-                        <test
-                              forcePluginActivation="true"
-                              property="org.eclipse.core.resources.extension"
-                              value="mch">
-                        </test>
+                        <or>
+                           <test
+                                 forcePluginActivation="true"
+                                 property="org.eclipse.core.resources.extension"
+                                 value="mch">
+                           </test>
+                           <test
+                                 forcePluginActivation="true"
+                                 property="org.eclipse.core.resources.extension"
+                                 value="ref">
+                           </test>
+                        </or>
                      </and>
                   </iterate>
                </with>
@@ -323,117 +330,54 @@
         point="org.eclipse.ui.navigator.navigatorContent">
      <navigatorContent
            activeByDefault="true"
-           contentProvider="de.prob.standalone.internal.FormalModelContentProvider"
-           id="de.prob.standalone.navigatorContent.formalModelContent"
-           labelProvider="de.prob.standalone.internal.FormalModelLabelProvider"
-           name="Formal Model Content"
+           contentProvider="de.prob.standalone.internal.ProBNavigatorContentProvider"
+           id="de.prob.standalone.navigatorContent.probContent"
+           labelProvider="de.prob.standalone.internal.ProBNavigatorLabelProvider"
+           name="ProB Navigation Content Provider"
            priority="normal">
         <triggerPoints>
-           <or>
-              <and>
-                 <instanceof
-                       value="org.eclipse.core.resources.IResource">
-                 </instanceof>
-                 <test
-                       forcePluginActivation="true"
-                       property="org.eclipse.core.resources.extension"
-                       value="bum">
-                 </test>
-              </and>
-              <and>
-                 <instanceof
-                       value="org.eclipse.core.resources.IResource">
-                 </instanceof>
-                 <test
-                       forcePluginActivation="true"
-                       property="org.eclipse.core.resources.extension"
-                       value="buc">
-                 </test>
-              </and>
-              <and>
-                 <instanceof
-                       value="org.eclipse.core.resources.IResource">
-                 </instanceof>
-                 <test
-                       forcePluginActivation="true"
-                       property="org.eclipse.core.resources.extension"
-                       value="mch">
-                 </test>
-              </and>
-              <and>
-                 <instanceof
-                       value="org.eclipse.core.resources.IResource">
-                 </instanceof>
-                 <test
-                       forcePluginActivation="true"
-                       property="org.eclipse.core.resources.extension"
-                       value="bmso">
-                 </test>
-              </and>
-           </or>
+           <instanceof
+                 value="org.eclipse.core.resources.IResource">
+           </instanceof>
         </triggerPoints>
      </navigatorContent>
      <commonFilter
            activeByDefault="true"
            id="de.prob.standalone.commonFilter.probFileFilter"
-           name="ProB File Filter">
+           name="ProB Navigation Filter">
         <filterExpression>
            <or>
-              <instanceof
-                    value="org.eclipse.core.resources.IFolder">
-              </instanceof>
               <and>
                  <instanceof
-                       value="org.eclipse.core.resources.IFile">
+                       value="org.eclipse.core.resources.IResource">
                  </instanceof>
-                 <not>
-                    <and>
-                       <instanceof
-                             value="org.eclipse.core.resources.IFile">
-                       </instanceof>
-                       <test
-                             forcePluginActivation="true"
-                             property="org.eclipse.core.resources.extension"
-                             value="buc">
-                       </test>
-                    </and>
-                 </not>
-                 <not>
-                    <and>
-                       <instanceof
-                             value="org.eclipse.core.resources.IFile">
-                       </instanceof>
-                       <test
-                             forcePluginActivation="true"
-                             property="org.eclipse.core.resources.extension"
-                             value="bum">
-                       </test>
-                    </and>
-                 </not>
-                 <not>
-                    <and>
-                       <instanceof
-                             value="org.eclipse.core.resources.IFile">
-                       </instanceof>
-                       <test
-                             forcePluginActivation="true"
-                             property="org.eclipse.core.resources.extension"
-                             value="bmso">
-                       </test>
-                    </and>
-                 </not>
-                 <not>
-                    <and>
-                       <instanceof
-                             value="org.eclipse.core.resources.IFile">
-                       </instanceof>
-                       <test
-                             forcePluginActivation="true"
-                             property="org.eclipse.core.resources.extension"
-                             value="mch">
-                       </test>
-                    </and>
-                 </not>
+                 <or>
+                    <test
+                          forcePluginActivation="true"
+                          property="org.eclipse.core.resources.extension"
+                          value="bcc">
+                    </test>
+                    <test
+                          forcePluginActivation="true"
+                          property="org.eclipse.core.resources.extension"
+                          value="bpo">
+                    </test>
+                    <test
+                          forcePluginActivation="true"
+                          property="org.eclipse.core.resources.extension"
+                          value="bpr">
+                    </test>
+                    <test
+                          forcePluginActivation="true"
+                          property="org.eclipse.core.resources.extension"
+                          value="bps">
+                    </test>
+                    <test
+                          forcePluginActivation="true"
+                          property="org.eclipse.core.resources.extension"
+                          value="bcm">
+                    </test>
+                 </or>
               </and>
            </or>
         </filterExpression>
