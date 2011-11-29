@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: ProB Rodin2 UI Bindings
 Bundle-SymbolicName: de.prob.plugin;singleton:=true
-Bundle-Version: 2.1.0
+Bundle-Version: 2.1.1
 Fragment-Host: de.prob.ui;bundle-version="[7.1.0,7.2)"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Vendor: HHU Düsseldorf STUPS Group
