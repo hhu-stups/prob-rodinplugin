@@ -424,6 +424,36 @@
            service="de.prob.standalone.internal.ClassicalBLanguageService">
      </language>
   </extension>
+  <extension
+        point="org.eclipse.ui.editors">
+     <editor
+           class="org.eclipse.ui.editors.text.TextEditor"
+           contributorClass="org.eclipse.ui.editors.text.TextEditorActionContributor"
+           default="true"
+           extensions="bum"
+           icon="icons/eventb/mch_obj.png"
+           id="de.prob.standalone.editor.eventb.machine"
+           name="Event-B Machine Editor">
+     </editor>
+     <editor
+           class="org.eclipse.ui.editors.text.TextEditor"
+           contributorClass="org.eclipse.ui.editors.text.TextEditorActionContributor"
+           default="true"
+           extensions="buc"
+           icon="icons/eventb/ctx_obj.png"
+           id="de.prob.standalone.editor.eventb.context"
+           name="Event-B Context Editor">
+     </editor>
+     <editor
+           class="org.eclipse.ui.editors.text.TextEditor"
+           contributorClass="org.eclipse.ui.editors.text.TextEditorActionContributor"
+           default="true"
+           extensions="mch"
+           icon="icons/icon16.png"
+           id="de.prob.standalone.editor.classicalb.machine"
+           name="Classical-B Machine Editor">
+     </editor>       
+  </extension>
    
    
 </plugin>

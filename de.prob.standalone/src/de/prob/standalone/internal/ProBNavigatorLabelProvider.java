@@ -11,25 +11,9 @@ import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.swt.graphics.Image;
 
-import de.prob.standalone.Activator;
-
 public class ProBNavigatorLabelProvider implements ILabelProvider {
 
 	public Image getImage(final Object element) {
-		// TODO: (LL) Needs to be improved
-		if (element instanceof IFile) {
-			IFile file = (IFile) element;
-			if (file.getFileExtension().equals("bum")) {
-				return Activator.getImageDescriptor("icons/eventb/mch_obj.png")
-						.createImage();
-			} else if (file.getFileExtension().equals("buc")) {
-				return Activator.getImageDescriptor("icons/eventb/ctx_obj.png")
-						.createImage();
-			} else if (file.getFileExtension().equals("mch")) {
-				return Activator.getImageDescriptor("icons/icon16.png")
-						.createImage();
-			}
-		}
 		return null;
 	}
 
