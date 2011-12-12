@@ -71,6 +71,9 @@ public class BCheckboxPart extends AppAbstractEditPart {
 							.getDefault(), rgbText));
 		}
 
+		if (aID.equals(AttributeConstants.ATTRIBUTE_ENABLED))
+			((CheckboxFigure) figure).setBtEnabled(Boolean.valueOf(value.toString()));
+		
 	}
 
 	@Override
