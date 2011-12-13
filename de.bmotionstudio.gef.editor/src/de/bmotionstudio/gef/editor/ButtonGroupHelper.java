@@ -17,7 +17,6 @@ public class ButtonGroupHelper {
 	private static HashMap<String, Collection<BControl>> map = new HashMap<String, Collection<BControl>>();
 
 	public ButtonGroupHelper() {
-		System.out.println("REGISTER");
 	}
 
 	public static Collection<BControl> getButtonGroup(String buttonGroupID) {
