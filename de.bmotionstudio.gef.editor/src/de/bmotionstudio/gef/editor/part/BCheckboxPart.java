@@ -36,27 +36,23 @@ public class BCheckboxPart extends AppAbstractEditPart {
 	private ChangeListener changeListener = new ChangeListener() {
 		@Override
 		public void handleStateChanged(ChangeEvent event) {
-
 			if (event.getPropertyName().equals(ButtonModel.PRESSED_PROPERTY)) {
-
-				BControl control = (BControl) getModel();
-
-				// Recheck observer after click
-				control.getVisualization().getAnimation().checkObserver();
-
-				if (Boolean.valueOf(control.getAttributeValue(
-						AttributeConstants.ATTRIBUTE_CHECKED).toString())) {
-					control.setAttributeValue(
-							AttributeConstants.ATTRIBUTE_CHECKED, false);
-				} else {
-					control.setAttributeValue(
-							AttributeConstants.ATTRIBUTE_CHECKED, true);
+				AbstractBMotionFigure f = (AbstractBMotionFigure) getFigure();
+				if (f.getModel().isPressed()) {
+					BControl control = (BControl) getModel();
+					// Recheck observer after click
+					control.getVisualization().getAnimation().checkObserver();
+					if (Boolean.valueOf(control.getAttributeValue(
+							AttributeConstants.ATTRIBUTE_CHECKED).toString())) {
+						control.setAttributeValue(
+								AttributeConstants.ATTRIBUTE_CHECKED, false);
+					} else {
+						control.setAttributeValue(
+								AttributeConstants.ATTRIBUTE_CHECKED, true);
+					}
 				}
-
 			}
-
 		}
-
 	};
 
 	@Override
