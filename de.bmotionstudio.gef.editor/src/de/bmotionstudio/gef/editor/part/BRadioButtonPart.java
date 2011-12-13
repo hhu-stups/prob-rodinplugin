@@ -133,9 +133,6 @@ public class BRadioButtonPart extends AppAbstractEditPart {
 						(BControl) getModel());
 			}
 		}
-		
-		if (aID.equals(AttributeConstants.ATTRIBUTE_ENABLED))
-			((RadioButtonFigure) figure).setBtEnabled(Boolean.valueOf(value.toString()));
 
 		if (aID.equals(AttributeConstants.ATTRIBUTE_ENABLED))
 			((RadioButtonFigure) figure).setBtEnabled(Boolean.valueOf(value
