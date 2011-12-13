@@ -79,5 +79,20 @@ public class BRadioButton extends BControl {
 		}
 		return "";
 	}
+	
+	@Override
+	public void executeEvent(String eventID) {
+		String btgroupid = getAttributeValue(
+				AttributeConstants.ATTRIBUTE_BUTTONGROUP).toString();
+		if (!btgroupid.trim().equals("")) {
+			Collection<BControl> btGroup = ButtonGroupHelper
+					.getButtonGroup(btgroupid);
+			for (BControl control : btGroup) {
+					control.setAttributeValue(AttributeConstants.ATTRIBUTE_CHECKED, false);					
+			}
+		}
+		setAttributeValue(AttributeConstants.ATTRIBUTE_CHECKED, true);
+		super.executeEvent(eventID);
+	}
 
 }

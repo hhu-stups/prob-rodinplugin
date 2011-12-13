@@ -62,5 +62,16 @@ public class BCheckbox extends BControl {
 					.toString();
 		}
 	}
+	
+	@Override
+	public void executeEvent(String eventID) {
+		if (Boolean.valueOf(getAttributeValue(
+				AttributeConstants.ATTRIBUTE_CHECKED).toString())) {
+			setAttributeValue(AttributeConstants.ATTRIBUTE_CHECKED, false);
+		} else {
+			setAttributeValue(AttributeConstants.ATTRIBUTE_CHECKED, true);
+		}
+		super.executeEvent(eventID);
+	}
 
 }
