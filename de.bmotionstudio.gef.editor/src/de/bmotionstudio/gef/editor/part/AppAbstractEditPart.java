@@ -63,12 +63,12 @@ public abstract class AppAbstractEditPart extends AbstractGraphicalEditPart
 				if (event.getPropertyName().equals(
 						ButtonModel.MOUSEOVER_PROPERTY))
 					getFigure().setCursor(cursorHover);
-				if (event.getPropertyName()
-						.equals(ButtonModel.PRESSED_PROPERTY)) {
-					AbstractBMotionFigure f = (AbstractBMotionFigure) getFigure();
-					if (f.getModel().isPressed())
-						executeEvent(AttributeConstants.EVENT_MOUSECLICK);
-				}
+			}
+			if (event.getPropertyName()
+					.equals(ButtonModel.PRESSED_PROPERTY)) {
+				AbstractBMotionFigure f = (AbstractBMotionFigure) getFigure();
+				if (f.getModel().isPressed())
+					executeEvent(AttributeConstants.EVENT_MOUSECLICK);
 			}
 		}
 	};

@@ -14,6 +14,7 @@ import org.eclipse.draw2d.PositionConstants;
 
 import de.be4.classicalb.core.parser.exceptions.BException;
 import de.bmotionstudio.gef.editor.AttributeConstants;
+import de.bmotionstudio.gef.editor.ButtonGroupHelper;
 import de.bmotionstudio.gef.editor.IAddErrorListener;
 import de.bmotionstudio.gef.editor.internal.Animation;
 import de.bmotionstudio.gef.editor.scheduler.PredicateOperation;
@@ -62,6 +63,7 @@ public class Visualization extends BControl {
 		this.errorListener = new ArrayList<IAddErrorListener>();
 		this.isRunning = false;
 		createRulers();
+		ButtonGroupHelper.reset();
 	}
 
 	@Override
@@ -71,6 +73,7 @@ public class Visualization extends BControl {
 		populateVisualization(this);
 		createRulers();
 		this.errorListener = new ArrayList<IAddErrorListener>();
+		ButtonGroupHelper.reset();
 		// this.errorMessages = new ArrayList<ErrorMessage>();
 		// setAttributeValue(AttributeConstants.ATTRIBUTE_ID, "surface", false);
 		return this;

@@ -46,6 +46,11 @@ public class RadioButtonFigure extends AbstractBMotionFigure {
 		foregroundColor = new Color(Display.getDefault(), rgb);
 		textLb.setForegroundColor(foregroundColor);
 	}
+	
+	public void setBtEnabled(Boolean bool) {
+		textLb.setEnabled(bool);
+		repaint();
+	}
 
 	/*
 	 * (non-Javadoc)

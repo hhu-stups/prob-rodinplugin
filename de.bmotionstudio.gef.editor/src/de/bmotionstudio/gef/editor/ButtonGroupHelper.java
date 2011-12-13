@@ -17,6 +17,7 @@ public class ButtonGroupHelper {
 	private static HashMap<String, Collection<BControl>> map = new HashMap<String, Collection<BControl>>();
 
 	public ButtonGroupHelper() {
+		System.out.println("REGISTER");
 	}
 
 	public static Collection<BControl> getButtonGroup(String buttonGroupID) {
@@ -36,6 +37,10 @@ public class ButtonGroupHelper {
 
 	public static void removeButtonGroup(String buttonGroupID) {
 		map.remove(buttonGroupID);
+	}
+
+	public static void reset() {
+		map.clear();
 	}
 
 }

@@ -22,7 +22,7 @@ public class BAttributeButtonGroup extends AbstractAttribute {
 
 	@Override
 	public String getName() {
-		return "Button";
+		return "Group Name";
 	}
 
 }

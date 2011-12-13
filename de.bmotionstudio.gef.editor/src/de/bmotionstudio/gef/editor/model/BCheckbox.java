@@ -11,6 +11,7 @@ import org.eclipse.swt.graphics.RGB;
 import de.bmotionstudio.gef.editor.AttributeConstants;
 import de.bmotionstudio.gef.editor.attribute.BAttributeButtonGroup;
 import de.bmotionstudio.gef.editor.attribute.BAttributeChecked;
+import de.bmotionstudio.gef.editor.attribute.BAttributeEnabled;
 import de.bmotionstudio.gef.editor.attribute.BAttributeFalseValue;
 import de.bmotionstudio.gef.editor.attribute.BAttributeText;
 import de.bmotionstudio.gef.editor.attribute.BAttributeTextColor;
@@ -42,6 +43,7 @@ public class BCheckbox extends BControl {
 		initAttribute(new BAttributeTextColor(new RGB(0, 0, 0)));
 		initAttribute(new BAttributeChecked(true));
 		initAttribute(new BAttributeValue(""));
+		initAttribute(new BAttributeEnabled(true));
 		initAttribute(new BAttributeButtonGroup(""));
 		initAttribute(new BAttributeTrueValue(""));
 		initAttribute(new BAttributeFalseValue(""));
