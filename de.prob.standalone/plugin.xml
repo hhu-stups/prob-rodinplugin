@@ -336,9 +336,65 @@
            name="ProB Navigation Content Provider"
            priority="normal">
         <triggerPoints>
-           <instanceof
-                 value="org.eclipse.core.resources.IResource">
-           </instanceof>
+           <or>
+              <and>
+                 <instanceof
+                       value="org.eclipse.core.resources.IResource">
+                 </instanceof>
+                 <test
+                       forcePluginActivation="true"
+                       property="org.eclipse.core.resources.extension"
+                       value="bum">
+                 </test>
+              </and>
+              <and>
+                 <instanceof
+                       value="org.eclipse.core.resources.IResource">
+                 </instanceof>
+                 <test
+                       forcePluginActivation="true"
+                       property="org.eclipse.core.resources.extension"
+                       value="buc">
+                 </test>
+              </and>
+              <and>
+                 <instanceof
+                       value="org.eclipse.core.resources.IResource">
+                 </instanceof>
+                 <or>
+                 <test
+                       forcePluginActivation="true"
+                       property="org.eclipse.core.resources.extension"
+                       value="mch">
+                 </test>
+                 <test
+                       forcePluginActivation="true"
+                       property="org.eclipse.core.resources.extension"
+                       value="ref">
+                 </test>
+                 <test
+                       forcePluginActivation="true"
+                       property="org.eclipse.core.resources.extension"
+                       value="imp">
+                 </test>
+                 <test
+                       forcePluginActivation="true"
+                       property="org.eclipse.core.resources.extension"
+                       value="csp">
+                 </test>
+                 </or>
+              </and>
+              <and>
+                 <instanceof
+                       value="org.eclipse.core.resources.IResource">
+                 </instanceof>
+                 <test
+                       forcePluginActivation="true"
+                       property="org.eclipse.core.resources.extension"
+                       value="bmso">
+                 </test>
+              </and>
+           </or>
         </triggerPoints>
      </navigatorContent>
      <commonFilter
@@ -351,33 +407,90 @@
                  <instanceof
                        value="org.eclipse.core.resources.IResource">
                  </instanceof>
-                 <or>
-                    <test
-                          forcePluginActivation="true"
-                          property="org.eclipse.core.resources.extension"
-                          value="bcc">
-                    </test>
-                    <test
-                          forcePluginActivation="true"
-                          property="org.eclipse.core.resources.extension"
-                          value="bpo">
-                    </test>
-                    <test
-                          forcePluginActivation="true"
-                          property="org.eclipse.core.resources.extension"
-                          value="bpr">
-                    </test>
-                    <test
-                          forcePluginActivation="true"
-                          property="org.eclipse.core.resources.extension"
-                          value="bps">
-                    </test>
-                    <test
-                          forcePluginActivation="true"
-                          property="org.eclipse.core.resources.extension"
-                          value="bcm">
-                    </test>
-                 </or>
+                 <not>
+                    <and>
+                       <instanceof
+                             value="org.eclipse.core.resources.IFile">
+                       </instanceof>
+                       <test
+                             forcePluginActivation="true"
+                             property="org.eclipse.core.resources.extension"
+                             value="buc">
+                       </test>
+                    </and>
+                 </not>
+                 <not>
+                    <and>
+                       <instanceof
+                             value="org.eclipse.core.resources.IFile">
+                       </instanceof>
+                       <test
+                             forcePluginActivation="true"
+                             property="org.eclipse.core.resources.extension"
+                             value="bum">
+                       </test>
+                    </and>
+                 </not>
+                 <not>
+                    <and>
+                       <instanceof
+                             value="org.eclipse.core.resources.IFile">
+                       </instanceof>
+                       <test
+                             forcePluginActivation="true"
+                             property="org.eclipse.core.resources.extension"
+                             value="bmso">
+                       </test>
+                    </and>
+                 </not>
+                 <not>
+                    <and>
+                       <instanceof
+                             value="org.eclipse.core.resources.IFile">
+                       </instanceof>
+                       <test
+                             forcePluginActivation="true"
+                             property="org.eclipse.core.resources.extension"
+                             value="ref">
+                       </test>
+                    </and>
+                 </not>
+                 <not>
+                    <and>
+                       <instanceof
+                             value="org.eclipse.core.resources.IFile">
+                       </instanceof>
+                       <test
+                             forcePluginActivation="true"
+                             property="org.eclipse.core.resources.extension"
+                             value="imp">
+                       </test>
+                    </and>
+                 </not>
+                 <not>
+                    <and>
+                       <instanceof
+                             value="org.eclipse.core.resources.IFile">
+                       </instanceof>
+                       <test
+                             forcePluginActivation="true"
+                             property="org.eclipse.core.resources.extension"
+                             value="csp">
+                       </test>
+                    </and>
+                 </not>
+                 <not>
+                    <and>
+                       <instanceof
+                             value="org.eclipse.core.resources.IFile">
+                       </instanceof>
+                       <test
+                             forcePluginActivation="true"
+                             property="org.eclipse.core.resources.extension"
+                             value="mch">
+                       </test>
+                    </and>
+                 </not>
               </and>
            </or>
         </filterExpression>
@@ -388,6 +501,10 @@
      <command
            id="de.prob.command.startClassicalBAnimation"
            name="Classical-B Animate / Model Check">
+     </command>
+     <command
+           id="de.prob.command.startCspAnimation"
+           name="CSP Animate / Model Check">
      </command>
   </extension>
   <extension
@@ -410,6 +527,30 @@
                           forcePluginActivation="true"
                           property="org.eclipse.core.resources.extension"
                           value="mch">
+                    </test>
+                 </and>
+              </iterate>
+           </with>
+        </enabledWhen>
+     </handler>
+     <handler
+           commandId="de.prob.command.startCspAnimation">
+        <class
+              class="de.prob.standalone.handler.StartCspAnimationHandler">
+        </class>
+        <enabledWhen>
+           <with
+                 variable="selection">
+              <iterate
+                    operator="or">
+                 <and>
+                    <instanceof
+                          value="org.eclipse.core.resources.IResource">
+                    </instanceof>
+                    <test
+                          forcePluginActivation="true"
+                          property="org.eclipse.core.resources.extension"
+                          value="csp">
                     </test>
                  </and>
               </iterate>
