@@ -14,7 +14,7 @@ Require-Bundle: org.eclipse.ui;bundle-version="[3.5.0,4.0.0)",
  org.eclipse.core.databinding.beans;bundle-version="[1.1.1,2.0.0)",
  org.eclipse.gef;bundle-version="[3.7.0,4.0.0)",
  de.prob.core;bundle-version="[9.1.0,9.2.0)",
- org.eventb.core;bundle-version="[2.1.0,2.4.0)"
+ org.eventb.core;bundle-version="[2.1.0,2.5.0)"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Eclipse-BuddyPolicy: registered
