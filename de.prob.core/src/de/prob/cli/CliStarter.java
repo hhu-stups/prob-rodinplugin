@@ -41,8 +41,6 @@ public final class CliStarter {
 	private static final String[] JARS = new String[] { "BParser.jar",
 			"ParserAspects.jar", "aspectjrt.jar", "prolog.jar" };
 
-	private static Map<String, OsSpecificInfo> OSINFOS = createOsInfos();
-
 	private Process prologProcess;
 	private String debuggingKey;
 
@@ -54,17 +52,6 @@ public final class CliStarter {
 
 	public CliStarter() throws CliException {
 		this(null);
-	}
-
-	private static Map<String, OsSpecificInfo> createOsInfos() {
-		Map<String, OsSpecificInfo> infos = new HashMap<String, CliStarter.OsSpecificInfo>();
-		infos.put(Platform.OS_MACOSX, new OsSpecificInfo("macos", "probcli.sh",
-				"sh", "send_user_interrupt"));
-		infos.put(Platform.OS_LINUX, new OsSpecificInfo("linux", "probcli.sh",
-				"sh", "send_user_interrupt"));
-		infos.put(Platform.OS_WIN32, new OsSpecificInfo("windows",
-				"probcli.exe", null, "send_user_interrupt.exe"));
-		return Collections.unmodifiableMap(infos);
 	}
 
 	public CliStarter(final File file) throws CliException {
@@ -97,10 +84,13 @@ public final class CliStarter {
 		debuggingKey = null;
 
 		final String os = Platform.getOS();
+		final String arch = Platform.getOSArch();
 		final File applicationPath = getCliPath();
 
 		final String fullcp = createFullClasspath(os, applicationPath);
-		final OsSpecificInfo osInfo = getOsInfo(os);
+		
+		final OsSpecificInfo osInfo = getOsInfo(os,arch);
+		
 
 		final String osPath = applicationPath + File.separator + osInfo.subdir;
 		final String executable = osPath + File.separator + osInfo.cliName;
@@ -161,15 +151,28 @@ public final class CliStarter {
 
 	}
 
-	private OsSpecificInfo getOsInfo(final String os) throws CliException {
-		final OsSpecificInfo osInfo = OSINFOS.get(os);
-		if (osInfo == null) {
+	private OsSpecificInfo getOsInfo(final String os, String architecture) throws CliException {
+		if (os.equals(Platform.OS_MACOSX)) {
+			return new OsSpecificInfo("macos", "probcli.sh",
+					"sh", "send_user_interrupt");
+		}
+		if (os.equals(Platform.OS_WIN32)) {
+			return new OsSpecificInfo("windows",
+					"probcli.exe", null, "send_user_interrupt.exe");
+		}
+		
+		if (os.equals(Platform.OS_LINUX)) {
+			String linux = "linux";
+			if (architecture.equals(Platform.ARCH_X86_64)) {
+				linux = "linux64";
+			}
+			return new OsSpecificInfo(linux, "probcli.sh",
+					"sh", "send_user_interrupt");
+		}
 			final CliException cliException = new CliException(
 					"ProB does not support the plattform: " + os);
 			cliException.notifyUserOnce();
 			throw cliException;
-		}
-		return osInfo;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -333,7 +336,8 @@ public final class CliStarter {
 	public void sendUserInterruptReference() {
 		if (userInterruptReference != null) {
 			try {
-				final OsSpecificInfo osInfo = getOsInfo(Platform.getOS());
+				final OsSpecificInfo osInfo = getOsInfo(Platform.getOS(),
+						Platform.getOSArch());
 				final String command = getCliPath() + File.separator
 						+ osInfo.subdir + File.separator
 						+ osInfo.userInterruptCmd;
