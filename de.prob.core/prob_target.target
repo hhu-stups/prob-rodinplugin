@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde version="3.6"?>
 
-<target name="prob_target" sequenceNumber="7">
+<target name="prob_target" sequenceNumber="12">
 <locations>
-<location includeAllPlatforms="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
+<location includeAllPlatforms="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="de.prob.target.feature.feature.group" version="1.0.0.qualifier"/>
 <repository location="http://cobra.cs.uni-duesseldorf.de/prob_dev_target"/>
 </location>
