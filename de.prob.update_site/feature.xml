@@ -2,7 +2,7 @@
 <feature
       id="de.prob.update_site"
       label="Update_site"
-      version="1.0.2">
+      version="1.0.3">
 
    <description url="http://www.stups.uni-duesseldorf.de/ProB">
       ProB is an animator and model checker for the B-Method. It allows
