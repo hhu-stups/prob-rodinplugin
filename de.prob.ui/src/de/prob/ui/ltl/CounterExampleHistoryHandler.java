@@ -27,18 +27,32 @@ import de.prob.ui.ProbUiPlugin;
  * 
  * @author plagge
  */
-public class CEHistoryHandler extends AbstractHandler implements IHandler {
+public final class CounterExampleHistoryHandler extends AbstractHandler
+		implements IHandler {
 
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
+		showCounterExampleInAnimator();
+
+		return null;
+	}
+
+	public static void showCounterExampleInAnimator() throws ExecutionException {
 		final IWorkbenchWindow window = ProbUiPlugin.getDefault()
 				.getWorkbench().getActiveWorkbenchWindow();
-		final CounterExampleView view = findCEView(window);
+		final CounterExampleViewPart view = findCEView(window);
+
 		if (view != null) {
 			final CounterExample ce = view.getCurrentCounterExample();
+
 			if (ce != null) {
 				try {
-					showCounterexampleInAnimator(ce);
+
+					final List<Operation> fullPath = ce.getFullPath();
+					final SetTraceCommand cmd = new SetTraceCommand(fullPath);
+					final Animator animator = Animator.getAnimator();
+					animator.execute(cmd);
+					cmd.setTraceInHistory(animator, fullPath.size());
 				} catch (ProBException e) {
 					e.notifyUserOnce();
 					throw new ExecutionException(
@@ -46,28 +60,19 @@ public class CEHistoryHandler extends AbstractHandler implements IHandler {
 				}
 			}
 		}
-		return null;
 	}
 
-	private void showCounterexampleInAnimator(CounterExample ce)
-			throws ProBException {
-		final List<Operation> fullPath = ce.getFullPath();
-		final SetTraceCommand cmd = new SetTraceCommand(fullPath);
-		final Animator animator = Animator.getAnimator();
-		animator.execute(cmd);
-		cmd.setTraceInHistory(animator, fullPath.size());
-	}
-
-	private CounterExampleView findCEView(final IWorkbenchWindow window) {
+	private static CounterExampleViewPart findCEView(
+			final IWorkbenchWindow window) {
 		final IWorkbenchPage page = window.getActivePage();
-		IViewPart view = page.findView(CounterExampleView.ID);
+		IViewPart view = page.findView(CounterExampleViewPart.ID);
 		if (view == null) {
 			MessageDialog.openError(window.getShell(), "Internal Error",
-					"Cannot not find the History View");
+					"Cannot find the History View");
 			return null;
 		} else {
-			if (view instanceof CounterExampleView)
-				return (CounterExampleView) view;
+			if (view instanceof CounterExampleViewPart)
+				return (CounterExampleViewPart) view;
 			else {
 				MessageDialog.openError(window.getShell(), "Internal Error",
 						"Not expected type of the Counter Example View: "
@@ -76,5 +81,4 @@ public class CEHistoryHandler extends AbstractHandler implements IHandler {
 			}
 		}
 	}
-
 }

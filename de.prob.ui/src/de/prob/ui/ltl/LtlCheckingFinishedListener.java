@@ -16,15 +16,13 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 
-import de.prob.core.command.LtlCheckingCommand.PathType;
 import de.prob.core.command.LtlCheckingCommand.Result;
 import de.prob.core.domainobjects.ltl.CounterExample;
 import de.prob.logging.Logger;
 import de.prob.prolog.term.ListPrologTerm;
 
-public final class LtlCheckingFinishedListener extends JobChangeAdapter {
-
-	private final Shell shell;
+public class LtlCheckingFinishedListener extends JobChangeAdapter {
+	protected final Shell shell;
 
 	public LtlCheckingFinishedListener(final Shell shell) {
 		this.shell = shell;
@@ -32,7 +30,6 @@ public final class LtlCheckingFinishedListener extends JobChangeAdapter {
 
 	@Override
 	public void done(final IJobChangeEvent event) {
-		super.done(event);
 		Job job = event.getJob();
 		if (job instanceof LtlCheckingJob) {
 			LtlCheckingJob ltlJob = (LtlCheckingJob) job;
@@ -43,6 +40,21 @@ public final class LtlCheckingFinishedListener extends JobChangeAdapter {
 			final String message = "The job has a wrong type. Expected LtlCheckingJob but got "
 					+ job.getClass();
 			Logger.notifyUserWithoutBugreport(message);
+		}
+	}
+
+	protected void showCounterexampleInView(final Result modelCheckingResult) {
+		final CounterExample counterExample = new CounterExample(
+				modelCheckingResult);
+		final IWorkbenchPage workbenchPage = PlatformUI.getWorkbench()
+				.getActiveWorkbenchWindow().getActivePage();
+
+		try {
+			final CounterExampleViewPart counterExampleView = (CounterExampleViewPart) workbenchPage
+					.showView(CounterExampleViewPart.ID);
+			counterExampleView.addCounterExample(counterExample);
+		} catch (PartInitException e) {
+			Logger.notifyUser("Failed to show the LTL view.", e);
 		}
 	}
 
@@ -66,12 +78,13 @@ public final class LtlCheckingFinishedListener extends JobChangeAdapter {
 			break;
 		case counterexample:
 			title = LtlStrings.ltlResultCounterexampleTitle;
-			if (modelCheckingResult.getPathType() == PathType.INFINITE) {
-				message = LtlStrings.ltlResultCounterexampleMessage
-						+ LtlStrings.ltlLoopAdvice;
-			} else {
-				message = LtlStrings.ltlResultCounterexampleMessage;
-			}
+			// if (modelCheckingResult.getPathType() == PathType.INFINITE) {
+			// message = LtlStrings.ltlResultCounterexampleMessage
+			// + LtlStrings.ltlLoopAdvice;
+			// } else {
+			// message = LtlStrings.ltlResultCounterexampleMessage;
+			// }
+			message = LtlStrings.ltlResultCounterexampleMessage;
 			displayType = MessageDialog.ERROR;
 			break;
 		case nostart:
@@ -93,28 +106,16 @@ public final class LtlCheckingFinishedListener extends JobChangeAdapter {
 			public void run() {
 				MessageDialog
 						.open(displayType, shell, title, message, SWT.NONE);
+
 				ListPrologTerm counterExample = modelCheckingResult
 						.getCounterexample();
+
 				if (counterExample != null) {
 					showCounterexampleInView(modelCheckingResult);
 				}
 			}
 		};
+
 		shell.getDisplay().asyncExec(runnable);
-	}
-
-	private void showCounterexampleInView(final Result modelCheckingResult) {
-		final CounterExample counterExample = new CounterExample(
-				modelCheckingResult);
-		final IWorkbenchPage workbenchPage = PlatformUI.getWorkbench()
-				.getActiveWorkbenchWindow().getActivePage();
-		try {
-			final CounterExampleView counterExampleView = (CounterExampleView) workbenchPage
-					.showView(CounterExampleView.ID);
-			counterExampleView.addCounterExample(counterExample);
-		} catch (PartInitException e) {
-			Logger.notifyUser("Failed to create the LTL view.", e);
-		}
-
 	}
 }

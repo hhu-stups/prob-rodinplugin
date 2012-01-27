@@ -12,11 +12,13 @@ import de.prob.core.domainobjects.ltl.CounterExampleBinaryOperator;
 import de.prob.core.domainobjects.ltl.CounterExampleProposition;
 import de.prob.core.domainobjects.ltl.CounterExampleUnaryOperator;
 
-public final class CounterExampleMouseMoveAdapter implements MouseMoveListener {
+public final class CounterExampleTreeMouseMoveAdapter implements
+		MouseMoveListener {
 	private final CounterExampleTreeViewer treeViewer;
 	private ViewerCell currentCell;
 
-	public CounterExampleMouseMoveAdapter(CounterExampleTreeViewer treeViewer) {
+	public CounterExampleTreeMouseMoveAdapter(
+			CounterExampleTreeViewer treeViewer) {
 		this.treeViewer = treeViewer;
 	}
 

@@ -23,6 +23,9 @@ public final class LtlStrings extends NLS {
 	public static String ltlResultNoStartTitle;
 	public static String ltlResultNoStartMessage;
 
+	public static String ltlMultiResultOkMessage;
+	public static String ltlMultiResultCounterexampleMessage;
+
 	static {
 		final Class<LtlStrings> clazz = LtlStrings.class;
 		initializeMessages(clazz.getName(), clazz);

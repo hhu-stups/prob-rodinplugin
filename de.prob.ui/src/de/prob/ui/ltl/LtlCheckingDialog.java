@@ -14,6 +14,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -21,10 +22,12 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.core.runtime.jobs.JobChangeAdapter;
 import org.eclipse.core.runtime.preferences.ConfigurationScope;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.IScopeContext;
 import org.eclipse.jface.dialogs.DialogTray;
+import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.TrayDialog;
 import org.eclipse.jface.resource.JFaceResources;
@@ -83,6 +86,7 @@ public final class LtlCheckingDialog extends TrayDialog {
 
 	@Override
 	protected void createButtonsForButtonBar(final Composite parent) {
+
 	}
 
 	@Override
@@ -94,18 +98,22 @@ public final class LtlCheckingDialog extends TrayDialog {
 	@Override
 	protected Control createDialogArea(final Composite parent) {
 		Composite dialogArea = (Composite) super.createDialogArea(parent);
-		GridLayout layout = (GridLayout) dialogArea.getLayout();
-		layout.numColumns = 1;
 
 		formulas = createFormulas(dialogArea);
 		startingPointOptions = createStartingPointOptions(dialogArea);
 		symmetryOptions = createSymmetryOptions(dialogArea);
 
-		Button startButton = new Button(dialogArea, SWT.PUSH);
+		Composite composite = new Composite(parent, SWT.None);
+		composite.setLayout(new GridLayout(1, true));
+		composite.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_CENTER));
+
+		Button startButton = new Button(composite, SWT.PUSH);
 		startButton.setText("Start LTL Checking");
-		startButton
-				.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_CENTER));
 		startButton.addSelectionListener(new StartButtonSelectionListener());
+
+		createButton(composite, IDialogConstants.CANCEL_ID,
+				IDialogConstants.CANCEL_LABEL, false);
+
 		return dialogArea;
 	}
 
@@ -177,62 +185,7 @@ public final class LtlCheckingDialog extends TrayDialog {
 
 		Button button = new Button(group, SWT.None);
 		button.setText("Open...");
-		button.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent event) {
-				FileDialog fileDialog = new FileDialog(shell, SWT.OPEN);
-				fileDialog.setFilterExtensions(new String[] { "*.ltl", "*.*" });
-				fileDialog.setFilterNames(new String[] { "LTL files (*.ltl)",
-						"All files (*.*)" });
-				String fileName = fileDialog.open();
-
-				if (fileName != null) {
-					BufferedReader reader = null;
-
-					try {
-						reader = new BufferedReader(new FileReader(fileName));
-
-						String formula = null;
-						List<String> formulaItems = Arrays.asList(formulas
-								.getItems());
-
-						while ((formula = reader.readLine()) != null) {
-							formula = formula.trim();
-
-							if (formula.equals("")
-									|| (formula.length() > 0 && formula
-											.charAt(0) == '#'))
-								continue;
-
-							PrologTerm parsedFormula = parseLTLFormula(formula);
-
-							if (parsedFormula != null) {
-								if (!formulaItems.contains(formula))
-									formulas.add(formula);
-							} else {
-								break;
-							}
-						}
-
-						formulas.select(0);
-						saveFormulas(new TreeSet<String>(Arrays.asList(formulas
-								.getItems())));
-					} catch (FileNotFoundException e) {
-						e.printStackTrace();
-					} catch (IOException e) {
-						e.printStackTrace();
-					} catch (CommandException e) {
-						e.printStackTrace();
-					} finally {
-						try {
-							reader.close();
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
-					}
-				}
-			}
-		});
+		button.addSelectionListener(new OpenButtonSelectionListener());
 
 		return combo;
 	}
@@ -276,7 +229,7 @@ public final class LtlCheckingDialog extends TrayDialog {
 	private void saveFormulas(Set<String> formulas) {
 		IScopeContext configContext = new ConfigurationScope();
 		IEclipsePreferences configNode = configContext
-				.getNode("de.prob.ui.ltl.CounterExampleView");
+				.getNode("de.prob.ui.ltl.CounterExampleViewPart");
 
 		if (configNode != null) {
 			try {
@@ -301,7 +254,7 @@ public final class LtlCheckingDialog extends TrayDialog {
 	private Set<String> getFormulas() {
 		IScopeContext configContext = new ConfigurationScope();
 		IEclipsePreferences configNode = configContext
-				.getNode("de.prob.ui.ltl.CounterExampleView");
+				.getNode("de.prob.ui.ltl.CounterExampleViewPart");
 
 		byte[] formula = null;
 		if (configNode != null) {
@@ -349,6 +302,20 @@ public final class LtlCheckingDialog extends TrayDialog {
 		return parsedFormula;
 	}
 
+	private void scheduleJob(final PrologTerm parsedFormula,
+			JobChangeAdapter checkingListener) {
+		LtlCheckingCommand.StartMode option = START_MODES[startingPointOptions
+				.getSelectionIndex()].mode;
+		String symmetryOption = SymmetryReductionOption.get(
+				symmetryOptions.getSelectionIndex()).name();
+
+		final Job job = new LtlCheckingJob("LTL Model Checking", parsedFormula,
+				option, symmetryOption);
+		job.setUser(true);
+		job.addJobChangeListener(checkingListener);
+		job.schedule();
+	}
+
 	private final class StartButtonSelectionListener extends SelectionAdapter {
 		@Override
 		public void widgetSelected(final SelectionEvent event) {
@@ -374,25 +341,85 @@ public final class LtlCheckingDialog extends TrayDialog {
 			}
 
 			if (parsedFormula != null) {
-
-				LtlCheckingCommand.StartMode startOption = START_MODES[startingPointOptions
-						.getSelectionIndex()].mode;
-				String symmetryOption = SymmetryReductionOption.get(
-						symmetryOptions.getSelectionIndex()).name();
-
-				scheduleJob(parsedFormula, startOption, symmetryOption);
+				scheduleJob(parsedFormula, new LtlCheckingFinishedListener(
+						shell));
 				close();
 			}
 		}
+	}
 
-		private void scheduleJob(final PrologTerm parsedFormula,
-				final LtlCheckingCommand.StartMode option,
-				final String symmetryOption) {
-			final Job job = new LtlCheckingJob("LTL Model Checking",
-					parsedFormula, option, symmetryOption);
-			job.setUser(true);
-			job.addJobChangeListener(new LtlCheckingFinishedListener(shell));
-			job.schedule();
+	private final class OpenButtonSelectionListener extends SelectionAdapter {
+		@Override
+		public void widgetSelected(final SelectionEvent event) {
+			FileDialog fileDialog = new FileDialog(shell, SWT.OPEN);
+			fileDialog.setFilterExtensions(new String[] { "*.ltl", "*.*" });
+			fileDialog.setFilterNames(new String[] { "LTL files (*.ltl)",
+					"All files (*.*)" });
+			String fileName = fileDialog.open();
+
+			if (fileName != null) {
+				BufferedReader reader = null;
+
+				try {
+					reader = new BufferedReader(new FileReader(fileName));
+
+					String formula = null;
+					List<String> formulaItems = Arrays.asList(formulas
+							.getItems());
+
+					List<String> fileFormulas = new ArrayList<String>();
+					List<PrologTerm> parsedFormulas = new ArrayList<PrologTerm>();
+
+					while ((formula = reader.readLine()) != null) {
+						formula = formula.trim();
+
+						if (formula.equals("")
+								|| (formula.length() > 0 && formula.charAt(0) == '#'))
+							continue;
+
+						PrologTerm parsedFormula = parseLTLFormula(formula);
+
+						if (parsedFormula != null) {
+							if (!formulaItems.contains(formula)) {
+								formulas.add(formula);
+							}
+
+							if (!fileFormulas.contains(formula)) {
+								fileFormulas.add(formula);
+								parsedFormulas.add(parsedFormula);
+							}
+						} else {
+							break;
+						}
+					}
+
+					saveFormulas(new TreeSet<String>(Arrays.asList(formulas
+							.getItems())));
+
+					JobChangeAdapter checkingListener = new LtlMultiCheckingFinishedListener(
+							shell, fileFormulas);
+
+					for (PrologTerm parsedFormula : parsedFormulas) {
+						scheduleJob(parsedFormula, checkingListener);
+					}
+
+					formulas.select(0);
+					close();
+
+				} catch (FileNotFoundException e) {
+					Logger.notifyUser("File not found", e);
+				} catch (IOException e) {
+					Logger.notifyUser("Unexpected IO exception", e);
+				} catch (CommandException e) {
+					Logger.notifyUser("Command exception", e);
+				} finally {
+					try {
+						reader.close();
+					} catch (IOException e) {
+						Logger.notifyUser("Unexpected IO exception", e);
+					}
+				}
+			}
 		}
 	}
 
