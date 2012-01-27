@@ -157,4 +157,8 @@ public class Animation implements IAnimationListener {
 		return evaluationElement;
 	}
 
+	public Map<String, Operation> getCurrentStateOperations() {
+		return currentStateOperations;
+	}
+	
 }

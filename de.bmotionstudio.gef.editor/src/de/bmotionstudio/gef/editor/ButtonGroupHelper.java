@@ -38,4 +38,8 @@ public class ButtonGroupHelper {
 		map.remove(buttonGroupID);
 	}
 
+	public static void reset() {
+		map.clear();
+	}
+
 }

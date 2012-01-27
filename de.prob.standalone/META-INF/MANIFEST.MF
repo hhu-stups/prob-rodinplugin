@@ -7,7 +7,7 @@ Bundle-Activator: de.prob.standalone.Activator
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  de.prob.ui;bundle-version="4.1.0",
- de.prob.core;bundle-version="9.1.1",
+ de.prob.core;bundle-version="9.2.0",
  de.bmotionstudio.gef.editor;bundle-version="5.2.0",
  org.rodinp.core;bundle-version="1.2.0",
  org.eventb.core;bundle-version="1.2.0",
@@ -15,6 +15,7 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.ui.navigator.resources;bundle-version="3.4.1",
  org.eclipse.ui.ide;bundle-version="3.5.1",
  org.eclipse.ui.ide.application;bundle-version="1.0.101",
- org.eclipse.ui.intro
+ org.eclipse.ui.intro,
+ org.eclipse.ui.editors;bundle-version="3.7.0"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: J2SE-1.5

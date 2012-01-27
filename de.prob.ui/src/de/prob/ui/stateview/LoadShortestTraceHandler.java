@@ -51,7 +51,7 @@ public class LoadShortestTraceHandler extends AbstractHandler implements
 				final Operation op = getOperationByDstId(nextState,
 						state.getEnabledOperations());
 
-				state = ExploreStateCommand.exploreState(animator, stateId);
+				state = ExploreStateCommand.exploreState(animator, nextState);
 
 				// append state- and operation objects to history
 				animator.getHistory().add(state, op);

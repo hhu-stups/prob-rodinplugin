@@ -10,7 +10,6 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.core.commands.Command;
 import org.osgi.service.prefs.Preferences;
 
 import de.prob.core.command.IComposableCommand;

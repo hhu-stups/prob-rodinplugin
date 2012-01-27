@@ -2,7 +2,7 @@
 <feature
       id="de.prob2.feature"
       label="ProB for Rodin2"
-      version="2.2.6"
+      version="2.3.0"
       provider-name="HHU Düsseldorf STUPS Group">
 
    <description url="http://www.stups.uni-duesseldorf.de/ProB">
@@ -224,29 +224,24 @@ litigation.
    </license>
 
    <requires>
-      <import plugin="fr.systerel.explorer" version="1.3.2" match="equivalent"/>
-      <import plugin="org.eclipse.ui.navigator" version="3.4.0" match="compatible"/>
+      <import plugin="org.eclipse.ui" version="3.5.0" match="compatible"/>
+      <import plugin="org.eclipse.ui.ide" version="3.5.0" match="compatible"/>
+      <import plugin="org.eclipse.ui.views" version="3.5.0" match="compatible"/>
+      <import plugin="org.eclipse.core.runtime" version="3.5.0" match="compatible"/>
+      <import plugin="org.eclipse.jface" version="3.5.0" match="compatible"/>
       <import plugin="org.eclipse.core.databinding" version="1.2.0" match="compatible"/>
       <import plugin="org.eclipse.jface.databinding" version="1.2.1" match="compatible"/>
       <import plugin="org.eclipse.core.databinding.beans" version="1.1.1" match="compatible"/>
-      <import plugin="org.eclipse.ui.views.properties.tabbed" version="3.4.1" match="compatible"/>
-      <import plugin="de.prob.ui" version="7.1.0" match="equivalent"/>
-      <import plugin="de.prob.core" version="9.1.0" match="equivalent"/>
-      <import plugin="org.eclipse.core.databinding.property" version="1.2.0" match="compatible"/>
-      <import plugin="org.eclipse.ui" version="3.5.0" match="compatible"/>
-      <import plugin="org.eclipse.core.runtime" version="3.5.0" match="compatible"/>
-      <import plugin="org.eclipse.jface.text" version="3.5.0" match="compatible"/>
-      <import plugin="org.eclipse.ui.editors" version="3.5.0" match="compatible"/>
-      <import plugin="org.eclipse.ui.views" version="3.4.1" match="compatible"/>
-      <import plugin="org.rodinp.core" version="1.3.1"/>
-      <import plugin="org.eclipse.gef" version="3.5.0" match="compatible"/>
-      <import plugin="org.eclipse.ui.ide" version="3.5.0" match="compatible"/>
+      <import plugin="org.eclipse.gef" version="3.7.0" match="compatible"/>
+      <import plugin="de.prob.core" version="9.2.0" match="equivalent"/>
       <import plugin="org.eventb.core" version="2.1.0"/>
-      <import plugin="org.rodinp.keyboard" version="1.1.0" match="equivalent"/>
-      <import plugin="org.eclipse.jface" version="3.6.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.ui" version="3.6.0" match="greaterOrEqual"/>
+      <import plugin="org.rodinp.core" version="1.3.1"/>
+      <import plugin="de.prob.ui" version="7.2.0" match="equivalent"/>
       <import plugin="org.eclipse.core.resources" version="3.5.0" match="compatible"/>
       <import plugin="org.eclipse.core.expressions" version="3.4.101" match="compatible"/>
+      <import plugin="org.eclipse.gef" version="3.5.0" match="compatible"/>
+      <import plugin="org.eclipse.ui.navigator" version="3.5.0" match="greaterOrEqual"/>
+      <import plugin="de.bmotionstudio.gef.editor" version="5.2.1" match="greaterOrEqual"/>
    </requires>
 
    <plugin

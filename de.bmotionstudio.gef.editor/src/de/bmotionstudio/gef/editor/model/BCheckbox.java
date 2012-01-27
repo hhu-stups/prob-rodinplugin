@@ -9,13 +9,12 @@ package de.bmotionstudio.gef.editor.model;
 import org.eclipse.swt.graphics.RGB;
 
 import de.bmotionstudio.gef.editor.AttributeConstants;
-import de.bmotionstudio.gef.editor.attribute.BAttributeButtonGroup;
 import de.bmotionstudio.gef.editor.attribute.BAttributeChecked;
+import de.bmotionstudio.gef.editor.attribute.BAttributeEnabled;
 import de.bmotionstudio.gef.editor.attribute.BAttributeFalseValue;
 import de.bmotionstudio.gef.editor.attribute.BAttributeText;
 import de.bmotionstudio.gef.editor.attribute.BAttributeTextColor;
 import de.bmotionstudio.gef.editor.attribute.BAttributeTrueValue;
-import de.bmotionstudio.gef.editor.attribute.BAttributeValue;
 
 /**
  * @author Lukas Ladenberger
@@ -41,8 +40,7 @@ public class BCheckbox extends BControl {
 		initAttribute(new BAttributeText(DEFAULT_TEXT));
 		initAttribute(new BAttributeTextColor(new RGB(0, 0, 0)));
 		initAttribute(new BAttributeChecked(true));
-		initAttribute(new BAttributeValue(""));
-		initAttribute(new BAttributeButtonGroup(""));
+		initAttribute(new BAttributeEnabled(true));
 		initAttribute(new BAttributeTrueValue(""));
 		initAttribute(new BAttributeFalseValue(""));
 		getAttribute(AttributeConstants.ATTRIBUTE_HEIGHT).setValue(21);

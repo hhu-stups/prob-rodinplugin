@@ -8,6 +8,9 @@ package de.bmotionstudio.gef.editor.part;
 
 import java.beans.PropertyChangeEvent;
 
+import org.eclipse.draw2d.ButtonModel;
+import org.eclipse.draw2d.ChangeEvent;
+import org.eclipse.draw2d.ChangeListener;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.Request;
@@ -24,10 +27,53 @@ import de.bmotionstudio.gef.editor.editpolicy.AppDeletePolicy;
 import de.bmotionstudio.gef.editor.editpolicy.BMotionNodeEditPolicy;
 import de.bmotionstudio.gef.editor.editpolicy.CustomDirectEditPolicy;
 import de.bmotionstudio.gef.editor.editpolicy.RenamePolicy;
+import de.bmotionstudio.gef.editor.figure.AbstractBMotionFigure;
 import de.bmotionstudio.gef.editor.figure.CheckboxFigure;
 import de.bmotionstudio.gef.editor.model.BControl;
 
 public class BCheckboxPart extends AppAbstractEditPart {
+
+	private ChangeListener changeListener = new ChangeListener() {
+		@Override
+		public void handleStateChanged(ChangeEvent event) {
+			if (event.getPropertyName().equals(ButtonModel.PRESSED_PROPERTY)) {
+				AbstractBMotionFigure f = (AbstractBMotionFigure) getFigure();
+				if (f.getModel().isPressed()) {
+					BControl control = (BControl) getModel();
+					// Recheck observer after click
+					control.getVisualization().getAnimation().checkObserver();
+					if (Boolean.valueOf(control.getAttributeValue(
+							AttributeConstants.ATTRIBUTE_CHECKED).toString())) {
+						control.setAttributeValue(
+								AttributeConstants.ATTRIBUTE_CHECKED, false);
+					} else {
+						control.setAttributeValue(
+								AttributeConstants.ATTRIBUTE_CHECKED, true);
+					}
+				}
+			}
+		}
+	};
+
+	@Override
+	public void activate() {
+		super.activate();
+		if (isRunning()) {
+			if (getFigure() instanceof AbstractBMotionFigure)
+				((AbstractBMotionFigure) getFigure())
+						.addChangeListener(changeListener);
+		}
+	}
+
+	@Override
+	public void deactivate() {
+		if (isRunning()) {
+			if (getFigure() instanceof AbstractBMotionFigure)
+				((AbstractBMotionFigure) getFigure())
+						.removeChangeListener(changeListener);
+		}
+		super.deactivate();
+	}
 
 	@Override
 	protected IFigure createEditFigure() {
@@ -70,6 +116,10 @@ public class BCheckboxPart extends AppAbstractEditPart {
 					.setTextColor(new org.eclipse.swt.graphics.Color(Display
 							.getDefault(), rgbText));
 		}
+
+		if (aID.equals(AttributeConstants.ATTRIBUTE_ENABLED))
+			((CheckboxFigure) figure).setBtEnabled(Boolean.valueOf(value
+					.toString()));
 
 	}
 

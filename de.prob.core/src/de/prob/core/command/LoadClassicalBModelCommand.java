@@ -123,6 +123,7 @@ public final class LoadClassicalBModelCommand {
 			@Override
 			public void processResult(
 					final ISimplifiedROMap<String, PrologTerm> bindings) {
+				Animator.getAnimator().announceReset();
 				ListPrologTerm e = (ListPrologTerm) bindings.get("Errors");
 				if (!e.isEmpty()) {
 					StringBuffer errormsg = new StringBuffer("Error from Prolog: ");

@@ -7,7 +7,11 @@
 package de.bmotionstudio.gef.editor.part;
 
 import java.beans.PropertyChangeEvent;
+import java.util.Collection;
 
+import org.eclipse.draw2d.ButtonModel;
+import org.eclipse.draw2d.ChangeEvent;
+import org.eclipse.draw2d.ChangeListener;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.Request;
@@ -24,10 +28,62 @@ import de.bmotionstudio.gef.editor.editpolicy.AppDeletePolicy;
 import de.bmotionstudio.gef.editor.editpolicy.BMotionNodeEditPolicy;
 import de.bmotionstudio.gef.editor.editpolicy.CustomDirectEditPolicy;
 import de.bmotionstudio.gef.editor.editpolicy.RenamePolicy;
+import de.bmotionstudio.gef.editor.figure.AbstractBMotionFigure;
 import de.bmotionstudio.gef.editor.figure.RadioButtonFigure;
 import de.bmotionstudio.gef.editor.model.BControl;
 
 public class BRadioButtonPart extends AppAbstractEditPart {
+
+	private ChangeListener changeListener = new ChangeListener() {
+		@Override
+		public void handleStateChanged(ChangeEvent event) {
+
+			if (event.getPropertyName().equals(ButtonModel.PRESSED_PROPERTY)) {
+
+				BControl control = (BControl) getModel();
+
+				// Recheck observer after click
+				control.getVisualization().getAnimation().checkObserver();
+
+				// Set correct image of Radiobutton
+				String btgroupid = control.getAttributeValue(
+						AttributeConstants.ATTRIBUTE_BUTTONGROUP).toString();
+				if (!btgroupid.trim().equals("")) {
+					Collection<BControl> btGroup = ButtonGroupHelper
+							.getButtonGroup(btgroupid);
+					for (BControl c : btGroup) {
+						c.setAttributeValue(
+								AttributeConstants.ATTRIBUTE_CHECKED, false);
+					}
+				}
+				control.setAttributeValue(AttributeConstants.ATTRIBUTE_CHECKED,
+						true);
+
+			}
+
+		}
+
+	};
+
+	@Override
+	public void activate() {
+		super.activate();
+		if (isRunning()) {
+			if (getFigure() instanceof AbstractBMotionFigure)
+				((AbstractBMotionFigure) getFigure())
+						.addChangeListener(changeListener);
+		}
+	}
+
+	@Override
+	public void deactivate() {
+		if (isRunning()) {
+			if (getFigure() instanceof AbstractBMotionFigure)
+				((AbstractBMotionFigure) getFigure())
+						.removeChangeListener(changeListener);
+		}
+		super.deactivate();
+	}
 
 	@Override
 	protected IFigure createEditFigure() {
@@ -77,6 +133,10 @@ public class BRadioButtonPart extends AppAbstractEditPart {
 						(BControl) getModel());
 			}
 		}
+
+		if (aID.equals(AttributeConstants.ATTRIBUTE_ENABLED))
+			((RadioButtonFigure) figure).setBtEnabled(Boolean.valueOf(value
+					.toString()));
 
 	}
 

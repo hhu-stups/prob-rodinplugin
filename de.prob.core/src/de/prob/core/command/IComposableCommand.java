@@ -3,7 +3,6 @@
  */
 package de.prob.core.command;
 
-import org.eclipse.core.commands.Command;
 
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;

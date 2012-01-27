@@ -41,5 +41,10 @@ public class CheckboxFigure extends AbstractBMotionFigure {
 	public void setTextColor(Color color) {
 		textLb.setForegroundColor(color);
 	}
+	
+	public void setBtEnabled(Boolean bool) {
+		textLb.setEnabled(bool);
+		repaint();
+	}
 
 }
