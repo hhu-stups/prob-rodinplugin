@@ -23,7 +23,6 @@ import de.prob.logging.Logger;
  * 
  */
 public class InvariantCheckFinishedListener extends ProBJobFinishedListener {
-
 	private final Shell shell;
 
 	public InvariantCheckFinishedListener(final Shell shell) {
