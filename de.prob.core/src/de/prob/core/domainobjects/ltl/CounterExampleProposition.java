@@ -20,6 +20,7 @@ public abstract class CounterExampleProposition {
 	protected final PathType pathType;
 	protected CounterExampleProposition parent;
 	private List<CounterExampleValueType> values;
+
 	protected final PropertyChangeSupport listeners = new PropertyChangeSupport(
 			this);
 	private boolean visible = false;
@@ -32,8 +33,6 @@ public abstract class CounterExampleProposition {
 		this.loopEntry = loopEntry;
 		this.pathType = pathType;
 	}
-
-	abstract protected List<CounterExampleValueType> calculate();
 
 	public CounterExampleProposition getParent() {
 		return parent;
@@ -118,9 +117,11 @@ public abstract class CounterExampleProposition {
 		return positions;
 	}
 
-	protected abstract int calculatePosition(int pos);
-
 	public boolean isTransition() {
 		return false;
 	}
+
+	protected abstract List<CounterExampleValueType> calculate();
+
+	protected abstract int calculatePosition(int pos);
 }

@@ -51,8 +51,9 @@ public final class CounterExample {
 	}
 
 	private void createStates(final ListPrologTerm example) {
-		final boolean isLoopType = pathType == PathType.INFINITE;
+		// final boolean isLoopType = pathType == PathType.INFINITE;
 		int index = 0;
+
 		for (PrologTerm exampleElement : example) {
 			CompoundPrologTerm state = (CompoundPrologTerm) exampleElement;
 			int stateId = ((IntegerPrologTerm) state.getArgument(1)).getValue()
@@ -76,11 +77,11 @@ public final class CounterExample {
 				predicateValues.get(i).add(value == 0 ? false : true);
 			}
 
-			final boolean inLoop = isLoopType && index >= loopEntry;
+			// final boolean inLoop = isLoopType && index >= loopEntry;
 			final Operation operation = NONE.equals(operationTerm) ? null
 					: Operation.fromPrologTerm(operationTerm);
 			final CounterExampleState ceState = new CounterExampleState(index,
-					stateId, operation, inLoop);
+					stateId, operation/* , inLoop */);
 			states.add(ceState);
 			index++;
 		}
@@ -141,8 +142,8 @@ public final class CounterExample {
 					proposition = new CounterExampleNext(pathType, loopEntry,
 							argument);
 				} else if (functor.equals("not")) {
-					proposition = new CounterExampleNegation(pathType, loopEntry,
-							argument);
+					proposition = new CounterExampleNegation(pathType,
+							loopEntry, argument);
 				} else if (functor.equals("once")) {
 					proposition = new CounterExampleOnce(pathType, loopEntry,
 							argument);
@@ -163,14 +164,14 @@ public final class CounterExample {
 					.getArgument(2));
 
 			if (functor.equals("and")) {
-				proposition = new CounterExampleConjunction(pathType, loopEntry,
-						firstArgument, secondArgument);
+				proposition = new CounterExampleConjunction(pathType,
+						loopEntry, firstArgument, secondArgument);
 			} else if (functor.equals("or")) {
-				proposition = new CounterExampleDisjunction(pathType, loopEntry,
-						firstArgument, secondArgument);
+				proposition = new CounterExampleDisjunction(pathType,
+						loopEntry, firstArgument, secondArgument);
 			} else if (functor.equals("implies")) {
-				proposition = new CounterExampleImplication(pathType, loopEntry,
-						firstArgument, secondArgument);
+				proposition = new CounterExampleImplication(pathType,
+						loopEntry, firstArgument, secondArgument);
 			} else if (functor.equals("until")) {
 				proposition = new CounterExampleUntil(pathType, loopEntry,
 						firstArgument, secondArgument);
@@ -213,11 +214,22 @@ public final class CounterExample {
 		return pathType;
 	}
 
+	public int getLoopEntry() {
+		return loopEntry;
+	}
+
 	public List<Operation> getFullPath() {
 		List<Operation> fullPath = new ArrayList<Operation>(initPath);
 		for (final CounterExampleState ceState : states) {
-			fullPath.add(ceState.getOperation());
+			final Operation operation = ceState.getOperation();
+			if (operation != null) {
+				fullPath.add(operation);
+			}
 		}
 		return fullPath;
+	}
+
+	public List<Operation> getInitPath() {
+		return initPath;
 	}
 }
