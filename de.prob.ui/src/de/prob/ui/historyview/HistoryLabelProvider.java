@@ -31,17 +31,17 @@ public abstract class HistoryLabelProvider extends CellLabelProvider {
 			final HistViewItem item = (HistViewItem) element;
 			cell.setText(getText(item));
 			cell.setForeground(getForeground(item));
-			cell.setBackground(getBackground(item));
-			cell.setFont(getFont(item));
+			// cell.setBackground(getBackground(item));
+			// cell.setFont(getFont(item));
 		}
 	}
 
 	protected Font getFont(final HistViewItem item) {
-		return item.isSameAsCurrent() ? bold : null;
+		return item.followingStateIsSameAsCurrent() ? bold : null;
 	}
 
-	protected Color getBackground(final HistViewItem item) {
-		return item.isActive() ? currentPositionColor : null;
+	protected Color followingStateIsActive(final HistViewItem item) {
+		return item.followingStateIsActive() ? currentPositionColor : null;
 	}
 
 	protected String getText(final HistViewItem item) {

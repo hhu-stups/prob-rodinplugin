@@ -22,9 +22,13 @@ import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTargetListener;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.dnd.TransferData;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 
@@ -61,8 +65,54 @@ public class HistoryView extends StateBasedViewPart {
 		final Table table = tableViewer.getTable();
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
+		setPaintListener(table);
 		initDragAndDrop();
 		return tableComposite;
+	}
+
+	/**
+	 * Adds a listener that does some custom painting of the cells. In
+	 * particular, a line is drawn on top of the active history item. This
+	 * should have the effect that a line is shown after the last executed
+	 * transition, indicating the currently shown state.
+	 * 
+	 * @param table
+	 */
+	private void setPaintListener(final Table table) {
+		// The color of the drawn line
+		final Color activecolor = Display.getDefault().getSystemColor(
+				SWT.COLOR_BLUE);
+		final Color samecolor = Display.getDefault().getSystemColor(
+				SWT.COLOR_GRAY);
+		table.addListener(SWT.PaintItem, new Listener() {
+			@Override
+			public void handleEvent(Event event) {
+				// The corresponding item for the shown row
+				final HistViewItem item = (HistViewItem) event.item.getData();
+				if (item != null) {
+					if (item.followingStateIsActive()) {
+						drawLine(table, event, true, activecolor);
+					} else if (item.followingStateIsSameAsCurrent()) {
+						drawLine(table, event, true, samecolor);
+					}
+					if (item.previousStateIsActive()) {
+						drawLine(table, event, false, activecolor);
+					} else if (item.previousStateIsSameAsCurrent()) {
+						drawLine(table, event, false, samecolor);
+					}
+				}
+			}
+
+			private void drawLine(final Table table, Event event,
+					final boolean onTop, final Color color) {
+				final int clientWidth = table.getClientArea().width;
+				final GC gc = event.gc;
+				final int y = onTop ? event.y : event.y + event.height - 1;
+				// A rectangle is painted with the background color
+				gc.setBackground(color);
+				gc.fillRectangle(event.x, y, clientWidth, 1);
+			}
+		});
 	}
 
 	private void initDragAndDrop() {
@@ -159,15 +209,12 @@ public class HistoryView extends StateBasedViewPart {
 		if (size > 0) {
 			final int activeItem = history.getCurrentPosition();
 			final State cs = items[activeItem].getState();
-			vItems[0] = new HistViewItem(0, items[0].getState(), null,
-					activeItem == 0,
-					ObjectUtils.equals(items[0].getState(), cs));
+			final State rootState = items[0].getState();
+			vItems[0] = new HistViewItem(0, activeItem, rootState, null, cs);
 			for (int i = 1; i < size; i++) {
-				final boolean active = activeItem == i;
 				final State state = items[i].getState();
 				final Operation op = items[i - 1].getOperation();
-				vItems[i] = new HistViewItem(i, state, op, active,
-						ObjectUtils.equals(cs, state));
+				vItems[i] = new HistViewItem(i, activeItem, state, op, cs);
 			}
 			current = vItems[activeItem];
 			ArrayUtils.reverse(vItems);
@@ -183,18 +230,26 @@ public class HistoryView extends StateBasedViewPart {
 
 	static class HistViewItem {
 		private final int historyPosition;
+		private final int activePosition;
 		private final State dstState;
 		private final Operation operation;
-		private final boolean isActive, sameAsCurrent;
+		private final boolean previousStateIsSameAsCurrent;
+		private final boolean followingStateIsSameAsCurrent;
 
-		public HistViewItem(final int historyPosition, final State dstState,
-				final Operation operation, final boolean isActive,
-				final boolean sameAsCurrent) {
+		public HistViewItem(final int historyPosition,
+				final int activePosition, final State dstState,
+				final Operation operation, final State currentState) {
 			this.historyPosition = historyPosition;
+			this.activePosition = activePosition;
 			this.dstState = dstState;
 			this.operation = operation;
-			this.isActive = isActive;
-			this.sameAsCurrent = sameAsCurrent;
+			// The item representing the root state has no operation leading to
+			// it, so we have to check if it is null
+			this.previousStateIsSameAsCurrent = operation != null
+					&& ObjectUtils.equals(currentState.getId(),
+							operation.getSource());
+			this.followingStateIsSameAsCurrent = ObjectUtils.equals(
+					currentState, dstState);
 		}
 
 		public State getDestination() {
@@ -205,12 +260,20 @@ public class HistoryView extends StateBasedViewPart {
 			return operation;
 		}
 
-		public boolean isActive() {
-			return isActive;
+		public boolean followingStateIsActive() {
+			return activePosition == historyPosition;
 		}
 
-		public boolean isSameAsCurrent() {
-			return sameAsCurrent;
+		public boolean previousStateIsActive() {
+			return activePosition == historyPosition - 1;
+		}
+
+		public boolean followingStateIsSameAsCurrent() {
+			return followingStateIsSameAsCurrent;
+		}
+
+		public boolean previousStateIsSameAsCurrent() {
+			return previousStateIsSameAsCurrent;
 		}
 
 		public void jumpToState() throws ProBException {
