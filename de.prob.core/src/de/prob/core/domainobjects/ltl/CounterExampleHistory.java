@@ -8,7 +8,7 @@ import de.prob.core.command.LtlCheckingCommand.PathType;
 import de.prob.logging.Logger;
 
 /**
- * Provides a "History" operator.
+ * Provides a "history" operator.
  * 
  * @author Andriy Tolstoy
  * 
@@ -22,8 +22,8 @@ public final class CounterExampleHistory extends CounterExampleUnaryOperator {
 			final CounterExampleProposition argument) {
 		super("H", "History", pathType, loopEntry, argument);
 
-		CounterExampleNegation notArgument = new CounterExampleNegation(pathType,
-				loopEntry, argument);
+		CounterExampleNegation notArgument = new CounterExampleNegation(
+				pathType, loopEntry, argument);
 
 		CounterExampleOnce onceOperator = new CounterExampleOnce(pathType,
 				loopEntry, notArgument);
@@ -59,7 +59,7 @@ public final class CounterExampleHistory extends CounterExampleUnaryOperator {
 	}
 
 	private CounterExampleValueType calculateHistoryOperator(final int position) {
-		CounterExampleValueType result = CounterExampleValueType.UNDEFINED;
+		CounterExampleValueType result = CounterExampleValueType.UNKNOWN;
 
 		List<CounterExampleValueType> checkedValues = new ArrayList<CounterExampleValueType>(
 				argument.getValues());
@@ -73,7 +73,7 @@ public final class CounterExampleHistory extends CounterExampleUnaryOperator {
 		if (index != -1) {
 			result = CounterExampleValueType.FALSE;
 		} else {
-			if (!checkedValues.contains(CounterExampleValueType.UNDEFINED)) {
+			if (!checkedValues.contains(CounterExampleValueType.UNKNOWN)) {
 				result = CounterExampleValueType.TRUE;
 			}
 		}

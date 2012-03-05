@@ -15,19 +15,19 @@ import de.prob.core.domainobjects.ltl.CounterExampleUnaryOperator;
 import de.prob.core.domainobjects.ltl.CounterExampleValueType;
 
 /**
- * Unit test for a "Once" operator.
+ * Unit test for an "once" operator.
  * 
  * @author Andriy Tolstoy
  * 
  */
-public class CounterExampleOnceUnitTest {
+public final class CounterExampleOnceUnitTest {
 	/*
 	 * f-FTFT, O f-FTTT
 	 */
 	@Test
 	public void testOnceTrueDefinitionOnFinitePath() {
 		// create argument values
-		List<CounterExampleValueType> argumentValues = Arrays
+		final List<CounterExampleValueType> argumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
 						CounterExampleValueType.FALSE,
 						CounterExampleValueType.TRUE,
@@ -35,15 +35,15 @@ public class CounterExampleOnceUnitTest {
 						CounterExampleValueType.TRUE });
 
 		// create an argument
-		CounterExampleProposition argument = new CounterExamplePredicate("",
-				PathType.FINITE, -1, argumentValues);
+		final CounterExampleProposition argument = new CounterExamplePredicate(
+				"", PathType.FINITE, -1, argumentValues);
 
 		// create an operator
-		CounterExampleUnaryOperator onceOperator = new CounterExampleOnce(
+		final CounterExampleUnaryOperator onceOperator = new CounterExampleOnce(
 				PathType.FINITE, argument);
 
 		// check result values
-		List<CounterExampleValueType> values = onceOperator.getValues();
+		final List<CounterExampleValueType> values = onceOperator.getValues();
 		assertTrue(values.size() == argumentValues.size());
 		assertTrue(values.get(0) == CounterExampleValueType.FALSE);
 		assertTrue(values.get(1) == CounterExampleValueType.TRUE);
@@ -51,7 +51,7 @@ public class CounterExampleOnceUnitTest {
 		assertTrue(values.get(3) == CounterExampleValueType.TRUE);
 
 		// check highlighted positions
-		List<List<Integer>> highlightedPositions = onceOperator
+		final List<List<Integer>> highlightedPositions = onceOperator
 				.getHighlightedPositions();
 		assertTrue(highlightedPositions.size() == argumentValues.size());
 		assertTrue(highlightedPositions.get(0).size() == 1);
@@ -81,7 +81,7 @@ public class CounterExampleOnceUnitTest {
 	@Test
 	public void testOnceFalseDefinitionOnFinitePath() {
 		// create argument values
-		List<CounterExampleValueType> argumentValues = Arrays
+		final List<CounterExampleValueType> argumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
 						CounterExampleValueType.FALSE,
 						CounterExampleValueType.FALSE,
@@ -89,15 +89,15 @@ public class CounterExampleOnceUnitTest {
 						CounterExampleValueType.FALSE });
 
 		// create an argument
-		CounterExampleProposition argument = new CounterExamplePredicate("",
-				PathType.FINITE, -1, argumentValues);
+		final CounterExampleProposition argument = new CounterExamplePredicate(
+				"", PathType.FINITE, -1, argumentValues);
 
 		// create an operator
-		CounterExampleUnaryOperator onceOperator = new CounterExampleOnce(
+		final CounterExampleUnaryOperator onceOperator = new CounterExampleOnce(
 				PathType.FINITE, -1, argument);
 
 		// check result values
-		List<CounterExampleValueType> values = onceOperator.getValues();
+		final List<CounterExampleValueType> values = onceOperator.getValues();
 		assertTrue(values.size() == argumentValues.size());
 		assertTrue(values.get(0) == CounterExampleValueType.FALSE);
 		assertTrue(values.get(1) == CounterExampleValueType.FALSE);
@@ -105,7 +105,7 @@ public class CounterExampleOnceUnitTest {
 		assertTrue(values.get(3) == CounterExampleValueType.FALSE);
 
 		// check highlighted positions
-		List<List<Integer>> highlightedPositions = onceOperator
+		final List<List<Integer>> highlightedPositions = onceOperator
 				.getHighlightedPositions();
 		assertTrue(highlightedPositions.size() == argumentValues.size());
 		assertTrue(highlightedPositions.get(0).size() == 1);
@@ -135,7 +135,7 @@ public class CounterExampleOnceUnitTest {
 	@Test
 	public void testOnceTrueDefinitionOnInfinitePath() {
 		// create argument values
-		List<CounterExampleValueType> argumentValues = Arrays
+		final List<CounterExampleValueType> argumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
 						CounterExampleValueType.FALSE,
 						CounterExampleValueType.TRUE,
@@ -307,7 +307,7 @@ public class CounterExampleOnceUnitTest {
 	@Test
 	public void testOnceFalseDefinitionOnInfinitePath() {
 		// create argument values
-		List<CounterExampleValueType> argumentValues = Arrays
+		final List<CounterExampleValueType> argumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
 						CounterExampleValueType.FALSE,
 						CounterExampleValueType.FALSE,
@@ -479,7 +479,7 @@ public class CounterExampleOnceUnitTest {
 	@Test
 	public void testOnceTrueDefinitionOnReducedPath() {
 		// create argument values
-		List<CounterExampleValueType> argumentValues = Arrays
+		final List<CounterExampleValueType> argumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
 						CounterExampleValueType.FALSE,
 						CounterExampleValueType.TRUE,
@@ -487,15 +487,15 @@ public class CounterExampleOnceUnitTest {
 						CounterExampleValueType.TRUE });
 
 		// create an argument
-		CounterExampleProposition argument = new CounterExamplePredicate("",
-				PathType.REDUCED, -1, argumentValues);
+		final CounterExampleProposition argument = new CounterExamplePredicate(
+				"", PathType.REDUCED, -1, argumentValues);
 
 		// create an operator
-		CounterExampleUnaryOperator onceOperator = new CounterExampleOnce(
+		final CounterExampleUnaryOperator onceOperator = new CounterExampleOnce(
 				PathType.REDUCED, -1, argument);
 
 		// check result values
-		List<CounterExampleValueType> values = onceOperator.getValues();
+		final List<CounterExampleValueType> values = onceOperator.getValues();
 		assertTrue(values.size() == argumentValues.size());
 		assertTrue(values.get(0) == CounterExampleValueType.FALSE);
 		assertTrue(values.get(1) == CounterExampleValueType.TRUE);
@@ -503,7 +503,7 @@ public class CounterExampleOnceUnitTest {
 		assertTrue(values.get(3) == CounterExampleValueType.TRUE);
 
 		// check highlighted positions
-		List<List<Integer>> highlightedPositions = onceOperator
+		final List<List<Integer>> highlightedPositions = onceOperator
 				.getHighlightedPositions();
 		assertTrue(highlightedPositions.size() == argumentValues.size());
 		assertTrue(highlightedPositions.get(0).size() == 1);
@@ -533,7 +533,7 @@ public class CounterExampleOnceUnitTest {
 	@Test
 	public void testOnceFalseDefinitionOnReducedPath() {
 		// create argument values
-		List<CounterExampleValueType> argumentValues = Arrays
+		final List<CounterExampleValueType> argumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
 						CounterExampleValueType.FALSE,
 						CounterExampleValueType.FALSE,
@@ -541,15 +541,15 @@ public class CounterExampleOnceUnitTest {
 						CounterExampleValueType.FALSE });
 
 		// create an argument
-		CounterExampleProposition argument = new CounterExamplePredicate("",
-				PathType.REDUCED, -1, argumentValues);
+		final CounterExampleProposition argument = new CounterExamplePredicate(
+				"", PathType.REDUCED, -1, argumentValues);
 
 		// create an operator
-		CounterExampleUnaryOperator onceOperator = new CounterExampleOnce(
+		final CounterExampleUnaryOperator onceOperator = new CounterExampleOnce(
 				PathType.REDUCED, -1, argument);
 
 		// check result values
-		List<CounterExampleValueType> values = onceOperator.getValues();
+		final List<CounterExampleValueType> values = onceOperator.getValues();
 		assertTrue(values.size() == argumentValues.size());
 		assertTrue(values.get(0) == CounterExampleValueType.FALSE);
 		assertTrue(values.get(1) == CounterExampleValueType.FALSE);
@@ -557,7 +557,7 @@ public class CounterExampleOnceUnitTest {
 		assertTrue(values.get(3) == CounterExampleValueType.FALSE);
 
 		// check highlighted positions
-		List<List<Integer>> highlightedPositions = onceOperator
+		final List<List<Integer>> highlightedPositions = onceOperator
 				.getHighlightedPositions();
 		assertTrue(highlightedPositions.size() == argumentValues.size());
 		assertTrue(highlightedPositions.get(0).size() == 1);
@@ -587,31 +587,31 @@ public class CounterExampleOnceUnitTest {
 	@Test
 	public void testOnceUnknownDefinitionOnReducedPath() {
 		// create argument values
-		List<CounterExampleValueType> argumentValues = Arrays
+		final List<CounterExampleValueType> argumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
-						CounterExampleValueType.UNDEFINED,
+						CounterExampleValueType.UNKNOWN,
 						CounterExampleValueType.FALSE,
-						CounterExampleValueType.UNDEFINED,
+						CounterExampleValueType.UNKNOWN,
 						CounterExampleValueType.FALSE });
 
 		// create an argument
-		CounterExampleProposition argument = new CounterExamplePredicate("",
-				PathType.REDUCED, -1, argumentValues);
+		final CounterExampleProposition argument = new CounterExamplePredicate(
+				"", PathType.REDUCED, -1, argumentValues);
 
 		// create an operator
-		CounterExampleUnaryOperator onceOperator = new CounterExampleOnce(
+		final CounterExampleUnaryOperator onceOperator = new CounterExampleOnce(
 				PathType.REDUCED, -1, argument);
 
 		// check result values
-		List<CounterExampleValueType> values = onceOperator.getValues();
+		final List<CounterExampleValueType> values = onceOperator.getValues();
 		assertTrue(values.size() == argumentValues.size());
-		assertTrue(values.get(0) == CounterExampleValueType.UNDEFINED);
-		assertTrue(values.get(1) == CounterExampleValueType.UNDEFINED);
-		assertTrue(values.get(2) == CounterExampleValueType.UNDEFINED);
-		assertTrue(values.get(3) == CounterExampleValueType.UNDEFINED);
+		assertTrue(values.get(0) == CounterExampleValueType.UNKNOWN);
+		assertTrue(values.get(1) == CounterExampleValueType.UNKNOWN);
+		assertTrue(values.get(2) == CounterExampleValueType.UNKNOWN);
+		assertTrue(values.get(3) == CounterExampleValueType.UNKNOWN);
 
 		// check highlighted positions
-		List<List<Integer>> highlightedPositions = onceOperator
+		final List<List<Integer>> highlightedPositions = onceOperator
 				.getHighlightedPositions();
 		assertTrue(highlightedPositions.size() == argumentValues.size());
 		assertTrue(highlightedPositions.get(0).size() == 1);
@@ -641,31 +641,31 @@ public class CounterExampleOnceUnitTest {
 	@Test
 	public void testOnceOnReducedPath() {
 		// create argument values
-		List<CounterExampleValueType> argumentValues = Arrays
+		final List<CounterExampleValueType> argumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
 						CounterExampleValueType.FALSE,
-						CounterExampleValueType.UNDEFINED,
+						CounterExampleValueType.UNKNOWN,
 						CounterExampleValueType.TRUE,
-						CounterExampleValueType.UNDEFINED });
+						CounterExampleValueType.UNKNOWN });
 
 		// create an argument
-		CounterExampleProposition argument = new CounterExamplePredicate("",
-				PathType.REDUCED, -1, argumentValues);
+		final CounterExampleProposition argument = new CounterExamplePredicate(
+				"", PathType.REDUCED, -1, argumentValues);
 
 		// create an operator
-		CounterExampleUnaryOperator onceOperator = new CounterExampleOnce(
+		final CounterExampleUnaryOperator onceOperator = new CounterExampleOnce(
 				PathType.REDUCED, -1, argument);
 
 		// check result values
-		List<CounterExampleValueType> values = onceOperator.getValues();
+		final List<CounterExampleValueType> values = onceOperator.getValues();
 		assertTrue(values.size() == argumentValues.size());
 		assertTrue(values.get(0) == CounterExampleValueType.FALSE);
-		assertTrue(values.get(1) == CounterExampleValueType.UNDEFINED);
+		assertTrue(values.get(1) == CounterExampleValueType.UNKNOWN);
 		assertTrue(values.get(2) == CounterExampleValueType.TRUE);
 		assertTrue(values.get(3) == CounterExampleValueType.TRUE);
 
 		// check highlighted positions
-		List<List<Integer>> highlightedPositions = onceOperator
+		final List<List<Integer>> highlightedPositions = onceOperator
 				.getHighlightedPositions();
 		assertTrue(highlightedPositions.size() == argumentValues.size());
 		assertTrue(highlightedPositions.get(0).size() == 1);

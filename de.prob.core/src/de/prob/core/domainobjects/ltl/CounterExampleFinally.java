@@ -8,7 +8,7 @@ import de.prob.core.command.LtlCheckingCommand.PathType;
 import de.prob.logging.Logger;
 
 /**
- * Provides a "Finally" operator.
+ * Provides a "finally" operator.
  * 
  * @author Andriy Tolstoy
  * 
@@ -43,7 +43,7 @@ public final class CounterExampleFinally extends CounterExampleUnaryOperator {
 	}
 
 	private CounterExampleValueType calculateFinallyOperator(final int position) {
-		CounterExampleValueType result = CounterExampleValueType.UNDEFINED;
+		CounterExampleValueType result = CounterExampleValueType.UNKNOWN;
 
 		List<CounterExampleValueType> checkedValues = new ArrayList<CounterExampleValueType>(
 				argument.getValues());

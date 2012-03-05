@@ -171,11 +171,17 @@ public final class CounterExampleBinaryFigure extends
 		final TitleBarBorder secondBorder = (TitleBarBorder) secondPanel
 				.getBorder();
 
+		// final CounterExampleFigure counterExampleFigure =
+		// (CounterExampleFigure) getParent();
+
 		if (firstArgumentEllipses1.containsKey(source)) {
 			secondBorder.setFont(normalFont);
 			secondArgument.setVisible(false);
 
 			stateId = firstArgumentEllipses1.get(source);
+
+			// Rectangle argumentBounds = firstArgumentFigure.getBounds();
+			// Insets insets = getInsets();
 
 			if (firstArgument.getStateId() == stateId) {
 				final boolean visible = !firstArgument.isVisible();
@@ -185,6 +191,14 @@ public final class CounterExampleBinaryFigure extends
 				}
 
 				firstArgument.setVisible(visible);
+
+				// if (visible)
+				// counterExampleFigure.updateStates(argumentBounds.height + 2
+				// * insets.top);
+				// else
+				// counterExampleFigure
+				// .updateStates((argumentBounds.height + 2 * insets.top)
+				// * -1);
 			} else {
 				if (firstArgument.hasChildren()) {
 					firstBorder.setFont(boldFont);
@@ -199,6 +213,8 @@ public final class CounterExampleBinaryFigure extends
 
 			stateId = secondArgumentEllipses1.get(source);
 
+			// Rectangle argumentBounds = secondArgumentFigure.getBounds();
+
 			if (secondArgument.getStateId() == stateId) {
 				final boolean visible = !secondArgument.isVisible();
 
@@ -207,6 +223,12 @@ public final class CounterExampleBinaryFigure extends
 				}
 
 				secondArgument.setVisible(visible);
+
+				// if (visible)
+				// counterExampleFigure.updateStates(argumentBounds.height);
+				// else
+				// counterExampleFigure.updateStates((argumentBounds.height)
+				// * -1);
 			} else {
 				if (secondArgument.hasChildren()) {
 					secondBorder.setFont(boldFont);
@@ -216,6 +238,8 @@ public final class CounterExampleBinaryFigure extends
 				secondArgument.setVisible(true);
 			}
 		}
+
+		repaint();
 	}
 
 	@Override

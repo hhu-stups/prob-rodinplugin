@@ -15,19 +15,19 @@ import de.prob.core.domainobjects.ltl.CounterExampleUnaryOperator;
 import de.prob.core.domainobjects.ltl.CounterExampleValueType;
 
 /**
- * Unit test for a "History" operator.
+ * Unit test for a "history" operator.
  * 
  * @author Andriy Tolstoy
  * 
  */
-public class CounterExampleHistoryUnitTest {
+public final class CounterExampleHistoryUnitTest {
 	/*
 	 * f-TTTT, O f-TTTT
 	 */
 	@Test
 	public void testHistoryTrueDefinitionOnFinitePath() {
 		// create argument values
-		List<CounterExampleValueType> argumentValues = Arrays
+		final List<CounterExampleValueType> argumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
 						CounterExampleValueType.TRUE,
 						CounterExampleValueType.TRUE,
@@ -35,15 +35,16 @@ public class CounterExampleHistoryUnitTest {
 						CounterExampleValueType.TRUE });
 
 		// create an argument
-		CounterExampleProposition argument = new CounterExamplePredicate("",
-				PathType.FINITE, -1, argumentValues);
+		final CounterExampleProposition argument = new CounterExamplePredicate(
+				"", PathType.FINITE, -1, argumentValues);
 
 		// create an operator
-		CounterExampleUnaryOperator historyOperator = new CounterExampleHistory(
+		final CounterExampleUnaryOperator historyOperator = new CounterExampleHistory(
 				PathType.FINITE, -1, argument);
 
 		// check result values
-		List<CounterExampleValueType> values = historyOperator.getValues();
+		final List<CounterExampleValueType> values = historyOperator
+				.getValues();
 		assertTrue(values.size() == argumentValues.size());
 		assertTrue(values.get(0) == CounterExampleValueType.TRUE);
 		assertTrue(values.get(1) == CounterExampleValueType.TRUE);
@@ -51,7 +52,7 @@ public class CounterExampleHistoryUnitTest {
 		assertTrue(values.get(3) == CounterExampleValueType.TRUE);
 
 		// check highlighted positions
-		List<List<Integer>> highlightedPositions = historyOperator
+		final List<List<Integer>> highlightedPositions = historyOperator
 				.getHighlightedPositions();
 		assertTrue(highlightedPositions.size() == argumentValues.size());
 		assertTrue(highlightedPositions.get(0).size() == 1);
@@ -81,7 +82,7 @@ public class CounterExampleHistoryUnitTest {
 	@Test
 	public void testHistoryFalseDefinitionOnFinitePath() {
 		// create argument values
-		List<CounterExampleValueType> argumentValues = Arrays
+		final List<CounterExampleValueType> argumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
 						CounterExampleValueType.TRUE,
 						CounterExampleValueType.TRUE,
@@ -89,15 +90,16 @@ public class CounterExampleHistoryUnitTest {
 						CounterExampleValueType.FALSE });
 
 		// create an argument
-		CounterExampleProposition argument = new CounterExamplePredicate("",
-				PathType.FINITE, -1, argumentValues);
+		final CounterExampleProposition argument = new CounterExamplePredicate(
+				"", PathType.FINITE, -1, argumentValues);
 
 		// create an operator
-		CounterExampleUnaryOperator historyOperator = new CounterExampleHistory(
+		final CounterExampleUnaryOperator historyOperator = new CounterExampleHistory(
 				PathType.FINITE, -1, argument);
 
 		// check result values
-		List<CounterExampleValueType> values = historyOperator.getValues();
+		final List<CounterExampleValueType> values = historyOperator
+				.getValues();
 		assertTrue(values.size() == argumentValues.size());
 		assertTrue(values.get(0) == CounterExampleValueType.TRUE);
 		assertTrue(values.get(1) == CounterExampleValueType.TRUE);
@@ -105,7 +107,7 @@ public class CounterExampleHistoryUnitTest {
 		assertTrue(values.get(3) == CounterExampleValueType.FALSE);
 
 		// check highlighted positions
-		List<List<Integer>> highlightedPositions = historyOperator
+		final List<List<Integer>> highlightedPositions = historyOperator
 				.getHighlightedPositions();
 		assertTrue(highlightedPositions.size() == argumentValues.size());
 		assertTrue(highlightedPositions.get(0).size() == 1);
@@ -135,7 +137,7 @@ public class CounterExampleHistoryUnitTest {
 	@Test
 	public void testHistoryTrueDefinitionOnInfinitePath() {
 		// create argument values
-		List<CounterExampleValueType> argumentValues = Arrays
+		final List<CounterExampleValueType> argumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
 						CounterExampleValueType.TRUE,
 						CounterExampleValueType.TRUE,
@@ -189,7 +191,8 @@ public class CounterExampleHistoryUnitTest {
 				argumentValues);
 
 		// create an operator
-		historyOperator = new CounterExampleHistory(PathType.INFINITE, 1, argument);
+		historyOperator = new CounterExampleHistory(PathType.INFINITE, 1,
+				argument);
 
 		// check result values
 		values = historyOperator.getValues();
@@ -228,7 +231,8 @@ public class CounterExampleHistoryUnitTest {
 				argumentValues);
 
 		// create an operator
-		historyOperator = new CounterExampleHistory(PathType.INFINITE, 2, argument);
+		historyOperator = new CounterExampleHistory(PathType.INFINITE, 2,
+				argument);
 
 		// check result values
 		values = historyOperator.getValues();
@@ -267,7 +271,8 @@ public class CounterExampleHistoryUnitTest {
 				argumentValues);
 
 		// create an operator
-		historyOperator = new CounterExampleHistory(PathType.INFINITE, 3, argument);
+		historyOperator = new CounterExampleHistory(PathType.INFINITE, 3,
+				argument);
 
 		// check result values
 		values = historyOperator.getValues();
@@ -307,7 +312,7 @@ public class CounterExampleHistoryUnitTest {
 	@Test
 	public void testHistoryFalseDefinitionOnInFinitePath() {
 		// create argument values
-		List<CounterExampleValueType> argumentValues = Arrays
+		final List<CounterExampleValueType> argumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
 						CounterExampleValueType.TRUE,
 						CounterExampleValueType.TRUE,
@@ -361,7 +366,8 @@ public class CounterExampleHistoryUnitTest {
 				argumentValues);
 
 		// create an operator
-		historyOperator = new CounterExampleHistory(PathType.INFINITE, 1, argument);
+		historyOperator = new CounterExampleHistory(PathType.INFINITE, 1,
+				argument);
 
 		// check result values
 		values = historyOperator.getValues();
@@ -400,7 +406,8 @@ public class CounterExampleHistoryUnitTest {
 				argumentValues);
 
 		// create an operator
-		historyOperator = new CounterExampleHistory(PathType.INFINITE, 2, argument);
+		historyOperator = new CounterExampleHistory(PathType.INFINITE, 2,
+				argument);
 
 		// check result values
 		values = historyOperator.getValues();
@@ -439,7 +446,8 @@ public class CounterExampleHistoryUnitTest {
 				argumentValues);
 
 		// create an operator
-		historyOperator = new CounterExampleHistory(PathType.INFINITE, 3, argument);
+		historyOperator = new CounterExampleHistory(PathType.INFINITE, 3,
+				argument);
 
 		// check result values
 		values = historyOperator.getValues();
@@ -479,7 +487,7 @@ public class CounterExampleHistoryUnitTest {
 	@Test
 	public void testHistoryTrueDefinitionOnReducedPath() {
 		// create argument values
-		List<CounterExampleValueType> argumentValues = Arrays
+		final List<CounterExampleValueType> argumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
 						CounterExampleValueType.TRUE,
 						CounterExampleValueType.TRUE,
@@ -487,15 +495,16 @@ public class CounterExampleHistoryUnitTest {
 						CounterExampleValueType.TRUE });
 
 		// create an argument
-		CounterExampleProposition argument = new CounterExamplePredicate("",
-				PathType.REDUCED, -1, argumentValues);
+		final CounterExampleProposition argument = new CounterExamplePredicate(
+				"", PathType.REDUCED, -1, argumentValues);
 
 		// create an operator
-		CounterExampleUnaryOperator historyOperator = new CounterExampleHistory(
+		final CounterExampleUnaryOperator historyOperator = new CounterExampleHistory(
 				PathType.REDUCED, -1, argument);
 
 		// check result values
-		List<CounterExampleValueType> values = historyOperator.getValues();
+		final List<CounterExampleValueType> values = historyOperator
+				.getValues();
 		assertTrue(values.size() == argumentValues.size());
 		assertTrue(values.get(0) == CounterExampleValueType.TRUE);
 		assertTrue(values.get(1) == CounterExampleValueType.TRUE);
@@ -503,7 +512,7 @@ public class CounterExampleHistoryUnitTest {
 		assertTrue(values.get(3) == CounterExampleValueType.TRUE);
 
 		// check highlighted positions
-		List<List<Integer>> highlightedPositions = historyOperator
+		final List<List<Integer>> highlightedPositions = historyOperator
 				.getHighlightedPositions();
 		assertTrue(highlightedPositions.size() == argumentValues.size());
 		assertTrue(highlightedPositions.get(0).size() == 1);
@@ -533,7 +542,7 @@ public class CounterExampleHistoryUnitTest {
 	@Test
 	public void testHistoryFalseDefinitionOnReducedPath() {
 		// create argument values
-		List<CounterExampleValueType> argumentValues = Arrays
+		final List<CounterExampleValueType> argumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
 						CounterExampleValueType.TRUE,
 						CounterExampleValueType.TRUE,
@@ -541,15 +550,16 @@ public class CounterExampleHistoryUnitTest {
 						CounterExampleValueType.FALSE });
 
 		// create an argument
-		CounterExampleProposition argument = new CounterExamplePredicate("",
-				PathType.REDUCED, -1, argumentValues);
+		final CounterExampleProposition argument = new CounterExamplePredicate(
+				"", PathType.REDUCED, -1, argumentValues);
 
 		// create an operator
-		CounterExampleUnaryOperator historyOperator = new CounterExampleHistory(
+		final CounterExampleUnaryOperator historyOperator = new CounterExampleHistory(
 				PathType.REDUCED, -1, argument);
 
 		// check result values
-		List<CounterExampleValueType> values = historyOperator.getValues();
+		final List<CounterExampleValueType> values = historyOperator
+				.getValues();
 		assertTrue(values.size() == argumentValues.size());
 		assertTrue(values.get(0) == CounterExampleValueType.TRUE);
 		assertTrue(values.get(1) == CounterExampleValueType.TRUE);
@@ -557,7 +567,7 @@ public class CounterExampleHistoryUnitTest {
 		assertTrue(values.get(3) == CounterExampleValueType.FALSE);
 
 		// check highlighted positions
-		List<List<Integer>> highlightedPositions = historyOperator
+		final List<List<Integer>> highlightedPositions = historyOperator
 				.getHighlightedPositions();
 		assertTrue(highlightedPositions.size() == argumentValues.size());
 		assertTrue(highlightedPositions.get(0).size() == 1);
@@ -587,31 +597,32 @@ public class CounterExampleHistoryUnitTest {
 	@Test
 	public void testHistoryUnknownDefinitionOnReducedPath() {
 		// create argument values
-		List<CounterExampleValueType> argumentValues = Arrays
+		final List<CounterExampleValueType> argumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
-						CounterExampleValueType.UNDEFINED,
+						CounterExampleValueType.UNKNOWN,
 						CounterExampleValueType.TRUE,
-						CounterExampleValueType.UNDEFINED,
+						CounterExampleValueType.UNKNOWN,
 						CounterExampleValueType.TRUE });
 
 		// create an argument
-		CounterExampleProposition argument = new CounterExamplePredicate("",
-				PathType.REDUCED, -1, argumentValues);
+		final CounterExampleProposition argument = new CounterExamplePredicate(
+				"", PathType.REDUCED, -1, argumentValues);
 
 		// create an operator
-		CounterExampleUnaryOperator historyOperator = new CounterExampleHistory(
+		final CounterExampleUnaryOperator historyOperator = new CounterExampleHistory(
 				PathType.REDUCED, -1, argument);
 
 		// check result values
-		List<CounterExampleValueType> values = historyOperator.getValues();
+		final List<CounterExampleValueType> values = historyOperator
+				.getValues();
 		assertTrue(values.size() == argumentValues.size());
-		assertTrue(values.get(0) == CounterExampleValueType.UNDEFINED);
-		assertTrue(values.get(1) == CounterExampleValueType.UNDEFINED);
-		assertTrue(values.get(2) == CounterExampleValueType.UNDEFINED);
-		assertTrue(values.get(3) == CounterExampleValueType.UNDEFINED);
+		assertTrue(values.get(0) == CounterExampleValueType.UNKNOWN);
+		assertTrue(values.get(1) == CounterExampleValueType.UNKNOWN);
+		assertTrue(values.get(2) == CounterExampleValueType.UNKNOWN);
+		assertTrue(values.get(3) == CounterExampleValueType.UNKNOWN);
 
 		// check highlighted positions
-		List<List<Integer>> highlightedPositions = historyOperator
+		final List<List<Integer>> highlightedPositions = historyOperator
 				.getHighlightedPositions();
 		assertTrue(highlightedPositions.size() == argumentValues.size());
 		assertTrue(highlightedPositions.get(0).size() == 1);
@@ -641,31 +652,32 @@ public class CounterExampleHistoryUnitTest {
 	@Test
 	public void testHistoryOnReducedPath() {
 		// create argument values
-		List<CounterExampleValueType> argumentValues = Arrays
+		final List<CounterExampleValueType> argumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
 						CounterExampleValueType.TRUE,
-						CounterExampleValueType.UNDEFINED,
+						CounterExampleValueType.UNKNOWN,
 						CounterExampleValueType.TRUE,
 						CounterExampleValueType.FALSE });
 
 		// create an argument
-		CounterExampleProposition argument = new CounterExamplePredicate("",
-				PathType.REDUCED, -1, argumentValues);
+		final CounterExampleProposition argument = new CounterExamplePredicate(
+				"", PathType.REDUCED, -1, argumentValues);
 
 		// create an operator
-		CounterExampleUnaryOperator historyOperator = new CounterExampleHistory(
+		final CounterExampleUnaryOperator historyOperator = new CounterExampleHistory(
 				PathType.REDUCED, -1, argument);
 
 		// check result values
-		List<CounterExampleValueType> values = historyOperator.getValues();
+		final List<CounterExampleValueType> values = historyOperator
+				.getValues();
 		assertTrue(values.size() == argumentValues.size());
 		assertTrue(values.get(0) == CounterExampleValueType.TRUE);
-		assertTrue(values.get(1) == CounterExampleValueType.UNDEFINED);
-		assertTrue(values.get(2) == CounterExampleValueType.UNDEFINED);
+		assertTrue(values.get(1) == CounterExampleValueType.UNKNOWN);
+		assertTrue(values.get(2) == CounterExampleValueType.UNKNOWN);
 		assertTrue(values.get(3) == CounterExampleValueType.FALSE);
 
 		// check highlighted positions
-		List<List<Integer>> highlightedPositions = historyOperator
+		final List<List<Integer>> highlightedPositions = historyOperator
 				.getHighlightedPositions();
 		assertTrue(highlightedPositions.size() == argumentValues.size());
 		assertTrue(highlightedPositions.get(0).size() == 1);
