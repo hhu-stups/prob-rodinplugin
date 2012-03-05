@@ -18,6 +18,8 @@ import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 
+import de.bmotionstudio.gef.editor.util.WizardObserverUtil;
+
 public class TextEditingSupport extends ObservableValueEditingSupport {
 
 	private TextCellEditor cellEditor;
@@ -48,6 +50,11 @@ public class TextEditingSupport extends ObservableValueEditingSupport {
 					.getControl());
 		}
 		return cellEditor;
+	}
+
+	@Override
+	protected boolean canEdit(Object element) {
+		return WizardObserverUtil.isEditElement(getViewer());
 	}
 
 }

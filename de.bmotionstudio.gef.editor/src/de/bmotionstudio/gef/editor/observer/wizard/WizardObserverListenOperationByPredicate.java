@@ -36,7 +36,6 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
@@ -44,7 +43,6 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 
 import de.bmotionstudio.gef.editor.BMotionStudioImage;
 import de.bmotionstudio.gef.editor.EditorImageRegistry;
@@ -59,6 +57,7 @@ import de.bmotionstudio.gef.editor.observer.Observer;
 import de.bmotionstudio.gef.editor.observer.ObserverWizard;
 import de.bmotionstudio.gef.editor.property.CheckboxCellEditorHelper;
 import de.bmotionstudio.gef.editor.scheduler.PredicateOperation;
+import de.bmotionstudio.gef.editor.util.WizardObserverUtil;
 
 public class WizardObserverListenOperationByPredicate extends ObserverWizard {
 
@@ -79,15 +78,8 @@ public class WizardObserverListenOperationByPredicate extends ObserverWizard {
 
 			setControl(container);
 
-			tableViewer = new TableViewer(container, SWT.BORDER
-					| SWT.FULL_SELECTION);
-			tableViewer.getTable().setLinesVisible(true);
-			tableViewer.getTable().setHeaderVisible(true);
-			tableViewer.getTable().setLayoutData(
-					new GridData(GridData.FILL_BOTH));
-			tableViewer.getTable().setFont(
-					new Font(Display.getDefault(), new FontData("Arial", 10,
-							SWT.NONE)));
+			tableViewer = WizardObserverUtil
+					.createObserverWizardTableViewer(container);
 
 			TableViewerColumn column = new TableViewerColumn(tableViewer,
 					SWT.NONE);
@@ -228,7 +220,7 @@ public class WizardObserverListenOperationByPredicate extends ObserverWizard {
 
 			@Override
 			protected boolean canEdit(Object element) {
-				return true;
+				return WizardObserverUtil.isEditElement(getViewer());
 			}
 
 			@Override

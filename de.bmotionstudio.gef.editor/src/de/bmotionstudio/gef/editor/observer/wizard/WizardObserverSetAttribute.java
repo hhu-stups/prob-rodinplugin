@@ -3,7 +3,6 @@
  * Heinrich Heine Universitaet Duesseldorf
  * This software is licenced under EPL 1.0 (http://www.eclipse.org/org/documents/epl-v10.html) 
  * */
-
 package de.bmotionstudio.gef.editor.observer.wizard;
 
 import java.util.ArrayList;
@@ -48,7 +47,6 @@ import org.eclipse.swt.widgets.Display;
 
 import de.be4.classicalb.core.parser.BParser;
 import de.bmotionstudio.gef.editor.BMotionStudioImage;
-import de.bmotionstudio.gef.editor.BMotionStudioSWTConstants;
 import de.bmotionstudio.gef.editor.EditorImageRegistry;
 import de.bmotionstudio.gef.editor.attribute.AbstractAttribute;
 import de.bmotionstudio.gef.editor.edit.AttributeExpressionEdittingSupport;
@@ -60,10 +58,13 @@ import de.bmotionstudio.gef.editor.observer.ObserverWizard;
 import de.bmotionstudio.gef.editor.observer.SetAttribute;
 import de.bmotionstudio.gef.editor.observer.SetAttributeObject;
 import de.bmotionstudio.gef.editor.property.CheckboxCellEditorHelper;
+import de.bmotionstudio.gef.editor.util.WizardObserverUtil;
 
 public class WizardObserverSetAttribute extends ObserverWizard {
 
 	private class WizardSetAttributePage extends WizardPage {
+
+		private WritableList input;
 
 		private TableViewer tableViewer;
 
@@ -84,14 +85,8 @@ public class WizardObserverSetAttribute extends ObserverWizard {
 			Composite container = new Composite(parent, SWT.NONE);
 			container.setLayout(gl);
 
-			tableViewer = new TableViewer(container, SWT.BORDER
-					| SWT.FULL_SELECTION);
-			tableViewer.getTable().setLinesVisible(true);
-			tableViewer.getTable().setHeaderVisible(true);
-			tableViewer.getTable().setLayoutData(
-					new GridData(GridData.FILL_BOTH));
-			tableViewer.getTable().setFont(
-					BMotionStudioSWTConstants.fontArial10);
+			tableViewer = WizardObserverUtil
+					.createObserverWizardTableViewer(container);
 
 			TableViewerColumn column = new TableViewerColumn(tableViewer,
 					SWT.NONE);
@@ -129,7 +124,7 @@ public class WizardObserverSetAttribute extends ObserverWizard {
 							contentProvider.getKnownElements(), new String[] {
 									"eval", "attribute", "value",
 									"isExpressionMode" })));
-			final WritableList input = new WritableList(
+			input = new WritableList(
 					((SetAttribute) getObserver()).getSetAttributeObjects(),
 					SetAttributeObject.class);
 			tableViewer.setInput(input);
@@ -186,7 +181,7 @@ public class WizardObserverSetAttribute extends ObserverWizard {
 
 			@Override
 			protected boolean canEdit(Object element) {
-				return true;
+				return WizardObserverUtil.isEditElement(getViewer());
 			}
 
 			@Override
