@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.prob.core.command.LtlCheckingCommand.PathType;
+import de.prob.logging.Logger;
 
 /**
  * Provides an abstract class for all types of propositions.
@@ -105,11 +106,13 @@ public abstract class CounterExampleProposition {
 		if (index != -1) {
 			int pos = isPastOperator ? index : index + position;
 			pos = calculatePosition(pos);
+			Logger.assertProB("Position invalid", pos >= 0);
 			positions.add(pos);
 		} else {
 			for (int i = 0; i < checkedSize; i++) {
 				int pos = isPastOperator ? position - i : position + i;
 				pos = calculatePosition(pos);
+				Logger.assertProB("Position invalid", pos >= 0);
 				positions.add(pos);
 			}
 		}

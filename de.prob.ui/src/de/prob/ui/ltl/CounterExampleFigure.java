@@ -31,8 +31,12 @@ public final class CounterExampleFigure extends Figure {
 
 		final Font font = new Font(Display.getDefault(), "Arial", 10, SWT.BOLD);
 		border.setFont(font);
-		border.setLabel(model.getPropositionRoot() + ", PathType - "
-				+ model.getPathType().name());
+		border.setLabel(model.getPropositionRoot().toString()/*
+															 * + ", PathType - "
+															 * +
+															 * model.getPathType
+															 * ().name()
+															 */);
 		setBorder(border);
 
 		for (int i = 0; i < model.getStates().size(); i++) {
@@ -48,6 +52,21 @@ public final class CounterExampleFigure extends Figure {
 	public CounterExample getModel() {
 		return model;
 	}
+
+	// public void updateStates(int height) {
+	// for (int i = 0; i < states.size(); i++) {
+	// final RectangleFigure state = states.get(i);
+	// final Rectangle bounds = state.getBounds();
+	// state.setSize(bounds.width, bounds.height + height);
+	//
+	// if (i == 0) {
+	// System.out.println("height = " + height);
+	// System.out.println("x = " + bounds.x + ", y = " + bounds.y
+	// + ", width = " + bounds.width + ", height = "
+	// + bounds.height);
+	// }
+	// }
+	// }
 
 	public void update() {
 		final IWorkbenchPage workbenchPage = PlatformUI.getWorkbench()

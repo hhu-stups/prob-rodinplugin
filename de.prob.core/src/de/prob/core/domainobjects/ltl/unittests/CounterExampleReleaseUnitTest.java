@@ -15,19 +15,19 @@ import de.prob.core.domainobjects.ltl.CounterExampleRelease;
 import de.prob.core.domainobjects.ltl.CounterExampleValueType;
 
 /**
- * Unit test for a "Release" operator.
+ * Unit test for a "release" operator.
  * 
  * @author Andriy Tolstoy
  * 
  */
-public class CounterExampleReleaseUnitTest {
+public final class CounterExampleReleaseUnitTest {
 	/*
 	 * f-FFFT, g-TTTT, f R g-TTTT
 	 */
 	@Test
-	public void testReleaseOnFinitePathTrueDefinition1() {
+	public void testReleaseTrueDefinitionOnFinitePath1() {
 		// create first argument values
-		List<CounterExampleValueType> firstArgumentValues = Arrays
+		final List<CounterExampleValueType> firstArgumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
 						CounterExampleValueType.FALSE,
 						CounterExampleValueType.FALSE,
@@ -35,7 +35,7 @@ public class CounterExampleReleaseUnitTest {
 						CounterExampleValueType.TRUE });
 
 		// create second argument values
-		List<CounterExampleValueType> secondArgumentValues = Arrays
+		final List<CounterExampleValueType> secondArgumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
 						CounterExampleValueType.TRUE,
 						CounterExampleValueType.TRUE,
@@ -43,19 +43,20 @@ public class CounterExampleReleaseUnitTest {
 						CounterExampleValueType.TRUE });
 
 		// create first argument
-		CounterExampleProposition firstArgument = new CounterExamplePredicate(
+		final CounterExampleProposition firstArgument = new CounterExamplePredicate(
 				PathType.FINITE, firstArgumentValues);
 
 		// create second argument
-		CounterExampleProposition secondArgument = new CounterExamplePredicate(
+		final CounterExampleProposition secondArgument = new CounterExamplePredicate(
 				PathType.FINITE, secondArgumentValues);
 
 		// create an operator
-		CounterExampleBinaryOperator releaseOperator = new CounterExampleRelease(
+		final CounterExampleBinaryOperator releaseOperator = new CounterExampleRelease(
 				PathType.FINITE, firstArgument, secondArgument);
 
 		// check result values
-		List<CounterExampleValueType> values = releaseOperator.getValues();
+		final List<CounterExampleValueType> values = releaseOperator
+				.getValues();
 		assertTrue(values.size() == firstArgumentValues.size());
 		assertTrue(values.size() == secondArgumentValues.size());
 		assertTrue(values.get(0) == CounterExampleValueType.TRUE);
@@ -64,9 +65,9 @@ public class CounterExampleReleaseUnitTest {
 		assertTrue(values.get(3) == CounterExampleValueType.TRUE);
 
 		// check highlighted positions
-		List<List<Integer>> firstHighlightedPositions = releaseOperator
+		final List<List<Integer>> firstHighlightedPositions = releaseOperator
 				.getFirstHighlightedPositions();
-		List<List<Integer>> secondHighlightedPositions = releaseOperator
+		final List<List<Integer>> secondHighlightedPositions = releaseOperator
 				.getSecondHighlightedPositions();
 		assertTrue(firstHighlightedPositions.size() == firstArgumentValues
 				.size());
@@ -118,9 +119,9 @@ public class CounterExampleReleaseUnitTest {
 	 * f-FFFF, g-TTTT, f R g-TTTT
 	 */
 	@Test
-	public void testReleaseOnFinitePathTrueDefinition2() {
+	public void testReleaseTrueDefinitionOnFinitePath2() {
 		// create first argument values
-		List<CounterExampleValueType> firstArgumentValues = Arrays
+		final List<CounterExampleValueType> firstArgumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
 						CounterExampleValueType.FALSE,
 						CounterExampleValueType.FALSE,
@@ -128,7 +129,7 @@ public class CounterExampleReleaseUnitTest {
 						CounterExampleValueType.FALSE });
 
 		// create second argument values
-		List<CounterExampleValueType> secondArgumentValues = Arrays
+		final List<CounterExampleValueType> secondArgumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
 						CounterExampleValueType.TRUE,
 						CounterExampleValueType.TRUE,
@@ -136,19 +137,20 @@ public class CounterExampleReleaseUnitTest {
 						CounterExampleValueType.TRUE });
 
 		// create first argument
-		CounterExampleProposition firstArgument = new CounterExamplePredicate(
+		final CounterExampleProposition firstArgument = new CounterExamplePredicate(
 				PathType.FINITE, firstArgumentValues);
 
 		// create second argument
-		CounterExampleProposition secondArgument = new CounterExamplePredicate(
+		final CounterExampleProposition secondArgument = new CounterExamplePredicate(
 				PathType.FINITE, secondArgumentValues);
 
 		// create an operator
-		CounterExampleBinaryOperator releaseOperator = new CounterExampleRelease(
+		final CounterExampleBinaryOperator releaseOperator = new CounterExampleRelease(
 				PathType.FINITE, firstArgument, secondArgument);
 
 		// check result values
-		List<CounterExampleValueType> values = releaseOperator.getValues();
+		final List<CounterExampleValueType> values = releaseOperator
+				.getValues();
 		assertTrue(values.size() == firstArgumentValues.size());
 		assertTrue(values.size() == secondArgumentValues.size());
 		assertTrue(values.get(0) == CounterExampleValueType.TRUE);
@@ -157,9 +159,9 @@ public class CounterExampleReleaseUnitTest {
 		assertTrue(values.get(3) == CounterExampleValueType.TRUE);
 
 		// check highlighted positions
-		List<List<Integer>> firstHighlightedPositions = releaseOperator
+		final List<List<Integer>> firstHighlightedPositions = releaseOperator
 				.getFirstHighlightedPositions();
-		List<List<Integer>> secondHighlightedPositions = releaseOperator
+		final List<List<Integer>> secondHighlightedPositions = releaseOperator
 				.getSecondHighlightedPositions();
 		assertTrue(firstHighlightedPositions.size() == firstArgumentValues
 				.size());
@@ -167,40 +169,28 @@ public class CounterExampleReleaseUnitTest {
 				.size());
 
 		// State 0
-		assertTrue(firstHighlightedPositions.get(0).size() == 4);
-		assertTrue(Arrays.equals(
-				firstHighlightedPositions.get(0).toArray(new Integer[0]),
-				new Integer[] { 0, 1, 2, 3 }));
+		assertTrue(firstHighlightedPositions.get(0).size() == 0);
 		assertTrue(secondHighlightedPositions.get(0).size() == 4);
 		assertTrue(Arrays.equals(
 				secondHighlightedPositions.get(0).toArray(new Integer[0]),
 				new Integer[] { 0, 1, 2, 3 }));
 
 		// State 1
-		assertTrue(firstHighlightedPositions.get(1).size() == 3);
-		assertTrue(Arrays.equals(
-				firstHighlightedPositions.get(1).toArray(new Integer[0]),
-				new Integer[] { 1, 2, 3 }));
+		assertTrue(firstHighlightedPositions.get(1).size() == 0);
 		assertTrue(secondHighlightedPositions.get(1).size() == 3);
 		assertTrue(Arrays.equals(
 				secondHighlightedPositions.get(1).toArray(new Integer[0]),
 				new Integer[] { 1, 2, 3 }));
 
 		// State 2
-		assertTrue(firstHighlightedPositions.get(2).size() == 2);
-		assertTrue(Arrays.equals(
-				firstHighlightedPositions.get(2).toArray(new Integer[0]),
-				new Integer[] { 2, 3 }));
+		assertTrue(firstHighlightedPositions.get(2).size() == 0);
 		assertTrue(secondHighlightedPositions.get(2).size() == 2);
 		assertTrue(Arrays.equals(
 				secondHighlightedPositions.get(2).toArray(new Integer[0]),
 				new Integer[] { 2, 3 }));
 
 		// State 3
-		assertTrue(firstHighlightedPositions.get(3).size() == 1);
-		assertTrue(Arrays.equals(
-				firstHighlightedPositions.get(3).toArray(new Integer[0]),
-				new Integer[] { 3 }));
+		assertTrue(firstHighlightedPositions.get(3).size() == 0);
 		assertTrue(secondHighlightedPositions.get(3).size() == 1);
 		assertTrue(Arrays.equals(
 				secondHighlightedPositions.get(3).toArray(new Integer[0]),
@@ -213,7 +203,7 @@ public class CounterExampleReleaseUnitTest {
 	@Test
 	public void testReleaseFalseDefinitionOnFinitePath1() {
 		// create first argument values
-		List<CounterExampleValueType> firstArgumentValues = Arrays
+		final List<CounterExampleValueType> firstArgumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
 						CounterExampleValueType.FALSE,
 						CounterExampleValueType.FALSE,
@@ -221,7 +211,7 @@ public class CounterExampleReleaseUnitTest {
 						CounterExampleValueType.TRUE });
 
 		// create second argument values
-		List<CounterExampleValueType> secondArgumentValues = Arrays
+		final List<CounterExampleValueType> secondArgumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
 						CounterExampleValueType.TRUE,
 						CounterExampleValueType.TRUE,
@@ -229,19 +219,20 @@ public class CounterExampleReleaseUnitTest {
 						CounterExampleValueType.FALSE });
 
 		// create first argument
-		CounterExampleProposition firstArgument = new CounterExamplePredicate(
+		final CounterExampleProposition firstArgument = new CounterExamplePredicate(
 				PathType.FINITE, firstArgumentValues);
 
 		// create second argument
-		CounterExampleProposition secondArgument = new CounterExamplePredicate(
+		final CounterExampleProposition secondArgument = new CounterExamplePredicate(
 				PathType.FINITE, secondArgumentValues);
 
 		// create an operator
-		CounterExampleBinaryOperator releaseOperator = new CounterExampleRelease(
+		final CounterExampleBinaryOperator releaseOperator = new CounterExampleRelease(
 				PathType.FINITE, firstArgument, secondArgument);
 
 		// check result values
-		List<CounterExampleValueType> values = releaseOperator.getValues();
+		final List<CounterExampleValueType> values = releaseOperator
+				.getValues();
 		assertTrue(values.size() == firstArgumentValues.size());
 		assertTrue(values.size() == secondArgumentValues.size());
 		assertTrue(values.get(0) == CounterExampleValueType.FALSE);
@@ -250,9 +241,9 @@ public class CounterExampleReleaseUnitTest {
 		assertTrue(values.get(3) == CounterExampleValueType.FALSE);
 
 		// check highlighted positions
-		List<List<Integer>> firstHighlightedPositions = releaseOperator
+		final List<List<Integer>> firstHighlightedPositions = releaseOperator
 				.getFirstHighlightedPositions();
-		List<List<Integer>> secondHighlightedPositions = releaseOperator
+		final List<List<Integer>> secondHighlightedPositions = releaseOperator
 				.getSecondHighlightedPositions();
 		assertTrue(firstHighlightedPositions.size() == firstArgumentValues
 				.size());
@@ -303,7 +294,7 @@ public class CounterExampleReleaseUnitTest {
 	@Test
 	public void testReleaseFalseDefinitionOnFinitePath2() {
 		// create first argument values
-		List<CounterExampleValueType> firstArgumentValues = Arrays
+		final List<CounterExampleValueType> firstArgumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
 						CounterExampleValueType.FALSE,
 						CounterExampleValueType.FALSE,
@@ -311,7 +302,7 @@ public class CounterExampleReleaseUnitTest {
 						CounterExampleValueType.FALSE });
 
 		// create second argument values
-		List<CounterExampleValueType> secondArgumentValues = Arrays
+		final List<CounterExampleValueType> secondArgumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
 						CounterExampleValueType.TRUE,
 						CounterExampleValueType.TRUE,
@@ -319,19 +310,20 @@ public class CounterExampleReleaseUnitTest {
 						CounterExampleValueType.FALSE });
 
 		// create first argument
-		CounterExampleProposition firstArgument = new CounterExamplePredicate(
+		final CounterExampleProposition firstArgument = new CounterExamplePredicate(
 				PathType.FINITE, firstArgumentValues);
 
 		// create second argument
-		CounterExampleProposition secondArgument = new CounterExamplePredicate(
+		final CounterExampleProposition secondArgument = new CounterExamplePredicate(
 				PathType.FINITE, secondArgumentValues);
 
 		// create an operator
-		CounterExampleBinaryOperator releaseOperator = new CounterExampleRelease(
+		final CounterExampleBinaryOperator releaseOperator = new CounterExampleRelease(
 				PathType.FINITE, firstArgument, secondArgument);
 
 		// check result values
-		List<CounterExampleValueType> values = releaseOperator.getValues();
+		final List<CounterExampleValueType> values = releaseOperator
+				.getValues();
 		assertTrue(values.size() == firstArgumentValues.size());
 		assertTrue(values.size() == secondArgumentValues.size());
 		assertTrue(values.get(0) == CounterExampleValueType.FALSE);
@@ -340,9 +332,9 @@ public class CounterExampleReleaseUnitTest {
 		assertTrue(values.get(3) == CounterExampleValueType.FALSE);
 
 		// check highlighted positions
-		List<List<Integer>> firstHighlightedPositions = releaseOperator
+		final List<List<Integer>> firstHighlightedPositions = releaseOperator
 				.getFirstHighlightedPositions();
-		List<List<Integer>> secondHighlightedPositions = releaseOperator
+		final List<List<Integer>> secondHighlightedPositions = releaseOperator
 				.getSecondHighlightedPositions();
 		assertTrue(firstHighlightedPositions.size() == firstArgumentValues
 				.size());
@@ -391,9 +383,9 @@ public class CounterExampleReleaseUnitTest {
 	 * f-TFTF, g-TFFT, f R g-TFFT
 	 */
 	@Test
-	public void testReleaseOnFinitePath() {
+	public void testReleaseOnFinitePath1() {
 		// create first argument values
-		List<CounterExampleValueType> firstArgumentValues = Arrays
+		final List<CounterExampleValueType> firstArgumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
 						CounterExampleValueType.TRUE,
 						CounterExampleValueType.FALSE,
@@ -401,7 +393,7 @@ public class CounterExampleReleaseUnitTest {
 						CounterExampleValueType.FALSE });
 
 		// create second argument values
-		List<CounterExampleValueType> secondArgumentValues = Arrays
+		final List<CounterExampleValueType> secondArgumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
 						CounterExampleValueType.TRUE,
 						CounterExampleValueType.FALSE,
@@ -409,19 +401,20 @@ public class CounterExampleReleaseUnitTest {
 						CounterExampleValueType.TRUE });
 
 		// create first argument
-		CounterExampleProposition firstArgument = new CounterExamplePredicate(
+		final CounterExampleProposition firstArgument = new CounterExamplePredicate(
 				PathType.FINITE, -1, firstArgumentValues);
 
 		// create second argument
-		CounterExampleProposition secondArgument = new CounterExamplePredicate(
+		final CounterExampleProposition secondArgument = new CounterExamplePredicate(
 				PathType.FINITE, -1, secondArgumentValues);
 
 		// create an operator
-		CounterExampleBinaryOperator releaseOperator = new CounterExampleRelease(
+		final CounterExampleBinaryOperator releaseOperator = new CounterExampleRelease(
 				PathType.FINITE, -1, firstArgument, secondArgument);
 
 		// check result values
-		List<CounterExampleValueType> values = releaseOperator.getValues();
+		final List<CounterExampleValueType> values = releaseOperator
+				.getValues();
 		assertTrue(values.size() == firstArgumentValues.size());
 		assertTrue(values.size() == secondArgumentValues.size());
 		assertTrue(values.get(0) == CounterExampleValueType.TRUE);
@@ -430,9 +423,9 @@ public class CounterExampleReleaseUnitTest {
 		assertTrue(values.get(3) == CounterExampleValueType.TRUE);
 
 		// check highlighted positions
-		List<List<Integer>> firstHighlightedPositions = releaseOperator
+		final List<List<Integer>> firstHighlightedPositions = releaseOperator
 				.getFirstHighlightedPositions();
-		List<List<Integer>> secondHighlightedPositions = releaseOperator
+		final List<List<Integer>> secondHighlightedPositions = releaseOperator
 				.getSecondHighlightedPositions();
 		assertTrue(firstHighlightedPositions.size() == firstArgumentValues
 				.size());
@@ -464,10 +457,95 @@ public class CounterExampleReleaseUnitTest {
 				new Integer[] { 2 }));
 
 		// State 3
-		assertTrue(firstHighlightedPositions.get(3).size() == 1);
+		assertTrue(firstHighlightedPositions.get(3).size() == 0);
+		assertTrue(secondHighlightedPositions.get(3).size() == 1);
 		assertTrue(Arrays.equals(
-				firstHighlightedPositions.get(3).toArray(new Integer[0]),
+				secondHighlightedPositions.get(3).toArray(new Integer[0]),
 				new Integer[] { 3 }));
+	}
+
+	/*
+	 * f-FTTF, g-TFTT, f R g-FFTT
+	 */
+	@Test
+	public void testReleaseOnFinitePath2() {
+		// create first argument values
+		final List<CounterExampleValueType> firstArgumentValues = Arrays
+				.asList(new CounterExampleValueType[] {
+						CounterExampleValueType.FALSE,
+						CounterExampleValueType.TRUE,
+						CounterExampleValueType.TRUE,
+						CounterExampleValueType.FALSE });
+
+		// create second argument values
+		final List<CounterExampleValueType> secondArgumentValues = Arrays
+				.asList(new CounterExampleValueType[] {
+						CounterExampleValueType.TRUE,
+						CounterExampleValueType.FALSE,
+						CounterExampleValueType.TRUE,
+						CounterExampleValueType.TRUE });
+
+		// create first argument
+		final CounterExampleProposition firstArgument = new CounterExamplePredicate(
+				PathType.FINITE, -1, firstArgumentValues);
+
+		// create second argument
+		final CounterExampleProposition secondArgument = new CounterExamplePredicate(
+				PathType.FINITE, -1, secondArgumentValues);
+
+		// create an operator
+		final CounterExampleBinaryOperator releaseOperator = new CounterExampleRelease(
+				PathType.FINITE, -1, firstArgument, secondArgument);
+
+		// check result values
+		final List<CounterExampleValueType> values = releaseOperator
+				.getValues();
+		assertTrue(values.size() == firstArgumentValues.size());
+		assertTrue(values.size() == secondArgumentValues.size());
+		assertTrue(values.get(0) == CounterExampleValueType.FALSE);
+		assertTrue(values.get(1) == CounterExampleValueType.FALSE);
+		assertTrue(values.get(2) == CounterExampleValueType.TRUE);
+		assertTrue(values.get(3) == CounterExampleValueType.TRUE);
+
+		// check highlighted positions
+		final List<List<Integer>> firstHighlightedPositions = releaseOperator
+				.getFirstHighlightedPositions();
+		final List<List<Integer>> secondHighlightedPositions = releaseOperator
+				.getSecondHighlightedPositions();
+		assertTrue(firstHighlightedPositions.size() == firstArgumentValues
+				.size());
+		assertTrue(secondHighlightedPositions.size() == secondArgumentValues
+				.size());
+
+		// State 0
+		assertTrue(firstHighlightedPositions.get(0).size() == 1);
+		assertTrue(Arrays.equals(
+				firstHighlightedPositions.get(0).toArray(new Integer[0]),
+				new Integer[] { 0 }));
+		assertTrue(secondHighlightedPositions.get(0).size() == 1);
+		assertTrue(Arrays.equals(
+				secondHighlightedPositions.get(0).toArray(new Integer[0]),
+				new Integer[] { 1 }));
+
+		// State 1
+		assertTrue(firstHighlightedPositions.get(1).size() == 0);
+		assertTrue(secondHighlightedPositions.get(1).size() == 1);
+		assertTrue(Arrays.equals(
+				secondHighlightedPositions.get(1).toArray(new Integer[0]),
+				new Integer[] { 1 }));
+
+		// State 2
+		assertTrue(firstHighlightedPositions.get(2).size() == 1);
+		assertTrue(Arrays.equals(
+				firstHighlightedPositions.get(2).toArray(new Integer[0]),
+				new Integer[] { 2 }));
+		assertTrue(secondHighlightedPositions.get(2).size() == 1);
+		assertTrue(Arrays.equals(
+				secondHighlightedPositions.get(2).toArray(new Integer[0]),
+				new Integer[] { 2 }));
+
+		// State 3
+		assertTrue(firstHighlightedPositions.get(3).size() == 0);
 		assertTrue(secondHighlightedPositions.get(3).size() == 1);
 		assertTrue(Arrays.equals(
 				secondHighlightedPositions.get(3).toArray(new Integer[0]),
@@ -480,7 +558,7 @@ public class CounterExampleReleaseUnitTest {
 	@Test
 	public void testReleaseTrueDefinitionOnInfinitePath1() {
 		// create first argument values
-		List<CounterExampleValueType> firstArgumentValues = Arrays
+		final List<CounterExampleValueType> firstArgumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
 						CounterExampleValueType.FALSE,
 						CounterExampleValueType.FALSE,
@@ -488,7 +566,7 @@ public class CounterExampleReleaseUnitTest {
 						CounterExampleValueType.TRUE });
 
 		// create second argument values
-		List<CounterExampleValueType> secondArgumentValues = Arrays
+		final List<CounterExampleValueType> secondArgumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
 						CounterExampleValueType.TRUE,
 						CounterExampleValueType.TRUE,
@@ -790,7 +868,7 @@ public class CounterExampleReleaseUnitTest {
 	@Test
 	public void testReleaseTrueDefinitionOnInfinitePath2() {
 		// create first argument values
-		List<CounterExampleValueType> firstArgumentValues = Arrays
+		final List<CounterExampleValueType> firstArgumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
 						CounterExampleValueType.FALSE,
 						CounterExampleValueType.FALSE,
@@ -798,7 +876,7 @@ public class CounterExampleReleaseUnitTest {
 						CounterExampleValueType.FALSE });
 
 		// create second argument values
-		List<CounterExampleValueType> secondArgumentValues = Arrays
+		final List<CounterExampleValueType> secondArgumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
 						CounterExampleValueType.TRUE,
 						CounterExampleValueType.TRUE,
@@ -838,40 +916,28 @@ public class CounterExampleReleaseUnitTest {
 				.size());
 
 		// State 0
-		assertTrue(firstHighlightedPositions.get(0).size() == 4);
-		assertTrue(Arrays.equals(
-				firstHighlightedPositions.get(0).toArray(new Integer[0]),
-				new Integer[] { 0, 1, 2, 3 }));
+		assertTrue(firstHighlightedPositions.get(0).size() == 0);
 		assertTrue(secondHighlightedPositions.get(0).size() == 4);
 		assertTrue(Arrays.equals(
 				secondHighlightedPositions.get(0).toArray(new Integer[0]),
 				new Integer[] { 0, 1, 2, 3 }));
 
 		// State 1
-		assertTrue(firstHighlightedPositions.get(1).size() == 4);
-		assertTrue(Arrays.equals(
-				firstHighlightedPositions.get(1).toArray(new Integer[0]),
-				new Integer[] { 1, 2, 3, 0 }));
+		assertTrue(firstHighlightedPositions.get(1).size() == 0);
 		assertTrue(secondHighlightedPositions.get(1).size() == 4);
 		assertTrue(Arrays.equals(
 				secondHighlightedPositions.get(1).toArray(new Integer[0]),
 				new Integer[] { 1, 2, 3, 0 }));
 
 		// State 2
-		assertTrue(firstHighlightedPositions.get(2).size() == 4);
-		assertTrue(Arrays.equals(
-				firstHighlightedPositions.get(2).toArray(new Integer[0]),
-				new Integer[] { 2, 3, 0, 1 }));
+		assertTrue(firstHighlightedPositions.get(2).size() == 0);
 		assertTrue(secondHighlightedPositions.get(2).size() == 4);
 		assertTrue(Arrays.equals(
 				secondHighlightedPositions.get(2).toArray(new Integer[0]),
 				new Integer[] { 2, 3, 0, 1 }));
 
 		// State 3
-		assertTrue(firstHighlightedPositions.get(3).size() == 4);
-		assertTrue(Arrays.equals(
-				firstHighlightedPositions.get(3).toArray(new Integer[0]),
-				new Integer[] { 3, 0, 1, 2 }));
+		assertTrue(firstHighlightedPositions.get(3).size() == 0);
 		assertTrue(secondHighlightedPositions.get(3).size() == 4);
 		assertTrue(Arrays.equals(
 				secondHighlightedPositions.get(3).toArray(new Integer[0]),
@@ -910,40 +976,28 @@ public class CounterExampleReleaseUnitTest {
 				.size());
 
 		// State 0
-		assertTrue(firstHighlightedPositions.get(0).size() == 4);
-		assertTrue(Arrays.equals(
-				firstHighlightedPositions.get(0).toArray(new Integer[0]),
-				new Integer[] { 0, 1, 2, 3 }));
+		assertTrue(firstHighlightedPositions.get(0).size() == 0);
 		assertTrue(secondHighlightedPositions.get(0).size() == 4);
 		assertTrue(Arrays.equals(
 				secondHighlightedPositions.get(0).toArray(new Integer[0]),
 				new Integer[] { 0, 1, 2, 3 }));
 
 		// State 1
-		assertTrue(firstHighlightedPositions.get(1).size() == 3);
-		assertTrue(Arrays.equals(
-				firstHighlightedPositions.get(1).toArray(new Integer[0]),
-				new Integer[] { 1, 2, 3 }));
+		assertTrue(firstHighlightedPositions.get(1).size() == 0);
 		assertTrue(secondHighlightedPositions.get(1).size() == 3);
 		assertTrue(Arrays.equals(
 				secondHighlightedPositions.get(1).toArray(new Integer[0]),
 				new Integer[] { 1, 2, 3 }));
 
 		// State 2
-		assertTrue(firstHighlightedPositions.get(2).size() == 3);
-		assertTrue(Arrays.equals(
-				firstHighlightedPositions.get(2).toArray(new Integer[0]),
-				new Integer[] { 2, 3, 1 }));
+		assertTrue(firstHighlightedPositions.get(2).size() == 0);
 		assertTrue(secondHighlightedPositions.get(2).size() == 3);
 		assertTrue(Arrays.equals(
 				secondHighlightedPositions.get(2).toArray(new Integer[0]),
 				new Integer[] { 2, 3, 1 }));
 
 		// State 3
-		assertTrue(firstHighlightedPositions.get(3).size() == 3);
-		assertTrue(Arrays.equals(
-				firstHighlightedPositions.get(3).toArray(new Integer[0]),
-				new Integer[] { 3, 1, 2 }));
+		assertTrue(firstHighlightedPositions.get(3).size() == 0);
 		assertTrue(secondHighlightedPositions.get(3).size() == 3);
 		assertTrue(Arrays.equals(
 				secondHighlightedPositions.get(3).toArray(new Integer[0]),
@@ -982,40 +1036,28 @@ public class CounterExampleReleaseUnitTest {
 				.size());
 
 		// State 0
-		assertTrue(firstHighlightedPositions.get(0).size() == 4);
-		assertTrue(Arrays.equals(
-				firstHighlightedPositions.get(0).toArray(new Integer[0]),
-				new Integer[] { 0, 1, 2, 3 }));
+		assertTrue(firstHighlightedPositions.get(0).size() == 0);
 		assertTrue(secondHighlightedPositions.get(0).size() == 4);
 		assertTrue(Arrays.equals(
 				secondHighlightedPositions.get(0).toArray(new Integer[0]),
 				new Integer[] { 0, 1, 2, 3 }));
 
 		// State 1
-		assertTrue(firstHighlightedPositions.get(1).size() == 3);
-		assertTrue(Arrays.equals(
-				firstHighlightedPositions.get(1).toArray(new Integer[0]),
-				new Integer[] { 1, 2, 3 }));
+		assertTrue(firstHighlightedPositions.get(1).size() == 0);
 		assertTrue(secondHighlightedPositions.get(1).size() == 3);
 		assertTrue(Arrays.equals(
 				secondHighlightedPositions.get(1).toArray(new Integer[0]),
 				new Integer[] { 1, 2, 3 }));
 
 		// State 2
-		assertTrue(firstHighlightedPositions.get(2).size() == 2);
-		assertTrue(Arrays.equals(
-				firstHighlightedPositions.get(2).toArray(new Integer[0]),
-				new Integer[] { 2, 3 }));
+		assertTrue(firstHighlightedPositions.get(2).size() == 0);
 		assertTrue(secondHighlightedPositions.get(2).size() == 2);
 		assertTrue(Arrays.equals(
 				secondHighlightedPositions.get(2).toArray(new Integer[0]),
 				new Integer[] { 2, 3 }));
 
 		// State 3
-		assertTrue(firstHighlightedPositions.get(3).size() == 2);
-		assertTrue(Arrays.equals(
-				firstHighlightedPositions.get(3).toArray(new Integer[0]),
-				new Integer[] { 3, 2 }));
+		assertTrue(firstHighlightedPositions.get(3).size() == 0);
 		assertTrue(secondHighlightedPositions.get(3).size() == 2);
 		assertTrue(Arrays.equals(
 				secondHighlightedPositions.get(3).toArray(new Integer[0]),
@@ -1054,40 +1096,28 @@ public class CounterExampleReleaseUnitTest {
 				.size());
 
 		// State 0
-		assertTrue(firstHighlightedPositions.get(0).size() == 4);
-		assertTrue(Arrays.equals(
-				firstHighlightedPositions.get(0).toArray(new Integer[0]),
-				new Integer[] { 0, 1, 2, 3 }));
+		assertTrue(firstHighlightedPositions.get(0).size() == 0);
 		assertTrue(secondHighlightedPositions.get(0).size() == 4);
 		assertTrue(Arrays.equals(
 				secondHighlightedPositions.get(0).toArray(new Integer[0]),
 				new Integer[] { 0, 1, 2, 3 }));
 
 		// State 1
-		assertTrue(firstHighlightedPositions.get(1).size() == 3);
-		assertTrue(Arrays.equals(
-				firstHighlightedPositions.get(1).toArray(new Integer[0]),
-				new Integer[] { 1, 2, 3 }));
+		assertTrue(firstHighlightedPositions.get(1).size() == 0);
 		assertTrue(secondHighlightedPositions.get(1).size() == 3);
 		assertTrue(Arrays.equals(
 				secondHighlightedPositions.get(1).toArray(new Integer[0]),
 				new Integer[] { 1, 2, 3 }));
 
 		// State 2
-		assertTrue(firstHighlightedPositions.get(2).size() == 2);
-		assertTrue(Arrays.equals(
-				firstHighlightedPositions.get(2).toArray(new Integer[0]),
-				new Integer[] { 2, 3 }));
+		assertTrue(firstHighlightedPositions.get(2).size() == 0);
 		assertTrue(secondHighlightedPositions.get(2).size() == 2);
 		assertTrue(Arrays.equals(
 				secondHighlightedPositions.get(2).toArray(new Integer[0]),
 				new Integer[] { 2, 3 }));
 
 		// State 3
-		assertTrue(firstHighlightedPositions.get(3).size() == 1);
-		assertTrue(Arrays.equals(
-				firstHighlightedPositions.get(3).toArray(new Integer[0]),
-				new Integer[] { 3 }));
+		assertTrue(firstHighlightedPositions.get(3).size() == 0);
 		assertTrue(secondHighlightedPositions.get(3).size() == 1);
 		assertTrue(Arrays.equals(
 				secondHighlightedPositions.get(3).toArray(new Integer[0]),
@@ -1100,7 +1130,7 @@ public class CounterExampleReleaseUnitTest {
 	@Test
 	public void testReleaseFalseDefinitionOnInfinitePath1() {
 		// create first argument values
-		List<CounterExampleValueType> firstArgumentValues = Arrays
+		final List<CounterExampleValueType> firstArgumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
 						CounterExampleValueType.FALSE,
 						CounterExampleValueType.FALSE,
@@ -1108,7 +1138,7 @@ public class CounterExampleReleaseUnitTest {
 						CounterExampleValueType.TRUE });
 
 		// create second argument values
-		List<CounterExampleValueType> secondArgumentValues = Arrays
+		final List<CounterExampleValueType> secondArgumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
 						CounterExampleValueType.TRUE,
 						CounterExampleValueType.TRUE,
@@ -1398,7 +1428,7 @@ public class CounterExampleReleaseUnitTest {
 	@Test
 	public void testReleaseFalseDefinitionOnInfinitePath2() {
 		// create first argument values
-		List<CounterExampleValueType> firstArgumentValues = Arrays
+		final List<CounterExampleValueType> firstArgumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
 						CounterExampleValueType.FALSE,
 						CounterExampleValueType.FALSE,
@@ -1406,7 +1436,7 @@ public class CounterExampleReleaseUnitTest {
 						CounterExampleValueType.FALSE });
 
 		// create second argument values
-		List<CounterExampleValueType> secondArgumentValues = Arrays
+		final List<CounterExampleValueType> secondArgumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
 						CounterExampleValueType.TRUE,
 						CounterExampleValueType.TRUE,
@@ -1696,7 +1726,7 @@ public class CounterExampleReleaseUnitTest {
 	@Test
 	public void testReleaseOnInfinitePath() {
 		// create first argument values
-		List<CounterExampleValueType> firstArgumentValues = Arrays
+		final List<CounterExampleValueType> firstArgumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
 						CounterExampleValueType.TRUE,
 						CounterExampleValueType.FALSE,
@@ -1704,7 +1734,7 @@ public class CounterExampleReleaseUnitTest {
 						CounterExampleValueType.FALSE });
 
 		// create second argument values
-		List<CounterExampleValueType> secondArgumentValues = Arrays
+		final List<CounterExampleValueType> secondArgumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
 						CounterExampleValueType.TRUE,
 						CounterExampleValueType.FALSE,
@@ -1966,10 +1996,7 @@ public class CounterExampleReleaseUnitTest {
 				new Integer[] { 2 }));
 
 		// State 3
-		assertTrue(firstHighlightedPositions.get(3).size() == 1);
-		assertTrue(Arrays.equals(
-				firstHighlightedPositions.get(3).toArray(new Integer[0]),
-				new Integer[] { 3 }));
+		assertTrue(firstHighlightedPositions.get(3).size() == 0);
 		assertTrue(secondHighlightedPositions.get(3).size() == 1);
 		assertTrue(Arrays.equals(
 				secondHighlightedPositions.get(3).toArray(new Integer[0]),
@@ -1980,17 +2007,17 @@ public class CounterExampleReleaseUnitTest {
 	 * f-UUUT, g-TTTT, f R g-TTTT
 	 */
 	@Test
-	public void testReleaseTrueDefinitionOnReducedPath() {
+	public void testReleaseTrueDefinitionOnReducedPath1() {
 		// create first argument values
-		List<CounterExampleValueType> firstArgumentValues = Arrays
+		final List<CounterExampleValueType> firstArgumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
-						CounterExampleValueType.UNDEFINED,
-						CounterExampleValueType.UNDEFINED,
-						CounterExampleValueType.UNDEFINED,
+						CounterExampleValueType.UNKNOWN,
+						CounterExampleValueType.UNKNOWN,
+						CounterExampleValueType.UNKNOWN,
 						CounterExampleValueType.TRUE });
 
 		// create second argument values
-		List<CounterExampleValueType> secondArgumentValues = Arrays
+		final List<CounterExampleValueType> secondArgumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
 						CounterExampleValueType.TRUE,
 						CounterExampleValueType.TRUE,
@@ -1998,19 +2025,20 @@ public class CounterExampleReleaseUnitTest {
 						CounterExampleValueType.TRUE });
 
 		// create first argument
-		CounterExampleProposition firstArgument = new CounterExamplePredicate(
+		final CounterExampleProposition firstArgument = new CounterExamplePredicate(
 				PathType.REDUCED, firstArgumentValues);
 
 		// create second argument
-		CounterExampleProposition secondArgument = new CounterExamplePredicate(
+		final CounterExampleProposition secondArgument = new CounterExamplePredicate(
 				PathType.REDUCED, secondArgumentValues);
 
 		// create an operator
-		CounterExampleBinaryOperator releaseOperator = new CounterExampleRelease(
+		final CounterExampleBinaryOperator releaseOperator = new CounterExampleRelease(
 				PathType.REDUCED, firstArgument, secondArgument);
 
 		// check result values
-		List<CounterExampleValueType> values = releaseOperator.getValues();
+		final List<CounterExampleValueType> values = releaseOperator
+				.getValues();
 		assertTrue(values.size() == firstArgumentValues.size());
 		assertTrue(values.size() == secondArgumentValues.size());
 		assertTrue(values.get(0) == CounterExampleValueType.TRUE);
@@ -2019,9 +2047,9 @@ public class CounterExampleReleaseUnitTest {
 		assertTrue(values.get(3) == CounterExampleValueType.TRUE);
 
 		// check highlighted positions
-		List<List<Integer>> firstHighlightedPositions = releaseOperator
+		final List<List<Integer>> firstHighlightedPositions = releaseOperator
 				.getFirstHighlightedPositions();
-		List<List<Integer>> secondHighlightedPositions = releaseOperator
+		final List<List<Integer>> secondHighlightedPositions = releaseOperator
 				.getSecondHighlightedPositions();
 		assertTrue(firstHighlightedPositions.size() == firstArgumentValues
 				.size());
@@ -2070,12 +2098,106 @@ public class CounterExampleReleaseUnitTest {
 	}
 
 	/*
+	 * f-FFFF, g-TTTT, f R g-UUUU
+	 */
+	@Test
+	public void testReleaseTrueDefinitionOnReducedPath2() {
+		// create first argument values
+		final List<CounterExampleValueType> firstArgumentValues = Arrays
+				.asList(new CounterExampleValueType[] {
+						CounterExampleValueType.FALSE,
+						CounterExampleValueType.FALSE,
+						CounterExampleValueType.FALSE,
+						CounterExampleValueType.FALSE });
+
+		// create second argument values
+		final List<CounterExampleValueType> secondArgumentValues = Arrays
+				.asList(new CounterExampleValueType[] {
+						CounterExampleValueType.TRUE,
+						CounterExampleValueType.TRUE,
+						CounterExampleValueType.TRUE,
+						CounterExampleValueType.TRUE });
+
+		// create first argument
+		final CounterExampleProposition firstArgument = new CounterExamplePredicate(
+				PathType.REDUCED, firstArgumentValues);
+
+		// create second argument
+		final CounterExampleProposition secondArgument = new CounterExamplePredicate(
+				PathType.REDUCED, secondArgumentValues);
+
+		// create an operator
+		final CounterExampleBinaryOperator releaseOperator = new CounterExampleRelease(
+				PathType.REDUCED, firstArgument, secondArgument);
+
+		// check result values
+		final List<CounterExampleValueType> values = releaseOperator
+				.getValues();
+		assertTrue(values.size() == firstArgumentValues.size());
+		assertTrue(values.size() == secondArgumentValues.size());
+		assertTrue(values.get(0) == CounterExampleValueType.UNKNOWN);
+		assertTrue(values.get(1) == CounterExampleValueType.UNKNOWN);
+		assertTrue(values.get(2) == CounterExampleValueType.UNKNOWN);
+		assertTrue(values.get(3) == CounterExampleValueType.UNKNOWN);
+
+		// check highlighted positions
+		final List<List<Integer>> firstHighlightedPositions = releaseOperator
+				.getFirstHighlightedPositions();
+		final List<List<Integer>> secondHighlightedPositions = releaseOperator
+				.getSecondHighlightedPositions();
+		assertTrue(firstHighlightedPositions.size() == firstArgumentValues
+				.size());
+		assertTrue(secondHighlightedPositions.size() == secondArgumentValues
+				.size());
+
+		// State 0
+		assertTrue(firstHighlightedPositions.get(0).size() == 4);
+		assertTrue(Arrays.equals(
+				firstHighlightedPositions.get(0).toArray(new Integer[0]),
+				new Integer[] { 0, 1, 2, 3 }));
+		assertTrue(secondHighlightedPositions.get(0).size() == 4);
+		assertTrue(Arrays.equals(
+				secondHighlightedPositions.get(0).toArray(new Integer[0]),
+				new Integer[] { 0, 1, 2, 3 }));
+
+		// State 1
+		assertTrue(firstHighlightedPositions.get(1).size() == 3);
+		assertTrue(Arrays.equals(
+				firstHighlightedPositions.get(1).toArray(new Integer[0]),
+				new Integer[] { 1, 2, 3 }));
+		assertTrue(secondHighlightedPositions.get(1).size() == 3);
+		assertTrue(Arrays.equals(
+				secondHighlightedPositions.get(1).toArray(new Integer[0]),
+				new Integer[] { 1, 2, 3 }));
+
+		// State 2
+		assertTrue(firstHighlightedPositions.get(2).size() == 2);
+		assertTrue(Arrays.equals(
+				firstHighlightedPositions.get(2).toArray(new Integer[0]),
+				new Integer[] { 2, 3 }));
+		assertTrue(secondHighlightedPositions.get(2).size() == 2);
+		assertTrue(Arrays.equals(
+				secondHighlightedPositions.get(2).toArray(new Integer[0]),
+				new Integer[] { 2, 3 }));
+
+		// State 3
+		assertTrue(firstHighlightedPositions.get(3).size() == 1);
+		assertTrue(Arrays.equals(
+				firstHighlightedPositions.get(3).toArray(new Integer[0]),
+				new Integer[] { 3 }));
+		assertTrue(secondHighlightedPositions.get(3).size() == 1);
+		assertTrue(Arrays.equals(
+				secondHighlightedPositions.get(3).toArray(new Integer[0]),
+				new Integer[] { 3 }));
+	}
+
+	/*
 	 * f-FFFT, g-TTTF, f R g-FFFF
 	 */
 	@Test
-	public void testReleaseFalseDefinitionOnReducedPath() {
+	public void testReleaseFalseDefinitionOnReducedPath1() {
 		// create first argument values
-		List<CounterExampleValueType> firstArgumentValues = Arrays
+		final List<CounterExampleValueType> firstArgumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
 						CounterExampleValueType.FALSE,
 						CounterExampleValueType.FALSE,
@@ -2083,7 +2205,7 @@ public class CounterExampleReleaseUnitTest {
 						CounterExampleValueType.TRUE });
 
 		// create second argument values
-		List<CounterExampleValueType> secondArgumentValues = Arrays
+		final List<CounterExampleValueType> secondArgumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
 						CounterExampleValueType.TRUE,
 						CounterExampleValueType.TRUE,
@@ -2091,19 +2213,20 @@ public class CounterExampleReleaseUnitTest {
 						CounterExampleValueType.FALSE });
 
 		// create first argument
-		CounterExampleProposition firstArgument = new CounterExamplePredicate(
+		final CounterExampleProposition firstArgument = new CounterExamplePredicate(
 				PathType.REDUCED, firstArgumentValues);
 
 		// create second argument
-		CounterExampleProposition secondArgument = new CounterExamplePredicate(
+		final CounterExampleProposition secondArgument = new CounterExamplePredicate(
 				PathType.REDUCED, secondArgumentValues);
 
 		// create an operator
-		CounterExampleBinaryOperator releaseOperator = new CounterExampleRelease(
+		final CounterExampleBinaryOperator releaseOperator = new CounterExampleRelease(
 				PathType.REDUCED, firstArgument, secondArgument);
 
 		// check result values
-		List<CounterExampleValueType> values = releaseOperator.getValues();
+		final List<CounterExampleValueType> values = releaseOperator
+				.getValues();
 		assertTrue(values.size() == firstArgumentValues.size());
 		assertTrue(values.size() == secondArgumentValues.size());
 		assertTrue(values.get(0) == CounterExampleValueType.FALSE);
@@ -2112,9 +2235,9 @@ public class CounterExampleReleaseUnitTest {
 		assertTrue(values.get(3) == CounterExampleValueType.FALSE);
 
 		// check highlighted positions
-		List<List<Integer>> firstHighlightedPositions = releaseOperator
+		final List<List<Integer>> firstHighlightedPositions = releaseOperator
 				.getFirstHighlightedPositions();
-		List<List<Integer>> secondHighlightedPositions = releaseOperator
+		final List<List<Integer>> secondHighlightedPositions = releaseOperator
 				.getSecondHighlightedPositions();
 		assertTrue(firstHighlightedPositions.size() == firstArgumentValues
 				.size());
@@ -2160,51 +2283,143 @@ public class CounterExampleReleaseUnitTest {
 	}
 
 	/*
+	 * f-FFFF, g-FTTT, f R g-FUUU
+	 */
+	@Test
+	public void testReleaseFalseDefinitionOnReducedPath2() {
+		// create first argument values
+		final List<CounterExampleValueType> firstArgumentValues = Arrays
+				.asList(new CounterExampleValueType[] {
+						CounterExampleValueType.FALSE,
+						CounterExampleValueType.FALSE,
+						CounterExampleValueType.FALSE,
+						CounterExampleValueType.FALSE });
+
+		// create second argument values
+		final List<CounterExampleValueType> secondArgumentValues = Arrays
+				.asList(new CounterExampleValueType[] {
+						CounterExampleValueType.FALSE,
+						CounterExampleValueType.TRUE,
+						CounterExampleValueType.TRUE,
+						CounterExampleValueType.TRUE });
+
+		// create first argument
+		final CounterExampleProposition firstArgument = new CounterExamplePredicate(
+				PathType.REDUCED, firstArgumentValues);
+
+		// create second argument
+		final CounterExampleProposition secondArgument = new CounterExamplePredicate(
+				PathType.REDUCED, secondArgumentValues);
+
+		// create an operator
+		final CounterExampleBinaryOperator releaseOperator = new CounterExampleRelease(
+				PathType.REDUCED, firstArgument, secondArgument);
+
+		// check result values
+		final List<CounterExampleValueType> values = releaseOperator
+				.getValues();
+		assertTrue(values.size() == firstArgumentValues.size());
+		assertTrue(values.size() == secondArgumentValues.size());
+		assertTrue(values.get(0) == CounterExampleValueType.FALSE);
+		assertTrue(values.get(1) == CounterExampleValueType.UNKNOWN);
+		assertTrue(values.get(2) == CounterExampleValueType.UNKNOWN);
+		assertTrue(values.get(3) == CounterExampleValueType.UNKNOWN);
+
+		// check highlighted positions
+		final List<List<Integer>> firstHighlightedPositions = releaseOperator
+				.getFirstHighlightedPositions();
+		final List<List<Integer>> secondHighlightedPositions = releaseOperator
+				.getSecondHighlightedPositions();
+		assertTrue(firstHighlightedPositions.size() == firstArgumentValues
+				.size());
+		assertTrue(secondHighlightedPositions.size() == secondArgumentValues
+				.size());
+
+		// State 0
+		assertTrue(firstHighlightedPositions.get(0).size() == 0);
+		assertTrue(secondHighlightedPositions.get(0).size() == 1);
+		assertTrue(Arrays.equals(
+				secondHighlightedPositions.get(0).toArray(new Integer[0]),
+				new Integer[] { 0 }));
+
+		// State 1
+		assertTrue(firstHighlightedPositions.get(1).size() == 3);
+		assertTrue(Arrays.equals(
+				firstHighlightedPositions.get(1).toArray(new Integer[0]),
+				new Integer[] { 1, 2, 3 }));
+		assertTrue(secondHighlightedPositions.get(1).size() == 3);
+		assertTrue(Arrays.equals(
+				secondHighlightedPositions.get(1).toArray(new Integer[0]),
+				new Integer[] { 1, 2, 3 }));
+
+		// State 2
+		assertTrue(firstHighlightedPositions.get(2).size() == 2);
+		assertTrue(Arrays.equals(
+				firstHighlightedPositions.get(2).toArray(new Integer[0]),
+				new Integer[] { 2, 3 }));
+		assertTrue(secondHighlightedPositions.get(2).size() == 2);
+		assertTrue(Arrays.equals(
+				secondHighlightedPositions.get(2).toArray(new Integer[0]),
+				new Integer[] { 2, 3 }));
+
+		// State 3
+		assertTrue(firstHighlightedPositions.get(3).size() == 1);
+		assertTrue(Arrays.equals(
+				firstHighlightedPositions.get(3).toArray(new Integer[0]),
+				new Integer[] { 3 }));
+		assertTrue(secondHighlightedPositions.get(3).size() == 1);
+		assertTrue(Arrays.equals(
+				secondHighlightedPositions.get(3).toArray(new Integer[0]),
+				new Integer[] { 3 }));
+	}
+
+	/*
 	 * f-FUTU, g-UTUU, f R g-UTTU
 	 */
 	@Test
 	public void testReleaseUnknownDefinitionOnReducedPath1() {
 		// create first argument values
-		List<CounterExampleValueType> firstArgumentValues = Arrays
+		final List<CounterExampleValueType> firstArgumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
 						CounterExampleValueType.FALSE,
-						CounterExampleValueType.UNDEFINED,
+						CounterExampleValueType.UNKNOWN,
 						CounterExampleValueType.TRUE,
-						CounterExampleValueType.UNDEFINED });
+						CounterExampleValueType.UNKNOWN });
 
 		// create second argument values
-		List<CounterExampleValueType> secondArgumentValues = Arrays
+		final List<CounterExampleValueType> secondArgumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
-						CounterExampleValueType.UNDEFINED,
+						CounterExampleValueType.UNKNOWN,
 						CounterExampleValueType.TRUE,
-						CounterExampleValueType.UNDEFINED,
-						CounterExampleValueType.UNDEFINED });
+						CounterExampleValueType.UNKNOWN,
+						CounterExampleValueType.UNKNOWN });
 
 		// create first argument
-		CounterExampleProposition firstArgument = new CounterExamplePredicate(
+		final CounterExampleProposition firstArgument = new CounterExamplePredicate(
 				PathType.REDUCED, firstArgumentValues);
 
 		// create second argument
-		CounterExampleProposition secondArgument = new CounterExamplePredicate(
+		final CounterExampleProposition secondArgument = new CounterExamplePredicate(
 				PathType.REDUCED, secondArgumentValues);
 
 		// create an operator
-		CounterExampleBinaryOperator releaseOperator = new CounterExampleRelease(
+		final CounterExampleBinaryOperator releaseOperator = new CounterExampleRelease(
 				PathType.REDUCED, firstArgument, secondArgument);
 
 		// check result values
-		List<CounterExampleValueType> values = releaseOperator.getValues();
+		final List<CounterExampleValueType> values = releaseOperator
+				.getValues();
 		assertTrue(values.size() == firstArgumentValues.size());
 		assertTrue(values.size() == secondArgumentValues.size());
-		assertTrue(values.get(0) == CounterExampleValueType.UNDEFINED);
-		assertTrue(values.get(1) == CounterExampleValueType.UNDEFINED);
-		assertTrue(values.get(2) == CounterExampleValueType.UNDEFINED);
-		assertTrue(values.get(3) == CounterExampleValueType.UNDEFINED);
+		assertTrue(values.get(0) == CounterExampleValueType.UNKNOWN);
+		assertTrue(values.get(1) == CounterExampleValueType.UNKNOWN);
+		assertTrue(values.get(2) == CounterExampleValueType.UNKNOWN);
+		assertTrue(values.get(3) == CounterExampleValueType.UNKNOWN);
 
 		// check highlighted positions
-		List<List<Integer>> firstHighlightedPositions = releaseOperator
+		final List<List<Integer>> firstHighlightedPositions = releaseOperator
 				.getFirstHighlightedPositions();
-		List<List<Integer>> secondHighlightedPositions = releaseOperator
+		final List<List<Integer>> secondHighlightedPositions = releaseOperator
 				.getSecondHighlightedPositions();
 		assertTrue(firstHighlightedPositions.size() == firstArgumentValues
 				.size());
@@ -2258,46 +2473,47 @@ public class CounterExampleReleaseUnitTest {
 	@Test
 	public void testReleaseUnknownDefinitionOnReducedPath2() {
 		// create first argument values
-		List<CounterExampleValueType> firstArgumentValues = Arrays
+		final List<CounterExampleValueType> firstArgumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
 						CounterExampleValueType.FALSE,
-						CounterExampleValueType.UNDEFINED,
-						CounterExampleValueType.UNDEFINED,
-						CounterExampleValueType.UNDEFINED });
+						CounterExampleValueType.UNKNOWN,
+						CounterExampleValueType.UNKNOWN,
+						CounterExampleValueType.UNKNOWN });
 
 		// create second argument values
-		List<CounterExampleValueType> secondArgumentValues = Arrays
+		final List<CounterExampleValueType> secondArgumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
-						CounterExampleValueType.UNDEFINED,
+						CounterExampleValueType.UNKNOWN,
 						CounterExampleValueType.TRUE,
 						CounterExampleValueType.FALSE,
-						CounterExampleValueType.UNDEFINED });
+						CounterExampleValueType.UNKNOWN });
 
 		// create first argument
-		CounterExampleProposition firstArgument = new CounterExamplePredicate(
+		final CounterExampleProposition firstArgument = new CounterExamplePredicate(
 				PathType.REDUCED, firstArgumentValues);
 
 		// create second argument
-		CounterExampleProposition secondArgument = new CounterExamplePredicate(
+		final CounterExampleProposition secondArgument = new CounterExamplePredicate(
 				PathType.REDUCED, secondArgumentValues);
 
 		// create an operator
-		CounterExampleBinaryOperator releaseOperator = new CounterExampleRelease(
+		final CounterExampleBinaryOperator releaseOperator = new CounterExampleRelease(
 				PathType.REDUCED, firstArgument, secondArgument);
 
 		// check result values
-		List<CounterExampleValueType> values = releaseOperator.getValues();
+		final List<CounterExampleValueType> values = releaseOperator
+				.getValues();
 		assertTrue(values.size() == firstArgumentValues.size());
 		assertTrue(values.size() == secondArgumentValues.size());
-		assertTrue(values.get(0) == CounterExampleValueType.UNDEFINED);
-		assertTrue(values.get(1) == CounterExampleValueType.UNDEFINED);
+		assertTrue(values.get(0) == CounterExampleValueType.UNKNOWN);
+		assertTrue(values.get(1) == CounterExampleValueType.UNKNOWN);
 		assertTrue(values.get(2) == CounterExampleValueType.FALSE);
-		assertTrue(values.get(3) == CounterExampleValueType.UNDEFINED);
+		assertTrue(values.get(3) == CounterExampleValueType.UNKNOWN);
 
 		// check highlighted positions
-		List<List<Integer>> firstHighlightedPositions = releaseOperator
+		final List<List<Integer>> firstHighlightedPositions = releaseOperator
 				.getFirstHighlightedPositions();
-		List<List<Integer>> secondHighlightedPositions = releaseOperator
+		final List<List<Integer>> secondHighlightedPositions = releaseOperator
 				.getSecondHighlightedPositions();
 		assertTrue(firstHighlightedPositions.size() == firstArgumentValues
 				.size());
@@ -2348,46 +2564,47 @@ public class CounterExampleReleaseUnitTest {
 	@Test
 	public void testReleaseUnknownDefinitionOnReducedPath3() {
 		// create first argument values
-		List<CounterExampleValueType> firstArgumentValues = Arrays
+		final List<CounterExampleValueType> firstArgumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
 						CounterExampleValueType.FALSE,
-						CounterExampleValueType.UNDEFINED,
-						CounterExampleValueType.UNDEFINED,
-						CounterExampleValueType.UNDEFINED });
+						CounterExampleValueType.UNKNOWN,
+						CounterExampleValueType.UNKNOWN,
+						CounterExampleValueType.UNKNOWN });
 
 		// create second argument values
-		List<CounterExampleValueType> secondArgumentValues = Arrays
+		final List<CounterExampleValueType> secondArgumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
-						CounterExampleValueType.UNDEFINED,
+						CounterExampleValueType.UNKNOWN,
 						CounterExampleValueType.TRUE,
-						CounterExampleValueType.UNDEFINED,
-						CounterExampleValueType.UNDEFINED });
+						CounterExampleValueType.UNKNOWN,
+						CounterExampleValueType.UNKNOWN });
 
 		// create first argument
-		CounterExampleProposition firstArgument = new CounterExamplePredicate(
+		final CounterExampleProposition firstArgument = new CounterExamplePredicate(
 				PathType.REDUCED, firstArgumentValues);
 
 		// create second argument
-		CounterExampleProposition secondArgument = new CounterExamplePredicate(
+		final CounterExampleProposition secondArgument = new CounterExamplePredicate(
 				PathType.REDUCED, secondArgumentValues);
 
 		// create an operator
-		CounterExampleBinaryOperator releaseOperator = new CounterExampleRelease(
+		final CounterExampleBinaryOperator releaseOperator = new CounterExampleRelease(
 				PathType.REDUCED, firstArgument, secondArgument);
 
 		// check result values
-		List<CounterExampleValueType> values = releaseOperator.getValues();
+		final List<CounterExampleValueType> values = releaseOperator
+				.getValues();
 		assertTrue(values.size() == firstArgumentValues.size());
 		assertTrue(values.size() == secondArgumentValues.size());
-		assertTrue(values.get(0) == CounterExampleValueType.UNDEFINED);
-		assertTrue(values.get(1) == CounterExampleValueType.UNDEFINED);
-		assertTrue(values.get(2) == CounterExampleValueType.UNDEFINED);
-		assertTrue(values.get(3) == CounterExampleValueType.UNDEFINED);
+		assertTrue(values.get(0) == CounterExampleValueType.UNKNOWN);
+		assertTrue(values.get(1) == CounterExampleValueType.UNKNOWN);
+		assertTrue(values.get(2) == CounterExampleValueType.UNKNOWN);
+		assertTrue(values.get(3) == CounterExampleValueType.UNKNOWN);
 
 		// check highlighted positions
-		List<List<Integer>> firstHighlightedPositions = releaseOperator
+		final List<List<Integer>> firstHighlightedPositions = releaseOperator
 				.getFirstHighlightedPositions();
-		List<List<Integer>> secondHighlightedPositions = releaseOperator
+		final List<List<Integer>> secondHighlightedPositions = releaseOperator
 				.getSecondHighlightedPositions();
 		assertTrue(firstHighlightedPositions.size() == firstArgumentValues
 				.size());
@@ -2441,7 +2658,7 @@ public class CounterExampleReleaseUnitTest {
 	@Test
 	public void testReleaseUnknownDefinitionOnReducedPath4() {
 		// create first argument values
-		List<CounterExampleValueType> firstArgumentValues = Arrays
+		final List<CounterExampleValueType> firstArgumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
 						CounterExampleValueType.FALSE,
 						CounterExampleValueType.FALSE,
@@ -2449,7 +2666,7 @@ public class CounterExampleReleaseUnitTest {
 						CounterExampleValueType.FALSE });
 
 		// create second argument values
-		List<CounterExampleValueType> secondArgumentValues = Arrays
+		final List<CounterExampleValueType> secondArgumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
 						CounterExampleValueType.TRUE,
 						CounterExampleValueType.TRUE,
@@ -2457,28 +2674,123 @@ public class CounterExampleReleaseUnitTest {
 						CounterExampleValueType.TRUE });
 
 		// create first argument
-		CounterExampleProposition firstArgument = new CounterExamplePredicate(
+		final CounterExampleProposition firstArgument = new CounterExamplePredicate(
 				PathType.REDUCED, firstArgumentValues);
 
 		// create second argument
-		CounterExampleProposition secondArgument = new CounterExamplePredicate(
+		final CounterExampleProposition secondArgument = new CounterExamplePredicate(
 				PathType.REDUCED, secondArgumentValues);
 
 		// create an operator
-		CounterExampleBinaryOperator releaseOperator = new CounterExampleRelease(
+		final CounterExampleBinaryOperator releaseOperator = new CounterExampleRelease(
 				PathType.REDUCED, firstArgument, secondArgument);
 
 		// check result values
-		List<CounterExampleValueType> values = releaseOperator.getValues();
+		final List<CounterExampleValueType> values = releaseOperator
+				.getValues();
 		assertTrue(values.size() == firstArgumentValues.size());
 		assertTrue(values.size() == secondArgumentValues.size());
-		assertTrue(values.get(0) == CounterExampleValueType.UNDEFINED);
-		assertTrue(values.get(1) == CounterExampleValueType.UNDEFINED);
-		assertTrue(values.get(2) == CounterExampleValueType.UNDEFINED);
-		assertTrue(values.get(3) == CounterExampleValueType.UNDEFINED);
+		assertTrue(values.get(0) == CounterExampleValueType.UNKNOWN);
+		assertTrue(values.get(1) == CounterExampleValueType.UNKNOWN);
+		assertTrue(values.get(2) == CounterExampleValueType.UNKNOWN);
+		assertTrue(values.get(3) == CounterExampleValueType.UNKNOWN);
 
 		// check highlighted positions
-		List<List<Integer>> firstHighlightedPositions = releaseOperator
+		final List<List<Integer>> firstHighlightedPositions = releaseOperator
+				.getFirstHighlightedPositions();
+		List<List<Integer>> secondHighlightedPositions = releaseOperator
+				.getSecondHighlightedPositions();
+		assertTrue(firstHighlightedPositions.size() == firstArgumentValues
+				.size());
+		assertTrue(secondHighlightedPositions.size() == secondArgumentValues
+				.size());
+
+		// State 0
+		assertTrue(firstHighlightedPositions.get(0).size() == 4);
+		assertTrue(Arrays.equals(
+				firstHighlightedPositions.get(0).toArray(new Integer[0]),
+				new Integer[] { 0, 1, 2, 3 }));
+		assertTrue(secondHighlightedPositions.get(0).size() == 4);
+		assertTrue(Arrays.equals(
+				secondHighlightedPositions.get(0).toArray(new Integer[0]),
+				new Integer[] { 0, 1, 2, 3 }));
+
+		// State 1
+		assertTrue(firstHighlightedPositions.get(1).size() == 3);
+		assertTrue(Arrays.equals(
+				firstHighlightedPositions.get(1).toArray(new Integer[0]),
+				new Integer[] { 1, 2, 3 }));
+		assertTrue(secondHighlightedPositions.get(1).size() == 3);
+		assertTrue(Arrays.equals(
+				secondHighlightedPositions.get(1).toArray(new Integer[0]),
+				new Integer[] { 1, 2, 3 }));
+
+		// State 2
+		assertTrue(firstHighlightedPositions.get(2).size() == 2);
+		assertTrue(Arrays.equals(
+				firstHighlightedPositions.get(2).toArray(new Integer[0]),
+				new Integer[] { 2, 3 }));
+		assertTrue(secondHighlightedPositions.get(2).size() == 2);
+		assertTrue(Arrays.equals(
+				secondHighlightedPositions.get(2).toArray(new Integer[0]),
+				new Integer[] { 2, 3 }));
+
+		// State 3
+		assertTrue(firstHighlightedPositions.get(3).size() == 1);
+		assertTrue(Arrays.equals(
+				firstHighlightedPositions.get(3).toArray(new Integer[0]),
+				new Integer[] { 3 }));
+		assertTrue(secondHighlightedPositions.get(3).size() == 1);
+		assertTrue(Arrays.equals(
+				secondHighlightedPositions.get(3).toArray(new Integer[0]),
+				new Integer[] { 3 }));
+	}
+
+	/*
+	 * f-FFFF, g-UUUU, f R g-UUUU
+	 */
+	@Test
+	public void testReleaseUnknownDefinitionOnReducedPath5() {
+		// create first argument values
+		final List<CounterExampleValueType> firstArgumentValues = Arrays
+				.asList(new CounterExampleValueType[] {
+						CounterExampleValueType.FALSE,
+						CounterExampleValueType.FALSE,
+						CounterExampleValueType.FALSE,
+						CounterExampleValueType.FALSE });
+
+		// create second argument values
+		final List<CounterExampleValueType> secondArgumentValues = Arrays
+				.asList(new CounterExampleValueType[] {
+						CounterExampleValueType.UNKNOWN,
+						CounterExampleValueType.UNKNOWN,
+						CounterExampleValueType.UNKNOWN,
+						CounterExampleValueType.UNKNOWN });
+
+		// create first argument
+		final CounterExampleProposition firstArgument = new CounterExamplePredicate(
+				PathType.REDUCED, firstArgumentValues);
+
+		// create second argument
+		final CounterExampleProposition secondArgument = new CounterExamplePredicate(
+				PathType.REDUCED, secondArgumentValues);
+
+		// create an operator
+		final CounterExampleBinaryOperator releaseOperator = new CounterExampleRelease(
+				PathType.REDUCED, firstArgument, secondArgument);
+
+		// check result values
+		final List<CounterExampleValueType> values = releaseOperator
+				.getValues();
+		assertTrue(values.size() == firstArgumentValues.size());
+		assertTrue(values.size() == secondArgumentValues.size());
+		assertTrue(values.get(0) == CounterExampleValueType.UNKNOWN);
+		assertTrue(values.get(1) == CounterExampleValueType.UNKNOWN);
+		assertTrue(values.get(2) == CounterExampleValueType.UNKNOWN);
+		assertTrue(values.get(3) == CounterExampleValueType.UNKNOWN);
+
+		// check highlighted positions
+		final List<List<Integer>> firstHighlightedPositions = releaseOperator
 				.getFirstHighlightedPositions();
 		List<List<Integer>> secondHighlightedPositions = releaseOperator
 				.getSecondHighlightedPositions();
@@ -2532,48 +2844,49 @@ public class CounterExampleReleaseUnitTest {
 	 * f-UUUU, g-UUUU, f R g-UUUU
 	 */
 	@Test
-	public void testReleaseUnknownDefinitionOnReducedPath5() {
+	public void testReleaseUnknownDefinitionOnReducedPath6() {
 		// create first argument values
-		List<CounterExampleValueType> firstArgumentValues = Arrays
+		final List<CounterExampleValueType> firstArgumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
-						CounterExampleValueType.UNDEFINED,
-						CounterExampleValueType.UNDEFINED,
-						CounterExampleValueType.UNDEFINED,
-						CounterExampleValueType.UNDEFINED });
+						CounterExampleValueType.UNKNOWN,
+						CounterExampleValueType.UNKNOWN,
+						CounterExampleValueType.UNKNOWN,
+						CounterExampleValueType.UNKNOWN });
 
 		// create second argument values
-		List<CounterExampleValueType> secondArgumentValues = Arrays
+		final List<CounterExampleValueType> secondArgumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
-						CounterExampleValueType.UNDEFINED,
-						CounterExampleValueType.UNDEFINED,
-						CounterExampleValueType.UNDEFINED,
-						CounterExampleValueType.UNDEFINED });
+						CounterExampleValueType.UNKNOWN,
+						CounterExampleValueType.UNKNOWN,
+						CounterExampleValueType.UNKNOWN,
+						CounterExampleValueType.UNKNOWN });
 
 		// create first argument
-		CounterExampleProposition firstArgument = new CounterExamplePredicate(
+		final CounterExampleProposition firstArgument = new CounterExamplePredicate(
 				PathType.REDUCED, firstArgumentValues);
 
 		// create second argument
-		CounterExampleProposition secondArgument = new CounterExamplePredicate(
+		final CounterExampleProposition secondArgument = new CounterExamplePredicate(
 				PathType.REDUCED, secondArgumentValues);
 
 		// create an operator
-		CounterExampleBinaryOperator releaseOperator = new CounterExampleRelease(
+		final CounterExampleBinaryOperator releaseOperator = new CounterExampleRelease(
 				PathType.REDUCED, firstArgument, secondArgument);
 
 		// check result values
-		List<CounterExampleValueType> values = releaseOperator.getValues();
+		final List<CounterExampleValueType> values = releaseOperator
+				.getValues();
 		assertTrue(values.size() == firstArgumentValues.size());
 		assertTrue(values.size() == secondArgumentValues.size());
-		assertTrue(values.get(0) == CounterExampleValueType.UNDEFINED);
-		assertTrue(values.get(1) == CounterExampleValueType.UNDEFINED);
-		assertTrue(values.get(2) == CounterExampleValueType.UNDEFINED);
-		assertTrue(values.get(3) == CounterExampleValueType.UNDEFINED);
+		assertTrue(values.get(0) == CounterExampleValueType.UNKNOWN);
+		assertTrue(values.get(1) == CounterExampleValueType.UNKNOWN);
+		assertTrue(values.get(2) == CounterExampleValueType.UNKNOWN);
+		assertTrue(values.get(3) == CounterExampleValueType.UNKNOWN);
 
 		// check highlighted positions
-		List<List<Integer>> firstHighlightedPositions = releaseOperator
+		final List<List<Integer>> firstHighlightedPositions = releaseOperator
 				.getFirstHighlightedPositions();
-		List<List<Integer>> secondHighlightedPositions = releaseOperator
+		final List<List<Integer>> secondHighlightedPositions = releaseOperator
 				.getSecondHighlightedPositions();
 		assertTrue(firstHighlightedPositions.size() == firstArgumentValues
 				.size());
@@ -2625,17 +2938,17 @@ public class CounterExampleReleaseUnitTest {
 	 * f-UUTF, g-FTTT, f R g-FTTU
 	 */
 	@Test
-	public void testReleaseOnReducedPath() {
+	public void testReleaseUnknownDefinitionOnReducedPath7() {
 		// create first argument values
-		List<CounterExampleValueType> firstArgumentValues = Arrays
+		final List<CounterExampleValueType> firstArgumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
-						CounterExampleValueType.UNDEFINED,
-						CounterExampleValueType.UNDEFINED,
+						CounterExampleValueType.UNKNOWN,
+						CounterExampleValueType.UNKNOWN,
 						CounterExampleValueType.TRUE,
 						CounterExampleValueType.FALSE });
 
 		// create second argument values
-		List<CounterExampleValueType> secondArgumentValues = Arrays
+		final List<CounterExampleValueType> secondArgumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
 						CounterExampleValueType.FALSE,
 						CounterExampleValueType.TRUE,
@@ -2643,30 +2956,31 @@ public class CounterExampleReleaseUnitTest {
 						CounterExampleValueType.TRUE });
 
 		// create first argument
-		CounterExampleProposition firstArgument = new CounterExamplePredicate(
+		final CounterExampleProposition firstArgument = new CounterExamplePredicate(
 				PathType.REDUCED, firstArgumentValues);
 
 		// create second argument
-		CounterExampleProposition secondArgument = new CounterExamplePredicate(
+		final CounterExampleProposition secondArgument = new CounterExamplePredicate(
 				PathType.REDUCED, secondArgumentValues);
 
 		// create an operator
-		CounterExampleBinaryOperator releaseOperator = new CounterExampleRelease(
+		final CounterExampleBinaryOperator releaseOperator = new CounterExampleRelease(
 				PathType.REDUCED, firstArgument, secondArgument);
 
 		// check result values
-		List<CounterExampleValueType> values = releaseOperator.getValues();
+		final List<CounterExampleValueType> values = releaseOperator
+				.getValues();
 		assertTrue(values.size() == firstArgumentValues.size());
 		assertTrue(values.size() == secondArgumentValues.size());
 		assertTrue(values.get(0) == CounterExampleValueType.FALSE);
 		assertTrue(values.get(1) == CounterExampleValueType.TRUE);
 		assertTrue(values.get(2) == CounterExampleValueType.TRUE);
-		assertTrue(values.get(3) == CounterExampleValueType.UNDEFINED);
+		assertTrue(values.get(3) == CounterExampleValueType.UNKNOWN);
 
 		// check highlighted positions
-		List<List<Integer>> firstHighlightedPositions = releaseOperator
+		final List<List<Integer>> firstHighlightedPositions = releaseOperator
 				.getFirstHighlightedPositions();
-		List<List<Integer>> secondHighlightedPositions = releaseOperator
+		final List<List<Integer>> secondHighlightedPositions = releaseOperator
 				.getSecondHighlightedPositions();
 		assertTrue(firstHighlightedPositions.size() == firstArgumentValues
 				.size());
@@ -2689,6 +3003,467 @@ public class CounterExampleReleaseUnitTest {
 		assertTrue(Arrays.equals(
 				secondHighlightedPositions.get(1).toArray(new Integer[0]),
 				new Integer[] { 1, 2 }));
+
+		// State 2
+		assertTrue(firstHighlightedPositions.get(2).size() == 1);
+		assertTrue(Arrays.equals(
+				firstHighlightedPositions.get(2).toArray(new Integer[0]),
+				new Integer[] { 2 }));
+		assertTrue(secondHighlightedPositions.get(2).size() == 1);
+		assertTrue(Arrays.equals(
+				secondHighlightedPositions.get(2).toArray(new Integer[0]),
+				new Integer[] { 2 }));
+
+		// State 3
+		assertTrue(firstHighlightedPositions.get(3).size() == 1);
+		assertTrue(Arrays.equals(
+				firstHighlightedPositions.get(3).toArray(new Integer[0]),
+				new Integer[] { 3 }));
+		assertTrue(secondHighlightedPositions.get(3).size() == 1);
+		assertTrue(Arrays.equals(
+				secondHighlightedPositions.get(3).toArray(new Integer[0]),
+				new Integer[] { 3 }));
+	}
+
+	/*
+	 * f-FUTU, g-TUTU, f R g-UUTU
+	 */
+	@Test
+	public void testReleaseUnknownDefinitionOnReducedPath8() {
+		// create first argument values
+		final List<CounterExampleValueType> firstArgumentValues = Arrays
+				.asList(new CounterExampleValueType[] {
+						CounterExampleValueType.FALSE,
+						CounterExampleValueType.UNKNOWN,
+						CounterExampleValueType.TRUE,
+						CounterExampleValueType.UNKNOWN });
+
+		// create second argument values
+		final List<CounterExampleValueType> secondArgumentValues = Arrays
+				.asList(new CounterExampleValueType[] {
+						CounterExampleValueType.TRUE,
+						CounterExampleValueType.UNKNOWN,
+						CounterExampleValueType.TRUE,
+						CounterExampleValueType.UNKNOWN });
+
+		// create first argument
+		final CounterExampleProposition firstArgument = new CounterExamplePredicate(
+				PathType.REDUCED, firstArgumentValues);
+
+		// create second argument
+		final CounterExampleProposition secondArgument = new CounterExamplePredicate(
+				PathType.REDUCED, secondArgumentValues);
+
+		// create an operator
+		final CounterExampleBinaryOperator releaseOperator = new CounterExampleRelease(
+				PathType.REDUCED, firstArgument, secondArgument);
+
+		// check result values
+		final List<CounterExampleValueType> values = releaseOperator
+				.getValues();
+		assertTrue(values.size() == firstArgumentValues.size());
+		assertTrue(values.size() == secondArgumentValues.size());
+		assertTrue(values.get(0) == CounterExampleValueType.UNKNOWN);
+		assertTrue(values.get(1) == CounterExampleValueType.UNKNOWN);
+		assertTrue(values.get(2) == CounterExampleValueType.TRUE);
+		assertTrue(values.get(3) == CounterExampleValueType.UNKNOWN);
+
+		// check highlighted positions
+		final List<List<Integer>> firstHighlightedPositions = releaseOperator
+				.getFirstHighlightedPositions();
+		final List<List<Integer>> secondHighlightedPositions = releaseOperator
+				.getSecondHighlightedPositions();
+		assertTrue(firstHighlightedPositions.size() == firstArgumentValues
+				.size());
+		assertTrue(secondHighlightedPositions.size() == secondArgumentValues
+				.size());
+
+		// State 0
+		assertTrue(firstHighlightedPositions.get(0).size() == 2);
+		assertTrue(Arrays.equals(
+				firstHighlightedPositions.get(0).toArray(new Integer[0]),
+				new Integer[] { 0, 1 }));
+		assertTrue(secondHighlightedPositions.get(0).size() == 2);
+		assertTrue(Arrays.equals(
+				secondHighlightedPositions.get(0).toArray(new Integer[0]),
+				new Integer[] { 0, 1 }));
+
+		// State 1
+		assertTrue(firstHighlightedPositions.get(1).size() == 1);
+		assertTrue(Arrays.equals(
+				firstHighlightedPositions.get(1).toArray(new Integer[0]),
+				new Integer[] { 1 }));
+		assertTrue(secondHighlightedPositions.get(1).size() == 1);
+		assertTrue(Arrays.equals(
+				secondHighlightedPositions.get(1).toArray(new Integer[0]),
+				new Integer[] { 1 }));
+
+		// State 2
+		assertTrue(firstHighlightedPositions.get(2).size() == 1);
+		assertTrue(Arrays.equals(
+				firstHighlightedPositions.get(2).toArray(new Integer[0]),
+				new Integer[] { 2 }));
+		assertTrue(secondHighlightedPositions.get(2).size() == 1);
+		assertTrue(Arrays.equals(
+				secondHighlightedPositions.get(2).toArray(new Integer[0]),
+				new Integer[] { 2 }));
+
+		// State 3
+		assertTrue(firstHighlightedPositions.get(3).size() == 1);
+		assertTrue(Arrays.equals(
+				firstHighlightedPositions.get(3).toArray(new Integer[0]),
+				new Integer[] { 3 }));
+		assertTrue(secondHighlightedPositions.get(3).size() == 1);
+		assertTrue(Arrays.equals(
+				secondHighlightedPositions.get(3).toArray(new Integer[0]),
+				new Integer[] { 3 }));
+	}
+
+	/*
+	 * f-FFTU, g-TUTU, f R g-UUTU
+	 */
+	@Test
+	public void testReleaseUnknownDefinitionOnReducedPath9() {
+		// create first argument values
+		final List<CounterExampleValueType> firstArgumentValues = Arrays
+				.asList(new CounterExampleValueType[] {
+						CounterExampleValueType.FALSE,
+						CounterExampleValueType.FALSE,
+						CounterExampleValueType.TRUE,
+						CounterExampleValueType.UNKNOWN });
+
+		// create second argument values
+		final List<CounterExampleValueType> secondArgumentValues = Arrays
+				.asList(new CounterExampleValueType[] {
+						CounterExampleValueType.TRUE,
+						CounterExampleValueType.UNKNOWN,
+						CounterExampleValueType.TRUE,
+						CounterExampleValueType.UNKNOWN });
+
+		// create first argument
+		final CounterExampleProposition firstArgument = new CounterExamplePredicate(
+				PathType.REDUCED, firstArgumentValues);
+
+		// create second argument
+		final CounterExampleProposition secondArgument = new CounterExamplePredicate(
+				PathType.REDUCED, secondArgumentValues);
+
+		// create an operator
+		final CounterExampleBinaryOperator releaseOperator = new CounterExampleRelease(
+				PathType.REDUCED, firstArgument, secondArgument);
+
+		// check result values
+		final List<CounterExampleValueType> values = releaseOperator
+				.getValues();
+		assertTrue(values.size() == firstArgumentValues.size());
+		assertTrue(values.size() == secondArgumentValues.size());
+		assertTrue(values.get(0) == CounterExampleValueType.UNKNOWN);
+		assertTrue(values.get(1) == CounterExampleValueType.UNKNOWN);
+		assertTrue(values.get(2) == CounterExampleValueType.TRUE);
+		assertTrue(values.get(3) == CounterExampleValueType.UNKNOWN);
+
+		// check highlighted positions
+		final List<List<Integer>> firstHighlightedPositions = releaseOperator
+				.getFirstHighlightedPositions();
+		final List<List<Integer>> secondHighlightedPositions = releaseOperator
+				.getSecondHighlightedPositions();
+		assertTrue(firstHighlightedPositions.size() == firstArgumentValues
+				.size());
+		assertTrue(secondHighlightedPositions.size() == secondArgumentValues
+				.size());
+
+		// State 0
+		assertTrue(firstHighlightedPositions.get(0).size() == 3);
+		assertTrue(Arrays.equals(
+				firstHighlightedPositions.get(0).toArray(new Integer[0]),
+				new Integer[] { 0, 1, 2 }));
+		assertTrue(secondHighlightedPositions.get(0).size() == 3);
+		assertTrue(Arrays.equals(
+				secondHighlightedPositions.get(0).toArray(new Integer[0]),
+				new Integer[] { 0, 1, 2 }));
+
+		// State 1
+		assertTrue(firstHighlightedPositions.get(1).size() == 2);
+		assertTrue(Arrays.equals(
+				firstHighlightedPositions.get(1).toArray(new Integer[0]),
+				new Integer[] { 1, 2 }));
+		assertTrue(secondHighlightedPositions.get(1).size() == 2);
+		assertTrue(Arrays.equals(
+				secondHighlightedPositions.get(1).toArray(new Integer[0]),
+				new Integer[] { 1, 2 }));
+
+		// State 2
+		assertTrue(firstHighlightedPositions.get(2).size() == 1);
+		assertTrue(Arrays.equals(
+				firstHighlightedPositions.get(2).toArray(new Integer[0]),
+				new Integer[] { 2 }));
+		assertTrue(secondHighlightedPositions.get(2).size() == 1);
+		assertTrue(Arrays.equals(
+				secondHighlightedPositions.get(2).toArray(new Integer[0]),
+				new Integer[] { 2 }));
+
+		// State 3
+		assertTrue(firstHighlightedPositions.get(3).size() == 1);
+		assertTrue(Arrays.equals(
+				firstHighlightedPositions.get(3).toArray(new Integer[0]),
+				new Integer[] { 3 }));
+		assertTrue(secondHighlightedPositions.get(3).size() == 1);
+		assertTrue(Arrays.equals(
+				secondHighlightedPositions.get(3).toArray(new Integer[0]),
+				new Integer[] { 3 }));
+	}
+
+	/*
+	 * f-FUUU, g-UTFU, f R g-UUFU
+	 */
+	@Test
+	public void testReleaseUnknownDefinitionOnReducedPath10() {
+		// create first argument values
+		final List<CounterExampleValueType> firstArgumentValues = Arrays
+				.asList(new CounterExampleValueType[] {
+						CounterExampleValueType.FALSE,
+						CounterExampleValueType.UNKNOWN,
+						CounterExampleValueType.UNKNOWN,
+						CounterExampleValueType.UNKNOWN });
+
+		// create second argument values
+		final List<CounterExampleValueType> secondArgumentValues = Arrays
+				.asList(new CounterExampleValueType[] {
+						CounterExampleValueType.UNKNOWN,
+						CounterExampleValueType.TRUE,
+						CounterExampleValueType.FALSE,
+						CounterExampleValueType.UNKNOWN });
+
+		// create first argument
+		final CounterExampleProposition firstArgument = new CounterExamplePredicate(
+				PathType.REDUCED, firstArgumentValues);
+
+		// create second argument
+		final CounterExampleProposition secondArgument = new CounterExamplePredicate(
+				PathType.REDUCED, secondArgumentValues);
+
+		// create an operator
+		final CounterExampleBinaryOperator releaseOperator = new CounterExampleRelease(
+				PathType.REDUCED, firstArgument, secondArgument);
+
+		// check result values
+		final List<CounterExampleValueType> values = releaseOperator
+				.getValues();
+		assertTrue(values.size() == firstArgumentValues.size());
+		assertTrue(values.size() == secondArgumentValues.size());
+		assertTrue(values.get(0) == CounterExampleValueType.UNKNOWN);
+		assertTrue(values.get(1) == CounterExampleValueType.UNKNOWN);
+		assertTrue(values.get(2) == CounterExampleValueType.FALSE);
+		assertTrue(values.get(3) == CounterExampleValueType.UNKNOWN);
+
+		// check highlighted positions
+		final List<List<Integer>> firstHighlightedPositions = releaseOperator
+				.getFirstHighlightedPositions();
+		final List<List<Integer>> secondHighlightedPositions = releaseOperator
+				.getSecondHighlightedPositions();
+		assertTrue(firstHighlightedPositions.size() == firstArgumentValues
+				.size());
+		assertTrue(secondHighlightedPositions.size() == secondArgumentValues
+				.size());
+
+		// State 0
+		assertTrue(firstHighlightedPositions.get(0).size() == 2);
+		assertTrue(Arrays.equals(
+				firstHighlightedPositions.get(0).toArray(new Integer[0]),
+				new Integer[] { 0, 1 }));
+		assertTrue(secondHighlightedPositions.get(0).size() == 3);
+		assertTrue(Arrays.equals(
+				secondHighlightedPositions.get(0).toArray(new Integer[0]),
+				new Integer[] { 0, 1, 2 }));
+
+		// State 1
+		assertTrue(firstHighlightedPositions.get(1).size() == 1);
+		assertTrue(Arrays.equals(
+				firstHighlightedPositions.get(1).toArray(new Integer[0]),
+				new Integer[] { 1 }));
+		assertTrue(secondHighlightedPositions.get(1).size() == 2);
+		assertTrue(Arrays.equals(
+				secondHighlightedPositions.get(1).toArray(new Integer[0]),
+				new Integer[] { 1, 2 }));
+
+		// State 2
+		assertTrue(firstHighlightedPositions.get(2).size() == 0);
+		assertTrue(secondHighlightedPositions.get(2).size() == 1);
+		assertTrue(Arrays.equals(
+				secondHighlightedPositions.get(2).toArray(new Integer[0]),
+				new Integer[] { 2 }));
+
+		// State 3
+		assertTrue(firstHighlightedPositions.get(3).size() == 1);
+		assertTrue(Arrays.equals(
+				firstHighlightedPositions.get(3).toArray(new Integer[0]),
+				new Integer[] { 3 }));
+		assertTrue(secondHighlightedPositions.get(3).size() == 1);
+		assertTrue(Arrays.equals(
+				secondHighlightedPositions.get(3).toArray(new Integer[0]),
+				new Integer[] { 3 }));
+	}
+
+	/*
+	 * f-FUUU, g-UUFU, f R g-UUFU
+	 */
+	@Test
+	public void testReleaseUnknownDefinitionOnReducedPath11() {
+		// create first argument values
+		final List<CounterExampleValueType> firstArgumentValues = Arrays
+				.asList(new CounterExampleValueType[] {
+						CounterExampleValueType.FALSE,
+						CounterExampleValueType.UNKNOWN,
+						CounterExampleValueType.UNKNOWN,
+						CounterExampleValueType.UNKNOWN });
+
+		// create second argument values
+		final List<CounterExampleValueType> secondArgumentValues = Arrays
+				.asList(new CounterExampleValueType[] {
+						CounterExampleValueType.UNKNOWN,
+						CounterExampleValueType.UNKNOWN,
+						CounterExampleValueType.FALSE,
+						CounterExampleValueType.UNKNOWN });
+
+		// create first argument
+		final CounterExampleProposition firstArgument = new CounterExamplePredicate(
+				PathType.REDUCED, firstArgumentValues);
+
+		// create second argument
+		final CounterExampleProposition secondArgument = new CounterExamplePredicate(
+				PathType.REDUCED, secondArgumentValues);
+
+		// create an operator
+		final CounterExampleBinaryOperator releaseOperator = new CounterExampleRelease(
+				PathType.REDUCED, firstArgument, secondArgument);
+
+		// check result values
+		final List<CounterExampleValueType> values = releaseOperator
+				.getValues();
+		assertTrue(values.size() == firstArgumentValues.size());
+		assertTrue(values.size() == secondArgumentValues.size());
+		assertTrue(values.get(0) == CounterExampleValueType.UNKNOWN);
+		assertTrue(values.get(1) == CounterExampleValueType.UNKNOWN);
+		assertTrue(values.get(2) == CounterExampleValueType.FALSE);
+		assertTrue(values.get(3) == CounterExampleValueType.UNKNOWN);
+
+		// check highlighted positions
+		final List<List<Integer>> firstHighlightedPositions = releaseOperator
+				.getFirstHighlightedPositions();
+		final List<List<Integer>> secondHighlightedPositions = releaseOperator
+				.getSecondHighlightedPositions();
+		assertTrue(firstHighlightedPositions.size() == firstArgumentValues
+				.size());
+		assertTrue(secondHighlightedPositions.size() == secondArgumentValues
+				.size());
+
+		// State 0
+		assertTrue(firstHighlightedPositions.get(0).size() == 2);
+		assertTrue(Arrays.equals(
+				firstHighlightedPositions.get(0).toArray(new Integer[0]),
+				new Integer[] { 0, 1 }));
+		assertTrue(secondHighlightedPositions.get(0).size() == 2);
+		assertTrue(Arrays.equals(
+				secondHighlightedPositions.get(0).toArray(new Integer[0]),
+				new Integer[] { 0, 1 }));
+
+		// State 1
+		assertTrue(firstHighlightedPositions.get(1).size() == 1);
+		assertTrue(Arrays.equals(
+				firstHighlightedPositions.get(1).toArray(new Integer[0]),
+				new Integer[] { 1 }));
+		assertTrue(secondHighlightedPositions.get(1).size() == 1);
+		assertTrue(Arrays.equals(
+				secondHighlightedPositions.get(1).toArray(new Integer[0]),
+				new Integer[] { 1 }));
+
+		// State 2
+		assertTrue(firstHighlightedPositions.get(2).size() == 0);
+		assertTrue(secondHighlightedPositions.get(2).size() == 1);
+		assertTrue(Arrays.equals(
+				secondHighlightedPositions.get(2).toArray(new Integer[0]),
+				new Integer[] { 2 }));
+
+		// State 3
+		assertTrue(firstHighlightedPositions.get(3).size() == 1);
+		assertTrue(Arrays.equals(
+				firstHighlightedPositions.get(3).toArray(new Integer[0]),
+				new Integer[] { 3 }));
+		assertTrue(secondHighlightedPositions.get(3).size() == 1);
+		assertTrue(Arrays.equals(
+				secondHighlightedPositions.get(3).toArray(new Integer[0]),
+				new Integer[] { 3 }));
+	}
+
+	/*
+	 * f-FTUF, g-FTUU, f R g-FTUU
+	 */
+	@Test
+	public void testReleaseUnknownDefinitionOnReducedPath12() {
+		// create first argument values
+		final List<CounterExampleValueType> firstArgumentValues = Arrays
+				.asList(new CounterExampleValueType[] {
+						CounterExampleValueType.FALSE,
+						CounterExampleValueType.TRUE,
+						CounterExampleValueType.UNKNOWN,
+						CounterExampleValueType.FALSE });
+
+		// create second argument values
+		final List<CounterExampleValueType> secondArgumentValues = Arrays
+				.asList(new CounterExampleValueType[] {
+						CounterExampleValueType.FALSE,
+						CounterExampleValueType.TRUE,
+						CounterExampleValueType.UNKNOWN,
+						CounterExampleValueType.UNKNOWN });
+
+		// create first argument
+		final CounterExampleProposition firstArgument = new CounterExamplePredicate(
+				PathType.REDUCED, firstArgumentValues);
+
+		// create second argument
+		final CounterExampleProposition secondArgument = new CounterExamplePredicate(
+				PathType.REDUCED, secondArgumentValues);
+
+		// create an operator
+		final CounterExampleBinaryOperator releaseOperator = new CounterExampleRelease(
+				PathType.REDUCED, firstArgument, secondArgument);
+
+		// check result values
+		final List<CounterExampleValueType> values = releaseOperator
+				.getValues();
+		assertTrue(values.size() == firstArgumentValues.size());
+		assertTrue(values.size() == secondArgumentValues.size());
+		assertTrue(values.get(0) == CounterExampleValueType.FALSE);
+		assertTrue(values.get(1) == CounterExampleValueType.TRUE);
+		assertTrue(values.get(2) == CounterExampleValueType.UNKNOWN);
+		assertTrue(values.get(3) == CounterExampleValueType.UNKNOWN);
+
+		// check highlighted positions
+		final List<List<Integer>> firstHighlightedPositions = releaseOperator
+				.getFirstHighlightedPositions();
+		final List<List<Integer>> secondHighlightedPositions = releaseOperator
+				.getSecondHighlightedPositions();
+		assertTrue(firstHighlightedPositions.size() == firstArgumentValues
+				.size());
+		assertTrue(secondHighlightedPositions.size() == secondArgumentValues
+				.size());
+
+		// State 0
+		assertTrue(firstHighlightedPositions.get(0).size() == 0);
+		assertTrue(secondHighlightedPositions.get(0).size() == 1);
+		assertTrue(Arrays.equals(
+				secondHighlightedPositions.get(0).toArray(new Integer[0]),
+				new Integer[] { 0 }));
+
+		// State 1
+		assertTrue(firstHighlightedPositions.get(1).size() == 1);
+		assertTrue(Arrays.equals(
+				firstHighlightedPositions.get(1).toArray(new Integer[0]),
+				new Integer[] { 1 }));
+		assertTrue(secondHighlightedPositions.get(1).size() == 1);
+		assertTrue(Arrays.equals(
+				secondHighlightedPositions.get(1).toArray(new Integer[0]),
+				new Integer[] { 1 }));
 
 		// State 2
 		assertTrue(firstHighlightedPositions.get(2).size() == 1);

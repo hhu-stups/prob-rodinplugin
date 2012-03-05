@@ -274,30 +274,25 @@ public abstract class CounterExamplePropositionFigure extends Figure implements
 
 		final PathType pathType = model.getPathType();
 
-		final List<CounterExampleValueType> values = argument != null ? argument
-				.getValues() : model.getValues();
+		final List<CounterExampleValueType> values = argument.getValues();
 
-		Panel panel = null;
+		Panel panel = new Panel();
+		panel.setBounds(panelBounds);
 
-		if (panelBounds != null) {
-			panel = new Panel();
-			panel.setBounds(panelBounds);
+		final TitleBarBorder border = new TitleBarBorder();
+		border.setBackgroundColor(backgroundColor);
+		border.setTextColor(foregroundColor);
+		border.setLabel(argument.toString());
+		border.setFont(normalFont);
 
-			final TitleBarBorder border = new TitleBarBorder();
-			border.setBackgroundColor(backgroundColor);
-			border.setTextColor(foregroundColor);
-			border.setLabel(argument.toString());
-			border.setFont(normalFont);
-
-			panel.setBorder(border);
-			add(panel);
-		}
+		panel.setBorder(border);
+		add(panel);
 
 		for (int i = 0; i < values.size(); i++) {
 			final CounterExampleValueType value = values.get(i);
 			final Ellipse ellipse = new Ellipse();
 
-			if (positions != null && !positions.contains(i)) {
+			if (!positions.contains(i)) {
 				ellipse.setAlpha(Alpha.MASKED);
 			}
 
@@ -317,10 +312,7 @@ public abstract class CounterExamplePropositionFigure extends Figure implements
 			ellipse.setLayoutManager(new BorderLayout());
 			ellipse.add(label, BorderLayout.CENTER);
 
-			if (panel != null)
-				panel.add(ellipse);
-			else
-				add(ellipse);
+			panel.add(ellipse);
 
 			final int x = (bounds.x + size) * (i + 1);
 			final int y = bounds.y + argumentHeight
@@ -357,16 +349,14 @@ public abstract class CounterExamplePropositionFigure extends Figure implements
 				decoration.setTemplate(decorationPointList);
 
 				// highlight the transition
-				if (positions == null
-						|| (positions.contains(i) && positions.contains(i - 1))) {
+				if (positions.contains(i) && positions.contains(i - 1)) {
 					connection.setAlpha(Alpha.HIGHLIGHED);
 					decoration.setAlpha(Alpha.HIGHLIGHED);
 				}
 
 				// highlight and color the transition
-				if (model.isTransition() || argument != null
-						&& argument.isTransition()) {
-					if (positions != null && positions.contains(i - 1)) {
+				if (model.isTransition() || argument.isTransition()) {
+					if (positions.contains(i - 1)) {
 						connection.setAlpha(Alpha.HIGHLIGHED);
 						decoration.setAlpha(Alpha.HIGHLIGHED);
 						Color transitionColor = getEllipseColor(values
@@ -378,10 +368,7 @@ public abstract class CounterExamplePropositionFigure extends Figure implements
 
 				connection.setSourceDecoration(decoration);
 
-				if (panel != null)
-					panel.add(connection);
-				else
-					add(connection);
+				panel.add(connection);
 			}
 
 			if (i == values.size() - 1) {
@@ -393,15 +380,12 @@ public abstract class CounterExamplePropositionFigure extends Figure implements
 					int alpha = Alpha.MASKED;
 					Color loopTransitionColor = ColorConstants.black;
 
-					if (positions == null
-							|| (positions.contains(i) && positions
-									.contains(i - 1))) {
+					if (positions.contains(i) && positions.contains(i - 1)) {
 						alpha = Alpha.HIGHLIGHED;
 					}
 
-					if (model.isTransition() || argument != null
-							&& argument.isTransition()) {
-						if (positions != null && positions.contains(i)) {
+					if (model.isTransition() || argument.isTransition()) {
+						if (positions.contains(i)) {
 							alpha = Alpha.HIGHLIGHED;
 							loopTransitionColor = getEllipseColor(values.get(i));
 						}
@@ -411,21 +395,13 @@ public abstract class CounterExamplePropositionFigure extends Figure implements
 							ellipse, target, alpha, operationName,
 							loopTransitionColor);
 
-					if (panel != null)
-						panel.add(loop);
-					else
-						this.add(loop);
+					panel.add(loop);
 				} else if (pathType.equals(PathType.REDUCED)) {
-					final Polyline reduced = createReduced(
-							getInsets(),
-							ellipse,
-							(positions == null || positions.contains(i)) ? Alpha.HIGHLIGHED
+					final Polyline reduced = createReduced(getInsets(),
+							ellipse, positions.contains(i) ? Alpha.HIGHLIGHED
 									: Alpha.MASKED);
 
-					if (panel != null)
-						panel.add(reduced);
-					else
-						this.add(reduced);
+					panel.add(reduced);
 				}
 			}
 		}

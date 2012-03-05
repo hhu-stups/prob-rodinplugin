@@ -8,7 +8,7 @@ import de.prob.core.command.LtlCheckingCommand.PathType;
 import de.prob.logging.Logger;
 
 /**
- * Provides a "Globally" operator.
+ * Provides a "globally" operator.
  * 
  * @author Andriy Tolstoy
  * 
@@ -75,7 +75,7 @@ public final class CounterExampleGlobally extends CounterExampleUnaryOperator {
 	}
 
 	private CounterExampleValueType calculateGlobally(final int position) {
-		CounterExampleValueType result = CounterExampleValueType.UNDEFINED;
+		CounterExampleValueType result = CounterExampleValueType.UNKNOWN;
 
 		List<CounterExampleValueType> checkedValues = new ArrayList<CounterExampleValueType>(
 				argument.getValues());

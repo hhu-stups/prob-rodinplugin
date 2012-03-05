@@ -6,7 +6,7 @@ import java.util.List;
 import de.prob.core.command.LtlCheckingCommand.PathType;
 
 /**
- * Provides a "Yesterday" operator.
+ * Provides a "yesterday" operator.
  * 
  * @author Andriy Tolstoy
  * 

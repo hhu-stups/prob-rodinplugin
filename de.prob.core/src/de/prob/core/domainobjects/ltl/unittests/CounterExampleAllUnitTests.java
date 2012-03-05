@@ -14,5 +14,5 @@ import org.junit.runners.Suite;
 		CounterExampleSinceUnitTest.class, CounterExampleTriggerUnitTest.class,
 		CounterExampleNotUnitTest.class, CounterExampleAndUnitTest.class,
 		CounterExampleOrUnitTest.class, CounterExampleImplyUnitTest.class })
-public class CounterExampleAllUnitTests {
+public final class CounterExampleAllUnitTests {
 }

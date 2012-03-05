@@ -3,7 +3,7 @@ package de.prob.core.domainobjects.ltl;
 import de.prob.core.command.LtlCheckingCommand.PathType;
 
 /**
- * Provides an "Or" operator.
+ * Provides an "or" operator.
  * 
  * @author Andriy Tolstoy
  * 
@@ -54,9 +54,9 @@ public final class CounterExampleDisjunction extends
 		if (firstValue == CounterExampleValueType.TRUE
 				|| secondValue == CounterExampleValueType.TRUE) {
 			result = CounterExampleValueType.TRUE;
-		} else if (firstValue == CounterExampleValueType.UNDEFINED
-				|| secondValue == CounterExampleValueType.UNDEFINED) {
-			result = CounterExampleValueType.UNDEFINED;
+		} else if (firstValue == CounterExampleValueType.UNKNOWN
+				|| secondValue == CounterExampleValueType.UNKNOWN) {
+			result = CounterExampleValueType.UNKNOWN;
 		}
 
 		return result;

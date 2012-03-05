@@ -20,6 +20,10 @@ import de.prob.core.domainobjects.ltl.CounterExampleValueType;
  */
 public final class TreeColumnValueLabelProvider extends CellLabelProvider {
 	private final CounterExampleState state;
+	private final Font normal = new Font(Display.getDefault(), "Arial", 10,
+			SWT.NORMAL);
+	private final Font bold = new Font(Display.getDefault(), "Arial", 10,
+			SWT.BOLD);
 
 	public TreeColumnValueLabelProvider(CounterExampleState state) {
 		super();
@@ -48,16 +52,10 @@ public final class TreeColumnValueLabelProvider extends CellLabelProvider {
 					final int currentIndex = counterExampleView
 							.getCurrentIndex();
 
-					int font = SWT.NORMAL;
-
-					if (index == currentIndex) {
-						font = SWT.BOLD;
-					}
-
-					Font currentFont = new Font(Display.getDefault(), "Arial",
-							10, font);
-
-					cell.setFont(currentFont);
+					if (index != currentIndex)
+						cell.setFont(normal);
+					else
+						cell.setFont(bold);
 				}
 			}
 		}

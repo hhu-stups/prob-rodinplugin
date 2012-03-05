@@ -15,12 +15,12 @@ import de.prob.core.domainobjects.ltl.CounterExampleValueType;
 import de.prob.core.domainobjects.ltl.CounterExampleYesterday;
 
 /**
- * Unit test for a "Yesterday" operator.
+ * Unit test for a "yesterday" operator.
  * 
  * @author Andriy Tolstoy
  * 
  */
-public class CounterExampleYesterdayUnitTest {
+public final class CounterExampleYesterdayUnitTest {
 
 	/*
 	 * f-FTFT, Y f-FFTF
@@ -28,7 +28,7 @@ public class CounterExampleYesterdayUnitTest {
 	@Test
 	public void testYesterdayOnFinitePath() {
 		// create argument values
-		List<CounterExampleValueType> argumentValues = Arrays
+		final List<CounterExampleValueType> argumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
 						CounterExampleValueType.FALSE,
 						CounterExampleValueType.TRUE,
@@ -36,15 +36,16 @@ public class CounterExampleYesterdayUnitTest {
 						CounterExampleValueType.TRUE });
 
 		// create an argument
-		CounterExampleProposition argument = new CounterExamplePredicate(
+		final CounterExampleProposition argument = new CounterExamplePredicate(
 				PathType.FINITE, argumentValues);
 
 		// create an operator
-		CounterExampleUnaryOperator yesterdayOperator = new CounterExampleYesterday(
+		final CounterExampleUnaryOperator yesterdayOperator = new CounterExampleYesterday(
 				PathType.FINITE, argument);
 
 		// check result values
-		List<CounterExampleValueType> values = yesterdayOperator.getValues();
+		final List<CounterExampleValueType> values = yesterdayOperator
+				.getValues();
 		assertTrue(values.size() == argumentValues.size());
 		assertTrue(values.get(0) == CounterExampleValueType.FALSE);
 		assertTrue(values.get(1) == CounterExampleValueType.FALSE);
@@ -52,7 +53,7 @@ public class CounterExampleYesterdayUnitTest {
 		assertTrue(values.get(3) == CounterExampleValueType.FALSE);
 
 		// check highlighted positions
-		List<List<Integer>> highlightedPositions = yesterdayOperator
+		final List<List<Integer>> highlightedPositions = yesterdayOperator
 				.getHighlightedPositions();
 		assertTrue(highlightedPositions.size() == argumentValues.size());
 
@@ -80,7 +81,7 @@ public class CounterExampleYesterdayUnitTest {
 	@Test
 	public void testYesterdayOnInfinitePath() {
 		// create argument values
-		List<CounterExampleValueType> argumentValues = Arrays
+		final List<CounterExampleValueType> argumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
 						CounterExampleValueType.FALSE,
 						CounterExampleValueType.TRUE,
@@ -128,7 +129,8 @@ public class CounterExampleYesterdayUnitTest {
 
 		// Loop entry = 1
 		// create an argument
-		argument = new CounterExamplePredicate(PathType.INFINITE, 1, argumentValues);
+		argument = new CounterExamplePredicate(PathType.INFINITE, 1,
+				argumentValues);
 
 		// create an operator
 		yesterdayOperator = new CounterExampleYesterday(PathType.INFINITE, 1,
@@ -165,7 +167,8 @@ public class CounterExampleYesterdayUnitTest {
 
 		// Loop entry = 2
 		// create an argument
-		argument = new CounterExamplePredicate(PathType.INFINITE, 2, argumentValues);
+		argument = new CounterExamplePredicate(PathType.INFINITE, 2,
+				argumentValues);
 
 		// create an operator
 		yesterdayOperator = new CounterExampleYesterday(PathType.INFINITE, 2,
@@ -202,7 +205,8 @@ public class CounterExampleYesterdayUnitTest {
 
 		// Loop entry = 3
 		// create an argument
-		argument = new CounterExamplePredicate(PathType.INFINITE, 3, argumentValues);
+		argument = new CounterExamplePredicate(PathType.INFINITE, 3,
+				argumentValues);
 
 		// create an operator
 		yesterdayOperator = new CounterExampleYesterday(PathType.INFINITE, 3,
@@ -244,31 +248,32 @@ public class CounterExampleYesterdayUnitTest {
 	@Test
 	public void testYesterdayOnReducedPath() {
 		// create argument values
-		List<CounterExampleValueType> argumentValues = Arrays
+		final List<CounterExampleValueType> argumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
 						CounterExampleValueType.TRUE,
-						CounterExampleValueType.UNDEFINED,
+						CounterExampleValueType.UNKNOWN,
 						CounterExampleValueType.FALSE,
 						CounterExampleValueType.TRUE });
 
 		// create an argument
-		CounterExampleProposition argument = new CounterExamplePredicate(
+		final CounterExampleProposition argument = new CounterExamplePredicate(
 				PathType.REDUCED, argumentValues);
 
 		// create an operator
-		CounterExampleUnaryOperator yesterdayOperator = new CounterExampleYesterday(
+		final CounterExampleUnaryOperator yesterdayOperator = new CounterExampleYesterday(
 				PathType.REDUCED, argument);
 
 		// check result values
-		List<CounterExampleValueType> values = yesterdayOperator.getValues();
+		final List<CounterExampleValueType> values = yesterdayOperator
+				.getValues();
 		assertTrue(values.size() == argumentValues.size());
 		assertTrue(values.get(0) == CounterExampleValueType.FALSE);
 		assertTrue(values.get(1) == CounterExampleValueType.TRUE);
-		assertTrue(values.get(2) == CounterExampleValueType.UNDEFINED);
+		assertTrue(values.get(2) == CounterExampleValueType.UNKNOWN);
 		assertTrue(values.get(3) == CounterExampleValueType.FALSE);
 
 		// check highlighted positions
-		List<List<Integer>> highlightedPositions = yesterdayOperator
+		final List<List<Integer>> highlightedPositions = yesterdayOperator
 				.getHighlightedPositions();
 		assertTrue(highlightedPositions.size() == argumentValues.size());
 

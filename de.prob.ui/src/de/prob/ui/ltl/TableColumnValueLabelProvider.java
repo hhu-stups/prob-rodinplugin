@@ -21,6 +21,10 @@ import de.prob.core.domainobjects.ltl.CounterExampleValueType;
  */
 public final class TableColumnValueLabelProvider extends CellLabelProvider {
 	final CounterExampleProposition proposition;
+	private final Font normal = new Font(Display.getDefault(), "Arial", 10,
+			SWT.NORMAL);
+	private final Font bold = new Font(Display.getDefault(), "Arial", 10,
+			SWT.BOLD);
 
 	public TableColumnValueLabelProvider(
 			final CounterExampleProposition proposition) {
@@ -46,16 +50,10 @@ public final class TableColumnValueLabelProvider extends CellLabelProvider {
 			if (counterExampleView != null) {
 				final int currentIndex = counterExampleView.getCurrentIndex();
 
-				int font = SWT.NORMAL;
-
-				if (index == currentIndex) {
-					font = SWT.BOLD;
-				}
-
-				Font currentFont = new Font(Display.getDefault(), "Arial", 10,
-						font);
-
-				cell.setFont(currentFont);
+				if (index != currentIndex)
+					cell.setFont(normal);
+				else
+					cell.setFont(bold);
 			}
 		}
 	}

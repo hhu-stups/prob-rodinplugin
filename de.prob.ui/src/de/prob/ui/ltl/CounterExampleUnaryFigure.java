@@ -150,6 +150,8 @@ public final class CounterExampleUnaryFigure extends
 			argument.setStateId(stateId);
 			argument.setVisible(true);
 		}
+
+		repaint();
 	}
 
 	@Override

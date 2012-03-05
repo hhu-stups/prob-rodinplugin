@@ -14,14 +14,20 @@ import de.prob.core.domainobjects.ltl.CounterExamplePredicate;
 import de.prob.core.domainobjects.ltl.CounterExampleProposition;
 import de.prob.core.domainobjects.ltl.CounterExampleValueType;
 
-public class CounterExampleAndUnitTest {
+/**
+ * Unit test for an "and" operator.
+ * 
+ * @author Andriy Tolstoy
+ * 
+ */
+public final class CounterExampleAndUnitTest {
 	/*
 	 * f-FTTF, g-TTFF, f And g-FTFF
 	 */
 	@Test
 	public void testAndOnFinitePath() {
 		// create first argument values
-		List<CounterExampleValueType> firstArgumentValues = Arrays
+		final List<CounterExampleValueType> firstArgumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
 						CounterExampleValueType.FALSE,
 						CounterExampleValueType.TRUE,
@@ -29,7 +35,7 @@ public class CounterExampleAndUnitTest {
 						CounterExampleValueType.FALSE });
 
 		// create second argument values
-		List<CounterExampleValueType> secondArgumentValues = Arrays
+		final List<CounterExampleValueType> secondArgumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
 						CounterExampleValueType.TRUE,
 						CounterExampleValueType.TRUE,
@@ -37,19 +43,19 @@ public class CounterExampleAndUnitTest {
 						CounterExampleValueType.FALSE });
 
 		// create first argument
-		CounterExampleProposition firstArgument = new CounterExamplePredicate(
+		final CounterExampleProposition firstArgument = new CounterExamplePredicate(
 				PathType.FINITE, firstArgumentValues);
 
 		// create second argument
-		CounterExampleProposition secondArgument = new CounterExamplePredicate(
+		final CounterExampleProposition secondArgument = new CounterExamplePredicate(
 				PathType.FINITE, secondArgumentValues);
 
 		// create an operator
-		CounterExampleBinaryOperator andOperator = new CounterExampleConjunction(
+		final CounterExampleBinaryOperator andOperator = new CounterExampleConjunction(
 				PathType.FINITE, firstArgument, secondArgument);
 
 		// check result values
-		List<CounterExampleValueType> values = andOperator.getValues();
+		final List<CounterExampleValueType> values = andOperator.getValues();
 		assertTrue(values.size() == firstArgumentValues.size());
 		assertTrue(values.size() == secondArgumentValues.size());
 		assertTrue(values.get(0) == CounterExampleValueType.FALSE);
@@ -58,9 +64,9 @@ public class CounterExampleAndUnitTest {
 		assertTrue(values.get(3) == CounterExampleValueType.FALSE);
 
 		// check highlighted positions
-		List<List<Integer>> firstHighlightedPositions = andOperator
+		final List<List<Integer>> firstHighlightedPositions = andOperator
 				.getFirstHighlightedPositions();
-		List<List<Integer>> secondHighlightedPositions = andOperator
+		final List<List<Integer>> secondHighlightedPositions = andOperator
 				.getSecondHighlightedPositions();
 		assertTrue(firstHighlightedPositions.size() == firstArgumentValues
 				.size());
@@ -105,7 +111,7 @@ public class CounterExampleAndUnitTest {
 	@Test
 	public void testAndOnInfinitePath() {
 		// create first argument values
-		List<CounterExampleValueType> firstArgumentValues = Arrays
+		final List<CounterExampleValueType> firstArgumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
 						CounterExampleValueType.FALSE,
 						CounterExampleValueType.TRUE,
@@ -113,7 +119,7 @@ public class CounterExampleAndUnitTest {
 						CounterExampleValueType.FALSE });
 
 		// create second argument values
-		List<CounterExampleValueType> secondArgumentValues = Arrays
+		final List<CounterExampleValueType> secondArgumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
 						CounterExampleValueType.TRUE,
 						CounterExampleValueType.TRUE,
@@ -376,7 +382,7 @@ public class CounterExampleAndUnitTest {
 	@Test
 	public void testAndOnReducedPath1() {
 		// create first argument values
-		List<CounterExampleValueType> firstArgumentValues = Arrays
+		final List<CounterExampleValueType> firstArgumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
 						CounterExampleValueType.FALSE,
 						CounterExampleValueType.TRUE,
@@ -384,7 +390,7 @@ public class CounterExampleAndUnitTest {
 						CounterExampleValueType.FALSE });
 
 		// create second argument values
-		List<CounterExampleValueType> secondArgumentValues = Arrays
+		final List<CounterExampleValueType> secondArgumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
 						CounterExampleValueType.TRUE,
 						CounterExampleValueType.TRUE,
@@ -392,19 +398,19 @@ public class CounterExampleAndUnitTest {
 						CounterExampleValueType.FALSE });
 
 		// create first argument
-		CounterExampleProposition firstArgument = new CounterExamplePredicate(
+		final CounterExampleProposition firstArgument = new CounterExamplePredicate(
 				PathType.REDUCED, firstArgumentValues);
 
 		// create second argument
-		CounterExampleProposition secondArgument = new CounterExamplePredicate(
+		final CounterExampleProposition secondArgument = new CounterExamplePredicate(
 				PathType.REDUCED, secondArgumentValues);
 
 		// create an operator
-		CounterExampleBinaryOperator andOperator = new CounterExampleConjunction(
+		final CounterExampleBinaryOperator andOperator = new CounterExampleConjunction(
 				PathType.REDUCED, firstArgument, secondArgument);
 
 		// check result values
-		List<CounterExampleValueType> values = andOperator.getValues();
+		final List<CounterExampleValueType> values = andOperator.getValues();
 		assertTrue(values.size() == firstArgumentValues.size());
 		assertTrue(values.size() == secondArgumentValues.size());
 		assertTrue(values.get(0) == CounterExampleValueType.FALSE);
@@ -413,9 +419,9 @@ public class CounterExampleAndUnitTest {
 		assertTrue(values.get(3) == CounterExampleValueType.FALSE);
 
 		// check highlighted positions
-		List<List<Integer>> firstHighlightedPositions = andOperator
+		final List<List<Integer>> firstHighlightedPositions = andOperator
 				.getFirstHighlightedPositions();
-		List<List<Integer>> secondHighlightedPositions = andOperator
+		final List<List<Integer>> secondHighlightedPositions = andOperator
 				.getSecondHighlightedPositions();
 		assertTrue(firstHighlightedPositions.size() == firstArgumentValues
 				.size());
@@ -460,46 +466,46 @@ public class CounterExampleAndUnitTest {
 	@Test
 	public void testAndOnReducedPath2() {
 		// create first argument values
-		List<CounterExampleValueType> firstArgumentValues = Arrays
+		final List<CounterExampleValueType> firstArgumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
 						CounterExampleValueType.FALSE,
-						CounterExampleValueType.UNDEFINED,
-						CounterExampleValueType.UNDEFINED,
+						CounterExampleValueType.UNKNOWN,
+						CounterExampleValueType.UNKNOWN,
 						CounterExampleValueType.TRUE });
 
 		// create second argument values
-		List<CounterExampleValueType> secondArgumentValues = Arrays
+		final List<CounterExampleValueType> secondArgumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
-						CounterExampleValueType.UNDEFINED,
+						CounterExampleValueType.UNKNOWN,
 						CounterExampleValueType.TRUE,
-						CounterExampleValueType.UNDEFINED,
-						CounterExampleValueType.UNDEFINED });
+						CounterExampleValueType.UNKNOWN,
+						CounterExampleValueType.UNKNOWN });
 
 		// create first argument
-		CounterExampleProposition firstArgument = new CounterExamplePredicate(
+		final CounterExampleProposition firstArgument = new CounterExamplePredicate(
 				PathType.REDUCED, firstArgumentValues);
 
 		// create second argument
-		CounterExampleProposition secondArgument = new CounterExamplePredicate(
+		final CounterExampleProposition secondArgument = new CounterExamplePredicate(
 				PathType.REDUCED, secondArgumentValues);
 
 		// create an operator
-		CounterExampleBinaryOperator andOperator = new CounterExampleConjunction(
+		final CounterExampleBinaryOperator andOperator = new CounterExampleConjunction(
 				PathType.REDUCED, firstArgument, secondArgument);
 
 		// check result values
-		List<CounterExampleValueType> values = andOperator.getValues();
+		final List<CounterExampleValueType> values = andOperator.getValues();
 		assertTrue(values.size() == firstArgumentValues.size());
 		assertTrue(values.size() == secondArgumentValues.size());
 		assertTrue(values.get(0) == CounterExampleValueType.FALSE);
-		assertTrue(values.get(1) == CounterExampleValueType.UNDEFINED);
-		assertTrue(values.get(2) == CounterExampleValueType.UNDEFINED);
-		assertTrue(values.get(3) == CounterExampleValueType.UNDEFINED);
+		assertTrue(values.get(1) == CounterExampleValueType.UNKNOWN);
+		assertTrue(values.get(2) == CounterExampleValueType.UNKNOWN);
+		assertTrue(values.get(3) == CounterExampleValueType.UNKNOWN);
 
 		// check highlighted positions
-		List<List<Integer>> firstHighlightedPositions = andOperator
+		final List<List<Integer>> firstHighlightedPositions = andOperator
 				.getFirstHighlightedPositions();
-		List<List<Integer>> secondHighlightedPositions = andOperator
+		final List<List<Integer>> secondHighlightedPositions = andOperator
 				.getSecondHighlightedPositions();
 		assertTrue(firstHighlightedPositions.size() == firstArgumentValues
 				.size());
