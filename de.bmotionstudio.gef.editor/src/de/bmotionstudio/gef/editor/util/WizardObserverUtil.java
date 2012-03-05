@@ -19,6 +19,7 @@ import org.eclipse.swt.widgets.TableItem;
 
 import de.bmotionstudio.gef.editor.BMotionStudioSWTConstants;
 import de.bmotionstudio.gef.editor.library.AttributeTransfer;
+import de.bmotionstudio.gef.editor.observer.wizard.WizardObserverAddItemAction;
 import de.bmotionstudio.gef.editor.observer.wizard.WizardObserverDeleteItemsAction;
 import de.bmotionstudio.gef.editor.observer.wizard.WizardObserverDragListener;
 import de.bmotionstudio.gef.editor.observer.wizard.WizardObserverDropListener;
@@ -32,7 +33,8 @@ public class WizardObserverUtil {
 		return false;
 	}
 
-	public static TableViewer createObserverWizardTableViewer(Composite parent) {
+	public static TableViewer createObserverWizardTableViewer(Composite parent,
+			Class<?> itemClass) {
 
 		final TableViewer tableViewer = new TableViewer(parent, SWT.BORDER
 				| SWT.FULL_SELECTION | SWT.MULTI);
@@ -53,6 +55,7 @@ public class WizardObserverUtil {
 		tableViewer.getControl().setMenu(
 				manager.createContextMenu(tableViewer.getControl()));
 		manager.add(new WizardObserverDeleteItemsAction(tableViewer));
+		manager.add(new WizardObserverAddItemAction(tableViewer, itemClass));
 
 		tableViewer.getTable().addListener(SWT.MouseDown, new Listener() {
 			public void handleEvent(Event event) {

@@ -67,8 +67,8 @@ public class WizardObserverSwitchImage extends ObserverWizard {
 			Composite container = new Composite(parent, SWT.NONE);
 			container.setLayout(new GridLayout(1, true));
 
-			tableViewer = WizardObserverUtil
-					.createObserverWizardTableViewer(container);
+			tableViewer = WizardObserverUtil.createObserverWizardTableViewer(
+					container, ToggleObjectImage.class);
 
 			TableViewerColumn column = new TableViewerColumn(tableViewer,
 					SWT.NONE);
@@ -131,8 +131,9 @@ public class WizardObserverSwitchImage extends ObserverWizard {
 			comp.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));
 
 			Button btRemove = new Button(comp, SWT.PUSH);
+			btRemove.setText("Remove");
 			btRemove.setImage(BMotionStudioImage
-					.getImage(EditorImageRegistry.IMG_ICON_DELETE));
+					.getImage(EditorImageRegistry.IMG_ICON_DELETE_EDIT));
 			btRemove.addSelectionListener(new SelectionAdapter() {
 				@Override
 				public void widgetSelected(final SelectionEvent e) {
@@ -146,8 +147,9 @@ public class WizardObserverSwitchImage extends ObserverWizard {
 			});
 
 			Button btAdd = new Button(comp, SWT.PUSH);
+			btAdd.setText("Add");
 			btAdd.setImage(BMotionStudioImage
-					.getImage(EditorImageRegistry.IMG_ICON_ADD));
+					.getImage(EditorImageRegistry.IMG_ICON_NEW_WIZ));
 			btAdd.addSelectionListener(new SelectionAdapter() {
 				@Override
 				public void widgetSelected(final SelectionEvent e) {

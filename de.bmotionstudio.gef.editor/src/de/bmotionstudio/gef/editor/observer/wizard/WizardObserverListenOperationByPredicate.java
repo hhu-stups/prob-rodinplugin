@@ -78,8 +78,8 @@ public class WizardObserverListenOperationByPredicate extends ObserverWizard {
 
 			setControl(container);
 
-			tableViewer = WizardObserverUtil
-					.createObserverWizardTableViewer(container);
+			tableViewer = WizardObserverUtil.createObserverWizardTableViewer(
+					container, PredicateOperation.class);
 
 			TableViewerColumn column = new TableViewerColumn(tableViewer,
 					SWT.NONE);
@@ -182,7 +182,7 @@ public class WizardObserverListenOperationByPredicate extends ObserverWizard {
 			Button btRemove = new Button(comp, SWT.PUSH);
 			btRemove.setText("Remove");
 			btRemove.setImage(BMotionStudioImage
-					.getImage(EditorImageRegistry.IMG_ICON_DELETE));
+					.getImage(EditorImageRegistry.IMG_ICON_DELETE_EDIT));
 			btRemove.addSelectionListener(new SelectionAdapter() {
 				@Override
 				public void widgetSelected(SelectionEvent e) {
@@ -198,7 +198,7 @@ public class WizardObserverListenOperationByPredicate extends ObserverWizard {
 			Button btAdd = new Button(comp, SWT.PUSH);
 			btAdd.setText("Add");
 			btAdd.setImage(BMotionStudioImage
-					.getImage(EditorImageRegistry.IMG_ICON_ADD));
+					.getImage(EditorImageRegistry.IMG_ICON_NEW_WIZ));
 			btAdd.addSelectionListener(new SelectionAdapter() {
 				@Override
 				public void widgetSelected(SelectionEvent e) {
