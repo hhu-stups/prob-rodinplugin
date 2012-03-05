@@ -15,7 +15,7 @@ import de.prob.core.domainobjects.ltl.CounterExampleUnaryOperator;
 import de.prob.core.domainobjects.ltl.CounterExampleValueType;
 
 /**
- * Unit test for a "Next" operator.
+ * Unit test for a "next" operator.
  * 
  * @author Andriy Tolstoy
  * 
@@ -24,7 +24,7 @@ public final class CounterExampleNextUnitTest {
 	@Test
 	public void testNextOnFinitePath() {
 		// create argument values
-		List<CounterExampleValueType> argumentValues = Arrays
+		final List<CounterExampleValueType> argumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
 						CounterExampleValueType.FALSE,
 						CounterExampleValueType.TRUE,
@@ -32,15 +32,15 @@ public final class CounterExampleNextUnitTest {
 						CounterExampleValueType.TRUE });
 
 		// create an argument
-		CounterExampleProposition argument = new CounterExamplePredicate("",
-				PathType.FINITE, -1, argumentValues);
+		final CounterExampleProposition argument = new CounterExamplePredicate(
+				"", PathType.FINITE, -1, argumentValues);
 
 		// create an operator
-		CounterExampleUnaryOperator nextOperator = new CounterExampleNext(
+		final CounterExampleUnaryOperator nextOperator = new CounterExampleNext(
 				PathType.FINITE, -1, argument);
 
 		// check result values
-		List<CounterExampleValueType> values = nextOperator.getValues();
+		final List<CounterExampleValueType> values = nextOperator.getValues();
 		assertTrue(values.size() == argumentValues.size());
 		assertTrue(values.get(0) == CounterExampleValueType.TRUE);
 		assertTrue(values.get(1) == CounterExampleValueType.FALSE);
@@ -48,7 +48,7 @@ public final class CounterExampleNextUnitTest {
 		assertTrue(values.get(3) == CounterExampleValueType.FALSE);
 
 		// check highlighted positions
-		List<List<Integer>> highlightedPositions = nextOperator
+		final List<List<Integer>> highlightedPositions = nextOperator
 				.getHighlightedPositions();
 		assertTrue(highlightedPositions.size() == argumentValues.size());
 		assertTrue(highlightedPositions.get(0).size() == 1);
@@ -72,7 +72,7 @@ public final class CounterExampleNextUnitTest {
 	@Test
 	public void testNextOnInfinitePath() {
 		// create argument values
-		List<CounterExampleValueType> argumentValues = Arrays
+		final List<CounterExampleValueType> argumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
 						CounterExampleValueType.FALSE,
 						CounterExampleValueType.TRUE,
@@ -241,31 +241,31 @@ public final class CounterExampleNextUnitTest {
 	@Test
 	public void testNextOnReducedPath() {
 		// create argument values
-		List<CounterExampleValueType> argumentValues = Arrays
+		final List<CounterExampleValueType> argumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
 						CounterExampleValueType.TRUE,
-						CounterExampleValueType.UNDEFINED,
+						CounterExampleValueType.UNKNOWN,
 						CounterExampleValueType.FALSE,
 						CounterExampleValueType.TRUE });
 
 		// create an argument
-		CounterExampleProposition argument = new CounterExamplePredicate("",
-				PathType.REDUCED, -1, argumentValues);
+		final CounterExampleProposition argument = new CounterExamplePredicate(
+				"", PathType.REDUCED, -1, argumentValues);
 
 		// create an operator
-		CounterExampleUnaryOperator nextOperator = new CounterExampleNext(
+		final CounterExampleUnaryOperator nextOperator = new CounterExampleNext(
 				PathType.REDUCED, -1, argument);
 
 		// check result values
-		List<CounterExampleValueType> values = nextOperator.getValues();
+		final List<CounterExampleValueType> values = nextOperator.getValues();
 		assertTrue(values.size() == argumentValues.size());
-		assertTrue(values.get(0) == CounterExampleValueType.UNDEFINED);
+		assertTrue(values.get(0) == CounterExampleValueType.UNKNOWN);
 		assertTrue(values.get(1) == CounterExampleValueType.FALSE);
 		assertTrue(values.get(2) == CounterExampleValueType.TRUE);
-		assertTrue(values.get(3) == CounterExampleValueType.UNDEFINED);
+		assertTrue(values.get(3) == CounterExampleValueType.UNKNOWN);
 
 		// check highlighted positions
-		List<List<Integer>> highlightedPositions = nextOperator
+		final List<List<Integer>> highlightedPositions = nextOperator
 				.getHighlightedPositions();
 		assertTrue(highlightedPositions.size() == argumentValues.size());
 		assertTrue(highlightedPositions.get(0).size() == 1);

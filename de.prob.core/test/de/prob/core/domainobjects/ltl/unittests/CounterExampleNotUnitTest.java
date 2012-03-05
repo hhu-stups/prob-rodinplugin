@@ -15,12 +15,12 @@ import de.prob.core.domainobjects.ltl.CounterExampleUnaryOperator;
 import de.prob.core.domainobjects.ltl.CounterExampleValueType;
 
 /**
- * Unit test for a "Not" operator.
+ * Unit test for a "not" operator.
  * 
  * @author Andriy Tolstoy
  * 
  */
-public class CounterExampleNotUnitTest {
+public final class CounterExampleNotUnitTest {
 
 	/*
 	 * f-TFFT, Not f-FTTF
@@ -28,7 +28,7 @@ public class CounterExampleNotUnitTest {
 	@Test
 	public void testNotOnFinitePath() {
 		// create argument values
-		List<CounterExampleValueType> argumentValues = Arrays
+		final List<CounterExampleValueType> argumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
 						CounterExampleValueType.TRUE,
 						CounterExampleValueType.FALSE,
@@ -36,15 +36,15 @@ public class CounterExampleNotUnitTest {
 						CounterExampleValueType.TRUE });
 
 		// create an argument
-		CounterExampleProposition argument = new CounterExamplePredicate("",
-				PathType.FINITE, argumentValues);
+		final CounterExampleProposition argument = new CounterExamplePredicate(
+				"", PathType.FINITE, argumentValues);
 
 		// create an operator
-		CounterExampleUnaryOperator notOperator = new CounterExampleNegation(
+		final CounterExampleUnaryOperator notOperator = new CounterExampleNegation(
 				PathType.FINITE, argument);
 
 		// check result values
-		List<CounterExampleValueType> values = notOperator.getValues();
+		final List<CounterExampleValueType> values = notOperator.getValues();
 		assertTrue(values.size() == argumentValues.size());
 		assertTrue(values.get(0) == CounterExampleValueType.FALSE);
 		assertTrue(values.get(1) == CounterExampleValueType.TRUE);
@@ -53,7 +53,7 @@ public class CounterExampleNotUnitTest {
 
 		// check highlighted positions
 		// State 0
-		List<List<Integer>> highlightedPositions = notOperator
+		final List<List<Integer>> highlightedPositions = notOperator
 				.getHighlightedPositions();
 		assertTrue(highlightedPositions.size() == argumentValues.size());
 		assertTrue(highlightedPositions.get(0).size() == 1);
@@ -86,7 +86,7 @@ public class CounterExampleNotUnitTest {
 	@Test
 	public void testNotOnInFinitePath() {
 		// create argument values
-		List<CounterExampleValueType> argumentValues = Arrays
+		final List<CounterExampleValueType> argumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
 						CounterExampleValueType.TRUE,
 						CounterExampleValueType.FALSE,
@@ -278,7 +278,7 @@ public class CounterExampleNotUnitTest {
 	@Test
 	public void testNotOnReducedPath1() {
 		// create argument values
-		List<CounterExampleValueType> argumentValues = Arrays
+		final List<CounterExampleValueType> argumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
 						CounterExampleValueType.TRUE,
 						CounterExampleValueType.FALSE,
@@ -286,15 +286,15 @@ public class CounterExampleNotUnitTest {
 						CounterExampleValueType.TRUE });
 
 		// create an argument
-		CounterExampleProposition argument = new CounterExamplePredicate("",
-				PathType.REDUCED, argumentValues);
+		final CounterExampleProposition argument = new CounterExamplePredicate(
+				"", PathType.REDUCED, argumentValues);
 
 		// create an operator
-		CounterExampleUnaryOperator notOperator = new CounterExampleNegation(
+		final CounterExampleUnaryOperator notOperator = new CounterExampleNegation(
 				PathType.REDUCED, argument);
 
 		// check result values
-		List<CounterExampleValueType> values = notOperator.getValues();
+		final List<CounterExampleValueType> values = notOperator.getValues();
 		assertTrue(values.size() == argumentValues.size());
 		assertTrue(values.get(0) == CounterExampleValueType.FALSE);
 		assertTrue(values.get(1) == CounterExampleValueType.TRUE);
@@ -303,7 +303,7 @@ public class CounterExampleNotUnitTest {
 
 		// check highlighted positions
 		// State 0
-		List<List<Integer>> highlightedPositions = notOperator
+		final List<List<Integer>> highlightedPositions = notOperator
 				.getHighlightedPositions();
 		assertTrue(highlightedPositions.size() == argumentValues.size());
 		assertTrue(highlightedPositions.get(0).size() == 1);
@@ -336,32 +336,32 @@ public class CounterExampleNotUnitTest {
 	@Test
 	public void testNotOnReducedPath2() {
 		// create argument values
-		List<CounterExampleValueType> argumentValues = Arrays
+		final List<CounterExampleValueType> argumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
 						CounterExampleValueType.TRUE,
-						CounterExampleValueType.UNDEFINED,
+						CounterExampleValueType.UNKNOWN,
 						CounterExampleValueType.FALSE,
-						CounterExampleValueType.UNDEFINED });
+						CounterExampleValueType.UNKNOWN });
 
 		// create an argument
-		CounterExampleProposition argument = new CounterExamplePredicate("",
-				PathType.REDUCED, argumentValues);
+		final CounterExampleProposition argument = new CounterExamplePredicate(
+				"", PathType.REDUCED, argumentValues);
 
 		// create an operator
-		CounterExampleUnaryOperator notOperator = new CounterExampleNegation(
+		final CounterExampleUnaryOperator notOperator = new CounterExampleNegation(
 				PathType.REDUCED, argument);
 
 		// check result values
-		List<CounterExampleValueType> values = notOperator.getValues();
+		final List<CounterExampleValueType> values = notOperator.getValues();
 		assertTrue(values.size() == argumentValues.size());
 		assertTrue(values.get(0) == CounterExampleValueType.FALSE);
-		assertTrue(values.get(1) == CounterExampleValueType.UNDEFINED);
+		assertTrue(values.get(1) == CounterExampleValueType.UNKNOWN);
 		assertTrue(values.get(2) == CounterExampleValueType.TRUE);
-		assertTrue(values.get(3) == CounterExampleValueType.UNDEFINED);
+		assertTrue(values.get(3) == CounterExampleValueType.UNKNOWN);
 
 		// check highlighted positions
 		// State 0
-		List<List<Integer>> highlightedPositions = notOperator
+		final List<List<Integer>> highlightedPositions = notOperator
 				.getHighlightedPositions();
 		assertTrue(highlightedPositions.size() == argumentValues.size());
 		assertTrue(highlightedPositions.get(0).size() == 1);

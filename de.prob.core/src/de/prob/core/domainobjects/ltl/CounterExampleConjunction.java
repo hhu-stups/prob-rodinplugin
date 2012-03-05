@@ -4,7 +4,7 @@ import de.prob.core.command.LtlCheckingCommand.PathType;
 import de.prob.logging.Logger;
 
 /**
- * Provides an "And" operator.
+ * Provides an "and" operator.
  * 
  * @author Andriy Tolstoy
  * 
@@ -24,8 +24,8 @@ public final class CounterExampleConjunction extends
 				pathType, loopEntry, firstArgument);
 		CounterExampleNegation notSecondArgument = new CounterExampleNegation(
 				pathType, loopEntry, secondArgument);
-		CounterExampleDisjunction or = new CounterExampleDisjunction(pathType, loopEntry,
-				notFirstArgument, notSecondArgument);
+		CounterExampleDisjunction or = new CounterExampleDisjunction(pathType,
+				loopEntry, notFirstArgument, notSecondArgument);
 		not = new CounterExampleNegation(pathType, loopEntry, or);
 	}
 
@@ -69,9 +69,9 @@ public final class CounterExampleConjunction extends
 		if (firstValue == CounterExampleValueType.FALSE
 				|| secondValue == CounterExampleValueType.FALSE) {
 			result = CounterExampleValueType.FALSE;
-		} else if (firstValue == CounterExampleValueType.UNDEFINED
-				|| secondValue == CounterExampleValueType.UNDEFINED) {
-			result = CounterExampleValueType.UNDEFINED;
+		} else if (firstValue == CounterExampleValueType.UNKNOWN
+				|| secondValue == CounterExampleValueType.UNKNOWN) {
+			result = CounterExampleValueType.UNKNOWN;
 		}
 
 		return result;

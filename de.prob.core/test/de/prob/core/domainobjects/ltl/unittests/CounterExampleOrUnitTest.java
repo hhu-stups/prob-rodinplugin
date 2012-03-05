@@ -14,14 +14,20 @@ import de.prob.core.domainobjects.ltl.CounterExamplePredicate;
 import de.prob.core.domainobjects.ltl.CounterExampleProposition;
 import de.prob.core.domainobjects.ltl.CounterExampleValueType;
 
-public class CounterExampleOrUnitTest {
+/**
+ * Unit test for an "or" operator.
+ * 
+ * @author Andriy Tolstoy
+ * 
+ */
+public final class CounterExampleOrUnitTest {
 	/*
 	 * f-FTTF, g-TTFF, f Or g-TTTF
 	 */
 	@Test
 	public void testOrOnFinitePath() {
 		// create first argument values
-		List<CounterExampleValueType> firstArgumentValues = Arrays
+		final List<CounterExampleValueType> firstArgumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
 						CounterExampleValueType.FALSE,
 						CounterExampleValueType.TRUE,
@@ -29,7 +35,7 @@ public class CounterExampleOrUnitTest {
 						CounterExampleValueType.FALSE });
 
 		// create second argument values
-		List<CounterExampleValueType> secondArgumentValues = Arrays
+		final List<CounterExampleValueType> secondArgumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
 						CounterExampleValueType.TRUE,
 						CounterExampleValueType.TRUE,
@@ -37,19 +43,19 @@ public class CounterExampleOrUnitTest {
 						CounterExampleValueType.FALSE });
 
 		// create first argument
-		CounterExampleProposition firstArgument = new CounterExamplePredicate(
+		final CounterExampleProposition firstArgument = new CounterExamplePredicate(
 				PathType.FINITE, firstArgumentValues);
 
 		// create second argument
-		CounterExampleProposition secondArgument = new CounterExamplePredicate(
+		final CounterExampleProposition secondArgument = new CounterExamplePredicate(
 				PathType.FINITE, secondArgumentValues);
 
 		// create an operator
-		CounterExampleBinaryOperator orOperator = new CounterExampleDisjunction(
+		final CounterExampleBinaryOperator orOperator = new CounterExampleDisjunction(
 				PathType.FINITE, firstArgument, secondArgument);
 
 		// check result values
-		List<CounterExampleValueType> values = orOperator.getValues();
+		final List<CounterExampleValueType> values = orOperator.getValues();
 		assertTrue(values.size() == firstArgumentValues.size());
 		assertTrue(values.size() == secondArgumentValues.size());
 		assertTrue(values.get(0) == CounterExampleValueType.TRUE);
@@ -58,9 +64,9 @@ public class CounterExampleOrUnitTest {
 		assertTrue(values.get(3) == CounterExampleValueType.FALSE);
 
 		// check highlighted positions
-		List<List<Integer>> firstHighlightedPositions = orOperator
+		final List<List<Integer>> firstHighlightedPositions = orOperator
 				.getFirstHighlightedPositions();
-		List<List<Integer>> secondHighlightedPositions = orOperator
+		final List<List<Integer>> secondHighlightedPositions = orOperator
 				.getSecondHighlightedPositions();
 		assertTrue(firstHighlightedPositions.size() == firstArgumentValues
 				.size());
@@ -105,7 +111,7 @@ public class CounterExampleOrUnitTest {
 	@Test
 	public void testOrOnInfinitePath() {
 		// create first argument values
-		List<CounterExampleValueType> firstArgumentValues = Arrays
+		final List<CounterExampleValueType> firstArgumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
 						CounterExampleValueType.FALSE,
 						CounterExampleValueType.TRUE,
@@ -113,7 +119,7 @@ public class CounterExampleOrUnitTest {
 						CounterExampleValueType.FALSE });
 
 		// create second argument values
-		List<CounterExampleValueType> secondArgumentValues = Arrays
+		final List<CounterExampleValueType> secondArgumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
 						CounterExampleValueType.TRUE,
 						CounterExampleValueType.TRUE,
@@ -373,7 +379,7 @@ public class CounterExampleOrUnitTest {
 	@Test
 	public void testOrOnReducedPath1() {
 		// create first argument values
-		List<CounterExampleValueType> firstArgumentValues = Arrays
+		final List<CounterExampleValueType> firstArgumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
 						CounterExampleValueType.FALSE,
 						CounterExampleValueType.TRUE,
@@ -381,7 +387,7 @@ public class CounterExampleOrUnitTest {
 						CounterExampleValueType.FALSE });
 
 		// create second argument values
-		List<CounterExampleValueType> secondArgumentValues = Arrays
+		final List<CounterExampleValueType> secondArgumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
 						CounterExampleValueType.TRUE,
 						CounterExampleValueType.TRUE,
@@ -389,19 +395,19 @@ public class CounterExampleOrUnitTest {
 						CounterExampleValueType.FALSE });
 
 		// create first argument
-		CounterExampleProposition firstArgument = new CounterExamplePredicate(
+		final CounterExampleProposition firstArgument = new CounterExamplePredicate(
 				PathType.REDUCED, firstArgumentValues);
 
 		// create second argument
-		CounterExampleProposition secondArgument = new CounterExamplePredicate(
+		final CounterExampleProposition secondArgument = new CounterExamplePredicate(
 				PathType.REDUCED, secondArgumentValues);
 
 		// create an operator
-		CounterExampleBinaryOperator orOperator = new CounterExampleDisjunction(
+		final CounterExampleBinaryOperator orOperator = new CounterExampleDisjunction(
 				PathType.REDUCED, firstArgument, secondArgument);
 
 		// check result values
-		List<CounterExampleValueType> values = orOperator.getValues();
+		final List<CounterExampleValueType> values = orOperator.getValues();
 		assertTrue(values.size() == firstArgumentValues.size());
 		assertTrue(values.size() == secondArgumentValues.size());
 		assertTrue(values.get(0) == CounterExampleValueType.TRUE);
@@ -410,9 +416,9 @@ public class CounterExampleOrUnitTest {
 		assertTrue(values.get(3) == CounterExampleValueType.FALSE);
 
 		// check highlighted positions
-		List<List<Integer>> firstHighlightedPositions = orOperator
+		final List<List<Integer>> firstHighlightedPositions = orOperator
 				.getFirstHighlightedPositions();
-		List<List<Integer>> secondHighlightedPositions = orOperator
+		final List<List<Integer>> secondHighlightedPositions = orOperator
 				.getSecondHighlightedPositions();
 		assertTrue(firstHighlightedPositions.size() == firstArgumentValues
 				.size());
@@ -457,46 +463,46 @@ public class CounterExampleOrUnitTest {
 	@Test
 	public void testOrOnReducedPath2() {
 		// create first argument values
-		List<CounterExampleValueType> firstArgumentValues = Arrays
+		final List<CounterExampleValueType> firstArgumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
 						CounterExampleValueType.FALSE,
-						CounterExampleValueType.UNDEFINED,
-						CounterExampleValueType.UNDEFINED,
-						CounterExampleValueType.UNDEFINED });
+						CounterExampleValueType.UNKNOWN,
+						CounterExampleValueType.UNKNOWN,
+						CounterExampleValueType.UNKNOWN });
 
 		// create second argument values
-		List<CounterExampleValueType> secondArgumentValues = Arrays
+		final List<CounterExampleValueType> secondArgumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
-						CounterExampleValueType.UNDEFINED,
+						CounterExampleValueType.UNKNOWN,
 						CounterExampleValueType.TRUE,
-						CounterExampleValueType.UNDEFINED,
+						CounterExampleValueType.UNKNOWN,
 						CounterExampleValueType.FALSE });
 
 		// create first argument
-		CounterExampleProposition firstArgument = new CounterExamplePredicate(
+		final CounterExampleProposition firstArgument = new CounterExamplePredicate(
 				PathType.REDUCED, firstArgumentValues);
 
 		// create second argument
-		CounterExampleProposition secondArgument = new CounterExamplePredicate(
+		final CounterExampleProposition secondArgument = new CounterExamplePredicate(
 				PathType.REDUCED, secondArgumentValues);
 
 		// create an operator
-		CounterExampleBinaryOperator orOperator = new CounterExampleDisjunction(
+		final CounterExampleBinaryOperator orOperator = new CounterExampleDisjunction(
 				PathType.REDUCED, firstArgument, secondArgument);
 
 		// check result values
-		List<CounterExampleValueType> values = orOperator.getValues();
+		final List<CounterExampleValueType> values = orOperator.getValues();
 		assertTrue(values.size() == firstArgumentValues.size());
 		assertTrue(values.size() == secondArgumentValues.size());
-		assertTrue(values.get(0) == CounterExampleValueType.UNDEFINED);
+		assertTrue(values.get(0) == CounterExampleValueType.UNKNOWN);
 		assertTrue(values.get(1) == CounterExampleValueType.TRUE);
-		assertTrue(values.get(2) == CounterExampleValueType.UNDEFINED);
-		assertTrue(values.get(3) == CounterExampleValueType.UNDEFINED);
+		assertTrue(values.get(2) == CounterExampleValueType.UNKNOWN);
+		assertTrue(values.get(3) == CounterExampleValueType.UNKNOWN);
 
 		// check highlighted positions
-		List<List<Integer>> firstHighlightedPositions = orOperator
+		final List<List<Integer>> firstHighlightedPositions = orOperator
 				.getFirstHighlightedPositions();
-		List<List<Integer>> secondHighlightedPositions = orOperator
+		final List<List<Integer>> secondHighlightedPositions = orOperator
 				.getSecondHighlightedPositions();
 		assertTrue(firstHighlightedPositions.size() == firstArgumentValues
 				.size());

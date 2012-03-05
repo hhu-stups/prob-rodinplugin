@@ -14,14 +14,20 @@ import de.prob.core.domainobjects.ltl.CounterExamplePredicate;
 import de.prob.core.domainobjects.ltl.CounterExampleProposition;
 import de.prob.core.domainobjects.ltl.CounterExampleValueType;
 
-public class CounterExampleImplyUnitTest {
+/**
+ * Unit test for an "imply" operator.
+ * 
+ * @author Andriy Tolstoy
+ * 
+ */
+public final class CounterExampleImplyUnitTest {
 	/*
 	 * f-TTFF, g-TFTF, f Imply g-TFTT
 	 */
 	@Test
 	public void testImplyOnFinitePath() {
 		// create first argument values
-		List<CounterExampleValueType> firstArgumentValues = Arrays
+		final List<CounterExampleValueType> firstArgumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
 						CounterExampleValueType.TRUE,
 						CounterExampleValueType.TRUE,
@@ -29,7 +35,7 @@ public class CounterExampleImplyUnitTest {
 						CounterExampleValueType.FALSE });
 
 		// create second argument values
-		List<CounterExampleValueType> secondArgumentValues = Arrays
+		final List<CounterExampleValueType> secondArgumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
 						CounterExampleValueType.TRUE,
 						CounterExampleValueType.FALSE,
@@ -37,19 +43,19 @@ public class CounterExampleImplyUnitTest {
 						CounterExampleValueType.FALSE });
 
 		// create first argument
-		CounterExampleProposition firstArgument = new CounterExamplePredicate(
+		final CounterExampleProposition firstArgument = new CounterExamplePredicate(
 				PathType.FINITE, firstArgumentValues);
 
 		// create second argument
-		CounterExampleProposition secondArgument = new CounterExamplePredicate(
+		final CounterExampleProposition secondArgument = new CounterExamplePredicate(
 				PathType.FINITE, secondArgumentValues);
 
 		// create an operator
-		CounterExampleBinaryOperator implyOperator = new CounterExampleImplication(
+		final CounterExampleBinaryOperator implyOperator = new CounterExampleImplication(
 				PathType.FINITE, firstArgument, secondArgument);
 
 		// check result values
-		List<CounterExampleValueType> values = implyOperator.getValues();
+		final List<CounterExampleValueType> values = implyOperator.getValues();
 		assertTrue(values.size() == firstArgumentValues.size());
 		assertTrue(values.size() == secondArgumentValues.size());
 		assertTrue(values.get(0) == CounterExampleValueType.TRUE);
@@ -58,9 +64,9 @@ public class CounterExampleImplyUnitTest {
 		assertTrue(values.get(3) == CounterExampleValueType.TRUE);
 
 		// check highlighted positions
-		List<List<Integer>> firstHighlightedPositions = implyOperator
+		final List<List<Integer>> firstHighlightedPositions = implyOperator
 				.getFirstHighlightedPositions();
-		List<List<Integer>> secondHighlightedPositions = implyOperator
+		final List<List<Integer>> secondHighlightedPositions = implyOperator
 				.getSecondHighlightedPositions();
 		assertTrue(firstHighlightedPositions.size() == firstArgumentValues
 				.size());
@@ -105,7 +111,7 @@ public class CounterExampleImplyUnitTest {
 	@Test
 	public void testImplyOnInfinitePath() {
 		// create first argument values
-		List<CounterExampleValueType> firstArgumentValues = Arrays
+		final List<CounterExampleValueType> firstArgumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
 						CounterExampleValueType.TRUE,
 						CounterExampleValueType.TRUE,
@@ -113,7 +119,7 @@ public class CounterExampleImplyUnitTest {
 						CounterExampleValueType.FALSE });
 
 		// create second argument values
-		List<CounterExampleValueType> secondArgumentValues = Arrays
+		final List<CounterExampleValueType> secondArgumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
 						CounterExampleValueType.TRUE,
 						CounterExampleValueType.FALSE,
@@ -379,7 +385,7 @@ public class CounterExampleImplyUnitTest {
 	@Test
 	public void testImplyOnReducedPath1() {
 		// create first argument values
-		List<CounterExampleValueType> firstArgumentValues = Arrays
+		final List<CounterExampleValueType> firstArgumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
 						CounterExampleValueType.TRUE,
 						CounterExampleValueType.TRUE,
@@ -387,7 +393,7 @@ public class CounterExampleImplyUnitTest {
 						CounterExampleValueType.FALSE });
 
 		// create second argument values
-		List<CounterExampleValueType> secondArgumentValues = Arrays
+		final List<CounterExampleValueType> secondArgumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
 						CounterExampleValueType.TRUE,
 						CounterExampleValueType.FALSE,
@@ -395,19 +401,19 @@ public class CounterExampleImplyUnitTest {
 						CounterExampleValueType.FALSE });
 
 		// create first argument
-		CounterExampleProposition firstArgument = new CounterExamplePredicate(
+		final CounterExampleProposition firstArgument = new CounterExamplePredicate(
 				PathType.REDUCED, firstArgumentValues);
 
 		// create second argument
-		CounterExampleProposition secondArgument = new CounterExamplePredicate(
+		final CounterExampleProposition secondArgument = new CounterExamplePredicate(
 				PathType.REDUCED, secondArgumentValues);
 
 		// create an operator
-		CounterExampleBinaryOperator implyOperator = new CounterExampleImplication(
+		final CounterExampleBinaryOperator implyOperator = new CounterExampleImplication(
 				PathType.REDUCED, firstArgument, secondArgument);
 
 		// check result values
-		List<CounterExampleValueType> values = implyOperator.getValues();
+		final List<CounterExampleValueType> values = implyOperator.getValues();
 		assertTrue(values.size() == firstArgumentValues.size());
 		assertTrue(values.size() == secondArgumentValues.size());
 		assertTrue(values.get(0) == CounterExampleValueType.TRUE);
@@ -416,9 +422,9 @@ public class CounterExampleImplyUnitTest {
 		assertTrue(values.get(3) == CounterExampleValueType.TRUE);
 
 		// check highlighted positions
-		List<List<Integer>> firstHighlightedPositions = implyOperator
+		final List<List<Integer>> firstHighlightedPositions = implyOperator
 				.getFirstHighlightedPositions();
-		List<List<Integer>> secondHighlightedPositions = implyOperator
+		final List<List<Integer>> secondHighlightedPositions = implyOperator
 				.getSecondHighlightedPositions();
 		assertTrue(firstHighlightedPositions.size() == firstArgumentValues
 				.size());
@@ -463,46 +469,46 @@ public class CounterExampleImplyUnitTest {
 	@Test
 	public void testImplyOnReducedPath2() {
 		// create first argument values
-		List<CounterExampleValueType> firstArgumentValues = Arrays
+		final List<CounterExampleValueType> firstArgumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
-						CounterExampleValueType.UNDEFINED,
-						CounterExampleValueType.UNDEFINED,
+						CounterExampleValueType.UNKNOWN,
+						CounterExampleValueType.UNKNOWN,
 						CounterExampleValueType.TRUE,
-						CounterExampleValueType.UNDEFINED });
+						CounterExampleValueType.UNKNOWN });
 
 		// create second argument values
-		List<CounterExampleValueType> secondArgumentValues = Arrays
+		final List<CounterExampleValueType> secondArgumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
-						CounterExampleValueType.UNDEFINED,
+						CounterExampleValueType.UNKNOWN,
 						CounterExampleValueType.TRUE,
-						CounterExampleValueType.UNDEFINED,
+						CounterExampleValueType.UNKNOWN,
 						CounterExampleValueType.FALSE });
 
 		// create first argument
-		CounterExampleProposition firstArgument = new CounterExamplePredicate(
+		final CounterExampleProposition firstArgument = new CounterExamplePredicate(
 				PathType.REDUCED, firstArgumentValues);
 
 		// create second argument
-		CounterExampleProposition secondArgument = new CounterExamplePredicate(
+		final CounterExampleProposition secondArgument = new CounterExamplePredicate(
 				PathType.REDUCED, secondArgumentValues);
 
 		// create an operator
-		CounterExampleBinaryOperator implyOperator = new CounterExampleImplication(
+		final CounterExampleBinaryOperator implyOperator = new CounterExampleImplication(
 				PathType.REDUCED, firstArgument, secondArgument);
 
 		// check result values
-		List<CounterExampleValueType> values = implyOperator.getValues();
+		final List<CounterExampleValueType> values = implyOperator.getValues();
 		assertTrue(values.size() == firstArgumentValues.size());
 		assertTrue(values.size() == secondArgumentValues.size());
-		assertTrue(values.get(0) == CounterExampleValueType.UNDEFINED);
+		assertTrue(values.get(0) == CounterExampleValueType.UNKNOWN);
 		assertTrue(values.get(1) == CounterExampleValueType.TRUE);
-		assertTrue(values.get(2) == CounterExampleValueType.UNDEFINED);
-		assertTrue(values.get(3) == CounterExampleValueType.UNDEFINED);
+		assertTrue(values.get(2) == CounterExampleValueType.UNKNOWN);
+		assertTrue(values.get(3) == CounterExampleValueType.UNKNOWN);
 
 		// check highlighted positions
-		List<List<Integer>> firstHighlightedPositions = implyOperator
+		final List<List<Integer>> firstHighlightedPositions = implyOperator
 				.getFirstHighlightedPositions();
-		List<List<Integer>> secondHighlightedPositions = implyOperator
+		final List<List<Integer>> secondHighlightedPositions = implyOperator
 				.getSecondHighlightedPositions();
 		assertTrue(firstHighlightedPositions.size() == firstArgumentValues
 				.size());
@@ -553,46 +559,46 @@ public class CounterExampleImplyUnitTest {
 	@Test
 	public void testImplyOnReducedPath3() {
 		// create first argument values
-		List<CounterExampleValueType> firstArgumentValues = Arrays
+		final List<CounterExampleValueType> firstArgumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
-						CounterExampleValueType.UNDEFINED,
-						CounterExampleValueType.UNDEFINED,
+						CounterExampleValueType.UNKNOWN,
+						CounterExampleValueType.UNKNOWN,
 						CounterExampleValueType.TRUE,
 						CounterExampleValueType.FALSE });
 
 		// create second argument values
-		List<CounterExampleValueType> secondArgumentValues = Arrays
+		final List<CounterExampleValueType> secondArgumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
-						CounterExampleValueType.UNDEFINED,
+						CounterExampleValueType.UNKNOWN,
 						CounterExampleValueType.TRUE,
-						CounterExampleValueType.UNDEFINED,
-						CounterExampleValueType.UNDEFINED });
+						CounterExampleValueType.UNKNOWN,
+						CounterExampleValueType.UNKNOWN });
 
 		// create first argument
-		CounterExampleProposition firstArgument = new CounterExamplePredicate(
+		final CounterExampleProposition firstArgument = new CounterExamplePredicate(
 				PathType.REDUCED, firstArgumentValues);
 
 		// create second argument
-		CounterExampleProposition secondArgument = new CounterExamplePredicate(
+		final CounterExampleProposition secondArgument = new CounterExamplePredicate(
 				PathType.REDUCED, secondArgumentValues);
 
 		// create an operator
-		CounterExampleBinaryOperator implyOperator = new CounterExampleImplication(
+		final CounterExampleBinaryOperator implyOperator = new CounterExampleImplication(
 				PathType.REDUCED, firstArgument, secondArgument);
 
 		// check result values
-		List<CounterExampleValueType> values = implyOperator.getValues();
+		final List<CounterExampleValueType> values = implyOperator.getValues();
 		assertTrue(values.size() == firstArgumentValues.size());
 		assertTrue(values.size() == secondArgumentValues.size());
-		assertTrue(values.get(0) == CounterExampleValueType.UNDEFINED);
+		assertTrue(values.get(0) == CounterExampleValueType.UNKNOWN);
 		assertTrue(values.get(1) == CounterExampleValueType.TRUE);
-		assertTrue(values.get(2) == CounterExampleValueType.UNDEFINED);
+		assertTrue(values.get(2) == CounterExampleValueType.UNKNOWN);
 		assertTrue(values.get(3) == CounterExampleValueType.TRUE);
 
 		// check highlighted positions
-		List<List<Integer>> firstHighlightedPositions = implyOperator
+		final List<List<Integer>> firstHighlightedPositions = implyOperator
 				.getFirstHighlightedPositions();
-		List<List<Integer>> secondHighlightedPositions = implyOperator
+		final List<List<Integer>> secondHighlightedPositions = implyOperator
 				.getSecondHighlightedPositions();
 		assertTrue(firstHighlightedPositions.size() == firstArgumentValues
 				.size());

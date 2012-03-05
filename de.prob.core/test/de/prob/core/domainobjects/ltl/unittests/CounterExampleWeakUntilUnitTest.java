@@ -14,14 +14,20 @@ import de.prob.core.domainobjects.ltl.CounterExampleProposition;
 import de.prob.core.domainobjects.ltl.CounterExampleValueType;
 import de.prob.core.domainobjects.ltl.CounterExampleWeakUntil;
 
-public class CounterExampleWeakUntilUnitTest {
+/**
+ * Unit test for a "weak until" operator.
+ * 
+ * @author Andriy Tolstoy
+ * 
+ */
+public final class CounterExampleWeakUntilUnitTest {
 	/*
-	 * f-TTTF, g-FFFT, f U g-TTTT
+	 * f-TTTF, g-FFFT, f WU g-TTTT
 	 */
 	@Test
 	public void testWeakUntilOnFinitePathTrueDefinition1() {
 		// create first argument values
-		List<CounterExampleValueType> firstArgumentValues = Arrays
+		final List<CounterExampleValueType> firstArgumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
 						CounterExampleValueType.TRUE,
 						CounterExampleValueType.TRUE,
@@ -29,7 +35,7 @@ public class CounterExampleWeakUntilUnitTest {
 						CounterExampleValueType.FALSE });
 
 		// create second argument values
-		List<CounterExampleValueType> secondArgumentValues = Arrays
+		final List<CounterExampleValueType> secondArgumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
 						CounterExampleValueType.FALSE,
 						CounterExampleValueType.FALSE,
@@ -37,19 +43,20 @@ public class CounterExampleWeakUntilUnitTest {
 						CounterExampleValueType.TRUE });
 
 		// create first argument
-		CounterExampleProposition firstArgument = new CounterExamplePredicate(
+		final CounterExampleProposition firstArgument = new CounterExamplePredicate(
 				"", PathType.FINITE, -1, firstArgumentValues);
 
 		// create second argument
-		CounterExampleProposition secondArgument = new CounterExamplePredicate(
+		final CounterExampleProposition secondArgument = new CounterExamplePredicate(
 				"", PathType.FINITE, -1, secondArgumentValues);
 
 		// create an operator
-		CounterExampleBinaryOperator weakUntilOperator = new CounterExampleWeakUntil(
+		final CounterExampleBinaryOperator weakUntilOperator = new CounterExampleWeakUntil(
 				PathType.FINITE, -1, firstArgument, secondArgument);
 
 		// check result values
-		List<CounterExampleValueType> values = weakUntilOperator.getValues();
+		final List<CounterExampleValueType> values = weakUntilOperator
+				.getValues();
 		assertTrue(values.size() == firstArgumentValues.size());
 		assertTrue(values.size() == secondArgumentValues.size());
 		assertTrue(values.get(0) == CounterExampleValueType.TRUE);
@@ -58,9 +65,9 @@ public class CounterExampleWeakUntilUnitTest {
 		assertTrue(values.get(3) == CounterExampleValueType.TRUE);
 
 		// check highlighted positions
-		List<List<Integer>> firstHighlightedPositions = weakUntilOperator
+		final List<List<Integer>> firstHighlightedPositions = weakUntilOperator
 				.getFirstHighlightedPositions();
-		List<List<Integer>> secondHighlightedPositions = weakUntilOperator
+		final List<List<Integer>> secondHighlightedPositions = weakUntilOperator
 				.getSecondHighlightedPositions();
 		assertTrue(firstHighlightedPositions.size() == firstArgumentValues
 				.size());
@@ -106,12 +113,12 @@ public class CounterExampleWeakUntilUnitTest {
 	}
 
 	/*
-	 * f-TTTT, g-FFFF, f U g-TTTT
+	 * f-TTTT, g-FFFF, f WU g-TTTT
 	 */
 	@Test
 	public void testWeakUntilOnFinitePathTrueDefinition2() {
 		// create first argument values
-		List<CounterExampleValueType> firstArgumentValues = Arrays
+		final List<CounterExampleValueType> firstArgumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
 						CounterExampleValueType.TRUE,
 						CounterExampleValueType.TRUE,
@@ -119,7 +126,7 @@ public class CounterExampleWeakUntilUnitTest {
 						CounterExampleValueType.TRUE });
 
 		// create second argument values
-		List<CounterExampleValueType> secondArgumentValues = Arrays
+		final List<CounterExampleValueType> secondArgumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
 						CounterExampleValueType.FALSE,
 						CounterExampleValueType.FALSE,
@@ -127,19 +134,20 @@ public class CounterExampleWeakUntilUnitTest {
 						CounterExampleValueType.FALSE });
 
 		// create first argument
-		CounterExampleProposition firstArgument = new CounterExamplePredicate(
-				"", PathType.FINITE, -1, firstArgumentValues);
+		final CounterExampleProposition firstArgument = new CounterExamplePredicate(
+				PathType.FINITE, -1, firstArgumentValues);
 
 		// create second argument
-		CounterExampleProposition secondArgument = new CounterExamplePredicate(
-				"", PathType.FINITE, -1, secondArgumentValues);
+		final CounterExampleProposition secondArgument = new CounterExamplePredicate(
+				PathType.FINITE, -1, secondArgumentValues);
 
 		// create an operator
-		CounterExampleBinaryOperator weakUntilOperator = new CounterExampleWeakUntil(
+		final CounterExampleBinaryOperator weakUntilOperator = new CounterExampleWeakUntil(
 				PathType.FINITE, -1, firstArgument, secondArgument);
 
 		// check result values
-		List<CounterExampleValueType> values = weakUntilOperator.getValues();
+		final List<CounterExampleValueType> values = weakUntilOperator
+				.getValues();
 		assertTrue(values.size() == firstArgumentValues.size());
 		assertTrue(values.size() == secondArgumentValues.size());
 		assertTrue(values.get(0) == CounterExampleValueType.TRUE);
@@ -148,9 +156,9 @@ public class CounterExampleWeakUntilUnitTest {
 		assertTrue(values.get(3) == CounterExampleValueType.TRUE);
 
 		// check highlighted positions
-		List<List<Integer>> firstHighlightedPositions = weakUntilOperator
+		final List<List<Integer>> firstHighlightedPositions = weakUntilOperator
 				.getFirstHighlightedPositions();
-		List<List<Integer>> secondHighlightedPositions = weakUntilOperator
+		final List<List<Integer>> secondHighlightedPositions = weakUntilOperator
 				.getSecondHighlightedPositions();
 		assertTrue(firstHighlightedPositions.size() == firstArgumentValues
 				.size());
@@ -162,49 +170,37 @@ public class CounterExampleWeakUntilUnitTest {
 		assertTrue(Arrays.equals(
 				firstHighlightedPositions.get(0).toArray(new Integer[0]),
 				new Integer[] { 0, 1, 2, 3 }));
-		assertTrue(secondHighlightedPositions.get(0).size() == 4);
-		assertTrue(Arrays.equals(
-				secondHighlightedPositions.get(0).toArray(new Integer[0]),
-				new Integer[] { 0, 1, 2, 3 }));
+		assertTrue(secondHighlightedPositions.get(0).size() == 0);
 
 		// State 1
 		assertTrue(firstHighlightedPositions.get(1).size() == 3);
 		assertTrue(Arrays.equals(
 				firstHighlightedPositions.get(1).toArray(new Integer[0]),
 				new Integer[] { 1, 2, 3 }));
-		assertTrue(secondHighlightedPositions.get(1).size() == 3);
-		assertTrue(Arrays.equals(
-				secondHighlightedPositions.get(1).toArray(new Integer[0]),
-				new Integer[] { 1, 2, 3 }));
+		assertTrue(secondHighlightedPositions.get(1).size() == 0);
 
 		// State 2
 		assertTrue(firstHighlightedPositions.get(2).size() == 2);
 		assertTrue(Arrays.equals(
 				firstHighlightedPositions.get(2).toArray(new Integer[0]),
 				new Integer[] { 2, 3 }));
-		assertTrue(secondHighlightedPositions.get(2).size() == 2);
-		assertTrue(Arrays.equals(
-				secondHighlightedPositions.get(2).toArray(new Integer[0]),
-				new Integer[] { 2, 3 }));
+		assertTrue(secondHighlightedPositions.get(2).size() == 0);
 
 		// State 3
 		assertTrue(firstHighlightedPositions.get(3).size() == 1);
 		assertTrue(Arrays.equals(
 				firstHighlightedPositions.get(3).toArray(new Integer[0]),
 				new Integer[] { 3 }));
-		assertTrue(secondHighlightedPositions.get(3).size() == 1);
-		assertTrue(Arrays.equals(
-				secondHighlightedPositions.get(3).toArray(new Integer[0]),
-				new Integer[] { 3 }));
+		assertTrue(secondHighlightedPositions.get(3).size() == 0);
 	}
 
 	/*
-	 * f-TTTF, g-FFFF, f U g-FFFF
+	 * f-TTTF, g-FFFF, f WU g-FFFF
 	 */
 	@Test
 	public void testWeakUntilOnFinitePathFalseDefinition1() {
 		// create first argument values
-		List<CounterExampleValueType> firstArgumentValues = Arrays
+		final List<CounterExampleValueType> firstArgumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
 						CounterExampleValueType.TRUE,
 						CounterExampleValueType.TRUE,
@@ -212,7 +208,7 @@ public class CounterExampleWeakUntilUnitTest {
 						CounterExampleValueType.FALSE });
 
 		// create second argument values
-		List<CounterExampleValueType> secondArgumentValues = Arrays
+		final List<CounterExampleValueType> secondArgumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
 						CounterExampleValueType.FALSE,
 						CounterExampleValueType.FALSE,
@@ -220,19 +216,20 @@ public class CounterExampleWeakUntilUnitTest {
 						CounterExampleValueType.FALSE });
 
 		// create first argument
-		CounterExampleProposition firstArgument = new CounterExamplePredicate(
+		final CounterExampleProposition firstArgument = new CounterExamplePredicate(
 				"", PathType.FINITE, -1, firstArgumentValues);
 
 		// create second argument
-		CounterExampleProposition secondArgument = new CounterExamplePredicate(
+		final CounterExampleProposition secondArgument = new CounterExamplePredicate(
 				"", PathType.FINITE, -1, secondArgumentValues);
 
 		// create an operator
-		CounterExampleBinaryOperator weakUntilOperator = new CounterExampleWeakUntil(
+		final CounterExampleBinaryOperator weakUntilOperator = new CounterExampleWeakUntil(
 				PathType.FINITE, -1, firstArgument, secondArgument);
 
 		// check result values
-		List<CounterExampleValueType> values = weakUntilOperator.getValues();
+		final List<CounterExampleValueType> values = weakUntilOperator
+				.getValues();
 		assertTrue(values.size() == firstArgumentValues.size());
 		assertTrue(values.size() == secondArgumentValues.size());
 		assertTrue(values.get(0) == CounterExampleValueType.FALSE);
@@ -241,9 +238,9 @@ public class CounterExampleWeakUntilUnitTest {
 		assertTrue(values.get(3) == CounterExampleValueType.FALSE);
 
 		// check highlighted positions
-		List<List<Integer>> firstHighlightedPositions = weakUntilOperator
+		final List<List<Integer>> firstHighlightedPositions = weakUntilOperator
 				.getFirstHighlightedPositions();
-		List<List<Integer>> secondHighlightedPositions = weakUntilOperator
+		final List<List<Integer>> secondHighlightedPositions = weakUntilOperator
 				.getSecondHighlightedPositions();
 		assertTrue(firstHighlightedPositions.size() == firstArgumentValues
 				.size());
@@ -292,12 +289,12 @@ public class CounterExampleWeakUntilUnitTest {
 	}
 
 	/*
-	 * f-TTFF, g-FFFT, f U g-FFFT
+	 * f-TTFF, g-FFFT, f WU g-FFFT
 	 */
 	@Test
 	public void testWeakUntilOnFinitePathFalseDefinition2() {
 		// create first argument values
-		List<CounterExampleValueType> firstArgumentValues = Arrays
+		final List<CounterExampleValueType> firstArgumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
 						CounterExampleValueType.TRUE,
 						CounterExampleValueType.TRUE,
@@ -305,7 +302,7 @@ public class CounterExampleWeakUntilUnitTest {
 						CounterExampleValueType.FALSE });
 
 		// create second argument values
-		List<CounterExampleValueType> secondArgumentValues = Arrays
+		final List<CounterExampleValueType> secondArgumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
 						CounterExampleValueType.FALSE,
 						CounterExampleValueType.FALSE,
@@ -313,19 +310,20 @@ public class CounterExampleWeakUntilUnitTest {
 						CounterExampleValueType.TRUE });
 
 		// create first argument
-		CounterExampleProposition firstArgument = new CounterExamplePredicate(
+		final CounterExampleProposition firstArgument = new CounterExamplePredicate(
 				"", PathType.FINITE, -1, firstArgumentValues);
 
 		// create second argument
-		CounterExampleProposition secondArgument = new CounterExamplePredicate(
+		final CounterExampleProposition secondArgument = new CounterExamplePredicate(
 				"", PathType.FINITE, -1, secondArgumentValues);
 
 		// create an operator
-		CounterExampleBinaryOperator weakUntilOperator = new CounterExampleWeakUntil(
+		final CounterExampleBinaryOperator weakUntilOperator = new CounterExampleWeakUntil(
 				PathType.FINITE, -1, firstArgument, secondArgument);
 
 		// check result values
-		List<CounterExampleValueType> values = weakUntilOperator.getValues();
+		final List<CounterExampleValueType> values = weakUntilOperator
+				.getValues();
 		assertTrue(values.size() == firstArgumentValues.size());
 		assertTrue(values.size() == secondArgumentValues.size());
 		assertTrue(values.get(0) == CounterExampleValueType.FALSE);
@@ -334,9 +332,9 @@ public class CounterExampleWeakUntilUnitTest {
 		assertTrue(values.get(3) == CounterExampleValueType.TRUE);
 
 		// check highlighted positions
-		List<List<Integer>> firstHighlightedPositions = weakUntilOperator
+		final List<List<Integer>> firstHighlightedPositions = weakUntilOperator
 				.getFirstHighlightedPositions();
-		List<List<Integer>> secondHighlightedPositions = weakUntilOperator
+		final List<List<Integer>> secondHighlightedPositions = weakUntilOperator
 				.getSecondHighlightedPositions();
 		assertTrue(firstHighlightedPositions.size() == firstArgumentValues
 				.size());
@@ -382,12 +380,12 @@ public class CounterExampleWeakUntilUnitTest {
 	}
 
 	/*
-	 * f - FFTT g - TFFF f U g - TFTT
+	 * f - FFTT g - TFFF f WU g - TFTT
 	 */
 	@Test
 	public void testWeakUntilOnFinitePath() {
 		// create first argument values
-		List<CounterExampleValueType> firstArgumentValues = Arrays
+		final List<CounterExampleValueType> firstArgumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
 						CounterExampleValueType.FALSE,
 						CounterExampleValueType.FALSE,
@@ -395,7 +393,7 @@ public class CounterExampleWeakUntilUnitTest {
 						CounterExampleValueType.TRUE });
 
 		// create second argument values
-		List<CounterExampleValueType> secondArgumentValues = Arrays
+		final List<CounterExampleValueType> secondArgumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
 						CounterExampleValueType.TRUE,
 						CounterExampleValueType.FALSE,
@@ -403,19 +401,20 @@ public class CounterExampleWeakUntilUnitTest {
 						CounterExampleValueType.FALSE });
 
 		// create first argument
-		CounterExampleProposition firstArgument = new CounterExamplePredicate(
+		final CounterExampleProposition firstArgument = new CounterExamplePredicate(
 				"", PathType.FINITE, -1, firstArgumentValues);
 
 		// create second argument
-		CounterExampleProposition secondArgument = new CounterExamplePredicate(
+		final CounterExampleProposition secondArgument = new CounterExamplePredicate(
 				"", PathType.FINITE, -1, secondArgumentValues);
 
 		// create an operator
-		CounterExampleBinaryOperator weakUntilOperator = new CounterExampleWeakUntil(
+		final CounterExampleBinaryOperator weakUntilOperator = new CounterExampleWeakUntil(
 				PathType.FINITE, -1, firstArgument, secondArgument);
 
 		// check result values
-		List<CounterExampleValueType> values = weakUntilOperator.getValues();
+		final List<CounterExampleValueType> values = weakUntilOperator
+				.getValues();
 		assertTrue(values.size() == firstArgumentValues.size());
 		assertTrue(values.size() == secondArgumentValues.size());
 		assertTrue(values.get(0) == CounterExampleValueType.TRUE);
@@ -424,9 +423,9 @@ public class CounterExampleWeakUntilUnitTest {
 		assertTrue(values.get(3) == CounterExampleValueType.TRUE);
 
 		// check highlighted positions
-		List<List<Integer>> firstHighlightedPositions = weakUntilOperator
+		final List<List<Integer>> firstHighlightedPositions = weakUntilOperator
 				.getFirstHighlightedPositions();
-		List<List<Integer>> secondHighlightedPositions = weakUntilOperator
+		final List<List<Integer>> secondHighlightedPositions = weakUntilOperator
 				.getSecondHighlightedPositions();
 		assertTrue(firstHighlightedPositions.size() == firstArgumentValues
 				.size());
@@ -455,20 +454,14 @@ public class CounterExampleWeakUntilUnitTest {
 		assertTrue(Arrays.equals(
 				firstHighlightedPositions.get(2).toArray(new Integer[0]),
 				new Integer[] { 2, 3 }));
-		assertTrue(secondHighlightedPositions.get(2).size() == 2);
-		assertTrue(Arrays.equals(
-				secondHighlightedPositions.get(2).toArray(new Integer[0]),
-				new Integer[] { 2, 3 }));
+		assertTrue(secondHighlightedPositions.get(2).size() == 0);
 
 		// State 3
 		assertTrue(firstHighlightedPositions.get(3).size() == 1);
 		assertTrue(Arrays.equals(
 				firstHighlightedPositions.get(3).toArray(new Integer[0]),
 				new Integer[] { 3 }));
-		assertTrue(secondHighlightedPositions.get(3).size() == 1);
-		assertTrue(Arrays.equals(
-				secondHighlightedPositions.get(3).toArray(new Integer[0]),
-				new Integer[] { 3 }));
+		assertTrue(secondHighlightedPositions.get(3).size() == 0);
 	}
 
 	/*
@@ -477,7 +470,7 @@ public class CounterExampleWeakUntilUnitTest {
 	@Test
 	public void testWeakUntilOnInfinitePath() {
 		// create first argument values
-		List<CounterExampleValueType> firstArgumentValues = Arrays
+		final List<CounterExampleValueType> firstArgumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
 						CounterExampleValueType.FALSE,
 						CounterExampleValueType.FALSE,
@@ -485,7 +478,7 @@ public class CounterExampleWeakUntilUnitTest {
 						CounterExampleValueType.TRUE });
 
 		// create second argument values
-		List<CounterExampleValueType> secondArgumentValues = Arrays
+		final List<CounterExampleValueType> secondArgumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
 						CounterExampleValueType.TRUE,
 						CounterExampleValueType.FALSE,
@@ -684,20 +677,14 @@ public class CounterExampleWeakUntilUnitTest {
 		assertTrue(Arrays.equals(
 				firstHighlightedPositions.get(2).toArray(new Integer[0]),
 				new Integer[] { 2, 3 }));
-		assertTrue(secondHighlightedPositions.get(2).size() == 2);
-		assertTrue(Arrays.equals(
-				secondHighlightedPositions.get(2).toArray(new Integer[0]),
-				new Integer[] { 2, 3 }));
+		assertTrue(secondHighlightedPositions.get(2).size() == 0);
 
 		// State 3
 		assertTrue(firstHighlightedPositions.get(3).size() == 2);
 		assertTrue(Arrays.equals(
 				firstHighlightedPositions.get(3).toArray(new Integer[0]),
 				new Integer[] { 3, 2 }));
-		assertTrue(secondHighlightedPositions.get(3).size() == 2);
-		assertTrue(Arrays.equals(
-				secondHighlightedPositions.get(3).toArray(new Integer[0]),
-				new Integer[] { 3, 2 }));
+		assertTrue(secondHighlightedPositions.get(3).size() == 0);
 
 		// Loop entry = 3
 		// create first argument
@@ -753,57 +740,52 @@ public class CounterExampleWeakUntilUnitTest {
 		assertTrue(Arrays.equals(
 				firstHighlightedPositions.get(2).toArray(new Integer[0]),
 				new Integer[] { 2, 3 }));
-		assertTrue(secondHighlightedPositions.get(2).size() == 2);
-		assertTrue(Arrays.equals(
-				secondHighlightedPositions.get(2).toArray(new Integer[0]),
-				new Integer[] { 2, 3 }));
+		assertTrue(secondHighlightedPositions.get(2).size() == 0);
 
 		// State 3
 		assertTrue(firstHighlightedPositions.get(3).size() == 1);
 		assertTrue(Arrays.equals(
 				firstHighlightedPositions.get(3).toArray(new Integer[0]),
 				new Integer[] { 3 }));
-		assertTrue(secondHighlightedPositions.get(3).size() == 1);
-		assertTrue(Arrays.equals(
-				secondHighlightedPositions.get(3).toArray(new Integer[0]),
-				new Integer[] { 3 }));
+		assertTrue(secondHighlightedPositions.get(3).size() == 0);
 	}
 
 	/*
-	 * f-TTTU, g-UUUT, f U g-TTTT
+	 * f-TTTU, g-UUUT, f WU g-TTTT
 	 */
 	@Test
 	public void testWeakUntilTrueDefinitionOnReducedPath() {
 		// create first argument values
-		List<CounterExampleValueType> firstArgumentValues = Arrays
+		final List<CounterExampleValueType> firstArgumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
 						CounterExampleValueType.TRUE,
 						CounterExampleValueType.TRUE,
 						CounterExampleValueType.TRUE,
-						CounterExampleValueType.UNDEFINED });
+						CounterExampleValueType.UNKNOWN });
 
 		// create second argument values
-		List<CounterExampleValueType> secondArgumentValues = Arrays
+		final List<CounterExampleValueType> secondArgumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
-						CounterExampleValueType.UNDEFINED,
-						CounterExampleValueType.UNDEFINED,
-						CounterExampleValueType.UNDEFINED,
+						CounterExampleValueType.UNKNOWN,
+						CounterExampleValueType.UNKNOWN,
+						CounterExampleValueType.UNKNOWN,
 						CounterExampleValueType.TRUE });
 
 		// create first argument
-		CounterExampleProposition firstArgument = new CounterExamplePredicate(
+		final CounterExampleProposition firstArgument = new CounterExamplePredicate(
 				"", PathType.FINITE, -1, firstArgumentValues);
 
 		// create second argument
-		CounterExampleProposition secondArgument = new CounterExamplePredicate(
+		final CounterExampleProposition secondArgument = new CounterExamplePredicate(
 				"", PathType.FINITE, -1, secondArgumentValues);
 
 		// create an operator
-		CounterExampleBinaryOperator weakUntilOperator = new CounterExampleWeakUntil(
+		final CounterExampleBinaryOperator weakUntilOperator = new CounterExampleWeakUntil(
 				PathType.FINITE, -1, firstArgument, secondArgument);
 
 		// check result values
-		List<CounterExampleValueType> values = weakUntilOperator.getValues();
+		final List<CounterExampleValueType> values = weakUntilOperator
+				.getValues();
 		assertTrue(values.size() == firstArgumentValues.size());
 		assertTrue(values.size() == secondArgumentValues.size());
 		assertTrue(values.get(0) == CounterExampleValueType.TRUE);
@@ -812,9 +794,9 @@ public class CounterExampleWeakUntilUnitTest {
 		assertTrue(values.get(3) == CounterExampleValueType.TRUE);
 
 		// check highlighted positions
-		List<List<Integer>> firstHighlightedPositions = weakUntilOperator
+		final List<List<Integer>> firstHighlightedPositions = weakUntilOperator
 				.getFirstHighlightedPositions();
-		List<List<Integer>> secondHighlightedPositions = weakUntilOperator
+		final List<List<Integer>> secondHighlightedPositions = weakUntilOperator
 				.getSecondHighlightedPositions();
 		assertTrue(firstHighlightedPositions.size() == firstArgumentValues
 				.size());
@@ -860,51 +842,52 @@ public class CounterExampleWeakUntilUnitTest {
 	}
 
 	/*
-	 * f-UTUU, g-FUTU, f U g-UTTU
+	 * f-UTUU, g-FUTU, f WU g-UTTU
 	 */
 	@Test
-	public void testUntilOnReducedPathUnknownDefinition1() {
+	public void testWeakUntilUnknownDefinitionOnReducedPath1() {
 		// create first argument values
-		List<CounterExampleValueType> firstArgumentValues = Arrays
+		final List<CounterExampleValueType> firstArgumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
-						CounterExampleValueType.UNDEFINED,
+						CounterExampleValueType.UNKNOWN,
 						CounterExampleValueType.TRUE,
-						CounterExampleValueType.UNDEFINED,
-						CounterExampleValueType.UNDEFINED });
+						CounterExampleValueType.UNKNOWN,
+						CounterExampleValueType.UNKNOWN });
 
 		// create second argument values
-		List<CounterExampleValueType> secondArgumentValues = Arrays
+		final List<CounterExampleValueType> secondArgumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
 						CounterExampleValueType.FALSE,
-						CounterExampleValueType.UNDEFINED,
+						CounterExampleValueType.UNKNOWN,
 						CounterExampleValueType.TRUE,
-						CounterExampleValueType.UNDEFINED });
+						CounterExampleValueType.UNKNOWN });
 
 		// create first argument
-		CounterExampleProposition firstArgument = new CounterExamplePredicate(
+		final CounterExampleProposition firstArgument = new CounterExamplePredicate(
 				"", PathType.REDUCED, -1, firstArgumentValues);
 
 		// create second argument
-		CounterExampleProposition secondArgument = new CounterExamplePredicate(
+		final CounterExampleProposition secondArgument = new CounterExamplePredicate(
 				"", PathType.REDUCED, -1, secondArgumentValues);
 
 		// create an operator
-		CounterExampleBinaryOperator weakUntilOperator = new CounterExampleWeakUntil(
+		final CounterExampleBinaryOperator weakUntilOperator = new CounterExampleWeakUntil(
 				PathType.REDUCED, -1, firstArgument, secondArgument);
 
 		// check result values
-		List<CounterExampleValueType> values = weakUntilOperator.getValues();
+		final List<CounterExampleValueType> values = weakUntilOperator
+				.getValues();
 		assertTrue(values.size() == firstArgumentValues.size());
 		assertTrue(values.size() == secondArgumentValues.size());
-		assertTrue(values.get(0) == CounterExampleValueType.UNDEFINED);
+		assertTrue(values.get(0) == CounterExampleValueType.UNKNOWN);
 		assertTrue(values.get(1) == CounterExampleValueType.TRUE);
 		assertTrue(values.get(2) == CounterExampleValueType.TRUE);
-		assertTrue(values.get(3) == CounterExampleValueType.UNDEFINED);
+		assertTrue(values.get(3) == CounterExampleValueType.UNKNOWN);
 
 		// check highlighted positions
-		List<List<Integer>> firstHighlightedPositions = weakUntilOperator
+		final List<List<Integer>> firstHighlightedPositions = weakUntilOperator
 				.getFirstHighlightedPositions();
-		List<List<Integer>> secondHighlightedPositions = weakUntilOperator
+		final List<List<Integer>> secondHighlightedPositions = weakUntilOperator
 				.getSecondHighlightedPositions();
 		assertTrue(firstHighlightedPositions.size() == firstArgumentValues
 				.size());
@@ -950,51 +933,52 @@ public class CounterExampleWeakUntilUnitTest {
 	}
 
 	/*
-	 * f-UUFU, g-FFUU, f U g-UUUU
+	 * f-UUFU, g-FFUU, f WU g-UUUU
 	 */
 	@Test
-	public void testUntilOnReducedPathUnknownDefinition2() {
+	public void testWeakUntilUnknownDefinitionOnReducedPath2() {
 		// create first argument values
-		List<CounterExampleValueType> firstArgumentValues = Arrays
+		final List<CounterExampleValueType> firstArgumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
-						CounterExampleValueType.UNDEFINED,
-						CounterExampleValueType.UNDEFINED,
+						CounterExampleValueType.UNKNOWN,
+						CounterExampleValueType.UNKNOWN,
 						CounterExampleValueType.FALSE,
-						CounterExampleValueType.UNDEFINED });
+						CounterExampleValueType.UNKNOWN });
 
 		// create second argument values
-		List<CounterExampleValueType> secondArgumentValues = Arrays
+		final List<CounterExampleValueType> secondArgumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
 						CounterExampleValueType.FALSE,
 						CounterExampleValueType.FALSE,
-						CounterExampleValueType.UNDEFINED,
-						CounterExampleValueType.UNDEFINED });
+						CounterExampleValueType.UNKNOWN,
+						CounterExampleValueType.UNKNOWN });
 
 		// create first argument
-		CounterExampleProposition firstArgument = new CounterExamplePredicate(
+		final CounterExampleProposition firstArgument = new CounterExamplePredicate(
 				"", PathType.REDUCED, -1, firstArgumentValues);
 
 		// create second argument
-		CounterExampleProposition secondArgument = new CounterExamplePredicate(
+		final CounterExampleProposition secondArgument = new CounterExamplePredicate(
 				"", PathType.REDUCED, -1, secondArgumentValues);
 
 		// create an operator
-		CounterExampleBinaryOperator weakUntilOperator = new CounterExampleWeakUntil(
+		final CounterExampleBinaryOperator weakUntilOperator = new CounterExampleWeakUntil(
 				PathType.REDUCED, -1, firstArgument, secondArgument);
 
 		// check result values
-		List<CounterExampleValueType> values = weakUntilOperator.getValues();
+		final List<CounterExampleValueType> values = weakUntilOperator
+				.getValues();
 		assertTrue(values.size() == firstArgumentValues.size());
 		assertTrue(values.size() == secondArgumentValues.size());
-		assertTrue(values.get(0) == CounterExampleValueType.UNDEFINED);
-		assertTrue(values.get(1) == CounterExampleValueType.UNDEFINED);
-		assertTrue(values.get(2) == CounterExampleValueType.UNDEFINED);
-		assertTrue(values.get(3) == CounterExampleValueType.UNDEFINED);
+		assertTrue(values.get(0) == CounterExampleValueType.UNKNOWN);
+		assertTrue(values.get(1) == CounterExampleValueType.UNKNOWN);
+		assertTrue(values.get(2) == CounterExampleValueType.UNKNOWN);
+		assertTrue(values.get(3) == CounterExampleValueType.UNKNOWN);
 
 		// check highlighted positions
-		List<List<Integer>> firstHighlightedPositions = weakUntilOperator
+		final List<List<Integer>> firstHighlightedPositions = weakUntilOperator
 				.getFirstHighlightedPositions();
-		List<List<Integer>> secondHighlightedPositions = weakUntilOperator
+		final List<List<Integer>> secondHighlightedPositions = weakUntilOperator
 				.getSecondHighlightedPositions();
 		assertTrue(firstHighlightedPositions.size() == firstArgumentValues
 				.size());
@@ -1043,51 +1027,52 @@ public class CounterExampleWeakUntilUnitTest {
 	}
 
 	/*
-	 * f-UTUU, g-FUUU, f U g-UUUU
+	 * f-UTUU, g-FUUU, f WU g-UUUU
 	 */
 	@Test
-	public void testUntilOnReducedPathUnknownDefinition3() {
+	public void testWeakUntilUnknownDefinitionOnReducedPath3() {
 		// create first argument values
-		List<CounterExampleValueType> firstArgumentValues = Arrays
+		final List<CounterExampleValueType> firstArgumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
-						CounterExampleValueType.UNDEFINED,
+						CounterExampleValueType.UNKNOWN,
 						CounterExampleValueType.TRUE,
-						CounterExampleValueType.UNDEFINED,
-						CounterExampleValueType.UNDEFINED });
+						CounterExampleValueType.UNKNOWN,
+						CounterExampleValueType.UNKNOWN });
 
 		// create second argument values
-		List<CounterExampleValueType> secondArgumentValues = Arrays
+		final List<CounterExampleValueType> secondArgumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
 						CounterExampleValueType.FALSE,
-						CounterExampleValueType.UNDEFINED,
-						CounterExampleValueType.UNDEFINED,
-						CounterExampleValueType.UNDEFINED });
+						CounterExampleValueType.UNKNOWN,
+						CounterExampleValueType.UNKNOWN,
+						CounterExampleValueType.UNKNOWN });
 
 		// create first argument
-		CounterExampleProposition firstArgument = new CounterExamplePredicate(
+		final CounterExampleProposition firstArgument = new CounterExamplePredicate(
 				"", PathType.REDUCED, -1, firstArgumentValues);
 
 		// create second argument
-		CounterExampleProposition secondArgument = new CounterExamplePredicate(
+		final CounterExampleProposition secondArgument = new CounterExamplePredicate(
 				"", PathType.REDUCED, -1, secondArgumentValues);
 
 		// create an operator
-		CounterExampleBinaryOperator weakUntilOperator = new CounterExampleWeakUntil(
+		final CounterExampleBinaryOperator weakUntilOperator = new CounterExampleWeakUntil(
 				PathType.REDUCED, -1, firstArgument, secondArgument);
 
 		// check result values
-		List<CounterExampleValueType> values = weakUntilOperator.getValues();
+		final List<CounterExampleValueType> values = weakUntilOperator
+				.getValues();
 		assertTrue(values.size() == firstArgumentValues.size());
 		assertTrue(values.size() == secondArgumentValues.size());
-		assertTrue(values.get(0) == CounterExampleValueType.UNDEFINED);
-		assertTrue(values.get(1) == CounterExampleValueType.UNDEFINED);
-		assertTrue(values.get(2) == CounterExampleValueType.UNDEFINED);
-		assertTrue(values.get(3) == CounterExampleValueType.UNDEFINED);
+		assertTrue(values.get(0) == CounterExampleValueType.UNKNOWN);
+		assertTrue(values.get(1) == CounterExampleValueType.UNKNOWN);
+		assertTrue(values.get(2) == CounterExampleValueType.UNKNOWN);
+		assertTrue(values.get(3) == CounterExampleValueType.UNKNOWN);
 
 		// check highlighted positions
-		List<List<Integer>> firstHighlightedPositions = weakUntilOperator
+		final List<List<Integer>> firstHighlightedPositions = weakUntilOperator
 				.getFirstHighlightedPositions();
-		List<List<Integer>> secondHighlightedPositions = weakUntilOperator
+		final List<List<Integer>> secondHighlightedPositions = weakUntilOperator
 				.getSecondHighlightedPositions();
 		assertTrue(firstHighlightedPositions.size() == firstArgumentValues
 				.size());
@@ -1136,12 +1121,12 @@ public class CounterExampleWeakUntilUnitTest {
 	}
 
 	/*
-	 * f-TTTT, g-FFFF, f U g-UUUU
+	 * f-TTTT, g-FFFF, f WU g-UUUU
 	 */
 	@Test
-	public void testUntilOnReducedPathUnknownDefinition4() {
+	public void testWeakUntilOnReducedPathUnknownDefinition4() {
 		// create first argument values
-		List<CounterExampleValueType> firstArgumentValues = Arrays
+		final List<CounterExampleValueType> firstArgumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
 						CounterExampleValueType.TRUE,
 						CounterExampleValueType.TRUE,
@@ -1149,7 +1134,7 @@ public class CounterExampleWeakUntilUnitTest {
 						CounterExampleValueType.TRUE });
 
 		// create second argument values
-		List<CounterExampleValueType> secondArgumentValues = Arrays
+		final List<CounterExampleValueType> secondArgumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
 						CounterExampleValueType.FALSE,
 						CounterExampleValueType.FALSE,
@@ -1157,30 +1142,31 @@ public class CounterExampleWeakUntilUnitTest {
 						CounterExampleValueType.FALSE });
 
 		// create first argument
-		CounterExampleProposition firstArgument = new CounterExamplePredicate(
+		final CounterExampleProposition firstArgument = new CounterExamplePredicate(
 				"", PathType.REDUCED, -1, firstArgumentValues);
 
 		// create second argument
-		CounterExampleProposition secondArgument = new CounterExamplePredicate(
+		final CounterExampleProposition secondArgument = new CounterExamplePredicate(
 				"", PathType.REDUCED, -1, secondArgumentValues);
 
 		// create an operator
-		CounterExampleBinaryOperator weakUntilOperator = new CounterExampleWeakUntil(
+		final CounterExampleBinaryOperator weakUntilOperator = new CounterExampleWeakUntil(
 				PathType.REDUCED, -1, firstArgument, secondArgument);
 
 		// check result values
-		List<CounterExampleValueType> values = weakUntilOperator.getValues();
+		final List<CounterExampleValueType> values = weakUntilOperator
+				.getValues();
 		assertTrue(values.size() == firstArgumentValues.size());
 		assertTrue(values.size() == secondArgumentValues.size());
-		assertTrue(values.get(0) == CounterExampleValueType.UNDEFINED);
-		assertTrue(values.get(1) == CounterExampleValueType.UNDEFINED);
-		assertTrue(values.get(2) == CounterExampleValueType.UNDEFINED);
-		assertTrue(values.get(3) == CounterExampleValueType.UNDEFINED);
+		assertTrue(values.get(0) == CounterExampleValueType.UNKNOWN);
+		assertTrue(values.get(1) == CounterExampleValueType.UNKNOWN);
+		assertTrue(values.get(2) == CounterExampleValueType.UNKNOWN);
+		assertTrue(values.get(3) == CounterExampleValueType.UNKNOWN);
 
 		// check highlighted positions
-		List<List<Integer>> firstHighlightedPositions = weakUntilOperator
+		final List<List<Integer>> firstHighlightedPositions = weakUntilOperator
 				.getFirstHighlightedPositions();
-		List<List<Integer>> secondHighlightedPositions = weakUntilOperator
+		final List<List<Integer>> secondHighlightedPositions = weakUntilOperator
 				.getSecondHighlightedPositions();
 		assertTrue(firstHighlightedPositions.size() == firstArgumentValues
 				.size());
@@ -1229,51 +1215,52 @@ public class CounterExampleWeakUntilUnitTest {
 	}
 
 	/*
-	 * f-UTUT, g-FUFU, f U g-UUUU
+	 * f-TTTT, g-UUUU, f WU g-UUUU
 	 */
 	@Test
-	public void testUntilOnReducedPathUnknownDefinition5() {
+	public void testWeakUntilUnknownDefinitionOnReducedPath5() {
 		// create first argument values
-		List<CounterExampleValueType> firstArgumentValues = Arrays
+		final List<CounterExampleValueType> firstArgumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
-						CounterExampleValueType.UNDEFINED,
 						CounterExampleValueType.TRUE,
-						CounterExampleValueType.UNDEFINED,
+						CounterExampleValueType.TRUE,
+						CounterExampleValueType.TRUE,
 						CounterExampleValueType.TRUE });
 
 		// create second argument values
-		List<CounterExampleValueType> secondArgumentValues = Arrays
+		final List<CounterExampleValueType> secondArgumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
-						CounterExampleValueType.FALSE,
-						CounterExampleValueType.UNDEFINED,
-						CounterExampleValueType.FALSE,
-						CounterExampleValueType.UNDEFINED });
+						CounterExampleValueType.UNKNOWN,
+						CounterExampleValueType.UNKNOWN,
+						CounterExampleValueType.UNKNOWN,
+						CounterExampleValueType.UNKNOWN });
 
 		// create first argument
-		CounterExampleProposition firstArgument = new CounterExamplePredicate(
+		final CounterExampleProposition firstArgument = new CounterExamplePredicate(
 				"", PathType.REDUCED, -1, firstArgumentValues);
 
 		// create second argument
-		CounterExampleProposition secondArgument = new CounterExamplePredicate(
+		final CounterExampleProposition secondArgument = new CounterExamplePredicate(
 				"", PathType.REDUCED, -1, secondArgumentValues);
 
 		// create an operator
-		CounterExampleBinaryOperator weakUntilOperator = new CounterExampleWeakUntil(
+		final CounterExampleBinaryOperator weakUntilOperator = new CounterExampleWeakUntil(
 				PathType.REDUCED, -1, firstArgument, secondArgument);
 
 		// check result values
-		List<CounterExampleValueType> values = weakUntilOperator.getValues();
+		final List<CounterExampleValueType> values = weakUntilOperator
+				.getValues();
 		assertTrue(values.size() == firstArgumentValues.size());
 		assertTrue(values.size() == secondArgumentValues.size());
-		assertTrue(values.get(0) == CounterExampleValueType.UNDEFINED);
-		assertTrue(values.get(1) == CounterExampleValueType.UNDEFINED);
-		assertTrue(values.get(2) == CounterExampleValueType.UNDEFINED);
-		assertTrue(values.get(3) == CounterExampleValueType.UNDEFINED);
+		assertTrue(values.get(0) == CounterExampleValueType.UNKNOWN);
+		assertTrue(values.get(1) == CounterExampleValueType.UNKNOWN);
+		assertTrue(values.get(2) == CounterExampleValueType.UNKNOWN);
+		assertTrue(values.get(3) == CounterExampleValueType.UNKNOWN);
 
 		// check highlighted positions
-		List<List<Integer>> firstHighlightedPositions = weakUntilOperator
+		final List<List<Integer>> firstHighlightedPositions = weakUntilOperator
 				.getFirstHighlightedPositions();
-		List<List<Integer>> secondHighlightedPositions = weakUntilOperator
+		final List<List<Integer>> secondHighlightedPositions = weakUntilOperator
 				.getSecondHighlightedPositions();
 		assertTrue(firstHighlightedPositions.size() == firstArgumentValues
 				.size());
@@ -1322,20 +1309,114 @@ public class CounterExampleWeakUntilUnitTest {
 	}
 
 	/*
-	 * f - UTFU g - FTFF f U g - UTFU
+	 * f-UTUT, g-FUFU, f WU g-UUUU
 	 */
 	@Test
-	public void testWeakUntilOnReducedPath() {
+	public void testWeakUntilOnReducedPathUnknownDefinition6() {
 		// create first argument values
-		List<CounterExampleValueType> firstArgumentValues = Arrays
+		final List<CounterExampleValueType> firstArgumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
-						CounterExampleValueType.UNDEFINED,
+						CounterExampleValueType.UNKNOWN,
 						CounterExampleValueType.TRUE,
-						CounterExampleValueType.FALSE,
-						CounterExampleValueType.UNDEFINED });
+						CounterExampleValueType.UNKNOWN,
+						CounterExampleValueType.TRUE });
 
 		// create second argument values
-		List<CounterExampleValueType> secondArgumentValues = Arrays
+		final List<CounterExampleValueType> secondArgumentValues = Arrays
+				.asList(new CounterExampleValueType[] {
+						CounterExampleValueType.FALSE,
+						CounterExampleValueType.UNKNOWN,
+						CounterExampleValueType.FALSE,
+						CounterExampleValueType.UNKNOWN });
+
+		// create first argument
+		final CounterExampleProposition firstArgument = new CounterExamplePredicate(
+				"", PathType.REDUCED, -1, firstArgumentValues);
+
+		// create second argument
+		final CounterExampleProposition secondArgument = new CounterExamplePredicate(
+				"", PathType.REDUCED, -1, secondArgumentValues);
+
+		// create an operator
+		final CounterExampleBinaryOperator weakUntilOperator = new CounterExampleWeakUntil(
+				PathType.REDUCED, -1, firstArgument, secondArgument);
+
+		// check result values
+		final List<CounterExampleValueType> values = weakUntilOperator
+				.getValues();
+		assertTrue(values.size() == firstArgumentValues.size());
+		assertTrue(values.size() == secondArgumentValues.size());
+		assertTrue(values.get(0) == CounterExampleValueType.UNKNOWN);
+		assertTrue(values.get(1) == CounterExampleValueType.UNKNOWN);
+		assertTrue(values.get(2) == CounterExampleValueType.UNKNOWN);
+		assertTrue(values.get(3) == CounterExampleValueType.UNKNOWN);
+
+		// check highlighted positions
+		final List<List<Integer>> firstHighlightedPositions = weakUntilOperator
+				.getFirstHighlightedPositions();
+		final List<List<Integer>> secondHighlightedPositions = weakUntilOperator
+				.getSecondHighlightedPositions();
+		assertTrue(firstHighlightedPositions.size() == firstArgumentValues
+				.size());
+		assertTrue(secondHighlightedPositions.size() == secondArgumentValues
+				.size());
+
+		// State 0
+		assertTrue(firstHighlightedPositions.get(0).size() == 4);
+		assertTrue(Arrays.equals(
+				firstHighlightedPositions.get(0).toArray(new Integer[0]),
+				new Integer[] { 0, 1, 2, 3 }));
+		assertTrue(secondHighlightedPositions.get(0).size() == 4);
+		assertTrue(Arrays.equals(
+				secondHighlightedPositions.get(0).toArray(new Integer[0]),
+				new Integer[] { 0, 1, 2, 3 }));
+
+		// State 1
+		assertTrue(firstHighlightedPositions.get(1).size() == 3);
+		assertTrue(Arrays.equals(
+				firstHighlightedPositions.get(1).toArray(new Integer[0]),
+				new Integer[] { 1, 2, 3 }));
+		assertTrue(secondHighlightedPositions.get(1).size() == 3);
+		assertTrue(Arrays.equals(
+				secondHighlightedPositions.get(1).toArray(new Integer[0]),
+				new Integer[] { 1, 2, 3 }));
+
+		// State 2
+		assertTrue(firstHighlightedPositions.get(2).size() == 2);
+		assertTrue(Arrays.equals(
+				firstHighlightedPositions.get(2).toArray(new Integer[0]),
+				new Integer[] { 2, 3 }));
+		assertTrue(secondHighlightedPositions.get(2).size() == 2);
+		assertTrue(Arrays.equals(
+				secondHighlightedPositions.get(2).toArray(new Integer[0]),
+				new Integer[] { 2, 3 }));
+
+		// State 3
+		assertTrue(firstHighlightedPositions.get(3).size() == 1);
+		assertTrue(Arrays.equals(
+				firstHighlightedPositions.get(3).toArray(new Integer[0]),
+				new Integer[] { 3 }));
+		assertTrue(secondHighlightedPositions.get(3).size() == 1);
+		assertTrue(Arrays.equals(
+				secondHighlightedPositions.get(3).toArray(new Integer[0]),
+				new Integer[] { 3 }));
+	}
+
+	/*
+	 * f-UTFU, g-FTFF, f WU g-UTFU
+	 */
+	@Test
+	public void testWeakUntilOnReducedPathUnknownDefinition7() {
+		// create first argument values
+		final List<CounterExampleValueType> firstArgumentValues = Arrays
+				.asList(new CounterExampleValueType[] {
+						CounterExampleValueType.UNKNOWN,
+						CounterExampleValueType.TRUE,
+						CounterExampleValueType.FALSE,
+						CounterExampleValueType.UNKNOWN });
+
+		// create second argument values
+		final List<CounterExampleValueType> secondArgumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
 						CounterExampleValueType.FALSE,
 						CounterExampleValueType.TRUE,
@@ -1343,30 +1424,31 @@ public class CounterExampleWeakUntilUnitTest {
 						CounterExampleValueType.FALSE });
 
 		// create first argument
-		CounterExampleProposition firstArgument = new CounterExamplePredicate(
+		final CounterExampleProposition firstArgument = new CounterExamplePredicate(
 				"", PathType.REDUCED, -1, firstArgumentValues);
 
 		// create second argument
-		CounterExampleProposition secondArgument = new CounterExamplePredicate(
+		final CounterExampleProposition secondArgument = new CounterExamplePredicate(
 				"", PathType.REDUCED, -1, secondArgumentValues);
 
 		// create an operator
-		CounterExampleBinaryOperator weakUntilOperator = new CounterExampleWeakUntil(
+		final CounterExampleBinaryOperator weakUntilOperator = new CounterExampleWeakUntil(
 				PathType.REDUCED, -1, firstArgument, secondArgument);
 
 		// check result values
-		List<CounterExampleValueType> values = weakUntilOperator.getValues();
+		final List<CounterExampleValueType> values = weakUntilOperator
+				.getValues();
 		assertTrue(values.size() == firstArgumentValues.size());
 		assertTrue(values.size() == secondArgumentValues.size());
-		assertTrue(values.get(0) == CounterExampleValueType.UNDEFINED);
+		assertTrue(values.get(0) == CounterExampleValueType.UNKNOWN);
 		assertTrue(values.get(1) == CounterExampleValueType.TRUE);
 		assertTrue(values.get(2) == CounterExampleValueType.FALSE);
-		assertTrue(values.get(3) == CounterExampleValueType.UNDEFINED);
+		assertTrue(values.get(3) == CounterExampleValueType.UNKNOWN);
 
 		// check highlighted positions
-		List<List<Integer>> firstHighlightedPositions = weakUntilOperator
+		final List<List<Integer>> firstHighlightedPositions = weakUntilOperator
 				.getFirstHighlightedPositions();
-		List<List<Integer>> secondHighlightedPositions = weakUntilOperator
+		final List<List<Integer>> secondHighlightedPositions = weakUntilOperator
 				.getSecondHighlightedPositions();
 		assertTrue(firstHighlightedPositions.size() == firstArgumentValues
 				.size());
@@ -1385,6 +1467,642 @@ public class CounterExampleWeakUntilUnitTest {
 
 		// State 1
 		assertTrue(firstHighlightedPositions.get(1).size() == 0);
+		assertTrue(secondHighlightedPositions.get(1).size() == 1);
+		assertTrue(Arrays.equals(
+				secondHighlightedPositions.get(1).toArray(new Integer[0]),
+				new Integer[] { 1 }));
+
+		// State 2
+		assertTrue(firstHighlightedPositions.get(2).size() == 1);
+		assertTrue(Arrays.equals(
+				firstHighlightedPositions.get(2).toArray(new Integer[0]),
+				new Integer[] { 2 }));
+		assertTrue(secondHighlightedPositions.get(2).size() == 1);
+		assertTrue(Arrays.equals(
+				secondHighlightedPositions.get(2).toArray(new Integer[0]),
+				new Integer[] { 2 }));
+
+		// State 3
+		assertTrue(firstHighlightedPositions.get(3).size() == 1);
+		assertTrue(Arrays.equals(
+				firstHighlightedPositions.get(3).toArray(new Integer[0]),
+				new Integer[] { 3 }));
+		assertTrue(secondHighlightedPositions.get(3).size() == 1);
+		assertTrue(Arrays.equals(
+				secondHighlightedPositions.get(3).toArray(new Integer[0]),
+				new Integer[] { 3 }));
+	}
+
+	// f-UUUU, g-UUUT, f WU g-UUUT
+	@Test
+	public void testWeakUntilUnknownDefinitionOnReducedPath8() {
+		// create first argument values
+		final List<CounterExampleValueType> firstArgumentValues = Arrays
+				.asList(new CounterExampleValueType[] {
+						CounterExampleValueType.UNKNOWN,
+						CounterExampleValueType.UNKNOWN,
+						CounterExampleValueType.UNKNOWN,
+						CounterExampleValueType.UNKNOWN });
+
+		// create second argument values
+		final List<CounterExampleValueType> secondArgumentValues = Arrays
+				.asList(new CounterExampleValueType[] {
+						CounterExampleValueType.UNKNOWN,
+						CounterExampleValueType.UNKNOWN,
+						CounterExampleValueType.UNKNOWN,
+						CounterExampleValueType.TRUE });
+
+		// create first argument
+		final CounterExampleProposition firstArgument = new CounterExamplePredicate(
+				PathType.REDUCED, firstArgumentValues);
+
+		// create second argument
+		final CounterExampleProposition secondArgument = new CounterExamplePredicate(
+				PathType.REDUCED, secondArgumentValues);
+
+		// create an operator
+		final CounterExampleBinaryOperator weakUntilOperator = new CounterExampleWeakUntil(
+				PathType.REDUCED, firstArgument, secondArgument);
+
+		// check result values
+		final List<CounterExampleValueType> values = weakUntilOperator
+				.getValues();
+		assertTrue(values.size() == firstArgumentValues.size());
+		assertTrue(values.size() == secondArgumentValues.size());
+		assertTrue(values.get(0) == CounterExampleValueType.UNKNOWN);
+		assertTrue(values.get(1) == CounterExampleValueType.UNKNOWN);
+		assertTrue(values.get(2) == CounterExampleValueType.UNKNOWN);
+		assertTrue(values.get(3) == CounterExampleValueType.TRUE);
+
+		// check highlighted positions
+		final List<List<Integer>> firstHighlightedPositions = weakUntilOperator
+				.getFirstHighlightedPositions();
+		final List<List<Integer>> secondHighlightedPositions = weakUntilOperator
+				.getSecondHighlightedPositions();
+		assertTrue(firstHighlightedPositions.size() == firstArgumentValues
+				.size());
+		assertTrue(secondHighlightedPositions.size() == secondArgumentValues
+				.size());
+
+		// State 0
+		assertTrue(firstHighlightedPositions.get(0).size() == 1);
+		assertTrue(Arrays.equals(
+				firstHighlightedPositions.get(0).toArray(new Integer[0]),
+				new Integer[] { 0 }));
+		assertTrue(secondHighlightedPositions.get(0).size() == 1);
+		assertTrue(Arrays.equals(
+				secondHighlightedPositions.get(0).toArray(new Integer[0]),
+				new Integer[] { 0 }));
+
+		// State 1
+		assertTrue(firstHighlightedPositions.get(1).size() == 1);
+		assertTrue(Arrays.equals(
+				firstHighlightedPositions.get(1).toArray(new Integer[0]),
+				new Integer[] { 1 }));
+		assertTrue(secondHighlightedPositions.get(1).size() == 1);
+		assertTrue(Arrays.equals(
+				secondHighlightedPositions.get(1).toArray(new Integer[0]),
+				new Integer[] { 1 }));
+
+		// State 2
+		assertTrue(firstHighlightedPositions.get(2).size() == 1);
+		assertTrue(Arrays.equals(
+				firstHighlightedPositions.get(2).toArray(new Integer[0]),
+				new Integer[] { 2 }));
+		assertTrue(secondHighlightedPositions.get(2).size() == 1);
+		assertTrue(Arrays.equals(
+				secondHighlightedPositions.get(2).toArray(new Integer[0]),
+				new Integer[] { 2 }));
+
+		// State 3
+		assertTrue(firstHighlightedPositions.get(3).size() == 0);
+		assertTrue(secondHighlightedPositions.get(3).size() == 1);
+		assertTrue(Arrays.equals(
+				secondHighlightedPositions.get(3).toArray(new Integer[0]),
+				new Integer[] { 3 }));
+	}
+
+	// f-UFUU, g-UFUT, f WU g-UFUT
+	@Test
+	public void testWeakUntilUnknownDefinitionOnReducedPath9() {
+		// create first argument values
+		final List<CounterExampleValueType> firstArgumentValues = Arrays
+				.asList(new CounterExampleValueType[] {
+						CounterExampleValueType.UNKNOWN,
+						CounterExampleValueType.FALSE,
+						CounterExampleValueType.UNKNOWN,
+						CounterExampleValueType.UNKNOWN });
+
+		// create second argument values
+		final List<CounterExampleValueType> secondArgumentValues = Arrays
+				.asList(new CounterExampleValueType[] {
+						CounterExampleValueType.UNKNOWN,
+						CounterExampleValueType.FALSE,
+						CounterExampleValueType.UNKNOWN,
+						CounterExampleValueType.TRUE });
+
+		// create first argument
+		final CounterExampleProposition firstArgument = new CounterExamplePredicate(
+				PathType.REDUCED, firstArgumentValues);
+
+		// create second argument
+		final CounterExampleProposition secondArgument = new CounterExamplePredicate(
+				PathType.REDUCED, secondArgumentValues);
+
+		// create an operator
+		final CounterExampleBinaryOperator weakUntilOperator = new CounterExampleWeakUntil(
+				PathType.REDUCED, firstArgument, secondArgument);
+
+		// check result values
+		final List<CounterExampleValueType> values = weakUntilOperator
+				.getValues();
+		assertTrue(values.size() == firstArgumentValues.size());
+		assertTrue(values.size() == secondArgumentValues.size());
+		assertTrue(values.get(0) == CounterExampleValueType.UNKNOWN);
+		assertTrue(values.get(1) == CounterExampleValueType.FALSE);
+		assertTrue(values.get(2) == CounterExampleValueType.UNKNOWN);
+		assertTrue(values.get(3) == CounterExampleValueType.TRUE);
+
+		// check highlighted positions
+		final List<List<Integer>> firstHighlightedPositions = weakUntilOperator
+				.getFirstHighlightedPositions();
+		final List<List<Integer>> secondHighlightedPositions = weakUntilOperator
+				.getSecondHighlightedPositions();
+		assertTrue(firstHighlightedPositions.size() == firstArgumentValues
+				.size());
+		assertTrue(secondHighlightedPositions.size() == secondArgumentValues
+				.size());
+
+		// State 0
+		assertTrue(firstHighlightedPositions.get(0).size() == 1);
+		assertTrue(Arrays.equals(
+				firstHighlightedPositions.get(0).toArray(new Integer[0]),
+				new Integer[] { 0 }));
+		assertTrue(secondHighlightedPositions.get(0).size() == 1);
+		assertTrue(Arrays.equals(
+				secondHighlightedPositions.get(0).toArray(new Integer[0]),
+				new Integer[] { 0 }));
+
+		// State 1
+		assertTrue(firstHighlightedPositions.get(1).size() == 1);
+		assertTrue(Arrays.equals(
+				firstHighlightedPositions.get(1).toArray(new Integer[0]),
+				new Integer[] { 1 }));
+		assertTrue(secondHighlightedPositions.get(1).size() == 1);
+		assertTrue(Arrays.equals(
+				secondHighlightedPositions.get(1).toArray(new Integer[0]),
+				new Integer[] { 1 }));
+
+		// State 2
+		assertTrue(firstHighlightedPositions.get(2).size() == 1);
+		assertTrue(Arrays.equals(
+				firstHighlightedPositions.get(2).toArray(new Integer[0]),
+				new Integer[] { 2 }));
+		assertTrue(secondHighlightedPositions.get(2).size() == 1);
+		assertTrue(Arrays.equals(
+				secondHighlightedPositions.get(2).toArray(new Integer[0]),
+				new Integer[] { 2 }));
+
+		// State 3
+		assertTrue(firstHighlightedPositions.get(3).size() == 0);
+		assertTrue(secondHighlightedPositions.get(3).size() == 1);
+		assertTrue(Arrays.equals(
+				secondHighlightedPositions.get(3).toArray(new Integer[0]),
+				new Integer[] { 3 }));
+	}
+
+	// f-UUFF, g-UUUF, f WU g-UUUF
+	@Test
+	public void testWeakUntilUnknownDefinitionOnReducedPath10() {
+		// create first argument values
+		final List<CounterExampleValueType> firstArgumentValues = Arrays
+				.asList(new CounterExampleValueType[] {
+						CounterExampleValueType.UNKNOWN,
+						CounterExampleValueType.UNKNOWN,
+						CounterExampleValueType.FALSE,
+						CounterExampleValueType.FALSE });
+
+		// create second argument values
+		final List<CounterExampleValueType> secondArgumentValues = Arrays
+				.asList(new CounterExampleValueType[] {
+						CounterExampleValueType.UNKNOWN,
+						CounterExampleValueType.UNKNOWN,
+						CounterExampleValueType.UNKNOWN,
+						CounterExampleValueType.FALSE });
+
+		// create first argument
+		final CounterExampleProposition firstArgument = new CounterExamplePredicate(
+				PathType.REDUCED, firstArgumentValues);
+
+		// create second argument
+		final CounterExampleProposition secondArgument = new CounterExamplePredicate(
+				PathType.REDUCED, secondArgumentValues);
+
+		// create an operator
+		final CounterExampleBinaryOperator weakUntilOperator = new CounterExampleWeakUntil(
+				PathType.REDUCED, firstArgument, secondArgument);
+
+		// check result values
+		final List<CounterExampleValueType> values = weakUntilOperator
+				.getValues();
+		assertTrue(values.size() == firstArgumentValues.size());
+		assertTrue(values.size() == secondArgumentValues.size());
+		assertTrue(values.get(0) == CounterExampleValueType.UNKNOWN);
+		assertTrue(values.get(1) == CounterExampleValueType.UNKNOWN);
+		assertTrue(values.get(2) == CounterExampleValueType.UNKNOWN);
+		assertTrue(values.get(3) == CounterExampleValueType.FALSE);
+
+		// check highlighted positions
+		final List<List<Integer>> firstHighlightedPositions = weakUntilOperator
+				.getFirstHighlightedPositions();
+		final List<List<Integer>> secondHighlightedPositions = weakUntilOperator
+				.getSecondHighlightedPositions();
+		assertTrue(firstHighlightedPositions.size() == firstArgumentValues
+				.size());
+		assertTrue(secondHighlightedPositions.size() == secondArgumentValues
+				.size());
+
+		// State 0
+		assertTrue(firstHighlightedPositions.get(0).size() == 1);
+		assertTrue(Arrays.equals(
+				firstHighlightedPositions.get(0).toArray(new Integer[0]),
+				new Integer[] { 0 }));
+		assertTrue(secondHighlightedPositions.get(0).size() == 1);
+		assertTrue(Arrays.equals(
+				secondHighlightedPositions.get(0).toArray(new Integer[0]),
+				new Integer[] { 0 }));
+
+		// State 1
+		assertTrue(firstHighlightedPositions.get(1).size() == 1);
+		assertTrue(Arrays.equals(
+				firstHighlightedPositions.get(1).toArray(new Integer[0]),
+				new Integer[] { 1 }));
+		assertTrue(secondHighlightedPositions.get(1).size() == 1);
+		assertTrue(Arrays.equals(
+				secondHighlightedPositions.get(1).toArray(new Integer[0]),
+				new Integer[] { 1 }));
+
+		// State 2
+		assertTrue(firstHighlightedPositions.get(2).size() == 1);
+		assertTrue(Arrays.equals(
+				firstHighlightedPositions.get(2).toArray(new Integer[0]),
+				new Integer[] { 2 }));
+		assertTrue(secondHighlightedPositions.get(2).size() == 1);
+		assertTrue(Arrays.equals(
+				secondHighlightedPositions.get(2).toArray(new Integer[0]),
+				new Integer[] { 2 }));
+
+		// State 3
+		assertTrue(firstHighlightedPositions.get(3).size() == 1);
+		assertTrue(Arrays.equals(
+				firstHighlightedPositions.get(3).toArray(new Integer[0]),
+				new Integer[] { 3 }));
+		assertTrue(secondHighlightedPositions.get(3).size() == 1);
+		assertTrue(Arrays.equals(
+				secondHighlightedPositions.get(3).toArray(new Integer[0]),
+				new Integer[] { 3 }));
+	}
+
+	// f-UUUU, g-UUTU, f WU g-UUTU
+	@Test
+	public void testWeakUntilUnknownDefinitionOnReducedPath11() {
+		// create first argument values
+		final List<CounterExampleValueType> firstArgumentValues = Arrays
+				.asList(new CounterExampleValueType[] {
+						CounterExampleValueType.UNKNOWN,
+						CounterExampleValueType.UNKNOWN,
+						CounterExampleValueType.UNKNOWN,
+						CounterExampleValueType.UNKNOWN });
+
+		// create second argument values
+		final List<CounterExampleValueType> secondArgumentValues = Arrays
+				.asList(new CounterExampleValueType[] {
+						CounterExampleValueType.UNKNOWN,
+						CounterExampleValueType.UNKNOWN,
+						CounterExampleValueType.TRUE,
+						CounterExampleValueType.UNKNOWN });
+
+		// create first argument
+		final CounterExampleProposition firstArgument = new CounterExamplePredicate(
+				PathType.REDUCED, firstArgumentValues);
+
+		// create second argument
+		final CounterExampleProposition secondArgument = new CounterExamplePredicate(
+				PathType.REDUCED, secondArgumentValues);
+
+		// create an operator
+		final CounterExampleBinaryOperator weakUntilOperator = new CounterExampleWeakUntil(
+				PathType.REDUCED, firstArgument, secondArgument);
+
+		// check result values
+		final List<CounterExampleValueType> values = weakUntilOperator
+				.getValues();
+		assertTrue(values.size() == firstArgumentValues.size());
+		assertTrue(values.size() == secondArgumentValues.size());
+		assertTrue(values.get(0) == CounterExampleValueType.UNKNOWN);
+		assertTrue(values.get(1) == CounterExampleValueType.UNKNOWN);
+		assertTrue(values.get(2) == CounterExampleValueType.TRUE);
+		assertTrue(values.get(3) == CounterExampleValueType.UNKNOWN);
+
+		// check highlighted positions
+		final List<List<Integer>> firstHighlightedPositions = weakUntilOperator
+				.getFirstHighlightedPositions();
+		final List<List<Integer>> secondHighlightedPositions = weakUntilOperator
+				.getSecondHighlightedPositions();
+		assertTrue(firstHighlightedPositions.size() == firstArgumentValues
+				.size());
+		assertTrue(secondHighlightedPositions.size() == secondArgumentValues
+				.size());
+
+		// State 0
+		assertTrue(firstHighlightedPositions.get(0).size() == 1);
+		assertTrue(Arrays.equals(
+				firstHighlightedPositions.get(0).toArray(new Integer[0]),
+				new Integer[] { 0 }));
+		assertTrue(secondHighlightedPositions.get(0).size() == 1);
+		assertTrue(Arrays.equals(
+				secondHighlightedPositions.get(0).toArray(new Integer[0]),
+				new Integer[] { 0 }));
+
+		// State 1
+		assertTrue(firstHighlightedPositions.get(1).size() == 1);
+		assertTrue(Arrays.equals(
+				firstHighlightedPositions.get(1).toArray(new Integer[0]),
+				new Integer[] { 1 }));
+		assertTrue(secondHighlightedPositions.get(1).size() == 1);
+		assertTrue(Arrays.equals(
+				secondHighlightedPositions.get(1).toArray(new Integer[0]),
+				new Integer[] { 1 }));
+
+		// State 2
+		assertTrue(firstHighlightedPositions.get(2).size() == 0);
+		assertTrue(secondHighlightedPositions.get(2).size() == 1);
+		assertTrue(Arrays.equals(
+				secondHighlightedPositions.get(2).toArray(new Integer[0]),
+				new Integer[] { 2 }));
+
+		// State 3
+		assertTrue(firstHighlightedPositions.get(3).size() == 1);
+		assertTrue(Arrays.equals(
+				firstHighlightedPositions.get(3).toArray(new Integer[0]),
+				new Integer[] { 3 }));
+		assertTrue(secondHighlightedPositions.get(3).size() == 1);
+		assertTrue(Arrays.equals(
+				secondHighlightedPositions.get(3).toArray(new Integer[0]),
+				new Integer[] { 3 }));
+	}
+
+	// f-UUFU, g-UUUU, f WU g-UUUU
+	@Test
+	public void testWeakUntilUnknownDefinitionOnReducedPath12() {
+		// create first argument values
+		final List<CounterExampleValueType> firstArgumentValues = Arrays
+				.asList(new CounterExampleValueType[] {
+						CounterExampleValueType.UNKNOWN,
+						CounterExampleValueType.UNKNOWN,
+						CounterExampleValueType.FALSE,
+						CounterExampleValueType.UNKNOWN });
+
+		// create second argument values
+		final List<CounterExampleValueType> secondArgumentValues = Arrays
+				.asList(new CounterExampleValueType[] {
+						CounterExampleValueType.UNKNOWN,
+						CounterExampleValueType.UNKNOWN,
+						CounterExampleValueType.UNKNOWN,
+						CounterExampleValueType.UNKNOWN });
+
+		// create first argument
+		final CounterExampleProposition firstArgument = new CounterExamplePredicate(
+				PathType.REDUCED, firstArgumentValues);
+
+		// create second argument
+		final CounterExampleProposition secondArgument = new CounterExamplePredicate(
+				PathType.REDUCED, secondArgumentValues);
+
+		// create an operator
+		final CounterExampleBinaryOperator weakUntilOperator = new CounterExampleWeakUntil(
+				PathType.REDUCED, firstArgument, secondArgument);
+
+		// check result values
+		final List<CounterExampleValueType> values = weakUntilOperator
+				.getValues();
+		assertTrue(values.size() == firstArgumentValues.size());
+		assertTrue(values.size() == secondArgumentValues.size());
+		assertTrue(values.get(0) == CounterExampleValueType.UNKNOWN);
+		assertTrue(values.get(1) == CounterExampleValueType.UNKNOWN);
+		assertTrue(values.get(2) == CounterExampleValueType.UNKNOWN);
+		assertTrue(values.get(3) == CounterExampleValueType.UNKNOWN);
+
+		// check highlighted positions
+		final List<List<Integer>> firstHighlightedPositions = weakUntilOperator
+				.getFirstHighlightedPositions();
+		final List<List<Integer>> secondHighlightedPositions = weakUntilOperator
+				.getSecondHighlightedPositions();
+		assertTrue(firstHighlightedPositions.size() == firstArgumentValues
+				.size());
+		assertTrue(secondHighlightedPositions.size() == secondArgumentValues
+				.size());
+
+		// State 0
+		assertTrue(firstHighlightedPositions.get(0).size() == 1);
+		assertTrue(Arrays.equals(
+				firstHighlightedPositions.get(0).toArray(new Integer[0]),
+				new Integer[] { 0 }));
+		assertTrue(secondHighlightedPositions.get(0).size() == 1);
+		assertTrue(Arrays.equals(
+				secondHighlightedPositions.get(0).toArray(new Integer[0]),
+				new Integer[] { 0 }));
+
+		// State 1
+		assertTrue(firstHighlightedPositions.get(1).size() == 1);
+		assertTrue(Arrays.equals(
+				firstHighlightedPositions.get(1).toArray(new Integer[0]),
+				new Integer[] { 1 }));
+		assertTrue(secondHighlightedPositions.get(1).size() == 1);
+		assertTrue(Arrays.equals(
+				secondHighlightedPositions.get(1).toArray(new Integer[0]),
+				new Integer[] { 1 }));
+
+		// State 2
+		assertTrue(firstHighlightedPositions.get(2).size() == 1);
+		assertTrue(Arrays.equals(
+				firstHighlightedPositions.get(2).toArray(new Integer[0]),
+				new Integer[] { 2 }));
+		assertTrue(secondHighlightedPositions.get(2).size() == 1);
+		assertTrue(Arrays.equals(
+				secondHighlightedPositions.get(2).toArray(new Integer[0]),
+				new Integer[] { 2 }));
+
+		// State 3
+		assertTrue(firstHighlightedPositions.get(3).size() == 1);
+		assertTrue(Arrays.equals(
+				firstHighlightedPositions.get(3).toArray(new Integer[0]),
+				new Integer[] { 3 }));
+		assertTrue(secondHighlightedPositions.get(3).size() == 1);
+		assertTrue(Arrays.equals(
+				secondHighlightedPositions.get(3).toArray(new Integer[0]),
+				new Integer[] { 3 }));
+	}
+
+	/*
+	 * f - UTFU g - FTFF f WU g - UTFU
+	 */
+	@Test
+	public void testWeakUntilOnReducedPathUnknownDefinition13() {
+		// create first argument values
+		final List<CounterExampleValueType> firstArgumentValues = Arrays
+				.asList(new CounterExampleValueType[] {
+						CounterExampleValueType.UNKNOWN,
+						CounterExampleValueType.TRUE,
+						CounterExampleValueType.FALSE,
+						CounterExampleValueType.UNKNOWN });
+
+		// create second argument values
+		final List<CounterExampleValueType> secondArgumentValues = Arrays
+				.asList(new CounterExampleValueType[] {
+						CounterExampleValueType.FALSE,
+						CounterExampleValueType.TRUE,
+						CounterExampleValueType.FALSE,
+						CounterExampleValueType.FALSE });
+
+		// create first argument
+		final CounterExampleProposition firstArgument = new CounterExamplePredicate(
+				"", PathType.REDUCED, -1, firstArgumentValues);
+
+		// create second argument
+		final CounterExampleProposition secondArgument = new CounterExamplePredicate(
+				"", PathType.REDUCED, -1, secondArgumentValues);
+
+		// create an operator
+		final CounterExampleBinaryOperator weakUntilOperator = new CounterExampleWeakUntil(
+				PathType.REDUCED, -1, firstArgument, secondArgument);
+
+		// check result values
+		final List<CounterExampleValueType> values = weakUntilOperator
+				.getValues();
+		assertTrue(values.size() == firstArgumentValues.size());
+		assertTrue(values.size() == secondArgumentValues.size());
+		assertTrue(values.get(0) == CounterExampleValueType.UNKNOWN);
+		assertTrue(values.get(1) == CounterExampleValueType.TRUE);
+		assertTrue(values.get(2) == CounterExampleValueType.FALSE);
+		assertTrue(values.get(3) == CounterExampleValueType.UNKNOWN);
+
+		// check highlighted positions
+		final List<List<Integer>> firstHighlightedPositions = weakUntilOperator
+				.getFirstHighlightedPositions();
+		final List<List<Integer>> secondHighlightedPositions = weakUntilOperator
+				.getSecondHighlightedPositions();
+		assertTrue(firstHighlightedPositions.size() == firstArgumentValues
+				.size());
+		assertTrue(secondHighlightedPositions.size() == secondArgumentValues
+				.size());
+
+		// State 0
+		assertTrue(firstHighlightedPositions.get(0).size() == 1);
+		assertTrue(Arrays.equals(
+				firstHighlightedPositions.get(0).toArray(new Integer[0]),
+				new Integer[] { 0 }));
+		assertTrue(secondHighlightedPositions.get(0).size() == 2);
+		assertTrue(Arrays.equals(
+				secondHighlightedPositions.get(0).toArray(new Integer[0]),
+				new Integer[] { 0, 1 }));
+
+		// State 1
+		assertTrue(firstHighlightedPositions.get(1).size() == 0);
+		assertTrue(secondHighlightedPositions.get(1).size() == 1);
+		assertTrue(Arrays.equals(
+				secondHighlightedPositions.get(1).toArray(new Integer[0]),
+				new Integer[] { 1 }));
+
+		// State 2
+		assertTrue(firstHighlightedPositions.get(2).size() == 1);
+		assertTrue(Arrays.equals(
+				firstHighlightedPositions.get(2).toArray(new Integer[0]),
+				new Integer[] { 2 }));
+		assertTrue(secondHighlightedPositions.get(2).size() == 1);
+		assertTrue(Arrays.equals(
+				secondHighlightedPositions.get(2).toArray(new Integer[0]),
+				new Integer[] { 2 }));
+
+		// State 3
+		assertTrue(firstHighlightedPositions.get(3).size() == 1);
+		assertTrue(Arrays.equals(
+				firstHighlightedPositions.get(3).toArray(new Integer[0]),
+				new Integer[] { 3 }));
+		assertTrue(secondHighlightedPositions.get(3).size() == 1);
+		assertTrue(Arrays.equals(
+				secondHighlightedPositions.get(3).toArray(new Integer[0]),
+				new Integer[] { 3 }));
+	}
+
+	/*
+	 * f - UUUU g - UUUU f WU g - UUUU
+	 */
+	@Test
+	public void testWeakUntilOnReducedPathUnknownDefinition14() {
+		// create first argument values
+		final List<CounterExampleValueType> firstArgumentValues = Arrays
+				.asList(new CounterExampleValueType[] {
+						CounterExampleValueType.UNKNOWN,
+						CounterExampleValueType.UNKNOWN,
+						CounterExampleValueType.UNKNOWN,
+						CounterExampleValueType.UNKNOWN });
+
+		// create second argument values
+		final List<CounterExampleValueType> secondArgumentValues = Arrays
+				.asList(new CounterExampleValueType[] {
+						CounterExampleValueType.UNKNOWN,
+						CounterExampleValueType.UNKNOWN,
+						CounterExampleValueType.UNKNOWN,
+						CounterExampleValueType.UNKNOWN });
+
+		// create first argument
+		final CounterExampleProposition firstArgument = new CounterExamplePredicate(
+				"", PathType.REDUCED, -1, firstArgumentValues);
+
+		// create second argument
+		final CounterExampleProposition secondArgument = new CounterExamplePredicate(
+				"", PathType.REDUCED, -1, secondArgumentValues);
+
+		// create an operator
+		final CounterExampleBinaryOperator weakUntilOperator = new CounterExampleWeakUntil(
+				PathType.REDUCED, -1, firstArgument, secondArgument);
+
+		// check result values
+		final List<CounterExampleValueType> values = weakUntilOperator
+				.getValues();
+		assertTrue(values.size() == firstArgumentValues.size());
+		assertTrue(values.size() == secondArgumentValues.size());
+		assertTrue(values.get(0) == CounterExampleValueType.UNKNOWN);
+		assertTrue(values.get(1) == CounterExampleValueType.UNKNOWN);
+		assertTrue(values.get(2) == CounterExampleValueType.UNKNOWN);
+		assertTrue(values.get(3) == CounterExampleValueType.UNKNOWN);
+
+		// check highlighted positions
+		final List<List<Integer>> firstHighlightedPositions = weakUntilOperator
+				.getFirstHighlightedPositions();
+		final List<List<Integer>> secondHighlightedPositions = weakUntilOperator
+				.getSecondHighlightedPositions();
+		assertTrue(firstHighlightedPositions.size() == firstArgumentValues
+				.size());
+		assertTrue(secondHighlightedPositions.size() == secondArgumentValues
+				.size());
+
+		// State 0
+		assertTrue(firstHighlightedPositions.get(0).size() == 1);
+		assertTrue(Arrays.equals(
+				firstHighlightedPositions.get(0).toArray(new Integer[0]),
+				new Integer[] { 0 }));
+		assertTrue(secondHighlightedPositions.get(0).size() == 1);
+		assertTrue(Arrays.equals(
+				secondHighlightedPositions.get(0).toArray(new Integer[0]),
+				new Integer[] { 0 }));
+
+		// State 1
+		assertTrue(firstHighlightedPositions.get(1).size() == 1);
+		assertTrue(Arrays.equals(
+				firstHighlightedPositions.get(1).toArray(new Integer[0]),
+				new Integer[] { 1 }));
 		assertTrue(secondHighlightedPositions.get(1).size() == 1);
 		assertTrue(Arrays.equals(
 				secondHighlightedPositions.get(1).toArray(new Integer[0]),

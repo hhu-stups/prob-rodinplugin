@@ -15,7 +15,7 @@ import de.prob.core.domainobjects.ltl.CounterExampleUnaryOperator;
 import de.prob.core.domainobjects.ltl.CounterExampleValueType;
 
 /**
- * Unit test for a "Globally" operator.
+ * Unit test for a "globally" operator.
  * 
  * @author Andriy Tolstoy
  * 
@@ -24,7 +24,7 @@ public final class CounterExampleGloballyUnitTest {
 	@Test
 	public void testGloballyOnFinitePath() {
 		// create argument values
-		List<CounterExampleValueType> argumentValues = Arrays
+		final List<CounterExampleValueType> argumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
 						CounterExampleValueType.TRUE,
 						CounterExampleValueType.FALSE,
@@ -32,15 +32,16 @@ public final class CounterExampleGloballyUnitTest {
 						CounterExampleValueType.TRUE });
 
 		// create an argument
-		CounterExampleProposition argument = new CounterExamplePredicate("",
-				PathType.FINITE, -1, argumentValues);
+		final CounterExampleProposition argument = new CounterExamplePredicate(
+				"", PathType.FINITE, -1, argumentValues);
 
 		// create an operator
-		CounterExampleUnaryOperator globallyOperator = new CounterExampleGlobally(
+		final CounterExampleUnaryOperator globallyOperator = new CounterExampleGlobally(
 				PathType.FINITE, -1, argument);
 
 		// check result values
-		List<CounterExampleValueType> values = globallyOperator.getValues();
+		final List<CounterExampleValueType> values = globallyOperator
+				.getValues();
 		assertTrue(values.size() == argumentValues.size());
 		assertTrue(values.get(0) == CounterExampleValueType.FALSE);
 		assertTrue(values.get(1) == CounterExampleValueType.FALSE);
@@ -48,7 +49,7 @@ public final class CounterExampleGloballyUnitTest {
 		assertTrue(values.get(3) == CounterExampleValueType.TRUE);
 
 		// check highlighted positions
-		List<List<Integer>> highlightedPositions = globallyOperator
+		final List<List<Integer>> highlightedPositions = globallyOperator
 				.getHighlightedPositions();
 		assertTrue(highlightedPositions.size() == argumentValues.size());
 		assertTrue(highlightedPositions.get(0).size() == 1);
@@ -75,7 +76,7 @@ public final class CounterExampleGloballyUnitTest {
 	@Test
 	public void testGloballyOnInfinitePath() {
 		// create argument values
-		List<CounterExampleValueType> argumentValues = Arrays
+		final List<CounterExampleValueType> argumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
 						CounterExampleValueType.TRUE,
 						CounterExampleValueType.FALSE,
@@ -247,31 +248,32 @@ public final class CounterExampleGloballyUnitTest {
 	@Test
 	public void testGloballyOnReducedPath() {
 		// create argument values
-		List<CounterExampleValueType> argumentValues = Arrays
+		final List<CounterExampleValueType> argumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
 						CounterExampleValueType.FALSE,
-						CounterExampleValueType.UNDEFINED,
+						CounterExampleValueType.UNKNOWN,
 						CounterExampleValueType.TRUE,
 						CounterExampleValueType.TRUE });
 
 		// create an argument
-		CounterExampleProposition argument = new CounterExamplePredicate("",
-				PathType.REDUCED, -1, argumentValues);
+		final CounterExampleProposition argument = new CounterExamplePredicate(
+				"", PathType.REDUCED, -1, argumentValues);
 
 		// create an operator
-		CounterExampleUnaryOperator globallyOperator = new CounterExampleGlobally(
+		final CounterExampleUnaryOperator globallyOperator = new CounterExampleGlobally(
 				PathType.REDUCED, -1, argument);
 
 		// check result values
-		List<CounterExampleValueType> values = globallyOperator.getValues();
+		final List<CounterExampleValueType> values = globallyOperator
+				.getValues();
 		assertTrue(values.size() == argumentValues.size());
 		assertTrue(values.get(0) == CounterExampleValueType.FALSE);
-		assertTrue(values.get(1) == CounterExampleValueType.UNDEFINED);
-		assertTrue(values.get(2) == CounterExampleValueType.UNDEFINED);
-		assertTrue(values.get(3) == CounterExampleValueType.UNDEFINED);
+		assertTrue(values.get(1) == CounterExampleValueType.UNKNOWN);
+		assertTrue(values.get(2) == CounterExampleValueType.UNKNOWN);
+		assertTrue(values.get(3) == CounterExampleValueType.UNKNOWN);
 
 		// check highlighted positions
-		List<List<Integer>> highlightedPositions = globallyOperator
+		final List<List<Integer>> highlightedPositions = globallyOperator
 				.getHighlightedPositions();
 		assertTrue(highlightedPositions.size() == argumentValues.size());
 		assertTrue(highlightedPositions.get(0).size() == 1);

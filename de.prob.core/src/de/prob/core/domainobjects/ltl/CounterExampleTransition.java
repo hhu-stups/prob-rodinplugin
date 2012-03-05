@@ -4,7 +4,14 @@ import java.util.List;
 
 import de.prob.core.command.LtlCheckingCommand.PathType;
 
-public class CounterExampleTransition extends CounterExamplePredicate {
+/**
+ * Provides transitions.
+ * 
+ * @author Andriy Tolstoy
+ * 
+ */
+
+public final class CounterExampleTransition extends CounterExamplePredicate {
 	public CounterExampleTransition(final String name, final PathType pathType,
 			final int loopEntry, final List<CounterExampleValueType> values) {
 		super(name, pathType, loopEntry, values);

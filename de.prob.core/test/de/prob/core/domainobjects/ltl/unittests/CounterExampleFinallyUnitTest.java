@@ -15,7 +15,7 @@ import de.prob.core.domainobjects.ltl.CounterExampleUnaryOperator;
 import de.prob.core.domainobjects.ltl.CounterExampleValueType;
 
 /**
- * Unit test for a "Finally" operator.
+ * Unit test for a "finally" operator.
  * 
  * @author Andriy Tolstoy
  * 
@@ -24,7 +24,7 @@ public final class CounterExampleFinallyUnitTest {
 	@Test
 	public void testFinallyOnFinitePath() {
 		// create argument values
-		List<CounterExampleValueType> argumentValues = Arrays
+		final List<CounterExampleValueType> argumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
 						CounterExampleValueType.FALSE,
 						CounterExampleValueType.TRUE,
@@ -32,15 +32,16 @@ public final class CounterExampleFinallyUnitTest {
 						CounterExampleValueType.FALSE });
 
 		// create an argument
-		CounterExampleProposition argument = new CounterExamplePredicate("",
-				PathType.FINITE, -1, argumentValues);
+		final CounterExampleProposition argument = new CounterExamplePredicate(
+				"", PathType.FINITE, -1, argumentValues);
 
 		// create an operator
-		CounterExampleUnaryOperator finallyOperator = new CounterExampleFinally(
+		final CounterExampleUnaryOperator finallyOperator = new CounterExampleFinally(
 				PathType.FINITE, -1, argument);
 
 		// check result values
-		List<CounterExampleValueType> values = finallyOperator.getValues();
+		final List<CounterExampleValueType> values = finallyOperator
+				.getValues();
 		assertTrue(values.size() == argumentValues.size());
 		assertTrue(values.get(0) == CounterExampleValueType.TRUE);
 		assertTrue(values.get(1) == CounterExampleValueType.TRUE);
@@ -48,7 +49,7 @@ public final class CounterExampleFinallyUnitTest {
 		assertTrue(values.get(3) == CounterExampleValueType.FALSE);
 
 		// check highlighted positions
-		List<List<Integer>> highlightedPositions = finallyOperator
+		final List<List<Integer>> highlightedPositions = finallyOperator
 				.getHighlightedPositions();
 		assertTrue(highlightedPositions.size() == argumentValues.size());
 		assertTrue(highlightedPositions.get(0).size() == 1);
@@ -75,7 +76,7 @@ public final class CounterExampleFinallyUnitTest {
 	@Test
 	public void testFinallyOnInfinitePath() {
 		// create argument values
-		List<CounterExampleValueType> argumentValues = Arrays
+		final List<CounterExampleValueType> argumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
 						CounterExampleValueType.FALSE,
 						CounterExampleValueType.TRUE,
@@ -129,7 +130,8 @@ public final class CounterExampleFinallyUnitTest {
 				argumentValues);
 
 		// create an operator
-		finallyOperator = new CounterExampleFinally(PathType.INFINITE, 1, argument);
+		finallyOperator = new CounterExampleFinally(PathType.INFINITE, 1,
+				argument);
 
 		// check result values
 		values = finallyOperator.getValues();
@@ -168,7 +170,8 @@ public final class CounterExampleFinallyUnitTest {
 				argumentValues);
 
 		// create an operator
-		finallyOperator = new CounterExampleFinally(PathType.INFINITE, 2, argument);
+		finallyOperator = new CounterExampleFinally(PathType.INFINITE, 2,
+				argument);
 
 		// check result values
 		values = finallyOperator.getValues();
@@ -207,7 +210,8 @@ public final class CounterExampleFinallyUnitTest {
 				argumentValues);
 
 		// create an operator
-		finallyOperator = new CounterExampleFinally(PathType.INFINITE, 3, argument);
+		finallyOperator = new CounterExampleFinally(PathType.INFINITE, 3,
+				argument);
 
 		// check result values
 		values = finallyOperator.getValues();
@@ -244,31 +248,32 @@ public final class CounterExampleFinallyUnitTest {
 	@Test
 	public void testFinallyOnReducedPath() {
 		// create argument values
-		List<CounterExampleValueType> argumentValues = Arrays
+		final List<CounterExampleValueType> argumentValues = Arrays
 				.asList(new CounterExampleValueType[] {
 						CounterExampleValueType.TRUE,
-						CounterExampleValueType.UNDEFINED,
+						CounterExampleValueType.UNKNOWN,
 						CounterExampleValueType.FALSE,
 						CounterExampleValueType.FALSE });
 
 		// create an argument
-		CounterExampleProposition argument = new CounterExamplePredicate("",
-				PathType.REDUCED, -1, argumentValues);
+		final CounterExampleProposition argument = new CounterExamplePredicate(
+				"", PathType.REDUCED, -1, argumentValues);
 
 		// create an operator
-		CounterExampleUnaryOperator finallyOperator = new CounterExampleFinally(
+		final CounterExampleUnaryOperator finallyOperator = new CounterExampleFinally(
 				PathType.REDUCED, -1, argument);
 
 		// check result values
-		List<CounterExampleValueType> values = finallyOperator.getValues();
+		final List<CounterExampleValueType> values = finallyOperator
+				.getValues();
 		assertTrue(values.size() == argumentValues.size());
 		assertTrue(values.get(0) == CounterExampleValueType.TRUE);
-		assertTrue(values.get(1) == CounterExampleValueType.UNDEFINED);
-		assertTrue(values.get(2) == CounterExampleValueType.UNDEFINED);
-		assertTrue(values.get(3) == CounterExampleValueType.UNDEFINED);
+		assertTrue(values.get(1) == CounterExampleValueType.UNKNOWN);
+		assertTrue(values.get(2) == CounterExampleValueType.UNKNOWN);
+		assertTrue(values.get(3) == CounterExampleValueType.UNKNOWN);
 
 		// check highlighted positions
-		List<List<Integer>> highlightedPositions = finallyOperator
+		final List<List<Integer>> highlightedPositions = finallyOperator
 				.getHighlightedPositions();
 		assertTrue(highlightedPositions.size() == argumentValues.size());
 		assertTrue(highlightedPositions.get(0).size() == 1);

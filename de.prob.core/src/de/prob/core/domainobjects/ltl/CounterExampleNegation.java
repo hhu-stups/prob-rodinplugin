@@ -3,7 +3,7 @@ package de.prob.core.domainobjects.ltl;
 import de.prob.core.command.LtlCheckingCommand.PathType;
 
 /**
- * Provides a "Not" operator.
+ * Provides a "not" operator.
  * 
  * @author Andriy Tolstoy
  * 
@@ -32,7 +32,7 @@ public final class CounterExampleNegation extends CounterExampleUnaryOperator {
 
 	public static CounterExampleValueType calculateNotOperator(
 			final CounterExampleValueType value) {
-		CounterExampleValueType result = CounterExampleValueType.UNDEFINED;
+		CounterExampleValueType result = CounterExampleValueType.UNKNOWN;
 
 		if (value == CounterExampleValueType.TRUE) {
 			result = CounterExampleValueType.FALSE;

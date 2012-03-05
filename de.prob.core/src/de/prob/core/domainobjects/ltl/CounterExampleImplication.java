@@ -3,7 +3,7 @@ package de.prob.core.domainobjects.ltl;
 import de.prob.core.command.LtlCheckingCommand.PathType;
 
 /**
- * Provides an "Imply" operator.
+ * Provides an "imply" operator.
  * 
  * @author Andriy Tolstoy
  * 

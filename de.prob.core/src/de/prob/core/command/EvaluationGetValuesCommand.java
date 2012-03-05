@@ -190,9 +190,10 @@ public class EvaluationGetValuesCommand implements IComposableCommand {
 				final CompoundPrologTerm vc = (CompoundPrologTerm) valueTerm;
 				final String valString = ((CompoundPrologTerm) vc
 						.getArgument(1)).getFunctor();
-				value = new EvaluationResult(
-						FormulaTranslator.translate(valString), true, false,
-						false, false);
+				final String translated = valString.length() == 0 ? ""
+						: FormulaTranslator.translate(valString);
+				value = new EvaluationResult(translated, true, false, false,
+						false);
 			} else if (valueTerm.hasFunctor("e", 1)) {
 				final CompoundPrologTerm vc = (CompoundPrologTerm) valueTerm;
 				final String error = ((CompoundPrologTerm) vc.getArgument(1))
