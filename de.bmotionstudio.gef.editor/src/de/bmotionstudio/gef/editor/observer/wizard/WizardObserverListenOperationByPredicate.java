@@ -16,6 +16,7 @@ import org.eclipse.core.databinding.observable.list.WritableList;
 import org.eclipse.core.databinding.observable.map.IObservableMap;
 import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
 import org.eclipse.jface.databinding.viewers.ObservableMapLabelProvider;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ComboBoxViewerCellEditor;
 import org.eclipse.jface.viewers.EditingSupport;
@@ -314,6 +315,24 @@ public class WizardObserverListenOperationByPredicate extends ObserverWizard {
 
 	@Override
 	protected Boolean prepareToFinish() {
+		if (((ListenOperationByPredicate) getObserver()).getList().size() == 0) {
+			setObserverDelete(true);
+		} else {
+			for (PredicateOperation obj : ((ListenOperationByPredicate) getObserver())
+					.getList()) {
+				if (obj.getOperationName().isEmpty()) {
+					MessageDialog
+							.openError(getShell(), "Please check your entries",
+									"Please check your entries. The operation field must not be empty.");
+					return false;
+				} else if (obj.getAttribute() == null) {
+					MessageDialog
+							.openError(getShell(), "Please check your entries",
+									"Please check your entries. The attribute field must not be empty.");
+					return false;
+				}
+			}
+		}
 		return true;
 	}
 
