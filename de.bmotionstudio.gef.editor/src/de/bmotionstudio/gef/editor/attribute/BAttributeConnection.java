@@ -6,6 +6,7 @@
 
 package de.bmotionstudio.gef.editor.attribute;
 
+import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
 
 public class BAttributeConnection extends AbstractAttribute {
@@ -16,7 +17,14 @@ public class BAttributeConnection extends AbstractAttribute {
 
 	@Override
 	public PropertyDescriptor preparePropertyDescriptor() {
-		return new PropertyDescriptor(getID(), getName());
+		PropertyDescriptor descriptor = new PropertyDescriptor(getID(),
+				getName());
+		descriptor.setLabelProvider(new LabelProvider() {
+			public String getText(Object element) {
+				return "";
+			}
+		});
+		return descriptor;
 	}
 
 	@Override
