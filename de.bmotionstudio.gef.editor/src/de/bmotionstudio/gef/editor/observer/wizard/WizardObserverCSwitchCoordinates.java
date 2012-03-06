@@ -68,7 +68,7 @@ public class WizardObserverCSwitchCoordinates extends ObserverWizard {
 			container.setLayout(new GridLayout(1, true));
 
 			tableViewer = WizardObserverUtil.createObserverWizardTableViewer(
-					container, ToggleObjectCoordinates.class);
+					container, ToggleObjectCoordinates.class, getObserver());
 
 			TableViewerColumn column = new TableViewerColumn(tableViewer,
 					SWT.NONE);

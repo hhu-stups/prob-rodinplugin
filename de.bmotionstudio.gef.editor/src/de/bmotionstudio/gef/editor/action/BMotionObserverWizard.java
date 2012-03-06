@@ -8,6 +8,7 @@ package de.bmotionstudio.gef.editor.action;
 
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.wizard.IWizard;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbenchPart;
 
@@ -15,6 +16,7 @@ public class BMotionObserverWizard extends BMotionAbstractWizard {
 
 	public BMotionObserverWizard(IWorkbenchPart workbenchPart, IWizard newWizard) {
 		super(workbenchPart, newWizard);
+		setShellStyle(SWT.CLOSE);
 		setDeleteToolTip("Delete Observer");
 	}
 

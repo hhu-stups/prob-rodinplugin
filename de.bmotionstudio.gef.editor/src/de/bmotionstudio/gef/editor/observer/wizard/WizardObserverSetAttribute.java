@@ -86,7 +86,7 @@ public class WizardObserverSetAttribute extends ObserverWizard {
 			container.setLayout(gl);
 
 			tableViewer = WizardObserverUtil.createObserverWizardTableViewer(
-					container, SetAttributeObject.class);
+					container, SetAttributeObject.class, getObserver());
 
 			TableViewerColumn column = new TableViewerColumn(tableViewer,
 					SWT.NONE);

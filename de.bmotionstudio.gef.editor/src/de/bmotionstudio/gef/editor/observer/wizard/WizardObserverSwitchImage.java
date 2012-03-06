@@ -68,7 +68,7 @@ public class WizardObserverSwitchImage extends ObserverWizard {
 			container.setLayout(new GridLayout(1, true));
 
 			tableViewer = WizardObserverUtil.createObserverWizardTableViewer(
-					container, ToggleObjectImage.class);
+					container, ToggleObjectImage.class, getObserver());
 
 			TableViewerColumn column = new TableViewerColumn(tableViewer,
 					SWT.NONE);

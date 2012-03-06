@@ -26,7 +26,8 @@ public class WizardObserverDragListener implements DragSourceListener {
 	public void dragSetData(DragSourceEvent event) {
 		IStructuredSelection selection = (IStructuredSelection) viewer
 				.getSelection();
-		event.data = selection.getFirstElement();
+		Object[] lobjects = selection.toArray();
+		event.data = lobjects;
 	}
 
 	@Override

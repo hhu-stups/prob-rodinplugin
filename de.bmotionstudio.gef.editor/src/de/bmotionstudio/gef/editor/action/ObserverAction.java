@@ -28,6 +28,7 @@ public class ObserverAction extends SelectionAction {
 	private String className;
 	private Observer clonedObserver;
 	private Observer newObserver;
+	private BControl actionControl;
 
 	public ObserverAction(IWorkbenchPart part) {
 		super(part);
@@ -44,11 +45,14 @@ public class ObserverAction extends SelectionAction {
 		return true;
 	}
 
+	@Override
 	public void run() {
 
 		clonedObserver = null;
 
-		if (getControl() != null) {
+		actionControl = getControl();
+
+		if (actionControl != null) {
 
 			newObserver = getControl().getObserver(getClassName());
 
@@ -115,7 +119,7 @@ public class ObserverAction extends SelectionAction {
 				} else if (status == WizardDialog.CANCEL) {
 
 					if (clonedObserver != null)
-						getControl().addObserver(clonedObserver);
+						actionControl.addObserver(clonedObserver);
 
 				} else if (status == BMotionObserverWizard.DELETE) {
 					RemoveObserverAction action = new RemoveObserverAction(
@@ -137,7 +141,7 @@ public class ObserverAction extends SelectionAction {
 	public ObserverCommand createObserverCommandCommand() {
 		ObserverCommand command = new ObserverCommand();
 		command.setClassName(getClassName());
-		command.setControl(getControl());
+		command.setControl(actionControl);
 		return command;
 	}
 
@@ -163,4 +167,5 @@ public class ObserverAction extends SelectionAction {
 		return null;
 
 	}
+
 }
