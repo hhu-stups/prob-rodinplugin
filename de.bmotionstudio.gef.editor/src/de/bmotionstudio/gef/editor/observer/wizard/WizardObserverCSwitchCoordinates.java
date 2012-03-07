@@ -16,10 +16,12 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.CheckboxCellEditor;
 import org.eclipse.jface.viewers.EditingSupport;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITableColorProvider;
 import org.eclipse.jface.viewers.ITableFontProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.wizard.WizardPage;
@@ -38,12 +40,14 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 
 import de.be4.classicalb.core.parser.BParser;
+import de.bmotionstudio.gef.editor.AttributeConstants;
 import de.bmotionstudio.gef.editor.BMotionStudioImage;
 import de.bmotionstudio.gef.editor.EditorImageRegistry;
 import de.bmotionstudio.gef.editor.edit.PredicateEditingSupport;
 import de.bmotionstudio.gef.editor.edit.TextEditingSupport;
 import de.bmotionstudio.gef.editor.model.BControl;
 import de.bmotionstudio.gef.editor.observer.Observer;
+import de.bmotionstudio.gef.editor.observer.ObserverEvalObject;
 import de.bmotionstudio.gef.editor.observer.ObserverWizard;
 import de.bmotionstudio.gef.editor.observer.SwitchChildCoordinates;
 import de.bmotionstudio.gef.editor.observer.ToggleObjectCoordinates;
@@ -51,6 +55,8 @@ import de.bmotionstudio.gef.editor.property.CheckboxCellEditorHelper;
 import de.bmotionstudio.gef.editor.util.WizardObserverUtil;
 
 public class WizardObserverCSwitchCoordinates extends ObserverWizard {
+
+	private String lastChangedControlID;
 
 	private class ObserverCSwitchCoordinatesPage extends WizardPage {
 
@@ -68,7 +74,37 @@ public class WizardObserverCSwitchCoordinates extends ObserverWizard {
 			container.setLayout(new GridLayout(1, true));
 
 			tableViewer = WizardObserverUtil.createObserverWizardTableViewer(
-					container, ToggleObjectCoordinates.class, getObserver());
+					container, ToggleObjectCoordinates.class,
+					(ObserverWizard) getWizard());
+			tableViewer
+					.addSelectionChangedListener(new ISelectionChangedListener() {
+
+						@Override
+						public void selectionChanged(SelectionChangedEvent event) {
+							IStructuredSelection selection = (IStructuredSelection) event
+									.getSelection();
+							Object firstElement = selection.getFirstElement();
+							if (firstElement instanceof ObserverEvalObject) {
+								restorePreview();
+								ObserverEvalObject observerEvalObject = (ObserverEvalObject) firstElement;
+								BControl control = getBControl();
+								ToggleObjectCoordinates toggleObjectCoordinates = (ToggleObjectCoordinates) observerEvalObject;
+								String attributeX = AttributeConstants.ATTRIBUTE_X;
+								String attributeY = AttributeConstants.ATTRIBUTE_Y;
+								String x = toggleObjectCoordinates.getX();
+								String y = toggleObjectCoordinates.getY();
+								String controlID = toggleObjectCoordinates
+										.getBcontrol();
+								BControl bControl = control.getChild(controlID);
+								if (bControl != null) {
+									bControl.setAttributeValue(attributeX, x);
+									bControl.setAttributeValue(attributeY, y);
+								}
+								lastChangedControlID = controlID;
+							}
+						}
+
+					});
 
 			TableViewerColumn column = new TableViewerColumn(tableViewer,
 					SWT.NONE);
@@ -189,6 +225,7 @@ public class WizardObserverCSwitchCoordinates extends ObserverWizard {
 
 	@Override
 	protected Boolean prepareToFinish() {
+		restorePreview();
 		if (((SwitchChildCoordinates) getObserver()).getToggleObjects().size() == 0) {
 			setObserverDelete(true);
 		} else {
@@ -204,6 +241,22 @@ public class WizardObserverCSwitchCoordinates extends ObserverWizard {
 			}
 		}
 		return true;
+	}
+
+	private void restorePreview() {
+		if (lastChangedControlID != null) {
+			BControl bControl = getBControl().getChild(lastChangedControlID);
+			if (bControl != null) {
+				bControl.restoreDefaultValue(AttributeConstants.ATTRIBUTE_X);
+				bControl.restoreDefaultValue(AttributeConstants.ATTRIBUTE_Y);
+			}
+		}
+	}
+
+	@Override
+	public boolean performCancel() {
+		restorePreview();
+		return super.performCancel();
 	}
 
 	@Override

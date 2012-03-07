@@ -13,10 +13,12 @@ import org.eclipse.core.databinding.observable.map.IObservableMap;
 import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
 import org.eclipse.jface.databinding.viewers.ObservableMapLabelProvider;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITableColorProvider;
 import org.eclipse.jface.viewers.ITableFontProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
@@ -44,6 +46,7 @@ import de.bmotionstudio.gef.editor.edit.IsExpressionModeEditingSupport;
 import de.bmotionstudio.gef.editor.edit.PredicateEditingSupport;
 import de.bmotionstudio.gef.editor.model.BControl;
 import de.bmotionstudio.gef.editor.observer.Observer;
+import de.bmotionstudio.gef.editor.observer.ObserverEvalObject;
 import de.bmotionstudio.gef.editor.observer.ObserverWizard;
 import de.bmotionstudio.gef.editor.observer.SwitchImage;
 import de.bmotionstudio.gef.editor.observer.ToggleObjectImage;
@@ -68,7 +71,27 @@ public class WizardObserverSwitchImage extends ObserverWizard {
 			container.setLayout(new GridLayout(1, true));
 
 			tableViewer = WizardObserverUtil.createObserverWizardTableViewer(
-					container, ToggleObjectImage.class, getObserver());
+					container, ToggleObjectImage.class,
+					(ObserverWizard) getWizard());
+			tableViewer
+					.addSelectionChangedListener(new ISelectionChangedListener() {
+
+						@Override
+						public void selectionChanged(SelectionChangedEvent event) {
+							IStructuredSelection selection = (IStructuredSelection) event
+									.getSelection();
+							Object firstElement = selection.getFirstElement();
+							if (firstElement instanceof ObserverEvalObject) {
+								ObserverEvalObject observerEvalObject = (ObserverEvalObject) firstElement;
+								BControl control = getBControl();
+								ToggleObjectImage toggleObjImage = (ToggleObjectImage) observerEvalObject;
+								String attribute = AttributeConstants.ATTRIBUTE_IMAGE;
+								String image = toggleObjImage.getImage();
+								control.setAttributeValue(attribute, image);
+							}
+						}
+
+					});
 
 			TableViewerColumn column = new TableViewerColumn(tableViewer,
 					SWT.NONE);
@@ -175,6 +198,7 @@ public class WizardObserverSwitchImage extends ObserverWizard {
 
 	@Override
 	protected Boolean prepareToFinish() {
+		getBControl().restoreDefaultValue(AttributeConstants.ATTRIBUTE_IMAGE);
 		if (((SwitchImage) getObserver()).getToggleObjects().size() == 0) {
 			setObserverDelete(true);
 		} else {
@@ -189,6 +213,12 @@ public class WizardObserverSwitchImage extends ObserverWizard {
 			}
 		}
 		return true;
+	}
+
+	@Override
+	public boolean performCancel() {
+		getBControl().restoreDefaultValue(AttributeConstants.ATTRIBUTE_IMAGE);
+		return super.performCancel();
 	}
 
 	@Override

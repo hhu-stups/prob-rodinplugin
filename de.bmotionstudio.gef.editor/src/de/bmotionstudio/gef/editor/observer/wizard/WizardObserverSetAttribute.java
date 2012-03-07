@@ -19,11 +19,13 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ComboBoxViewerCellEditor;
 import org.eclipse.jface.viewers.EditingSupport;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITableColorProvider;
 import org.eclipse.jface.viewers.ITableFontProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
@@ -54,6 +56,7 @@ import de.bmotionstudio.gef.editor.edit.IsExpressionModeEditingSupport;
 import de.bmotionstudio.gef.editor.edit.PredicateEditingSupport;
 import de.bmotionstudio.gef.editor.model.BControl;
 import de.bmotionstudio.gef.editor.observer.Observer;
+import de.bmotionstudio.gef.editor.observer.ObserverEvalObject;
 import de.bmotionstudio.gef.editor.observer.ObserverWizard;
 import de.bmotionstudio.gef.editor.observer.SetAttribute;
 import de.bmotionstudio.gef.editor.observer.SetAttributeObject;
@@ -61,6 +64,8 @@ import de.bmotionstudio.gef.editor.property.CheckboxCellEditorHelper;
 import de.bmotionstudio.gef.editor.util.WizardObserverUtil;
 
 public class WizardObserverSetAttribute extends ObserverWizard {
+
+	private String lastChangedAttributeID;
 
 	private class WizardSetAttributePage extends WizardPage {
 
@@ -86,7 +91,37 @@ public class WizardObserverSetAttribute extends ObserverWizard {
 			container.setLayout(gl);
 
 			tableViewer = WizardObserverUtil.createObserverWizardTableViewer(
-					container, SetAttributeObject.class, getObserver());
+					container, SetAttributeObject.class,
+					(ObserverWizard) getWizard());
+
+			tableViewer
+					.addSelectionChangedListener(new ISelectionChangedListener() {
+
+						@Override
+						public void selectionChanged(SelectionChangedEvent event) {
+							IStructuredSelection selection = (IStructuredSelection) event
+									.getSelection();
+							Object firstElement = selection.getFirstElement();
+							if (firstElement instanceof ObserverEvalObject) {
+
+								ObserverEvalObject observerEvalObject = (ObserverEvalObject) firstElement;
+								BControl control = getBControl();
+
+								if (lastChangedAttributeID != null)
+									control.restoreDefaultValue(lastChangedAttributeID);
+
+								SetAttributeObject setAttributeObj = (SetAttributeObject) observerEvalObject;
+								String attribute = setAttributeObj
+										.getAttribute();
+								Object value = setAttributeObj.getValue();
+								control.setAttributeValue(attribute, value);
+
+								lastChangedAttributeID = attribute;
+
+							}
+						}
+
+					});
 
 			TableViewerColumn column = new TableViewerColumn(tableViewer,
 					SWT.NONE);
@@ -278,6 +313,7 @@ public class WizardObserverSetAttribute extends ObserverWizard {
 
 	@Override
 	protected Boolean prepareToFinish() {
+		getBControl().restoreDefaultValue(lastChangedAttributeID);
 		if (((SetAttribute) getObserver()).getSetAttributeObjects().size() == 0) {
 			setObserverDelete(true);
 		} else {
@@ -292,6 +328,12 @@ public class WizardObserverSetAttribute extends ObserverWizard {
 			}
 		}
 		return true;
+	}
+
+	@Override
+	public boolean performCancel() {
+		getBControl().restoreDefaultValue(lastChangedAttributeID);
+		return super.performCancel();
 	}
 
 	private class ObserverLabelProvider extends ObservableMapLabelProvider

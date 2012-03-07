@@ -80,7 +80,8 @@ public class WizardObserverListenOperationByPredicate extends ObserverWizard {
 			setControl(container);
 
 			tableViewer = WizardObserverUtil.createObserverWizardTableViewer(
-					container, PredicateOperation.class, getObserver());
+					container, PredicateOperation.class,
+					(ObserverWizard) getWizard());
 
 			TableViewerColumn column = new TableViewerColumn(tableViewer,
 					SWT.NONE);

@@ -6,6 +6,7 @@
 
 package de.bmotionstudio.gef.editor.figure;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -43,21 +44,26 @@ public class BMSImageFigure extends AbstractBMotionFigure {
 		if (currentGIFThread != null)
 			currentGIFThread.interrupt();
 
-		loader.load(myPath);
+		if (new File(myPath).exists()) {
 
-		List<Image> imgList = images.get(myPath);
-		if (imgList == null) {
-			imgList = new ArrayList<Image>();
-			for (ImageData imageData : loader.data)
-				imgList.add(new Image(Display.getDefault(), imageData));
-			images.put(myPath, imgList);
-		}
+			loader.load(myPath);
 
-		if (loader.data.length > 1) { // GIF file
-			currentGIFThread = new GIFThread(this.imageFigure, myPath, imgList);
-			currentGIFThread.start();
-		} else { // Non GIF file
-			imageFigure.setImage(imgList.get(0));
+			List<Image> imgList = images.get(myPath);
+			if (imgList == null) {
+				imgList = new ArrayList<Image>();
+				for (ImageData imageData : loader.data)
+					imgList.add(new Image(Display.getDefault(), imageData));
+				images.put(myPath, imgList);
+			}
+
+			if (loader.data.length > 1) { // GIF file
+				currentGIFThread = new GIFThread(this.imageFigure, myPath,
+						imgList);
+				currentGIFThread.start();
+			} else { // Non GIF file
+				imageFigure.setImage(imgList.get(0));
+			}
+
 		}
 
 	}
