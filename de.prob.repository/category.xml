@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <feature url="features/de.prob.feature_1.0.0.qualifier.jar" id="de.prob.feature" version="1.0.0.qualifier">
-      <category name="de.prob.category"/>
-   </feature>
+
    <feature url="features/de.prob2.feature_2.3.0.qualifier.jar" id="de.prob2.feature" version="2.3.0.qualifier">
       <category name="de.prob2.category"/>
    </feature>
-   <category-def name="de.prob.category" label="Prob Category">
+   <category-def name="de.prob.category" label="ProB">
       <description>
          ProB is an animator and model checker for the B-Method. It allows
 fully automatic animation of many B specifications, and can be
