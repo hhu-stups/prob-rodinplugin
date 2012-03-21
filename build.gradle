@@ -51,6 +51,9 @@ apply plugin: 'base'
 	</project>
 	"""}
 
+
+
+
 subprojects {
 	
 	apply plugin: 'base'
@@ -67,16 +70,22 @@ subprojects {
 		*	Bundle-Version Number
 		*/
 	}
+	
+	task deleteArtifacts(type: Delete) {
+	  delete 'target','pom.xml'
+	}
+	
 }
 
 task deploy(dependsOn: subprojects.deploy)
 
 task install(dependsOn: deploy , type:Exec) {
 	description = "\tExecutes a 'mvn install' of the parent pom.xml and auto-generates Tycho Poms"	
-
 	commandLine 'mvn', 'install', '-f', 'de.prob.parent/pom.xml'
+}
 
-		
+clean {
+	dependsOn += subprojects.deleteArtifacts
 }
 
 
