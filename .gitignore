@@ -1,1 +1,7 @@
 **/bin/
+**/target/
+.gradle/
+.metadata/
+**/pom.xml
+.DS_Store
+pom.xml
