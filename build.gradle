@@ -1,0 +1,95 @@
+apply plugin: 'base'
+
+//---     Defining Tycho POM parts			--//
+
+
+    def artifact(artifactId,versionNumber) { """
+		<groupId>de.prob</groupId>
+		<artifactId>${artifactId}</artifactId>
+		<version>${versionNumber}</version>
+		<packaging>eclipse-plugin</packaging>
+	""" }
+	
+	
+			
+	def start() { """<?xml version="1.0" encoding="UTF-8"?>
+	<project
+		xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+		<modelVersion>4.0.0</modelVersion>
+	"""}
+	
+	
+	def elder() {"""
+		<parent>
+			<groupId>de.prob</groupId>
+			<artifactId>de.prob.parent</artifactId>
+			<version>1.0.0.qualifier</version>
+			<relativePath>../de.prob.parent/pom.xml</relativePath>
+		</parent>
+	"""}
+
+	def repos() {"""
+		  <repositories>
+    	<!-- configure p2 repository to resolve against -->
+    	<repository>
+    	  <id>prob_target</id>
+    	  <layout>p2</layout>
+    	  <url>http://cobra.cs.uni-duesseldorf.de/prob_dev_target/</url>
+    	</repository>
+    
+    	<repository>
+    	  	<id>indigo</id>
+    	  	<layout>p2</layout>
+      		<url>http://download.eclipse.org/releases/indigo/</url>
+    	</repository>
+  	</repositories> 
+	"""}
+	
+
+
+	def end() {"""
+	</project>
+	"""}
+
+
+
+
+subprojects {
+	
+	apply plugin: 'base'
+	
+	task deploy(){
+		description = "\tGenerating the Tycho Poms"
+
+		versionNumber = 'Version Number Error: check Manifest for Bundle-Version Number'
+		/* -- In case of changed Manifest File in Eclipse:
+		*	
+		*	Version Numbers of the projects are collected via 
+		*	regular expressions in the Manifest.MF File.  
+		*	Versionnumber of the projects are equal to their
+		*	Bundle-Version Number
+		*/
+	}
+	
+	task deleteArtifacts(type: Delete) {
+	  delete 'target','pom.xml'
+	}
+	
+}
+
+task deploy(dependsOn: subprojects.deploy)
+
+task install(dependsOn: deploy , type:Exec) {
+	description = "\tExecutes a 'mvn install' of the parent pom.xml and auto-generates Tycho Poms"	
+	commandLine 'mvn', 'install', '-f', 'de.prob.parent/pom.xml'
+}
+
+clean {
+	dependsOn += subprojects.deleteArtifacts
+}
+
+
+//	Build Script can be executed via gradle install
+//	Pom Generation can be executed via gradle deploy
+
+

@@ -1,0 +1,48 @@
+def feature(artifactId, versionNumber) { """
+<?xml version="1.0" encoding="UTF-8"?>
+	<project
+		xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+		<modelVersion>4.0.0</modelVersion>
+		<parent>
+			<groupId>de.prob</groupId>
+			<artifactId>de.prob.parent</artifactId>
+			<version>1.0.0.qualifier</version>
+			<relativePath>../de.prob.parent/pom.xml</relativePath>
+		</parent>
+		<groupId>de.prob</groupId>
+		<artifactId>${artifactId}</artifactId>
+		<version>${versionNumber}</version>
+		<packaging>eclipse-feature</packaging>
+	</project>
+"""}
+
+deploy <<{
+
+		content = new File("de.prob2.feature/feature.xml").getText("UTF-8") 
+
+	printFileLine = { if(  it ==~ /.+version.+qualifier.+/ ){
+			versionNumber = it.substring(15,it.size()-1) 
+			// possibile error: cuts off first 15 chars and leaves out last '"'
+			
+			/*	Version Number is taken from Feature.xml 
+			*	feature.xml is searched for version="version.qualifier"
+			*	first 15 chars and last '"' are cut off
+			*/
+
+		}
+	}
+	
+	content.eachLine( printFileLine )
+	
+	
+	artifactId = 'de.prob2.feature'
+	
+	println artifactId
+	println "\t"+versionNumber
+
+
+	def f = new File(artifactId+'/pom.xml') 
+	f.delete()
+	f << feature(artifactId, versionNumber)
+	
+}
