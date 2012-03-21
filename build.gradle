@@ -77,12 +77,8 @@ subprojects {
 	
 }
 
-task deploy(dependsOn: subprojects.deploy)
+task createPoms(dependsOn: subprojects.deploy)
 
-task install(dependsOn: deploy , type:Exec) {
-	description = "\tExecutes a 'mvn install' of the parent pom.xml and auto-generates Tycho Poms"	
-	commandLine 'mvn', 'install', '-f', 'de.prob.parent/pom.xml'
-}
 
 clean {
 	dependsOn += subprojects.deleteArtifacts
