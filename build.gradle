@@ -79,6 +79,11 @@ subprojects {
 
 task createPoms(dependsOn: subprojects.deploy)
 
+task collectArtifacts(type:Copy) {
+	    from 'de.prob.repository/target/repository/'
+	    into 'updatesite'
+ }		
+
 
 clean {
 	dependsOn += subprojects.deleteArtifacts
