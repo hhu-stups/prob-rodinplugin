@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: BMotion Studio Rodin Integration
 Bundle-SymbolicName: de.bmotionstudio.rodin;singleton:=true
-Bundle-Version: 1.0.2
+Bundle-Version: 1.0.2.qualifier
 Fragment-Host: de.bmotionstudio.gef.editor;bundle-version="5.2.1"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Vendor: HHU Düsseldorf STUPS Group
