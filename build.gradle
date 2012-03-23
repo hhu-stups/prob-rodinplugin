@@ -62,9 +62,13 @@ def download(address,target) {
 
 
 task downloadCli << {
+		dir = 'de.prob.core/prob/'
+		delete file(dir)
+	    new File(dir).mkdirs() 
+	
 		['leopard':'macos','linux':'linux','linux64':'linux64','win32':'windows'].each {
 		n = it.getKey()
-		dir = 'de.prob.core/prob/'
+	
 		targetdir = dir+it.getValue()
 		targetzip = dir+"probcli_${n}.zip"
 		url = "http://nightly.cobra.cs.uni-duesseldorf.de/cli/probcli_${n}.zip"
