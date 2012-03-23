@@ -1,4 +1,0 @@
-
-		Last build: ${build} Revision: 9938
-		January 17 2012
-  
