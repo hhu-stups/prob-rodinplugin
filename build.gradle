@@ -60,6 +60,13 @@ def download(address,target) {
 	    out.close()
 }
 
+def projects(int i){
+	return  subprojects.name[i]
+}
+
+def numberOfProjects(){
+	return subprojects.name.size()
+}
 
 task downloadCli << {
 		dir = 'de.prob.core/prob/'
@@ -83,14 +90,17 @@ task downloadCli << {
 	
 }
 
+def parentId(){
+	return "de.prob.parent"
+}
 subprojects {
 	
 	apply plugin: 'base'
-	
+		
 	task deploy(){
-		description = "\tGenerating the Tycho Poms"
+		description = "\tGenerating the Tycho Poms. Please remember to add a '.qualifier' to the version numbers!"
 
-		versionNumber = 'Version Number Error: check Manifest for Bundle-Version Number'
+		versionNumber = 'Version Number Error:\tcheck Manifest for Bundle-Version Number and make sure to add a ".qualifier" to the version numbers!\n'
 		/* -- In case of changed Manifest File in Eclipse:
 		*	
 		*	Version Numbers of the projects are collected via 
@@ -117,6 +127,16 @@ task collectArtifacts(type:Copy) {
 clean {
 	dependsOn += subprojects.deleteArtifacts
 }
+
+
+task install(dependsOn: [createPoms, downloadCli] , type:Exec) {
+	description = "\tExecutes a 'mvn install' of the parent pom.xml and auto-generates Tycho Poms"	
+
+	
+	commandLine 'mvn', 'install', '-f', 'de.prob.parent/pom.xml'
+		
+}
+
 
 
 //	Build Script can be executed via gradle install
