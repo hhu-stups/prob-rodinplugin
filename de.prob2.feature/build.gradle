@@ -4,12 +4,12 @@ def feature(artifactId, versionNumber) { """
 		xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 		<modelVersion>4.0.0</modelVersion>
 		<parent>
-			<groupId>de.prob</groupId>
-			<artifactId>de.prob.parent</artifactId>
+			<groupId>${groupId()}</groupId>
+			<artifactId>${parentId()}</artifactId>
 			<version>1.0.0.qualifier</version>
-			<relativePath>../de.prob.parent/pom.xml</relativePath>
+			<relativePath>../${parentId()}/pom.xml</relativePath>
 		</parent>
-		<groupId>de.prob</groupId>
+		<groupId>${groupId()}</groupId>
 		<artifactId>${artifactId}</artifactId>
 		<version>${versionNumber}</version>
 		<packaging>eclipse-feature</packaging>

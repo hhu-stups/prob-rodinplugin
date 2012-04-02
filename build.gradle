@@ -1,10 +1,17 @@
 apply plugin: 'base'
 
+/*	--!		 Please Define the Parent ID and and the Group Id! 		--!	*/
+
+groupID		=	"de.prob"
+parentID	= 	"de.prob.parent"
+
+
+
 //---     Defining Tycho POM parts			--//
 
 
     def artifact(artifactId,versionNumber) { """
-		<groupId>de.prob</groupId>
+		<groupId>${groupId()}</groupId>
 		<artifactId>${artifactId}</artifactId>
 		<version>${versionNumber}</version>
 		<packaging>eclipse-plugin</packaging>
@@ -21,10 +28,10 @@ apply plugin: 'base'
 	
 	def elder() {"""
 		<parent>
-			<groupId>de.prob</groupId>
-			<artifactId>de.prob.parent</artifactId>
+			<groupId>${groupId()}</groupId>
+			<artifactId>${parentId()}</artifactId>
 			<version>1.0.0.qualifier</version>
-			<relativePath>../de.prob.parent/pom.xml</relativePath>
+			<relativePath>../${parentId()}/pom.xml</relativePath>
 		</parent>
 	"""}
 
@@ -63,10 +70,14 @@ def download(address,target) {
 def projects(int i){
 	return  subprojects.name[i]
 }
+//	returns the name of a subproject listed in the settings.gradle file
+
 
 def numberOfProjects(){
 	return subprojects.name.size()
 }
+//	returns the number of projects listed in the settings.gradle file
+
 
 task downloadCli << {
 		dir = 'de.prob.core/prob/'
@@ -90,9 +101,29 @@ task downloadCli << {
 	
 }
 
+
+/* 		--		Define ParentId			--		*/
+
 def parentId(){
-	return "de.prob.parent"
+	return parentID
 }
+/*
+*	This is the project of the parent Pom
+*	The Tycho Maven Build is triggered from
+*	this project's pom
+*/
+
+
+
+/*	--			Define Group Id			--		*/
+def groupId(){
+	return groupID
+}
+
+/*
+*	This Group ID will be used in every sub project
+*/
+
 subprojects {
 	
 	apply plugin: 'base'

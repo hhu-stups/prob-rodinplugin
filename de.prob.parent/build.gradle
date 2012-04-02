@@ -3,7 +3,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	
-	<groupId>de.prob</groupId>
+	<groupId>${groupId()}</groupId>
   	<artifactId>${artifactId}</artifactId>
   	<version>1.0.0.qualifier</version>
   
@@ -65,7 +65,7 @@ def endParent() {"""
 deploy <<{
 
 	versionNumber = '1.0.0.qualifier'
-	artifactId = 'de.prob.parent'
+	artifactId = parentId()
 	
 		println projects(2) + numberOfProjects() + projects(1)
 
@@ -85,7 +85,7 @@ deploy <<{
 
 /*
 
-!!!!!	In case of problems the old parernt Pom Defenintion:				!!!!
+!!!!!	In case of problems: This is the old parernt Pom Defenintion:				!!!!
 	
 	def parentPom() { """
 <?xml version="1.0" encoding="UTF-8"?>
