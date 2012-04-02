@@ -66,9 +66,6 @@ deploy <<{
 
 	versionNumber = '1.0.0.qualifier'
 	artifactId = parentId()
-	
-		println projects(2) + numberOfProjects() + projects(1)
-
 
 	def f = new File(artifactId+'/pom.xml') 
 	f.delete()

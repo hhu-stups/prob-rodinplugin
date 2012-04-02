@@ -18,9 +18,13 @@ def feature(artifactId, versionNumber) { """
 
 deploy <<{
 
-		content = new File("de.prob2.feature/feature.xml").getText("UTF-8") 
+	boolean idfound = false
 
-	printFileLine = { if(  it ==~ /.+version.+qualifier.+/ ){
+	content = new File("${project.name}/feature.xml").getText("UTF-8") 
+
+	printFileLine = {
+		
+		if(  it ==~ /.+version.+qualifier.+/ ){
 			versionNumber = it.substring(15,it.size()-1) 
 			// possibile error: cuts off first 15 chars and leaves out last '"'
 			
@@ -30,12 +34,19 @@ deploy <<{
 			*/
 
 		}
+		
+		
+		if(  it ==~ /.+id=".+/ && idfound == false ){
+			artifactId = it.substring(10,it.length()-1)
+			idfound = true
+		}
+		/*	Artifact ID is taken from Bundle-SymbolicName minus the
+		*	16 chars ';singleton:=true'
+		*/
 	}
 	
 	content.eachLine( printFileLine )
-	
-	
-	artifactId = 'de.prob2.feature'
+
 	
 	println artifactId
 	println "\t"+versionNumber

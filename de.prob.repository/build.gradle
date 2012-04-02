@@ -21,7 +21,7 @@ def reposi(artifact) { """
 deploy <<{
 
 	versionNumber = '1.0.0.qualifier'
-	artifactId = 'de.prob.repository'
+	artifactId = project.name
 	
 	println artifactId
 

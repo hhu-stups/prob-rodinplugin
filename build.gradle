@@ -132,6 +132,10 @@ subprojects {
 		description = "\tGenerating the Tycho Poms. Please remember to add a '.qualifier' to the version numbers!"
 
 		versionNumber = 'Version Number Error:\tcheck Manifest for Bundle-Version Number and make sure to add a ".qualifier" to the version numbers!\n'
+		
+		artifactId = 'Could not find Bundle-SymbolicName in Manifest.file'
+
+		
 		/* -- In case of changed Manifest File in Eclipse:
 		*	
 		*	Version Numbers of the projects are collected via 

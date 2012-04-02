@@ -1,4 +1,49 @@
+apply plugin: 'base'
 
+deploy <<{
+	
+	content = new File("${project.name}/META-INF/MANIFEST.MF").getText("UTF-8") 
+
+	 
+
+	printFileLine = { 
+		if(  it ==~ /Bundle-Version.+qualifier/ ){
+			versionNumber = it.substring(16) // possibile error: cuts off first 16 chars 
+			
+			/*	Version Number is taken from Bundle-Version in Manifest.MF
+			*	If there is no Bundle-Version or the versionnumber needs to
+			*	be taken from a different key word, please change the
+			*	regular expression and the substring above
+			*/
+			
+		}
+		
+		if(  it ==~ /Bundle-SymbolicName:.+/ ){
+			artifactId = it.substring(21)
+			artifactId = artifactId.replace(";singleton:=true",'')
+		}
+		/*	Artifact ID is taken from Bundle-SymbolicName minus the
+		*	16 chars ';singleton:=true'
+		*/
+	}
+	
+	content.eachLine( printFileLine )
+	
+	
+	println artifactId
+	println "\t"+versionNumber
+	
+	def f = new File(artifactId+'/pom.xml') 
+	f.delete()
+	f << start()+elder()+repos()+artifact(artifactId, versionNumber)+end()
+	/*	
+	*	old pom.xml files are deleted and replaced by new auto generated Tycho pom.xml files
+	*/
+	
+}
+
+
+/*
 deploy <<{
 	
 	content = new File("de.bmotionstudio.rodin/META-INF/MANIFEST.MF").getText("UTF-8") 
@@ -10,7 +55,7 @@ deploy <<{
 			*	If there is no Bundle-Version or the versionnumber needs to
 			*	be taken from a different key word, please change the
 			*	regular expression and the substring above
-			*/
+			*//*
 
 		}
 	}
@@ -28,3 +73,5 @@ deploy <<{
 	f << start()+elder()+repos()+artifact(artifactId, versionNumber)+end()
 	
 }
+
+*/
