@@ -1,4 +1,4 @@
-<img src="https://github.com/bendisposto/prob/raw/develop/logo.png" width="500">
+<img src="https://github.com/bendisposto/prob/raw/develop/logo.png" width="500" align="center">
 
 # The ProB Model Checker and Animator
 
