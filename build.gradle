@@ -3,9 +3,21 @@ apply plugin: 'base'
 /*	--!		 Please Define the Parent ID and and the Group Id! 		--!	*/
 
 groupID			=	"de.prob"
-parentID		= 	"de.prob.parent"			// must be the same as the folder name
 features		=	["de.prob2.feature"]		// must be the same as the folder name
+
+descriptions	=	[ ["de.prob2.feature": "ProB Rodin Plugin"],["de.prob2.feature": """ProB is an animator and model checker for the B-Method. It allows
+fully automatic animation of many B specifications, and can be
+used to systematically check a specification for errors. 
+Part of the research and development was conducted within the
+EPSRC funded projects ABCD and iMoc, and within the EU funded
+project Rodin. 
+Development is continued under the EU funded project Deploy and
+the DFG project Gepavas. 
+ProB has been successfully used on various industrial specifications
+and is now being used within Siemens."""] ]		// label und descriptions of the features
+
 repositoryName	=	"de.prob.repository"		// will be the folder name
+parentID		= 	"de.prob.parent"			// will be the same as the folder name
 
 
 def download(address,target) {
@@ -102,7 +114,7 @@ subprojects {
 		*/
 		
 		
-		if(features.every{ it != project.name }){
+		if(features.every{ it != project.name }){			// Generating Poms for sub projects except features
 			content = new File("${project.name}/META-INF/MANIFEST.MF").getText("UTF-8") 
 
 	 		printFileLine = { 
@@ -137,7 +149,7 @@ subprojects {
 			/*	
 			*	old pom.xml files are deleted and replaced by new auto generated Tycho pom.xml files
 			*/
-		}else{	// if subprojects are neither a feature, repository nor parent
+		}else{	// if subprojects aren't a feature
 			
 
 	
@@ -198,7 +210,7 @@ clean {
 }
 
 task createParent() << {
-	//		--				 define Parent 				--		//
+	//		---------				 define Parent 				---------		//
 		
 	new File("${parentID}").mkdir() 			
 	versionNumber 	=	'1.0.0.qualifier'
@@ -208,15 +220,16 @@ task createParent() << {
 	f.delete()
 	f << parentPom(artifactId)
 	for(int i = 0; i < numberOfProjects(); i++){
-		f << module(i)
+		f << module(projects(i))
 	}
+	f << module(repositoryName)
 	f << endParent()
 
 }
 
 task createRepository() << {
 
-	//				 -- 	define Repository			--		//
+	//			------------	 	define Repository			---------		//
 			
 			
 	new File("${repositoryName}").mkdir() 
@@ -247,7 +260,7 @@ task createRepository() << {
 			
 	for(int i = 0; i < features.size(); i++){
 				
-		f << categoryDescription(features[i], "Test" ,"categorydescription")
+		f << categoryDescription(features[i], descriptions[features[i]][0] ,descriptions[features[i]][1])
 	}//for
 				
 	f << categoryEnd()
@@ -378,10 +391,9 @@ def parentPom(artifactId) { """<?xml version="1.0" encoding="UTF-8"?>
 
 //for(int i = 0; i < numberOfProjects(); i++)
 
-def module(int i){
-	if(projects(i)!=parentId()){"""		<module>../${projects(i)}</module>
-"""}else{""""""}
-}
+def module(String project){"""		<module>../${project}</module>
+"""}
+
 	
 
 def endParent() {"""
