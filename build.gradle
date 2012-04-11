@@ -2,6 +2,8 @@ apply plugin: 'base'
 
 /*	--!		 Please Define the Group ID, Features, Descrptions, Labels and the Parent Id  		--!	*/
 
+// Possible solution for Lukas request: map with repository definitions for target platform
+
 groupID			=	"de.prob"
 features		=	["de.prob2.feature"]		// must be the same as the folder name
 
@@ -283,7 +285,7 @@ task install(dependsOn: [createPoms, downloadCli] , type:Exec) {
 	description = "\tExecutes a 'mvn install' of the parent pom.xml and auto-generates Tycho Poms"	
 
 	
-	commandLine 'mvn', 'install', '-f', 'de.prob.parent/pom.xml'
+	commandLine 'mvn', 'install', '-f', parentID+'/pom.xml'
 		
 }
 
