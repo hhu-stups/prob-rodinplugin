@@ -21,6 +21,8 @@ and is now being used within Siemens."""] ]		// label and descriptions of the fe
 repositoryName	=	"de.prob.repository"		// will be the folder name
 parentID		= 	"de.prob.parent"			// will be the same as the folder name
 
+targetRepositories = ["http://cobra.cs.uni-duesseldorf.de/prob_dev_target/"]		// ps Repository with Target Definition File
+
 
 def download(address,target) {
 	    def file = new FileOutputStream(target)
@@ -147,7 +149,7 @@ subprojects {
 	
 			def f = new File(artifactId+'/pom.xml') 
 			f.delete()
-			f << start()+elder()+repos()+artifact(artifactId, versionNumber)+end()
+			f << start()+elder()+artifact(artifactId, versionNumber)+end()
 			/*	
 			*	old pom.xml files are deleted and replaced by new auto generated Tycho pom.xml files
 			*/
@@ -221,6 +223,11 @@ task createParent() << {
 	def f = new File(artifactId+'/pom.xml') 
 	f.delete()
 	f << parentPom(artifactId)
+	for(int i = 0; i < targetRepositories.size(); i++){
+		f << repos(targetRepositories[i])
+	}
+	f << endRepos()
+	f << moduleStart()
 	for(int i = 0; i < numberOfProjects(); i++){
 		f << module(projects(i))
 	}
@@ -318,30 +325,15 @@ task install(dependsOn: [createPoms, downloadCli] , type:Exec) {
 		</parent>
 	"""}
 
-	def repos() {"""
-		  <repositories>
-    	<!-- configure p2 repository to resolve against -->
-    	<repository>
-    	  <id>prob_target</id>
-    	  <layout>p2</layout>
-    	  <url>http://cobra.cs.uni-duesseldorf.de/prob_dev_target/</url>
-    	</repository>
-    
-    	<repository>
-    	  	<id>indigo</id>
-    	  	<layout>p2</layout>
-      		<url>http://download.eclipse.org/releases/indigo/</url>
-    	</repository>
-  	</repositories> 
-	"""}
-	
-
 
 	def end() {"""
 	</project>
 	"""}
 	
 // 				--	defining Parent Pom				--				//
+
+
+
 
 def parentPom(artifactId) { """<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -358,22 +350,30 @@ def parentPom(artifactId) { """<?xml version="1.0" encoding="UTF-8"?>
 		<tycho-version>0.14.1</tycho-version>
 	</properties>
 
-  
    <repositories>
-    <!-- configure p2 repository to resolve against -->
-    <repository>
-      <id>prob_target</id>
-      <layout>p2</layout>
-      <url>http://cobra.cs.uni-duesseldorf.de/prob_dev_target/</url>
-    </repository>
-
-        
-     <repository>
+	<!-- configure p2 repository to resolve against -->  
+    
+ 	<repository>
       <id>indigo</id>
       <layout>p2</layout>
       <url>http://download.eclipse.org/releases/indigo/</url>
     </repository>
-    
+"""}
+
+
+def repos(String targetRepo) {"""
+	
+	<repository>
+	  <id>prob_target</id>
+	  <layout>p2</layout>
+	  <url>${targetRepo}</url>
+	</repository>
+
+"""}
+
+
+
+def endRepos() {"""
   </repositories> 
 
 	<build>
@@ -387,7 +387,9 @@ def parentPom(artifactId) { """<?xml version="1.0" encoding="UTF-8"?>
 			</plugin>
 		</plugins>
 	</build>
+"""}
 
+def moduleStart(){"""
 	<!-- the modules that should be built together -->
 	<modules>
 	"""}
