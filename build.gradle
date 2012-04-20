@@ -224,7 +224,7 @@ task createParent() << {
 	f.delete()
 	f << parentPom(artifactId)
 	for(int i = 0; i < targetRepositories.size(); i++){
-		f << repos(targetRepositories[i])
+		f << repos(targetRepositories[i], i)
 	}
 	f << endRepos()
 	f << moduleStart()
@@ -288,7 +288,7 @@ task collectArtifacts(type:Copy) {
 	    into 'updatesite'
  }		
 
-task install(dependsOn: [createPoms, downloadCli] , type:Exec) {
+task install(dependsOn: [createPoms] , type:Exec) {
 	description = "\tExecutes a 'mvn install' of the parent pom.xml and auto-generates Tycho Poms"	
 
 	
@@ -361,10 +361,10 @@ def parentPom(artifactId) { """<?xml version="1.0" encoding="UTF-8"?>
 """}
 
 
-def repos(String targetRepo) {"""
+def repos(String targetRepo, int i) {"""
 	
 	<repository>
-	  <id>prob_target</id>
+	  <id>targetRepository${i}</id>
 	  <layout>p2</layout>
 	  <url>${targetRepo}</url>
 	</repository>
