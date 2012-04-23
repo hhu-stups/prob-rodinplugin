@@ -8,3 +8,4 @@ pom.xml
 updatesite/
 de.prob.core/prob/
 build/
+de.prob.repository/category.xml
