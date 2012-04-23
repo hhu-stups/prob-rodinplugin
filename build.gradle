@@ -1,11 +1,5 @@
 apply plugin: 'base'
-apply from: 'values.gradle'
-/*	--!		 Please Define the Group ID, Features, Descrptions, Labels and the Parent Id  		--!	*/
-
-// Possible solution for Lukas request: map with repository definitions for target platform
-
-
-
+apply from: 'build_setup.gradle'
 
 def download(address,target) {
 	    def file = new FileOutputStream(target)
