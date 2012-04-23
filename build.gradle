@@ -1,27 +1,10 @@
 apply plugin: 'base'
-
+apply from: 'values.gradle'
 /*	--!		 Please Define the Group ID, Features, Descrptions, Labels and the Parent Id  		--!	*/
 
 // Possible solution for Lukas request: map with repository definitions for target platform
 
-groupID			=	"de.prob"
-features		=	["de.prob2.feature"]		// must be the same as the folder name
 
-descriptions	=	[ ["de.prob2.feature": "ProB Rodin Plugin"],["de.prob2.feature": """ProB is an animator and model checker for the B-Method. It allows
-fully automatic animation of many B specifications, and can be
-used to systematically check a specification for errors. 
-Part of the research and development was conducted within the
-EPSRC funded projects ABCD and iMoc, and within the EU funded
-project Rodin. 
-Development is continued under the EU funded project Deploy and
-the DFG project Gepavas. 
-ProB has been successfully used on various industrial specifications
-and is now being used within Siemens."""] ]		// label and descriptions of the features
-
-repositoryName	=	"de.prob.repository"		// will be the folder name
-parentID		= 	"de.prob.parent"			// will be the same as the folder name
-
-targetRepositories = ["http://cobra.cs.uni-duesseldorf.de/prob_dev_target/"]		// ps Repository with Target Definition File
 
 
 def download(address,target) {
