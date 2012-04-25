@@ -4,6 +4,8 @@ import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.IHandler;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.eclipse.ui.handlers.RadioState;
 
@@ -17,21 +19,23 @@ import org.eclipse.ui.handlers.RadioState;
 public final class CounterExampleViewMenuHandler extends AbstractHandler
 		implements IHandler {
 
-	private static String currentViewType = "Table";
-
 	@Override
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
 		if (HandlerUtil.matchesRadioState(event))
 			return null;
 
-		currentViewType = event.getParameter(RadioState.PARAMETER_ID);
+		String currentViewType = event.getParameter(RadioState.PARAMETER_ID);
 		HandlerUtil.updateRadioState(event.getCommand(), currentViewType);
 
-		CounterExampleView.setViewType(currentViewType);
-		return null;
-	}
+		final IWorkbenchPage workbenchPage = PlatformUI.getWorkbench()
+				.getActiveWorkbenchWindow().getActivePage();
 
-	public static String getCurrentViewType() {
-		return currentViewType;
+		final CounterExampleViewPart counterExampleView = (CounterExampleViewPart) workbenchPage
+				.findView(CounterExampleViewPart.ID);
+
+		if (counterExampleView != null)
+			counterExampleView.setViewType(currentViewType);
+
+		return null;
 	}
 }

@@ -16,6 +16,7 @@ import org.eclipse.core.databinding.observable.list.WritableList;
 import org.eclipse.core.databinding.observable.map.IObservableMap;
 import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
 import org.eclipse.jface.databinding.viewers.ObservableMapLabelProvider;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ComboBoxViewerCellEditor;
 import org.eclipse.jface.viewers.EditingSupport;
@@ -36,7 +37,6 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
@@ -44,7 +44,6 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 
 import de.bmotionstudio.gef.editor.BMotionStudioImage;
 import de.bmotionstudio.gef.editor.EditorImageRegistry;
@@ -59,6 +58,7 @@ import de.bmotionstudio.gef.editor.observer.Observer;
 import de.bmotionstudio.gef.editor.observer.ObserverWizard;
 import de.bmotionstudio.gef.editor.property.CheckboxCellEditorHelper;
 import de.bmotionstudio.gef.editor.scheduler.PredicateOperation;
+import de.bmotionstudio.gef.editor.util.WizardObserverUtil;
 
 public class WizardObserverListenOperationByPredicate extends ObserverWizard {
 
@@ -79,15 +79,9 @@ public class WizardObserverListenOperationByPredicate extends ObserverWizard {
 
 			setControl(container);
 
-			tableViewer = new TableViewer(container, SWT.BORDER
-					| SWT.FULL_SELECTION);
-			tableViewer.getTable().setLinesVisible(true);
-			tableViewer.getTable().setHeaderVisible(true);
-			tableViewer.getTable().setLayoutData(
-					new GridData(GridData.FILL_BOTH));
-			tableViewer.getTable().setFont(
-					new Font(Display.getDefault(), new FontData("Arial", 10,
-							SWT.NONE)));
+			tableViewer = WizardObserverUtil.createObserverWizardTableViewer(
+					container, PredicateOperation.class,
+					(ObserverWizard) getWizard());
 
 			TableViewerColumn column = new TableViewerColumn(tableViewer,
 					SWT.NONE);
@@ -190,7 +184,7 @@ public class WizardObserverListenOperationByPredicate extends ObserverWizard {
 			Button btRemove = new Button(comp, SWT.PUSH);
 			btRemove.setText("Remove");
 			btRemove.setImage(BMotionStudioImage
-					.getImage(EditorImageRegistry.IMG_ICON_DELETE));
+					.getImage(EditorImageRegistry.IMG_ICON_DELETE_EDIT));
 			btRemove.addSelectionListener(new SelectionAdapter() {
 				@Override
 				public void widgetSelected(SelectionEvent e) {
@@ -206,7 +200,7 @@ public class WizardObserverListenOperationByPredicate extends ObserverWizard {
 			Button btAdd = new Button(comp, SWT.PUSH);
 			btAdd.setText("Add");
 			btAdd.setImage(BMotionStudioImage
-					.getImage(EditorImageRegistry.IMG_ICON_ADD));
+					.getImage(EditorImageRegistry.IMG_ICON_NEW_WIZ));
 			btAdd.addSelectionListener(new SelectionAdapter() {
 				@Override
 				public void widgetSelected(SelectionEvent e) {
@@ -228,7 +222,7 @@ public class WizardObserverListenOperationByPredicate extends ObserverWizard {
 
 			@Override
 			protected boolean canEdit(Object element) {
-				return true;
+				return WizardObserverUtil.isEditElement(getViewer());
 			}
 
 			@Override
@@ -322,6 +316,24 @@ public class WizardObserverListenOperationByPredicate extends ObserverWizard {
 
 	@Override
 	protected Boolean prepareToFinish() {
+		if (((ListenOperationByPredicate) getObserver()).getList().size() == 0) {
+			setObserverDelete(true);
+		} else {
+			for (PredicateOperation obj : ((ListenOperationByPredicate) getObserver())
+					.getList()) {
+				if (obj.getOperationName().isEmpty()) {
+					MessageDialog
+							.openError(getShell(), "Please check your entries",
+									"Please check your entries. The operation field must not be empty.");
+					return false;
+				} else if (obj.getAttribute() == null) {
+					MessageDialog
+							.openError(getShell(), "Please check your entries",
+									"Please check your entries. The attribute field must not be empty.");
+					return false;
+				}
+			}
+		}
 		return true;
 	}
 

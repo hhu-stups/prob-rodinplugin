@@ -2,11 +2,12 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: ProB Animator Core
 Bundle-SymbolicName: de.prob.core;singleton:=true
-Bundle-Version: 9.2.0
+Bundle-Version: 9.2.1.qualifier
 Require-Bundle: org.eclipse.core.runtime;bundle-version="[3.5.0,4.0.0)",
  org.rodinp.core;bundle-version="[1.3.1,1.6.0)",
- org.eventb.core;bundle-version="[2.1.0,2.5.0)"
+ org.eventb.core;bundle-version="[2.1.0,2.6.0)"
 Bundle-ActivationPolicy: lazy
+Eclipse-BundleShape: dir
 Bundle-Vendor: HHU Düsseldorf STUPS Group
 Export-Package: de.be4.classicalb.core.parser,
  de.be4.classicalb.core.parser.analysis;x-friends:="de.prob.eventb.disprover.core",
@@ -14,10 +15,6 @@ Export-Package: de.be4.classicalb.core.parser,
  de.be4.classicalb.core.parser.exceptions,
  de.be4.classicalb.core.parser.node;x-friends:="de.prob.eventb.disprover.core",
  de.be4.ltl.core.parser,
- de.prob.animationscript.parser.analysis,
- de.prob.animationscript.parser.lexer,
- de.prob.animationscript.parser.node,
- de.prob.animationscript.parser.parser;uses:="de.prob.animationscript.parser.lexer,de.prob.animationscript.parser.analysis,de.prob.animationscript.parser.node",
  de.prob.core;
   uses:="de.prob.core.domainobjects.eval,
    de.prob.parserbase,

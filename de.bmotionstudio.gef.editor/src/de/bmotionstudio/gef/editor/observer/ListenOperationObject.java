@@ -13,6 +13,12 @@ public class ListenOperationObject extends BindingObject implements Cloneable {
 	private String operationName;
 	private String predicate;
 
+	public ListenOperationObject() {
+		super();
+		this.operationName = "";
+		this.predicate = "";
+	}
+
 	public ListenOperationObject clone() throws CloneNotSupportedException {
 		return (ListenOperationObject) super.clone();
 	}

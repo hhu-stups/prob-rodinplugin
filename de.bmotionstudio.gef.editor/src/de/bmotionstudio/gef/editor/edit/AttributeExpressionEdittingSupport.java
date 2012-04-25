@@ -16,6 +16,7 @@ import org.eclipse.ui.views.properties.PropertyDescriptor;
 import de.bmotionstudio.gef.editor.attribute.AbstractAttribute;
 import de.bmotionstudio.gef.editor.model.BControl;
 import de.bmotionstudio.gef.editor.observer.ObserverEvalObject;
+import de.bmotionstudio.gef.editor.util.WizardObserverUtil;
 
 public class AttributeExpressionEdittingSupport extends EditingSupport {
 
@@ -39,7 +40,7 @@ public class AttributeExpressionEdittingSupport extends EditingSupport {
 
 	@Override
 	protected boolean canEdit(Object element) {
-		return true;
+		return WizardObserverUtil.isEditElement(getViewer());
 	}
 
 	@Override

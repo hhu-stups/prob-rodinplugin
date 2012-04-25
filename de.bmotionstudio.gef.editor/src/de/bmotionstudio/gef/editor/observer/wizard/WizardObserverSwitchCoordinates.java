@@ -16,10 +16,12 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.CheckboxCellEditor;
 import org.eclipse.jface.viewers.EditingSupport;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITableColorProvider;
 import org.eclipse.jface.viewers.ITableFontProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
@@ -29,7 +31,6 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
@@ -40,16 +41,19 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 
 import de.be4.classicalb.core.parser.BParser;
+import de.bmotionstudio.gef.editor.AttributeConstants;
 import de.bmotionstudio.gef.editor.BMotionStudioImage;
 import de.bmotionstudio.gef.editor.EditorImageRegistry;
 import de.bmotionstudio.gef.editor.edit.PredicateEditingSupport;
 import de.bmotionstudio.gef.editor.edit.TextEditingSupport;
 import de.bmotionstudio.gef.editor.model.BControl;
 import de.bmotionstudio.gef.editor.observer.Observer;
+import de.bmotionstudio.gef.editor.observer.ObserverEvalObject;
 import de.bmotionstudio.gef.editor.observer.ObserverWizard;
 import de.bmotionstudio.gef.editor.observer.SwitchCoordinates;
 import de.bmotionstudio.gef.editor.observer.ToggleObjectCoordinates;
 import de.bmotionstudio.gef.editor.property.CheckboxCellEditorHelper;
+import de.bmotionstudio.gef.editor.util.WizardObserverUtil;
 
 public class WizardObserverSwitchCoordinates extends ObserverWizard {
 
@@ -68,15 +72,32 @@ public class WizardObserverSwitchCoordinates extends ObserverWizard {
 			Composite container = new Composite(parent, SWT.NONE);
 			container.setLayout(new GridLayout(1, true));
 
-			tableViewer = new TableViewer(container, SWT.BORDER
-					| SWT.FULL_SELECTION);
-			tableViewer.getTable().setLinesVisible(true);
-			tableViewer.getTable().setHeaderVisible(true);
-			tableViewer.getTable().setLayoutData(
-					new GridData(GridData.FILL_BOTH));
-			tableViewer.getTable().setFont(
-					new Font(Display.getDefault(), new FontData("Arial", 10,
-							SWT.NONE)));
+			tableViewer = WizardObserverUtil.createObserverWizardTableViewer(
+					container, ToggleObjectCoordinates.class,
+					(ObserverWizard) getWizard());
+
+			tableViewer
+					.addSelectionChangedListener(new ISelectionChangedListener() {
+
+						@Override
+						public void selectionChanged(SelectionChangedEvent event) {
+							IStructuredSelection selection = (IStructuredSelection) event
+									.getSelection();
+							Object firstElement = selection.getFirstElement();
+							if (firstElement instanceof ObserverEvalObject) {
+								ObserverEvalObject observerEvalObject = (ObserverEvalObject) firstElement;
+								BControl control = getBControl();
+								ToggleObjectCoordinates toggleObjectCoordinates = (ToggleObjectCoordinates) observerEvalObject;
+								String attributeX = AttributeConstants.ATTRIBUTE_X;
+								String attributeY = AttributeConstants.ATTRIBUTE_Y;
+								String x = toggleObjectCoordinates.getX();
+								String y = toggleObjectCoordinates.getY();
+								control.setAttributeValue(attributeX, x);
+								control.setAttributeValue(attributeY, y);
+							}
+						}
+
+					});
 
 			TableViewerColumn column = new TableViewerColumn(tableViewer,
 					SWT.NONE);
@@ -149,7 +170,7 @@ public class WizardObserverSwitchCoordinates extends ObserverWizard {
 			Button btRemove = new Button(comp, SWT.PUSH);
 			btRemove.setText("Remove");
 			btRemove.setImage(BMotionStudioImage
-					.getImage(EditorImageRegistry.IMG_ICON_DELETE));
+					.getImage(EditorImageRegistry.IMG_ICON_DELETE_EDIT));
 			btRemove.addSelectionListener(new SelectionAdapter() {
 				@Override
 				public void widgetSelected(SelectionEvent e) {
@@ -165,7 +186,7 @@ public class WizardObserverSwitchCoordinates extends ObserverWizard {
 			Button btAdd = new Button(comp, SWT.PUSH);
 			btAdd.setText("Add");
 			btAdd.setImage(BMotionStudioImage
-					.getImage(EditorImageRegistry.IMG_ICON_ADD));
+					.getImage(EditorImageRegistry.IMG_ICON_NEW_WIZ));
 			btAdd.addSelectionListener(new SelectionAdapter() {
 				@Override
 				public void widgetSelected(SelectionEvent e) {
@@ -191,6 +212,8 @@ public class WizardObserverSwitchCoordinates extends ObserverWizard {
 
 	@Override
 	protected Boolean prepareToFinish() {
+		getBControl().restoreDefaultValue(AttributeConstants.ATTRIBUTE_X);
+		getBControl().restoreDefaultValue(AttributeConstants.ATTRIBUTE_Y);
 		if (((SwitchCoordinates) getObserver()).getToggleObjects().size() == 0) {
 			setObserverDelete(true);
 		} else {
@@ -205,6 +228,13 @@ public class WizardObserverSwitchCoordinates extends ObserverWizard {
 			}
 		}
 		return true;
+	}
+
+	@Override
+	public boolean performCancel() {
+		getBControl().restoreDefaultValue(AttributeConstants.ATTRIBUTE_X);
+		getBControl().restoreDefaultValue(AttributeConstants.ATTRIBUTE_Y);
+		return super.performCancel();
 	}
 
 	@Override

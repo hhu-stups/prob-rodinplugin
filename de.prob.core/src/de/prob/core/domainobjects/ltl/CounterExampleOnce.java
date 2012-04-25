@@ -8,7 +8,7 @@ import de.prob.core.command.LtlCheckingCommand.PathType;
 import de.prob.logging.Logger;
 
 /**
- * Provides an "Once" operator.
+ * Provides an "once" operator.
  * 
  * @author Andriy Tolstoy
  * 
@@ -48,7 +48,7 @@ public final class CounterExampleOnce extends CounterExampleUnaryOperator {
 	}
 
 	private CounterExampleValueType calculateOnceOperator(final int position) {
-		CounterExampleValueType result = CounterExampleValueType.UNDEFINED;
+		CounterExampleValueType result = CounterExampleValueType.UNKNOWN;
 
 		List<CounterExampleValueType> checkedValues = new ArrayList<CounterExampleValueType>(
 				argument.getValues());
@@ -62,7 +62,7 @@ public final class CounterExampleOnce extends CounterExampleUnaryOperator {
 		if (index != -1) {
 			result = CounterExampleValueType.TRUE;
 		} else {
-			if (!checkedValues.contains(CounterExampleValueType.UNDEFINED)) {
+			if (!checkedValues.contains(CounterExampleValueType.UNKNOWN)) {
 				result = CounterExampleValueType.FALSE;
 			}
 		}

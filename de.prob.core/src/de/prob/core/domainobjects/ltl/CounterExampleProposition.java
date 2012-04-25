@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.prob.core.command.LtlCheckingCommand.PathType;
+import de.prob.logging.Logger;
 
 /**
  * Provides an abstract class for all types of propositions.
@@ -20,6 +21,7 @@ public abstract class CounterExampleProposition {
 	protected final PathType pathType;
 	protected CounterExampleProposition parent;
 	private List<CounterExampleValueType> values;
+
 	protected final PropertyChangeSupport listeners = new PropertyChangeSupport(
 			this);
 	private boolean visible = false;
@@ -32,8 +34,6 @@ public abstract class CounterExampleProposition {
 		this.loopEntry = loopEntry;
 		this.pathType = pathType;
 	}
-
-	abstract protected List<CounterExampleValueType> calculate();
 
 	public CounterExampleProposition getParent() {
 		return parent;
@@ -106,11 +106,13 @@ public abstract class CounterExampleProposition {
 		if (index != -1) {
 			int pos = isPastOperator ? index : index + position;
 			pos = calculatePosition(pos);
+			Logger.assertProB("Position invalid", pos >= 0);
 			positions.add(pos);
 		} else {
 			for (int i = 0; i < checkedSize; i++) {
 				int pos = isPastOperator ? position - i : position + i;
 				pos = calculatePosition(pos);
+				Logger.assertProB("Position invalid", pos >= 0);
 				positions.add(pos);
 			}
 		}
@@ -118,9 +120,11 @@ public abstract class CounterExampleProposition {
 		return positions;
 	}
 
-	protected abstract int calculatePosition(int pos);
-
 	public boolean isTransition() {
 		return false;
 	}
+
+	protected abstract List<CounterExampleValueType> calculate();
+
+	protected abstract int calculatePosition(int pos);
 }

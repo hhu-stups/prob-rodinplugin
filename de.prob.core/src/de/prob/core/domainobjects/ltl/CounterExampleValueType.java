@@ -1,7 +1,7 @@
 package de.prob.core.domainobjects.ltl;
 
 public enum CounterExampleValueType {
-	TRUE, FALSE, UNDEFINED;
+	TRUE, FALSE, UNKNOWN;
 
 	@Override
 	public String toString() {

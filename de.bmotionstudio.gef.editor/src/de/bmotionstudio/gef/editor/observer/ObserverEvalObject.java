@@ -29,6 +29,7 @@ public class ObserverEvalObject extends BindingObject implements Cloneable {
 	private transient Boolean hasError;
 
 	public ObserverEvalObject() {
+		this.isExpressionMode = false;
 	}
 
 	public ObserverEvalObject(String type, String eval, Boolean isExpressionMode) {

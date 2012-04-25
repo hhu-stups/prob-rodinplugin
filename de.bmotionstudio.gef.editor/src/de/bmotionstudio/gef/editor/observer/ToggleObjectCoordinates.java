@@ -6,16 +6,19 @@
 
 package de.bmotionstudio.gef.editor.observer;
 
-
 public class ToggleObjectCoordinates extends ObserverEvalObject implements
 		Cloneable {
 
 	private String bcontrol;
 	private String x;
 	private String y;
-	private Boolean animate = false;
+	private Boolean animate;
 
 	public ToggleObjectCoordinates() {
+		super();
+		this.x = "";
+		this.y = "";
+		this.animate = false;
 	}
 
 	public ToggleObjectCoordinates(String type, String bcontrol, String x,

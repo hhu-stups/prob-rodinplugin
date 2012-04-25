@@ -80,7 +80,7 @@
       </view>
       <view
             category="de.hhu.stups.prob"
-            class="de.prob.ui.ltl.CounterExampleView"
+            class="de.prob.ui.ltl.CounterExampleViewPart"
             id="de.prob.ui.ltl.CounterExampleView"
             name="Ltl Counter-Example"
             restorable="true">
@@ -313,7 +313,7 @@
             name="Start Distributed Modelcheck">
       </command>
  -->     
-      <command defaultHandler="de.prob.ui.ltl.CounterExampleViewMenuHandler"
+      <command
           id="de.prob.ui.ltl.counterexampleviewmenuhandler"
           name="CounterExampleView Menu Command">
           <commandParameter
@@ -325,9 +325,21 @@
               id="org.eclipse.ui.commands.radioState">
           </state>
       </command>
-      <command defaultHandler="de.prob.ui.ltl.CEHistoryHandler"
-          id="de.prob.ui.ltl.showCounterexampleInHistory"
+      <command
+          id="de.prob.ui.ltl.showcounterexampleinhistory"
           name="Show counter-example in history">
+      </command> 
+      <command
+          id="de.prob.ui.ltl.counterexamplezoominhandler"
+          name="CounterExample Zoom In">
+      </command> 
+      <command
+          id="de.prob.ui.ltl.counterexamplezoomouthandler"
+          name="CounterExample Zoom Out">
+      </command>
+      <command
+          id="de.prob.ui.ltl.counterexampleprinthandler"
+          name="CounterExample Print">
       </command>
    </extension>
    <extension
@@ -654,6 +666,56 @@
          <class
                class="de.prob.ui.internal.InvariantAnalyzeHandler">
          </class>
+      </handler>
+      <handler commandId="de.prob.ui.ltl.counterexampleviewmenuhandler">
+            <class class="de.prob.ui.ltl.CounterExampleViewMenuHandler"/>
+            <enabledWhen>
+            <with variable="de.prob.ui.ltl.counterexample_loaded">
+                  <equals
+                        value="enabled">
+                  </equals>
+            </with>
+         </enabledWhen>
+      </handler>
+      <handler commandId="de.prob.ui.ltl.counterexamplezoominhandler">
+            <class class="de.prob.ui.ltl.CounterExampleZoomInHandler"/>
+            <enabledWhen>
+            <with variable="de.prob.ui.ltl.counterexample_loaded">
+                  <equals
+                        value="enabled">
+                  </equals>
+            </with>
+         </enabledWhen>
+      </handler>
+      <handler commandId="de.prob.ui.ltl.counterexamplezoomouthandler">
+            <class class="de.prob.ui.ltl.CounterExampleZoomOutHandler"/>
+            <enabledWhen>
+            <with variable="de.prob.ui.ltl.counterexample_loaded">
+                  <equals
+                        value="enabled">
+                  </equals>
+            </with>
+         </enabledWhen>
+      </handler>
+      <handler commandId="de.prob.ui.ltl.counterexampleprinthandler">
+            <class class="de.prob.ui.ltl.CounterExamplePrintHandler"/>
+            <enabledWhen>
+            <with variable="de.prob.ui.ltl.counterexample_loaded">
+                  <equals
+                        value="enabled">
+                  </equals>
+            </with>
+         </enabledWhen>
+      </handler>
+      <handler commandId="de.prob.ui.ltl.showcounterexampleinhistory">
+            <class class="de.prob.ui.ltl.CounterExampleHistoryHandler"/>
+            <enabledWhen>
+            <with variable="de.prob.ui.ltl.counterexample_loaded">
+                  <equals
+                        value="enabled">
+                  </equals>
+            </with>
+         </enabledWhen>
       </handler>
 <!--      <handler
             commandId="de.prob.ui.startdmc">
@@ -991,24 +1053,62 @@
       </menuContribution>
       -->
       <menuContribution locationURI="menu:de.prob.ui.ltl.CounterExampleView">
-          <command commandId="de.prob.ui.ltl.counterexampleviewmenuhandler"
-              label="Show as a table view"
-              style="radio">
-         	  <parameter
-                  name="org.eclipse.ui.commands.radioStateParameter"
-               	  value="Table"> 
-              </parameter>
+         <menu
+               label="Show as">
+            <command
+                  commandId="de.prob.ui.ltl.counterexampleviewmenuhandler"
+                  label="a table view"
+                  style="radio">
+               <parameter
+                     name="org.eclipse.ui.commands.radioStateParameter"
+                     value="Table">
+               </parameter>
+            </command>
+            <command
+                  commandId="de.prob.ui.ltl.counterexampleviewmenuhandler"
+                  label="a tree view"
+                  style="radio">
+               <parameter
+                     name="org.eclipse.ui.commands.radioStateParameter"
+                     value="Tree">
+               </parameter>
+            </command>
+            <command
+                  commandId="de.prob.ui.ltl.counterexampleviewmenuhandler"
+                  label="an interactive view"
+                  style="radio">
+               <parameter
+                     name="org.eclipse.ui.commands.radioStateParameter"
+                     value="Interactive">
+               </parameter>
+            </command>
+         </menu>
+         <menu
+               label="Zoom">
+            <command
+                  commandId="de.prob.ui.ltl.counterexamplezoominhandler"
+                  icon="icons/zoom_in.png"
+                  label="Zoom In">
+            </command>
+            <command
+                  commandId="de.prob.ui.ltl.counterexamplezoomouthandler"
+                  icon="icons/zoom_out.png"
+                  label="Zoom Out">
+            </command>
+         </menu>
+          <command
+               commandId="de.prob.ui.ltl.counterexampleprinthandler"
+               icon="icons/print.png"
+               label="Print">
           </command>
-          <command commandId="de.prob.ui.ltl.counterexampleviewmenuhandler"
-              label="Show as a tree view"
-              style="radio">
-         	  <parameter 
-                  name="org.eclipse.ui.commands.radioStateParameter"
-               	  value="Tree">
-              </parameter>
-          </command>
-          <command commandId="de.prob.ui.ltl.showCounterexampleInHistory"
+          <command commandId="de.prob.ui.ltl.showcounterexampleinhistory"
               label="Show the counter-example in the history">
+          </command>
+      </menuContribution>
+      <menuContribution locationURI="popup:de.prob.ui.ltl.CounterExampleView">
+      	<command commandId="de.prob.ui.ltl.showcounterexampleinhistory"
+              label="Show the counter-example in the history"
+              style="push">
           </command>
       </menuContribution>
       
@@ -1030,6 +1130,13 @@
          </variable>
          <variable
                name="de.prob.core.history.backward_service"
+               priorityLevel="workbench">
+         </variable>
+      </sourceProvider>
+      <sourceProvider
+            provider="de.prob.ui.ltl.CounterExampleLoadedProvider">
+         <variable
+               name="de.prob.ui.ltl.counterexample_loaded"
                priorityLevel="workbench">
          </variable>
       </sourceProvider>

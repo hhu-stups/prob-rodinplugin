@@ -32,7 +32,6 @@ public abstract class CounterExamplePropositionEditPart extends
 	@Override
 	protected void refreshVisuals() {
 		CounterExamplePropositionFigure figure = (CounterExamplePropositionFigure) getFigure();
-		figure.getParent().repaint();
 		figure.update();
 	}
 

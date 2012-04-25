@@ -32,9 +32,9 @@ public abstract class BMotionAbstractWizard extends WizardDialog {
 	public static final int DELETE = 3;
 
 	private IWorkbenchPart workbenchPart;
-	
-	private String deleteToolTip;	
-	
+
+	private String deleteToolTip;
+
 	public BMotionAbstractWizard(IWorkbenchPart workbenchPart, IWizard newWizard) {
 		super(workbenchPart.getSite().getShell(), newWizard);
 		this.workbenchPart = workbenchPart;
@@ -67,8 +67,9 @@ public abstract class BMotionAbstractWizard extends WizardDialog {
 	}
 
 	private Control createDeleteControl(Composite parent) {
-		return createDeleteImageButton(parent, BMotionStudioImage
-				.getImage(EditorImageRegistry.IMG_ICON_DELETE21));
+		return createDeleteImageButton(parent,
+				BMotionStudioImage
+						.getImage(EditorImageRegistry.IMG_ICON_DELETE21));
 	}
 
 	private ToolBar createDeleteImageButton(Composite parent, Image image) {
@@ -98,7 +99,7 @@ public abstract class BMotionAbstractWizard extends WizardDialog {
 	public IWorkbenchPart getWorkbenchPart() {
 		return workbenchPart;
 	}
-	
+
 	protected void setDeleteToolTip(String msg) {
 		this.deleteToolTip = msg;
 	}

@@ -11,21 +11,22 @@ import de.prob.core.domainobjects.ltl.CounterExampleProposition;
 public final class CounterExampleEditPart extends AbstractGraphicalEditPart {
 	@Override
 	protected IFigure createFigure() {
-		CounterExample model = (CounterExample) getModel();
+		final CounterExample model = (CounterExample) getModel();
 		return new CounterExampleFigure(model);
 	}
 
 	@Override
 	public List<CounterExampleProposition> getModelChildren() {
-		CounterExample model = (CounterExample) getModel();
-		List<CounterExampleProposition> children = model.getPropositions();
+		final CounterExample model = (CounterExample) getModel();
+		final List<CounterExampleProposition> children = model
+				.getPropositions();
 
 		return children;
 	}
 
 	@Override
 	protected void refreshVisuals() {
-		CounterExampleFigure figure = (CounterExampleFigure) getFigure();
+		final CounterExampleFigure figure = (CounterExampleFigure) getFigure();
 		figure.update();
 	}
 

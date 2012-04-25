@@ -6,7 +6,7 @@ import java.util.List;
 import de.prob.core.command.LtlCheckingCommand.PathType;
 
 /**
- * Provides a "Next" operator.
+ * Provides a "next" operator.
  * 
  * @author Andriy Tolstoy
  * 
@@ -24,7 +24,7 @@ public final class CounterExampleNext extends CounterExampleUnaryOperator {
 	}
 
 	private CounterExampleValueType calculateNextOperator(int position) {
-		CounterExampleValueType result = CounterExampleValueType.UNDEFINED;
+		CounterExampleValueType result = CounterExampleValueType.UNKNOWN;
 
 		List<CounterExampleValueType> checkedValues = new ArrayList<CounterExampleValueType>(
 				argument.getValues());

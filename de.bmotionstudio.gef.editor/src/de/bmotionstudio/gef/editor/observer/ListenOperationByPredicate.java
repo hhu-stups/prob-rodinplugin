@@ -63,71 +63,75 @@ public class ListenOperationByPredicate extends Observer {
 			}
 
 			String fPredicate = pop.getPredicate();
-
-			if (fPredicate.length() > 0) {
-				fPredicate = parseControls(fPredicate, control);
-			}
-
 			String fOpName = pop.getOperationName();
+
 			if (fOpName != null && fPredicate != null) {
-				try {
-					if (fPredicate.equals(""))
-						fPredicate = "1=1";
-					Operation operation = GetOperationByPredicateCommand
-							.getOperation(animator, state.getId(), fOpName,
-									fPredicate);
-					if (operation != null) { // Operation enabled
 
-						String attributeID = pop.getAttribute();
+				if (animation.getCurrentStateOperations().containsKey(fOpName)) {
 
-						AbstractAttribute attributeObj = control
-								.getAttribute(attributeID);
-
-						Object attributeVal = pop.getValue();
-
-						if (pop.isExpressionMode()) {
-							String strAtrVal = parseExpression(
-									attributeVal.toString(), control,
-									animation, pop);
-							String er = attributeObj.validateValue(strAtrVal, null);
-							if (er != null) {
-								addError(
-										control,
-										animation,
-										"You selected "
-												+ attributeObj.getName()
-												+ " as attribute. There is a problem with your value: "
-												+ strAtrVal + " - Reason: "
-												+ er);
-								pop.setHasError(true);
-							} else {
-								attributeVal = attributeObj
-										.unmarshal(strAtrVal);
-							}
-						}
-
-						if (!pop.hasError()) {
-							Object oldAttrVal = control
-									.getAttributeValue(attributeID);
-							if (!oldAttrVal.equals(attributeVal)) {
-								control.setAttributeValue(attributeID,
-										attributeVal);
-							}
-						}
-
-						setAttributes.add(attributeID);
-
+					if (fPredicate.length() > 0) {
+						fPredicate = parseControls(fPredicate, control);
 					}
-				} catch (ProBException e) {
-					addError(
-							control,
-							animation,
-							"An error occurred while evaluating. Reason: "
-									+ e.getMessage());
-				} catch (BException e) {
-					addError(control, animation, "Parsing error in: "
-							+ fPredicate + " Reason: " + e.getMessage());
+
+					try {
+						if (fPredicate.equals(""))
+							fPredicate = "1=1";
+						Operation operation = GetOperationByPredicateCommand
+								.getOperation(animator, state.getId(), fOpName,
+										fPredicate);
+						if (operation != null) { // Operation enabled
+
+							String attributeID = pop.getAttribute();
+
+							AbstractAttribute attributeObj = control
+									.getAttribute(attributeID);
+
+							Object attributeVal = pop.getValue();
+
+							if (pop.isExpressionMode()) {
+								String strAtrVal = parseExpression(
+										attributeVal.toString(), control,
+										animation, pop);
+								String er = attributeObj.validateValue(
+										strAtrVal, null);
+								if (er != null) {
+									addError(
+											control,
+											animation,
+											"You selected "
+													+ attributeObj.getName()
+													+ " as attribute. There is a problem with your value: "
+													+ strAtrVal + " - Reason: "
+													+ er);
+									pop.setHasError(true);
+								} else {
+									attributeVal = attributeObj
+											.unmarshal(strAtrVal);
+								}
+							}
+
+							if (!pop.hasError()) {
+								Object oldAttrVal = control
+										.getAttributeValue(attributeID);
+								if (!oldAttrVal.equals(attributeVal)) {
+									control.setAttributeValue(attributeID,
+											attributeVal);
+								}
+							}
+
+							setAttributes.add(attributeID);
+
+						}
+					} catch (ProBException e) {
+						addError(control, animation,
+								"An error occurred while evaluating. Reason: "
+										+ e.getMessage());
+					} catch (BException e) {
+						addError(control, animation, "Parsing error in: "
+								+ fPredicate + " Reason: " + e.getMessage());
+					}
 				}
+
 			}
 
 		}

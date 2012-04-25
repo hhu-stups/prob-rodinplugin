@@ -19,6 +19,7 @@ public class HistoryActiveProvider extends AbstractSourceProvider {
 	private boolean forward = false;
 	private boolean backward = false;
 
+	@Override
 	public Map<String, String> getCurrentState() {
 		Map<String, String> state = new HashMap<String, String>(2);
 		addToState(state, backward, BACKWARD_SERVICE);
@@ -32,6 +33,7 @@ public class HistoryActiveProvider extends AbstractSourceProvider {
 		state.put(service, f);
 	}
 
+	@Override
 	public String[] getProvidedSourceNames() {
 		return new String[] { FORWARD_SERVICE, BACKWARD_SERVICE };
 	}
@@ -56,6 +58,7 @@ public class HistoryActiveProvider extends AbstractSourceProvider {
 		fireSourceChanged(ISources.WORKBENCH, getCurrentState());
 	}
 
+	@Override
 	public void dispose() {
 
 	}

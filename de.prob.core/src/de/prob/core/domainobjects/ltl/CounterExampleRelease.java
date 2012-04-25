@@ -7,7 +7,7 @@ import de.prob.core.command.LtlCheckingCommand.PathType;
 import de.prob.logging.Logger;
 
 /**
- * Provides a "Release" operator.
+ * Provides a "release" operator.
  * 
  * @author Andriy Tolstoy
  * 
@@ -38,9 +38,10 @@ public final class CounterExampleRelease extends CounterExampleBinaryOperator {
 
 	@Override
 	protected CounterExampleValueType calculate(final int position) {
-		CounterExampleValueType value = calculateReleaseOperator(position);
+		final CounterExampleValueType value = calculateReleaseOperator(position);
 
-		List<CounterExampleValueType> notUntilValues = notUntil.getValues();
+		final List<CounterExampleValueType> notUntilValues = notUntil
+				.getValues();
 
 		Logger.assertProB("Release invalid",
 				value == notUntilValues.get(position));
@@ -49,7 +50,7 @@ public final class CounterExampleRelease extends CounterExampleBinaryOperator {
 	}
 
 	private CounterExampleValueType calculateReleaseOperator(final int position) {
-		CounterExampleValueType result = CounterExampleValueType.UNDEFINED;
+		CounterExampleValueType result = CounterExampleValueType.UNKNOWN;
 
 		List<CounterExampleValueType> firstCheckedValues = new ArrayList<CounterExampleValueType>(
 				getFirstArgument().getValues());
@@ -80,36 +81,49 @@ public final class CounterExampleRelease extends CounterExampleBinaryOperator {
 
 		if (firstIndex != -1) {
 			// look for a state with a false value in second argument
-			secondCheckedValues = secondCheckedValues
-					.subList(0, firstIndex + 1);
-			secondIndex = secondCheckedValues
+			secondIndex = secondCheckedValues.subList(0, firstIndex + 1)
 					.indexOf(CounterExampleValueType.FALSE);
 
 			if (secondIndex == -1) {
 				trueOrUnknown = true;
 
-				if (pathType != PathType.REDUCED) {
-					result = CounterExampleValueType.TRUE;
+				firstCheckedValues = firstCheckedValues.subList(0,
+						firstIndex + 1);
+				secondCheckedValues = secondCheckedValues.subList(0,
+						firstIndex + 1);
+
+				// look for a state with an unknown value in first and
+				// second argument
+				final int unknownStateIndex = indexOfUnknownState(
+						firstCheckedValues, secondCheckedValues, false);
+
+				if (unknownStateIndex != -1) {
+					firstCheckedValues = firstCheckedValues.subList(0,
+							unknownStateIndex + 1);
+					secondCheckedValues = secondCheckedValues.subList(0,
+							unknownStateIndex + 1);
+
+					firstIndex = -1;
 				} else {
 					// look for the state with an unknown value in second
 					// argument
-					if (secondCheckedValues
-							.contains(CounterExampleValueType.UNDEFINED)) {
-						firstCheckedValues = firstCheckedValues.subList(0,
-								firstIndex + 1);
-						firstIndex = -1;
-					} else {
+					if (!secondCheckedValues
+							.contains(CounterExampleValueType.UNKNOWN)) {
 						result = CounterExampleValueType.TRUE;
+					} else {
+						firstIndex = -1;
 					}
 				}
 			}
 		} else {
-			// look for a state with a false value in second argument
-			if (!secondCheckedValues.contains(CounterExampleValueType.FALSE)) {
-				if (pathType != PathType.REDUCED) {
-					trueOrUnknown = true;
-					result = CounterExampleValueType.TRUE;
-				}
+			// all states of first argument are invalid and all states of second
+			// argument are valid on a finite or an infinite path
+			if (pathType != PathType.REDUCED
+					&& !secondCheckedValues
+							.contains(CounterExampleValueType.FALSE)) {
+				trueOrUnknown = true;
+				result = CounterExampleValueType.TRUE;
+				firstCheckedValues.clear();
 			}
 		}
 
@@ -122,36 +136,41 @@ public final class CounterExampleRelease extends CounterExampleBinaryOperator {
 				firstCheckedValues = firstCheckedValues.subList(0, secondIndex);
 				firstIndex = -1;
 
-				if (pathType != PathType.REDUCED) {
+				// look for a state with an unknown value in first argument
+				if (!firstCheckedValues
+						.contains(CounterExampleValueType.UNKNOWN)) {
 					result = CounterExampleValueType.FALSE;
 				} else {
-					// look for a state with an unknown value in first argument
-					if (firstCheckedValues
-							.contains(CounterExampleValueType.UNDEFINED)) {
+					// look for a state with an unknown value in first and
+					// second argument
+					final int unknownStateIndex = indexOfUnknownState(
+							firstCheckedValues,
+							secondCheckedValues.subList(0, secondIndex), false);
+
+					if (unknownStateIndex != -1) {
+						firstCheckedValues = firstCheckedValues.subList(0,
+								unknownStateIndex + 1);
+						secondCheckedValues = secondCheckedValues.subList(0,
+								unknownStateIndex + 1);
+					} else {
 						secondCheckedValues = secondCheckedValues.subList(0,
 								secondIndex + 1);
 						secondIndex = -1;
-					} else {
-						result = CounterExampleValueType.FALSE;
 					}
+
+					secondIndex = -1;
 				}
 			} else {
-				if (pathType != PathType.REDUCED) {
-					result = CounterExampleValueType.FALSE;
-				} else {
-					for (int i = 0; i < firstCheckedValues.size(); i++) {
-						if (firstCheckedValues.get(i).equals(
-								CounterExampleValueType.UNDEFINED)
-								&& secondCheckedValues.get(i).equals(
-										CounterExampleValueType.UNDEFINED)) {
-							firstCheckedValues = firstCheckedValues.subList(0,
-									i + 1);
-							secondCheckedValues = secondCheckedValues.subList(
-									0, i + 1);
+				// look for a state with an unknown value in first and
+				// second argument
+				final int unknownStateIndex = indexOfUnknownState(
+						firstCheckedValues, secondCheckedValues, false);
 
-							break;
-						}
-					}
+				if (unknownStateIndex != -1) {
+					firstCheckedValues = firstCheckedValues.subList(0,
+							unknownStateIndex + 1);
+					secondCheckedValues = secondCheckedValues.subList(0,
+							unknownStateIndex + 1);
 				}
 			}
 		}

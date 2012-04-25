@@ -60,6 +60,7 @@ public abstract class StateBasedViewPart extends ViewPart implements
 			final Operation operation) {
 	}
 
+	@Override
 	public void createPartControl(final Composite parent) {
 		this.parent = parent;
 		StaticListenerRegistry.registerListener((ILifecycleListener) this);
@@ -119,9 +120,11 @@ public abstract class StateBasedViewPart extends ViewPart implements
 		}
 	}
 
+	@Override
 	final public void currentStateChanged(final State currentState,
 			final Operation operation) {
 		final Runnable runnable = new Runnable() {
+			@Override
 			public void run() {
 				createStateControl();
 				stateChanged(currentState, operation);
@@ -129,16 +132,18 @@ public abstract class StateBasedViewPart extends ViewPart implements
 		};
 		Display.getDefault().asyncExec(runnable);
 
-		ISourceProviderService service = (ISourceProviderService) this
-				.getSite().getService(ISourceProviderService.class);
+		ISourceProviderService service = (ISourceProviderService) getSite()
+				.getService(ISourceProviderService.class);
 		HistoryActiveProvider sourceProvider = (HistoryActiveProvider) service
 				.getSourceProvider(HistoryActiveProvider.FORWARD_SERVICE);
 		sourceProvider.historyChange();
 
 	}
 
+	@Override
 	final public void reset() {
 		final Runnable runnable = new Runnable() {
+			@Override
 			public void run() {
 				createNoStateMessage();
 				stateReset();
@@ -147,6 +152,7 @@ public abstract class StateBasedViewPart extends ViewPart implements
 		Display.getDefault().asyncExec(runnable);
 	}
 
+	@Override
 	public void dispose() {
 		super.dispose();
 		StaticListenerRegistry.unregisterListener((ILifecycleListener) this);

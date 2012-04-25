@@ -1,1 +1,11 @@
 **/bin/
+**/target/
+.gradle/
+.metadata/
+**/pom.xml
+.DS_Store
+pom.xml
+updatesite/
+de.prob.core/prob/
+build/
+de.prob.repository/category.xml
