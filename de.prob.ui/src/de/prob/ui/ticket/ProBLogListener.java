@@ -24,9 +24,10 @@ public final class ProBLogListener implements ILogListener {
 			return;
 		}
 
-		final int code = status.getCode();
+//		final int code = status.getCode();
+		final int code = Logger.NOBUGREPORT;
 
-		if (code == Logger.BUGREPORT || code == Logger.NOBUGREPORT) {
+//		if (code == Logger.BUGREPORT || code == Logger.NOBUGREPORT) {
 			final boolean bugreport = code == Logger.BUGREPORT;
 			display.asyncExec(new Runnable() {
 				public void run() {
@@ -34,8 +35,9 @@ public final class ProBLogListener implements ILogListener {
 					ErrorTicketDialog.openError(display.getActiveShell(),
 							"Error", "An error occured.", status, bugreport);
 				}
-			});
-		}
+			}
+			);
+//		}
 
 		display.asyncExec(new Runnable() {
 			public void run() {

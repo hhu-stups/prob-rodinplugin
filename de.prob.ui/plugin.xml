@@ -750,19 +750,9 @@
             </parameter>
          </command>
          <command
-               commandId="de.prob.ui.openWebsite"
+               commandId="de.prob.ui.bugreport"
                label="Open Bugtracker Website"
                mnemonic="W"
-               style="push">
-            <parameter
-                  name="de.prob.ui.openwebsite.url"
-                  value="https://cobra.cs.uni-duesseldorf.de/trac/newticket?type=bug&amp;priority=major&amp;component=Eclipse%20Plugin&amp;keywords=user%20discovered%20bug">
-            </parameter>
-         </command>
-         <command
-               commandId="de.prob.ui.bugreport"
-               label="Submit bugreport"
-               mnemonic="B"
                style="push">
          </command>
       </menuContribution>
