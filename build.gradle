@@ -62,4 +62,6 @@ task downloadCli << {
 task collectArtifacts(type:Copy) {
 	    from groupID+'.repository/target/repository/'
 	    into 'updatesite'
+	    from "index.html"
+	    into 'updatesite'
 }
