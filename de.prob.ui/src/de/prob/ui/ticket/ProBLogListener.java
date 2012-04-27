@@ -24,11 +24,10 @@ public final class ProBLogListener implements ILogListener {
 			return;
 		}
 
-//		final int code = status.getCode();
-		final int code = Logger.NOBUGREPORT;
+		final int code = status.getCode();
 
-//		if (code == Logger.BUGREPORT || code == Logger.NOBUGREPORT) {
-			final boolean bugreport = code == Logger.BUGREPORT;
+		if (code == Logger.BUGREPORT || code == Logger.NOBUGREPORT) {
+			final boolean bugreport = false; //;code == Logger.BUGREPORT;
 			display.asyncExec(new Runnable() {
 				public void run() {
 					// Notice: ErrorTICKETDialog to provide Bugreport-Button
@@ -37,7 +36,7 @@ public final class ProBLogListener implements ILogListener {
 				}
 			}
 			);
-//		}
+		}
 
 		display.asyncExec(new Runnable() {
 			public void run() {
