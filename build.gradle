@@ -61,6 +61,11 @@ task downloadCli << {
 	
 }
 
+task deleteOldArtifacts(type: Delete) {
+  	String updateSite = workspacePath+'updatesite'
+	delete updateSite
+}
+
 task collectArtifacts(type:Copy) {
 	    from groupID+'.repository/target/repository/'
 	    into 'updatesite'
