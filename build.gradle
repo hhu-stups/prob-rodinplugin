@@ -1,7 +1,7 @@
 groupID			=	"de.prob"
 features		=	["de.prob2.feature"]		// must be the same as the folder name Please remember to add '../' if necessary
 
-descriptions	=	[["../de.prob2.feature": "ProB Rodin Plugin"],["../de.prob2.feature": """ProB is an animator and model checker for the B-Method. It allows
+descriptions	=	[["de.prob2.feature": "ProB Rodin Plugin"],["de.prob2.feature": """ProB is an animator and model checker for the B-Method. It allows
 fully automatic animation of many B specifications, and can be
 used to systematically check a specification for errors. 
 Part of the research and development was conducted within the

@@ -125,7 +125,8 @@ subprojects {
 				printFileLine = {
 		
 					if(  it ==~ /.+version.+qualifier.+/ ){
-						versionNumber = it.substring(15,it.size()-1) 
+						versionNumber = it.substring(15,it.size()-1)
+						versionNumber = versionNumber.replace('"','') 
 						// possibile error: cuts off first 15 chars and leaves out last '"'
 			
 						/*	Version Number is taken from Feature.xml 
@@ -211,7 +212,9 @@ task createRepository() << {
 		content = new File("${features[i]}/feature.xml").getText("UTF-8") 
 		printFileLine = {
 			if(  it ==~ /.+version.+qualifier.+/ ){
-				featureVersionNumber = it.substring(15,it.size()-1) 
+				featureVersionNumber = it.substring(15,it.size()-1)
+				featureVersionNumber = featureVersionNumber.replace('"','')
+				  
 				// possibile error: cuts off first 15 chars and leaves out last '"'
 				
 				/*	Version Number is taken from Feature.xml 
