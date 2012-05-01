@@ -1,7 +1,7 @@
 groupID			=	"de.prob"
-features		=	["de.prob2.feature"]		// must be the same as the folder name
+features		=	["de.prob2.feature"]		// must be the same as the folder name Please remember to add '../' if necessary
 
-descriptions	=	[["de.prob2.feature": "ProB Rodin Plugin"],["de.prob2.feature": """ProB is an animator and model checker for the B-Method. It allows
+descriptions	=	[["../de.prob2.feature": "ProB Rodin Plugin"],["../de.prob2.feature": """ProB is an animator and model checker for the B-Method. It allows
 fully automatic animation of many B specifications, and can be
 used to systematically check a specification for errors. 
 Part of the research and development was conducted within the
@@ -16,6 +16,8 @@ repositoryName	=	groupID+".repository"		// will be the folder name
 parentID		= 	groupID+".parent"			// will be the same as the folder name
 
 targetRepositories = ["http://cobra.cs.uni-duesseldorf.de/prob_dev_target/","http://download.eclipse.org/releases/indigo/"]		// ps Repository with Target Definition File
+
+workspacePath = ""					// Relative Path to workspace directory e.g. your build is located in the folder workspace/buildscript please set relativePath to ".../"
 
 apply from: 'tycho_build.gradle'
 

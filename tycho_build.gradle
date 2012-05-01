@@ -3,7 +3,10 @@ apply plugin: 'base'
 
 
 def projects(int i){
-	return  subprojects.name[i]
+	///
+	String subprojectsName =  subprojects.name[i]	
+	subprojectsName = subprojectsName.replace(workspacePath,'')
+	return  subprojectsName
 }
 //	returns the name of a subproject listed in the settings.gradle file
 
@@ -85,7 +88,10 @@ subprojects {
 		
 				if(  it ==~ /Bundle-SymbolicName:.+/ ){
 					artifactId = it.substring(21)
-					artifactId = artifactId.replace(";singleton:=true",'')
+	
+					artifactId = artifactId.replace(";",'')
+					artifactId = artifactId.replace(" ",'')
+					artifactId = artifactId.replace("singleton:=true",'')
 				}
 				/*	Artifact ID is taken from Bundle-SymbolicName minus the
 				*	16 chars ';singleton:=true'
@@ -98,7 +104,7 @@ subprojects {
 			println artifactId
 			println "\t"+versionNumber
 	
-			def f = new File(artifactId+'/pom.xml') 
+			def f = new File(workspacePath+artifactId+'/pom.xml') 
 			f.delete()
 			f << start()+elder()+artifact(artifactId, versionNumber)+end()
 			/*	
@@ -146,7 +152,7 @@ subprojects {
 				println "\t"+versionNumber
 
 
-				def f = new File(artifactId+'/pom.xml') 
+				def f = new File(workspacePath+artifactId+'/pom.xml') 
 				f.delete()
 				f << feature(artifactId, versionNumber)
 							
@@ -167,11 +173,11 @@ clean {
 task createParent() << {
 	//		---------				 define Parent 				---------		//
 		
-	new File("${parentID}").mkdir() 			
+	new File(workspacePath+"${parentID}").mkdir() 			
 	versionNumber 	=	'1.0.0.qualifier'
 	artifactId 		=	parentId()
 
-	def f = new File(artifactId+'/pom.xml') 
+	def f = new File(workspacePath+artifactId+'/pom.xml') 
 	f.delete()
 	f << parentPom(artifactId)
 	for(int i = 0; i < targetRepositories.size(); i++){
@@ -192,12 +198,12 @@ task createRepository() << {
 	//			------------	 	define Repository			---------		//
 			
 			
-	new File("${repositoryName}").mkdir() 
+	new File(workspacePath+"${repositoryName}").mkdir() 
 				
 	versionNumber 	=	'1.0.0.qualifier'
 	artifactId		=	repositoryName
 	featureVersionNumber = '1.0.0.qualifier'
-	def f = new File(artifactId+'/category.xml') 
+	def f = new File(workspacePath+artifactId+'/category.xml') 
 	f.delete()
 	f << categoryHead()
 	for(int i = 0; i < features.size(); i++){
@@ -215,7 +221,7 @@ task createRepository() << {
 				}		
 		}
 		content.eachLine( printFileLine )
-		f << categoryFeatures(features[i], featureVersionNumber)
+		f << categoryFeatures(features[i].replace(workspacePath,''), featureVersionNumber)
 	}// for
 			
 	for(int i = 0; i < features.size(); i++){
@@ -226,7 +232,7 @@ task createRepository() << {
 				
 	f << categoryEnd()
 				
-	def pom = new File(artifactId+'/pom.xml') 
+	def pom = new File(workspacePath+artifactId+'/pom.xml') 
 	pom.delete()
 	pom << reposi()
 }// end of repository definition
@@ -237,7 +243,7 @@ task createPoms(dependsOn: [createParent, createRepository, subprojects.deploy])
 
 task install(dependsOn: [createPoms] , type:Exec) {
 	description = "\tExecutes a 'mvn install' of the parent pom.xml and auto-generates Tycho Poms"	
-	commandLine 'mvn', 'install', '-f', parentID+'/pom.xml'
+	commandLine 'mvn', 'install', '-f', workspacePath+parentID+'/pom.xml'
 }
 
 
