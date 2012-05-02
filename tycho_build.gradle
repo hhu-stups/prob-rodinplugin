@@ -87,8 +87,8 @@ subprojects {
 				}
 		
 				if(  it ==~ /Bundle-SymbolicName:.+/ ){
-					artifactId = it.substring(21)
-	
+					artifactId = it
+					artifactId = artifactId.replace("Bundle-SymbolicName:", '');
 					artifactId = artifactId.replace(";",'')
 					artifactId = artifactId.replace(" ",'')
 					artifactId = artifactId.replace("singleton:=true",'')
@@ -125,10 +125,11 @@ subprojects {
 				printFileLine = {
 		
 					if(  it ==~ /.+version.+qualifier.+/ ){
-						versionNumber = it.substring(15,it.size()-1)
-						versionNumber = versionNumber.replace('"','') 
-						// possibile error: cuts off first 15 chars and leaves out last '"'
-			
+						versionNumber = it 
+						versionNumber = versionNumber.replace(" ", '')
+						versionNumber = versionNumber.replace("version=", '')
+						versionNumber = versionNumber.replace('"', '')
+						
 						/*	Version Number is taken from Feature.xml 
 						*	feature.xml is searched for version="version.qualifier"
 						*	first 15 chars and last '"' are cut off
@@ -138,12 +139,13 @@ subprojects {
 		
 		
 					if(  it ==~ /.+id=".+/ && idfound == false ){
-						artifactId = it.substring(10,it.length()-1)
+						artifactId = it
+						artifactId = artifactId.replace("id=", '')
+						artifactId = artifactId.replace(" ", '')
+						artifactId = artifactId.replace('"', '')
 						idfound = true
 					}
-					/*	Artifact ID is taken from Bundle-SymbolicName minus the
-					*	16 chars ';singleton:=true'
-					*/
+				
 				}
 	
 				content.eachLine( printFileLine )
@@ -208,23 +210,32 @@ task createRepository() << {
 	f.delete()
 	f << categoryHead()
 	for(int i = 0; i < features.size(); i++){
-					
+
 		content = new File("${features[i]}/feature.xml").getText("UTF-8") 
+		boolean idfound = false
 		printFileLine = {
-			if(  it ==~ /.+version.+qualifier.+/ ){
-				featureVersionNumber = it.substring(15,it.size()-1)
-				featureVersionNumber = featureVersionNumber.replace('"','')
-				  
-				// possibile error: cuts off first 15 chars and leaves out last '"'
-				
-				/*	Version Number is taken from Feature.xml 
-				*	feature.xml is searched for version="version.qualifier"
-				*	first 15 chars and last '"' are cut off
-				*/
-				}		
+				if(  it ==~ /.+version.+qualifier.+/ ){
+					featureVersionNumber = it 
+					featureVersionNumber = featureVersionNumber.replace(" ", '')
+					featureVersionNumber = featureVersionNumber.replace("version=", '')
+					featureVersionNumber = featureVersionNumber.replace('"', '')
+
+
+				}
+	
+	
+				if(  it ==~ /.+id=".+/ && idfound == false ){
+					featureArtifactId = it
+					featureArtifactId = featureArtifactId.replace("id=", '')
+					featureArtifactId = featureArtifactId.replace(" ", '')
+					featureArtifactId = featureArtifactId.replace('"', '')
+					idfound = true
+				}
+			
 		}
+	
 		content.eachLine( printFileLine )
-		f << categoryFeatures(features[i].replace(workspacePath,''), featureVersionNumber)
+		f << categoryFeatures(featureArtifactId.replace(workspacePath,''), featureVersionNumber)
 	}// for
 			
 	for(int i = 0; i < features.size(); i++){
