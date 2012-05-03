@@ -19,6 +19,7 @@ targetRepositories = ["http://cobra.cs.uni-duesseldorf.de/prob_dev_target/","htt
 
 workspacePath = ""					// Relative Path to workspace directory e.g. your build is located in the folder workspace/buildscript please set relativePath to ".../"
 
+
 apply from: 'tycho_build.gradle'
 
 // Local tasks
