@@ -126,6 +126,8 @@ subprojects {
 						versionNumber = versionNumber.replace(" ", '')
 						versionNumber = versionNumber.replace("version=", '')
 						versionNumber = versionNumber.replace('"', '')
+						versionNumber = versionNumber.replace('<', '')
+						versionNumber = versionNumber.replace('>', '')
 						
 						/*	Version Number is taken from Feature.xml 
 						*	feature.xml is searched for version="version.qualifier"
