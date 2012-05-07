@@ -218,6 +218,8 @@ task createRepository() << {
 					featureVersionNumber = featureVersionNumber.replace(" ", '')
 					featureVersionNumber = featureVersionNumber.replace("version=", '')
 					featureVersionNumber = featureVersionNumber.replace('"', '')
+					featureVersionNumber = featureVersionNumber.replace(">", '');
+					featureVersionNumber = featureVersionNumber.replace("<", '');
 
 
 				}
