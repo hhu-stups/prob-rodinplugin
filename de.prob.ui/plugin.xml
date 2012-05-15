@@ -378,7 +378,7 @@
                </with>
          </enabledWhen>
          <class
-               class="de.prob.ui.ltl.LtlCommand">
+               class="de.prob.ui.ltl.handler.LtlCommand">
          </class>
       </handler>
       <handler
@@ -668,7 +668,7 @@
          </class>
       </handler>
       <handler commandId="de.prob.ui.ltl.counterexampleviewmenuhandler">
-            <class class="de.prob.ui.ltl.CounterExampleViewMenuHandler"/>
+            <class class="de.prob.ui.ltl.handler.CounterExampleViewMenuHandler"/>
             <enabledWhen>
             <with variable="de.prob.ui.ltl.counterexample_loaded">
                   <equals
@@ -678,7 +678,7 @@
          </enabledWhen>
       </handler>
       <handler commandId="de.prob.ui.ltl.counterexamplezoominhandler">
-            <class class="de.prob.ui.ltl.CounterExampleZoomInHandler"/>
+            <class class="de.prob.ui.ltl.handler.CounterExampleZoomInHandler"/>
             <enabledWhen>
             <with variable="de.prob.ui.ltl.counterexample_loaded">
                   <equals
@@ -688,7 +688,7 @@
          </enabledWhen>
       </handler>
       <handler commandId="de.prob.ui.ltl.counterexamplezoomouthandler">
-            <class class="de.prob.ui.ltl.CounterExampleZoomOutHandler"/>
+            <class class="de.prob.ui.ltl.handler.CounterExampleZoomOutHandler"/>
             <enabledWhen>
             <with variable="de.prob.ui.ltl.counterexample_loaded">
                   <equals
@@ -698,7 +698,7 @@
          </enabledWhen>
       </handler>
       <handler commandId="de.prob.ui.ltl.counterexampleprinthandler">
-            <class class="de.prob.ui.ltl.CounterExamplePrintHandler"/>
+            <class class="de.prob.ui.ltl.handler.CounterExamplePrintHandler"/>
             <enabledWhen>
             <with variable="de.prob.ui.ltl.counterexample_loaded">
                   <equals
@@ -708,7 +708,7 @@
          </enabledWhen>
       </handler>
       <handler commandId="de.prob.ui.ltl.showcounterexampleinhistory">
-            <class class="de.prob.ui.ltl.CounterExampleHistoryHandler"/>
+            <class class="de.prob.ui.ltl.handler.CounterExampleHistoryHandler"/>
             <enabledWhen>
             <with variable="de.prob.ui.ltl.counterexample_loaded">
                   <equals
@@ -1051,7 +1051,7 @@
                   style="radio">
                <parameter
                      name="org.eclipse.ui.commands.radioStateParameter"
-                     value="Table">
+                     value="TABLE">
                </parameter>
             </command>
             <command
@@ -1060,7 +1060,7 @@
                   style="radio">
                <parameter
                      name="org.eclipse.ui.commands.radioStateParameter"
-                     value="Tree">
+                     value="TREE">
                </parameter>
             </command>
             <command
@@ -1069,7 +1069,7 @@
                   style="radio">
                <parameter
                      name="org.eclipse.ui.commands.radioStateParameter"
-                     value="Interactive">
+                     value="INTERACTIVE">
                </parameter>
             </command>
          </menu>

@@ -5,8 +5,6 @@ import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.PlatformUI;
 
 import de.prob.core.domainobjects.ltl.CounterExampleProposition;
 import de.prob.core.domainobjects.ltl.CounterExampleState;
@@ -43,11 +41,8 @@ public final class TreeColumnValueLabelProvider extends CellLabelProvider {
 						.get(index);
 				cell.setText(value.toString());
 
-				final IWorkbenchPage workbenchPage = PlatformUI.getWorkbench()
-						.getActiveWorkbenchWindow().getActivePage();
-				final CounterExampleViewPart counterExampleView = (CounterExampleViewPart) workbenchPage
-						.findView(CounterExampleViewPart.ID);
-
+				final CounterExampleViewPart counterExampleView = CounterExampleViewPart
+						.getDefault();
 				if (counterExampleView != null) {
 					final int currentIndex = counterExampleView
 							.getCurrentIndex();

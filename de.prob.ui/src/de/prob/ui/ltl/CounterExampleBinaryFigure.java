@@ -21,6 +21,7 @@ import de.prob.core.domainobjects.ltl.CounterExampleBinaryOperator;
 import de.prob.core.domainobjects.ltl.CounterExampleProposition;
 import de.prob.exceptions.ProBException;
 import de.prob.logging.Logger;
+import de.prob.ui.ltl.handler.CounterExampleHistoryHandler;
 
 public final class CounterExampleBinaryFigure extends
 		CounterExamplePropositionFigure {

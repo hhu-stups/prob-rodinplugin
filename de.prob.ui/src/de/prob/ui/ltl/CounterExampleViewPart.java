@@ -41,6 +41,9 @@ import org.eclipse.swt.printing.PrinterData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.eclipse.ui.menus.CommandContributionItem;
 import org.eclipse.ui.services.ISourceProviderService;
@@ -64,23 +67,43 @@ import de.prob.ui.StateBasedViewPart;
  * 
  */
 public final class CounterExampleViewPart extends StateBasedViewPart {
-	public static final String ID = "de.prob.ui.ltl.CounterExampleView";
+	private static final String ID = "de.prob.ui.ltl.CounterExampleView";
 
 	private static final String COUNTEREXAMPLE_DATA_KEY = "counterexample";
 	private static final String EDITPART_DATA_KEY = "editpart";
 	private static final String GRAPHICALVIEWER_DATA_KEY = "graphicalviewer";
 	private static final String LAYOUT_DATA_KEY = "layout";
-	private static final String TABLEVIEW_DATA_KEY = "tableview";
-	private static final String TREEVIEW_DATA_KEY = "treeview";
-	private static final String INTERACTIVEVIEW_DATA_KEY = "interactiveview";
 	private static final String TABLEVIEWER_DATA_KEY = "tableviewer";
 	private static final String TREEVIEWER_DATA_KEY = "treeviewer";
+
+	public static enum ViewType {
+		INTERACTIVE, TREE, TABLE
+	};
 
 	private final List<CounterExample> counterExamples = new ArrayList<CounterExample>();
 
 	private CTabFolder tabFolder;
-	private String viewType = "Interactive";
+	private ViewType viewType = ViewType.INTERACTIVE;
 	private int currentIndex = -1;
+
+	public static CounterExampleViewPart showDefault() {
+		final IWorkbenchPage workbenchPage = PlatformUI.getWorkbench()
+				.getActiveWorkbenchWindow().getActivePage();
+		CounterExampleViewPart counterExampleView = null;
+		try {
+			counterExampleView = (CounterExampleViewPart) workbenchPage
+					.showView(ID);
+		} catch (PartInitException e) {
+			Logger.notifyUser("Failed to show the LTL view.", e);
+		}
+		return counterExampleView;
+	}
+
+	public static CounterExampleViewPart getDefault() {
+		final IWorkbenchPage workbenchPage = PlatformUI.getWorkbench()
+				.getActiveWorkbenchWindow().getActivePage();
+		return (CounterExampleViewPart) workbenchPage.findView(ID);
+	}
 
 	@Override
 	protected Control createStatePartControl(Composite parent) {
@@ -117,7 +140,8 @@ public final class CounterExampleViewPart extends StateBasedViewPart {
 							Command command = parameterizedCommand.getCommand();
 
 							try {
-								HandlerUtil.updateRadioState(command, viewType);
+								HandlerUtil.updateRadioState(command,
+										viewType.name());
 							} catch (ExecutionException e) {
 							}
 						}
@@ -208,23 +232,14 @@ public final class CounterExampleViewPart extends StateBasedViewPart {
 		}
 	}
 
-	public void setViewType(String viewType) {
+	public void setViewType(ViewType viewType) {
 		this.viewType = viewType;
 
 		for (CTabItem tabItem : tabFolder.getItems()) {
 			StackLayout layout = (StackLayout) tabItem.getData(LAYOUT_DATA_KEY);
 
-			if (viewType.equals("Table")) {
-				layout.topControl = (Composite) tabItem
-						.getData(TABLEVIEW_DATA_KEY);
-			} else if (viewType.equals("Tree")) {
-				layout.topControl = (Composite) tabItem
-						.getData(TREEVIEW_DATA_KEY);
-			} else if (viewType.equals("Interactive")) {
-				layout.topControl = (Composite) tabItem
-						.getData(INTERACTIVEVIEW_DATA_KEY);
-			}
-
+			final String dataKey = viewType.name();
+			layout.topControl = (Composite) tabItem.getData(dataKey);
 			if (layout.topControl != null) {
 				Composite parent = layout.topControl.getParent();
 
@@ -361,14 +376,14 @@ public final class CounterExampleViewPart extends StateBasedViewPart {
 
 		Composite tableView = new Composite(composite, SWT.None);
 		TableViewer tableViewer = createTableViewer(tableView, counterExample);
-		tabItem.setData(TABLEVIEW_DATA_KEY, tableView);
+		tabItem.setData(ViewType.TABLE.name(), tableView);
 		tabItem.setData(TABLEVIEWER_DATA_KEY, tableViewer);
 		// createPopupMenu(tableViewer.getTable(), tableViewer);
 
 		Composite treeView = new Composite(composite, SWT.None);
 		treeView.setLayout(new FillLayout());
 		TreeViewer treeViewer = createTreeViewer(treeView, counterExample);
-		tabItem.setData(TREEVIEW_DATA_KEY, treeView);
+		tabItem.setData(ViewType.TREE.name(), treeView);
 		tabItem.setData(TREEVIEWER_DATA_KEY, treeViewer);
 		// createPopupMenu(treeViewer.getTree(), treeViewer);
 
@@ -383,7 +398,7 @@ public final class CounterExampleViewPart extends StateBasedViewPart {
 				SWT.COLOR_WHITE));
 		// createPopupMenu(interactiveView, graphicalViewer);
 
-		tabItem.setData(INTERACTIVEVIEW_DATA_KEY, interactiveView);
+		tabItem.setData(ViewType.INTERACTIVE.name(), interactiveView);
 
 		graphicalViewer.setRootEditPart(rootEditPart);
 		graphicalViewer.setEditPartFactory(new CounterExampleEditPartFactory());
@@ -392,13 +407,22 @@ public final class CounterExampleViewPart extends StateBasedViewPart {
 		EditDomain editDomain = new DefaultEditDomain(null);
 		editDomain.addViewer(graphicalViewer);
 
-		if (viewType.equals("Table")) {
-			layout.topControl = tableView;
-		} else if (viewType.equals("Tree")) {
-			layout.topControl = treeView;
-		} else if (viewType.equals("Interactive")) {
-			layout.topControl = interactiveView;
+		final Control topControl;
+		switch (viewType) {
+		case TABLE:
+			topControl = tableView;
+			break;
+		case TREE:
+			topControl = treeView;
+			break;
+		case INTERACTIVE:
+			topControl = interactiveView;
+			break;
+		default:
+			throw new IllegalStateException(
+					"Unexpected view type in LTL counter-example view");
 		}
+		layout.topControl = topControl;
 
 		return tabItem;
 	}

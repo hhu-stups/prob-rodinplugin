@@ -63,6 +63,8 @@ import de.prob.prolog.term.PrologTerm;
 import de.prob.ui.DialogHelpers;
 
 public final class LtlCheckingDialog extends TrayDialog {
+	private static final String CONFIGURATION_ID = "de.prob.ui.ltl.CounterExampleViewPart";
+
 	private static final StartOption[] START_MODES = new StartOption[] {
 			new StartOption(LtlCheckingCommand.StartMode.init,
 					"Start in the (possible several) initialisation states of the model"),
@@ -79,7 +81,7 @@ public final class LtlCheckingDialog extends TrayDialog {
 	private Combo startingPointOptions = null;
 	private Combo symmetryOptions = null;
 
-	protected LtlCheckingDialog(final Shell shell) {
+	public LtlCheckingDialog(final Shell shell) {
 		super(shell);
 		this.shell = shell;
 	}
@@ -227,9 +229,8 @@ public final class LtlCheckingDialog extends TrayDialog {
 	}
 
 	private void saveFormulas(Set<String> formulas) {
-		IScopeContext configContext = new ConfigurationScope();
-		IEclipsePreferences configNode = configContext
-				.getNode("de.prob.ui.ltl.CounterExampleViewPart");
+		final IEclipsePreferences configNode = ConfigurationScope.INSTANCE
+				.getNode(CONFIGURATION_ID);
 
 		if (configNode != null) {
 			try {
@@ -252,9 +253,8 @@ public final class LtlCheckingDialog extends TrayDialog {
 
 	@SuppressWarnings("unchecked")
 	private Set<String> getFormulas() {
-		IScopeContext configContext = new ConfigurationScope();
-		IEclipsePreferences configNode = configContext
-				.getNode("de.prob.ui.ltl.CounterExampleViewPart");
+		IEclipsePreferences configNode = ConfigurationScope.INSTANCE
+				.getNode(CONFIGURATION_ID);
 
 		byte[] formula = null;
 		if (configNode != null) {

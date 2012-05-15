@@ -1,4 +1,4 @@
-package de.prob.ui.ltl;
+package de.prob.ui.ltl.handler;
 
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -15,6 +15,7 @@ import org.eclipse.ui.services.ISourceProviderService;
 import de.prob.core.Animator;
 import de.prob.ui.PerspectiveFactory;
 import de.prob.ui.ProbUiPlugin;
+import de.prob.ui.ltl.LtlCheckingDialog;
 import de.prob.ui.services.ModelLoadedProvider;
 
 public final class LtlCommand extends AbstractHandler implements IHandler {
