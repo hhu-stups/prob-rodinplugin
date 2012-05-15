@@ -261,6 +261,9 @@ public final class CliStarter {
 		final Path path = new Path("prob");
 		final URL fileURL = FileLocator.find(
 				Activator.getDefault().getBundle(), path, null);
+		if (fileURL==null) {
+			throw new CliException("Unable to find directory with prob executables.");
+		}
 		URL resolved;
 		try {
 			resolved = FileLocator.resolve(fileURL);
