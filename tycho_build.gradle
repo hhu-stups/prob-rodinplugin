@@ -1,6 +1,7 @@
 apply plugin: 'base'
+import groovy.xml.XmlUtil
 
-
+tychoVersion = "0.14.1"
 
 def projects(int i){
 	return  subprojects.name[i]
@@ -55,9 +56,8 @@ subprojects {
 	task deploy() <<{
 		description = "\tGenerating the Tycho Poms. Please remember to add a '.qualifier' to the version numbers!"
 
-		versionNumber = 'Version Number Error:\tcheck Manifest for Bundle-Version Number and make sure to add a ".qualifier" to the version numbers!\n'
-		
-		artifactId = 'Could not find Bundle-SymbolicName in Manifest.file'
+		String 	versionNumber = 'Version Number Error:\tcheck Manifest for Bundle-Version Number and make sure to add a ".qualifier" to the version numbers!\n'
+		String 	artifactId = 'Could not find Bundle-SymbolicName in Manifest.file'
 
 		
 		/* -- In case of changed Manifest File in Eclipse:
@@ -74,7 +74,7 @@ subprojects {
 
 	 		printFileLine = { 
 				if(  it ==~ /Bundle-Version.+qualifier/ ){
-					versionNumber = it.substring(16) // possibile error: cuts off first 16 chars 
+					 versionNumber = it.substring(16) // possibile error: cuts off first 16 chars 
 			
 					/*	Version Number is taken from Bundle-Version in Manifest.MF
 					*	If there is no Bundle-Version or the versionnumber needs to
@@ -103,66 +103,41 @@ subprojects {
 	
 			def f = new File(workspacePath+artifactId+'/pom.xml') 
 			f.delete()
-			f << start()+elder()+artifact(artifactId, versionNumber)+end()
-			/*	
-			*	old pom.xml files are deleted and replaced by new auto generated Tycho pom.xml files
-			*/
-		}else{	// if subprojects aren't a feature
-			
+		
+			// 			---- 			Test Cases					 ------ 				//
 
+			if( project.name ==~ /.*\.tests/ || project.name ==~ /.*\.test/ || project.name ==~ /.*\.Tests/ || project.name ==~ /.*\.Test/){
+					
+				f << start()+elder()+testArtifact(artifactId, versionNumber)+end()
+			}else{
+				
+			// ---- 				Normal Plugin 				-----						//
+				f << start()+elder()+artifact(artifactId, versionNumber)+end()
+				/*	
+				*	old pom.xml files are deleted and replaced by new auto generated Tycho pom.xml files
+				*/
+			}
+		}else{	// if subprojects aren't a feature
 	
 //		--		Features 					--			//
 	
 			if(features.any{ it == project.name } ){
 			
-				boolean idfound = false
+				def parsedXml = new XmlParser().parse(workspacePath+"${project.name}/feature.xml")
 
-				content = new File(workspacePath+"${project.name}/feature.xml").getText("UTF-8") 
+				artifactId   = parsedXml.attribute("id")
+				versionNumber = parsedXml.attribute("version")
 
-				printFileLine = {
-		
-					if(  it ==~ /.+version.+qualifier.+/ ){
-						versionNumber = it 
-						versionNumber = versionNumber.replace(" ", '')
-						versionNumber = versionNumber.replace("version=", '')
-						versionNumber = versionNumber.replace('"', '')
-						versionNumber = versionNumber.replace('<', '')
-						versionNumber = versionNumber.replace('>', '')
-						
-						/*	Version Number is taken from Feature.xml 
-						*	feature.xml is searched for version="version.qualifier"
-						*	first 15 chars and last '"' are cut off
-						*/
-
-					}
-		
-		
-					if(  it ==~ /.+id=".+/ && idfound == false ){
-						artifactId = it
-						artifactId = artifactId.replace("id=", '')
-						artifactId = artifactId.replace(" ", '')
-						artifactId = artifactId.replace('"', '')
-						idfound = true
-					}
-				
-				}
-	
-				content.eachLine( printFileLine )
-
-	
 				println artifactId
 				println "\t"+versionNumber
-
 
 				def f = new File(workspacePath+artifactId+'/pom.xml') 
 				f.delete()
 				f << feature(artifactId, versionNumber)
 							
 			}
-	
 		}
-	}
-	
+	}//deploy
 
 	
 }// defining subprojects
@@ -176,8 +151,8 @@ task createParent() << {
 	//		---------				 define Parent 				---------		//
 		
 	new File(workspacePath+"${parentID}").mkdir() 			
-	versionNumber 	=	'1.0.0.qualifier'
-	artifactId 		=	parentId()
+	String versionNumber 	=	'1.0.0.qualifier'
+	String artifactId 		=	parentId()
 
 	def f = new File(workspacePath+artifactId+'/pom.xml') 
 	f.delete()
@@ -202,40 +177,20 @@ task createRepository() << {
 			
 	new File(workspacePath+"${repositoryName}").mkdir() 
 				
-	versionNumber 	=	'1.0.0.qualifier'
-	artifactId		=	repositoryName
-	featureVersionNumber = '1.0.0.qualifier'
+	String versionNumber 	=	'1.0.0.qualifier'
+	String artifactId		=	repositoryName
+	String featureVersionNumber = '1.0.0.qualifier'
+	String featureArtifactId
 	def f = new File(workspacePath+artifactId+'/category.xml') 
 	f.delete()
 	f << categoryHead()
 	for(int i = 0; i < features.size(); i++){
-
-		content = new File("${workspacePath}${features[i]}/feature.xml").getText("UTF-8") 
-		boolean idfound = false
-		printFileLine = {
-				if(  it ==~ /.+version.+qualifier.+/ ){
-					featureVersionNumber = it 
-					featureVersionNumber = featureVersionNumber.replace(" ", '')
-					featureVersionNumber = featureVersionNumber.replace("version=", '')
-					featureVersionNumber = featureVersionNumber.replace('"', '')
-					featureVersionNumber = featureVersionNumber.replace(">", '');
-					featureVersionNumber = featureVersionNumber.replace("<", '');
-
-
-				}
+		
+		def parsedXml = new XmlParser().parse("${workspacePath}${features[i]}/feature.xml")
+		
+		featureVersionNumber  = parsedXml.attribute("version")
+		featureArtifactId  = parsedXml.attribute("id")
 	
-	
-				if(  it ==~ /.+id=".+/ && idfound == false ){
-					featureArtifactId = it
-					featureArtifactId = featureArtifactId.replace("id=", '')
-					featureArtifactId = featureArtifactId.replace(" ", '')
-					featureArtifactId = featureArtifactId.replace('"', '')
-					idfound = true
-				}
-			
-		}
-	
-		content.eachLine( printFileLine )
 		f << categoryFeatures(featureArtifactId.replace(workspacePath,''), featureVersionNumber)
 	}// for
 			
@@ -272,6 +227,12 @@ task install(dependsOn: [createPoms] , type:Exec) {
 		<packaging>eclipse-plugin</packaging>
 	""" }
 	
+    def testArtifact(artifactId,versionNumber) { """
+		<groupId>${groupId()}</groupId>
+		<artifactId>${artifactId}</artifactId>
+		<version>${versionNumber}</version>
+		<packaging>eclipse-test-plugin</packaging>
+	""" }
 	
 			
 	def start() { """<?xml version="1.0" encoding="UTF-8"?>
@@ -312,7 +273,7 @@ def parentPom(artifactId) { """<?xml version="1.0" encoding="UTF-8"?>
 
 	<!-- this is the parent POM from which all modules inherit common settings -->
 	<properties>
-		<tycho-version>0.14.1</tycho-version>
+		<tycho-version>${tychoVersion}</tycho-version>
 	</properties>
 
    <repositories>
@@ -343,7 +304,7 @@ def endRepos() {"""
 				<!-- enable tycho build extension -->
 				<groupId>org.eclipse.tycho</groupId>
 				<artifactId>tycho-maven-plugin</artifactId>
-				<version>0.14.1</version>
+				<version>${tychoVersion}</version>
 				<extensions>true</extensions>
 			</plugin>
 		</plugins>
@@ -435,6 +396,37 @@ def feature(artifactId, versionNumber) { """
 	</project>
 """}
 // end of feature pom
+
+// Testing XML slurping for creating poms
+task slurpXml() <<{
+	
+	def comment = "<![CDATA[<!-- address is new to this release -->]]>"
+	def builder = new groovy.xml.StreamingMarkupBuilder()
+	builder.encoding = "UTF-8"
+	def project = {
+	  mkp.xmlDeclaration()
+	  mkp.pi()
+	  mkp.declareNamespace('':'http://maven.apache.org/POM/4.0.0')
+	  mkp.declareNamespace('schemaLocation':'http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd')
+	  mkp.declareNamespace('xsi':'http://www.w3.org/2001/XMLSchema-instance')
+	 	
+	 	project(){
+	    	parent(){
+				groupId(groupId())
+				artifactId(parentId())
+		  		version('1.0.0.qualifier')
+				relativePath("../${parentId()}/pom.xml")
+			}
+	    	groupId(groupId())
+			artifactId("artfct")
+	  		version("1.2.3.qualifier")
+		}
+	}
+	def writer = new File("pomTest.xml")
+	writer.delete()
+	writer << builder.bind(project)
+	
+}
 
 
 //	Build Script can be executed via gradle install
