@@ -50,6 +50,7 @@ public class PerspectiveFactory implements IPerspectiveFactory {
 			IWorkbench workbench = PlatformUI.getWorkbench();
 			workbench.showPerspective(PROB_PERSPECTIVE,
 					workbench.getActiveWorkbenchWindow());
+			workbench.getActiveWorkbenchWindow().addPerspectiveListener(new PerspectiveListener());
 		} catch (WorkbenchException e) {
 			final String message = "Error opening ProB perspective.";
 			Logger.notifyUser(message, e);
