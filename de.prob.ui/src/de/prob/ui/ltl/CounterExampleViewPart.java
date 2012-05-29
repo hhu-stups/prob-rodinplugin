@@ -12,7 +12,6 @@ import org.eclipse.gef.DefaultEditDomain;
 import org.eclipse.gef.EditDomain;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.GraphicalViewer;
-import org.eclipse.gef.RootEditPart;
 import org.eclipse.gef.editparts.ScalableRootEditPart;
 import org.eclipse.gef.editparts.ZoomManager;
 import org.eclipse.gef.print.PrintGraphicalViewerOperation;
@@ -25,7 +24,6 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.TreeViewerColumn;
-import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.custom.CTabFolder;
@@ -69,16 +67,47 @@ import de.prob.ui.StateBasedViewPart;
 public final class CounterExampleViewPart extends StateBasedViewPart {
 	private static final String ID = "de.prob.ui.ltl.CounterExampleView";
 
-	private static final String COUNTEREXAMPLE_DATA_KEY = "counterexample";
-	private static final String EDITPART_DATA_KEY = "editpart";
-	private static final String GRAPHICALVIEWER_DATA_KEY = "graphicalviewer";
-	private static final String LAYOUT_DATA_KEY = "layout";
-	private static final String TABLEVIEWER_DATA_KEY = "tableviewer";
-	private static final String TREEVIEWER_DATA_KEY = "treeviewer";
+	private static final String DATA_KEY = "tabdata";
 
 	public static enum ViewType {
 		INTERACTIVE, TREE, TABLE
 	};
+
+	private static class TabData {
+		private final CounterExample counterExample;
+
+		private final StackLayout layout;
+
+		// Table view
+		private final Composite tableView;
+		private final TableViewer tableViewer;
+
+		// Tree view
+		private final Composite treeView;
+		private final TreeViewer treeViewer;
+
+		// Graphical view
+		private final ScalableRootEditPart editPart;
+		private final GraphicalViewer graphicalViewer;
+		private final Control interactiveView;
+
+		public TabData(CounterExample counterExample, StackLayout layout,
+				Composite tableView, TableViewer tableViewer,
+				Composite treeView, TreeViewer treeViewer,
+				ScalableRootEditPart editPart, GraphicalViewer graphicalViewer,
+				Control interactiveView) {
+			super();
+			this.counterExample = counterExample;
+			this.layout = layout;
+			this.tableView = tableView;
+			this.tableViewer = tableViewer;
+			this.treeView = treeView;
+			this.treeViewer = treeViewer;
+			this.editPart = editPart;
+			this.graphicalViewer = graphicalViewer;
+			this.interactiveView = interactiveView;
+		}
+	}
 
 	private final List<CounterExample> counterExamples = new ArrayList<CounterExample>();
 
@@ -121,6 +150,24 @@ public final class CounterExampleViewPart extends StateBasedViewPart {
 	}
 
 	public void addCounterExample(final CounterExample counterExample) {
+		initializeMenuSetting();
+
+		updateCounterExampleLoadedProvider(true);
+		counterExamples.add(counterExample);
+
+		final Runnable runnable = new Runnable() {
+			@Override
+			public void run() {
+				final CTabItem tabItem = createTabItem(counterExample);
+				tabFolder.setSelection(tabItem);
+				tabFolder.update();
+			}
+		};
+
+		Display.getDefault().asyncExec(runnable);
+	}
+
+	private void initializeMenuSetting() {
 		if (tabFolder.getItemCount() == 0) {
 			MenuManager manager = (MenuManager) getViewSite().getActionBars()
 					.getMenuManager();
@@ -148,104 +195,57 @@ public final class CounterExampleViewPart extends StateBasedViewPart {
 				}
 			}
 		}
-
-		updateCounterExampleLoadedProvider(true);
-		counterExamples.add(counterExample);
-
-		final Runnable runnable = new Runnable() {
-			@Override
-			public void run() {
-				final CTabItem tabItem = createTabItem(counterExample);
-				tabFolder.setSelection(tabItem);
-				tabFolder.update();
-			}
-		};
-
-		Display.getDefault().asyncExec(runnable);
-	}
-
-	public CounterExample getCurrentCounterExample() {
-		final CTabItem selection = tabFolder.getSelection();
-		return selection == null ? null : (CounterExample) selection
-				.getData(COUNTEREXAMPLE_DATA_KEY);
 	}
 
 	public void zoomInCounterExample() {
-		final CTabItem tabItem = tabFolder.getSelection();
-
-		if (tabItem != null) {
-			ScalableRootEditPart editPart = (ScalableRootEditPart) tabItem
-					.getData(EDITPART_DATA_KEY);
-
-			if (editPart != null) {
-				ZoomManager manager = editPart.getZoomManager();
-
-				if (manager != null && manager.canZoomIn()) {
-					manager.setZoom(manager.getNextZoomLevel());
-				}
+		final ZoomManager zoomManager = getZoomManager();
+		if (zoomManager != null) {
+			if (zoomManager != null && zoomManager.canZoomIn()) {
+				zoomManager.setZoom(zoomManager.getNextZoomLevel());
 			}
 		}
 	}
 
 	public void zoomOutCounterExample() {
-		final CTabItem tabItem = tabFolder.getSelection();
-
-		if (tabItem != null) {
-			ScalableRootEditPart editPart = (ScalableRootEditPart) tabItem
-					.getData(EDITPART_DATA_KEY);
-
-			if (editPart != null) {
-				ZoomManager manager = editPart.getZoomManager();
-
-				if (manager != null && manager.canZoomOut()) {
-					manager.setZoom(manager.getPreviousZoomLevel());
-				}
+		final ZoomManager zoomManager = getZoomManager();
+		if (zoomManager != null) {
+			if (zoomManager != null && zoomManager.canZoomOut()) {
+				zoomManager.setZoom(zoomManager.getPreviousZoomLevel());
 			}
 		}
 	}
 
+	private ZoomManager getZoomManager() {
+		final TabData data = getCurrentTabData();
+		return data == null ? null : data.editPart.getZoomManager();
+	}
+
 	public void printCounterExample() {
-		final CTabItem tabItem = tabFolder.getSelection();
+		final TabData data = getCurrentTabData();
+		if (data != null) {
+			final GraphicalViewer graphicalViewer = data.graphicalViewer;
+			final PrintDialog dialog = new PrintDialog(graphicalViewer
+					.getControl().getShell(), SWT.NULL);
 
-		if (tabItem != null) {
-			GraphicalViewer graphicalViewer = (GraphicalViewer) tabItem
-					.getData(GRAPHICALVIEWER_DATA_KEY);
+			try {
+				final PrinterData printerData = dialog.open();
+				if (printerData != null) {
+					final PrintGraphicalViewerOperation viewerOperation = new PrintGraphicalViewerOperation(
+							new Printer(printerData), graphicalViewer);
 
-			if (graphicalViewer != null) {
-				PrintDialog dialog = new PrintDialog(graphicalViewer
-						.getControl().getShell(), SWT.NULL);
-
-				try {
-					PrinterData data = dialog.open();
-
-					if (data != null) {
-						PrintGraphicalViewerOperation viewerOperation = new PrintGraphicalViewerOperation(
-								new Printer(data), graphicalViewer);
-
-						viewerOperation.run(getTitle());
-					}
-				} catch (SWTException e) {
-					Logger.notifyUser(
-							"Failed to print the LTL counter example.", e);
+					viewerOperation.run(getTitle());
 				}
+			} catch (SWTException e) {
+				Logger.notifyUser("Failed to print the LTL counter example.", e);
 			}
 		}
 	}
 
 	public void setViewType(ViewType viewType) {
 		this.viewType = viewType;
-
 		for (CTabItem tabItem : tabFolder.getItems()) {
-			StackLayout layout = (StackLayout) tabItem.getData(LAYOUT_DATA_KEY);
-
-			final String dataKey = viewType.name();
-			layout.topControl = (Composite) tabItem.getData(dataKey);
-			if (layout.topControl != null) {
-				Composite parent = layout.topControl.getParent();
-
-				if (parent != null)
-					parent.layout();
-			}
+			final TabData data = getTabData(tabItem);
+			updateTopControl(data);
 		}
 	}
 
@@ -256,87 +256,77 @@ public final class CounterExampleViewPart extends StateBasedViewPart {
 	@Override
 	protected void stateChanged(final State activeState,
 			final Operation operation) {
-		if (tabFolder != null) {
-			CTabItem selection = tabFolder.getSelection();
+		final TabData data = getCurrentTabData();
+		if (data != null) {
+			if (activeState.isInitialized()) {
+				final CounterExample ce = data.counterExample;
+				final List<Operation> fullPath = ce.getFullPath();
 
-			if (selection != null) {
-				if (activeState.isInitialized()) {
-					CounterExample ce = (CounterExample) selection
-							.getData(COUNTEREXAMPLE_DATA_KEY);
+				final Animator animator = Animator.getAnimator();
+				final History history = animator.getHistory();
 
-					if (ce != null) {
-						final List<Operation> fullPath = ce.getFullPath();
+				if (isCounterExampleLoadedInHistory(data.counterExample)) {
+					final int initPathSize = ce.getInitPath().size();
 
-						Animator animator = Animator.getAnimator();
-						History history = animator.getHistory();
-						ArrayList<HistoryItem> historyItems = new ArrayList<HistoryItem>(
-								Arrays.asList(history.getAllItems()));
+					currentIndex = history.getCurrentPosition() - initPathSize;
 
-						if (!historyItems.isEmpty()) {
-							if (historyItems.get(historyItems.size() - 1)
-									.getOperation() == null) {
-								historyItems.remove(historyItems.size() - 1);
-							}
+					// HistoryItem item = history.getCurrent();
 
-							if (fullPath.size() == historyItems.size()) {
-								boolean ceLoaded = true;
-
-								for (int i = 0; i < fullPath.size(); i++) {
-									if (!fullPath.get(i).equals(
-											historyItems.get(i).getOperation())) {
-										ceLoaded = false;
-									}
-								}
-
-								if (ceLoaded) {
-									final int initPathSize = ce.getInitPath()
-											.size();
-
-									currentIndex = history.getCurrentPosition()
-											- initPathSize;
-
-									// HistoryItem item = history.getCurrent();
-
-									if (ce.getPathType() == PathType.INFINITE
-											&& currentIndex == fullPath.size()
-													- initPathSize) {
-										currentIndex = ce.getLoopEntry();
-									}
-								}
-							}
-						}
+					if (ce.getPathType() == PathType.INFINITE
+							&& currentIndex == fullPath.size() - initPathSize) {
+						currentIndex = ce.getLoopEntry();
 					}
 				}
 
-				Viewer treeViewer = (Viewer) selection
-						.getData(TREEVIEWER_DATA_KEY);
-
-				if (treeViewer != null)
-					treeViewer.refresh();
-
-				Viewer tableViewer = (Viewer) selection
-						.getData(TABLEVIEWER_DATA_KEY);
-
-				if (tableViewer != null)
-					tableViewer.refresh();
-
-				ScalableRootEditPart editPart = (ScalableRootEditPart) selection
-						.getData(EDITPART_DATA_KEY);
-
-				if (editPart != null) {
-					// We know that each element is of type
-					// EditPart, but AbstractEditPart.getChildren() returns just
-					// a list
-					@SuppressWarnings("unchecked")
-					List<EditPart> children = editPart.getChildren();
-					for (EditPart child : children) {
-						child.refresh();
-					}
+				data.treeViewer.refresh();
+				data.tableViewer.refresh();
+				// We know that each element is of type
+				// EditPart, but AbstractEditPart.getChildren() returns just
+				// a list
+				@SuppressWarnings("unchecked")
+				List<EditPart> children = data.editPart.getChildren();
+				for (EditPart child : children) {
+					child.refresh();
 				}
 
 				currentIndex = -1;
 			}
 		}
+	}
+
+	private boolean isCounterExampleLoadedInHistory(final CounterExample ce) {
+		final List<Operation> fullPath = ce.getFullPath();
+
+		final Animator animator = Animator.getAnimator();
+		final History history = animator.getHistory();
+		final List<HistoryItem> historyItems = new ArrayList<HistoryItem>(
+				Arrays.asList(history.getAllItems()));
+
+		final boolean isLoaded;
+		if (!historyItems.isEmpty()) {
+			if (historyItems.get(historyItems.size() - 1).getOperation() == null) {
+				historyItems.remove(historyItems.size() - 1);
+			}
+
+			if (fullPath.size() == historyItems.size()) {
+				boolean ceIsEqual = true;
+				for (int i = 0; i < fullPath.size(); i++) {
+					final Operation ceOperation = fullPath.get(i);
+					final Operation histOperation = historyItems.get(i)
+							.getOperation();
+					if (!ceOperation.equals(histOperation)) {
+						ceIsEqual = false;
+						break;
+					}
+				}
+				isLoaded = ceIsEqual;
+			} else {
+				isLoaded = false;
+			}
+		} else {
+			isLoaded = false;
+		}
+		return isLoaded;
 	}
 
 	@Override
@@ -363,42 +353,32 @@ public final class CounterExampleViewPart extends StateBasedViewPart {
 	private CTabItem createTabItem(final CounterExample counterExample) {
 		final CTabItem tabItem = new CTabItem(tabFolder, SWT.CLOSE);
 		tabItem.setText(counterExample.getPropositionRoot().toString());
-		tabItem.setData(COUNTEREXAMPLE_DATA_KEY, counterExample);
 
 		final Composite sashForm = new SashForm(tabFolder, SWT.HORIZONTAL);
 		tabItem.setControl(sashForm);
 
-		Composite composite = new Composite(sashForm, SWT.None);
+		final Composite composite = new Composite(sashForm, SWT.None);
 
-		StackLayout layout = new StackLayout();
+		final StackLayout layout = new StackLayout();
 		composite.setLayout(layout);
-		tabItem.setData(LAYOUT_DATA_KEY, layout);
 
-		Composite tableView = new Composite(composite, SWT.None);
+		final Composite tableView = new Composite(composite, SWT.None);
 		TableViewer tableViewer = createTableViewer(tableView, counterExample);
-		tabItem.setData(ViewType.TABLE.name(), tableView);
-		tabItem.setData(TABLEVIEWER_DATA_KEY, tableViewer);
 		// createPopupMenu(tableViewer.getTable(), tableViewer);
 
-		Composite treeView = new Composite(composite, SWT.None);
+		final Composite treeView = new Composite(composite, SWT.None);
 		treeView.setLayout(new FillLayout());
 		TreeViewer treeViewer = createTreeViewer(treeView, counterExample);
-		tabItem.setData(ViewType.TREE.name(), treeView);
-		tabItem.setData(TREEVIEWER_DATA_KEY, treeViewer);
 		// createPopupMenu(treeViewer.getTree(), treeViewer);
 
-		RootEditPart rootEditPart = new ScalableRootEditPart();
-		tabItem.setData(EDITPART_DATA_KEY, rootEditPart);
+		final ScalableRootEditPart rootEditPart = new ScalableRootEditPart();
+		final GraphicalViewer graphicalViewer = new ScrollingGraphicalViewer();
 
-		GraphicalViewer graphicalViewer = new ScrollingGraphicalViewer();
-		tabItem.setData(GRAPHICALVIEWER_DATA_KEY, graphicalViewer);
-
-		Control interactiveView = graphicalViewer.createControl(composite);
+		final Control interactiveView = graphicalViewer
+				.createControl(composite);
 		interactiveView.setBackground(Display.getDefault().getSystemColor(
 				SWT.COLOR_WHITE));
 		// createPopupMenu(interactiveView, graphicalViewer);
-
-		tabItem.setData(ViewType.INTERACTIVE.name(), interactiveView);
 
 		graphicalViewer.setRootEditPart(rootEditPart);
 		graphicalViewer.setEditPartFactory(new CounterExampleEditPartFactory());
@@ -407,24 +387,42 @@ public final class CounterExampleViewPart extends StateBasedViewPart {
 		EditDomain editDomain = new DefaultEditDomain(null);
 		editDomain.addViewer(graphicalViewer);
 
+		final TabData tabData = new TabData(counterExample, layout, tableView,
+				tableViewer, treeView, treeViewer, rootEditPart,
+				graphicalViewer, interactiveView);
+		tabItem.setData(DATA_KEY, tabData);
+
+		updateTopControl(tabData);
+
+		return tabItem;
+	}
+
+	private void updateTopControl(final TabData data) {
 		final Control topControl;
 		switch (viewType) {
 		case TABLE:
-			topControl = tableView;
+			topControl = data.tableView;
 			break;
 		case TREE:
-			topControl = treeView;
+			topControl = data.treeView;
 			break;
 		case INTERACTIVE:
-			topControl = interactiveView;
+			topControl = data.interactiveView;
 			break;
 		default:
 			throw new IllegalStateException(
 					"Unexpected view type in LTL counter-example view");
 		}
-		layout.topControl = topControl;
 
-		return tabItem;
+		final StackLayout layout = data.layout;
+		layout.topControl = topControl;
+		if (layout.topControl != null) {
+			final Composite parent = layout.topControl.getParent();
+			if (parent != null) {
+				parent.layout();
+			}
+		}
+
 	}
 
 	private TableViewer createTableViewer(Composite parent,
@@ -533,6 +531,26 @@ public final class CounterExampleViewPart extends StateBasedViewPart {
 		propositionColumn.getColumn().pack();
 
 		return treeViewer;
+	}
+
+	public CounterExample getCurrentCounterExample() {
+		final TabData data = getCurrentTabData();
+		return data == null ? null : data.counterExample;
+	}
+
+	private TabData getCurrentTabData() {
+		final TabData data;
+		if (tabFolder != null) {
+			final CTabItem selection = tabFolder.getSelection();
+			data = getTabData(selection);
+		} else {
+			data = null;
+		}
+		return data;
+	}
+
+	private TabData getTabData(final CTabItem item) {
+		return item == null ? null : (TabData) item.getData(DATA_KEY);
 	}
 
 	// private void createPopupMenu(Control control,
