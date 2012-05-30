@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.prob.core.command.LtlCheckingCommand.PathType;
-import de.prob.logging.Logger;
 
 /**
  * Provides a "release" operator.
@@ -14,39 +13,28 @@ import de.prob.logging.Logger;
  */
 
 public final class CounterExampleRelease extends CounterExampleBinaryOperator {
-	private final CounterExampleNegation notUntil;
-
-	public CounterExampleRelease(final PathType pathType, final int loopEntry,
+	public CounterExampleRelease(final CounterExample counterExample,
 			final CounterExampleProposition firstArgument,
 			final CounterExampleProposition secondArgument) {
-		super("R", "Release", pathType, loopEntry, firstArgument,
-				secondArgument);
-		CounterExampleNegation notFirst = new CounterExampleNegation(pathType,
-				loopEntry, firstArgument);
-		CounterExampleNegation notSecond = new CounterExampleNegation(pathType,
-				loopEntry, secondArgument);
-		CounterExampleUntil until = new CounterExampleUntil(pathType,
-				loopEntry, notFirst, notSecond);
-		notUntil = new CounterExampleNegation(pathType, loopEntry, until);
+		super("R", "Release", counterExample, firstArgument, secondArgument);
+		checkByUntil(counterExample, firstArgument, secondArgument);
 	}
 
-	public CounterExampleRelease(final PathType pathType,
+	private void checkByUntil(final CounterExample counterExample,
 			final CounterExampleProposition firstArgument,
 			final CounterExampleProposition secondArgument) {
-		this(pathType, -1, firstArgument, secondArgument);
+		CounterExampleNegation notFirst = new CounterExampleNegation(
+				counterExample, firstArgument);
+		CounterExampleNegation notSecond = new CounterExampleNegation(
+				counterExample, secondArgument);
+		CounterExampleUntil until = new CounterExampleUntil(counterExample,
+				notFirst, notSecond);
+		addCheck(new CounterExampleNegation(counterExample, until));
 	}
 
 	@Override
 	protected CounterExampleValueType calculate(final int position) {
-		final CounterExampleValueType value = calculateReleaseOperator(position);
-
-		final List<CounterExampleValueType> notUntilValues = notUntil
-				.getValues();
-
-		Logger.assertProB("Release invalid",
-				value == notUntilValues.get(position));
-
-		return value;
+		return calculateReleaseOperator(position);
 	}
 
 	private CounterExampleValueType calculateReleaseOperator(final int position) {

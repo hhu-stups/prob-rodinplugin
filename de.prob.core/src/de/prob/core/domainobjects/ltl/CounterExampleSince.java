@@ -3,8 +3,6 @@ package de.prob.core.domainobjects.ltl;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.prob.core.command.LtlCheckingCommand.PathType;
-
 /**
  * Provides a "since" operator.
  * 
@@ -13,16 +11,10 @@ import de.prob.core.command.LtlCheckingCommand.PathType;
  */
 
 public final class CounterExampleSince extends CounterExampleBinaryOperator {
-	public CounterExampleSince(final PathType pathType, final int loopEntry,
+	public CounterExampleSince(final CounterExample counterExample,
 			final CounterExampleProposition firstArgument,
 			final CounterExampleProposition secondArgument) {
-		super("S", "Since", pathType, loopEntry, firstArgument, secondArgument);
-	}
-
-	public CounterExampleSince(final PathType pathType,
-			final CounterExampleProposition firstArgument,
-			final CounterExampleProposition secondArgument) {
-		this(pathType, -1, firstArgument, secondArgument);
+		super("S", "Since", counterExample, firstArgument, secondArgument);
 	}
 
 	@Override

@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import de.prob.core.command.LtlCheckingCommand.PathType;
-import de.prob.logging.Logger;
 
 /**
  * Provides a "weak until" operator.
@@ -15,63 +14,51 @@ import de.prob.logging.Logger;
  */
 
 public final class CounterExampleWeakUntil extends CounterExampleBinaryOperator {
-	private final CounterExampleRelease release;
-	private final CounterExampleDisjunction or1;
-	private final CounterExampleDisjunction or2;
-
-	public CounterExampleWeakUntil(final PathType pathType,
-			final int loopEntry, final CounterExampleProposition firstArgument,
+	public CounterExampleWeakUntil(final CounterExample counterExample,
+			final CounterExampleProposition firstArgument,
 			final CounterExampleProposition secondArgument) {
-		super("W", "Weak Until", pathType, loopEntry, firstArgument,
-				secondArgument);
+		super("W", "Weak Until", counterExample, firstArgument, secondArgument);
 
-		release = new CounterExampleRelease(pathType, loopEntry,
-				secondArgument, new CounterExampleDisjunction(pathType,
-						loopEntry, secondArgument, firstArgument));
+		checkByRelease(counterExample, firstArgument, secondArgument);
+		checkByUntil(counterExample, firstArgument, secondArgument);
+	}
 
-		CounterExampleNegation not = new CounterExampleNegation(pathType,
-				loopEntry, firstArgument);
+	private void checkByUntil(final CounterExample counterExample,
+			final CounterExampleProposition firstArgument,
+			final CounterExampleProposition secondArgument) {
+		CounterExampleNegation not = new CounterExampleNegation(counterExample,
+				firstArgument);
 
 		CounterExampleValueType[] trueValues = new CounterExampleValueType[firstArgument
 				.getValues().size()];
 		Arrays.fill(trueValues, CounterExampleValueType.TRUE);
 
-		CounterExamplePredicate truePredicate = new CounterExamplePredicate(
-				pathType, loopEntry, Arrays.asList(trueValues));
+		CounterExamplePredicate truePredicate = new CounterExamplePredicate("",
+				counterExample, Arrays.asList(trueValues));
 
-		CounterExampleNegation notUntil = new CounterExampleNegation(pathType,
-				loopEntry, new CounterExampleUntil(pathType, loopEntry,
+		CounterExampleNegation notUntil = new CounterExampleNegation(
+				counterExample, new CounterExampleUntil(counterExample,
 						truePredicate, not));
 
-		CounterExampleUntil until = new CounterExampleUntil(pathType,
-				loopEntry, firstArgument, secondArgument);
+		CounterExampleUntil until = new CounterExampleUntil(counterExample,
+				firstArgument, secondArgument);
 
-		or1 = new CounterExampleDisjunction(pathType, loopEntry, notUntil,
-				until);
-		or2 = new CounterExampleDisjunction(pathType, loopEntry, until,
-				new CounterExampleGlobally(pathType, loopEntry, firstArgument));
+		addCheck(new CounterExampleDisjunction(counterExample, notUntil, until));
+		addCheck(new CounterExampleDisjunction(counterExample, until,
+				new CounterExampleGlobally(counterExample, firstArgument)));
 	}
 
-	public CounterExampleWeakUntil(final PathType pathType,
+	private void checkByRelease(final CounterExample counterExample,
 			final CounterExampleProposition firstArgument,
 			final CounterExampleProposition secondArgument) {
-		this(pathType, -1, firstArgument, secondArgument);
+		addCheck(new CounterExampleRelease(counterExample, secondArgument,
+				new CounterExampleDisjunction(counterExample, secondArgument,
+						firstArgument)));
 	}
 
 	@Override
 	protected CounterExampleValueType calculate(final int position) {
-		final CounterExampleValueType value = calculateWeakUntilOperator(position);
-
-		Logger.assertProB("Weak Until invalid", value == release.getValues()
-				.get(position));
-
-		Logger.assertProB("Weak Until invalid",
-				value == or1.getValues().get(position));
-
-		Logger.assertProB("Weak Until invalid",
-				value == or2.getValues().get(position));
-
-		return value;
+		return calculateWeakUntilOperator(position);
 	}
 
 	private CounterExampleValueType calculateWeakUntilOperator(

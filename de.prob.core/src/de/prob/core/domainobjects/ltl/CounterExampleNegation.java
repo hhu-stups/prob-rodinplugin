@@ -1,6 +1,5 @@
 package de.prob.core.domainobjects.ltl;
 
-import de.prob.core.command.LtlCheckingCommand.PathType;
 
 /**
  * Provides a "not" operator.
@@ -10,14 +9,9 @@ import de.prob.core.command.LtlCheckingCommand.PathType;
  */
 
 public final class CounterExampleNegation extends CounterExampleUnaryOperator {
-	public CounterExampleNegation(final PathType pathType, final int loopEntry,
+	public CounterExampleNegation(final CounterExample counterExample,
 			final CounterExampleProposition argument) {
-		super("not", "Negation", pathType, loopEntry, argument);
-	}
-
-	public CounterExampleNegation(final PathType pathType,
-			final CounterExampleProposition argument) {
-		this(pathType, -1, argument);
+		super("not", "Negation", counterExample, argument);
 	}
 
 	@Override

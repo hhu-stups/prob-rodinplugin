@@ -7,7 +7,7 @@ import java.util.List;
 
 import org.junit.Test;
 
-import de.prob.core.command.LtlCheckingCommand.PathType;
+import de.prob.core.domainobjects.ltl.CounterExample;
 import de.prob.core.domainobjects.ltl.CounterExampleBinaryOperator;
 import de.prob.core.domainobjects.ltl.CounterExampleDisjunction;
 import de.prob.core.domainobjects.ltl.CounterExamplePredicate;
@@ -42,17 +42,19 @@ public final class CounterExampleOrUnitTest {
 						CounterExampleValueType.FALSE,
 						CounterExampleValueType.FALSE });
 
+		final CounterExample ce = TestCounterExample.finite(4);
+
 		// create first argument
 		final CounterExampleProposition firstArgument = new CounterExamplePredicate(
-				PathType.FINITE, firstArgumentValues);
+				"", ce, firstArgumentValues);
 
 		// create second argument
 		final CounterExampleProposition secondArgument = new CounterExamplePredicate(
-				PathType.FINITE, secondArgumentValues);
+				"", ce, secondArgumentValues);
 
 		// create an operator
 		final CounterExampleBinaryOperator orOperator = new CounterExampleDisjunction(
-				PathType.FINITE, firstArgument, secondArgument);
+				ce, firstArgument, secondArgument);
 
 		// check result values
 		final List<CounterExampleValueType> values = orOperator.getValues();
@@ -127,17 +129,18 @@ public final class CounterExampleOrUnitTest {
 						CounterExampleValueType.FALSE });
 
 		// Loop entry = 0
+		final CounterExample ce0 = TestCounterExample.loop(0, 4);
 		// create first argument
 		CounterExampleProposition firstArgument = new CounterExamplePredicate(
-				PathType.INFINITE, 0, firstArgumentValues);
+				"", ce0, firstArgumentValues);
 
 		// create second argument
 		CounterExampleProposition secondArgument = new CounterExamplePredicate(
-				PathType.INFINITE, 0, secondArgumentValues);
+				"", ce0, secondArgumentValues);
 
 		// create an operator
 		CounterExampleBinaryOperator orOperator = new CounterExampleDisjunction(
-				PathType.INFINITE, 0, firstArgument, secondArgument);
+				ce0, firstArgument, secondArgument);
 
 		// check result values
 		List<CounterExampleValueType> values = orOperator.getValues();
@@ -190,17 +193,19 @@ public final class CounterExampleOrUnitTest {
 				new Integer[] { 3 }));
 
 		// Loop entry = 1
+		final CounterExample ce1 = TestCounterExample.loop(1, 4);
+
 		// create first argument
-		firstArgument = new CounterExamplePredicate(PathType.INFINITE, 1,
+		firstArgument = new CounterExamplePredicate("", ce1,
 				firstArgumentValues);
 
 		// create second argument
-		secondArgument = new CounterExamplePredicate(PathType.INFINITE, 1,
+		secondArgument = new CounterExamplePredicate("", ce1,
 				secondArgumentValues);
 
 		// create an operator
-		orOperator = new CounterExampleDisjunction(PathType.INFINITE, 1,
-				firstArgument, secondArgument);
+		orOperator = new CounterExampleDisjunction(ce1, firstArgument,
+				secondArgument);
 
 		// check result values
 		values = orOperator.getValues();
@@ -251,17 +256,18 @@ public final class CounterExampleOrUnitTest {
 				new Integer[] { 3 }));
 
 		// Loop entry = 2
+		final CounterExample ce2 = TestCounterExample.loop(2, 4);
 		// create first argument
-		firstArgument = new CounterExamplePredicate("", PathType.INFINITE, 2,
+		firstArgument = new CounterExamplePredicate("", ce2,
 				firstArgumentValues);
 
 		// create second argument
-		secondArgument = new CounterExamplePredicate("", PathType.INFINITE, 2,
+		secondArgument = new CounterExamplePredicate("", ce2,
 				secondArgumentValues);
 
 		// create an operator
-		orOperator = new CounterExampleDisjunction(PathType.INFINITE, 2,
-				firstArgument, secondArgument);
+		orOperator = new CounterExampleDisjunction(ce2, firstArgument,
+				secondArgument);
 
 		// check result values
 		values = orOperator.getValues();
@@ -312,17 +318,18 @@ public final class CounterExampleOrUnitTest {
 				new Integer[] { 3 }));
 
 		// Loop entry = 3
+		final CounterExample ce3 = TestCounterExample.loop(3, 4);
 		// create first argument
-		firstArgument = new CounterExamplePredicate("", PathType.INFINITE, 3,
+		firstArgument = new CounterExamplePredicate("", ce3,
 				firstArgumentValues);
 
 		// create second argument
-		secondArgument = new CounterExamplePredicate("", PathType.INFINITE, 3,
+		secondArgument = new CounterExamplePredicate("", ce3,
 				secondArgumentValues);
 
 		// create an operator
-		orOperator = new CounterExampleDisjunction(PathType.INFINITE, 3,
-				firstArgument, secondArgument);
+		orOperator = new CounterExampleDisjunction(ce3, firstArgument,
+				secondArgument);
 
 		// check result values
 		values = orOperator.getValues();
@@ -394,17 +401,19 @@ public final class CounterExampleOrUnitTest {
 						CounterExampleValueType.FALSE,
 						CounterExampleValueType.FALSE });
 
+		final CounterExample ce = TestCounterExample.reduced(4);
+
 		// create first argument
 		final CounterExampleProposition firstArgument = new CounterExamplePredicate(
-				PathType.REDUCED, firstArgumentValues);
+				"", ce, firstArgumentValues);
 
 		// create second argument
 		final CounterExampleProposition secondArgument = new CounterExamplePredicate(
-				PathType.REDUCED, secondArgumentValues);
+				"", ce, secondArgumentValues);
 
 		// create an operator
 		final CounterExampleBinaryOperator orOperator = new CounterExampleDisjunction(
-				PathType.REDUCED, firstArgument, secondArgument);
+				ce, firstArgument, secondArgument);
 
 		// check result values
 		final List<CounterExampleValueType> values = orOperator.getValues();
@@ -478,17 +487,18 @@ public final class CounterExampleOrUnitTest {
 						CounterExampleValueType.UNKNOWN,
 						CounterExampleValueType.FALSE });
 
+		final CounterExample ce = TestCounterExample.reduced(4);
 		// create first argument
 		final CounterExampleProposition firstArgument = new CounterExamplePredicate(
-				PathType.REDUCED, firstArgumentValues);
+				"", ce, firstArgumentValues);
 
 		// create second argument
 		final CounterExampleProposition secondArgument = new CounterExamplePredicate(
-				PathType.REDUCED, secondArgumentValues);
+				"", ce, secondArgumentValues);
 
 		// create an operator
 		final CounterExampleBinaryOperator orOperator = new CounterExampleDisjunction(
-				PathType.REDUCED, firstArgument, secondArgument);
+				ce, firstArgument, secondArgument);
 
 		// check result values
 		final List<CounterExampleValueType> values = orOperator.getValues();

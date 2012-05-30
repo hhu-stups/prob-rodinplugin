@@ -7,7 +7,7 @@ import java.util.List;
 
 import org.junit.Test;
 
-import de.prob.core.command.LtlCheckingCommand.PathType;
+import de.prob.core.domainobjects.ltl.CounterExample;
 import de.prob.core.domainobjects.ltl.CounterExampleBinaryOperator;
 import de.prob.core.domainobjects.ltl.CounterExampleConjunction;
 import de.prob.core.domainobjects.ltl.CounterExamplePredicate;
@@ -26,83 +26,29 @@ public final class CounterExampleAndUnitTest {
 	 */
 	@Test
 	public void testAndOnFinitePath() {
-		// create first argument values
-		final List<CounterExampleValueType> firstArgumentValues = Arrays
-				.asList(new CounterExampleValueType[] {
-						CounterExampleValueType.FALSE,
-						CounterExampleValueType.TRUE,
-						CounterExampleValueType.TRUE,
-						CounterExampleValueType.FALSE });
-
-		// create second argument values
-		final List<CounterExampleValueType> secondArgumentValues = Arrays
-				.asList(new CounterExampleValueType[] {
-						CounterExampleValueType.TRUE,
-						CounterExampleValueType.TRUE,
-						CounterExampleValueType.FALSE,
-						CounterExampleValueType.FALSE });
-
-		// create first argument
-		final CounterExampleProposition firstArgument = new CounterExamplePredicate(
-				PathType.FINITE, firstArgumentValues);
-
-		// create second argument
-		final CounterExampleProposition secondArgument = new CounterExamplePredicate(
-				PathType.FINITE, secondArgumentValues);
-
-		// create an operator
-		final CounterExampleBinaryOperator andOperator = new CounterExampleConjunction(
-				PathType.FINITE, firstArgument, secondArgument);
-
-		// check result values
-		final List<CounterExampleValueType> values = andOperator.getValues();
-		assertTrue(values.size() == firstArgumentValues.size());
-		assertTrue(values.size() == secondArgumentValues.size());
-		assertTrue(values.get(0) == CounterExampleValueType.FALSE);
-		assertTrue(values.get(1) == CounterExampleValueType.TRUE);
-		assertTrue(values.get(2) == CounterExampleValueType.FALSE);
-		assertTrue(values.get(3) == CounterExampleValueType.FALSE);
+		final LtlTestDescription d = LtlTestDescription.finite(4);
+		final CounterExampleProposition fst = d.addArgument("fst", "fttf");
+		final CounterExampleProposition snd = d.addArgument("snd", "ttff");
+		final CounterExampleBinaryOperator and = new CounterExampleConjunction(
+				d.getCounterExample(), fst, snd);
+		d.checkValues("and", and, "ftff");
 
 		// check highlighted positions
-		final List<List<Integer>> firstHighlightedPositions = andOperator
-				.getFirstHighlightedPositions();
-		final List<List<Integer>> secondHighlightedPositions = andOperator
-				.getSecondHighlightedPositions();
-		assertTrue(firstHighlightedPositions.size() == firstArgumentValues
-				.size());
-		assertTrue(secondHighlightedPositions.size() == secondArgumentValues
-				.size());
+		d.expectedHighlight(0, "fstH", 0);
+		d.expectedHighlight(0, "sndH");
 
-		// State 0
-		assertTrue(firstHighlightedPositions.get(0).size() == 1);
-		assertTrue(Arrays.equals(
-				firstHighlightedPositions.get(0).toArray(new Integer[0]),
-				new Integer[] { 0 }));
-		assertTrue(secondHighlightedPositions.get(0).size() == 0);
+		d.expectedHighlight(1, "fstH", 1);
+		d.expectedHighlight(1, "sndH", 1);
 
-		// State 1
-		assertTrue(firstHighlightedPositions.get(1).size() == 1);
-		assertTrue(Arrays.equals(
-				firstHighlightedPositions.get(1).toArray(new Integer[0]),
-				new Integer[] { 1 }));
-		assertTrue(secondHighlightedPositions.get(1).size() == 1);
-		assertTrue(Arrays.equals(
-				secondHighlightedPositions.get(1).toArray(new Integer[0]),
-				new Integer[] { 1 }));
+		d.expectedHighlight(2, "fstH");
+		d.expectedHighlight(2, "sndH", 2);
 
-		// State 2
-		assertTrue(firstHighlightedPositions.get(2).size() == 0);
-		assertTrue(secondHighlightedPositions.get(2).size() == 1);
-		assertTrue(Arrays.equals(
-				secondHighlightedPositions.get(2).toArray(new Integer[0]),
-				new Integer[] { 2 }));
+		d.expectedHighlight(3, "fstH", 3); // If both are false, the first is
+											// chosen to be highlighted (could
+											// be different)
+		d.expectedHighlight(3, "sndH");
 
-		// State 3
-		assertTrue(firstHighlightedPositions.get(3).size() == 1);
-		assertTrue(Arrays.equals(
-				firstHighlightedPositions.get(3).toArray(new Integer[0]),
-				new Integer[] { 3 }));
-		assertTrue(secondHighlightedPositions.get(3).size() == 0);
+		d.checkHighlights("and", and, "fstH", "sndH");
 	}
 
 	/*
@@ -126,18 +72,20 @@ public final class CounterExampleAndUnitTest {
 						CounterExampleValueType.FALSE,
 						CounterExampleValueType.FALSE });
 
+		// using a loop with state 0 as entry point
+		final CounterExample ce0 = TestCounterExample.loop(0, 4);
 		// Loop entry = 0
 		// create first argument
 		CounterExampleProposition firstArgument = new CounterExamplePredicate(
-				PathType.INFINITE, 0, firstArgumentValues);
+				"", ce0, firstArgumentValues);
 
 		// create second argument
 		CounterExampleProposition secondArgument = new CounterExamplePredicate(
-				PathType.INFINITE, 0, secondArgumentValues);
+				"", ce0, secondArgumentValues);
 
 		// create an operator
 		CounterExampleBinaryOperator andOperator = new CounterExampleConjunction(
-				PathType.INFINITE, 0, firstArgument, secondArgument);
+				ce0, firstArgument, secondArgument);
 
 		// check result values
 		List<CounterExampleValueType> values = andOperator.getValues();
@@ -191,16 +139,17 @@ public final class CounterExampleAndUnitTest {
 
 		// Loop entry = 1
 		// create first argument
-		firstArgument = new CounterExamplePredicate(PathType.INFINITE, 1,
+		CounterExample ce1 = TestCounterExample.loop(1, 4);
+		firstArgument = new CounterExamplePredicate("", ce1,
 				firstArgumentValues);
 
 		// create second argument
-		secondArgument = new CounterExamplePredicate(PathType.INFINITE, 1,
+		secondArgument = new CounterExamplePredicate("", ce1,
 				secondArgumentValues);
 
 		// create an operator
-		andOperator = new CounterExampleConjunction(PathType.INFINITE, 1,
-				firstArgument, secondArgument);
+		andOperator = new CounterExampleConjunction(ce1, firstArgument,
+				secondArgument);
 
 		// check result values
 		values = andOperator.getValues();
@@ -252,17 +201,18 @@ public final class CounterExampleAndUnitTest {
 		assertTrue(secondHighlightedPositions.get(3).size() == 0);
 
 		// Loop entry = 2
+		CounterExample ce2 = TestCounterExample.loop(2, 4);
 		// create first argument
-		firstArgument = new CounterExamplePredicate("", PathType.INFINITE, 2,
+		firstArgument = new CounterExamplePredicate("", ce2,
 				firstArgumentValues);
 
 		// create second argument
-		secondArgument = new CounterExamplePredicate("", PathType.INFINITE, 2,
+		secondArgument = new CounterExamplePredicate("", ce2,
 				secondArgumentValues);
 
 		// create an operator
-		andOperator = new CounterExampleConjunction(PathType.INFINITE, 2,
-				firstArgument, secondArgument);
+		andOperator = new CounterExampleConjunction(ce2, firstArgument,
+				secondArgument);
 
 		// check result values
 		values = andOperator.getValues();
@@ -314,17 +264,18 @@ public final class CounterExampleAndUnitTest {
 		assertTrue(secondHighlightedPositions.get(3).size() == 0);
 
 		// Loop entry = 3
+		final CounterExample ce3 = TestCounterExample.loop(4, 4);
 		// create first argument
-		firstArgument = new CounterExamplePredicate("", PathType.INFINITE, 3,
+		firstArgument = new CounterExamplePredicate("", ce3,
 				firstArgumentValues);
 
 		// create second argument
-		secondArgument = new CounterExamplePredicate("", PathType.INFINITE, 3,
+		secondArgument = new CounterExamplePredicate("", ce3,
 				secondArgumentValues);
 
 		// create an operator
-		andOperator = new CounterExampleConjunction(PathType.INFINITE, 3,
-				firstArgument, secondArgument);
+		andOperator = new CounterExampleConjunction(ce3, firstArgument,
+				secondArgument);
 
 		// check result values
 		values = andOperator.getValues();
@@ -397,17 +348,19 @@ public final class CounterExampleAndUnitTest {
 						CounterExampleValueType.FALSE,
 						CounterExampleValueType.FALSE });
 
+		final CounterExample ce = TestCounterExample.reduced(4);
+
 		// create first argument
 		final CounterExampleProposition firstArgument = new CounterExamplePredicate(
-				PathType.REDUCED, firstArgumentValues);
+				"", ce, firstArgumentValues);
 
 		// create second argument
 		final CounterExampleProposition secondArgument = new CounterExamplePredicate(
-				PathType.REDUCED, secondArgumentValues);
+				"", ce, secondArgumentValues);
 
 		// create an operator
 		final CounterExampleBinaryOperator andOperator = new CounterExampleConjunction(
-				PathType.REDUCED, firstArgument, secondArgument);
+				ce, firstArgument, secondArgument);
 
 		// check result values
 		final List<CounterExampleValueType> values = andOperator.getValues();
@@ -481,17 +434,18 @@ public final class CounterExampleAndUnitTest {
 						CounterExampleValueType.UNKNOWN,
 						CounterExampleValueType.UNKNOWN });
 
+		final CounterExample ce = TestCounterExample.reduced(4);
 		// create first argument
 		final CounterExampleProposition firstArgument = new CounterExamplePredicate(
-				PathType.REDUCED, firstArgumentValues);
+				"", ce, firstArgumentValues);
 
 		// create second argument
 		final CounterExampleProposition secondArgument = new CounterExamplePredicate(
-				PathType.REDUCED, secondArgumentValues);
+				"", ce, secondArgumentValues);
 
 		// create an operator
 		final CounterExampleBinaryOperator andOperator = new CounterExampleConjunction(
-				PathType.REDUCED, firstArgument, secondArgument);
+				ce, firstArgument, secondArgument);
 
 		// check result values
 		final List<CounterExampleValueType> values = andOperator.getValues();

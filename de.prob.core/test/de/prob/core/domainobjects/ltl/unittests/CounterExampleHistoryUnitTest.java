@@ -7,7 +7,7 @@ import java.util.List;
 
 import org.junit.Test;
 
-import de.prob.core.command.LtlCheckingCommand.PathType;
+import de.prob.core.domainobjects.ltl.CounterExample;
 import de.prob.core.domainobjects.ltl.CounterExampleHistory;
 import de.prob.core.domainobjects.ltl.CounterExamplePredicate;
 import de.prob.core.domainobjects.ltl.CounterExampleProposition;
@@ -34,13 +34,14 @@ public final class CounterExampleHistoryUnitTest {
 						CounterExampleValueType.TRUE,
 						CounterExampleValueType.TRUE });
 
+		final CounterExample ce = TestCounterExample.finite(4);
 		// create an argument
 		final CounterExampleProposition argument = new CounterExamplePredicate(
-				"", PathType.FINITE, -1, argumentValues);
+				"", ce, argumentValues);
 
 		// create an operator
 		final CounterExampleUnaryOperator historyOperator = new CounterExampleHistory(
-				PathType.FINITE, -1, argument);
+				ce, argument);
 
 		// check result values
 		final List<CounterExampleValueType> values = historyOperator
@@ -89,13 +90,15 @@ public final class CounterExampleHistoryUnitTest {
 						CounterExampleValueType.FALSE,
 						CounterExampleValueType.FALSE });
 
+		final CounterExample ce = TestCounterExample.finite(4);
+
 		// create an argument
 		final CounterExampleProposition argument = new CounterExamplePredicate(
-				"", PathType.FINITE, -1, argumentValues);
+				"", ce, argumentValues);
 
 		// create an operator
 		final CounterExampleUnaryOperator historyOperator = new CounterExampleHistory(
-				PathType.FINITE, -1, argument);
+				ce, argument);
 
 		// check result values
 		final List<CounterExampleValueType> values = historyOperator
@@ -145,13 +148,14 @@ public final class CounterExampleHistoryUnitTest {
 						CounterExampleValueType.TRUE });
 
 		// Loop entry = 0
+		final CounterExample ce0 = TestCounterExample.loop(0, 4);
 		// create an argument
 		CounterExampleProposition argument = new CounterExamplePredicate("",
-				PathType.INFINITE, 0, argumentValues);
+				ce0, argumentValues);
 
 		// create an operator
 		CounterExampleUnaryOperator historyOperator = new CounterExampleHistory(
-				PathType.INFINITE, 0, argument);
+				ce0, argument);
 
 		// check result values
 		List<CounterExampleValueType> values = historyOperator.getValues();
@@ -186,13 +190,12 @@ public final class CounterExampleHistoryUnitTest {
 				new Integer[] { 3, 2, 1, 0 }));
 
 		// Loop entry = 1
+		final CounterExample ce1 = TestCounterExample.loop(1, 4);
 		// create an argument
-		argument = new CounterExamplePredicate("", PathType.INFINITE, 1,
-				argumentValues);
+		argument = new CounterExamplePredicate("", ce1, argumentValues);
 
 		// create an operator
-		historyOperator = new CounterExampleHistory(PathType.INFINITE, 1,
-				argument);
+		historyOperator = new CounterExampleHistory(ce1, argument);
 
 		// check result values
 		values = historyOperator.getValues();
@@ -226,13 +229,13 @@ public final class CounterExampleHistoryUnitTest {
 				new Integer[] { 3, 2, 1, 0 }));
 
 		// Loop entry = 2
+		final CounterExample ce2 = TestCounterExample.loop(2, 4);
+
 		// create an argument
-		argument = new CounterExamplePredicate("", PathType.INFINITE, 2,
-				argumentValues);
+		argument = new CounterExamplePredicate("", ce2, argumentValues);
 
 		// create an operator
-		historyOperator = new CounterExampleHistory(PathType.INFINITE, 2,
-				argument);
+		historyOperator = new CounterExampleHistory(ce2, argument);
 
 		// check result values
 		values = historyOperator.getValues();
@@ -266,13 +269,13 @@ public final class CounterExampleHistoryUnitTest {
 				new Integer[] { 3, 2, 1, 0 }));
 
 		// Loop entry = 3
+		final CounterExample ce3 = TestCounterExample.loop(3, 4);
+
 		// create an argument
-		argument = new CounterExamplePredicate("", PathType.INFINITE, 3,
-				argumentValues);
+		argument = new CounterExamplePredicate("", ce3, argumentValues);
 
 		// create an operator
-		historyOperator = new CounterExampleHistory(PathType.INFINITE, 3,
-				argument);
+		historyOperator = new CounterExampleHistory(ce3, argument);
 
 		// check result values
 		values = historyOperator.getValues();
@@ -320,13 +323,14 @@ public final class CounterExampleHistoryUnitTest {
 						CounterExampleValueType.FALSE });
 
 		// Loop entry = 0
+		final CounterExample ce0 = TestCounterExample.loop(0, 4);
 		// create an argument
 		CounterExampleProposition argument = new CounterExamplePredicate("",
-				PathType.INFINITE, 0, argumentValues);
+				ce0, argumentValues);
 
 		// create an operator
 		CounterExampleUnaryOperator historyOperator = new CounterExampleHistory(
-				PathType.INFINITE, 0, argument);
+				ce0, argument);
 
 		// check result values
 		List<CounterExampleValueType> values = historyOperator.getValues();
@@ -361,13 +365,12 @@ public final class CounterExampleHistoryUnitTest {
 				new Integer[] { 3 }));
 
 		// Loop entry = 1
+		final CounterExample ce1 = TestCounterExample.loop(0, 4);
 		// create an argument
-		argument = new CounterExamplePredicate("", PathType.INFINITE, 1,
-				argumentValues);
+		argument = new CounterExamplePredicate("", ce1, argumentValues);
 
 		// create an operator
-		historyOperator = new CounterExampleHistory(PathType.INFINITE, 1,
-				argument);
+		historyOperator = new CounterExampleHistory(ce1, argument);
 
 		// check result values
 		values = historyOperator.getValues();
@@ -401,13 +404,12 @@ public final class CounterExampleHistoryUnitTest {
 				new Integer[] { 3 }));
 
 		// Loop entry = 2
+		final CounterExample ce2 = TestCounterExample.loop(0, 4);
 		// create an argument
-		argument = new CounterExamplePredicate("", PathType.INFINITE, 2,
-				argumentValues);
+		argument = new CounterExamplePredicate("", ce2, argumentValues);
 
 		// create an operator
-		historyOperator = new CounterExampleHistory(PathType.INFINITE, 2,
-				argument);
+		historyOperator = new CounterExampleHistory(ce2, argument);
 
 		// check result values
 		values = historyOperator.getValues();
@@ -441,13 +443,12 @@ public final class CounterExampleHistoryUnitTest {
 				new Integer[] { 3 }));
 
 		// Loop entry = 3
+		final CounterExample ce3 = TestCounterExample.loop(3, 4);
 		// create an argument
-		argument = new CounterExamplePredicate("", PathType.INFINITE, 3,
-				argumentValues);
+		argument = new CounterExamplePredicate("", ce3, argumentValues);
 
 		// create an operator
-		historyOperator = new CounterExampleHistory(PathType.INFINITE, 3,
-				argument);
+		historyOperator = new CounterExampleHistory(ce3, argument);
 
 		// check result values
 		values = historyOperator.getValues();
@@ -494,13 +495,14 @@ public final class CounterExampleHistoryUnitTest {
 						CounterExampleValueType.TRUE,
 						CounterExampleValueType.TRUE });
 
+		final CounterExample ce = TestCounterExample.reduced(4);
 		// create an argument
 		final CounterExampleProposition argument = new CounterExamplePredicate(
-				"", PathType.REDUCED, -1, argumentValues);
+				"", ce, argumentValues);
 
 		// create an operator
 		final CounterExampleUnaryOperator historyOperator = new CounterExampleHistory(
-				PathType.REDUCED, -1, argument);
+				ce, argument);
 
 		// check result values
 		final List<CounterExampleValueType> values = historyOperator
@@ -549,13 +551,15 @@ public final class CounterExampleHistoryUnitTest {
 						CounterExampleValueType.FALSE,
 						CounterExampleValueType.FALSE });
 
+		final CounterExample ce = TestCounterExample.reduced(4);
+
 		// create an argument
 		final CounterExampleProposition argument = new CounterExamplePredicate(
-				"", PathType.REDUCED, -1, argumentValues);
+				"", ce, argumentValues);
 
 		// create an operator
 		final CounterExampleUnaryOperator historyOperator = new CounterExampleHistory(
-				PathType.REDUCED, -1, argument);
+				ce, argument);
 
 		// check result values
 		final List<CounterExampleValueType> values = historyOperator
@@ -604,13 +608,15 @@ public final class CounterExampleHistoryUnitTest {
 						CounterExampleValueType.UNKNOWN,
 						CounterExampleValueType.TRUE });
 
+		final CounterExample ce = TestCounterExample.reduced(4);
+
 		// create an argument
 		final CounterExampleProposition argument = new CounterExamplePredicate(
-				"", PathType.REDUCED, -1, argumentValues);
+				"", ce, argumentValues);
 
 		// create an operator
 		final CounterExampleUnaryOperator historyOperator = new CounterExampleHistory(
-				PathType.REDUCED, -1, argument);
+				ce, argument);
 
 		// check result values
 		final List<CounterExampleValueType> values = historyOperator
@@ -659,13 +665,14 @@ public final class CounterExampleHistoryUnitTest {
 						CounterExampleValueType.TRUE,
 						CounterExampleValueType.FALSE });
 
+		final CounterExample ce = TestCounterExample.reduced(4);
 		// create an argument
 		final CounterExampleProposition argument = new CounterExamplePredicate(
-				"", PathType.REDUCED, -1, argumentValues);
+				"", ce, argumentValues);
 
 		// create an operator
 		final CounterExampleUnaryOperator historyOperator = new CounterExampleHistory(
-				PathType.REDUCED, -1, argument);
+				ce, argument);
 
 		// check result values
 		final List<CounterExampleValueType> values = historyOperator

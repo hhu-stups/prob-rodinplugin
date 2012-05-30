@@ -2,8 +2,6 @@ package de.prob.core.domainobjects.ltl;
 
 import java.util.List;
 
-import de.prob.core.command.LtlCheckingCommand.PathType;
-
 /**
  * Provides transitions.
  * 
@@ -12,24 +10,10 @@ import de.prob.core.command.LtlCheckingCommand.PathType;
  */
 
 public final class CounterExampleTransition extends CounterExamplePredicate {
-	public CounterExampleTransition(final String name, final PathType pathType,
-			final int loopEntry, final List<CounterExampleValueType> values) {
-		super(name, pathType, loopEntry, values);
-	}
-
-	public CounterExampleTransition(final String name, final PathType pathType,
+	public CounterExampleTransition(final String name,
+			final CounterExample counterExample,
 			final List<CounterExampleValueType> values) {
-		this(name, pathType, -1, values);
-	}
-
-	public CounterExampleTransition(final PathType pathType,
-			final int loopEntry, final List<CounterExampleValueType> values) {
-		this("", pathType, loopEntry, values);
-	}
-
-	public CounterExampleTransition(final PathType pathType,
-			final List<CounterExampleValueType> values) {
-		this("", pathType, values);
+		super(name, counterExample, values);
 	}
 
 	@Override

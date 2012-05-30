@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import de.prob.core.command.LtlCheckingCommand.PathType;
-import de.prob.logging.Logger;
 
 /**
  * Provides a "globally" operator.
@@ -15,66 +14,55 @@ import de.prob.logging.Logger;
  */
 
 public final class CounterExampleGlobally extends CounterExampleUnaryOperator {
-	private final CounterExampleRelease release;
-	private final CounterExampleNegation notFinally;
-	private final CounterExampleNegation notUntil;
-
-	public CounterExampleGlobally(final PathType pathType, final int loopEntry,
+	public CounterExampleGlobally(final CounterExample counterExample,
 			final CounterExampleProposition argument) {
-		super("G", "Globally", pathType, loopEntry, argument);
+		super("G", "Globally", counterExample, argument);
 
+		checkByRelease(counterExample, argument);
+		CounterExampleNegation notArgument = new CounterExampleNegation(
+				counterExample, argument);
+		checkByFinally(counterExample, notArgument);
+		checkByUntil(counterExample, argument, notArgument);
+	}
+
+	private void checkByUntil(final CounterExample counterExample,
+			final CounterExampleProposition argument,
+			CounterExampleNegation notArgument) {
+		CounterExampleValueType[] trueValues = new CounterExampleValueType[argument
+				.getValues().size()];
+		Arrays.fill(trueValues, CounterExampleValueType.TRUE);
+
+		CounterExamplePredicate truePredicate = new CounterExamplePredicate("",
+				counterExample, Arrays.asList(trueValues));
+
+		CounterExampleUntil until = new CounterExampleUntil(counterExample,
+				truePredicate, notArgument);
+		addCheck(new CounterExampleNegation(counterExample, until));
+	}
+
+	private void checkByFinally(final CounterExample counterExample,
+			CounterExampleNegation notArgument) {
+		CounterExampleFinally finallyOperator = new CounterExampleFinally(
+				counterExample, notArgument);
+
+		addCheck(new CounterExampleNegation(counterExample, finallyOperator));
+	}
+
+	private void checkByRelease(final CounterExample counterExample,
+			final CounterExampleProposition argument) {
 		CounterExampleValueType[] falseValues = new CounterExampleValueType[argument
 				.getValues().size()];
 		Arrays.fill(falseValues, CounterExampleValueType.FALSE);
 
 		CounterExamplePredicate falsePredicate = new CounterExamplePredicate(
-				pathType, loopEntry, Arrays.asList(falseValues));
+				"", counterExample, Arrays.asList(falseValues));
 
-		release = new CounterExampleRelease(pathType, loopEntry,
-				falsePredicate, argument);
-
-		CounterExampleNegation notArgument = new CounterExampleNegation(
-				pathType, loopEntry, argument);
-
-		CounterExampleFinally finallyOperator = new CounterExampleFinally(
-				pathType, loopEntry, notArgument);
-
-		notFinally = new CounterExampleNegation(pathType, loopEntry,
-				finallyOperator);
-
-		CounterExampleValueType[] trueValues = new CounterExampleValueType[argument
-				.getValues().size()];
-		Arrays.fill(trueValues, CounterExampleValueType.TRUE);
-
-		CounterExamplePredicate truePredicate = new CounterExamplePredicate(
-				pathType, loopEntry, Arrays.asList(trueValues));
-
-		CounterExampleUntil until = new CounterExampleUntil(pathType,
-				loopEntry, truePredicate, notArgument);
-		notUntil = new CounterExampleNegation(pathType, loopEntry, until);
+		addCheck(new CounterExampleRelease(counterExample, falsePredicate,
+				argument));
 	}
 
 	@Override
 	protected CounterExampleValueType calculate(final int position) {
-		CounterExampleValueType value = calculateGlobally(position);
-
-		List<CounterExampleValueType> releaseValues = release.getValues();
-		List<CounterExampleValueType> notFinallyValues = notFinally.getValues();
-		List<CounterExampleValueType> notUntilValues = notUntil.getValues();
-
-		Logger.assertProB("Globally invalid",
-				value == releaseValues.get(position));
-
-		Logger.assertProB("Globally invalid",
-				value == notFinallyValues.get(position));
-
-		Logger.assertProB("Globally invalid",
-				value == notUntilValues.get(position));
-
-		return value;
-	}
-
-	private CounterExampleValueType calculateGlobally(final int position) {
 		CounterExampleValueType result = CounterExampleValueType.UNKNOWN;
 
 		List<CounterExampleValueType> checkedValues = new ArrayList<CounterExampleValueType>(
