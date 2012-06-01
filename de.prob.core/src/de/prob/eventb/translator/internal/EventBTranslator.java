@@ -84,25 +84,37 @@ public abstract class EventBTranslator implements ITranslator {
 
 	private void printProofInformation(
 			final Collection<ModelTranslator> refinementChainTranslators,
+			Collection<ContextTranslator> contextTranslators,
 			final IPrologTermOutput pout) throws TranslationFailedException {
-		for (ModelTranslator modelTranslator : refinementChainTranslators) {
-			for (DischargedProof proof : modelTranslator.getProofs()) {
-				pout.openTerm("discharged");
-				pout.printAtom(proof.machine.getRodinFile().getBareName());
-				try {
-					final String label = proof.event.getLabel();
-					final String elementName = proof.invariant.getLabel();
-					pout.printAtom(label);
-					pout.printAtom(elementName);
-				} catch (RodinDBException e) {
-					final String details = "Translation error while getting information about discharged proof obligations";
-					throw new TranslationFailedException(name, details);
-				}
 
-				pout.closeTerm();
-			}
+		ArrayList<DischargedProof> list = new ArrayList<DischargedProof>();
+
+		for (ContextTranslator contextTranslator : contextTranslators) {
+			list.addAll(contextTranslator.getProofs());
 		}
-		if (System.getProperty("flow") != null) printFlowInformation(pout);
+		for (ModelTranslator modelTranslator : refinementChainTranslators) {
+			list.addAll(modelTranslator.getProofs());
+		}
+
+		for (DischargedProof proof : list) {
+			pout.openTerm("discharged");
+			pout.printAtom(proof.machine.getRodinFile().getBareName());
+			try {
+				final String label = proof.event != null ? proof.event
+						.getLabel() : "$ANY";
+				final String elementName = proof.predicate;
+				pout.printAtom(label);
+				pout.printAtom(elementName);
+			} catch (RodinDBException e) {
+				final String details = "Translation error while getting information about discharged proof obligations";
+				throw new TranslationFailedException(name, details);
+			}
+
+			pout.closeTerm();
+		}
+
+		if (System.getProperty("flow") != null)
+			printFlowInformation(pout);
 	}
 
 	protected abstract void printFlowInformation(final IPrologTermOutput pout);
@@ -128,7 +140,8 @@ public abstract class EventBTranslator implements ITranslator {
 		printModels(refinementChainTranslators, pout, prolog);
 		printContexts(contextTranslators, pout, prolog);
 		pout.openList();
-		printProofInformation(refinementChainTranslators, pout);
+		printProofInformation(refinementChainTranslators, contextTranslators,
+				pout);
 		pout.closeList();
 		pout.printVariable("_Error");
 		pout.closeTerm();

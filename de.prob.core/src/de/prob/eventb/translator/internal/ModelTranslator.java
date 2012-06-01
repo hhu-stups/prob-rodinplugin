@@ -35,6 +35,7 @@ import org.eventb.core.ISCRefinesMachine;
 import org.eventb.core.ISCVariable;
 import org.eventb.core.ISCVariant;
 import org.eventb.core.ISCWitness;
+import org.eventb.core.ITheorem;
 import org.eventb.core.ITraceableElement;
 import org.eventb.core.ast.FormulaFactory;
 import org.eventb.core.ast.ITypeEnvironment;
@@ -195,10 +196,12 @@ public class ModelTranslator extends AbstractComponentTranslator {
 						if (((IMachineRoot) tmp.getParent()).equals(origin)) {
 							inv = tmp;
 						}
-
 					}
 				}
 				if (evt != null && inv != null) {
+					proofs.add(new DischargedProof(origin, inv, evt));
+				}
+				if (evt == null && inv != null && inv.isTheorem()) {
 					proofs.add(new DischargedProof(origin, inv, evt));
 				}
 			}

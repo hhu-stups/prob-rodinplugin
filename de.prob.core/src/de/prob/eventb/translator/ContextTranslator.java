@@ -13,9 +13,15 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.Assert;
+import org.eventb.core.IAxiom;
 import org.eventb.core.IContextRoot;
 import org.eventb.core.IExtendsContext;
+import org.eventb.core.IPOSequent;
+import org.eventb.core.IPOSource;
+import org.eventb.core.IPSRoot;
+import org.eventb.core.IPSStatus;
 import org.eventb.core.ISCAxiom;
 import org.eventb.core.ISCCarrierSet;
 import org.eventb.core.ISCConstant;
@@ -26,6 +32,8 @@ import org.eventb.core.ISCInternalContext;
 import org.eventb.core.ISCMachineRoot;
 import org.eventb.core.ast.FormulaFactory;
 import org.eventb.core.ast.ITypeEnvironment;
+import org.eventb.core.seqprover.IConfidence;
+import org.rodinp.core.IRodinElement;
 import org.rodinp.core.IRodinFile;
 import org.rodinp.core.RodinDBException;
 
@@ -43,12 +51,15 @@ import de.be4.classicalb.core.parser.node.PPredicate;
 import de.be4.classicalb.core.parser.node.PSet;
 import de.be4.classicalb.core.parser.node.TIdentifierLiteral;
 import de.prob.core.translator.TranslationFailedException;
+import de.prob.eventb.translator.internal.DischargedProof;
+import de.prob.logging.Logger;
 
 public final class ContextTranslator extends AbstractComponentTranslator {
 
 	private final ISCContext context;
 	private final AEventBContextParseUnit model = new AEventBContextParseUnit();
 	private final Map<String, ISCContext> depContext = new HashMap<String, ISCContext>();
+	private final List<DischargedProof> proofs = new ArrayList<DischargedProof>();
 	private final FormulaFactory ff;
 
 	// Confined in the thread calling the factory method
@@ -82,10 +93,12 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 	}
 
 	private void translate() throws RodinDBException {
+		ISCContextRoot context_root = null;
 		if (context instanceof ISCContextRoot) {
-			ISCContextRoot context_root = (ISCContextRoot) context;
+			context_root = (ISCContextRoot) context;
 			Assert.isTrue(context_root.getRodinFile().isConsistent());
 			te = context_root.getTypeEnvironment(ff);
+			collectProofInfo(context_root);
 		} else if (context instanceof ISCInternalContext) {
 			ISCInternalContext context_internal = (ISCInternalContext) context;
 			ISCMachineRoot machine_root = (ISCMachineRoot) context_internal
@@ -94,6 +107,48 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 			te = machine_root.getTypeEnvironment(ff);
 		}
 		translateContext();
+	}
+
+	private void collectProofInfo(ISCContextRoot context_root)
+			throws RodinDBException {
+
+		IPSRoot proofStatus = context_root.getPSRoot();
+		IPSStatus[] statuses = proofStatus.getStatuses();
+
+		List<String> bugs = new LinkedList<String>();
+
+		for (IPSStatus status : statuses) {
+			final int confidence = status.getConfidence();
+			boolean broken = status.isBroken();
+			if (!broken && confidence == IConfidence.DISCHARGED_MAX) {
+				IPOSequent sequent = status.getPOSequent();
+				IPOSource[] sources = sequent.getSources();
+
+				for (IPOSource source : sources) {
+
+					IRodinElement srcElement = source.getSource();
+					if (!srcElement.exists()) {
+						bugs.add(status.getElementName());
+						break;
+					}
+
+					if (srcElement instanceof IAxiom) {
+						IAxiom tmp = (IAxiom) srcElement;
+						if (((IContextRoot) tmp.getParent())
+								.equals(context_root.getContextRoot())) {
+							proofs.add(new DischargedProof(context_root, tmp,
+									null));
+						}
+					}
+				}
+			}
+		}
+
+		if (!bugs.isEmpty()) {
+			String message = "Translation incomplete due to a Bug in Rodin. This does not affect correctness of the Animation/Model Checking but can decrease its performance. Skipped discharged information about: "
+					+ StringUtils.join(bugs, ",");
+			Logger.notifyUser(message);
+		}
 
 	}
 
@@ -243,6 +298,10 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 			labelMapping.put(predicate, element);
 		}
 		return list;
+	}
+
+	public List<DischargedProof> getProofs() {
+		return proofs;
 	}
 
 }
