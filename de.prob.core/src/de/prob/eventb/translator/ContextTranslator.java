@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.Assert;
 import org.eventb.core.IAxiom;
 import org.eventb.core.IContextRoot;
@@ -33,9 +34,13 @@ import org.eventb.core.ISCMachineRoot;
 import org.eventb.core.ast.FormulaFactory;
 import org.eventb.core.ast.ITypeEnvironment;
 import org.eventb.core.seqprover.IConfidence;
+import org.rodinp.core.IInternalElement;
 import org.rodinp.core.IRodinElement;
 import org.rodinp.core.IRodinFile;
+import org.rodinp.core.IRodinProject;
+import org.rodinp.core.RodinCore;
 import org.rodinp.core.RodinDBException;
+import org.rodinp.internal.core.RodinProject;
 
 import de.be4.classicalb.core.parser.node.AAxiomsContextClause;
 import de.be4.classicalb.core.parser.node.AConstantsContextClause;
@@ -93,14 +98,29 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 	}
 
 	private void translate() throws RodinDBException {
-		ISCContextRoot context_root = null;
 		if (context instanceof ISCContextRoot) {
-			context_root = (ISCContextRoot) context;
+			ISCContextRoot context_root = (ISCContextRoot) context;
 			Assert.isTrue(context_root.getRodinFile().isConsistent());
 			te = context_root.getTypeEnvironment(ff);
 			collectProofInfo(context_root);
 		} else if (context instanceof ISCInternalContext) {
 			ISCInternalContext context_internal = (ISCInternalContext) context;
+
+			try {
+
+				String elementName = context_internal.getElementName();
+				IRodinProject rodinProject = context_internal.getRodinProject();
+				IRodinFile rodinFile = rodinProject.getRodinFile(elementName
+						+ ".bcc");
+				if (rodinFile.exists()) {
+					ISCContextRoot root = (ISCContextRoot) rodinFile.getRoot();
+					collectProofInfo(root);
+				}
+			} catch (Exception e) {
+				// We do not guarantee to include proof infos. If something goes
+				// wrong, we ignore the Proof info.
+			}
+
 			ISCMachineRoot machine_root = (ISCMachineRoot) context_internal
 					.getRoot();
 			Assert.isTrue(machine_root.getRodinFile().isConsistent());
