@@ -52,7 +52,7 @@ public final class EventBContextTranslator extends EventBTranslator {
 	private void constructTranslation(final IPrologTermOutput pto)
 			throws TranslationFailedException {
 		List<ContextTranslator> translators = new ArrayList<ContextTranslator>();
-		translators.add(ContextTranslator.create(context));
+//		translators.add(ContextTranslator.create(context));
 		if (context instanceof ISCContextRoot) {
 			ISCContextRoot root = (ISCContextRoot) context;
 			collectContexts(translators, new ArrayList<String>(), root);
