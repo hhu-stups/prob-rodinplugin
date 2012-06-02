@@ -100,10 +100,10 @@ public abstract class EventBTranslator implements ITranslator {
 			pout.openTerm("discharged");
 			pout.printAtom(proof.machine.getRodinFile().getBareName());
 			try {
-				final String label = proof.event != null ? proof.event
-						.getLabel() : "$ANY";
+				IEvent event = proof.event;
 				final String elementName = proof.predicate;
-				pout.printAtom(label);
+				if (event != null)
+					pout.printAtom(event.getLabel());
 				pout.printAtom(elementName);
 			} catch (RodinDBException e) {
 				final String details = "Translation error while getting information about discharged proof obligations";
