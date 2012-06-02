@@ -14,11 +14,11 @@ import de.be4.classicalb.core.parser.exceptions.BException;
 import de.be4.classicalb.core.parser.node.AConjunctPredicate;
 import de.be4.classicalb.core.parser.node.ADisjunctPredicate;
 import de.be4.classicalb.core.parser.node.AEquivalencePredicate;
-import de.be4.classicalb.core.parser.node.AExistentialQuantificationPredicate;
+import de.be4.classicalb.core.parser.node.AExistsPredicate;
+import de.be4.classicalb.core.parser.node.AForallPredicate;
 import de.be4.classicalb.core.parser.node.AImplicationPredicate;
 import de.be4.classicalb.core.parser.node.ANegationPredicate;
 import de.be4.classicalb.core.parser.node.APredicateParseUnit;
-import de.be4.classicalb.core.parser.node.AUniversalQuantificationPredicate;
 import de.be4.classicalb.core.parser.node.EOF;
 import de.be4.classicalb.core.parser.node.Start;
 import de.prob.eventb.translator.PredicateVisitor;
@@ -102,16 +102,15 @@ public class PredicateEvalElement extends AbstractEvalElement {
 		}
 
 		@Override
-		public void inAUniversalQuantificationPredicate(
-				final AUniversalQuantificationPredicate node) {
+		public void inAForallPredicate(final AForallPredicate node) {
 			hasChildren = true;
 		}
 
-		@Override
-		public void inAExistentialQuantificationPredicate(
-				final AExistentialQuantificationPredicate node) {
+ 		@Override
+		public void inAExistsPredicate(AExistsPredicate arg0) {
 			hasChildren = true;
 		}
+
 	}
 
 }

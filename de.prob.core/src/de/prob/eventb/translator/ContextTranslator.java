@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.Assert;
 import org.eventb.core.IAxiom;
 import org.eventb.core.IContextRoot;
@@ -34,17 +33,15 @@ import org.eventb.core.ISCMachineRoot;
 import org.eventb.core.ast.FormulaFactory;
 import org.eventb.core.ast.ITypeEnvironment;
 import org.eventb.core.seqprover.IConfidence;
-import org.rodinp.core.IInternalElement;
 import org.rodinp.core.IRodinElement;
 import org.rodinp.core.IRodinFile;
 import org.rodinp.core.IRodinProject;
-import org.rodinp.core.RodinCore;
 import org.rodinp.core.RodinDBException;
-import org.rodinp.internal.core.RodinProject;
 
+import de.be4.classicalb.core.parser.analysis.pragma.internal.ClassifiedPragma;
 import de.be4.classicalb.core.parser.node.AAxiomsContextClause;
 import de.be4.classicalb.core.parser.node.AConstantsContextClause;
-import de.be4.classicalb.core.parser.node.ADeferredSet;
+import de.be4.classicalb.core.parser.node.ADeferredSetSet;
 import de.be4.classicalb.core.parser.node.AEventBContextParseUnit;
 import de.be4.classicalb.core.parser.node.AExtendsContextClause;
 import de.be4.classicalb.core.parser.node.AIdentifierExpression;
@@ -55,16 +52,19 @@ import de.be4.classicalb.core.parser.node.PExpression;
 import de.be4.classicalb.core.parser.node.PPredicate;
 import de.be4.classicalb.core.parser.node.PSet;
 import de.be4.classicalb.core.parser.node.TIdentifierLiteral;
+import de.hhu.stups.sablecc.patch.SourcePosition;
 import de.prob.core.translator.TranslationFailedException;
 import de.prob.eventb.translator.internal.DischargedProof;
 import de.prob.logging.Logger;
 
 public final class ContextTranslator extends AbstractComponentTranslator {
 
+	private static final SourcePosition NO_POS = new SourcePosition(-1, -1);
 	private final ISCContext context;
 	private final AEventBContextParseUnit model = new AEventBContextParseUnit();
 	private final Map<String, ISCContext> depContext = new HashMap<String, ISCContext>();
 	private final List<DischargedProof> proofs = new ArrayList<DischargedProof>();
+	private final List<ClassifiedPragma> proofspragmas = new ArrayList<ClassifiedPragma>();
 	private final FormulaFactory ff;
 
 	// Confined in the thread calling the factory method
@@ -265,7 +265,7 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 		final ISCCarrierSet[] carrierSets = context.getSCCarrierSets();
 		final List<PSet> setList = new ArrayList<PSet>(carrierSets.length);
 		for (final ISCCarrierSet carrierSet : carrierSets) {
-			final ADeferredSet deferredSet = new ADeferredSet(
+			final ADeferredSetSet deferredSet = new ADeferredSetSet(
 					Arrays.asList(new TIdentifierLiteral[] { new TIdentifierLiteral(
 							carrierSet.getIdentifierString()) }));
 			setList.add(deferredSet);
@@ -313,15 +313,28 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 			final PredicateVisitor visitor = new PredicateVisitor(
 					new LinkedList<String>());
 			element.getPredicate(ff, te).accept(visitor);
+
 			final PPredicate predicate = visitor.getPredicate();
 			list.add(predicate);
 			labelMapping.put(predicate, element);
+			proofspragmas.add(new ClassifiedPragma("discharged", predicate,
+					Arrays.asList(new String[0]), Arrays.asList(new String[0]),
+					NO_POS, NO_POS));
 		}
 		return list;
 	}
 
 	public List<DischargedProof> getProofs() {
 		return proofs;
+	}
+
+	public List<ClassifiedPragma> getProofspragmas() {
+		return proofspragmas;
+	}
+
+	@Override
+	public String getResource() {
+		return context.getComponentName();
 	}
 
 }

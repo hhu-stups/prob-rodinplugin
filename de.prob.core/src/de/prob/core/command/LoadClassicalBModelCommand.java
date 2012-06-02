@@ -144,8 +144,8 @@ public final class LoadClassicalBModelCommand {
 		try {
 			Start ast = bParser.parseFile(model, false);
 			final RecursiveMachineLoader rml = new RecursiveMachineLoader(
-					model.getParent());
-			rml.loadAllMachines(model, ast, null, bParser.getDefinitions());
+					model.getParent(), null);
+			rml.loadAllMachines(model, ast, null, bParser.getDefinitions(), null);
 			StructuredPrologOutput output = new StructuredPrologOutput();
 			StructuredPrologOutput out = new StructuredPrologOutput();
 			rml.printAsProlog(output);
