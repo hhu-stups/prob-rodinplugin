@@ -11,6 +11,7 @@ import java.util.Collection;
 import java.util.Map;
 
 import org.eclipse.core.runtime.Assert;
+import org.eventb.core.IEvent;
 import org.eventb.core.IEventBProject;
 import org.eventb.core.IEventBRoot;
 import org.eventb.core.ISCInternalContext;
@@ -52,7 +53,7 @@ public abstract class EventBTranslator implements ITranslator {
 		for (AbstractComponentTranslator t : translators) {
 			final Map<Node, IInternalElement> labelMapping = t
 					.getLabelMapping();
-			printer.addNodes(labelMapping);
+			printer.addNodes(labelMapping, t.getResource());
 		}
 		return printer;
 	}
