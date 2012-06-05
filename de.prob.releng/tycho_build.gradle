@@ -1,0 +1,483 @@
+apply plugin: 'base'
+
+import groovy.io.FileType
+tychoVersion = "0.14.1"
+
+
+try{
+	workspacePath = workspacePath
+}catch(MissingPropertyException e){
+	workspacePath = "../"
+}
+
+try{
+	groupID = groupID
+}catch(MissingPropertyException e){
+	
+	// workspace nach releng durchsuchen
+	def folderNames = []
+	def folders = []
+	println "folders:"
+	new File(workspacePath+".").listFiles().each{ dir ->  
+	    if( dir.isDirectory() ) folders <<  dir.getName()
+	}  
+
+	folders.each(){ it ->
+		it = (String)it.replaceFirst(/\.\//, "")
+		if( !( ( it ==~ /\..+/ ) || (it ==~ /.*.repository/) || (it ==~ /.*.parent/) ) ) folderNames << it			// subProjects eventuell unnötig settings.gradle datei stattdessen benutzen
+	}
+
+	
+	groupID = "group"
+	for( i = 0; i < folderNames.size(); i++ ){
+		
+		if( folderNames[i] ==~ /.*\.[rR]eleng/ ){
+			groupID = folderNames[i]
+			groupID = groupID.replace( ".releng", "")
+			groupID = groupID.replace( ".Releng", "")
+		}
+	}
+	
+}
+
+
+try{
+	features = features
+}catch(MissingPropertyException e){
+	
+	features = []
+	for( i = 0; i < subprojects.name.size(); i++ ){
+		if( subprojects.name[i] ==~ /.*\.[fF]eature/ ){
+			features.add( subprojects.name[i] )
+		}
+	}
+	
+}
+
+
+try{
+	repositoryName = repositoryName
+}catch(MissingPropertyException e){
+	repositoryName = groupID+".repository"
+}
+
+try{
+	parentID = parentID
+}catch(MissingPropertyException e){
+	parentID = groupID+".parent"
+}
+
+
+try{
+	targetRepositories = targetRepositories
+}catch(MissingPropertyException e){
+	targetRepositories = ["http://download.eclipse.org/releases/indigo/"]
+}
+
+
+
+def projects(int i){
+	return  subprojects.name[i]
+}
+//	returns the name of a subproject listed in the settings.gradle file
+
+
+def numberOfProjects(){
+	return subprojects.name.size()
+}
+//	returns the number of projects listed in the settings.gradle file
+//
+
+
+
+
+/* 		--		Return ParentId			--		*/
+
+def parentId(){
+	return parentID
+}
+/*
+*	This is the project of the parent Pom
+*	The Tycho Maven Build is triggered from
+*	this project's pom
+*/
+
+
+
+/*	--			Return Group Id			--		*/
+def groupId(){
+	return groupID
+}
+
+/*
+*	This Group ID will be used in every sub project
+*/
+
+
+/////////////////////////////////////////////////////////////////////////////////////////
+//		--	!!! 				DEFINING SUB PROJECTS 							!!!	-- //
+/////////////////////////////////////////////////////////////////////////////////////////
+
+subprojects {
+	
+	apply plugin: 'base'
+	
+	task deleteArtifacts(type: Delete) {
+  		delete 'target','pom.xml'
+	}
+		
+	task deploy() <<{
+		description = "\tGenerating the Tycho Poms. Please remember to add a '.qualifier' to the version numbers!"
+
+		String 	versionNumber = 'Version Number Error:\tcheck Manifest for Bundle-Version Number and make sure to add a ".qualifier" to the version numbers!\n'
+		String 	artifactId = 'Could not find Bundle-SymbolicName in Manifest.file'
+
+		
+		/* -- In case of changed Manifest File in Eclipse:
+		*	
+		*	Version Numbers of the projects are collected via 
+		*	regular expressions in the Manifest.MF File.  
+		*	Versionnumber of the projects are equal to their
+		*	Bundle-Version Number
+		*/
+		
+		
+		if(features.every{ it != project.name }){			// Generating Poms for sub projects except features
+			content = new File(workspacePath+"${project.name}/META-INF/MANIFEST.MF").getText("UTF-8") 
+
+	 		printFileLine = { 
+				if(  it ==~ /Bundle-Version.+qualifier/ ){
+					 versionNumber = it.substring(16) // possibile error: cuts off first 16 chars 
+			
+					/*	Version Number is taken from Bundle-Version in Manifest.MF
+					*	If there is no Bundle-Version or the versionnumber needs to
+					*	be taken from a different key word, please change the
+					*	regular expression and the substring above
+					*/	
+				}
+		
+				if(  it ==~ /Bundle-SymbolicName:.+/ ){
+					artifactId = it
+					artifactId = artifactId.replace("Bundle-SymbolicName:", '');
+					artifactId = artifactId.replace(";",'')
+					artifactId = artifactId.replace(" ",'')
+					artifactId = artifactId.replace("singleton:=true",'')
+				}
+				/*	Artifact ID is taken from Bundle-SymbolicName minus the
+				*	16 chars ';singleton:=true'
+				*/
+			}
+	
+			content.eachLine( printFileLine )
+	
+	
+			println artifactId
+			println "\t"+versionNumber
+	
+			def f = new File(workspacePath+artifactId+'/pom.xml') 
+			f.delete()
+		
+			// 			---- 			Test Cases					 ------ 				//
+
+			if( project.name ==~ /.*\.[tT]ests*/){
+					
+				f << start()+elder()+testArtifact(artifactId, versionNumber)+end()
+			}else{
+				
+			// ---- 				Normal Plugin 				-----						//
+				f << start()+elder()+artifact(artifactId, versionNumber)+end()
+				/*	
+				*	old pom.xml files are deleted and replaced by new auto generated Tycho pom.xml files
+				*/
+			}
+		}else{	// if subprojects aren't a feature
+	
+//		--		Features 					--			//
+	
+			if(features.any{ it == project.name } ){
+			
+				def parsedXml = new XmlParser().parse(workspacePath+"${project.name}/feature.xml")
+
+				artifactId   = parsedXml.attribute("id")
+				versionNumber = parsedXml.attribute("version")
+
+				println artifactId
+				println "\t"+versionNumber
+
+				def f = new File(workspacePath+artifactId+'/pom.xml') 
+				f.delete()
+				f << feature(artifactId, versionNumber)
+							
+			}
+		}
+	}//deploy
+
+	
+}// defining subprojects
+
+
+clean {
+	dependsOn += subprojects.deleteArtifacts
+}
+
+task createParent() << {
+	//		---------				 define Parent 				---------		//
+		
+	new File(workspacePath+"${parentID}").mkdir() 			
+	String versionNumber 	=	'1.0.0.qualifier'
+	String artifactId 		=	parentId()
+
+	def f = new File(workspacePath+artifactId+'/pom.xml') 
+	f.delete()
+	f << parentPom(artifactId)
+	for(int i = 0; i < targetRepositories.size(); i++){
+		f << repos(targetRepositories[i], i)
+	}
+	f << endRepos()
+	f << moduleStart()
+	for(int i = 0; i < numberOfProjects(); i++){
+		f << module(projects(i))
+	}
+	f << module(repositoryName)
+	f << endParent()
+
+}
+
+task createRepository() << {
+
+	//			------------	 	define Repository			---------		//
+			
+			
+	new File(workspacePath+"${repositoryName}").mkdir() 
+	
+	descriptions = [ [:],[:] ]		// label and descriptions of the features
+				
+	String versionNumber 	=	'1.0.0.qualifier'
+	String artifactId		=	repositoryName
+	String featureVersionNumber = '1.0.0.qualifier'
+	String featureArtifactId
+	def f = new File(workspacePath+artifactId+'/category.xml') 
+	f.delete()
+	f << categoryHead()
+	for(int i = 0; i < features.size(); i++){
+		
+		def parsedXml = new XmlParser().parse("${workspacePath}${features[i]}/feature.xml")
+		
+		featureVersionNumber  = parsedXml.attribute("version")
+		featureArtifactId  = parsedXml.attribute("id")
+		
+		
+		descriptions[0].put( features[i], parsedXml.attribute("label") )
+		descriptions[1].put( features[i], parsedXml.description.text() )
+		
+		f << categoryFeatures(featureArtifactId.replace(workspacePath,''), featureVersionNumber)
+	}// for
+			
+	for(int i = 0; i < features.size(); i++){
+						
+		f << categoryDescription(features[i], descriptions[0][features[i]] ,descriptions[1][features[i]] )
+		//							featureName,	label,		description
+	}//for
+				
+	f << categoryEnd()
+				
+	def pom = new File(workspacePath+artifactId+'/pom.xml') 
+	pom.delete()
+	pom << reposi()
+}// end of repository definition
+	
+
+task createPoms(dependsOn: [createParent, createRepository, subprojects.deploy])
+
+
+task install(dependsOn: [createPoms] , type:Exec) {
+	description = "\tExecutes a 'mvn install' of the parent pom.xml and auto-generates Tycho Poms"	
+	commandLine 'mvn', 'install', '-f', workspacePath+parentID+'/pom.xml'
+}
+
+
+//---     Defining Tycho POM parts			--//
+
+
+    def artifact(artifactId,versionNumber) { """
+		<groupId>${groupId()}</groupId>
+		<artifactId>${artifactId}</artifactId>
+		<version>${versionNumber}</version>
+		<packaging>eclipse-plugin</packaging>
+	""" }
+	
+    def testArtifact(artifactId,versionNumber) { """
+		<groupId>${groupId()}</groupId>
+		<artifactId>${artifactId}</artifactId>
+		<version>${versionNumber}</version>
+		<packaging>eclipse-test-plugin</packaging>
+	""" }
+	
+			
+	def start() { """<?xml version="1.0" encoding="UTF-8"?>
+	<project
+		xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+		<modelVersion>4.0.0</modelVersion>
+	"""}
+	
+	
+	def elder() {"""
+		<parent>
+			<groupId>${groupId()}</groupId>
+			<artifactId>${parentId()}</artifactId>
+			<version>1.0.0.qualifier</version>
+			<relativePath>../${parentId()}/pom.xml</relativePath>
+		</parent>
+	"""}
+
+
+	def end() {"""
+	</project>
+	"""}
+	
+// 				--	defining Parent Pom				--				//
+
+
+
+
+def parentPom(artifactId) { """<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	
+	<groupId>${groupId()}</groupId>
+  	<artifactId>${artifactId}</artifactId>
+  	<version>1.0.0.qualifier</version>
+  
+	<packaging>pom</packaging>
+
+	<!-- this is the parent POM from which all modules inherit common settings -->
+	<properties>
+		<tycho-version>${tychoVersion}</tycho-version>
+	</properties>
+
+   <repositories>
+	<!-- configure p2 repository to resolve against -->  
+    
+
+"""}
+
+
+def repos(String targetRepo, int i) {"""
+	
+	<repository>
+	  <id>targetRepository${i}</id>
+	  <layout>p2</layout>
+	  <url>${targetRepo}</url>
+	</repository>
+
+"""}
+
+
+
+def endRepos() {"""
+  </repositories> 
+
+	<build>
+		<plugins>
+			<plugin>
+				<!-- enable tycho build extension -->
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-maven-plugin</artifactId>
+				<version>${tychoVersion}</version>
+				<extensions>true</extensions>
+			</plugin>
+		</plugins>
+	</build>
+"""}
+
+def moduleStart(){"""
+	<!-- the modules that should be built together -->
+	<modules>
+	"""}
+
+//for(int i = 0; i < numberOfProjects(); i++)
+
+def module(String project){"""		<module>../${project}</module>
+"""}
+
+	
+
+def endParent() {"""
+	</modules>
+</project>
+	"""}
+	
+// end of defining parent pom.xml
+
+// repository Pom
+def reposi() { """
+<?xml version="1.0" encoding="UTF-8"?>
+  <project
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+      <groupId>${groupID}</groupId>
+      <artifactId>${parentID}</artifactId>
+      <version>1.0.0.qualifier</version>
+      <relativePath>../${parentID}/pom.xml</relativePath>
+    </parent>
+
+    
+    <groupId>${groupID}</groupId>
+    <artifactId>${repositoryName}</artifactId>
+    <version>1.0.0.qualifier</version>
+    <packaging>eclipse-repository</packaging>
+  </project>
+"""}
+
+
+// creates a category in 
+def categoryHead() { """<?xml version="1.0" encoding="UTF-8"?>
+<site>
+
+"""}
+	
+def categoryFeatures(artifactId, versionNumber){"""
+	<feature url="features/${artifactId}_${versionNumber}.jar" id="${artifactId}" version="${versionNumber}">
+		<category name="${artifactId}.category"/>
+	</feature>
+"""}
+
+def categoryDescription(artifactId, categoryName, categorydescription){"""
+<category-def name="${artifactId}.category" label="${categoryName}">
+      <description>
+${categorydescription}
+      </description>
+   </category-def>
+"""}
+
+def categoryEnd(){"""
+</site>
+"""}
+// end of category definition
+
+// feature pom
+def feature(artifactId, versionNumber) { """
+<?xml version="1.0" encoding="UTF-8"?>
+	<project
+		xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+		<modelVersion>4.0.0</modelVersion>
+		<parent>
+			<groupId>${groupId()}</groupId>
+			<artifactId>${parentId()}</artifactId>
+			<version>1.0.0.qualifier</version>
+			<relativePath>../${parentId()}/pom.xml</relativePath>
+		</parent>
+		<groupId>${groupId()}</groupId>
+		<artifactId>${artifactId}</artifactId>
+		<version>${versionNumber}</version>
+		<packaging>eclipse-feature</packaging>
+	</project>
+"""}
+// end of feature pom
+
+
+
+//	Build Script can be executed via gradle install
+//	Pom Generation can be executed via gradle deploy
+
