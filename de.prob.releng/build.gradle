@@ -50,7 +50,7 @@ task deleteOldArtifacts(type: Delete) {
 
 task collectArtifacts(type:Copy) {
 	    from "../"+groupID+'.repository/target/repository/'
-	    into 'updatesite'
-	    from "index.html"
-	    into 'updatesite'
+	    into '../updatesite'
+	    from "../index.html"
+	    into '../updatesite'
 }
