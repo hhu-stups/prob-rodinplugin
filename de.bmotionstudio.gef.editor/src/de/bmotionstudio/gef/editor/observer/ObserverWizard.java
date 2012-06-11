@@ -22,18 +22,13 @@ import de.bmotionstudio.gef.editor.model.BControl;
  */
 public abstract class ObserverWizard extends BMotionAbstractWizard {
 
-	private BControl control;
 	private Observer observer;
 
 	protected Boolean observerDelete = false;
 
 	public ObserverWizard(BControl control, Observer observer) {
-		this.control = control;
+		super(control);
 		this.observer = observer;
-	}
-
-	public BControl getBControl() {
-		return this.control;
 	}
 
 	public Observer getObserver() {

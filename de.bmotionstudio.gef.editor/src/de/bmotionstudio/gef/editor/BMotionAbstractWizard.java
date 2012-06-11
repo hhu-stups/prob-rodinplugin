@@ -14,11 +14,19 @@ public abstract class BMotionAbstractWizard extends Wizard {
 
 	private BControl control;
 	
+	public BMotionAbstractWizard(BControl control) {
+		this.control = control;
+	}
+
 	@Override
 	public boolean performFinish() {
 		return prepareToFinish();
 	}
 	
+	public BControl getBControl() {
+		return this.control;
+	}
+
 	public abstract String getName();
 
 	protected abstract Boolean prepareToFinish();

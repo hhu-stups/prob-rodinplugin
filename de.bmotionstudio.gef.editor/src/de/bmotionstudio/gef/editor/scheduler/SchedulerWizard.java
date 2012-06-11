@@ -22,18 +22,13 @@ import de.bmotionstudio.gef.editor.model.BControl;
  */
 public abstract class SchedulerWizard extends BMotionAbstractWizard {
 
-	private BControl bcontrol;
 	private SchedulerEvent event;
 
 	protected Boolean eventDelete = false;
 
-	public SchedulerWizard(BControl bcontrol, SchedulerEvent scheduler) {
-		this.bcontrol = bcontrol;
+	public SchedulerWizard(BControl control, SchedulerEvent scheduler) {
+		super(control);
 		this.event = scheduler;
-	}
-
-	public BControl getBControl() {
-		return this.bcontrol;
 	}
 
 	public SchedulerEvent getScheduler() {
