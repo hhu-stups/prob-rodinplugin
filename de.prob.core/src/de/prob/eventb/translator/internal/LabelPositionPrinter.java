@@ -35,15 +35,15 @@ public class LabelPositionPrinter implements PositionPrinter {
 
 	private final Map<Node, NodeInfo> nodeInfos = new ConcurrentHashMap<Node, NodeInfo>();
 
-	public void addNode(final Node node, final IInternalElement element)
-			throws TranslationFailedException {
+	public void addNode(final Node node, final IInternalElement element,
+			String file) throws TranslationFailedException {
 		final String label, source;
+
 		try {
 			if (element instanceof ITraceableElement) {
 				// get name of unchecked element
 				IRodinElement traceableSource;
 				traceableSource = ((ITraceableElement) element).getSource();
-
 				source = traceableSource.getElementName();
 			} else {
 				source = null;
@@ -53,7 +53,8 @@ public class LabelPositionPrinter implements PositionPrinter {
 			} else {
 				label = null;
 			}
-			addNode(node, label, source);
+
+			addNode(node, label, source, file);
 		} catch (RodinDBException e) {
 			final String message = "A Rodin exception occured during translation process, you can try to fix that by cleaning the project. Original Exception: ";
 			throw new TranslationFailedException(element.getElementName(),
@@ -61,19 +62,19 @@ public class LabelPositionPrinter implements PositionPrinter {
 		}
 	}
 
-	public void addNodes(final Map<Node, IInternalElement> nodeMapping)
-			throws TranslationFailedException {
+	public void addNodes(final Map<Node, IInternalElement> nodeMapping,
+			String name) throws TranslationFailedException {
 		for (Entry<Node, IInternalElement> item : nodeMapping.entrySet()) {
 			final Node key = item.getKey();
 			final IInternalElement value = item.getValue();
-			addNode(key, value);
+			addNode(key, value, name);
 		}
 	}
 
 	private void addNode(final Node node, final String label,
-			final String elementName) {
+			final String elementName, String file) {
 		if (label != null || elementName != null) {
-			nodeInfos.put(node, new NodeInfo(label, elementName));
+			nodeInfos.put(node, new NodeInfo(label, elementName, file));
 		}
 	}
 
@@ -83,6 +84,11 @@ public class LabelPositionPrinter implements PositionPrinter {
 			pout.printAtom("none");
 		} else {
 			pout.openTerm("rodinpos");
+			if (info.file == null) {
+				pout.emptyList();
+			} else {
+				pout.printAtom(info.file);
+			}
 			if (info.label == null) {
 				pout.emptyList();
 			} else {
@@ -104,11 +110,14 @@ public class LabelPositionPrinter implements PositionPrinter {
 	private static class NodeInfo {
 		private final String label;
 		private final String elementName;
+		private final String file;
 
-		public NodeInfo(final String label, final String elementName) {
+		public NodeInfo(final String label, final String elementName,
+				String file) {
 			super();
 			this.label = label;
 			this.elementName = elementName;
+			this.file = file;
 		}
 	}
 

@@ -1,7 +1,80 @@
 apply plugin: 'base'
-import groovy.xml.XmlUtil
 
+import groovy.io.FileType
 tychoVersion = "0.14.1"
+
+
+try{
+	workspacePath = workspacePath
+}catch(MissingPropertyException e){
+	workspacePath = "../"
+}
+
+try{
+	groupID = groupID
+}catch(MissingPropertyException e){
+	
+	// workspace nach releng durchsuchen
+	def folderNames = []
+	def folders = []
+	println "folders:"
+	new File(workspacePath+".").listFiles().each{ dir ->  
+	    if( dir.isDirectory() ) folders <<  dir.getName()
+	}  
+
+	folders.each(){ it ->
+		it = (String)it.replaceFirst(/\.\//, "")
+		if( !( ( it ==~ /\..+/ ) || (it ==~ /.*.repository/) || (it ==~ /.*.parent/) ) ) folderNames << it			// subProjects eventuell unnötig settings.gradle datei stattdessen benutzen
+	}
+
+	
+	groupID = "group"
+	for( i = 0; i < folderNames.size(); i++ ){
+		
+		if( folderNames[i] ==~ /.*\.[rR]eleng/ ){
+			groupID = folderNames[i]
+			groupID = groupID.replace( ".releng", "")
+			groupID = groupID.replace( ".Releng", "")
+		}
+	}
+	
+}
+
+
+try{
+	features = features
+}catch(MissingPropertyException e){
+	
+	features = []
+	for( i = 0; i < subprojects.name.size(); i++ ){
+		if( subprojects.name[i] ==~ /.*\.[fF]eature/ ){
+			features.add( subprojects.name[i] )
+		}
+	}
+	
+}
+
+
+try{
+	repositoryName = repositoryName
+}catch(MissingPropertyException e){
+	repositoryName = groupID+".repository"
+}
+
+try{
+	parentID = parentID
+}catch(MissingPropertyException e){
+	parentID = groupID+".parent"
+}
+
+
+try{
+	targetRepositories = targetRepositories
+}catch(MissingPropertyException e){
+	targetRepositories = ["http://download.eclipse.org/releases/indigo/"]
+}
+
+
 
 def projects(int i){
 	return  subprojects.name[i]
@@ -13,7 +86,7 @@ def numberOfProjects(){
 	return subprojects.name.size()
 }
 //	returns the number of projects listed in the settings.gradle file
-
+//
 
 
 
@@ -106,7 +179,7 @@ subprojects {
 		
 			// 			---- 			Test Cases					 ------ 				//
 
-			if( project.name ==~ /.*\.tests/ || project.name ==~ /.*\.test/ || project.name ==~ /.*\.Tests/ || project.name ==~ /.*\.Test/){
+			if( project.name ==~ /.*\.[tT]ests*/){
 					
 				f << start()+elder()+testArtifact(artifactId, versionNumber)+end()
 			}else{
@@ -176,6 +249,8 @@ task createRepository() << {
 			
 			
 	new File(workspacePath+"${repositoryName}").mkdir() 
+	
+	descriptions = [ [:],[:] ]		// label and descriptions of the features
 				
 	String versionNumber 	=	'1.0.0.qualifier'
 	String artifactId		=	repositoryName
@@ -190,13 +265,17 @@ task createRepository() << {
 		
 		featureVersionNumber  = parsedXml.attribute("version")
 		featureArtifactId  = parsedXml.attribute("id")
-	
+		
+		
+		descriptions[0].put( features[i], parsedXml.attribute("label") )
+		descriptions[1].put( features[i], parsedXml.description.text() )
+		
 		f << categoryFeatures(featureArtifactId.replace(workspacePath,''), featureVersionNumber)
 	}// for
 			
 	for(int i = 0; i < features.size(); i++){
-				
-		f << categoryDescription(features[i], descriptions[features[i]][0] ,descriptions[features[i]][1])
+						
+		f << categoryDescription(features[i], descriptions[0][features[i]] ,descriptions[1][features[i]] )
 		//							featureName,	label,		description
 	}//for
 				
@@ -397,39 +476,8 @@ def feature(artifactId, versionNumber) { """
 """}
 // end of feature pom
 
-// Testing XML slurping for creating poms
-task slurpXml() <<{
-	
-	def comment = "<![CDATA[<!-- address is new to this release -->]]>"
-	def builder = new groovy.xml.StreamingMarkupBuilder()
-	builder.encoding = "UTF-8"
-	def project = {
-	  mkp.xmlDeclaration()
-	  mkp.pi()
-	  mkp.declareNamespace('':'http://maven.apache.org/POM/4.0.0')
-	  mkp.declareNamespace('schemaLocation':'http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd')
-	  mkp.declareNamespace('xsi':'http://www.w3.org/2001/XMLSchema-instance')
-	 	
-	 	project(){
-	    	parent(){
-				groupId(groupId())
-				artifactId(parentId())
-		  		version('1.0.0.qualifier')
-				relativePath("../${parentId()}/pom.xml")
-			}
-	    	groupId(groupId())
-			artifactId("artfct")
-	  		version("1.2.3.qualifier")
-		}
-	}
-	def writer = new File("pomTest.xml")
-	writer.delete()
-	writer << builder.bind(project)
-	
-}
 
 
 //	Build Script can be executed via gradle install
 //	Pom Generation can be executed via gradle deploy
-
 
