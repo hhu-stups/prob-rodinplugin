@@ -11,7 +11,7 @@ import java.util.Random;
 
 import de.bmotionstudio.gef.editor.internal.Animation;
 import de.bmotionstudio.gef.editor.model.BControl;
-import de.bmotionstudio.gef.editor.scheduler.wizard.WizardSchedulerExecuteOperationByPredicate;
+import de.bmotionstudio.gef.editor.scheduler.wizard.WizardExecuteOperationByPredicate;
 import de.prob.core.Animator;
 import de.prob.core.command.ExecuteOperationCommand;
 import de.prob.core.command.GetCurrentStateIdCommand;
@@ -75,7 +75,7 @@ public class ExecuteOperationByPredicate extends SchedulerEvent {
 
 	@Override
 	public SchedulerWizard getWizard(BControl bcontrol) {
-		return new WizardSchedulerExecuteOperationByPredicate(bcontrol, this);
+		return new WizardExecuteOperationByPredicate(bcontrol, this);
 	}
 
 	public void setPredicateOperation(PredicateOperation predicateOperation) {

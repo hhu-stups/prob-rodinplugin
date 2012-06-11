@@ -8,16 +8,18 @@ package de.bmotionstudio.gef.editor.action;
 
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.wizard.IWizard;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbenchPart;
 
 import de.bmotionstudio.gef.editor.scheduler.SchedulerWizard;
 
-public class BMotionSchedulerEventWizard extends BMotionAbstractWizard {
+public class BMotionSchedulerEventWizardDialog extends BMotionAbstractWizardDialog {
 
-	public BMotionSchedulerEventWizard(IWorkbenchPart workbenchPart,
+	public BMotionSchedulerEventWizardDialog(IWorkbenchPart workbenchPart,
 			IWizard newWizard) {
 		super(workbenchPart, newWizard);
+		setShellStyle(SWT.CLOSE);
 		setDeleteToolTip("Delete Event");
 	}
 

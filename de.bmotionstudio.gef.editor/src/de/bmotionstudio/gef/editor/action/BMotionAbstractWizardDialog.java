@@ -27,7 +27,7 @@ import org.eclipse.ui.IWorkbenchPart;
 import de.bmotionstudio.gef.editor.BMotionStudioImage;
 import de.bmotionstudio.gef.editor.EditorImageRegistry;
 
-public abstract class BMotionAbstractWizard extends WizardDialog {
+public abstract class BMotionAbstractWizardDialog extends WizardDialog {
 
 	public static final int DELETE = 3;
 
@@ -35,7 +35,7 @@ public abstract class BMotionAbstractWizard extends WizardDialog {
 
 	private String deleteToolTip;
 
-	public BMotionAbstractWizard(IWorkbenchPart workbenchPart, IWizard newWizard) {
+	public BMotionAbstractWizardDialog(IWorkbenchPart workbenchPart, IWizard newWizard) {
 		super(workbenchPart.getSite().getShell(), newWizard);
 		this.workbenchPart = workbenchPart;
 	}

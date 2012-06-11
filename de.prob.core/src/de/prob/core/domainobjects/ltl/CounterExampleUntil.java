@@ -13,16 +13,10 @@ import de.prob.core.command.LtlCheckingCommand.PathType;
  */
 
 public final class CounterExampleUntil extends CounterExampleBinaryOperator {
-	public CounterExampleUntil(final PathType pathType, final int loopEntry,
+	public CounterExampleUntil(final CounterExample counterExample,
 			final CounterExampleProposition firstArgument,
 			final CounterExampleProposition secondArgument) {
-		super("U", "Until", pathType, loopEntry, firstArgument, secondArgument);
-	}
-
-	public CounterExampleUntil(final PathType pathType,
-			final CounterExampleProposition firstArgument,
-			final CounterExampleProposition secondArgument) {
-		this(pathType, -1, firstArgument, secondArgument);
+		super("U", "Until", counterExample, firstArgument, secondArgument);
 	}
 
 	@Override

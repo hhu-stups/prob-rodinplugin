@@ -18,14 +18,13 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.TableItem;
 
 import de.bmotionstudio.gef.editor.BMotionStudioSWTConstants;
+import de.bmotionstudio.gef.editor.action.BMotionWizardAddItemAction;
+import de.bmotionstudio.gef.editor.action.BMotionWizardDeleteItemsAction;
 import de.bmotionstudio.gef.editor.library.AttributeTransfer;
-import de.bmotionstudio.gef.editor.observer.ObserverWizard;
-import de.bmotionstudio.gef.editor.observer.wizard.WizardObserverAddItemAction;
-import de.bmotionstudio.gef.editor.observer.wizard.WizardObserverDeleteItemsAction;
 import de.bmotionstudio.gef.editor.observer.wizard.WizardObserverDragListener;
 import de.bmotionstudio.gef.editor.observer.wizard.WizardObserverDropListener;
 
-public class WizardObserverUtil {
+public class BMotionWizardUtil {
 
 	public static boolean isEditElement(ColumnViewer viewer) {
 		Object data = viewer.getData("editElement");
@@ -34,8 +33,8 @@ public class WizardObserverUtil {
 		return false;
 	}
 
-	public static TableViewer createObserverWizardTableViewer(Composite parent,
-			Class<?> itemClass, final ObserverWizard observerWizard) {
+	public static TableViewer createBMotionWizardTableViewer(Composite parent,
+			Class<?> itemClass, final String wizardName) {
 
 		final TableViewer tableViewer = new TableViewer(parent, SWT.BORDER
 				| SWT.FULL_SELECTION | SWT.MULTI);
@@ -47,17 +46,17 @@ public class WizardObserverUtil {
 		int operations = DND.DROP_COPY | DND.DROP_MOVE;
 		Transfer[] transferTypes = new Transfer[] { AttributeTransfer
 				.getInstance() };
+		
 		tableViewer.addDropSupport(operations, transferTypes,
-				new WizardObserverDropListener(tableViewer, observerWizard
-						.getObserver().getName()));
+				new WizardObserverDropListener(tableViewer, wizardName));
 		tableViewer.addDragSupport(operations, transferTypes,
 				new WizardObserverDragListener(tableViewer));
 
 		MenuManager manager = new MenuManager();
 		tableViewer.getControl().setMenu(
 				manager.createContextMenu(tableViewer.getControl()));
-		manager.add(new WizardObserverDeleteItemsAction(tableViewer));
-		manager.add(new WizardObserverAddItemAction(tableViewer, itemClass));
+		manager.add(new BMotionWizardDeleteItemsAction(tableViewer));
+		manager.add(new BMotionWizardAddItemAction(tableViewer, itemClass));
 
 		tableViewer.getTable().addListener(SWT.MouseDown, new Listener() {
 			public void handleEvent(Event event) {

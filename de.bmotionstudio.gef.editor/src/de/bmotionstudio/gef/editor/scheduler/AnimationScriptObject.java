@@ -16,6 +16,9 @@ public class AnimationScriptObject extends BindingObject implements Cloneable {
 
 	private String predicate;
 
+	public AnimationScriptObject() {
+	}
+	
 	public AnimationScriptObject(String predicate) {
 		this(predicate, new Vector<AnimationScriptStep>());
 	}

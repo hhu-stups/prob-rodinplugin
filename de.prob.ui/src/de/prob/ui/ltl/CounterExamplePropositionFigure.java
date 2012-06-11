@@ -32,8 +32,10 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.widgets.Display;
 
 import de.prob.core.command.LtlCheckingCommand.PathType;
+import de.prob.core.domainobjects.Operation;
 import de.prob.core.domainobjects.ltl.CounterExample;
 import de.prob.core.domainobjects.ltl.CounterExampleProposition;
+import de.prob.core.domainobjects.ltl.CounterExampleState;
 import de.prob.core.domainobjects.ltl.CounterExampleValueType;
 
 public abstract class CounterExamplePropositionFigure extends Figure implements
@@ -145,8 +147,10 @@ public abstract class CounterExamplePropositionFigure extends Figure implements
 	protected String getOperationName(final int index) {
 		final CounterExampleFigure parentFigure = (CounterExampleFigure) getParent();
 		final CounterExample parentModel = parentFigure.getModel();
-		final String operationName = parentModel.getStates().get(index)
-				.getOperation().getName();
+		final List<CounterExampleState> states = parentModel.getStates();
+		final CounterExampleState state = states.get(index);
+		final Operation operation = state.getOperation();
+		final String operationName = operation.getName();
 		return operationName;
 	}
 

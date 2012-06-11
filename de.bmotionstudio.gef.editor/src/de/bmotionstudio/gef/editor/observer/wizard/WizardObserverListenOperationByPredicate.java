@@ -45,6 +45,7 @@ import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 
+import de.bmotionstudio.gef.editor.BMotionAbstractWizard;
 import de.bmotionstudio.gef.editor.BMotionStudioImage;
 import de.bmotionstudio.gef.editor.EditorImageRegistry;
 import de.bmotionstudio.gef.editor.attribute.AbstractAttribute;
@@ -58,7 +59,7 @@ import de.bmotionstudio.gef.editor.observer.Observer;
 import de.bmotionstudio.gef.editor.observer.ObserverWizard;
 import de.bmotionstudio.gef.editor.property.CheckboxCellEditorHelper;
 import de.bmotionstudio.gef.editor.scheduler.PredicateOperation;
-import de.bmotionstudio.gef.editor.util.WizardObserverUtil;
+import de.bmotionstudio.gef.editor.util.BMotionWizardUtil;
 
 public class WizardObserverListenOperationByPredicate extends ObserverWizard {
 
@@ -79,9 +80,9 @@ public class WizardObserverListenOperationByPredicate extends ObserverWizard {
 
 			setControl(container);
 
-			tableViewer = WizardObserverUtil.createObserverWizardTableViewer(
+			tableViewer = BMotionWizardUtil.createBMotionWizardTableViewer(
 					container, PredicateOperation.class,
-					(ObserverWizard) getWizard());
+					((BMotionAbstractWizard) getWizard()).getName());
 
 			TableViewerColumn column = new TableViewerColumn(tableViewer,
 					SWT.NONE);
@@ -222,7 +223,7 @@ public class WizardObserverListenOperationByPredicate extends ObserverWizard {
 
 			@Override
 			protected boolean canEdit(Object element) {
-				return WizardObserverUtil.isEditElement(getViewer());
+				return BMotionWizardUtil.isEditElement(getViewer());
 			}
 
 			@Override

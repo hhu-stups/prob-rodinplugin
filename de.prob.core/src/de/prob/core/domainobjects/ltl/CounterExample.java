@@ -20,56 +20,73 @@ import de.prob.prolog.term.PrologTerm;
  * @author Andriy Tolstoy
  * 
  */
-public final class CounterExample {
+public class CounterExample {
 	private final static PrologTerm NONE = new CompoundPrologTerm("none");
 
 	private final CounterExampleProposition propositionRoot;
 	private final List<CounterExampleProposition> propositions = new ArrayList<CounterExampleProposition>();
 	private final List<CounterExampleState> states = new ArrayList<CounterExampleState>();
 	private final int loopEntry;
-	private List<ArrayList<Boolean>> predicateValues;
 	private final List<Operation> initPath;
 
-	private final ListPrologTerm atomics;
-	private final ListPrologTerm example;
 	private final PathType pathType;
+	private final int ceSize; // the length of the counterexample (number of
+								// states without the initialisation)
+
+	protected CounterExample(CounterExampleProposition propositionRoot,
+			int loopEntry, List<Operation> initPath, PathType pathType,
+			int ceSize) {
+		super();
+		this.propositionRoot = propositionRoot;
+		this.loopEntry = loopEntry;
+		this.initPath = initPath;
+		this.pathType = pathType;
+		this.ceSize = ceSize;
+	}
 
 	public CounterExample(final Result modelCheckingResult) {
-		atomics = modelCheckingResult.getAtomics();
-		example = modelCheckingResult.getCounterexample();
 		loopEntry = modelCheckingResult.getLoopEntry();
 		pathType = modelCheckingResult.getPathType();
 		initPath = Collections.unmodifiableList(Arrays
 				.asList(modelCheckingResult.getInitPathOps()));
+		ceSize = modelCheckingResult.getCounterexample().size();
 
-		createStates(example);
+		final List<ArrayList<Boolean>> predicateValues = createStates(modelCheckingResult
+				.getCounterexample());
 
-		propositionRoot = createExample(modelCheckingResult.getStructure());
+		final String[] atomicFormulaNames = createAtomicNames(modelCheckingResult);
+		propositionRoot = createExample(modelCheckingResult.getStructure(),
+				atomicFormulaNames, predicateValues);
 		propositionRoot.setVisible(true);
 		Collections.reverse(propositions);
 
 	}
 
-	private void createStates(final ListPrologTerm example) {
-		// final boolean isLoopType = pathType == PathType.INFINITE;
-		int index = 0;
+	private String[] createAtomicNames(final Result modelCheckingResult) {
+		String[] res = new String[modelCheckingResult.getAtomics().size()];
+		int i = 0;
+		for (final PrologTerm term : modelCheckingResult.getAtomics()) {
+			res[i] = PrologTerm.atomicString(((CompoundPrologTerm) term)
+					.getArgument(1));
+		}
+		return res;
+	}
 
+	private List<ArrayList<Boolean>> createStates(final ListPrologTerm example) {
+		List<ArrayList<Boolean>> predicateValues = new ArrayList<ArrayList<Boolean>>();
+
+		for (int i = 0; i < example.size(); i++) {
+			predicateValues.add(new ArrayList<Boolean>());
+		}
+
+		int index = 0;
 		for (PrologTerm exampleElement : example) {
 			CompoundPrologTerm state = (CompoundPrologTerm) exampleElement;
-			int stateId = ((IntegerPrologTerm) state.getArgument(1)).getValue()
-					.intValue();
+			final PrologTerm stateId = state.getArgument(1);
 			final ListPrologTerm values = ((ListPrologTerm) state
 					.getArgument(2));
 			final CompoundPrologTerm operationTerm = (CompoundPrologTerm) state
 					.getArgument(3);
-
-			if (predicateValues == null) {
-				predicateValues = new ArrayList<ArrayList<Boolean>>();
-
-				for (int i = 0; i < values.size(); i++) {
-					predicateValues.add(new ArrayList<Boolean>());
-				}
-			}
 
 			for (int i = 0; i < values.size(); i++) {
 				int value = ((IntegerPrologTerm) values.get(i)).getValue()
@@ -77,18 +94,21 @@ public final class CounterExample {
 				predicateValues.get(i).add(value == 0 ? false : true);
 			}
 
-			// final boolean inLoop = isLoopType && index >= loopEntry;
 			final Operation operation = NONE.equals(operationTerm) ? null
 					: Operation.fromPrologTerm(operationTerm);
 			final CounterExampleState ceState = new CounterExampleState(index,
-					stateId, operation/* , inLoop */);
+					stateId, operation);
 			states.add(ceState);
 			index++;
 		}
+
+		return predicateValues;
 	}
 
-	private CounterExampleProposition createExample(final PrologTerm structure) {
-		CounterExampleProposition proposition = null;
+	private CounterExampleProposition createExample(final PrologTerm structure,
+			final String[] atomicFormulaNames,
+			List<ArrayList<Boolean>> predicateValues) {
+		final CounterExampleProposition proposition;
 
 		CompoundPrologTerm term = (CompoundPrologTerm) structure;
 		String functor = term.getFunctor();
@@ -104,18 +124,15 @@ public final class CounterExample {
 				Arrays.fill(values, CounterExampleValueType.FALSE);
 			}
 
-			proposition = new CounterExamplePredicate(functor, pathType,
-					loopEntry, Arrays.asList(values));
+			proposition = new CounterExamplePredicate(functor, this,
+					Arrays.asList(values));
 		} else if (arity == 1) {
 			if (functor.equals("ap") || functor.equals("tp")) {
 				IntegerPrologTerm atomic = (IntegerPrologTerm) term
 						.getArgument(1);
 				int atomicId = atomic.getValue().intValue();
 
-				CompoundPrologTerm atomicTerm = (CompoundPrologTerm) atomics
-						.get(atomicId);
-				atomicTerm = (CompoundPrologTerm) atomicTerm.getArgument(1);
-				String name = atomicTerm.getFunctor();
+				final String name = atomicFormulaNames[atomicId];
 
 				Logger.assertProB("CounterExample invalid",
 						values.length == predicateValues.get(atomicId).size());
@@ -126,75 +143,97 @@ public final class CounterExample {
 				}
 
 				proposition = functor.equals("ap") ? new CounterExamplePredicate(
-						name, pathType, loopEntry, Arrays.asList(values))
-						: new CounterExampleTransition(name, pathType,
-								loopEntry, Arrays.asList(values));
+						name, this, Arrays.asList(values))
+						: new CounterExampleTransition(name, this,
+								Arrays.asList(values));
 			} else {
-				CounterExampleProposition argument = createExample(term
-						.getArgument(1));
-				if (functor.equals("globally")) {
-					proposition = new CounterExampleGlobally(pathType,
-							loopEntry, argument);
-				} else if (functor.equals("finally")) {
-					proposition = new CounterExampleFinally(pathType,
-							loopEntry, argument);
-				} else if (functor.equals("next")) {
-					proposition = new CounterExampleNext(pathType, loopEntry,
-							argument);
-				} else if (functor.equals("not")) {
-					proposition = new CounterExampleNegation(pathType,
-							loopEntry, argument);
-				} else if (functor.equals("once")) {
-					proposition = new CounterExampleOnce(pathType, loopEntry,
-							argument);
-				} else if (functor.equals("yesterday")) {
-					proposition = new CounterExampleYesterday(pathType,
-							loopEntry, argument);
-				} else if (functor.equals("historically")) {
-					proposition = new CounterExampleHistory(pathType,
-							loopEntry, argument);
-				}
-
-				argument.setParent(proposition);
+				proposition = createUnaryOperator(atomicFormulaNames,
+						predicateValues, term, functor);
 			}
 		} else if (arity == 2) {
-			CounterExampleProposition firstArgument = createExample(term
-					.getArgument(1));
-			CounterExampleProposition secondArgument = createExample(term
-					.getArgument(2));
-
-			if (functor.equals("and")) {
-				proposition = new CounterExampleConjunction(pathType,
-						loopEntry, firstArgument, secondArgument);
-			} else if (functor.equals("or")) {
-				proposition = new CounterExampleDisjunction(pathType,
-						loopEntry, firstArgument, secondArgument);
-			} else if (functor.equals("implies")) {
-				proposition = new CounterExampleImplication(pathType,
-						loopEntry, firstArgument, secondArgument);
-			} else if (functor.equals("until")) {
-				proposition = new CounterExampleUntil(pathType, loopEntry,
-						firstArgument, secondArgument);
-			} else if (functor.equals("weakuntil")) {
-				proposition = new CounterExampleWeakUntil(pathType, loopEntry,
-						firstArgument, secondArgument);
-			} else if (functor.equals("release")) {
-				proposition = new CounterExampleRelease(pathType, loopEntry,
-						firstArgument, secondArgument);
-			} else if (functor.equals("since")) {
-				proposition = new CounterExampleSince(pathType, loopEntry,
-						firstArgument, secondArgument);
-			} else if (functor.equals("trigger")) {
-				proposition = new CounterExampleTrigger(pathType, loopEntry,
-						firstArgument, secondArgument);
-			}
-
-			firstArgument.setParent(proposition);
-			secondArgument.setParent(proposition);
+			proposition = createBinaryOperator(atomicFormulaNames,
+					predicateValues, term, functor);
+		} else {
+			throw new IllegalArgumentException("Unexpected Prolog LTL " + arity
+					+ "-ary operator " + functor);
 		}
 
 		propositions.add(proposition);
 
+		return proposition;
+	}
+
+	private CounterExampleProposition createBinaryOperator(
+			final String[] atomicFormulaNames,
+			List<ArrayList<Boolean>> predicateValues, CompoundPrologTerm term,
+			String functor) {
+		final CounterExampleProposition proposition;
+		final CounterExampleProposition firstArgument = createExample(
+				term.getArgument(1), atomicFormulaNames, predicateValues);
+		final CounterExampleProposition secondArgument = createExample(
+				term.getArgument(2), atomicFormulaNames, predicateValues);
+
+		if (functor.equals("and")) {
+			proposition = new CounterExampleConjunction(this, firstArgument,
+					secondArgument);
+		} else if (functor.equals("or")) {
+			proposition = new CounterExampleDisjunction(this, firstArgument,
+					secondArgument);
+		} else if (functor.equals("implies")) {
+			proposition = new CounterExampleImplication(this, firstArgument,
+					secondArgument);
+		} else if (functor.equals("until")) {
+			proposition = new CounterExampleUntil(this, firstArgument,
+					secondArgument);
+		} else if (functor.equals("weakuntil")) {
+			proposition = new CounterExampleWeakUntil(this, firstArgument,
+					secondArgument);
+		} else if (functor.equals("release")) {
+			proposition = new CounterExampleRelease(this, firstArgument,
+					secondArgument);
+		} else if (functor.equals("since")) {
+			proposition = new CounterExampleSince(this, firstArgument,
+					secondArgument);
+		} else if (functor.equals("trigger")) {
+			proposition = new CounterExampleTrigger(this, firstArgument,
+					secondArgument);
+		} else {
+			throw new IllegalArgumentException(
+					"Unexpected Prolog LTL binary operator " + functor);
+		}
+
+		firstArgument.setParent(proposition);
+		secondArgument.setParent(proposition);
+		return proposition;
+	}
+
+	private CounterExampleProposition createUnaryOperator(
+			final String[] atomicFormulaNames,
+			List<ArrayList<Boolean>> predicateValues, CompoundPrologTerm term,
+			String functor) {
+		final CounterExampleProposition proposition;
+		final CounterExampleProposition argument = createExample(
+				term.getArgument(1), atomicFormulaNames, predicateValues);
+		if (functor.equals("globally")) {
+			proposition = new CounterExampleGlobally(this, argument);
+		} else if (functor.equals("finally")) {
+			proposition = new CounterExampleFinally(this, argument);
+		} else if (functor.equals("next")) {
+			proposition = new CounterExampleNext(this, argument);
+		} else if (functor.equals("not")) {
+			proposition = new CounterExampleNegation(this, argument);
+		} else if (functor.equals("once")) {
+			proposition = new CounterExampleOnce(this, argument);
+		} else if (functor.equals("yesterday")) {
+			proposition = new CounterExampleYesterday(this, argument);
+		} else if (functor.equals("historically")) {
+			proposition = new CounterExampleHistory(this, argument);
+		} else {
+			throw new IllegalArgumentException(
+					"Unexpected Prolog LTL unary operator " + functor);
+		}
+
+		argument.setParent(proposition);
 		return proposition;
 	}
 
@@ -231,5 +270,9 @@ public final class CounterExample {
 
 	public List<Operation> getInitPath() {
 		return initPath;
+	}
+
+	public int getCounterExampleSize() {
+		return ceSize;
 	}
 }

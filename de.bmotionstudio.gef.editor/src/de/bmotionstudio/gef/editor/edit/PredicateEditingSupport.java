@@ -19,7 +19,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
 
 import de.bmotionstudio.gef.editor.model.Visualization;
-import de.bmotionstudio.gef.editor.util.WizardObserverUtil;
+import de.bmotionstudio.gef.editor.util.BMotionWizardUtil;
 
 /**
  * @author Lukas Ladenberger
@@ -57,7 +57,7 @@ public class PredicateEditingSupport extends ObservableValueEditingSupport {
 
 	@Override
 	protected boolean canEdit(Object element) {
-		return WizardObserverUtil.isEditElement(getViewer());
+		return BMotionWizardUtil.isEditElement(getViewer());
 	}
 
 }
