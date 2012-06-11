@@ -42,6 +42,7 @@ import org.eclipse.swt.widgets.Display;
 
 import de.be4.classicalb.core.parser.BParser;
 import de.bmotionstudio.gef.editor.AttributeConstants;
+import de.bmotionstudio.gef.editor.BMotionAbstractWizard;
 import de.bmotionstudio.gef.editor.BMotionStudioImage;
 import de.bmotionstudio.gef.editor.EditorImageRegistry;
 import de.bmotionstudio.gef.editor.edit.PredicateEditingSupport;
@@ -53,7 +54,7 @@ import de.bmotionstudio.gef.editor.observer.ObserverWizard;
 import de.bmotionstudio.gef.editor.observer.SwitchCoordinates;
 import de.bmotionstudio.gef.editor.observer.ToggleObjectCoordinates;
 import de.bmotionstudio.gef.editor.property.CheckboxCellEditorHelper;
-import de.bmotionstudio.gef.editor.util.WizardObserverUtil;
+import de.bmotionstudio.gef.editor.util.BMotionWizardUtil;
 
 public class WizardObserverSwitchCoordinates extends ObserverWizard {
 
@@ -72,9 +73,9 @@ public class WizardObserverSwitchCoordinates extends ObserverWizard {
 			Composite container = new Composite(parent, SWT.NONE);
 			container.setLayout(new GridLayout(1, true));
 
-			tableViewer = WizardObserverUtil.createObserverWizardTableViewer(
+			tableViewer = BMotionWizardUtil.createBMotionWizardTableViewer(
 					container, ToggleObjectCoordinates.class,
-					(ObserverWizard) getWizard());
+					((BMotionAbstractWizard) getWizard()).getName());
 
 			tableViewer
 					.addSelectionChangedListener(new ISelectionChangedListener() {

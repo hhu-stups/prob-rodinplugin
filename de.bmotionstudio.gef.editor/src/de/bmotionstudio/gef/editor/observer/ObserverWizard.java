@@ -6,9 +6,9 @@
 
 package de.bmotionstudio.gef.editor.observer;
 
-import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.swt.graphics.Point;
 
+import de.bmotionstudio.gef.editor.BMotionAbstractWizard;
 import de.bmotionstudio.gef.editor.model.BControl;
 
 /**
@@ -20,20 +20,15 @@ import de.bmotionstudio.gef.editor.model.BControl;
  * @author Lukas Ladenberger
  * 
  */
-public abstract class ObserverWizard extends Wizard {
+public abstract class ObserverWizard extends BMotionAbstractWizard {
 
-	private BControl control;
 	private Observer observer;
 
 	protected Boolean observerDelete = false;
 
 	public ObserverWizard(BControl control, Observer observer) {
-		this.control = control;
+		super(control);
 		this.observer = observer;
-	}
-
-	public BControl getBControl() {
-		return this.control;
 	}
 
 	public Observer getObserver() {
@@ -44,17 +39,15 @@ public abstract class ObserverWizard extends Wizard {
 		this.observerDelete = b;
 	}
 
-	protected abstract Boolean prepareToFinish();
-
-	@Override
-	public boolean performFinish() {
-		return prepareToFinish();
-	}
-
 	public Boolean isObserverDelete() {
 		return this.observerDelete;
 	}
 
 	public abstract Point getSize();
+	
+	@Override
+	public String getName() {
+		return observer.getName();
+	}
 
 }

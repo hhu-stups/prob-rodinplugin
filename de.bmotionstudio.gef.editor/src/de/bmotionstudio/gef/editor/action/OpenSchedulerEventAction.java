@@ -23,13 +23,13 @@ import de.bmotionstudio.gef.editor.scheduler.SchedulerEvent;
 import de.bmotionstudio.gef.editor.scheduler.SchedulerWizard;
 import de.prob.logging.Logger;
 
-public class SchedulerEventAction extends SelectionAction {
+public class OpenSchedulerEventAction extends SelectionAction {
 
 	private String className;
 	private String eventID;
 	private SchedulerEvent clonedSchedulerEvent;
 
-	public SchedulerEventAction(IWorkbenchPart part) {
+	public OpenSchedulerEventAction(IWorkbenchPart part) {
 		super(part);
 		setLazyEnablementCalculation(true);
 	}
@@ -79,7 +79,7 @@ public class SchedulerEventAction extends SelectionAction {
 
 				if (wizard != null) {
 
-					BMotionSchedulerEventWizard dialog = new BMotionSchedulerEventWizard(
+					BMotionSchedulerEventWizardDialog dialog = new BMotionSchedulerEventWizardDialog(
 							getWorkbenchPart(), wizard);
 					dialog.create();
 					dialog.getShell().setSize(wizard.getSize());

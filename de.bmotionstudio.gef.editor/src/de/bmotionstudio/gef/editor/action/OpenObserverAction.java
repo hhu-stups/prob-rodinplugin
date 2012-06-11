@@ -23,14 +23,14 @@ import de.bmotionstudio.gef.editor.observer.Observer;
 import de.bmotionstudio.gef.editor.observer.ObserverWizard;
 import de.prob.logging.Logger;
 
-public class ObserverAction extends SelectionAction {
+public class OpenObserverAction extends SelectionAction {
 
 	private String className;
 	private Observer clonedObserver;
 	private Observer newObserver;
 	private BControl actionControl;
 
-	public ObserverAction(IWorkbenchPart part) {
+	public OpenObserverAction(IWorkbenchPart part) {
 		super(part);
 		setLazyEnablementCalculation(true);
 	}
@@ -80,7 +80,7 @@ public class ObserverAction extends SelectionAction {
 
 			if (wizard != null) {
 
-				BMotionObserverWizard dialog = new BMotionObserverWizard(
+				BMotionObserverWizardDialog dialog = new BMotionObserverWizardDialog(
 						getWorkbenchPart(), wizard);
 				dialog.create();
 				dialog.getShell().setSize(wizard.getSize());
@@ -121,7 +121,7 @@ public class ObserverAction extends SelectionAction {
 					if (clonedObserver != null)
 						actionControl.addObserver(clonedObserver);
 
-				} else if (status == BMotionObserverWizard.DELETE) {
+				} else if (status == BMotionObserverWizardDialog.DELETE) {
 					RemoveObserverAction action = new RemoveObserverAction(
 							getWorkbenchPart());
 					action.setControl(getControl());

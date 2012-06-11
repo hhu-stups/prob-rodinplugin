@@ -18,7 +18,7 @@ import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 
-import de.bmotionstudio.gef.editor.util.WizardObserverUtil;
+import de.bmotionstudio.gef.editor.util.BMotionWizardUtil;
 
 public class TextEditingSupport extends ObservableValueEditingSupport {
 
@@ -54,7 +54,7 @@ public class TextEditingSupport extends ObservableValueEditingSupport {
 
 	@Override
 	protected boolean canEdit(Object element) {
-		return WizardObserverUtil.isEditElement(getViewer());
+		return BMotionWizardUtil.isEditElement(getViewer());
 	}
 
 }

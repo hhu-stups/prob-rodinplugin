@@ -4,7 +4,7 @@
  * This software is licenced under EPL 1.0 (http://www.eclipse.org/org/documents/epl-v10.html) 
  * */
 
-package de.bmotionstudio.gef.editor.observer.wizard;
+package de.bmotionstudio.gef.editor.action;
 
 import org.eclipse.core.databinding.observable.list.WritableList;
 import org.eclipse.jface.action.Action;
@@ -13,12 +13,12 @@ import org.eclipse.jface.viewers.TableViewer;
 
 import de.bmotionstudio.gef.editor.BMotionStudioImage;
 
-public class WizardObserverAddItemAction extends Action {
+public class BMotionWizardAddItemAction extends Action {
 
 	private TableViewer viewer;
 	private Class<?> itemClass;
 
-	public WizardObserverAddItemAction(TableViewer viewer, Class<?> itemClass) {
+	public BMotionWizardAddItemAction(TableViewer viewer, Class<?> itemClass) {
 		this.viewer = viewer;
 		this.itemClass = itemClass;
 		setText("Add new item");

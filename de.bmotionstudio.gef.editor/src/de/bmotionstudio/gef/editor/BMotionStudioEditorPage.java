@@ -92,9 +92,9 @@ import org.eclipse.ui.views.properties.IPropertySheetPage;
 import com.thoughtworks.xstream.XStream;
 
 import de.bmotionstudio.gef.editor.action.CopyAction;
-import de.bmotionstudio.gef.editor.action.ObserverAction;
+import de.bmotionstudio.gef.editor.action.OpenObserverAction;
 import de.bmotionstudio.gef.editor.action.PasteAction;
-import de.bmotionstudio.gef.editor.action.SchedulerEventAction;
+import de.bmotionstudio.gef.editor.action.OpenSchedulerEventAction;
 import de.bmotionstudio.gef.editor.internal.BControlTransferDropTargetListener;
 import de.bmotionstudio.gef.editor.library.AttributeTransferDropTargetListener;
 import de.bmotionstudio.gef.editor.model.BMotionRuler;
@@ -355,10 +355,10 @@ public class BMotionStudioEditorPage extends GraphicalEditorWithFlyoutPalette {
 					String observerClassName = configurationElement
 							.getAttribute("class");
 
-					action = new ObserverAction(this);
+					action = new OpenObserverAction(this);
 					action.setId("de.bmotionstudio.gef.editor.observerAction."
 							+ observerClassName);
-					((ObserverAction) action).setClassName(observerClassName);
+					((OpenObserverAction) action).setClassName(observerClassName);
 					registry.registerAction(action);
 					getSelectionActions().add(
 							"de.bmotionstudio.gef.editor.observerAction."
@@ -390,10 +390,10 @@ public class BMotionStudioEditorPage extends GraphicalEditorWithFlyoutPalette {
 					String sClassName = configurationElement
 							.getAttribute("class");
 
-					action = new SchedulerEventAction(this);
+					action = new OpenSchedulerEventAction(this);
 					action.setId("de.bmotionstudio.gef.editor.SchedulerEventAction."
 							+ sClassName);
-					((SchedulerEventAction) action).setClassName(sClassName);
+					((OpenSchedulerEventAction) action).setClassName(sClassName);
 					registry.registerAction(action);
 					getSelectionActions().add(
 							"de.bmotionstudio.gef.editor.SchedulerEventAction."

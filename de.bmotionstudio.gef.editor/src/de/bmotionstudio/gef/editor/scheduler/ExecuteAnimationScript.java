@@ -12,7 +12,7 @@ import java.util.Random;
 
 import de.bmotionstudio.gef.editor.internal.Animation;
 import de.bmotionstudio.gef.editor.model.BControl;
-import de.bmotionstudio.gef.editor.scheduler.wizard.WizardExecuteAnimationScript;
+import de.bmotionstudio.gef.editor.scheduler.wizard.WizardExecuteScheduler;
 import de.prob.core.Animator;
 import de.prob.core.command.ExecuteOperationCommand;
 import de.prob.core.command.GetCurrentStateIdCommand;
@@ -97,7 +97,7 @@ public class ExecuteAnimationScript extends SchedulerEvent {
 
 	@Override
 	public SchedulerWizard getWizard(final BControl bcontrol) {
-		return new WizardExecuteAnimationScript(bcontrol, this);
+		return new WizardExecuteScheduler(bcontrol, this);
 	}
 
 	public ExecuteAnimationScript clone() throws CloneNotSupportedException {

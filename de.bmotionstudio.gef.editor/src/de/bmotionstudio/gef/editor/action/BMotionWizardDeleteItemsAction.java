@@ -4,7 +4,7 @@
  * This software is licenced under EPL 1.0 (http://www.eclipse.org/org/documents/epl-v10.html) 
  * */
 
-package de.bmotionstudio.gef.editor.observer.wizard;
+package de.bmotionstudio.gef.editor.action;
 
 import java.util.Arrays;
 
@@ -17,11 +17,11 @@ import org.eclipse.swt.widgets.Display;
 
 import de.bmotionstudio.gef.editor.BMotionStudioImage;
 
-public class WizardObserverDeleteItemsAction extends Action {
+public class BMotionWizardDeleteItemsAction extends Action {
 
 	private TableViewer viewer;
 
-	public WizardObserverDeleteItemsAction(TableViewer viewer) {
+	public BMotionWizardDeleteItemsAction(TableViewer viewer) {
 		this.viewer = viewer;
 		setText("Delete selected items");
 		setImageDescriptor(BMotionStudioImage.getImageDescriptor(
