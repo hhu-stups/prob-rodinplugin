@@ -10,6 +10,13 @@ try{
 	workspacePath = "../"
 }
 
+
+try{
+	dependencyFolder = dependencyFolder
+}catch(MissingPropertyException e){
+	dependencyFolder = "lib/dependencies/"			// Folder in each subproject where 
+}
+
 try{
 	groupID = groupID
 }catch(MissingPropertyException e){
@@ -114,6 +121,8 @@ def groupId(){
 */
 
 
+
+
 /////////////////////////////////////////////////////////////////////////////////////////
 //		--	!!! 				DEFINING SUB PROJECTS 							!!!	-- //
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -121,11 +130,22 @@ def groupId(){
 subprojects {
 	
 	apply plugin: 'base'
+	apply plugin: 'java'
 	
 	task deleteArtifacts(type: Delete) {
   		delete 'target','pom.xml'
 	}
-		
+	
+	/////				Copy Dependencies into subprojects DependencyFolder 				///// 
+	task collectDependencies(type: Copy){
+
+		   	from configurations.compile
+	   	
+			into "../"+workspacePath+project.name+"/${dependencyFolder}" 					
+			
+	}
+	////////////////////////////////////////////////////////////////////////////////////////////	
+	
 	task deploy() <<{
 		description = "\tGenerating the Tycho Poms. Please remember to add a '.qualifier' to the version numbers!"
 
@@ -292,6 +312,12 @@ task createPoms(dependsOn: [createParent, createRepository, subprojects.deploy])
 
 task install(dependsOn: [createPoms] , type:Exec) {
 	description = "\tExecutes a 'mvn install' of the parent pom.xml and auto-generates Tycho Poms"	
+	commandLine 'mvn', 'install', '-f', workspacePath+parentID+'/pom.xml'
+}
+
+task completeInstall(dependsOn: [subprojects.collectDependencies, createPoms], type:Exec ){
+	
+	description = "\tCopies dependencies into dependencyFolder of each subproject and executes a 'mvn install' of the parent pom.xml and auto-generates Tycho Poms"
 	commandLine 'mvn', 'install', '-f', workspacePath+parentID+'/pom.xml'
 }
 

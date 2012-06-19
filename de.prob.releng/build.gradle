@@ -1,9 +1,22 @@
 
 targetRepositories = ["http://cobra.cs.uni-duesseldorf.de/prob_dev_target/","http://download.eclipse.org/releases/indigo/"]	
 
-apply from: 'http://cobra.cs.uni-duesseldorf.de/artifactory//plugins-snapshot-local/tycho_build-SNAPSHOT.gradle'
+apply from: 'tycho_build.gradle'
 
 // Local tasks
+
+project(':de.prob.core') {
+
+	repositories {
+	    mavenCentral()
+	}
+	dependencies {
+		compile group: 'commons-lang', name: 'commons-lang', version: '2.4'
+	}	
+	
+}
+
+
 def download(address,target) {
 	    def file = new FileOutputStream(target)
 	    def out = new BufferedOutputStream(file)
