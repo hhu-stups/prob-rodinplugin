@@ -6,7 +6,7 @@ Bundle-Version: 5.3.1.qualifier
 Bundle-Activator: de.bmotionstudio.gef.editor.BMotionEditorPlugin
 Require-Bundle: org.eclipse.ui;bundle-version="[3.5.0,4.0.0)",
  org.eclipse.ui.ide;bundle-version="[3.5.0,4.0.0)",
- org.eclipse.ui.views;bundle-version="[3.5.0,4.0.0)",
+ org.eclipse.ui.views;bundle-version="[3.5.0,4.0.0)";visibility:=reexport,
  org.eclipse.core.runtime;bundle-version="[3.5.0,4.0.0)",
  org.eclipse.jface;bundle-version="[3.5.0,4.0.0)",
  org.eclipse.core.databinding;bundle-version="[1.2.0,2.0.0)",
