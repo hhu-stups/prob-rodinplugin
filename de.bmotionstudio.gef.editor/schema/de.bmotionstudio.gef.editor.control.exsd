@@ -115,7 +115,7 @@
                   
                </documentation>
                <appInfo>
-                  <meta.attribute kind="java" basedOn="de.bmotionstudio.gef.editor.service.AbstractBControlService:de.bmotionstudio.gef.editor.IBControlService"/>
+                  <meta.attribute kind="java" basedOn="de.bmotionstudio.gef.editor.AbstractBControlService:de.bmotionstudio.gef.editor.IBControlService"/>
                </appInfo>
             </annotation>
          </attribute>
