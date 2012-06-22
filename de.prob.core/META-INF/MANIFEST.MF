@@ -63,4 +63,4 @@ Eclipse-BuddyPolicy: registered
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ClassPath: .,
  lib/probcliparser.jar,
- lib/commons-lang-2.4.jar
+ lib/dependencies/commons-lang-2.4.jar
