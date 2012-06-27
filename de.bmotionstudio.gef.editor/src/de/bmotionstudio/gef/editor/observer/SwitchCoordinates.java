@@ -9,19 +9,16 @@ package de.bmotionstudio.gef.editor.observer;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.bmotionstudio.gef.editor.Animation;
 import de.bmotionstudio.gef.editor.AttributeConstants;
 import de.bmotionstudio.gef.editor.animation.AnimationMove;
-import de.bmotionstudio.gef.editor.internal.Animation;
 import de.bmotionstudio.gef.editor.model.BControl;
 import de.bmotionstudio.gef.editor.observer.wizard.WizardObserverSwitchCoordinates;
+import de.bmotionstudio.gef.editor.util.BMSUtil;
 
 public class SwitchCoordinates extends Observer {
 
 	private List<ToggleObjectCoordinates> toggleObjects;
-
-	// private transient AnimationListener animationListener;
-
-	// private transient Boolean checked;
 
 	public SwitchCoordinates() {
 		toggleObjects = new ArrayList<ToggleObjectCoordinates>();
@@ -31,27 +28,6 @@ public class SwitchCoordinates extends Observer {
 
 		boolean set = false;
 
-		// if (checked == null)
-		// checked = true;
-
-		// if (animationListener == null) {
-		// animationListener = new AnimationListener() {
-		// public void animationStopped(AnimationEvent evt) {
-		// setCallBack(true);
-		// checked = true;
-		// // System.out
-		// // .println("Animation stopped ---> Set callback to TRUE!");
-		// }
-		//
-		// public void animationStarted(AnimationEvent evt) {
-		// setCallBack(false);
-		// checked = false;
-		// // System.out
-		// // .println("Animation started ---> Set callback to FALSE!");
-		// }
-		// };
-		// }
-
 		// Collect evaluate predicate objects in list
 		for (ToggleObjectCoordinates obj : toggleObjects) {
 
@@ -60,8 +36,8 @@ public class SwitchCoordinates extends Observer {
 			// First evaluate predicate (predicate field)
 			String bolValue = "true";
 			if (obj.getEval().length() > 0) {
-				bolValue = parsePredicate(obj.getEval(), control, animation,
-						obj);
+				bolValue = BMSUtil.parsePredicate(obj.getEval(), control,
+						animation);
 			}
 
 			if (!obj.hasError() && Boolean.valueOf(bolValue)) {
@@ -70,21 +46,21 @@ public class SwitchCoordinates extends Observer {
 				int parsedY = 0;
 				// Handle X field
 				try {
-					parsedX = Integer.valueOf(parseExpression(obj.getX(),
-							false, control, animation, obj, false));
+					parsedX = Integer.valueOf(BMSUtil.parseExpression(
+							obj.getX(), control, animation));
 				} catch (NumberFormatException n) {
 					obj.setHasError(true);
-					addError(control, animation, "x is not a valid integer: "
-							+ n.getMessage());
+					// addError(control, animation, "x is not a valid integer: "
+					// + n.getMessage());
 				}
 				// Handle Y field
 				try {
-					parsedY = Integer.valueOf(parseExpression(obj.getY(),
-							false, control, animation, obj, false));
+					parsedY = Integer.valueOf(BMSUtil.parseExpression(
+							obj.getY(), control, animation));
 				} catch (NumberFormatException n) {
 					obj.setHasError(true);
-					addError(control, animation, "y is not a valid integer: "
-							+ n.getMessage());
+					// addError(control, animation, "y is not a valid integer: "
+					// + n.getMessage());
 				}
 
 				int currentX = Integer.valueOf(control.getAttributeValue(

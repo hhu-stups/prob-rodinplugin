@@ -12,10 +12,11 @@ import java.util.List;
 
 import org.eclipse.core.resources.IFile;
 
+import de.bmotionstudio.gef.editor.Animation;
 import de.bmotionstudio.gef.editor.AttributeConstants;
-import de.bmotionstudio.gef.editor.internal.Animation;
 import de.bmotionstudio.gef.editor.model.BControl;
 import de.bmotionstudio.gef.editor.observer.wizard.WizardObserverSwitchImage;
+import de.bmotionstudio.gef.editor.util.BMSUtil;
 
 public class SwitchImage extends Observer {
 
@@ -37,8 +38,8 @@ public class SwitchImage extends Observer {
 			// First evaluate predicate (predicate field)
 			String bolValue = "true";
 			if (obj.getEval().length() > 0) {
-				bolValue = parsePredicate(obj.getEval(), control, animation,
-						obj);
+				bolValue = BMSUtil.parsePredicate(obj.getEval(), control,
+						animation);
 			}
 
 			if (!obj.hasError() && Boolean.valueOf(bolValue)) {
@@ -46,16 +47,16 @@ public class SwitchImage extends Observer {
 				String fImage = obj.getImage();
 
 				if (obj.isExpressionMode()) { // Expression mode
-					fImage = parseExpression(obj.getImage(), control,
-							animation, obj);
+					fImage = BMSUtil.parseExpression(obj.getImage(), control,
+							animation);
 				}
 
 				IFile pFile = control.getVisualization().getProjectFile();
 				String myPath = (pFile.getProject().getLocation() + "/images/" + fImage)
 						.replace("file:", "");
 				if (!new File(myPath).exists()) {
-					addError(control, animation,
-							"No such image in your library: " + fImage);
+					// addError(control, animation,
+					// "No such image in your library: " + fImage);
 				}
 
 				if (!obj.hasError()) {

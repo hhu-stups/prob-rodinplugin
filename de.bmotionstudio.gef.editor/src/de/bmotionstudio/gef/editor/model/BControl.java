@@ -24,6 +24,7 @@ import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.ui.views.properties.IPropertySource;
 
+import de.bmotionstudio.gef.editor.Animation;
 import de.bmotionstudio.gef.editor.AttributeConstants;
 import de.bmotionstudio.gef.editor.BMotionEditorPlugin;
 import de.bmotionstudio.gef.editor.IBControlService;
@@ -37,7 +38,6 @@ import de.bmotionstudio.gef.editor.attribute.BAttributeVisible;
 import de.bmotionstudio.gef.editor.attribute.BAttributeWidth;
 import de.bmotionstudio.gef.editor.attribute.BAttributeX;
 import de.bmotionstudio.gef.editor.attribute.BAttributeY;
-import de.bmotionstudio.gef.editor.internal.Animation;
 import de.bmotionstudio.gef.editor.internal.BControlPropertySource;
 import de.bmotionstudio.gef.editor.observer.IObserverListener;
 import de.bmotionstudio.gef.editor.observer.Observer;
@@ -625,26 +625,6 @@ public abstract class BControl implements IAdaptable, Cloneable {
 			con.checkObserver(animation);
 		}
 
-		// Check Observers of children
-		if (getChildrenArray().size() > 0) {
-			for (BControl bcontrol : getChildrenArray()) {
-				bcontrol.checkObserver(animation);
-			}
-		}
-
-	}
-
-	public void afterCheckObserver(Animation animation) {
-		// Check all Observers
-		for (Observer observer : getObservers().values()) {
-			observer.afterCheck(animation, this);
-		}
-		// Check Observers of children
-		if (getChildrenArray().size() > 0) {
-			for (BControl bcontrol : getChildrenArray()) {
-				bcontrol.afterCheckObserver(animation);
-			}
-		}
 	}
 
 	public void executeEvent(String eventID) {

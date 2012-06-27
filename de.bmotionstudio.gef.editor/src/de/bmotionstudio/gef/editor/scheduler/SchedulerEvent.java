@@ -9,8 +9,8 @@ package de.bmotionstudio.gef.editor.scheduler;
 import org.eclipse.core.runtime.IConfigurationElement;
 
 import de.bmotionstudio.gef.editor.AbstractExpressionControl;
+import de.bmotionstudio.gef.editor.Animation;
 import de.bmotionstudio.gef.editor.BMotionEditorPlugin;
-import de.bmotionstudio.gef.editor.internal.Animation;
 import de.bmotionstudio.gef.editor.model.BControl;
 
 /**

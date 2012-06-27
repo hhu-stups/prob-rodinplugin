@@ -259,9 +259,8 @@
             name="Switch Coordinates">
       </observer>
       <observer
-            class="de.bmotionstudio.gef.editor.observer.CloneObserver"
-            description="This observer clones the control depending on an expression rule"
-            name="Clone Observer">
+            class="de.bmotionstudio.gef.editor.observer.ExternalObserverScript"
+            name="External Observer Script">
       </observer>
    </extension>
    <extension
@@ -438,6 +437,33 @@
             </control>
             <control
                   id="de.bmotionstudio.gef.editor.visualization">
+            </control>
+         </observer>
+         <observer
+               id="de.bmotionstudio.gef.editor.observer.ExternalObserverScript">
+            <control
+                  id="de.bmotionstudio.gef.editor.image">
+            </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.button">
+            </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.composite">
+            </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.text">
+            </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.shape">
+            </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.radiobutton">
+            </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.checkbox">
+            </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.connection">
             </control>
          </observer>
       </include>

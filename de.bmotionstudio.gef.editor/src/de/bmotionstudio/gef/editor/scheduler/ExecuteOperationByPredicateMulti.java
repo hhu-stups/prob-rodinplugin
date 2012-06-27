@@ -2,10 +2,11 @@ package de.bmotionstudio.gef.editor.scheduler;
 
 import java.util.ArrayList;
 
+import de.bmotionstudio.gef.editor.Animation;
 import de.bmotionstudio.gef.editor.BindingObject;
-import de.bmotionstudio.gef.editor.internal.Animation;
 import de.bmotionstudio.gef.editor.model.BControl;
 import de.bmotionstudio.gef.editor.scheduler.wizard.WizardExecuteOperationByPredicateMulti;
+import de.bmotionstudio.gef.editor.util.BMSUtil;
 
 public class ExecuteOperationByPredicateMulti extends SchedulerEvent {
 
@@ -27,8 +28,8 @@ public class ExecuteOperationByPredicateMulti extends SchedulerEvent {
 					.getExecutePredicate();
 
 			if (executePredicate.length() > 0) {
-				bolValue = parsePredicate(executePredicate, control, animation,
-						null);
+				bolValue = BMSUtil.parsePredicate(executePredicate, control,
+						animation);
 			}
 
 			if (Boolean.valueOf(bolValue)) { // If true
