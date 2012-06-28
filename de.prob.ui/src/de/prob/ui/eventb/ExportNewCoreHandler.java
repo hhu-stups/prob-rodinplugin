@@ -1,6 +1,5 @@
 package de.prob.ui.eventb;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -18,7 +17,6 @@ import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.IHandler;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.preferences.InstanceScope;
-import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.xmi.XMLResource;
 import org.eclipse.emf.ecore.xmi.impl.XMLResourceImpl;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -30,7 +28,6 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.eventb.core.IEventBRoot;
 import org.eventb.core.IMachineRoot;
-import org.eventb.emf.core.EventBNamedCommentedComponentElement;
 import org.eventb.emf.core.Project;
 import org.eventb.emf.persistence.ProjectResource;
 import org.osgi.service.prefs.BackingStoreException;

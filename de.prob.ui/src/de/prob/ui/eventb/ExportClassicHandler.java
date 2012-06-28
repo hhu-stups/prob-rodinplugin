@@ -28,6 +28,11 @@ import de.prob.core.translator.TranslationFailedException;
 import de.prob.eventb.translator.TranslatorFactory;
 import de.prob.logging.Logger;
 
+/**
+ * @author bendisposto
+ * @deprecated Use ExpprtNewCoreHandler instead
+ */
+@Deprecated
 public class ExportClassicHandler extends AbstractHandler implements IHandler {
 
 	public Object execute(final ExecutionEvent event) throws ExecutionException {

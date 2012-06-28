@@ -564,23 +564,6 @@
             </enabledWhen>
       </handler>
       <handler
-            commandId="de.prob.ui.classic.export">
-         <class
-               class="de.prob.ui.eventb.ExportClassicHandler">
-         </class>
-                              <enabledWhen>
-      <with
-            variable="selection">
-         <iterate
-               operator="or">
-            <instanceof
-                  value="org.eventb.core.IEventBRoot">
-            </instanceof>
-         </iterate>
-      </with>
-            </enabledWhen>
-      </handler>
-      <handler
             commandId="de.prob.ui.classic.open">
          <class
                class="de.prob.ui.eventb.OpenClassicHandler">
@@ -995,7 +978,7 @@
                </with>
             </visibleWhen>
             <command
-                  commandId="de.prob.ui.classic.export"
+                  commandId="de.prob.ui.newcore.export"
                   icon="icons/prob_mini_logo.gif"
                   label="Export for use in ProB classic"
                   style="push">
@@ -1004,12 +987,6 @@
                   commandId="de.prob.ui.classic.open"
                   icon="icons/prob_mini_logo.gif"
                   label="Open in ProB classic"
-                  style="push">
-            </command>
-            <command
-                  commandId="de.prob.ui.newcore.export"
-                  icon="icons/prob_mini_logo.gif"
-                  label="Export for new core (experimental)"
                   style="push">
             </command>
          </menu>
