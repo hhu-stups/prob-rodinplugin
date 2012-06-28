@@ -341,6 +341,10 @@
           id="de.prob.ui.ltl.counterexampleprinthandler"
           name="CounterExample Print">
       </command>
+      <command
+            id="de.prob.ui.newcore.export"
+            name="Export for new Core">
+      </command>
    </extension>
    <extension
          point="org.eclipse.ui.handlers">
@@ -717,6 +721,23 @@
             </with>
          </enabledWhen>
       </handler>
+      <handler
+            commandId="de.prob.ui.newcore.export">
+         <class
+               class="de.prob.ui.eventb.ExportNewCoreHandler">
+         </class>
+         <enabledWhen>
+            <with
+                  variable="selection">
+               <iterate
+                     operator="or">
+                  <instanceof
+                        value="org.eventb.core.IEventBRoot">
+                  </instanceof>
+               </iterate>
+            </with>
+         </enabledWhen>
+      </handler>
 <!--      <handler
             commandId="de.prob.ui.startdmc">
          <class
@@ -983,6 +1004,12 @@
                   commandId="de.prob.ui.classic.open"
                   icon="icons/prob_mini_logo.gif"
                   label="Open in ProB classic"
+                  style="push">
+            </command>
+            <command
+                  commandId="de.prob.ui.newcore.export"
+                  icon="icons/prob_mini_logo.gif"
+                  label="Export for new core (experimental)"
                   style="push">
             </command>
          </menu>

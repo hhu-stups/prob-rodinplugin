@@ -20,4 +20,5 @@ dependencies {
  compile group: "de.prob", name: "unicode", version: parser_version , changing: true
  compile 'jgrapht:jgrapht:0.8.3'
  compile 'commons-lang:commons-lang:2.6'
+ compile 'commons-codec:commons-codec:1.6'
 }
