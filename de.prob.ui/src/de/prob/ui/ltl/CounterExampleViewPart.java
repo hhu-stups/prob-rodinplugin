@@ -42,7 +42,6 @@ public final class CounterExampleViewPart extends StateBasedViewPart {
 
 	private CTabFolder tabFolder;
 	private ViewType viewType = ViewType.INTERACTIVE;
-	private int currentIndex = -1;
 
 	public static CounterExampleViewPart showDefault() {
 		final IWorkbenchPage workbenchPage = PlatformUI.getWorkbench()
