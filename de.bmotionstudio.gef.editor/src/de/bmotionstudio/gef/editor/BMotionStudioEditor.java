@@ -36,7 +36,6 @@ import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.mapper.MapperWrapper;
 
 import de.bmotionstudio.gef.editor.animation.StaticListenerRegistry;
-import de.bmotionstudio.gef.editor.internal.Animation;
 import de.bmotionstudio.gef.editor.internal.BMSConverter512;
 import de.bmotionstudio.gef.editor.model.Visualization;
 import de.prob.core.ILifecycleListener;
