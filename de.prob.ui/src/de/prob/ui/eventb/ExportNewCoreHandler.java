@@ -120,7 +120,8 @@ public class ExportNewCoreHandler extends AbstractHandler implements IHandler {
 				TranslatorFactory.translate(root, new PrintWriter(fw));
 				fw.append('\n');
 
-				fw.append("model(\"" + serialize(project) + "\").");
+				fw.append("emf_model('" + root.getComponentName() + "',\""
+						+ serialize(project) + "\").");
 
 			} catch (TranslationFailedException e) {
 				e.notifyUserOnce();
