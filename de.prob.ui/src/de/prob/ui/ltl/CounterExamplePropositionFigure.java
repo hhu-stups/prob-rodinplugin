@@ -176,9 +176,9 @@ public abstract class CounterExamplePropositionFigure extends Figure implements
 		final Rectangle targetBounds = target.getBounds();
 		points.addPoint(new Point(sourceBounds.x + size + insets.left,
 				sourceBounds.y + size / 2 + insets.top));
-		points.addPoint(new Point(sourceBounds.x + size + 3.0 / 10 * size
+		points.addPoint(new Point(sourceBounds.x + size + (3 * size) / 10
 				+ insets.left, sourceBounds.y + size / 2 + insets.top));
-		points.addPoint(new Point(sourceBounds.x + size + 3.0 / 10 * size
+		points.addPoint(new Point(sourceBounds.x + size + (3 * size) / 10
 				+ insets.left, sourceBounds.y - size / 5 + insets.top));
 		points.addPoint(new Point(targetBounds.x + size / 2 + insets.left,
 				targetBounds.y - size / 5 + insets.top));
@@ -215,13 +215,12 @@ public abstract class CounterExamplePropositionFigure extends Figure implements
 		final Rectangle sourceBounds = source.getBounds();
 		points.addPoint(new Point(sourceBounds.x + size + insets.left,
 				sourceBounds.y + size / 2 + insets.top));
-		points.addPoint(new Point(sourceBounds.x + size + 3.0 / 10 * size
+		points.addPoint(new Point(sourceBounds.x + size + (3 * size) / 10
 				+ insets.left, sourceBounds.y + size / 2 + insets.top));
-		points.addPoint(new Point(sourceBounds.x + size + 3.0 / 10 * size
+		points.addPoint(new Point(sourceBounds.x + size + (3 * size) / 10
 				+ insets.left, sourceBounds.y + insets.top + size / 4));
-		points.addPoint(new Point(sourceBounds.x + size + 3.0 / 10 * size
-				+ insets.left, sourceBounds.y + insets.top
-				+ (int) (3.0 / 4 * size)));
+		points.addPoint(new Point(sourceBounds.x + size + (3 * size) / 10
+				+ insets.left, sourceBounds.y + insets.top + (3 * size) / 4));
 		polyline.setPoints(points);
 
 		return polyline;
