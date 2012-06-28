@@ -1,5 +1,5 @@
 
-targetRepositories = ["http://cobra.cs.uni-duesseldorf.de/prob_dev_target/","http://download.eclipse.org/releases/indigo/"]	
+targetRepositories = ["http://cobra.cs.uni-duesseldorf.de/prob_dev_target/","http://download.eclipse.org/releases/indigo/","http://rodin-b-sharp.sourceforge.net/updates"]	
 
 apply from: 'tycho_build.gradle'
 
