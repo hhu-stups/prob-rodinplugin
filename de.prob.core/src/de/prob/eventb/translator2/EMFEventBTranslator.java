@@ -9,7 +9,6 @@ import org.eclipse.emf.common.util.EList;
 import org.eventb.core.IEventBRoot;
 import org.eventb.emf.core.EventBNamedCommentedComponentElement;
 import org.eventb.emf.core.Project;
-import org.eventb.emf.core.context.Axiom;
 import org.eventb.emf.core.context.CarrierSet;
 import org.eventb.emf.core.context.Context;
 import org.eventb.emf.core.machine.Machine;
@@ -54,10 +53,6 @@ public class EMFEventBTranslator {
 							s.getName()) }));
 			setList.add(deferredSet);
 		}
-		
-		EList<Axiom> axioms = c.getAxioms();
-		
-		
 
 	}
 
