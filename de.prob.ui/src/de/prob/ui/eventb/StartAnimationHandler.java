@@ -1,5 +1,8 @@
 package de.prob.ui.eventb;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
@@ -67,9 +70,15 @@ public class StartAnimationHandler extends AbstractHandler implements IHandler {
 		final IEventBRoot rootElement = getRootElement();
 		final IFile resource = extractResource(rootElement);
 
-		if (!checkErrorMarkers(resource)) {
-			String message = "A model/context in your project contains Errors or Warnings. This can lead to unexpected behavior (e.g. missing variables) when animating.";
-			Logger.notifyUserWithoutBugreport(message);
+		List<String> errors = checkErrorMarkers(resource);
+		if (!errors.isEmpty()) {
+			String message = "A model/context in your project contains Errors or Warnings. This can lead to unexpected behavior (e.g. missing variables) when animating.\ns\nDetails:\n";
+			StringBuffer stringBuffer = new StringBuffer(message);
+			for (String string : errors) {
+				stringBuffer.append(string);
+				stringBuffer.append('\n');
+			}
+			Logger.notifyUserWithoutBugreport(stringBuffer.toString());
 		}
 		;
 
@@ -90,17 +99,24 @@ public class StartAnimationHandler extends AbstractHandler implements IHandler {
 		return null;
 	}
 
-	private boolean checkErrorMarkers(final IFile resource) {
+	private List<String> checkErrorMarkers(final IFile resource) {
+		List<String> errors = new ArrayList<String>();
 		IProject project = resource.getProject();
 		try {
 			IMarker[] markers = project.findMarkers(
 					"org.eclipse.core.resources.problemmarker", true,
 					IResource.DEPTH_INFINITE);
-			return markers.length == 0;
-		} catch (CoreException e1) {
+			for (IMarker iMarker : markers) {
+				errors.add(iMarker.getResource().getName()
+						+ ": "
+						+ iMarker
+								.getAttribute(IMarker.MESSAGE, "unknown Error"));
+			}
 
+		} catch (CoreException e1) {
 		}
-		return false;
+
+		return errors;
 	}
 
 	private IEventBRoot getRootElement() {
