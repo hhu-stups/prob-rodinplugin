@@ -70,15 +70,22 @@ public class StartAnimationHandler extends AbstractHandler implements IHandler {
 		final IEventBRoot rootElement = getRootElement();
 		final IFile resource = extractResource(rootElement);
 
-		List<String> errors = checkErrorMarkers(resource);
+		ArrayList<String> errors = new ArrayList<String>();
+		boolean realError = checkErrorMarkers(resource, errors);
 		if (!errors.isEmpty()) {
-			String message = "A model/context in your project contains Errors or Warnings. This can lead to unexpected behavior (e.g. missing variables) when animating.\ns\nDetails:\n";
+			String message = "Some components in your project contain "
+					+ (realError ? "errors" : "warnings")
+					+ ". This can lead to unexpected behavior (e.g. missing variables) when animating.\n\nDetails:\n";
 			StringBuffer stringBuffer = new StringBuffer(message);
 			for (String string : errors) {
 				stringBuffer.append(string);
 				stringBuffer.append('\n');
 			}
-			Logger.notifyUserWithoutBugreport(stringBuffer.toString());
+			if (realError)
+				Logger.notifyUserWithoutBugreport(stringBuffer.toString());
+			else
+				Logger.notifyUserAboutWarningWithoutBugreport(stringBuffer
+						.toString());
 		}
 		;
 
@@ -99,8 +106,8 @@ public class StartAnimationHandler extends AbstractHandler implements IHandler {
 		return null;
 	}
 
-	private List<String> checkErrorMarkers(final IFile resource) {
-		List<String> errors = new ArrayList<String>();
+	private boolean checkErrorMarkers(final IFile resource, List<String> errors) {
+		boolean result = false;
 		IProject project = resource.getProject();
 		try {
 			IMarker[] markers = project.findMarkers(
@@ -111,12 +118,13 @@ public class StartAnimationHandler extends AbstractHandler implements IHandler {
 						+ ": "
 						+ iMarker
 								.getAttribute(IMarker.MESSAGE, "unknown Error"));
+				result = result
+						|| (Integer) iMarker.getAttribute(IMarker.SEVERITY) == IMarker.SEVERITY_ERROR;
 			}
 
 		} catch (CoreException e1) {
 		}
-
-		return errors;
+		return result;
 	}
 
 	private IEventBRoot getRootElement() {
