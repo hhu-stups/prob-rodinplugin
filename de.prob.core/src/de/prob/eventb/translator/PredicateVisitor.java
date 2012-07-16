@@ -8,7 +8,6 @@ package de.prob.eventb.translator; // NOPMD
 // High number of imports because it depends on AST
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -26,7 +25,6 @@ import org.eventb.core.ast.RelationalPredicate;
 import org.eventb.core.ast.SimplePredicate;
 import org.eventb.core.ast.UnaryPredicate;
 
-import de.be4.classicalb.core.parser.analysis.pragma.internal.ClassifiedPragma;
 import de.be4.classicalb.core.parser.node.AConjunctPredicate;
 import de.be4.classicalb.core.parser.node.ADisjunctPredicate;
 import de.be4.classicalb.core.parser.node.AEqualPredicate;
@@ -52,7 +50,6 @@ import de.be4.classicalb.core.parser.node.ASubsetStrictPredicate;
 import de.be4.classicalb.core.parser.node.ATruthPredicate;
 import de.be4.classicalb.core.parser.node.PExpression;
 import de.be4.classicalb.core.parser.node.PPredicate;
-import de.hhu.stups.sablecc.patch.SourcePosition;
 import de.prob.eventb.translator.internal.SimpleVisitorAdapter;
 
 public class PredicateVisitor extends SimpleVisitorAdapter implements // NOPMD
