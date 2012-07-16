@@ -18,7 +18,7 @@ import de.bmotionstudio.gef.editor.part.BShapePart;
  * @author Lukas Ladenberger
  * 
  */
-public class BShapeService extends AbstractBControlService implements
+public class BRectangleService extends AbstractBControlService implements
 		IBControlService {
 
 	/*

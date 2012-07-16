@@ -22,11 +22,13 @@ import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.views.properties.IPropertySource;
 
 import de.bmotionstudio.gef.editor.Animation;
 import de.bmotionstudio.gef.editor.AttributeConstants;
 import de.bmotionstudio.gef.editor.BMotionEditorPlugin;
+import de.bmotionstudio.gef.editor.BMotionStudioImage;
 import de.bmotionstudio.gef.editor.IBControlService;
 import de.bmotionstudio.gef.editor.attribute.AbstractAttribute;
 import de.bmotionstudio.gef.editor.attribute.BAttributeCoordinates;
@@ -119,6 +121,7 @@ public abstract class BControl implements IAdaptable, Cloneable {
 		// Populate parent
 		for (BControl child : getChildrenArray())
 			child.setParent(this);
+		init();
 		return this;
 	}
 
@@ -278,14 +281,22 @@ public abstract class BControl implements IAdaptable, Cloneable {
 	}
 
 	public Rectangle getLayout() {
-		int width = Integer.valueOf(getAttributeValue(
-				AttributeConstants.ATTRIBUTE_WIDTH).toString());
-		int height = Integer.valueOf(getAttributeValue(
-				AttributeConstants.ATTRIBUTE_HEIGHT).toString());
-		int x = Integer.valueOf(getAttributeValue(
-				AttributeConstants.ATTRIBUTE_X).toString());
-		int y = Integer.valueOf(getAttributeValue(
-				AttributeConstants.ATTRIBUTE_Y).toString());
+
+		String widthStr = getAttributeValue(AttributeConstants.ATTRIBUTE_WIDTH)
+				.toString();
+		String heightStr = getAttributeValue(
+				AttributeConstants.ATTRIBUTE_HEIGHT).toString();
+		String xStr = getAttributeValue(AttributeConstants.ATTRIBUTE_X)
+				.toString();
+		String yStr = getAttributeValue(AttributeConstants.ATTRIBUTE_Y)
+				.toString();
+
+		// TODO: check if strings are a correct integers
+
+		int width = Integer.valueOf(widthStr);
+		int height = Integer.valueOf(heightStr);
+		int x = Integer.valueOf(xStr);
+		int y = Integer.valueOf(yStr);
 		if (layout == null) {
 			layout = new Rectangle(x, y, width, height);
 		} else {
@@ -295,6 +306,7 @@ public abstract class BControl implements IAdaptable, Cloneable {
 			layout.height = height;
 		}
 		return layout;
+
 	}
 
 	public void setLocation(Point newLocation) {
@@ -716,7 +728,14 @@ public abstract class BControl implements IAdaptable, Cloneable {
 	public abstract String getType();
 
 	protected void initAttribute(AbstractAttribute atr) {
-		getAttributes().put(atr.getID(), atr);
+		AbstractAttribute matr = getAttributes().get(atr.getID());
+		if (matr != null) {
+			matr.setEditable(atr.isEditable());
+			matr.setGroup(atr.getGroup());
+			matr.setShow(atr.show());
+		} else {
+			getAttributes().put(atr.getID(), atr);
+		}
 	}
 
 	protected void initAttribute(AbstractAttribute atr, AbstractAttribute group) {
@@ -735,6 +754,10 @@ public abstract class BControl implements IAdaptable, Cloneable {
 	public String getValueOfData() {
 		return getAttributeValue(AttributeConstants.ATTRIBUTE_CUSTOM)
 				.toString();
+	}
+
+	public Image getIcon() {
+		return BMotionStudioImage.getBControlImage(getType());
 	}
 
 }

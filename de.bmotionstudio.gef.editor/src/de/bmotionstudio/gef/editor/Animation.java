@@ -90,7 +90,7 @@ public class Animation implements IAnimationListener {
 		}
 	}
 
-	public void collectAllBControls(List<BControl> allBControls,
+	private void collectAllBControls(List<BControl> allBControls,
 			BControl control) {
 
 		if (control.getChildrenArray().isEmpty())

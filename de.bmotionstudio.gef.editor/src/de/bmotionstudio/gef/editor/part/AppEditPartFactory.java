@@ -7,6 +7,7 @@
 package de.bmotionstudio.gef.editor.part;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPartFactory;
 import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
@@ -29,10 +30,13 @@ public class AppEditPartFactory implements EditPartFactory {
 			part = new VisualizationPart();
 		} else {
 			try {
-				IBControlService service = (IBControlService) BMotionEditorPlugin
-						.getControlServices().get(control.getType())
-						.createExecutableExtension("service");
-				part = service.createEditPart();
+				IConfigurationElement configElement = BMotionEditorPlugin
+						.getControlServices().get(control.getType());
+				if (configElement != null) {
+					IBControlService service = (IBControlService) configElement
+							.createExecutableExtension("service");
+					part = service.createEditPart();
+				}
 			} catch (CoreException e) {
 				e.printStackTrace();
 			}

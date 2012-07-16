@@ -216,9 +216,16 @@
       <control
             groupid="de.bmotionstudio.gef.editor.group.main"
             icon="icons/icon_rectangle.gif"
-            id="de.bmotionstudio.gef.editor.shape"
-            name="Shape"
-            service="de.bmotionstudio.gef.editor.service.BShapeService">
+            id="de.bmotionstudio.gef.editor.rectangle"
+            name="Rectanlge"
+            service="de.bmotionstudio.gef.editor.service.BRectangleService">
+      </control>
+      <control
+            groupid="de.bmotionstudio.gef.editor.group.main"
+            icon="icons/icon_ellipse.gif"
+            id="de.bmotionstudio.gef.editor.ellipse"
+            name="Ellipse"
+            service="de.bmotionstudio.gef.editor.service.BEllipseService">
       </control>
       <control
             groupid="de.bmotionstudio.gef.editor.group.main"
@@ -275,7 +282,7 @@
             class="de.bmotionstudio.gef.editor.scheduler.ExecuteAnimationScript"
             description="Execute an animation script"
             menu="true"
-            name="Execute Scheduler (Multi)">
+            name="Execute Scheduler">
       </schedulerEvent>
       <schedulerEvent
             class="de.bmotionstudio.gef.editor.scheduler.ExecuteOperationByPredicateMulti"
@@ -331,7 +338,7 @@
                   id="de.bmotionstudio.gef.editor.ellipse">
             </control>
             <control
-                  id="de.bmotionstudio.gef.editor.shape">
+                  id="de.bmotionstudio.gef.editor.rectangle">
             </control>
             <control
                   id="de.bmotionstudio.gef.editor.radiobutton">
@@ -341,15 +348,6 @@
             </control>
             <control
                   id="de.bmotionstudio.gef.editor.connection">
-            </control>
-         </observer>
-         <observer
-               id="de.bmotionstudio.gef.editor.observer.CloneObserver">
-            <control
-                  id="de.bmotionstudio.gef.editor.composite">
-            </control>
-            <control
-                  id="de.bmotionstudio.gef.editor.visualization">
             </control>
          </observer>
          <observer
@@ -367,7 +365,7 @@
                   id="de.bmotionstudio.gef.editor.text">
             </control>
             <control
-                  id="de.bmotionstudio.gef.editor.shape">
+                  id="de.bmotionstudio.gef.editor.rectangle">
             </control>
             <control
                   id="de.bmotionstudio.gef.editor.radiobutton">
@@ -395,15 +393,6 @@
             </control>
          </observer>
          <observer
-               id="de.bmotionstudio.gef.editor.observer.SwitchImage">
-            <control
-                  id="de.bmotionstudio.gef.editor.image">
-            </control>
-            <control
-                  id="de.bmotionstudio.gef.editor.composite">
-            </control>
-         </observer>
-         <observer
                id="de.bmotionstudio.gef.editor.observer.SetAttribute">
             <control
                   id="de.bmotionstudio.gef.editor.image">
@@ -418,7 +407,7 @@
                   id="de.bmotionstudio.gef.editor.text">
             </control>
             <control
-                  id="de.bmotionstudio.gef.editor.shape">
+                  id="de.bmotionstudio.gef.editor.rectangle">
             </control>
             <control
                   id="de.bmotionstudio.gef.editor.radiobutton">
@@ -454,7 +443,7 @@
                   id="de.bmotionstudio.gef.editor.text">
             </control>
             <control
-                  id="de.bmotionstudio.gef.editor.shape">
+                  id="de.bmotionstudio.gef.editor.rectangle">
             </control>
             <control
                   id="de.bmotionstudio.gef.editor.radiobutton">
@@ -464,6 +453,21 @@
             </control>
             <control
                   id="de.bmotionstudio.gef.editor.connection">
+            </control>
+         </observer>
+         <observer
+               id="de.bmotionstudio.gef.editor.observer.SwitchImage">
+            <control
+                  id="de.bmotionstudio.gef.editor.image">
+            </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.composite">
+            </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.rectangle">
+            </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.ellipse">
             </control>
          </observer>
       </include>

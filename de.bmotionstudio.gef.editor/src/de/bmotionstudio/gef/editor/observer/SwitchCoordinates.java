@@ -11,7 +11,6 @@ import java.util.List;
 
 import de.bmotionstudio.gef.editor.Animation;
 import de.bmotionstudio.gef.editor.AttributeConstants;
-import de.bmotionstudio.gef.editor.animation.AnimationMove;
 import de.bmotionstudio.gef.editor.model.BControl;
 import de.bmotionstudio.gef.editor.observer.wizard.WizardObserverSwitchCoordinates;
 import de.bmotionstudio.gef.editor.util.BMSUtil;
@@ -73,24 +72,24 @@ public class SwitchCoordinates extends Observer {
 					// setCallBack(false);
 
 					// If true
-					if (obj.getAnimate()) {
+					// if (obj.getAnimate()) {
 
-						// if (!checked)
-						// return;
+					// if (!checked)
+					// return;
 
-						AnimationMove aMove = new AnimationMove(5000, true,
-								control, parsedX, parsedY);
-						// aMove.addAnimationListener(animationListener);
-						aMove.start();
+					// AnimationMove aMove = new AnimationMove(5000, true,
+					// control, parsedX, parsedY);
+					// aMove.addAnimationListener(animationListener);
+					// aMove.start();
 
-					} else {
-						control.setAttributeValue(
-								AttributeConstants.ATTRIBUTE_X, parsedX);
-						control.setAttributeValue(
-								AttributeConstants.ATTRIBUTE_Y, parsedY);
-						// setCallBack(true);
-						// checked = false;
-					}
+					// } else {
+					control.setAttributeValue(AttributeConstants.ATTRIBUTE_X,
+							parsedX);
+					control.setAttributeValue(AttributeConstants.ATTRIBUTE_Y,
+							parsedY);
+					// setCallBack(true);
+					// checked = false;
+					// }
 
 				}
 				// else {

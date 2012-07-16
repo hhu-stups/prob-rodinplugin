@@ -29,19 +29,24 @@ public abstract class AbstractAttribute implements IPropertySource, Cloneable {
 
 	private transient HashMap<String, AbstractAttribute> children;
 	private transient BControl control;
-	private String group;
-	private boolean editable;
-	private boolean show;
-	private Object value;
-
 	private transient PropertyDescriptor propertyDescriptor;
 	private transient Object initValue;
+	private transient boolean editable;
+	private transient boolean show;
+	private transient String group;
+
+	private Object value;
 
 	public AbstractAttribute(Object value) {
+		this(value, true, true);
+	}
+	
+	public AbstractAttribute(Object value, boolean isEditable,
+			boolean showInPropertiesView) {
 		this.value = value;
 		this.initValue = value;
-		this.editable = true;
-		this.show = true;
+		this.editable = isEditable;
+		this.show = showInPropertiesView;
 	}
 
 	private Object readResolve() {
