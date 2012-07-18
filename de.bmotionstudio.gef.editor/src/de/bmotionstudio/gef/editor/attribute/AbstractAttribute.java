@@ -55,9 +55,7 @@ public abstract class AbstractAttribute implements IPropertySource, Cloneable {
 	}
 
 	public void addChild(AbstractAttribute atr) {
-		if (!getChildren().containsKey(atr.getID())) {
-			getChildren().put(atr.getID(), atr);
-		}
+		getChildren().put(atr.getID(), atr);
 	}
 
 	public Boolean hasChildren() {
