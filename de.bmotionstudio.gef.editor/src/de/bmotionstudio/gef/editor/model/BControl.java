@@ -293,18 +293,28 @@ public abstract class BControl implements IAdaptable, Cloneable {
 
 		// TODO: check if strings are a correct integers
 
-		int width = Integer.valueOf(widthStr);
-		int height = Integer.valueOf(heightStr);
-		int x = Integer.valueOf(xStr);
-		int y = Integer.valueOf(yStr);
-		if (layout == null) {
-			layout = new Rectangle(x, y, width, height);
-		} else {
-			layout.x = x;
-			layout.y = y;
-			layout.width = width;
-			layout.height = height;
+		try {
+
+			int width = Integer.valueOf(widthStr);
+			int height = Integer.valueOf(heightStr);
+			int x = Integer.valueOf(xStr);
+			int y = Integer.valueOf(yStr);
+
+			if (layout == null) {
+				layout = new Rectangle(x, y, width, height);
+			} else {
+				layout.x = x;
+				layout.y = y;
+				layout.width = width;
+				layout.height = height;
+			}
+
+		} catch (NumberFormatException e) {
+			// We ignore number format exceptions, however we should return an
+			// error message here
+			// TODO: return error message
 		}
+
 		return layout;
 
 	}
