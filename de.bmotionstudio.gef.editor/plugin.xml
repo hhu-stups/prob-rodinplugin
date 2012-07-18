@@ -376,6 +376,9 @@
             <control
                   id="de.bmotionstudio.gef.editor.checkbox">
             </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.ellipse">
+            </control>
          </observer>
          <observer
                id="de.bmotionstudio.gef.editor.observer.SimpleValueDisplay">
@@ -418,6 +421,12 @@
             <control
                   id="de.bmotionstudio.gef.editor.connection">
             </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.ellipse">
+            </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.textfield">
+            </control>
          </observer>
          <observer
                id="de.bmotionstudio.gef.editor.observer.SwitchChildCoordinates">
@@ -453,6 +462,12 @@
             </control>
             <control
                   id="de.bmotionstudio.gef.editor.connection">
+            </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.ellipse">
+            </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.textfield">
             </control>
          </observer>
          <observer
