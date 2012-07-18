@@ -94,8 +94,10 @@ public class WizardObserverCSwitchCoordinates extends ObserverWizard {
 										.getBcontrol();
 								BControl bControl = control.getChild(controlID);
 								if (bControl != null) {
-									bControl.setAttributeValue(attributeX, x);
-									bControl.setAttributeValue(attributeY, y);
+									bControl.setAttributeValue(attributeX, x,
+											true, false);
+									bControl.setAttributeValue(attributeY, y,
+											true, false);
 								}
 								lastChangedControlID = controlID;
 							}

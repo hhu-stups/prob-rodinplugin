@@ -228,11 +228,16 @@ public abstract class BControl implements IAdaptable, Cloneable {
 	}
 
 	public boolean setAttributeValue(String attributeID, Object value) {
-		return setAttributeValue(attributeID, value, true);
+		return setAttributeValue(attributeID, value, true, true);
 	}
 
 	public boolean setAttributeValue(String attributeID, Object value,
 			Boolean firePropertyChange) {
+		return setAttributeValue(attributeID, value, firePropertyChange, true);
+	}
+
+	public boolean setAttributeValue(String attributeID, Object value,
+			Boolean firePropertyChange, Boolean setInitVal) {
 
 		AbstractAttribute atr = attributes.get(attributeID);
 
@@ -247,7 +252,7 @@ public abstract class BControl implements IAdaptable, Cloneable {
 				|| !atr.isEditable())
 			return true;
 
-		atr.setValue(value, firePropertyChange);
+		atr.setValue(value, firePropertyChange, setInitVal);
 
 		return true;
 

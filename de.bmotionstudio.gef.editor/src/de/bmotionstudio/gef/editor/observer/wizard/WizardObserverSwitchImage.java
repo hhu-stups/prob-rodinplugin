@@ -88,7 +88,8 @@ public class WizardObserverSwitchImage extends ObserverWizard {
 								ToggleObjectImage toggleObjImage = (ToggleObjectImage) observerEvalObject;
 								String attribute = AttributeConstants.ATTRIBUTE_IMAGE;
 								String image = toggleObjImage.getImage();
-								control.setAttributeValue(attribute, image);
+								control.setAttributeValue(attribute, image,
+										true, false);
 							}
 						}
 

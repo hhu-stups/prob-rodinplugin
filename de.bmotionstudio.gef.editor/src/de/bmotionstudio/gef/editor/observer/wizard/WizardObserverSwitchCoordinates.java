@@ -89,8 +89,10 @@ public class WizardObserverSwitchCoordinates extends ObserverWizard {
 								String attributeY = AttributeConstants.ATTRIBUTE_Y;
 								String x = toggleObjectCoordinates.getX();
 								String y = toggleObjectCoordinates.getY();
-								control.setAttributeValue(attributeX, x);
-								control.setAttributeValue(attributeY, y);
+								control.setAttributeValue(attributeX, x, true,
+										false);
+								control.setAttributeValue(attributeY, y, true,
+										false);
 							}
 						}
 

@@ -20,11 +20,13 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ComboBoxViewerCellEditor;
 import org.eclipse.jface.viewers.EditingSupport;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITableColorProvider;
 import org.eclipse.jface.viewers.ITableFontProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
@@ -56,12 +58,15 @@ import de.bmotionstudio.gef.editor.edit.PredicateEditingSupport;
 import de.bmotionstudio.gef.editor.model.BControl;
 import de.bmotionstudio.gef.editor.observer.ListenOperationByPredicate;
 import de.bmotionstudio.gef.editor.observer.Observer;
+import de.bmotionstudio.gef.editor.observer.ObserverEvalObject;
 import de.bmotionstudio.gef.editor.observer.ObserverWizard;
 import de.bmotionstudio.gef.editor.property.CheckboxCellEditorHelper;
 import de.bmotionstudio.gef.editor.scheduler.PredicateOperation;
 import de.bmotionstudio.gef.editor.util.BMotionWizardUtil;
 
 public class WizardObserverListenOperationByPredicate extends ObserverWizard {
+
+	private String lastChangedAttributeID;
 
 	private class ObserverListenOperationByPredicatePage extends WizardPage {
 
@@ -83,6 +88,35 @@ public class WizardObserverListenOperationByPredicate extends ObserverWizard {
 			tableViewer = BMotionWizardUtil.createBMotionWizardTableViewer(
 					container, PredicateOperation.class,
 					((BMotionAbstractWizard) getWizard()).getName());
+			tableViewer
+					.addSelectionChangedListener(new ISelectionChangedListener() {
+
+						@Override
+						public void selectionChanged(SelectionChangedEvent event) {
+							IStructuredSelection selection = (IStructuredSelection) event
+									.getSelection();
+							Object firstElement = selection.getFirstElement();
+							if (firstElement instanceof ObserverEvalObject) {
+
+								ObserverEvalObject observerEvalObject = (ObserverEvalObject) firstElement;
+								BControl control = getBControl();
+
+								if (lastChangedAttributeID != null)
+									control.restoreDefaultValue(lastChangedAttributeID);
+
+								PredicateOperation obj = (PredicateOperation) observerEvalObject;
+								String attribute = obj
+										.getAttribute();
+								Object value = obj.getValue();
+								control.setAttributeValue(attribute, value,
+										true, false);
+
+								lastChangedAttributeID = attribute;
+
+							}
+						}
+
+					});
 
 			TableViewerColumn column = new TableViewerColumn(tableViewer,
 					SWT.NONE);
@@ -316,7 +350,14 @@ public class WizardObserverListenOperationByPredicate extends ObserverWizard {
 	}
 
 	@Override
+	public boolean performCancel() {
+		getBControl().restoreDefaultValue(lastChangedAttributeID);
+		return super.performCancel();
+	}
+
+	@Override
 	protected Boolean prepareToFinish() {
+		getBControl().restoreDefaultValue(lastChangedAttributeID);
 		if (((ListenOperationByPredicate) getObserver()).getList().size() == 0) {
 			setObserverDelete(true);
 		} else {

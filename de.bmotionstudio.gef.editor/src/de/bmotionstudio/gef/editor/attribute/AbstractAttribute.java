@@ -135,12 +135,15 @@ public abstract class AbstractAttribute implements IPropertySource, Cloneable {
 	}
 
 	public void setValue(Object value) {
-		setValue(value, true);
+		setValue(value, true, true);
 	}
 
-	public void setValue(Object value, Boolean firePropertyChange) {
+	public void setValue(Object value, Boolean firePropertyChange,
+			Boolean setInitVal) {
 		Object oldVal = this.value;
 		this.value = value;
+		if (setInitVal)
+			this.initValue = value;
 		if (firePropertyChange && control != null)
 			control.getListeners().firePropertyChange(getID(), oldVal, value);
 	}

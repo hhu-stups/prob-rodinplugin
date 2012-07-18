@@ -115,7 +115,8 @@ public class WizardObserverSetAttribute extends ObserverWizard {
 								String attribute = setAttributeObj
 										.getAttribute();
 								Object value = setAttributeObj.getValue();
-								control.setAttributeValue(attribute, value);
+								control.setAttributeValue(attribute, value,
+										true, false);
 
 								lastChangedAttributeID = attribute;
 
