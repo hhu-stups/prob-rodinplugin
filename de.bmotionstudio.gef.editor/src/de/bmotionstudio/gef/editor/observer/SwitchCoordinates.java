@@ -84,9 +84,9 @@ public class SwitchCoordinates extends Observer {
 
 					// } else {
 					control.setAttributeValue(AttributeConstants.ATTRIBUTE_X,
-							parsedX);
+							parsedX, true, false);
 					control.setAttributeValue(AttributeConstants.ATTRIBUTE_Y,
-							parsedY);
+							parsedY, true, false);
 					// setCallBack(true);
 					// checked = false;
 					// }

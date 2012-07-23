@@ -117,7 +117,7 @@ public class ListenOperationByPredicate extends Observer {
 										.getAttributeValue(attributeID);
 								if (!oldAttrVal.equals(attributeVal)) {
 									control.setAttributeValue(attributeID,
-											attributeVal);
+											attributeVal, true, false);
 								}
 							}
 

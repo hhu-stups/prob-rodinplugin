@@ -83,9 +83,11 @@ public class SwitchChildCoordinates extends Observer {
 						// } else {
 
 						toggleControl.setAttributeValue(
-								AttributeConstants.ATTRIBUTE_X, parsedX);
+								AttributeConstants.ATTRIBUTE_X, parsedX, true,
+								false);
 						toggleControl.setAttributeValue(
-								AttributeConstants.ATTRIBUTE_Y, parsedY);
+								AttributeConstants.ATTRIBUTE_Y, parsedY, true,
+								false);
 
 						// }
 					}

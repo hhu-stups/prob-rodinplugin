@@ -81,7 +81,8 @@ public class SetAttribute extends Observer {
 				if (!obj.hasError()) {
 					Object oldAttrVal = control.getAttributeValue(attributeID);
 					if (!oldAttrVal.equals(attributeVal)) {
-						control.setAttributeValue(attributeID, attributeVal);
+						control.setAttributeValue(attributeID, attributeVal,
+								true, false);
 					}
 				}
 

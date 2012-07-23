@@ -63,7 +63,8 @@ public class SwitchImage extends Observer {
 					if (!control.getAttributeValue(
 							AttributeConstants.ATTRIBUTE_IMAGE).equals(fImage)) {
 						control.setAttributeValue(
-								AttributeConstants.ATTRIBUTE_IMAGE, fImage);
+								AttributeConstants.ATTRIBUTE_IMAGE, fImage,
+								true, false);
 					}
 				}
 
