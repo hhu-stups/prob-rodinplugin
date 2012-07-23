@@ -23,11 +23,6 @@ public final class AttributeConstants {
 	public static final String ATTRIBUTE_IMAGE = "de.bmotionstudio.gef.editor.attribute.BAttributeImage";
 	public static final String ATTRIBUTE_TEXT = "de.bmotionstudio.gef.editor.attribute.BAttributeText";
 	public static final String ATTRIBUTE_TEXT_COLOR = "de.bmotionstudio.gef.editor.attribute.BAttributeTextColor";
-	public static final String ATTRIBUTE_FILL_HEIGHT = "de.bmotionstudio.gef.editor.attribute.BAttributeFillHeight";
-	public static final String ATTRIBUTE_FILL_COLOR = "de.bmotionstudio.gef.editor.attribute.BAttributeFillColor";
-	public static final String ATTRIBUTE_SHOWS_MEASURE = "de.bmotionstudio.gef.editor.attribute.BAttributeShowMeasure";
-	public static final String ATTRIBUTE_MEASURE_MAXPOS = "de.bmotionstudio.gef.editor.attribute.BAttributeMeasureMaxPos";
-	public static final String ATTRIBUTE_MEASURE_INTERVAL = "de.bmotionstudio.gef.editor.attribute.BAttributeMeasureInterval";
 	public static final String ATTRIBUTE_ALPHA = "de.bmotionstudio.gef.editor.attribute.BAttributeAlpha";
 	public static final String ATTRIBUTE_OUTLINEALPHA = "de.bmotionstudio.gef.editor.attribute.BAttributeOutlineAlpha";
 	public static final String ATTRIBUTE_FONT = "de.bmotionstudio.gef.editor.attribute.BAttributeFont";
