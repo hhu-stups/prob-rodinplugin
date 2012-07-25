@@ -16,7 +16,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
 
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.draw2d.geometry.Dimension;
@@ -29,7 +28,6 @@ import de.bmotionstudio.gef.editor.Animation;
 import de.bmotionstudio.gef.editor.AttributeConstants;
 import de.bmotionstudio.gef.editor.BMotionEditorPlugin;
 import de.bmotionstudio.gef.editor.BMotionStudioImage;
-import de.bmotionstudio.gef.editor.IBControlService;
 import de.bmotionstudio.gef.editor.attribute.AbstractAttribute;
 import de.bmotionstudio.gef.editor.attribute.BAttributeCoordinates;
 import de.bmotionstudio.gef.editor.attribute.BAttributeCustom;
@@ -369,6 +367,16 @@ public abstract class BControl implements IAdaptable, Cloneable {
 		getListeners().firePropertyChange(PROPERTY_ADD, index, child);
 	}
 
+	public void removeAllChildren() {
+		getChildrenArray().clear();
+		getListeners().firePropertyChange(PROPERTY_REMOVE, null, null);
+	}
+
+	public boolean removeChild(int index) {
+		BControl control = children.get(index);
+		return removeChild(control);
+	}
+
 	public boolean removeChild(BControl child) {
 		boolean b = children.remove(child);
 		if (b)
@@ -587,49 +595,37 @@ public abstract class BControl implements IAdaptable, Cloneable {
 
 		BControl clonedControl = (BControl) super.clone();
 
-		IConfigurationElement configElement = BMotionEditorPlugin
-				.getControlServices().get(getType());
-		if (configElement != null) {
+		clonedControl.setParent(getParent());
 
-			try {
+		String newID = clonedControl.getID();
 
-				IBControlService service = (IBControlService) configElement
-						.createExecutableExtension("service");
-				clonedControl = service.createControl(visualization);
-
-				clonedControl.setParent(getParent());
-
-				String newID = clonedControl.getID();
-
-				Map<String, AbstractAttribute> newProperties = new HashMap<String, AbstractAttribute>();
-				for (Entry<String, AbstractAttribute> e : getAttributes()
-						.entrySet()) {
-					AbstractAttribute idAtr = e.getValue().clone();
-					newProperties.put(e.getKey(), idAtr);
-				}
-
-				clonedControl.setAttributes(newProperties);
-				clonedControl.setAttributeValue(
-						AttributeConstants.ATTRIBUTE_ID, newID);
-
-				Iterator<BControl> it = getChildrenArray().iterator();
-				while (it.hasNext()) {
-					clonedControl.addChild(((BControl) it.next()).clone());
-				}
-
-				for (Observer observer : observers.values()) {
-					clonedControl.addObserver(observer.clone());
-				}
-
-				for (Map.Entry<String, SchedulerEvent> e : events.entrySet()) {
-					clonedControl.addEvent(e.getKey(), e.getValue().clone());
-				}
-
-			} catch (CoreException e) {
-				e.printStackTrace();
-			}
-
+		Map<String, AbstractAttribute> newProperties = new HashMap<String, AbstractAttribute>();
+		for (Entry<String, AbstractAttribute> e : getAttributes().entrySet()) {
+			AbstractAttribute idAtr = e.getValue().clone();
+			newProperties.put(e.getKey(), idAtr);
 		}
+
+		clonedControl.setAttributes(newProperties);
+		clonedControl.setAttributeValue(AttributeConstants.ATTRIBUTE_ID, newID);
+
+		clonedControl.setChildrenArray(new BControlList());
+		Iterator<BControl> it = getChildrenArray().iterator();
+		while (it.hasNext()) {
+			clonedControl.addChild(((BControl) it.next()).clone());
+		}
+
+		clonedControl.setObserverMap(new HashMap<String, Observer>());
+		for (Observer observer : observers.values()) {
+			clonedControl.addObserver(observer.clone());
+		}
+
+		clonedControl.setEventMap(new HashMap<String, SchedulerEvent>());
+		for (Map.Entry<String, SchedulerEvent> e : events.entrySet()) {
+			clonedControl.addEvent(e.getKey(), e.getValue().clone());
+		}
+
+		clonedControl.listeners = new PropertyChangeSupport(clonedControl);
+		clonedControl.observerListener = new ArrayList<IObserverListener>();
 
 		return clonedControl;
 

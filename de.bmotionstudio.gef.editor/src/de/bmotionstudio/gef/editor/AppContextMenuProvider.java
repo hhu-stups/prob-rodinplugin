@@ -174,7 +174,9 @@ public class AppContextMenuProvider extends ContextMenuProvider {
 					String langID = configurationElement
 							.getAttribute("language");
 
-					if (langID.equals(control.getVisualization().getLanguage())) {
+					if (langID != null
+							&& langID.equals(control.getVisualization()
+									.getLanguage())) {
 
 						for (IConfigurationElement cObserver : configurationElement
 								.getChildren("observer")) {

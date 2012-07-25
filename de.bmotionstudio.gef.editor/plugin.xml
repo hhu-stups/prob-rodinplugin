@@ -166,7 +166,7 @@
       </group>
       <control
             groupid="de.bmotionstudio.gef.editor.group.main"
-            icon="icons/icon_image.gif"
+            icon="icons/eclipse16/image_obj.gif"
             id="de.bmotionstudio.gef.editor.image"
             name="Image"
             service="de.bmotionstudio.gef.editor.service.BImageService">
@@ -194,7 +194,7 @@
       </control>
       <control
             groupid="de.bmotionstudio.gef.editor.group.main"
-            icon="icons/icon_composite.gif"
+            icon="icons/eclipse16/overview_obj.gif"
             id="de.bmotionstudio.gef.editor.composite"
             name="Composite"
             service="de.bmotionstudio.gef.editor.service.BCompositeService">
@@ -234,6 +234,27 @@
             name="Connection"
             service="de.bmotionstudio.gef.editor.service.BConnectionService">
       </control>
+      <control
+            groupid="de.bmotionstudio.gef.editor.group.main"
+            icon="icons/eclipse16/prop_ps.gif"
+            id="de.bmotionstudio.gef.editor.table"
+            name="Table"
+            service="de.bmotionstudio.gef.editor.service.BTableService">
+      </control>
+      <control
+            groupid="de.bmotionstudio.gef.editor.group.main"
+            icon="icons/eclipse16/prop_ps2.gif"
+            id="de.bmotionstudio.gef.editor.tablecolumn"
+            name="Column"
+            service="de.bmotionstudio.gef.editor.service.BTableColumnService">
+      </control>
+      <control
+            groupid="de.bmotionstudio.gef.editor.group.main"
+            icon="icons/eclipse16/prop_ps3.gif"
+            id="de.bmotionstudio.gef.editor.tablecell"
+            name="Cell"
+            service="de.bmotionstudio.gef.editor.service.BTableCellService">
+      </control>
    </extension>
    <extension
          point="de.bmotionstudio.gef.editor.observer">
@@ -268,6 +289,10 @@
       <observer
             class="de.bmotionstudio.gef.editor.observer.ExternalObserverScript"
             name="External Observer Script">
+      </observer>
+      <observer
+            class="de.bmotionstudio.gef.editor.observer.ColumnObserver"
+            name="Column Observer">
       </observer>
    </extension>
    <extension
@@ -349,6 +374,12 @@
             <control
                   id="de.bmotionstudio.gef.editor.connection">
             </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.tablecell">
+            </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.table">
+            </control>
          </observer>
          <observer
                id="de.bmotionstudio.gef.editor.observer.SwitchCoordinates">
@@ -379,6 +410,9 @@
             <control
                   id="de.bmotionstudio.gef.editor.ellipse">
             </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.table">
+            </control>
          </observer>
          <observer
                id="de.bmotionstudio.gef.editor.observer.SimpleValueDisplay">
@@ -393,6 +427,9 @@
             </control>
             <control
                   id="de.bmotionstudio.gef.editor.button">
+            </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.tablecell">
             </control>
          </observer>
          <observer
@@ -426,6 +463,12 @@
             </control>
             <control
                   id="de.bmotionstudio.gef.editor.textfield">
+            </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.tablecell">
+            </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.table">
             </control>
          </observer>
          <observer
@@ -469,6 +512,12 @@
             <control
                   id="de.bmotionstudio.gef.editor.textfield">
             </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.tablecell">
+            </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.table">
+            </control>
          </observer>
          <observer
                id="de.bmotionstudio.gef.editor.observer.SwitchImage">
@@ -483,6 +532,12 @@
             </control>
             <control
                   id="de.bmotionstudio.gef.editor.ellipse">
+            </control>
+         </observer>
+         <observer
+               id="de.bmotionstudio.gef.editor.observer.ColumnObserver">
+            <control
+                  id="de.bmotionstudio.gef.editor.tablecolumn">
             </control>
          </observer>
       </include>

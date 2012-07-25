@@ -195,12 +195,12 @@ public abstract class AppAbstractEditPart extends AbstractGraphicalEditPart
 		} else if (Arrays.asList(layoutAttributes).contains(propName)) {
 			// Layout attribute
 			if (isRunning()) {
-				Display.getDefault().asyncExec(new Runnable() {
-					@Override
-					public void run() {
+				// Display.getDefault().asyncExec(new Runnable() {
+				// @Override
+				// public void run() {
 						refreshEditLayout(figure, model);
-					}
-				});
+				// }
+				// });
 			} else {
 				refreshEditLayout(figure, model);
 			}
@@ -208,12 +208,12 @@ public abstract class AppAbstractEditPart extends AbstractGraphicalEditPart
 
 			// Custom attribute
 			if (isRunning()) {
-				Display.getDefault().asyncExec(new Runnable() {
-					@Override
-					public void run() {
+				// Display.getDefault().asyncExec(new Runnable() {
+				// @Override
+				// public void run() {
 						refreshEditFigure(figure, model, evt);
-					}
-				});
+				// }
+				// });
 			} else {
 				refreshEditFigure(figure, model, evt);
 			}

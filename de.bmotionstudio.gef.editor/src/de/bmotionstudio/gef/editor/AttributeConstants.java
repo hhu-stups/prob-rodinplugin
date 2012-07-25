@@ -16,6 +16,9 @@ public final class AttributeConstants {
 	public static final String ATTRIBUTE_ID = "de.bmotionstudio.gef.editor.attribute.BAttributeID";
 	public static final String ATTRIBUTE_VISIBLE = "de.bmotionstudio.gef.editor.attribute.BAttributeVisible";
 
+	public static final String ATTRIBUTE_COLUMNS = "de.bmotionstudio.gef.editor.attribute.BAttributeColumns";
+	public static final String ATTRIBUTE_ROWS = "de.bmotionstudio.gef.editor.attribute.BAttributeRows";
+
 	public static final String ATTRIBUTE_BACKGROUND_IMAGE = "de.bmotionstudio.gef.editor.attribute.BAttributeImage";
 	public static final String ATTRIBUTE_BACKGROUND_COLOR = "de.bmotionstudio.gef.editor.attribute.BAttributeBackgroundColor";
 	public static final String ATTRIBUTE_FOREGROUND_COLOR = "de.bmotionstudio.gef.editor.attribute.BAttributeForegroundColor";
