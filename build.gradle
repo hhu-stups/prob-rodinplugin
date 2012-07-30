@@ -1,10 +1,11 @@
 
 targetRepositories = ["http://cobra.cs.uni-duesseldorf.de/prob_dev_target/","http://download.eclipse.org/releases/indigo/","http://rodin-b-sharp.sourceforge.net/updates"]	
 
+groupID = "de.prob"
+
 apply from: 'tycho_build.gradle'
 
 // Local tasks
-
 
 project(':de.prob.core') {
 
@@ -90,8 +91,9 @@ task deleteOldArtifacts(type: Delete) {
 }
 
 task collectArtifacts(type:Copy) {
-	    from "../"+groupID+'.repository/target/repository/'
-	    into '../updatesite'
-	    from "../index.html"
-	    into '../updatesite'
+	    from workspacePath + groupID+'.repository/target/repository/'
+	    into workspacePath + 'updatesite'
+	    from workspacePath + "index.html"
+	    into workspacePath + 'updatesite'
 }
+

@@ -7,7 +7,7 @@ tychoVersion = "0.14.1"
 try{
 	workspacePath = workspacePath
 }catch(MissingPropertyException e){
-	workspacePath = "../"
+	workspacePath = ""
 }
 
 
@@ -131,17 +131,33 @@ subprojects {
 	
 	apply plugin: 'base'
 	apply plugin: 'java'
+	apply plugin: 'eclipse'
 	
 	task deleteArtifacts(type: Delete) {
   		delete 'target','pom.xml'
 	}
 	
 	/////				Copy Dependencies into subprojects DependencyFolder 				///// 
-	task collectDependencies(type: Copy){
+	task collectDependencies(type: Copy , dependsOn: ['eclipse']){
 
 		   	from configurations.compile
 	   	
-			into "../"+workspacePath+project.name+"/${dependencyFolder}" 					
+			
+			into "${dependencyFolder}" 	
+			
+			
+			eclipse {
+
+			  classpath {
+			    //adding extra configurations:
+			    plusConfigurations += configurations.compile
+
+			    //default settings for dependencies sources/javadoc download:
+			    downloadSources = true
+			    downloadJavadoc = false
+			  }
+			}
+							
 			
 	}
 	////////////////////////////////////////////////////////////////////////////////////////////	
@@ -157,12 +173,12 @@ subprojects {
 		*	
 		*	Version Numbers of the projects are collected via 
 		*	regular expressions in the Manifest.MF File.  
-		*	Versionnumber of the projects are equal to their
+		*	versionnumber of the projects are equal to their
 		*	Bundle-Version Number
 		*/
 		
 		
-		if(features.every{ it != project.name }){			// Generating Poms for sub projects except features
+		if(features.every{ it != project.name }){		// Generating Poms for sub projects except features
 			content = new File(workspacePath+"${project.name}/META-INF/MANIFEST.MF").getText("UTF-8") 
 
 	 		printFileLine = { 
@@ -210,7 +226,7 @@ subprojects {
 				*	old pom.xml files are deleted and replaced by new auto generated Tycho pom.xml files
 				*/
 			}
-		}else{	// if subprojects aren't a feature
+		}else{	//  end  of { if subprojects aren't a feature } Block
 	
 //		--		Features 					--			//
 	
@@ -293,7 +309,7 @@ task createRepository() << {
 		f << categoryFeatures(featureArtifactId.replace(workspacePath,''), featureVersionNumber)
 	}// for
 			
-	for(int i = 0; i < features.size(); i++){
+	for( int i = 0; i < features.size(); i++ ){
 						
 		f << categoryDescription(features[i], descriptions[0][features[i]] ,descriptions[1][features[i]] )
 		//							featureName,	label,		description
