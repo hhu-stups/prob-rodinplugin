@@ -1,12 +1,5 @@
 apply plugin: 'java'
 
-repositories {
-	maven {
-	  name "cobra"
-	  url "http://cobra.cs.uni-duesseldorf.de/artifactory/repo"
-	}
-}
-
 
 def parser_version = '2.4.8-SNAPSHOT'
 
