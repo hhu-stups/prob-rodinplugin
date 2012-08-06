@@ -29,6 +29,7 @@ project(':de.prob.core') {
 	 compile group: "de.prob", name: "unicode", version: parser_version , changing: true
 	 compile 'jgrapht:jgrapht:0.8.3'
 	 compile 'commons-lang:commons-lang:2.6'
+	 compile group: "de.prob", name: "cli", version: "2.0.0-milestone-5-SNAPSHOT" , changing: true
 	}
 	
 }

@@ -1,5 +1,47 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
+	<classpathentry exported="true" kind="lib" path="lib/dependencies/ant-1.6.5.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/dependencies/aopalliance-1.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/dependencies/asm-3.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/dependencies/cglib-2.2.1-v20090111.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/dependencies/cli-2.0.0-milestone-5-SNAPSHOT.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/dependencies/common-2.3.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/dependencies/commons-cli-1.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/dependencies/commons-codec-1.6.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/dependencies/ecj-3.5.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/dependencies/ecore-2.3.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/dependencies/groovy-all-2.0.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/dependencies/gson-1.7.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/dependencies/guava-r09.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/dependencies/guice-3.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/dependencies/guice-assistedinject-3.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/dependencies/guice-servlet-3.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/dependencies/jansi-1.5.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/dependencies/javax.inject-1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/dependencies/jettison-1.3.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/dependencies/jetty-continuation-8.0.0.M3.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/dependencies/jetty-http-8.0.0.M3.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/dependencies/jetty-io-8.0.0.M3.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/dependencies/jetty-security-8.0.0.M3.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/dependencies/jetty-server-8.0.0.M3.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/dependencies/jetty-servlet-8.0.0.M3.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/dependencies/jetty-util-8.0.0.M3.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/dependencies/jetty-webapp-8.0.0.M3.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/dependencies/jetty-xml-8.0.0.M3.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/dependencies/jgraphx-1.10.1.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/dependencies/jline-0.9.94.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/dependencies/jsp-2.1-glassfish-2.1.v20100127.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/dependencies/jsp-api-2.1-glassfish-2.1.v20100127.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/dependencies/junit-3.8.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/dependencies/logback-classic-0.9.29.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/dependencies/logback-core-0.9.29.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/dependencies/servlet-api-3.0.20100224.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/dependencies/slf4j-api-1.6.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/dependencies/stax-1.2.0_rc2-dev.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/dependencies/stax-api-1.0.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/dependencies/xmi-2.7.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/dependencies/xpp3_min-1.1.3.4.O.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/dependencies/xstream-1.2.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/dependencies/answerparser-2.4.8-SNAPSHOT.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/dependencies/bparser-2.4.8-SNAPSHOT.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/dependencies/cliparser-2.4.8-SNAPSHOT.jar"/>
