@@ -74,6 +74,14 @@ try{
 	parentID = groupID+".parent"
 }
 
+Boolean noDescriptions = false					// in case of using own CategoryDescription Map
+
+try{
+	categoryDescriptions = categoryDescriptions
+}catch(MissingPropertyException e){
+	categoryDescriptions = [ [:],[:] ]		// label and descriptions of the features
+	noDescriptions = true
+}
 
 try{
 	targetRepositories = targetRepositories
@@ -286,7 +294,7 @@ task createRepository() << {
 			
 	new File(workspacePath+"${repositoryName}").mkdir() 
 	
-	descriptions = [ [:],[:] ]		// label and descriptions of the features
+
 				
 	String versionNumber 	=	'1.0.0.qualifier'
 	String artifactId		=	repositoryName
@@ -302,17 +310,21 @@ task createRepository() << {
 		featureVersionNumber  = parsedXml.attribute("version")
 		featureArtifactId  = parsedXml.attribute("id")
 		
-		
-		descriptions[0].put( features[i], parsedXml.attribute("label") )
-		descriptions[1].put( features[i], parsedXml.description.text() )
-		
+		if(noDescriptions){
+			categoryDescriptions[0].put( features[i], parsedXml.attribute("label") )
+			categoryDescriptions[1].put( features[i], parsedXml.description.text() )
+		}
 		f << categoryFeatures(featureArtifactId.replace(workspacePath,''), featureVersionNumber)
 	}// for
 			
 	for( int i = 0; i < features.size(); i++ ){
-						
-		f << categoryDescription(features[i], descriptions[0][features[i]] ,descriptions[1][features[i]] )
-		//							featureName,	label,		description
+	
+		if(noDescriptions){
+			f << categoryDescription(features[i], categoryDescriptions[0][features[i]] ,categoryDescriptions[1][features[i]] )
+			//							featureName,	label,		description
+		}else{
+			f << categoryDescription(features[i], categoryDescriptions[features[i]][0] ,categoryDescriptions[features[i]][1])
+		}
 	}//for
 				
 	f << categoryEnd()
