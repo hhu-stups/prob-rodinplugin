@@ -81,7 +81,7 @@ try{
 }catch(MissingPropertyException e){
 	categoryDescriptions = [ [:],[:] ]		// label and descriptions of the features
 	noDescriptions = true
-}
+}							// 	categoryDescriptions	=	[["feature": "labelName","feature2": "label"],["feature": "featureDescription","feature2": "feature2Description"]]		// label and descriptions of the features
 
 try{
 	targetRepositories = targetRepositories
@@ -150,9 +150,7 @@ subprojects {
 
 		   	from configurations.compile
 	   	
-			
 			into "${dependencyFolder}" 	
-			
 			
 			eclipse {
 
@@ -164,9 +162,7 @@ subprojects {
 			    downloadSources = true
 			    downloadJavadoc = false
 			  }
-			}
-							
-			
+			}					
 	}
 	////////////////////////////////////////////////////////////////////////////////////////////	
 	
@@ -214,7 +210,6 @@ subprojects {
 	
 			content.eachLine( printFileLine )
 	
-	
 			println artifactId
 			println "\t"+versionNumber
 	
@@ -250,8 +245,7 @@ subprojects {
 
 				def f = new File(workspacePath+artifactId+'/pom.xml') 
 				f.delete()
-				f << feature(artifactId, versionNumber)
-							
+				f << feature(artifactId, versionNumber)				
 			}
 		}
 	}//deploy
@@ -290,11 +284,8 @@ task createParent() << {
 task createRepository() << {
 
 	//			------------	 	define Repository			---------		//
-			
-			
+						
 	new File(workspacePath+"${repositoryName}").mkdir() 
-	
-
 				
 	String versionNumber 	=	'1.0.0.qualifier'
 	String artifactId		=	repositoryName
@@ -321,7 +312,7 @@ task createRepository() << {
 	
 		if(noDescriptions){
 			f << categoryDescription(features[i], categoryDescriptions[0][features[i]] ,categoryDescriptions[1][features[i]] )
-			//							featureName,	label,		description
+			//						featureName,			label,							description
 		}else{
 			f << categoryDescription(features[i], categoryDescriptions[features[i]][0] ,categoryDescriptions[features[i]][1])
 		}
@@ -529,8 +520,6 @@ def feature(artifactId, versionNumber) { """
 	</project>
 """}
 // end of feature pom
-
-
 
 //	Build Script can be executed via gradle install
 //	Pom Generation can be executed via gradle deploy
