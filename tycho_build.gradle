@@ -7,7 +7,7 @@ tychoVersion = "0.14.1"
 try{
 	workspacePath = workspacePath
 }catch(MissingPropertyException e){
-	workspacePath = "../"
+	workspacePath = ""
 }
 
 
@@ -74,6 +74,14 @@ try{
 	parentID = groupID+".parent"
 }
 
+Boolean noDescriptions = false					// in case of using own CategoryDescription Map
+
+try{
+	categoryDescriptions = categoryDescriptions
+}catch(MissingPropertyException e){
+	categoryDescriptions = [ [:],[:] ]		// label and descriptions of the features
+	noDescriptions = true
+}							// 	categoryDescriptions	=	[["feature": "labelName","feature2": "label"],["feature": "featureDescription","feature2": "feature2Description"]]		// label and descriptions of the features
 
 try{
 	targetRepositories = targetRepositories
@@ -131,6 +139,7 @@ subprojects {
 	
 	apply plugin: 'base'
 	apply plugin: 'java'
+	apply plugin: 'eclipse'
 	
 	task deleteArtifacts(type: Delete) {
   		delete 'target','pom.xml'
@@ -141,8 +150,21 @@ subprojects {
 
 		   	from configurations.compile
 	   	
-			into "../"+workspacePath+project.name+"/${dependencyFolder}" 					
+			into "${dependencyFolder}" 	
 			
+	}
+	
+	
+	eclipse {
+
+	  classpath {
+	    //adding extra configurations:
+	    plusConfigurations += configurations.compile
+
+	    //default settings for dependencies sources/javadoc download:
+	    downloadSources = true
+	    downloadJavadoc = false
+	  }
 	}
 	////////////////////////////////////////////////////////////////////////////////////////////	
 	
@@ -157,12 +179,12 @@ subprojects {
 		*	
 		*	Version Numbers of the projects are collected via 
 		*	regular expressions in the Manifest.MF File.  
-		*	Versionnumber of the projects are equal to their
+		*	versionnumber of the projects are equal to their
 		*	Bundle-Version Number
 		*/
 		
 		
-		if(features.every{ it != project.name }){			// Generating Poms for sub projects except features
+		if(features.every{ it != project.name }){		// Generating Poms for sub projects except features
 			content = new File(workspacePath+"${project.name}/META-INF/MANIFEST.MF").getText("UTF-8") 
 
 	 		printFileLine = { 
@@ -190,7 +212,6 @@ subprojects {
 	
 			content.eachLine( printFileLine )
 	
-	
 			println artifactId
 			println "\t"+versionNumber
 	
@@ -210,7 +231,7 @@ subprojects {
 				*	old pom.xml files are deleted and replaced by new auto generated Tycho pom.xml files
 				*/
 			}
-		}else{	// if subprojects aren't a feature
+		}else{	//  end  of { if subprojects aren't a feature } Block
 	
 //		--		Features 					--			//
 	
@@ -226,8 +247,7 @@ subprojects {
 
 				def f = new File(workspacePath+artifactId+'/pom.xml') 
 				f.delete()
-				f << feature(artifactId, versionNumber)
-							
+				f << feature(artifactId, versionNumber)				
 			}
 		}
 	}//deploy
@@ -266,11 +286,8 @@ task createParent() << {
 task createRepository() << {
 
 	//			------------	 	define Repository			---------		//
-			
-			
+						
 	new File(workspacePath+"${repositoryName}").mkdir() 
-	
-	descriptions = [ [:],[:] ]		// label and descriptions of the features
 				
 	String versionNumber 	=	'1.0.0.qualifier'
 	String artifactId		=	repositoryName
@@ -286,17 +303,21 @@ task createRepository() << {
 		featureVersionNumber  = parsedXml.attribute("version")
 		featureArtifactId  = parsedXml.attribute("id")
 		
-		
-		descriptions[0].put( features[i], parsedXml.attribute("label") )
-		descriptions[1].put( features[i], parsedXml.description.text() )
-		
+		if(noDescriptions){
+			categoryDescriptions[0].put( features[i], parsedXml.attribute("label") )
+			categoryDescriptions[1].put( features[i], parsedXml.description.text() )
+		}
 		f << categoryFeatures(featureArtifactId.replace(workspacePath,''), featureVersionNumber)
 	}// for
 			
-	for(int i = 0; i < features.size(); i++){
-						
-		f << categoryDescription(features[i], descriptions[0][features[i]] ,descriptions[1][features[i]] )
-		//							featureName,	label,		description
+	for( int i = 0; i < features.size(); i++ ){
+	
+		if(noDescriptions){
+			f << categoryDescription(features[i], categoryDescriptions[0][features[i]] ,categoryDescriptions[1][features[i]] )
+			//						featureName,			label,							description
+		}else{
+			f << categoryDescription(features[i], categoryDescriptions[features[i]][0] ,categoryDescriptions[features[i]][1])
+		}
 	}//for
 				
 	f << categoryEnd()
@@ -501,8 +522,6 @@ def feature(artifactId, versionNumber) { """
 	</project>
 """}
 // end of feature pom
-
-
 
 //	Build Script can be executed via gradle install
 //	Pom Generation can be executed via gradle deploy
