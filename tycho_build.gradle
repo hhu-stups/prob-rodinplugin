@@ -146,23 +146,25 @@ subprojects {
 	}
 	
 	/////				Copy Dependencies into subprojects DependencyFolder 				///// 
-	task collectDependencies(type: Copy , dependsOn: ['eclipse']){
+	task collectDependencies(type: Copy){
 
 		   	from configurations.compile
 	   	
 			into "${dependencyFolder}" 	
 			
-			eclipse {
+	}
+	
+	
+	eclipse {
 
-			  classpath {
-			    //adding extra configurations:
-			    plusConfigurations += configurations.compile
+	  classpath {
+	    //adding extra configurations:
+	    plusConfigurations += configurations.compile
 
-			    //default settings for dependencies sources/javadoc download:
-			    downloadSources = true
-			    downloadJavadoc = false
-			  }
-			}					
+	    //default settings for dependencies sources/javadoc download:
+	    downloadSources = true
+	    downloadJavadoc = false
+	  }
 	}
 	////////////////////////////////////////////////////////////////////////////////////////////	
 	
