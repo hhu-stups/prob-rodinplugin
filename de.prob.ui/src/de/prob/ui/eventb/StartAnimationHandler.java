@@ -1,8 +1,13 @@
 package de.prob.ui.eventb;
 
-import java.util.ArrayList;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.commons.codec.binary.Base64;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
@@ -17,6 +22,8 @@ import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.emf.ecore.xmi.XMLResource;
+import org.eclipse.emf.ecore.xmi.impl.XMLResourceImpl;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -24,15 +31,18 @@ import org.eclipse.ui.handlers.HandlerUtil;
 import org.eventb.core.IContextRoot;
 import org.eventb.core.IEventBRoot;
 import org.eventb.core.IMachineRoot;
+import org.eventb.emf.core.Project;
+import org.eventb.emf.persistence.ProjectResource;
 import org.rodinp.core.IRodinFile;
+import org.rodinp.core.IRodinProject;
 import org.rodinp.core.RodinCore;
 
 import de.prob.core.Animator;
-import de.prob.core.LimitedLogger;
-import de.prob.core.command.LoadEventBModelCommand;
-import de.prob.exceptions.ProBException;
-import de.prob.logging.Logger;
-import de.prob.ui.PerspectiveFactory;
+import de.prob.core.internal.Activator;
+import de.prob.model.eventb.EventBModel;
+import de.prob.scripting.EventBFactory;
+import de.prob.statespace.History;
+import de.prob.statespace.StateSpace;
 
 public class StartAnimationHandler extends AbstractHandler implements IHandler {
 
@@ -48,6 +58,7 @@ public class StartAnimationHandler extends AbstractHandler implements IHandler {
 			}
 		}
 
+		@Override
 		public void resourceChanged(final IResourceChangeEvent event) {
 			if (path != null) {
 				final IResourceDelta delta = event.getDelta();
@@ -62,48 +73,55 @@ public class StartAnimationHandler extends AbstractHandler implements IHandler {
 	private ISelection fSelection;
 	private ModificationListener listener;
 
+	@Override
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
 
 		fSelection = HandlerUtil.getCurrentSelection(event);
 
-		// Get the Selection
 		final IEventBRoot rootElement = getRootElement();
-		final IFile resource = extractResource(rootElement);
 
-		ArrayList<String> errors = new ArrayList<String>();
-		boolean realError = checkErrorMarkers(resource, errors);
-		if (!errors.isEmpty()) {
-			String message = "Some components in your project contain "
-					+ (realError ? "errors" : "warnings")
-					+ ". This can lead to unexpected behavior (e.g. missing variables) when animating.\n\nDetails:\n";
-			StringBuffer stringBuffer = new StringBuffer(message);
-			for (String string : errors) {
-				stringBuffer.append(string);
-				stringBuffer.append('\n');
-			}
-			if (realError)
-				Logger.notifyUserWithoutBugreport(stringBuffer.toString());
-			else
-				Logger.notifyUserAboutWarningWithoutBugreport(stringBuffer
-						.toString());
+		final EventBFactory instance = Activator.getInjector().getInstance(
+				EventBFactory.class);
+
+		IRodinProject rodinProject = rootElement.getRodinProject();
+		ProjectResource resource = new ProjectResource(rodinProject);
+		try {
+			resource.load(null);
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
-		;
-
-		if (resource != null) {
-			LimitedLogger.getLogger().log("user started animation",
-					rootElement.getElementName(), null);
-			registerModificationListener(resource);
-			PerspectiveFactory.openPerspective();
-
-			final Animator animator = Animator.getAnimator();
-			try {
-				LoadEventBModelCommand.load(animator, rootElement);
-			} catch (ProBException e) {
-				e.notifyUserOnce();
-				throw new ExecutionException("Loading the machine failed", e);
-			}
+		Project project = (Project) resource.getContents().get(0);
+		String serialized = serialize(project);
+		EventBModel model = null;
+		try {
+			model = instance.load(serialized, rootElement.getComponentName());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
+		StateSpace s = model.getStatespace();
+		History h = new History(s);
+		Activator.setHistory(h);
+
 		return null;
+	}
+
+	private static String serialize(Project project) {
+
+		StringWriter sw = new StringWriter();
+		Map<Object, Object> options = new HashMap<Object, Object>();
+		options.put(XMLResource.OPTION_ROOT_OBJECTS,
+				Collections.singletonList(project));
+		options.put(XMLResource.OPTION_FORMATTED, false);
+		XMLResourceImpl ri = new XMLResourceImpl();
+		try {
+			ri.save(sw, options);
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+
+		String xml = Base64.encodeBase64String(sw.toString().getBytes());
+		return xml;
 	}
 
 	private boolean checkErrorMarkers(final IFile resource, List<String> errors) {
@@ -137,8 +155,9 @@ public class StartAnimationHandler extends AbstractHandler implements IHandler {
 					root = (IEventBRoot) element;
 				} else if (element instanceof IFile) {
 					IRodinFile rodinFile = RodinCore.valueOf((IFile) element);
-					if (rodinFile != null)
+					if (rodinFile != null) {
 						root = (IEventBRoot) rodinFile.getRoot();
+					}
 				}
 			}
 		}

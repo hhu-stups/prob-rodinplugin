@@ -23,6 +23,10 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.jobs.JobChangeAdapter;
 import org.osgi.framework.BundleContext;
 
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+
+import de.prob.MainModule;
 import de.prob.core.Animator;
 import de.prob.core.IAnimationListener;
 import de.prob.core.IComputationListener;
@@ -31,8 +35,13 @@ import de.prob.core.LimitedLogger;
 import de.prob.core.domainobjects.Operation;
 import de.prob.core.domainobjects.State;
 import de.prob.logging.Logger;
+import de.prob.statespace.History;
+import de.prob.webconsole.WebModule;
 
 public final class Activator extends Plugin {
+	private static History history;
+	private final static Injector INJECTOR = Guice.createInjector(
+			new MainModule(), new WebModule());
 	// The plug-in ID
 	public static final String PLUGIN_ID = "de.prob.core";
 	private static final String ANIMATION_EXTENSION_POINT = PLUGIN_ID
@@ -211,6 +220,18 @@ public final class Activator extends Plugin {
 			jobs.add(job);
 			job.addJobChangeListener(jobFinishedListener);
 		}
+	}
+
+	public static Injector getInjector() {
+		return INJECTOR;
+	}
+
+	public static History getHistory() {
+		return history;
+	}
+
+	public static void setHistory(History history) {
+		Activator.history = history;
 	}
 
 	private class JobFinishedListener extends JobChangeAdapter {
