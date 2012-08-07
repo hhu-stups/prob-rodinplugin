@@ -3,7 +3,6 @@ package de.prob.core.domainobjects.ltl;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.prob.core.command.LtlCheckingCommand.PathType;
 import de.prob.logging.Logger;
 
 /**
@@ -20,10 +19,10 @@ public abstract class CounterExampleBinaryOperator extends
 	protected List<List<Integer>> secondHighlightedPositions = new ArrayList<List<Integer>>();
 
 	public CounterExampleBinaryOperator(final String name,
-			final String fullName, final PathType pathType,
-			final int loopEntry, final CounterExampleProposition firstArgument,
+			final String fullName, final CounterExample counterExample,
+			final CounterExampleProposition firstArgument,
 			final CounterExampleProposition secondArgument) {
-		super(name, fullName, pathType, loopEntry);
+		super(name, fullName, counterExample);
 		this.firstArgument = firstArgument;
 		this.secondArgument = secondArgument;
 	}
@@ -90,12 +89,6 @@ public abstract class CounterExampleBinaryOperator extends
 				firstCheckedSize, isPast));
 		secondHighlightedPositions.add(fillPositions(position, secondIndex,
 				secondCheckedSize, isPast));
-	}
-
-	@Override
-	protected int calculatePosition(int pos) {
-		int size = getFirstArgument().getValues().size();
-		return pos < size ? pos : pos - (size - loopEntry);
 	}
 
 	protected int indexOfUnknownState(

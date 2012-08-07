@@ -13,9 +13,9 @@ import de.prob.core.command.LtlCheckingCommand.PathType;
  */
 
 public final class CounterExampleNext extends CounterExampleUnaryOperator {
-	public CounterExampleNext(final PathType pathType, final int loopEntry,
+	public CounterExampleNext(final CounterExample counterExample,
 			final CounterExampleProposition argument) {
-		super("X", "Next", pathType, loopEntry, argument);
+		super("X", "Next", counterExample, argument);
 	}
 
 	@Override

@@ -28,6 +28,7 @@ import de.prob.core.domainobjects.ltl.CounterExampleProposition;
 import de.prob.core.domainobjects.ltl.CounterExampleValueType;
 import de.prob.exceptions.ProBException;
 import de.prob.logging.Logger;
+import de.prob.ui.ltl.handler.CounterExampleHistoryHandler;
 
 public final class CounterExamplePredicateFigure extends
 		CounterExamplePropositionFigure {

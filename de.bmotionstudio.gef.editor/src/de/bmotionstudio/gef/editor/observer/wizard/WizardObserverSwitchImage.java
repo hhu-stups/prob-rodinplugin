@@ -39,6 +39,7 @@ import org.eclipse.swt.widgets.Display;
 
 import de.be4.classicalb.core.parser.BParser;
 import de.bmotionstudio.gef.editor.AttributeConstants;
+import de.bmotionstudio.gef.editor.BMotionAbstractWizard;
 import de.bmotionstudio.gef.editor.BMotionStudioImage;
 import de.bmotionstudio.gef.editor.EditorImageRegistry;
 import de.bmotionstudio.gef.editor.edit.AttributeExpressionEdittingSupport;
@@ -51,7 +52,7 @@ import de.bmotionstudio.gef.editor.observer.ObserverWizard;
 import de.bmotionstudio.gef.editor.observer.SwitchImage;
 import de.bmotionstudio.gef.editor.observer.ToggleObjectImage;
 import de.bmotionstudio.gef.editor.property.CheckboxCellEditorHelper;
-import de.bmotionstudio.gef.editor.util.WizardObserverUtil;
+import de.bmotionstudio.gef.editor.util.BMotionWizardUtil;
 
 public class WizardObserverSwitchImage extends ObserverWizard {
 
@@ -70,9 +71,9 @@ public class WizardObserverSwitchImage extends ObserverWizard {
 			Composite container = new Composite(parent, SWT.NONE);
 			container.setLayout(new GridLayout(1, true));
 
-			tableViewer = WizardObserverUtil.createObserverWizardTableViewer(
+			tableViewer = BMotionWizardUtil.createBMotionWizardTableViewer(
 					container, ToggleObjectImage.class,
-					(ObserverWizard) getWizard());
+					((BMotionAbstractWizard) getWizard()).getName());
 			tableViewer
 					.addSelectionChangedListener(new ISelectionChangedListener() {
 
@@ -87,7 +88,8 @@ public class WizardObserverSwitchImage extends ObserverWizard {
 								ToggleObjectImage toggleObjImage = (ToggleObjectImage) observerEvalObject;
 								String attribute = AttributeConstants.ATTRIBUTE_IMAGE;
 								String image = toggleObjImage.getImage();
-								control.setAttributeValue(attribute, image);
+								control.setAttributeValue(attribute, image,
+										true, false);
 							}
 						}
 

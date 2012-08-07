@@ -27,9 +27,12 @@ public class BAttributeCoordinates extends AbstractAttribute {
 				Point point = (Point) element;
 				StringBuffer buf = new StringBuffer();
 				buf.append("[");
-				buf.append(point.x);
-				buf.append(",  ");
-				buf.append(point.y);
+				if (point.x >= 0)
+					buf.append(point.x);
+				if (point.y >= 0) {
+					buf.append(",  ");
+					buf.append(point.y);
+				}
 				buf.append("]");
 				return buf.toString();
 			}
@@ -39,11 +42,22 @@ public class BAttributeCoordinates extends AbstractAttribute {
 
 	@Override
 	public Object getEditableValue() {
-		int x = Integer.valueOf(getChildren()
-				.get(AttributeConstants.ATTRIBUTE_X).getValue().toString());
-		int y = Integer.valueOf(getChildren()
-				.get(AttributeConstants.ATTRIBUTE_Y).getValue().toString());
+
+		AbstractAttribute atrX = getChildren().get(
+				AttributeConstants.ATTRIBUTE_X);
+		AbstractAttribute atrY = getChildren().get(
+				AttributeConstants.ATTRIBUTE_Y);
+
+		int x = -1;
+		int y = -1;
+
+		if (atrX != null)
+			x = Integer.valueOf(atrX.getValue().toString());
+		if (atrY != null)
+			y = Integer.valueOf(atrY.getValue().toString());
+
 		return new Point(x, y);
+
 	}
 
 	@Override

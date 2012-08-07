@@ -13,9 +13,6 @@ import org.eclipse.core.databinding.observable.map.IObservableMap;
 import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
 import org.eclipse.jface.databinding.viewers.ObservableMapLabelProvider;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.viewers.CellEditor;
-import org.eclipse.jface.viewers.CheckboxCellEditor;
-import org.eclipse.jface.viewers.EditingSupport;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITableColorProvider;
@@ -42,6 +39,7 @@ import org.eclipse.swt.widgets.Display;
 
 import de.be4.classicalb.core.parser.BParser;
 import de.bmotionstudio.gef.editor.AttributeConstants;
+import de.bmotionstudio.gef.editor.BMotionAbstractWizard;
 import de.bmotionstudio.gef.editor.BMotionStudioImage;
 import de.bmotionstudio.gef.editor.EditorImageRegistry;
 import de.bmotionstudio.gef.editor.edit.PredicateEditingSupport;
@@ -52,8 +50,7 @@ import de.bmotionstudio.gef.editor.observer.ObserverEvalObject;
 import de.bmotionstudio.gef.editor.observer.ObserverWizard;
 import de.bmotionstudio.gef.editor.observer.SwitchCoordinates;
 import de.bmotionstudio.gef.editor.observer.ToggleObjectCoordinates;
-import de.bmotionstudio.gef.editor.property.CheckboxCellEditorHelper;
-import de.bmotionstudio.gef.editor.util.WizardObserverUtil;
+import de.bmotionstudio.gef.editor.util.BMotionWizardUtil;
 
 public class WizardObserverSwitchCoordinates extends ObserverWizard {
 
@@ -72,9 +69,9 @@ public class WizardObserverSwitchCoordinates extends ObserverWizard {
 			Composite container = new Composite(parent, SWT.NONE);
 			container.setLayout(new GridLayout(1, true));
 
-			tableViewer = WizardObserverUtil.createObserverWizardTableViewer(
+			tableViewer = BMotionWizardUtil.createBMotionWizardTableViewer(
 					container, ToggleObjectCoordinates.class,
-					(ObserverWizard) getWizard());
+					((BMotionAbstractWizard) getWizard()).getName());
 
 			tableViewer
 					.addSelectionChangedListener(new ISelectionChangedListener() {
@@ -92,8 +89,10 @@ public class WizardObserverSwitchCoordinates extends ObserverWizard {
 								String attributeY = AttributeConstants.ATTRIBUTE_Y;
 								String x = toggleObjectCoordinates.getX();
 								String y = toggleObjectCoordinates.getY();
-								control.setAttributeValue(attributeX, x);
-								control.setAttributeValue(attributeY, y);
+								control.setAttributeValue(attributeX, x, true,
+										false);
+								control.setAttributeValue(attributeY, y, true,
+										false);
 							}
 						}
 
@@ -118,45 +117,45 @@ public class WizardObserverSwitchCoordinates extends ObserverWizard {
 			column.setEditingSupport(new TextEditingSupport(tableViewer, dbc,
 					"y"));
 
-			column = new TableViewerColumn(tableViewer, SWT.NONE);
-			column.getColumn().setText("Animate?");
-			column.getColumn().setWidth(75);
-			column.setEditingSupport(new EditingSupport(tableViewer) {
-
-				private CellEditor cellEditor = new CheckboxCellEditor(
-						(Composite) tableViewer.getControl());
-
-				@Override
-				protected void setValue(Object element, Object value) {
-					((ToggleObjectCoordinates) element).setAnimate(Boolean
-							.valueOf(String.valueOf(value)));
-				}
-
-				@Override
-				protected Object getValue(Object element) {
-					Boolean b = ((ToggleObjectCoordinates) element)
-							.getAnimate();
-					return b != null ? b : false;
-				}
-
-				@Override
-				protected CellEditor getCellEditor(Object element) {
-					return cellEditor;
-				}
-
-				@Override
-				protected boolean canEdit(Object element) {
-					return true;
-				}
-
-			});
+			// column = new TableViewerColumn(tableViewer, SWT.NONE);
+			// column.getColumn().setText("Animate?");
+			// column.getColumn().setWidth(75);
+			// column.setEditingSupport(new EditingSupport(tableViewer) {
+			//
+			// private CellEditor cellEditor = new CheckboxCellEditor(
+			// (Composite) tableViewer.getControl());
+			//
+			// @Override
+			// protected void setValue(Object element, Object value) {
+			// ((ToggleObjectCoordinates) element).setAnimate(Boolean
+			// .valueOf(String.valueOf(value)));
+			// }
+			//
+			// @Override
+			// protected Object getValue(Object element) {
+			// Boolean b = ((ToggleObjectCoordinates) element)
+			// .getAnimate();
+			// return b != null ? b : false;
+			// }
+			//
+			// @Override
+			// protected CellEditor getCellEditor(Object element) {
+			// return cellEditor;
+			// }
+			//
+			// @Override
+			// protected boolean canEdit(Object element) {
+			// return true;
+			// }
+			//
+			// });
 
 			ObservableListContentProvider contentProvider = new ObservableListContentProvider();
 			tableViewer.setContentProvider(contentProvider);
 			tableViewer.setLabelProvider(new ObserverLabelProvider(
 					BeansObservables.observeMaps(
 							contentProvider.getKnownElements(), new String[] {
-									"eval", "x", "y", "animate" })));
+									"eval", "x", "y" })));
 
 			final WritableList input = new WritableList(
 					((SwitchCoordinates) getObserver()).getToggleObjects(),
@@ -191,7 +190,9 @@ public class WizardObserverSwitchCoordinates extends ObserverWizard {
 				@Override
 				public void widgetSelected(SelectionEvent e) {
 					ToggleObjectCoordinates toggleObj = new ToggleObjectCoordinates(
-							BParser.PREDICATE_PREFIX, "", "", "", false);
+							BParser.PREDICATE_PREFIX, "", String
+									.valueOf(getBControl().getLayout().x),
+							String.valueOf(getBControl().getLayout().y), "");
 					input.add(toggleObj);
 					tableViewer
 							.setSelection(new StructuredSelection(toggleObj));
@@ -266,11 +267,11 @@ public class WizardObserverSwitchCoordinates extends ObserverWizard {
 
 		@Override
 		public Image getColumnImage(Object element, int columnIndex) {
-			if (columnIndex == 3) {
-				return CheckboxCellEditorHelper
-						.getCellEditorImage(((ToggleObjectCoordinates) element)
-								.getAnimate());
-			}
+			// if (columnIndex == 3) {
+			// return CheckboxCellEditorHelper
+			// .getCellEditorImage(((ToggleObjectCoordinates) element)
+			// .getAnimate());
+			// }
 			return null;
 		}
 

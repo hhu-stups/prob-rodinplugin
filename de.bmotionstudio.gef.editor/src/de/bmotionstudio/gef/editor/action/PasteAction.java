@@ -6,6 +6,10 @@
 
 package de.bmotionstudio.gef.editor.action;
 
+import java.util.Iterator;
+import java.util.List;
+
+import org.eclipse.gef.EditPart;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.ui.actions.SelectionAction;
 import org.eclipse.ui.ISharedImages;
@@ -14,6 +18,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.ActionFactory;
 
 import de.bmotionstudio.gef.editor.command.PasteCommand;
+import de.bmotionstudio.gef.editor.model.BControl;
 
 public class PasteAction extends SelectionAction {
 
@@ -38,19 +43,37 @@ public class PasteAction extends SelectionAction {
 		setEnabled(false);
 	}
 
-	private PasteCommand createPasteCommand() {
-		return new PasteCommand();
+	private PasteCommand createPasteCommand(List<Object> selectedObjects) {
+
+		PasteCommand cmd = new PasteCommand();
+
+		Iterator<Object> it = selectedObjects.iterator();
+		while (it.hasNext()) {
+			Object nextElement = it.next();
+			if (nextElement instanceof EditPart) {
+				EditPart ep = (EditPart) nextElement;
+				BControl node = (BControl) ep.getModel();
+				if (!cmd.isContainer(node))
+					return null;
+				cmd.addElement(node);
+			}
+		}
+
+		return cmd;
+
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	protected boolean calculateEnabled() {
-		Command command = createPasteCommand();
+		Command command = createPasteCommand(getSelectedObjects());
 		return command != null && command.canExecute();
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void run() {
-		PasteCommand command = createPasteCommand();
+		PasteCommand command = createPasteCommand(getSelectedObjects());
 		if (command != null && command.canExecute())
 			execute(command);
 	}

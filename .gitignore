@@ -6,6 +6,7 @@
 .DS_Store
 pom.xml
 updatesite/
+**/lib/dependencies/
 de.prob.core/prob/
 build/
 de.prob.repository/category.xml

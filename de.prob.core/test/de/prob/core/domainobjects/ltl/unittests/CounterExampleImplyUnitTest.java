@@ -7,7 +7,7 @@ import java.util.List;
 
 import org.junit.Test;
 
-import de.prob.core.command.LtlCheckingCommand.PathType;
+import de.prob.core.domainobjects.ltl.CounterExample;
 import de.prob.core.domainobjects.ltl.CounterExampleBinaryOperator;
 import de.prob.core.domainobjects.ltl.CounterExampleImplication;
 import de.prob.core.domainobjects.ltl.CounterExamplePredicate;
@@ -42,17 +42,18 @@ public final class CounterExampleImplyUnitTest {
 						CounterExampleValueType.TRUE,
 						CounterExampleValueType.FALSE });
 
+		final CounterExample ce = TestCounterExample.finite(4);
 		// create first argument
 		final CounterExampleProposition firstArgument = new CounterExamplePredicate(
-				PathType.FINITE, firstArgumentValues);
+				"", ce, firstArgumentValues);
 
 		// create second argument
 		final CounterExampleProposition secondArgument = new CounterExamplePredicate(
-				PathType.FINITE, secondArgumentValues);
+				"", ce, secondArgumentValues);
 
 		// create an operator
 		final CounterExampleBinaryOperator implyOperator = new CounterExampleImplication(
-				PathType.FINITE, firstArgument, secondArgument);
+				ce, firstArgument, secondArgument);
 
 		// check result values
 		final List<CounterExampleValueType> values = implyOperator.getValues();
@@ -127,17 +128,18 @@ public final class CounterExampleImplyUnitTest {
 						CounterExampleValueType.FALSE });
 
 		// Loop entry = 0
+		final CounterExample ce0 = TestCounterExample.loop(0, 4);
 		// create first argument
 		CounterExampleProposition firstArgument = new CounterExamplePredicate(
-				PathType.INFINITE, 0, firstArgumentValues);
+				"", ce0, firstArgumentValues);
 
 		// create second argument
 		CounterExampleProposition secondArgument = new CounterExamplePredicate(
-				PathType.INFINITE, 0, secondArgumentValues);
+				"", ce0, secondArgumentValues);
 
 		// create an operator
 		CounterExampleBinaryOperator implyOperator = new CounterExampleImplication(
-				PathType.INFINITE, 0, firstArgument, secondArgument);
+				ce0, firstArgument, secondArgument);
 
 		// check result values
 		List<CounterExampleValueType> values = implyOperator.getValues();
@@ -190,17 +192,18 @@ public final class CounterExampleImplyUnitTest {
 		assertTrue(secondHighlightedPositions.get(3).size() == 0);
 
 		// Loop entry = 1
+		final CounterExample ce1 = TestCounterExample.loop(1, 4);
 		// create first argument
-		firstArgument = new CounterExamplePredicate(PathType.INFINITE, 1,
+		firstArgument = new CounterExamplePredicate("", ce1,
 				firstArgumentValues);
 
 		// create second argument
-		secondArgument = new CounterExamplePredicate(PathType.INFINITE, 1,
+		secondArgument = new CounterExamplePredicate("", ce1,
 				secondArgumentValues);
 
 		// create an operator
-		implyOperator = new CounterExampleImplication(PathType.INFINITE, 1,
-				firstArgument, secondArgument);
+		implyOperator = new CounterExampleImplication(ce1, firstArgument,
+				secondArgument);
 
 		// check result values
 		values = implyOperator.getValues();
@@ -253,17 +256,18 @@ public final class CounterExampleImplyUnitTest {
 		assertTrue(secondHighlightedPositions.get(3).size() == 0);
 
 		// Loop entry = 2
+		final CounterExample ce2 = TestCounterExample.loop(2, 4);
 		// create first argument
-		firstArgument = new CounterExamplePredicate("", PathType.INFINITE, 2,
+		firstArgument = new CounterExamplePredicate("", ce2,
 				firstArgumentValues);
 
 		// create second argument
-		secondArgument = new CounterExamplePredicate("", PathType.INFINITE, 2,
+		secondArgument = new CounterExamplePredicate("", ce2,
 				secondArgumentValues);
 
 		// create an operator
-		implyOperator = new CounterExampleImplication(PathType.INFINITE, 2,
-				firstArgument, secondArgument);
+		implyOperator = new CounterExampleImplication(ce2, firstArgument,
+				secondArgument);
 
 		// check result values
 		values = implyOperator.getValues();
@@ -316,17 +320,18 @@ public final class CounterExampleImplyUnitTest {
 		assertTrue(secondHighlightedPositions.get(3).size() == 0);
 
 		// Loop entry = 3
+		final CounterExample ce3 = TestCounterExample.loop(3, 4);
 		// create first argument
-		firstArgument = new CounterExamplePredicate("", PathType.INFINITE, 3,
+		firstArgument = new CounterExamplePredicate("", ce3,
 				firstArgumentValues);
 
 		// create second argument
-		secondArgument = new CounterExamplePredicate("", PathType.INFINITE, 3,
+		secondArgument = new CounterExamplePredicate("", ce3,
 				secondArgumentValues);
 
 		// create an operator
-		implyOperator = new CounterExampleImplication(PathType.INFINITE, 3,
-				firstArgument, secondArgument);
+		implyOperator = new CounterExampleImplication(ce3, firstArgument,
+				secondArgument);
 
 		// check result values
 		values = implyOperator.getValues();
@@ -400,17 +405,18 @@ public final class CounterExampleImplyUnitTest {
 						CounterExampleValueType.TRUE,
 						CounterExampleValueType.FALSE });
 
+		final CounterExample ce = TestCounterExample.reduced(4);
 		// create first argument
 		final CounterExampleProposition firstArgument = new CounterExamplePredicate(
-				PathType.REDUCED, firstArgumentValues);
+				"", ce, firstArgumentValues);
 
 		// create second argument
 		final CounterExampleProposition secondArgument = new CounterExamplePredicate(
-				PathType.REDUCED, secondArgumentValues);
+				"", ce, secondArgumentValues);
 
 		// create an operator
 		final CounterExampleBinaryOperator implyOperator = new CounterExampleImplication(
-				PathType.REDUCED, firstArgument, secondArgument);
+				ce, firstArgument, secondArgument);
 
 		// check result values
 		final List<CounterExampleValueType> values = implyOperator.getValues();
@@ -484,17 +490,19 @@ public final class CounterExampleImplyUnitTest {
 						CounterExampleValueType.UNKNOWN,
 						CounterExampleValueType.FALSE });
 
+		final CounterExample ce = TestCounterExample.reduced(4);
+
 		// create first argument
 		final CounterExampleProposition firstArgument = new CounterExamplePredicate(
-				PathType.REDUCED, firstArgumentValues);
+				"", ce, firstArgumentValues);
 
 		// create second argument
 		final CounterExampleProposition secondArgument = new CounterExamplePredicate(
-				PathType.REDUCED, secondArgumentValues);
+				"", ce, secondArgumentValues);
 
 		// create an operator
 		final CounterExampleBinaryOperator implyOperator = new CounterExampleImplication(
-				PathType.REDUCED, firstArgument, secondArgument);
+				ce, firstArgument, secondArgument);
 
 		// check result values
 		final List<CounterExampleValueType> values = implyOperator.getValues();
@@ -574,17 +582,19 @@ public final class CounterExampleImplyUnitTest {
 						CounterExampleValueType.UNKNOWN,
 						CounterExampleValueType.UNKNOWN });
 
+		final CounterExample ce = TestCounterExample.reduced(4);
+
 		// create first argument
 		final CounterExampleProposition firstArgument = new CounterExamplePredicate(
-				PathType.REDUCED, firstArgumentValues);
+				"", ce, firstArgumentValues);
 
 		// create second argument
 		final CounterExampleProposition secondArgument = new CounterExamplePredicate(
-				PathType.REDUCED, secondArgumentValues);
+				"", ce, secondArgumentValues);
 
 		// create an operator
 		final CounterExampleBinaryOperator implyOperator = new CounterExampleImplication(
-				PathType.REDUCED, firstArgument, secondArgument);
+				ce, firstArgument, secondArgument);
 
 		// check result values
 		final List<CounterExampleValueType> values = implyOperator.getValues();

@@ -7,7 +7,7 @@ import java.util.List;
 
 import org.junit.Test;
 
-import de.prob.core.command.LtlCheckingCommand.PathType;
+import de.prob.core.domainobjects.ltl.CounterExample;
 import de.prob.core.domainobjects.ltl.CounterExampleGlobally;
 import de.prob.core.domainobjects.ltl.CounterExamplePredicate;
 import de.prob.core.domainobjects.ltl.CounterExampleProposition;
@@ -31,13 +31,14 @@ public final class CounterExampleGloballyUnitTest {
 						CounterExampleValueType.TRUE,
 						CounterExampleValueType.TRUE });
 
+		final CounterExample ce = TestCounterExample.finite(4);
 		// create an argument
 		final CounterExampleProposition argument = new CounterExamplePredicate(
-				"", PathType.FINITE, -1, argumentValues);
+				"", ce, argumentValues);
 
 		// create an operator
 		final CounterExampleUnaryOperator globallyOperator = new CounterExampleGlobally(
-				PathType.FINITE, -1, argument);
+				ce, argument);
 
 		// check result values
 		final List<CounterExampleValueType> values = globallyOperator
@@ -84,13 +85,14 @@ public final class CounterExampleGloballyUnitTest {
 						CounterExampleValueType.TRUE });
 
 		// Loop entry = 0
+		final CounterExample ce0 = TestCounterExample.loop(0, 4);
 		// create an argument
 		CounterExampleProposition argument = new CounterExamplePredicate("",
-				PathType.INFINITE, 0, argumentValues);
+				ce0, argumentValues);
 
 		// create an operator
 		CounterExampleUnaryOperator globallyOperator = new CounterExampleGlobally(
-				PathType.INFINITE, 0, argument);
+				ce0, argument);
 
 		// check result values
 		List<CounterExampleValueType> values = globallyOperator.getValues();
@@ -125,13 +127,12 @@ public final class CounterExampleGloballyUnitTest {
 				new Integer[] { 1 }));
 
 		// Loop entry = 1
+		final CounterExample ce1 = TestCounterExample.loop(1, 4);
 		// create an argument
-		argument = new CounterExamplePredicate("", PathType.INFINITE, 1,
-				argumentValues);
+		argument = new CounterExamplePredicate("", ce1, argumentValues);
 
 		// create an operator
-		globallyOperator = new CounterExampleGlobally(PathType.INFINITE, 1,
-				argument);
+		globallyOperator = new CounterExampleGlobally(ce1, argument);
 
 		// check result values
 		values = globallyOperator.getValues();
@@ -165,13 +166,12 @@ public final class CounterExampleGloballyUnitTest {
 				new Integer[] { 1 }));
 
 		// Loop entry = 2
+		final CounterExample ce2 = TestCounterExample.loop(2, 4);
 		// create an argument
-		argument = new CounterExamplePredicate("", PathType.INFINITE, 2,
-				argumentValues);
+		argument = new CounterExamplePredicate("", ce2, argumentValues);
 
 		// create an operator
-		globallyOperator = new CounterExampleGlobally(PathType.INFINITE, 2,
-				argument);
+		globallyOperator = new CounterExampleGlobally(ce2, argument);
 
 		// check result values
 		values = globallyOperator.getValues();
@@ -205,13 +205,12 @@ public final class CounterExampleGloballyUnitTest {
 				new Integer[] { 3, 2 }));
 
 		// Loop entry = 3
+		final CounterExample ce3 = TestCounterExample.loop(3, 4);
 		// create an argument
-		argument = new CounterExamplePredicate("", PathType.INFINITE, 3,
-				argumentValues);
+		argument = new CounterExamplePredicate("", ce3, argumentValues);
 
 		// create an operator
-		globallyOperator = new CounterExampleGlobally(PathType.INFINITE, 3,
-				argument);
+		globallyOperator = new CounterExampleGlobally(ce3, argument);
 
 		// check result values
 		values = globallyOperator.getValues();
@@ -255,13 +254,15 @@ public final class CounterExampleGloballyUnitTest {
 						CounterExampleValueType.TRUE,
 						CounterExampleValueType.TRUE });
 
+		final CounterExample ce = TestCounterExample.reduced(4);
+
 		// create an argument
 		final CounterExampleProposition argument = new CounterExamplePredicate(
-				"", PathType.REDUCED, -1, argumentValues);
+				"", ce, argumentValues);
 
 		// create an operator
 		final CounterExampleUnaryOperator globallyOperator = new CounterExampleGlobally(
-				PathType.REDUCED, -1, argument);
+				ce, argument);
 
 		// check result values
 		final List<CounterExampleValueType> values = globallyOperator

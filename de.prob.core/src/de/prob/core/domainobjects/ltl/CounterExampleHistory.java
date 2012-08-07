@@ -4,9 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import de.prob.core.command.LtlCheckingCommand.PathType;
-import de.prob.logging.Logger;
-
 /**
  * Provides a "history" operator.
  * 
@@ -15,47 +12,42 @@ import de.prob.logging.Logger;
  */
 
 public final class CounterExampleHistory extends CounterExampleUnaryOperator {
-	private final CounterExampleNegation notOnce;
-	private final CounterExampleNegation notSince;
-
-	public CounterExampleHistory(final PathType pathType, final int loopEntry,
+	public CounterExampleHistory(final CounterExample counterExample,
 			final CounterExampleProposition argument) {
-		super("H", "History", pathType, loopEntry, argument);
+		super("H", "History", counterExample, argument);
 
 		CounterExampleNegation notArgument = new CounterExampleNegation(
-				pathType, loopEntry, argument);
+				counterExample, argument);
+		checkByOnce(counterExample, notArgument);
+		checkBySince(counterExample, argument, notArgument);
+	}
 
-		CounterExampleOnce onceOperator = new CounterExampleOnce(pathType,
-				loopEntry, notArgument);
-
-		notOnce = new CounterExampleNegation(pathType, loopEntry, onceOperator);
-
+	private void checkBySince(final CounterExample counterExample,
+			final CounterExampleProposition argument,
+			CounterExampleNegation notArgument) {
 		CounterExampleValueType[] trueValues = new CounterExampleValueType[argument
 				.getValues().size()];
 		Arrays.fill(trueValues, CounterExampleValueType.TRUE);
 
-		CounterExamplePredicate truePredicate = new CounterExamplePredicate(
-				pathType, loopEntry, Arrays.asList(trueValues));
+		CounterExamplePredicate truePredicate = new CounterExamplePredicate("",
+				counterExample, Arrays.asList(trueValues));
 
-		CounterExampleSince since = new CounterExampleSince(pathType,
-				loopEntry, truePredicate, notArgument);
-		notSince = new CounterExampleNegation(pathType, loopEntry, since);
+		CounterExampleSince since = new CounterExampleSince(counterExample,
+				truePredicate, notArgument);
+		addCheck(new CounterExampleNegation(counterExample, since));
+	}
+
+	private void checkByOnce(final CounterExample counterExample,
+			CounterExampleNegation notArgument) {
+		CounterExampleOnce onceOperator = new CounterExampleOnce(
+				counterExample, notArgument);
+
+		addCheck(new CounterExampleNegation(counterExample, onceOperator));
 	}
 
 	@Override
 	public CounterExampleValueType calculate(final int position) {
-		CounterExampleValueType value = calculateHistoryOperator(position);
-
-		List<CounterExampleValueType> notOnceValues = notOnce.getValues();
-		List<CounterExampleValueType> notSinceValues = notSince.getValues();
-
-		Logger.assertProB("History invalid",
-				value == notOnceValues.get(position));
-
-		Logger.assertProB("History invalid",
-				value == notSinceValues.get(position));
-
-		return value;
+		return calculateHistoryOperator(position);
 	}
 
 	private CounterExampleValueType calculateHistoryOperator(final int position) {

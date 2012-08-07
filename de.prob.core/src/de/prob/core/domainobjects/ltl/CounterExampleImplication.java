@@ -1,6 +1,5 @@
 package de.prob.core.domainobjects.ltl;
 
-import de.prob.core.command.LtlCheckingCommand.PathType;
 
 /**
  * Provides an "imply" operator.
@@ -11,17 +10,11 @@ import de.prob.core.command.LtlCheckingCommand.PathType;
 
 public final class CounterExampleImplication extends
 		CounterExampleBinaryOperator {
-	public CounterExampleImplication(final PathType pathType,
-			final int loopEntry, final CounterExampleProposition firstArgument,
-			final CounterExampleProposition secondArgument) {
-		super("=>", "Implication", pathType, loopEntry, firstArgument,
-				secondArgument);
-	}
-
-	public CounterExampleImplication(final PathType pathType,
+	public CounterExampleImplication(final CounterExample counterExample,
 			final CounterExampleProposition firstArgument,
 			final CounterExampleProposition secondArgument) {
-		this(pathType, -1, firstArgument, secondArgument);
+		super("=>", "Implication", counterExample, firstArgument,
+				secondArgument);
 	}
 
 	@Override

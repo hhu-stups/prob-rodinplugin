@@ -6,10 +6,11 @@
 
 package de.bmotionstudio.gef.editor.observer;
 
+import de.bmotionstudio.gef.editor.Animation;
 import de.bmotionstudio.gef.editor.AttributeConstants;
-import de.bmotionstudio.gef.editor.internal.Animation;
 import de.bmotionstudio.gef.editor.model.BControl;
 import de.bmotionstudio.gef.editor.observer.wizard.WizardObserverSimpleValueDisplay;
+import de.bmotionstudio.gef.editor.util.BMSUtil;
 
 public class SimpleValueDisplay extends Observer {
 
@@ -25,12 +26,12 @@ public class SimpleValueDisplay extends Observer {
 		// First evaluate predicate (predicate field)
 		String bolValue = "true";
 		if (predicate != null && predicate.length() > 0) {
-			bolValue = parsePredicate(predicate, bcontrol, animation, null);
+			bolValue = BMSUtil.parsePredicate(predicate, bcontrol, animation);
 		}
 
 		if (Boolean.valueOf(bolValue)) {
 
-			String fEval = parseExpression(eval, bcontrol, animation, null);
+			String fEval = BMSUtil.parseExpression(eval, bcontrol, animation);
 
 			if (!isOrgStringSet) {
 				orgString = bcontrol.getAttributeValue(

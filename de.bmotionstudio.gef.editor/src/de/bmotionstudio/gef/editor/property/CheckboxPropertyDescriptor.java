@@ -36,7 +36,11 @@ public class CheckboxPropertyDescriptor extends PropertyDescriptor {
 
 			@Override
 			public String getText(Object element) {
-				return ""; //$NON-NLS-1$
+				if (element instanceof Boolean) {
+					Boolean b = (Boolean) element;
+					return b.toString();
+				}
+				return "";
 			}
 		});
 	}

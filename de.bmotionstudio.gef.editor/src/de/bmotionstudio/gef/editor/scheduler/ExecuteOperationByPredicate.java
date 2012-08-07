@@ -9,9 +9,10 @@ package de.bmotionstudio.gef.editor.scheduler;
 import java.util.List;
 import java.util.Random;
 
-import de.bmotionstudio.gef.editor.internal.Animation;
+import de.bmotionstudio.gef.editor.Animation;
 import de.bmotionstudio.gef.editor.model.BControl;
-import de.bmotionstudio.gef.editor.scheduler.wizard.WizardSchedulerExecuteOperationByPredicate;
+import de.bmotionstudio.gef.editor.scheduler.wizard.WizardExecuteOperationByPredicate;
+import de.bmotionstudio.gef.editor.util.BMSUtil;
 import de.prob.core.Animator;
 import de.prob.core.command.ExecuteOperationCommand;
 import de.prob.core.command.GetCurrentStateIdCommand;
@@ -39,7 +40,7 @@ public class ExecuteOperationByPredicate extends SchedulerEvent {
 					String currentState = GetCurrentStateIdCommand
 							.getID(animator);
 
-					List<Operation> operations = parseOperation(
+					List<Operation> operations = BMSUtil.parseOperation(
 							predicateOperation.getOperationName(),
 							predicateOperation.getPredicate(),
 							predicateOperation.getMaxrandom(), animation,
@@ -75,7 +76,7 @@ public class ExecuteOperationByPredicate extends SchedulerEvent {
 
 	@Override
 	public SchedulerWizard getWizard(BControl bcontrol) {
-		return new WizardSchedulerExecuteOperationByPredicate(bcontrol, this);
+		return new WizardExecuteOperationByPredicate(bcontrol, this);
 	}
 
 	public void setPredicateOperation(PredicateOperation predicateOperation) {

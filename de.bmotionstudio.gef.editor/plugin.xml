@@ -166,7 +166,7 @@
       </group>
       <control
             groupid="de.bmotionstudio.gef.editor.group.main"
-            icon="icons/icon_image.gif"
+            icon="icons/eclipse16/image_obj.gif"
             id="de.bmotionstudio.gef.editor.image"
             name="Image"
             service="de.bmotionstudio.gef.editor.service.BImageService">
@@ -194,7 +194,7 @@
       </control>
       <control
             groupid="de.bmotionstudio.gef.editor.group.main"
-            icon="icons/icon_composite.gif"
+            icon="icons/eclipse16/overview_obj.gif"
             id="de.bmotionstudio.gef.editor.composite"
             name="Composite"
             service="de.bmotionstudio.gef.editor.service.BCompositeService">
@@ -216,9 +216,16 @@
       <control
             groupid="de.bmotionstudio.gef.editor.group.main"
             icon="icons/icon_rectangle.gif"
-            id="de.bmotionstudio.gef.editor.shape"
-            name="Shape"
-            service="de.bmotionstudio.gef.editor.service.BShapeService">
+            id="de.bmotionstudio.gef.editor.rectangle"
+            name="Rectanlge"
+            service="de.bmotionstudio.gef.editor.service.BRectangleService">
+      </control>
+      <control
+            groupid="de.bmotionstudio.gef.editor.group.main"
+            icon="icons/icon_ellipse.gif"
+            id="de.bmotionstudio.gef.editor.ellipse"
+            name="Ellipse"
+            service="de.bmotionstudio.gef.editor.service.BEllipseService">
       </control>
       <control
             groupid="de.bmotionstudio.gef.editor.group.main"
@@ -226,6 +233,27 @@
             id="de.bmotionstudio.gef.editor.connection"
             name="Connection"
             service="de.bmotionstudio.gef.editor.service.BConnectionService">
+      </control>
+      <control
+            groupid="de.bmotionstudio.gef.editor.group.main"
+            icon="icons/eclipse16/prop_ps.gif"
+            id="de.bmotionstudio.gef.editor.table"
+            name="Table"
+            service="de.bmotionstudio.gef.editor.service.BTableService">
+      </control>
+      <control
+            groupid="de.bmotionstudio.gef.editor.group.main"
+            icon="icons/eclipse16/prop_ps2.gif"
+            id="de.bmotionstudio.gef.editor.tablecolumn"
+            name="Column"
+            service="de.bmotionstudio.gef.editor.service.BTableColumnService">
+      </control>
+      <control
+            groupid="de.bmotionstudio.gef.editor.group.main"
+            icon="icons/eclipse16/prop_ps3.gif"
+            id="de.bmotionstudio.gef.editor.tablecell"
+            name="Cell"
+            service="de.bmotionstudio.gef.editor.service.BTableCellService">
       </control>
    </extension>
    <extension
@@ -259,9 +287,12 @@
             name="Switch Coordinates">
       </observer>
       <observer
-            class="de.bmotionstudio.gef.editor.observer.CloneObserver"
-            description="This observer clones the control depending on an expression rule"
-            name="Clone Observer">
+            class="de.bmotionstudio.gef.editor.observer.ExternalObserverScript"
+            name="External Observer Script">
+      </observer>
+      <observer
+            class="de.bmotionstudio.gef.editor.observer.ColumnObserver"
+            name="Column Observer">
       </observer>
    </extension>
    <extension
@@ -276,7 +307,7 @@
             class="de.bmotionstudio.gef.editor.scheduler.ExecuteAnimationScript"
             description="Execute an animation script"
             menu="true"
-            name="Execute Scheduler (Multi)">
+            name="Execute Scheduler">
       </schedulerEvent>
       <schedulerEvent
             class="de.bmotionstudio.gef.editor.scheduler.ExecuteOperationByPredicateMulti"
@@ -332,7 +363,7 @@
                   id="de.bmotionstudio.gef.editor.ellipse">
             </control>
             <control
-                  id="de.bmotionstudio.gef.editor.shape">
+                  id="de.bmotionstudio.gef.editor.rectangle">
             </control>
             <control
                   id="de.bmotionstudio.gef.editor.radiobutton">
@@ -343,14 +374,11 @@
             <control
                   id="de.bmotionstudio.gef.editor.connection">
             </control>
-         </observer>
-         <observer
-               id="de.bmotionstudio.gef.editor.observer.CloneObserver">
             <control
-                  id="de.bmotionstudio.gef.editor.composite">
+                  id="de.bmotionstudio.gef.editor.tablecell">
             </control>
             <control
-                  id="de.bmotionstudio.gef.editor.visualization">
+                  id="de.bmotionstudio.gef.editor.table">
             </control>
          </observer>
          <observer
@@ -368,7 +396,7 @@
                   id="de.bmotionstudio.gef.editor.text">
             </control>
             <control
-                  id="de.bmotionstudio.gef.editor.shape">
+                  id="de.bmotionstudio.gef.editor.rectangle">
             </control>
             <control
                   id="de.bmotionstudio.gef.editor.radiobutton">
@@ -378,6 +406,12 @@
             </control>
             <control
                   id="de.bmotionstudio.gef.editor.checkbox">
+            </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.ellipse">
+            </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.table">
             </control>
          </observer>
          <observer
@@ -394,14 +428,8 @@
             <control
                   id="de.bmotionstudio.gef.editor.button">
             </control>
-         </observer>
-         <observer
-               id="de.bmotionstudio.gef.editor.observer.SwitchImage">
             <control
-                  id="de.bmotionstudio.gef.editor.image">
-            </control>
-            <control
-                  id="de.bmotionstudio.gef.editor.composite">
+                  id="de.bmotionstudio.gef.editor.tablecell">
             </control>
          </observer>
          <observer
@@ -419,7 +447,7 @@
                   id="de.bmotionstudio.gef.editor.text">
             </control>
             <control
-                  id="de.bmotionstudio.gef.editor.shape">
+                  id="de.bmotionstudio.gef.editor.rectangle">
             </control>
             <control
                   id="de.bmotionstudio.gef.editor.radiobutton">
@@ -430,6 +458,18 @@
             <control
                   id="de.bmotionstudio.gef.editor.connection">
             </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.ellipse">
+            </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.textfield">
+            </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.tablecell">
+            </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.table">
+            </control>
          </observer>
          <observer
                id="de.bmotionstudio.gef.editor.observer.SwitchChildCoordinates">
@@ -438,6 +478,66 @@
             </control>
             <control
                   id="de.bmotionstudio.gef.editor.visualization">
+            </control>
+         </observer>
+         <observer
+               id="de.bmotionstudio.gef.editor.observer.ExternalObserverScript">
+            <control
+                  id="de.bmotionstudio.gef.editor.image">
+            </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.button">
+            </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.composite">
+            </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.text">
+            </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.rectangle">
+            </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.radiobutton">
+            </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.checkbox">
+            </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.connection">
+            </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.ellipse">
+            </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.textfield">
+            </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.tablecell">
+            </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.table">
+            </control>
+         </observer>
+         <observer
+               id="de.bmotionstudio.gef.editor.observer.SwitchImage">
+            <control
+                  id="de.bmotionstudio.gef.editor.image">
+            </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.composite">
+            </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.rectangle">
+            </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.ellipse">
+            </control>
+         </observer>
+         <observer
+               id="de.bmotionstudio.gef.editor.observer.ColumnObserver">
+            <control
+                  id="de.bmotionstudio.gef.editor.tablecolumn">
             </control>
          </observer>
       </include>

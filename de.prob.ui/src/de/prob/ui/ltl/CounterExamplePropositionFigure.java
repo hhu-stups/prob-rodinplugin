@@ -32,8 +32,10 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.widgets.Display;
 
 import de.prob.core.command.LtlCheckingCommand.PathType;
+import de.prob.core.domainobjects.Operation;
 import de.prob.core.domainobjects.ltl.CounterExample;
 import de.prob.core.domainobjects.ltl.CounterExampleProposition;
+import de.prob.core.domainobjects.ltl.CounterExampleState;
 import de.prob.core.domainobjects.ltl.CounterExampleValueType;
 
 public abstract class CounterExamplePropositionFigure extends Figure implements
@@ -145,8 +147,10 @@ public abstract class CounterExamplePropositionFigure extends Figure implements
 	protected String getOperationName(final int index) {
 		final CounterExampleFigure parentFigure = (CounterExampleFigure) getParent();
 		final CounterExample parentModel = parentFigure.getModel();
-		final String operationName = parentModel.getStates().get(index)
-				.getOperation().getName();
+		final List<CounterExampleState> states = parentModel.getStates();
+		final CounterExampleState state = states.get(index);
+		final Operation operation = state.getOperation();
+		final String operationName = operation.getName();
 		return operationName;
 	}
 
@@ -172,9 +176,9 @@ public abstract class CounterExamplePropositionFigure extends Figure implements
 		final Rectangle targetBounds = target.getBounds();
 		points.addPoint(new Point(sourceBounds.x + size + insets.left,
 				sourceBounds.y + size / 2 + insets.top));
-		points.addPoint(new Point(sourceBounds.x + size + 3.0 / 10 * size
+		points.addPoint(new Point(sourceBounds.x + size + (3 * size) / 10
 				+ insets.left, sourceBounds.y + size / 2 + insets.top));
-		points.addPoint(new Point(sourceBounds.x + size + 3.0 / 10 * size
+		points.addPoint(new Point(sourceBounds.x + size + (3 * size) / 10
 				+ insets.left, sourceBounds.y - size / 5 + insets.top));
 		points.addPoint(new Point(targetBounds.x + size / 2 + insets.left,
 				targetBounds.y - size / 5 + insets.top));
@@ -211,13 +215,12 @@ public abstract class CounterExamplePropositionFigure extends Figure implements
 		final Rectangle sourceBounds = source.getBounds();
 		points.addPoint(new Point(sourceBounds.x + size + insets.left,
 				sourceBounds.y + size / 2 + insets.top));
-		points.addPoint(new Point(sourceBounds.x + size + 3.0 / 10 * size
+		points.addPoint(new Point(sourceBounds.x + size + (3 * size) / 10
 				+ insets.left, sourceBounds.y + size / 2 + insets.top));
-		points.addPoint(new Point(sourceBounds.x + size + 3.0 / 10 * size
+		points.addPoint(new Point(sourceBounds.x + size + (3 * size) / 10
 				+ insets.left, sourceBounds.y + insets.top + size / 4));
-		points.addPoint(new Point(sourceBounds.x + size + 3.0 / 10 * size
-				+ insets.left, sourceBounds.y + insets.top
-				+ (int) (3.0 / 4 * size)));
+		points.addPoint(new Point(sourceBounds.x + size + (3 * size) / 10
+				+ insets.left, sourceBounds.y + insets.top + (3 * size) / 4));
 		polyline.setPoints(points);
 
 		return polyline;
@@ -289,121 +292,8 @@ public abstract class CounterExamplePropositionFigure extends Figure implements
 		add(panel);
 
 		for (int i = 0; i < values.size(); i++) {
-			final CounterExampleValueType value = values.get(i);
-			final Ellipse ellipse = new Ellipse();
-
-			if (!positions.contains(i)) {
-				ellipse.setAlpha(Alpha.MASKED);
-			}
-
-			ellipse.setAntialias(SWT.ON);
-			ellipse.setLineWidth(2);
-			ellipse.setOpaque(true);
-			ellipse.addMouseListener(this);
-			ellipse.addMouseMotionListener(this);
-			ellipse.setBackgroundColor(getEllipseColor(value));
-
-			ellipses1.put(ellipse, i);
-			ellipses2.put(i, ellipse);
-
-			final Label label = new Label(value.toString());
-			label.setOpaque(false);
-
-			ellipse.setLayoutManager(new BorderLayout());
-			ellipse.add(label, BorderLayout.CENTER);
-
-			panel.add(ellipse);
-
-			final int x = (bounds.x + size) * (i + 1);
-			final int y = bounds.y + argumentHeight
-					+ (pathType == PathType.INFINITE ? size / 10 : 0);
-			ellipse.setBounds(new Rectangle(x, y, size, size));
-
-			if (i > 0) {
-				final ChopboxAnchor source = new ChopboxAnchor(ellipse);
-				final Ellipse targetEllipse = ellipses2.get(i - 1);
-
-				if (targetEllipse == null)
-					continue;
-
-				final ChopboxAnchor target = new ChopboxAnchor(targetEllipse);
-
-				final PolylineConnection connection = new PolylineConnection();
-				connection.setAlpha(Alpha.MASKED);
-				connection.setAntialias(SWT.ON);
-				connection.setLineStyle(SWT.LINE_SOLID);
-				connection.setLineWidth(2);
-				connection.setToolTip(new Label(getOperationName(i - 1)));
-				connection.setSourceAnchor(source);
-				connection.setTargetAnchor(target);
-
-				final PolygonDecoration decoration = new PolygonDecoration();
-				decoration.setAlpha(Alpha.MASKED);
-				decoration.setAntialias(SWT.ON);
-
-				final PointList decorationPointList = new PointList();
-				decorationPointList.addPoint(0, 0);
-				decorationPointList.addPoint(-1, 1);
-				decorationPointList.addPoint(-1, 0);
-				decorationPointList.addPoint(-1, -1);
-				decoration.setTemplate(decorationPointList);
-
-				// highlight the transition
-				if (positions.contains(i) && positions.contains(i - 1)) {
-					connection.setAlpha(Alpha.HIGHLIGHED);
-					decoration.setAlpha(Alpha.HIGHLIGHED);
-				}
-
-				// highlight and color the transition
-				if (model.isTransition() || argument.isTransition()) {
-					if (positions.contains(i - 1)) {
-						connection.setAlpha(Alpha.HIGHLIGHED);
-						decoration.setAlpha(Alpha.HIGHLIGHED);
-						Color transitionColor = getEllipseColor(values
-								.get(i - 1));
-						connection.setForegroundColor(transitionColor);
-						decoration.setForegroundColor(transitionColor);
-					}
-				}
-
-				connection.setSourceDecoration(decoration);
-
-				panel.add(connection);
-			}
-
-			if (i == values.size() - 1) {
-				if (pathType.equals(PathType.INFINITE)) {
-					final String operationName = getOperationName(ellipses1
-							.get(ellipse));
-					final Ellipse target = ellipses2.get(model.getLoopEntry());
-
-					int alpha = Alpha.MASKED;
-					Color loopTransitionColor = ColorConstants.black;
-
-					if (positions.contains(i) && positions.contains(i - 1)) {
-						alpha = Alpha.HIGHLIGHED;
-					}
-
-					if (model.isTransition() || argument.isTransition()) {
-						if (positions.contains(i)) {
-							alpha = Alpha.HIGHLIGHED;
-							loopTransitionColor = getEllipseColor(values.get(i));
-						}
-					}
-
-					final PolylineConnection loop = createLoop(getInsets(),
-							ellipse, target, alpha, operationName,
-							loopTransitionColor);
-
-					panel.add(loop);
-				} else if (pathType.equals(PathType.REDUCED)) {
-					final Polyline reduced = createReduced(getInsets(),
-							ellipse, positions.contains(i) ? Alpha.HIGHLIGHED
-									: Alpha.MASKED);
-
-					panel.add(reduced);
-				}
-			}
+			createColumn(bounds, argument, positions, ellipses1, ellipses2,
+					argumentHeight, pathType, values, panel, i);
 		}
 
 		if (parent != null) {
@@ -412,6 +302,148 @@ public abstract class CounterExamplePropositionFigure extends Figure implements
 		}
 
 		return panel;
+	}
+
+	private void createColumn(final Rectangle bounds,
+			final CounterExampleProposition argument,
+			final List<Integer> positions,
+			final Hashtable<Ellipse, Integer> ellipses1,
+			final Hashtable<Integer, Ellipse> ellipses2,
+			final int argumentHeight, final PathType pathType,
+			final List<CounterExampleValueType> values, Panel panel, int i) {
+		final CounterExampleValueType value = values.get(i);
+		final Ellipse ellipse = new Ellipse();
+
+		if (!positions.contains(i)) {
+			ellipse.setAlpha(Alpha.MASKED);
+		}
+
+		ellipse.setAntialias(SWT.ON);
+		ellipse.setLineWidth(2);
+		ellipse.setOpaque(true);
+		ellipse.addMouseListener(this);
+		ellipse.addMouseMotionListener(this);
+		ellipse.setBackgroundColor(getEllipseColor(value));
+
+		ellipses1.put(ellipse, i);
+		ellipses2.put(i, ellipse);
+
+		final Label label = new Label(value.toString());
+		label.setOpaque(false);
+
+		ellipse.setLayoutManager(new BorderLayout());
+		ellipse.add(label, BorderLayout.CENTER);
+
+		panel.add(ellipse);
+
+		final int x = (bounds.x + size) * (i + 1);
+		final int y = bounds.y + argumentHeight
+				+ (pathType == PathType.INFINITE ? size / 10 : 0);
+		ellipse.setBounds(new Rectangle(x, y, size, size));
+
+		if (i > 0) {
+			final ChopboxAnchor source = new ChopboxAnchor(ellipse);
+			final Ellipse targetEllipse = ellipses2.get(i - 1);
+
+			if (targetEllipse == null)
+				return;
+
+			final ChopboxAnchor target = new ChopboxAnchor(targetEllipse);
+
+			final PolylineConnection connection = new PolylineConnection();
+			connection.setAlpha(Alpha.MASKED);
+			connection.setAntialias(SWT.ON);
+			connection.setLineStyle(SWT.LINE_SOLID);
+			connection.setLineWidth(2);
+			connection.setToolTip(new Label(getOperationName(i - 1)));
+			connection.setSourceAnchor(source);
+			connection.setTargetAnchor(target);
+
+			final PolygonDecoration decoration = new PolygonDecoration();
+			decoration.setAlpha(Alpha.MASKED);
+			decoration.setAntialias(SWT.ON);
+
+			final PointList decorationPointList = new PointList();
+			decorationPointList.addPoint(0, 0);
+			decorationPointList.addPoint(-1, 1);
+			decorationPointList.addPoint(-1, 0);
+			decorationPointList.addPoint(-1, -1);
+			decoration.setTemplate(decorationPointList);
+
+			// highlight the transition
+			if (positions.contains(i) && positions.contains(i - 1)) {
+				connection.setAlpha(Alpha.HIGHLIGHED);
+				decoration.setAlpha(Alpha.HIGHLIGHED);
+			}
+
+			// highlight and color the transition
+			if (model.isTransition() || argument.isTransition()) {
+				if (positions.contains(i - 1)) {
+					connection.setAlpha(Alpha.HIGHLIGHED);
+					decoration.setAlpha(Alpha.HIGHLIGHED);
+					Color transitionColor = getEllipseColor(values.get(i - 1));
+					connection.setForegroundColor(transitionColor);
+					decoration.setForegroundColor(transitionColor);
+				}
+			}
+
+			connection.setSourceDecoration(decoration);
+
+			panel.add(connection);
+		}
+
+		boolean isLastElement = i == values.size() - 1;
+		if (isLastElement) {
+			createEnd(argument, positions, ellipses1, ellipses2, pathType,
+					values, panel, i, ellipse);
+		}
+	}
+
+	private void createEnd(final CounterExampleProposition argument,
+			final List<Integer> positions,
+			final Hashtable<Ellipse, Integer> ellipses1,
+			final Hashtable<Integer, Ellipse> ellipses2,
+			final PathType pathType,
+			final List<CounterExampleValueType> values, Panel panel, int i,
+			final Ellipse ellipse) {
+		final IFigure figure;
+		switch (pathType) {
+		case INFINITE:
+			final String operationName = getOperationName(ellipses1
+					.get(ellipse));
+			final Ellipse target = ellipses2.get(model.getLoopEntry());
+
+			int alpha = Alpha.MASKED;
+			Color loopTransitionColor = ColorConstants.black;
+
+			final boolean highlightLoop = positions.contains(i)
+					&& positions.contains(i - 1);
+			if (highlightLoop) {
+				alpha = Alpha.HIGHLIGHED;
+			}
+
+			if (model.isTransition() || argument.isTransition()) {
+				if (positions.contains(i)) {
+					alpha = Alpha.HIGHLIGHED;
+					loopTransitionColor = getEllipseColor(values.get(i));
+				}
+			}
+			figure = createLoop(getInsets(), ellipse, target, alpha,
+					operationName, loopTransitionColor);
+			break;
+
+		case REDUCED:
+			figure = createReduced(getInsets(), ellipse,
+					positions.contains(i) ? Alpha.HIGHLIGHED : Alpha.MASKED);
+			break;
+
+		default:
+			figure = null;
+			break;
+		}
+		if (figure != null) {
+			panel.add(figure);
+		}
 	}
 
 	@Override

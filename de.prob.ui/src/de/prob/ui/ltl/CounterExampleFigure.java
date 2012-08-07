@@ -12,13 +12,13 @@ import org.eclipse.draw2d.XYLayout;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.PlatformUI;
 
 import de.prob.core.domainobjects.ltl.CounterExample;
 
 public final class CounterExampleFigure extends Figure {
 	private final CounterExample model;
+	// These are the rectangles that should show which is the current state
+	// At most one of them is visible at the same time
 	private final List<RectangleFigure> states = new ArrayList<RectangleFigure>();
 
 	public CounterExampleFigure(CounterExample model) {
@@ -69,11 +69,8 @@ public final class CounterExampleFigure extends Figure {
 	// }
 
 	public void update() {
-		final IWorkbenchPage workbenchPage = PlatformUI.getWorkbench()
-				.getActiveWorkbenchWindow().getActivePage();
-		final CounterExampleViewPart counterExampleView = (CounterExampleViewPart) workbenchPage
-				.findView(CounterExampleViewPart.ID);
-
+		final CounterExampleViewPart counterExampleView = CounterExampleViewPart
+				.getDefault();
 		if (counterExampleView != null) {
 			final int currentIndex = counterExampleView.getCurrentIndex();
 

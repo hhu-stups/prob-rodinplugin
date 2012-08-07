@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Set;
 
 import de.bmotionstudio.gef.editor.AttributeConstants;
-import de.bmotionstudio.gef.editor.BMotionStudioImage;
 import de.bmotionstudio.gef.editor.model.BConnection;
 import de.bmotionstudio.gef.editor.model.BControl;
 import de.bmotionstudio.gef.editor.model.Visualization;
@@ -47,8 +46,7 @@ public class BControlTreeEditPart extends AppAbstractTreeEditPart {
 				|| evt.getPropertyName().equals(BControl.PROPERTY_REMOVE)) {
 			refreshChildren();
 		}
-		if (evt.getPropertyName().equals(AttributeConstants.ATTRIBUTE_ID))
-			refreshVisuals();
+		refreshVisuals();
 	}
 
 	@Override
@@ -57,8 +55,7 @@ public class BControlTreeEditPart extends AppAbstractTreeEditPart {
 		if (!(bcontrol instanceof Visualization)) {
 			setWidgetText(bcontrol.getAttributeValue(
 					AttributeConstants.ATTRIBUTE_ID).toString());
-			setWidgetImage(BMotionStudioImage.getBControlImage(bcontrol
-					.getType()));
+			setWidgetImage(bcontrol.getIcon());
 		}
 	}
 

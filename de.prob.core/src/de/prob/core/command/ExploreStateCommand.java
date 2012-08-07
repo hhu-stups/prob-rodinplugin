@@ -79,7 +79,7 @@ public final class ExploreStateCommand implements IComposableCommand {
 		final Collection<StateError> stateErrors = getStateErrCmd.getResult();
 
 		if (!initialised && enabledOperations.isEmpty() && !timeoutOccured) {
-			Logger.notifyUserWithoutBugreport("ProB could not find valid constants. This might be caused by the animation settings (e.g., Integer range or deferred set size) or by an inconsistency in the axioms");
+			Logger.notifyUserWithoutBugreport("ProB could not find valid constants/variables. This might be caused by the animation settings (e.g., Integer range or deferred set size) or by an inconsistency in the axioms");
 		}
 
 		Set<String> timeouts = new HashSet<String>(
@@ -92,7 +92,8 @@ public final class ExploreStateCommand implements IComposableCommand {
 		Activator.computedState(state);
 	}
 
-	public void writeCommand(final IPrologTermOutput pto) throws CommandException {
+	public void writeCommand(final IPrologTermOutput pto)
+			throws CommandException {
 		allCommands.writeCommand(pto);
 	}
 

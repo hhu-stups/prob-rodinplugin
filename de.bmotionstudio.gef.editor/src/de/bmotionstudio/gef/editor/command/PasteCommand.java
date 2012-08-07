@@ -9,6 +9,7 @@ package de.bmotionstudio.gef.editor.command;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.ui.actions.Clipboard;
@@ -23,6 +24,8 @@ public class PasteCommand extends Command {
 
 	private HashMap<BControl, BControl> list = new HashMap<BControl, BControl>();
 
+	private List<BControl> parentControls = new ArrayList<BControl>();
+
 	@Override
 	public boolean canExecute() {
 		cHelper = (CopyPasteHelper) Clipboard.getDefault().getContents();
@@ -34,39 +37,59 @@ public class PasteCommand extends Command {
 		Iterator<?> it = myList.iterator();
 		while (it.hasNext()) {
 			BControl node = (BControl) it.next();
-			if (isPastableNode(node)) {
+			if (isPastableControl(node)) {
 				list.put(node, null);
 			}
 		}
 		return true;
 	}
 
+	public boolean addElement(BControl control) {
+		if (!parentControls.contains(control)) {
+			return parentControls.add(control);
+		}
+		return false;
+	}
+
+	public boolean isContainer(BControl control) {
+		return control.canHaveChildren();
+	}
+
 	@Override
 	public void execute() {
+
 		if (!canExecute())
 			return;
-		Iterator<BControl> it = list.keySet().iterator();
-		while (it.hasNext()) {
-			BControl control = (BControl) it.next();
-			try {
-				BControl clone = (BControl) control.clone();
-				int x = Integer.valueOf(Integer.valueOf(clone
-						.getAttributeValue(AttributeConstants.ATTRIBUTE_X)
-						.toString()));
-				int y = Integer.valueOf(Integer.valueOf(clone
-						.getAttributeValue(AttributeConstants.ATTRIBUTE_Y)
-						.toString()));
-				clone.setAttributeValue(AttributeConstants.ATTRIBUTE_X, x
-						+ cHelper.getDistance());
-				clone.setAttributeValue(AttributeConstants.ATTRIBUTE_Y, y
-						+ cHelper.getDistance());
-				list.put(control, clone);
-				cHelper.setDistance(cHelper.getDistance() + 10);
-			} catch (CloneNotSupportedException e) {
-				e.printStackTrace();
+
+		for (BControl parent : parentControls) {
+
+			Iterator<BControl> it = list.keySet().iterator();
+			while (it.hasNext()) {
+				BControl control = (BControl) it.next();
+				control.setParent(parent);
+				try {
+					BControl clone = (BControl) control.clone();
+					clone.setParent(parent);
+					int x = Integer.valueOf(Integer.valueOf(clone
+							.getAttributeValue(AttributeConstants.ATTRIBUTE_X)
+							.toString()));
+					int y = Integer.valueOf(Integer.valueOf(clone
+							.getAttributeValue(AttributeConstants.ATTRIBUTE_Y)
+							.toString()));
+					clone.setAttributeValue(AttributeConstants.ATTRIBUTE_X, x
+							+ cHelper.getDistance());
+					clone.setAttributeValue(AttributeConstants.ATTRIBUTE_Y, y
+							+ cHelper.getDistance());
+					list.put(control, clone);
+					cHelper.setDistance(cHelper.getDistance() + 10);
+				} catch (CloneNotSupportedException e) {
+					e.printStackTrace();
+				}
 			}
+			redo();
+
 		}
-		redo();
+
 	}
 
 	@Override
@@ -74,7 +97,7 @@ public class PasteCommand extends Command {
 		Iterator<BControl> it = list.values().iterator();
 		while (it.hasNext()) {
 			BControl control = it.next();
-			if (isPastableNode(control)) {
+			if (isPastableControl(control)) {
 				control.getParent().addChild(control);
 			}
 		}
@@ -90,13 +113,13 @@ public class PasteCommand extends Command {
 		Iterator<BControl> it = list.values().iterator();
 		while (it.hasNext()) {
 			BControl bcontrol = it.next();
-			if (isPastableNode(bcontrol)) {
+			if (isPastableControl(bcontrol)) {
 				bcontrol.getParent().removeChild(bcontrol);
 			}
 		}
 	}
 
-	public boolean isPastableNode(BControl control) {
+	public boolean isPastableControl(BControl control) {
 		if (control instanceof Visualization)
 			return false;
 		return true;

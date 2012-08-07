@@ -31,6 +31,8 @@ import org.eventb.core.ast.UnaryExpression;
 
 import de.be4.classicalb.core.parser.node.AAddExpression;
 import de.be4.classicalb.core.parser.node.ABoolSetExpression;
+import de.be4.classicalb.core.parser.node.ABooleanFalseExpression;
+import de.be4.classicalb.core.parser.node.ABooleanTrueExpression;
 import de.be4.classicalb.core.parser.node.ACardExpression;
 import de.be4.classicalb.core.parser.node.ACartesianProductExpression;
 import de.be4.classicalb.core.parser.node.ACompositionExpression;
@@ -48,7 +50,6 @@ import de.be4.classicalb.core.parser.node.AEventBFirstProjectionV2Expression;
 import de.be4.classicalb.core.parser.node.AEventBIdentityExpression;
 import de.be4.classicalb.core.parser.node.AEventBSecondProjectionExpression;
 import de.be4.classicalb.core.parser.node.AEventBSecondProjectionV2Expression;
-import de.be4.classicalb.core.parser.node.AFalseExpression;
 import de.be4.classicalb.core.parser.node.AFunctionExpression;
 import de.be4.classicalb.core.parser.node.AGeneralIntersectionExpression;
 import de.be4.classicalb.core.parser.node.AGeneralUnionExpression;
@@ -93,8 +94,7 @@ import de.be4.classicalb.core.parser.node.ATotalInjectionExpression;
 import de.be4.classicalb.core.parser.node.ATotalRelationExpression;
 import de.be4.classicalb.core.parser.node.ATotalSurjectionExpression;
 import de.be4.classicalb.core.parser.node.ATotalSurjectionRelationExpression;
-import de.be4.classicalb.core.parser.node.ATrueExpression;
-import de.be4.classicalb.core.parser.node.AUnaryExpression;
+import de.be4.classicalb.core.parser.node.AUnaryMinusExpression;
 import de.be4.classicalb.core.parser.node.AUnionExpression;
 import de.be4.classicalb.core.parser.node.PExpression;
 import de.be4.classicalb.core.parser.node.PPredicate;
@@ -530,10 +530,10 @@ public class ExpressionVisitor extends SimpleVisitorAdapter implements // NOPMD
 			setExpression(new ABoolSetExpression());
 			break;
 		case Formula.TRUE:
-			setExpression(new ATrueExpression());
+			setExpression(new ABooleanTrueExpression());
 			break;
 		case Formula.FALSE:
-			setExpression(new AFalseExpression());
+			setExpression(new ABooleanFalseExpression());
 			break;
 		case Formula.EMPTYSET:
 			setExpression(new AEmptySetExpression());
@@ -696,7 +696,7 @@ public class ExpressionVisitor extends SimpleVisitorAdapter implements // NOPMD
 			setExpression(reverseExpression);
 			break;
 		case Formula.UNMINUS:
-			final AUnaryExpression unaryExpression = new AUnaryExpression();
+			final AUnaryMinusExpression unaryExpression = new AUnaryMinusExpression();
 			unaryExpression.setExpression(exp);
 			setExpression(unaryExpression);
 			break;

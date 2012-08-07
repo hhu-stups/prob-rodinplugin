@@ -3,9 +3,6 @@ package de.prob.core.domainobjects.ltl;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.prob.core.command.LtlCheckingCommand.PathType;
-import de.prob.logging.Logger;
-
 /**
  * Provides a "trigger" operator.
  * 
@@ -14,39 +11,28 @@ import de.prob.logging.Logger;
  */
 
 public final class CounterExampleTrigger extends CounterExampleBinaryOperator {
-	private final CounterExampleNegation notSince;
-
-	public CounterExampleTrigger(final PathType pathType, final int loopEntry,
+	public CounterExampleTrigger(final CounterExample counterExample,
 			final CounterExampleProposition firstArgument,
 			final CounterExampleProposition secondArgument) {
-		super("T", "Trigger", pathType, loopEntry, firstArgument,
-				secondArgument);
-		CounterExampleNegation notFirst = new CounterExampleNegation(pathType,
-				loopEntry, firstArgument);
-		CounterExampleNegation notSecond = new CounterExampleNegation(pathType,
-				loopEntry, secondArgument);
-		CounterExampleSince since = new CounterExampleSince(pathType,
-				loopEntry, notFirst, notSecond);
-		notSince = new CounterExampleNegation(pathType, loopEntry, since);
+		super("T", "Trigger", counterExample, firstArgument, secondArgument);
+		checkBySince(counterExample, firstArgument, secondArgument);
 	}
 
-	public CounterExampleTrigger(final PathType pathType,
+	private void checkBySince(final CounterExample counterExample,
 			final CounterExampleProposition firstArgument,
 			final CounterExampleProposition secondArgument) {
-		this(pathType, -1, firstArgument, secondArgument);
+		CounterExampleNegation notFirst = new CounterExampleNegation(
+				counterExample, firstArgument);
+		CounterExampleNegation notSecond = new CounterExampleNegation(
+				counterExample, secondArgument);
+		CounterExampleSince since = new CounterExampleSince(counterExample,
+				notFirst, notSecond);
+		addCheck(new CounterExampleNegation(counterExample, since));
 	}
 
 	@Override
 	protected CounterExampleValueType calculate(final int position) {
-		final CounterExampleValueType value = calculateTriggerOperator(position);
-
-		final List<CounterExampleValueType> notSinceValues = notSince
-				.getValues();
-
-		Logger.assertProB("Trigger invalid",
-				value == notSinceValues.get(position));
-
-		return value;
+		return calculateTriggerOperator(position);
 	}
 
 	private CounterExampleValueType calculateTriggerOperator(final int position) {

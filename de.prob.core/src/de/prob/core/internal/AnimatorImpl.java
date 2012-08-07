@@ -189,12 +189,10 @@ public class AnimatorImpl {
 		final Start ast = sendCommandImpl(query);
 		Map<String, PrologTerm> bindings;
 		try {
-			bindings = BindingGenerator
-					.createBindingMustNotFail(query, ast);
+			bindings = BindingGenerator.createBindingMustNotFail(query, ast);
 		} catch (de.prob.parser.ResultParserException e) {
-			CommandException commandException = new CommandException(e.getLocalizedMessage(), e);
-			commandException.notifyUserOnce();
-			throw commandException;
+			Logger.notifyUser(e.getMessage());
+			throw new CommandException(e.getMessage());
 		}
 		return new SimplifiedROMap<String, PrologTerm>(bindings);
 	}

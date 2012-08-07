@@ -4,9 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import de.prob.core.command.LtlCheckingCommand.PathType;
-import de.prob.logging.Logger;
-
 /**
  * Provides an "once" operator.
  * 
@@ -15,36 +12,27 @@ import de.prob.logging.Logger;
  */
 
 public final class CounterExampleOnce extends CounterExampleUnaryOperator {
-	private final CounterExampleSince since;
-
-	public CounterExampleOnce(final PathType pathType, final int loopEntry,
+	public CounterExampleOnce(final CounterExample counterExample,
 			final CounterExampleProposition argument) {
-		super("O", "Once", pathType, loopEntry, argument);
+		super("O", "Once", counterExample, argument);
+		checkBySince(counterExample, argument);
+	}
 
+	private void checkBySince(final CounterExample counterExample,
+			final CounterExampleProposition argument) {
 		CounterExampleValueType[] firstValues = new CounterExampleValueType[argument
 				.getValues().size()];
 		Arrays.fill(firstValues, CounterExampleValueType.TRUE);
 
-		CounterExamplePredicate first = new CounterExamplePredicate(pathType,
-				loopEntry, Arrays.asList(firstValues));
+		CounterExamplePredicate first = new CounterExamplePredicate("",
+				counterExample, Arrays.asList(firstValues));
 
-		since = new CounterExampleSince(pathType, loopEntry, first, argument);
-	}
-
-	public CounterExampleOnce(final PathType pathType,
-			final CounterExampleProposition argument) {
-		this(pathType, -1, argument);
+		addCheck(new CounterExampleSince(counterExample, first, argument));
 	}
 
 	@Override
 	public CounterExampleValueType calculate(final int position) {
-		CounterExampleValueType value = calculateOnceOperator(position);
-
-		List<CounterExampleValueType> sinceValues = since.getValues();
-
-		Logger.assertProB("Once invalid", value == sinceValues.get(position));
-
-		return value;
+		return calculateOnceOperator(position);
 	}
 
 	private CounterExampleValueType calculateOnceOperator(final int position) {

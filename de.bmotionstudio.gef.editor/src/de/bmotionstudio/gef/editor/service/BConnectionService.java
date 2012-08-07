@@ -33,7 +33,7 @@ public class BConnectionService extends AbstractBControlService implements
 		String sourcePluginID = configurationElement.getContributor().getName();
 		String name = configurationElement.getAttribute("name");
 		String icon = configurationElement.getAttribute("icon");
-		return new ConnectionCreationToolEntry(name, "Create Control " + name,
+		return new ConnectionCreationToolEntry(name, "Create " + name,
 				new BControlCreationFactory(BConnection.TYPE, visualization),
 				AbstractUIPlugin
 						.imageDescriptorFromPlugin(sourcePluginID, icon),

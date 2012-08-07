@@ -22,7 +22,7 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.actions.ActionFactory;
 
-import de.bmotionstudio.gef.editor.action.SchedulerEventAction;
+import de.bmotionstudio.gef.editor.action.OpenSchedulerEventAction;
 import de.bmotionstudio.gef.editor.model.BControl;
 import de.bmotionstudio.gef.editor.part.AppAbstractEditPart;
 import de.bmotionstudio.gef.editor.part.VisualizationPart;
@@ -174,7 +174,9 @@ public class AppContextMenuProvider extends ContextMenuProvider {
 					String langID = configurationElement
 							.getAttribute("language");
 
-					if (langID.equals(control.getVisualization().getLanguage())) {
+					if (langID != null
+							&& langID.equals(control.getVisualization()
+									.getLanguage())) {
 
 						for (IConfigurationElement cObserver : configurationElement
 								.getChildren("observer")) {
@@ -233,7 +235,7 @@ public class AppContextMenuProvider extends ContextMenuProvider {
 
 				SchedulerEvent event = bcontrol.getEvent(eventIDs[0]);
 
-				SchedulerEventAction action = (SchedulerEventAction) getActionRegistry()
+				OpenSchedulerEventAction action = (OpenSchedulerEventAction) getActionRegistry()
 						.getAction(
 								"de.bmotionstudio.gef.editor.SchedulerEventAction."
 										+ event.getID());
@@ -264,7 +266,7 @@ public class AppContextMenuProvider extends ContextMenuProvider {
 
 							if (show) {
 
-								SchedulerEventAction action = (SchedulerEventAction) getActionRegistry()
+								OpenSchedulerEventAction action = (OpenSchedulerEventAction) getActionRegistry()
 										.getAction(
 												"de.bmotionstudio.gef.editor.SchedulerEventAction."
 														+ sClassName);

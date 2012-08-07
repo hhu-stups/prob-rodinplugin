@@ -25,29 +25,29 @@ import org.eventb.core.ast.RelationalPredicate;
 import org.eventb.core.ast.SimplePredicate;
 import org.eventb.core.ast.UnaryPredicate;
 
-import de.be4.classicalb.core.parser.node.ABelongPredicate;
 import de.be4.classicalb.core.parser.node.AConjunctPredicate;
 import de.be4.classicalb.core.parser.node.ADisjunctPredicate;
 import de.be4.classicalb.core.parser.node.AEqualPredicate;
 import de.be4.classicalb.core.parser.node.AEquivalencePredicate;
-import de.be4.classicalb.core.parser.node.AExistentialQuantificationPredicate;
-import de.be4.classicalb.core.parser.node.AFalsePredicate;
+import de.be4.classicalb.core.parser.node.AExistsPredicate;
+import de.be4.classicalb.core.parser.node.AFalsityPredicate;
 import de.be4.classicalb.core.parser.node.AFinitePredicate;
+import de.be4.classicalb.core.parser.node.AForallPredicate;
 import de.be4.classicalb.core.parser.node.AGreaterEqualPredicate;
 import de.be4.classicalb.core.parser.node.AGreaterPredicate;
 import de.be4.classicalb.core.parser.node.AImplicationPredicate;
-import de.be4.classicalb.core.parser.node.AIncludePredicate;
-import de.be4.classicalb.core.parser.node.AIncludeStrictlyPredicate;
 import de.be4.classicalb.core.parser.node.ALessEqualPredicate;
 import de.be4.classicalb.core.parser.node.ALessPredicate;
+import de.be4.classicalb.core.parser.node.AMemberPredicate;
 import de.be4.classicalb.core.parser.node.ANegationPredicate;
-import de.be4.classicalb.core.parser.node.ANotBelongPredicate;
-import de.be4.classicalb.core.parser.node.ANotIncludePredicate;
-import de.be4.classicalb.core.parser.node.ANotIncludeStrictlyPredicate;
+import de.be4.classicalb.core.parser.node.ANotEqualPredicate;
+import de.be4.classicalb.core.parser.node.ANotMemberPredicate;
+import de.be4.classicalb.core.parser.node.ANotSubsetPredicate;
+import de.be4.classicalb.core.parser.node.ANotSubsetStrictPredicate;
 import de.be4.classicalb.core.parser.node.APartitionPredicate;
-import de.be4.classicalb.core.parser.node.ATruePredicate;
-import de.be4.classicalb.core.parser.node.AUnequalPredicate;
-import de.be4.classicalb.core.parser.node.AUniversalQuantificationPredicate;
+import de.be4.classicalb.core.parser.node.ASubsetPredicate;
+import de.be4.classicalb.core.parser.node.ASubsetStrictPredicate;
+import de.be4.classicalb.core.parser.node.ATruthPredicate;
 import de.be4.classicalb.core.parser.node.PExpression;
 import de.be4.classicalb.core.parser.node.PPredicate;
 import de.prob.eventb.translator.internal.SimpleVisitorAdapter;
@@ -76,6 +76,9 @@ public class PredicateVisitor extends SimpleVisitorAdapter implements // NOPMD
 			predicateSet = true;
 			this.p = p;
 		}
+		//public ClassifiedPragma(String name, Node attachedTo, List<String> arguments, List<String> warnings, SourcePosition start, SourcePosition end) {
+		
+    //     new ClassifiedPragma("discharged", p, proof, Collections.emptyList(), new SourcePosition(-1, -1), new SourcePosition(-1, -1));
 	}
 
 	public PredicateVisitor(final LinkedList<String> bounds) {
@@ -118,18 +121,18 @@ public class PredicateVisitor extends SimpleVisitorAdapter implements // NOPMD
 
 		switch (tag) {
 		case Formula.EXISTS:
-			final AExistentialQuantificationPredicate existentialQuantificationPredicate = new AExistentialQuantificationPredicate();
+			final AExistsPredicate existentialQuantificationPredicate = new AExistsPredicate();
 			existentialQuantificationPredicate.setIdentifiers(list);
 			existentialQuantificationPredicate.setPredicate(predicateVisitor
 					.getPredicate());
 			setPredicate(existentialQuantificationPredicate);
 			break;
 		case Formula.FORALL:
-			final AUniversalQuantificationPredicate universalQuantificationPredicate = new AUniversalQuantificationPredicate();
+			final AForallPredicate universalQuantificationPredicate = new AForallPredicate();
 			universalQuantificationPredicate.setIdentifiers(list);
 			PPredicate pred = predicateVisitor.getPredicate();
 			if (!(pred instanceof AImplicationPredicate)) {
-				pred = new AImplicationPredicate(new ATruePredicate(), pred);
+				pred = new AImplicationPredicate(new ATruthPredicate(), pred);
 			}
 			universalQuantificationPredicate.setImplication(pred);
 			setPredicate(universalQuantificationPredicate);
@@ -249,10 +252,10 @@ public class PredicateVisitor extends SimpleVisitorAdapter implements // NOPMD
 		final int tag = predicate.getTag();
 		switch (tag) {
 		case Formula.BTRUE:
-			setPredicate(new ATruePredicate());
+			setPredicate(new ATruthPredicate());
 			break;
 		case Formula.BFALSE:
-			setPredicate(new AFalsePredicate());
+			setPredicate(new AFalsityPredicate());
 			break;
 
 		default:
@@ -280,7 +283,7 @@ public class PredicateVisitor extends SimpleVisitorAdapter implements // NOPMD
 			setPredicate(equalPredicate);
 			break;
 		case Formula.NOTEQUAL:
-			final AUnequalPredicate unequalPredicate = new AUnequalPredicate();
+			final ANotEqualPredicate unequalPredicate = new ANotEqualPredicate();
 			unequalPredicate.setLeft(subLeft.getExpression());
 			unequalPredicate.setRight(subRight.getExpression());
 			setPredicate(unequalPredicate);
@@ -312,37 +315,37 @@ public class PredicateVisitor extends SimpleVisitorAdapter implements // NOPMD
 			break;
 
 		case Formula.IN:
-			final ABelongPredicate inPredicate = new ABelongPredicate();
+			final AMemberPredicate inPredicate = new AMemberPredicate();
 			inPredicate.setLeft(subLeft.getExpression());
 			inPredicate.setRight(subRight.getExpression());
 			setPredicate(inPredicate);
 			break;
 		case Formula.NOTIN:
-			final ANotBelongPredicate ninPredicate = new ANotBelongPredicate();
+			final ANotMemberPredicate ninPredicate = new ANotMemberPredicate();
 			ninPredicate.setLeft(subLeft.getExpression());
 			ninPredicate.setRight(subRight.getExpression());
 			setPredicate(ninPredicate);
 			break;
 		case Formula.SUBSET:
-			final AIncludeStrictlyPredicate strictSubsetPredicate = new AIncludeStrictlyPredicate();
+			final ASubsetStrictPredicate strictSubsetPredicate = new ASubsetStrictPredicate();
 			strictSubsetPredicate.setLeft(subLeft.getExpression());
 			strictSubsetPredicate.setRight(subRight.getExpression());
 			setPredicate(strictSubsetPredicate);
 			break;
 		case Formula.NOTSUBSET:
-			final ANotIncludeStrictlyPredicate notStrictSubsetPredicate = new ANotIncludeStrictlyPredicate();
+			final ANotSubsetStrictPredicate notStrictSubsetPredicate = new ANotSubsetStrictPredicate();
 			notStrictSubsetPredicate.setLeft(subLeft.getExpression());
 			notStrictSubsetPredicate.setRight(subRight.getExpression());
 			setPredicate(notStrictSubsetPredicate);
 			break;
 		case Formula.SUBSETEQ:
-			final AIncludePredicate subsetPredicate = new AIncludePredicate();
+			final ASubsetPredicate subsetPredicate = new ASubsetPredicate();
 			subsetPredicate.setLeft(subLeft.getExpression());
 			subsetPredicate.setRight(subRight.getExpression());
 			setPredicate(subsetPredicate);
 			break;
 		case Formula.NOTSUBSETEQ:
-			final ANotIncludePredicate notSubsetPredicate = new ANotIncludePredicate();
+			final ANotSubsetPredicate notSubsetPredicate = new ANotSubsetPredicate();
 			notSubsetPredicate.setLeft(subLeft.getExpression());
 			notSubsetPredicate.setRight(subRight.getExpression());
 			setPredicate(notSubsetPredicate);

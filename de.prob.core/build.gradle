@@ -1,0 +1,24 @@
+apply plugin: 'java'
+
+repositories {
+	maven {
+	  name "cobra"
+	  url "http://cobra.cs.uni-duesseldorf.de/artifactory/repo"
+	}
+}
+
+
+def parser_version = '2.4.8-SNAPSHOT'
+
+dependencies {
+ compile group: "de.prob", name: "answerparser", version: parser_version , changing: true
+ compile group: "de.prob", name: "bparser", version: parser_version , changing: true
+ compile group: "de.prob", name: "cliparser", version: parser_version , changing: true
+ compile group: "de.prob", name: "ltlparser", version: parser_version , changing: true
+ compile group: "de.prob", name: "parserbase", version: parser_version , changing: true
+ compile group: "de.prob", name: "prologlib", version: parser_version , changing: true
+ compile group: "de.prob", name: "unicode", version: parser_version , changing: true
+ compile 'jgrapht:jgrapht:0.8.3'
+ compile 'commons-lang:commons-lang:2.6'
+ compile 'commons-codec:commons-codec:1.6'
+}

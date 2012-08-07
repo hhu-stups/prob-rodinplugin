@@ -27,9 +27,9 @@ public abstract class AbstractBControlService {
 		String type = configurationElement.getAttribute("id");
 		// Get the source plug-in (from the control extension)
 		String sourcePluginID = configurationElement.getContributor().getName();
-		return new CombinedTemplateCreationEntry(name,
-				"Create Control " + name, new BControlTemplate(type),
-				new BControlCreationFactory(type, visualization),
+		return new CombinedTemplateCreationEntry(name, "Create " + name,
+				new BControlTemplate(type), new BControlCreationFactory(type,
+						visualization),
 				AbstractUIPlugin
 						.imageDescriptorFromPlugin(sourcePluginID, icon),
 				AbstractUIPlugin

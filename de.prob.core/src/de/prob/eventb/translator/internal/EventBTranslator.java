@@ -11,6 +11,7 @@ import java.util.Collection;
 import java.util.Map;
 
 import org.eclipse.core.runtime.Assert;
+import org.eventb.core.IEvent;
 import org.eventb.core.IEventBProject;
 import org.eventb.core.IEventBRoot;
 import org.eventb.core.ISCInternalContext;
@@ -52,7 +53,7 @@ public abstract class EventBTranslator implements ITranslator {
 		for (AbstractComponentTranslator t : translators) {
 			final Map<Node, IInternalElement> labelMapping = t
 					.getLabelMapping();
-			printer.addNodes(labelMapping);
+			printer.addNodes(labelMapping, t.getResource());
 		}
 		return printer;
 	}
@@ -84,25 +85,37 @@ public abstract class EventBTranslator implements ITranslator {
 
 	private void printProofInformation(
 			final Collection<ModelTranslator> refinementChainTranslators,
+			Collection<ContextTranslator> contextTranslators,
 			final IPrologTermOutput pout) throws TranslationFailedException {
-		for (ModelTranslator modelTranslator : refinementChainTranslators) {
-			for (DischargedProof proof : modelTranslator.getProofs()) {
-				pout.openTerm("discharged");
-				pout.printAtom(proof.machine.getRodinFile().getBareName());
-				try {
-					final String label = proof.event.getLabel();
-					final String elementName = proof.invariant.getLabel();
-					pout.printAtom(label);
-					pout.printAtom(elementName);
-				} catch (RodinDBException e) {
-					final String details = "Translation error while getting information about discharged proof obligations";
-					throw new TranslationFailedException(name, details);
-				}
 
-				pout.closeTerm();
-			}
+		ArrayList<DischargedProof> list = new ArrayList<DischargedProof>();
+
+		for (ContextTranslator contextTranslator : contextTranslators) {
+			list.addAll(contextTranslator.getProofs());
 		}
-		if (System.getProperty("flow") != null) printFlowInformation(pout);
+		for (ModelTranslator modelTranslator : refinementChainTranslators) {
+			list.addAll(modelTranslator.getProofs());
+		}
+
+		for (DischargedProof proof : list) {
+			pout.openTerm("discharged");
+			pout.printAtom(proof.machine.getRodinFile().getBareName());
+			try {
+				IEvent event = proof.event;
+				final String elementName = proof.predicate;
+				if (event != null)
+					pout.printAtom(event.getLabel());
+				pout.printAtom(elementName);
+			} catch (RodinDBException e) {
+				final String details = "Translation error while getting information about discharged proof obligations";
+				throw new TranslationFailedException(name, details);
+			}
+
+			pout.closeTerm();
+		}
+
+		if (System.getProperty("flow") != null)
+			printFlowInformation(pout);
 	}
 
 	protected abstract void printFlowInformation(final IPrologTermOutput pout);
@@ -128,7 +141,8 @@ public abstract class EventBTranslator implements ITranslator {
 		printModels(refinementChainTranslators, pout, prolog);
 		printContexts(contextTranslators, pout, prolog);
 		pout.openList();
-		printProofInformation(refinementChainTranslators, pout);
+		printProofInformation(refinementChainTranslators, contextTranslators,
+				pout);
 		pout.closeList();
 		pout.printVariable("_Error");
 		pout.closeTerm();

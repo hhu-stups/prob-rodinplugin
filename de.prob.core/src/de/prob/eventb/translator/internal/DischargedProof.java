@@ -9,19 +9,42 @@
  */
 package de.prob.eventb.translator.internal;
 
+import org.eventb.core.IAxiom;
 import org.eventb.core.IEvent;
+import org.eventb.core.IEventBRoot;
 import org.eventb.core.IInvariant;
-import org.eventb.core.IMachineRoot;
+import org.rodinp.core.RodinDBException;
 
 public class DischargedProof {
-	public final IInvariant invariant;
+	public final String predicate;
 	public final IEvent event;
-	public final IMachineRoot machine;
+	public final IEventBRoot machine;
 
-	public DischargedProof(final IMachineRoot root, final IInvariant inv,
+	public DischargedProof(final IEventBRoot root, final IInvariant inv,
 			final IEvent evt) {
 		machine = root;
-		invariant = inv;
+		String p;
+		try {
+			p = inv.getLabel();
+		} catch (RodinDBException e) {
+			p = "";
+			e.printStackTrace();
+		}
+		predicate = p;
+		event = evt;
+	}
+
+	public DischargedProof(final IEventBRoot root, final IAxiom inv,
+			final IEvent evt) {
+		machine = root;
+		String p;
+		try {
+			p = inv.getLabel();
+		} catch (RodinDBException e) {
+			p = "";
+			e.printStackTrace();
+		}
+		predicate = p;
 		event = evt;
 	}
 }

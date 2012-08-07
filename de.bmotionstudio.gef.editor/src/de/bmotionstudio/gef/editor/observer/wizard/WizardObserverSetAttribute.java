@@ -48,6 +48,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 
 import de.be4.classicalb.core.parser.BParser;
+import de.bmotionstudio.gef.editor.BMotionAbstractWizard;
 import de.bmotionstudio.gef.editor.BMotionStudioImage;
 import de.bmotionstudio.gef.editor.EditorImageRegistry;
 import de.bmotionstudio.gef.editor.attribute.AbstractAttribute;
@@ -61,7 +62,7 @@ import de.bmotionstudio.gef.editor.observer.ObserverWizard;
 import de.bmotionstudio.gef.editor.observer.SetAttribute;
 import de.bmotionstudio.gef.editor.observer.SetAttributeObject;
 import de.bmotionstudio.gef.editor.property.CheckboxCellEditorHelper;
-import de.bmotionstudio.gef.editor.util.WizardObserverUtil;
+import de.bmotionstudio.gef.editor.util.BMotionWizardUtil;
 
 public class WizardObserverSetAttribute extends ObserverWizard {
 
@@ -90,9 +91,9 @@ public class WizardObserverSetAttribute extends ObserverWizard {
 			Composite container = new Composite(parent, SWT.NONE);
 			container.setLayout(gl);
 
-			tableViewer = WizardObserverUtil.createObserverWizardTableViewer(
+			tableViewer = BMotionWizardUtil.createBMotionWizardTableViewer(
 					container, SetAttributeObject.class,
-					(ObserverWizard) getWizard());
+					((BMotionAbstractWizard) getWizard()).getName());
 
 			tableViewer
 					.addSelectionChangedListener(new ISelectionChangedListener() {
@@ -114,7 +115,8 @@ public class WizardObserverSetAttribute extends ObserverWizard {
 								String attribute = setAttributeObj
 										.getAttribute();
 								Object value = setAttributeObj.getValue();
-								control.setAttributeValue(attribute, value);
+								control.setAttributeValue(attribute, value,
+										true, false);
 
 								lastChangedAttributeID = attribute;
 
@@ -216,7 +218,7 @@ public class WizardObserverSetAttribute extends ObserverWizard {
 
 			@Override
 			protected boolean canEdit(Object element) {
-				return WizardObserverUtil.isEditElement(getViewer());
+				return BMotionWizardUtil.isEditElement(getViewer());
 			}
 
 			@Override

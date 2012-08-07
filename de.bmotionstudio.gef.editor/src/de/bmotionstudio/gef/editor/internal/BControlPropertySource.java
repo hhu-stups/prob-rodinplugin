@@ -30,27 +30,32 @@ public class BControlPropertySource extends AbstractAttribute {
 
 		for (AbstractAttribute atr : control.getAttributes().values()) {
 
-			atr.setControl(control);
+			if (atr.show()) {
 
-			String group = atr.getGroup();
+				atr.setControl(control);
 
-			if (group != null) {
+				String group = atr.getGroup();
 
-				// If group is root node --> add to root
-				if (group.equals(ROOT)) {
-					addChild(atr);
-				} else {
-					AbstractAttribute groupAtr = control.getAttribute(group);
-					if (groupAtr != null) {
-						groupAtr.addChild(atr);
+				if (group != null) {
+
+					// If group is root node --> add to root
+					if (group.equals(ROOT)) {
+						addChild(atr);
 					} else {
-						miscAttribute.addChild(atr);
+						AbstractAttribute groupAtr = control
+								.getAttribute(group);
+						if (groupAtr != null) {
+							groupAtr.addChild(atr);
+						} else {
+							miscAttribute.addChild(atr);
+						}
 					}
+
+				} else {
+					// No group, add to misc attribute node
+					miscAttribute.addChild(atr);
 				}
 
-			} else {
-				// No group, add to misc attribute node
-				miscAttribute.addChild(atr);
 			}
 
 		}

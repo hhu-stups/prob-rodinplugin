@@ -6,7 +6,6 @@
 
 package de.bmotionstudio.gef.editor.figure;
 
-import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.IFigure;
@@ -150,7 +149,9 @@ public class ShapeFigure extends AbstractBMotionFigure {
 					g.fillRectangle(this.getBounds());
 					break;
 				case SHAPE_TYPE_OVAL:
-					g.fillOval(this.getBounds());
+					g.fillOval(this.getBounds().x, this.getBounds().y,
+							this.getBounds().width - 3,
+							this.getBounds().height - 3);
 					break;
 				case SHAPE_TYPE_TRIANGLE:
 					g.fillPolygon(triangle);
@@ -172,6 +173,7 @@ public class ShapeFigure extends AbstractBMotionFigure {
 				g.setForegroundColor(this.getForegroundColor());
 
 				float lineInset = Math.max(1.0f, getLineWidthFloat()) / 2.0f;
+
 				int inset1 = (int) Math.floor(lineInset);
 				int inset2 = (int) Math.ceil(lineInset);
 
@@ -186,6 +188,8 @@ public class ShapeFigure extends AbstractBMotionFigure {
 					g.drawRectangle(r);
 					break;
 				case SHAPE_TYPE_OVAL:
+					r.width -= 2;
+					r.height -= 2;
 					g.drawOval(r);
 					break;
 				case SHAPE_TYPE_TRIANGLE:
@@ -201,7 +205,7 @@ public class ShapeFigure extends AbstractBMotionFigure {
 			}
 
 		};
-		shapeFigure.setForegroundColor(ColorConstants.blue);
+		// shapeFigure.setForegroundColor(ColorConstants.blue);
 		// setOpaque(true);
 		add(shapeFigure);
 	}

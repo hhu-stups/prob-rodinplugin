@@ -8,6 +8,7 @@ package de.bmotionstudio.gef.editor.model;
 
 import org.eclipse.swt.graphics.RGB;
 
+import de.bmotionstudio.gef.editor.AttributeConstants;
 import de.bmotionstudio.gef.editor.attribute.BAttributeBackgroundColor;
 import de.bmotionstudio.gef.editor.attribute.BAttributeEnabled;
 import de.bmotionstudio.gef.editor.attribute.BAttributeText;
@@ -38,6 +39,8 @@ public class BButton extends BControl {
 		initAttribute(new BAttributeBackgroundColor(new RGB(192, 192, 192)));
 		initAttribute(new BAttributeTextColor(new RGB(0, 0, 0)));
 		initAttribute(new BAttributeEnabled(true));
+		getAttribute(AttributeConstants.ATTRIBUTE_HEIGHT).setValue(25);
+		getAttribute(AttributeConstants.ATTRIBUTE_WIDTH).setValue(100);
 	}
 
 }
