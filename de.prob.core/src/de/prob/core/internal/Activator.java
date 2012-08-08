@@ -26,6 +26,7 @@ import org.osgi.framework.BundleContext;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 
+import de.prob.Main;
 import de.prob.MainModule;
 import de.prob.core.Animator;
 import de.prob.core.IAnimationListener;
@@ -41,8 +42,6 @@ import de.prob.webconsole.WebModule;
 
 public final class Activator extends Plugin {
 	private static History history;
-	private final static Injector INJECTOR = Guice.createInjector(
-			new MainModule(), new WebModule());
 
 	// The plug-in ID
 	public static final String PLUGIN_ID = "de.prob.core";
@@ -224,9 +223,6 @@ public final class Activator extends Plugin {
 		}
 	}
 
-	public static Injector getInjector() {
-		return INJECTOR;
-	}
 
 	public static History getHistory() {
 		return history;

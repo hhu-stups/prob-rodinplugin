@@ -42,6 +42,9 @@ import org.rodinp.core.IRodinFile;
 import org.rodinp.core.IRodinProject;
 import org.rodinp.core.RodinCore;
 
+import com.google.inject.Injector;
+
+import de.prob.Main;
 import de.prob.animator.command.LoadEventBCommand;
 import de.prob.animator.command.StartAnimationCommand;
 import de.prob.core.Animator;
@@ -53,6 +56,7 @@ import de.prob.scripting.EventBFactory;
 import de.prob.statespace.History;
 import de.prob.statespace.StateSpace;
 import de.prob.webconsole.GroovyExecution;
+import de.prob.webconsole.ServletContextListener;
 
 public class StartAnimationHandler extends AbstractHandler implements IHandler {
 
@@ -90,7 +94,12 @@ public class StartAnimationHandler extends AbstractHandler implements IHandler {
 
 		final IEventBRoot rootElement = getRootElement();
 
-		final EventBFactory instance = Activator.getInjector().getInstance(
+		
+		
+	
+		Injector injector = ServletContextListener.INJECTOR;
+		
+		final EventBFactory instance = injector .getInstance(
 				EventBFactory.class);
 
 		IRodinProject rodinProject = rootElement.getRodinProject();
@@ -130,7 +139,7 @@ public class StartAnimationHandler extends AbstractHandler implements IHandler {
 
 		History h = new History(s);
 		Activator.setHistory(h);
-		final GroovyExecution ge = Activator.getInjector().getInstance(
+		final GroovyExecution ge = injector.getInstance(
 				GroovyExecution.class);
 		Binding bindings = ge.getBindings();
 		bindings.setVariable("defaultStateSpace", s);
