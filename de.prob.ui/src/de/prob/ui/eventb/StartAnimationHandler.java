@@ -44,7 +44,6 @@ import org.rodinp.core.RodinCore;
 
 import com.google.inject.Injector;
 
-import de.prob.Main;
 import de.prob.animator.command.LoadEventBCommand;
 import de.prob.animator.command.StartAnimationCommand;
 import de.prob.core.Animator;
@@ -94,13 +93,10 @@ public class StartAnimationHandler extends AbstractHandler implements IHandler {
 
 		final IEventBRoot rootElement = getRootElement();
 
-		
-		
-	
 		Injector injector = ServletContextListener.INJECTOR;
-		
-		final EventBFactory instance = injector .getInstance(
-				EventBFactory.class);
+
+		final EventBFactory instance = injector
+				.getInstance(EventBFactory.class);
 
 		IRodinProject rodinProject = rootElement.getRodinProject();
 		ProjectResource resource = new ProjectResource(rodinProject);
@@ -139,12 +135,11 @@ public class StartAnimationHandler extends AbstractHandler implements IHandler {
 
 		History h = new History(s);
 		Activator.setHistory(h);
-		final GroovyExecution ge = injector.getInstance(
-				GroovyExecution.class);
+		final GroovyExecution ge = injector.getInstance(GroovyExecution.class);
 		Binding bindings = ge.getBindings();
 		bindings.setVariable("defaultStateSpace", s);
 		bindings.setVariable("defaultHistory", h);
-
+		System.gc();
 		return null;
 	}
 
