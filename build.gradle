@@ -31,7 +31,10 @@ project(':de.prob.core') {
 	 compile 'commons-lang:commons-lang:2.6'
 	 compile group: "de.prob", name: "cli", version: "2.0.0-milestone-5-SNAPSHOT" , changing: true
 	}
-	
+
+	configurations.all {
+      resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+	}	
 }
 
 project(':de.prob.ui') {
