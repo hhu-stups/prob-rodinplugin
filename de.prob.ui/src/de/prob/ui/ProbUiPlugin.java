@@ -6,13 +6,21 @@
 
 package de.prob.ui;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+
 import org.eclipse.jface.resource.ImageRegistry;
+import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.browser.IWebBrowser;
+import org.eclipse.ui.browser.IWorkbenchBrowserSupport;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 
 import de.prob.logging.Logger;
 import de.prob.ui.ticket.ProBLogListener;
+import de.prob.webconsole.WebConsole;
 
 public class ProbUiPlugin extends AbstractUIPlugin {
 
@@ -57,6 +65,36 @@ public class ProbUiPlugin extends AbstractUIPlugin {
 		super.start(context);
 		this.context = context;
 		Logger.addListener(new ProBLogListener());
+		Runnable r = new Runnable() {
+			@Override
+			public void run() {
+				try {
+					WebConsole.run(new Runnable() {
+
+						@Override
+						public void run() {
+
+							try {
+								IWorkbenchBrowserSupport browserSupport = PlatformUI
+										.getWorkbench().getBrowserSupport();
+								browserSupport.createBrowser(
+										IWorkbenchBrowserSupport.AS_EDITOR,
+										"prob", "prob2", "prob3").openURL(
+										new URL("http://localhost:8080"));
+							} catch (PartInitException e) {
+								e.printStackTrace();
+							} catch (MalformedURLException e) {
+								e.printStackTrace();
+							}
+						}
+					});
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		};
+
+		new Thread(r).start();
 	}
 
 	public static ProbUiPlugin getDefault() {

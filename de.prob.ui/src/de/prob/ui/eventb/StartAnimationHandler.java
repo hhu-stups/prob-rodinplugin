@@ -1,11 +1,14 @@
 package de.prob.ui.eventb;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.codec.binary.Base64;
 import org.eclipse.core.commands.AbstractHandler;
@@ -37,8 +40,12 @@ import org.rodinp.core.IRodinFile;
 import org.rodinp.core.IRodinProject;
 import org.rodinp.core.RodinCore;
 
+import de.prob.animator.command.LoadEventBCommand;
+import de.prob.animator.command.StartAnimationCommand;
 import de.prob.core.Animator;
 import de.prob.core.internal.Activator;
+import de.prob.core.translator.TranslationFailedException;
+import de.prob.eventb.translator.TranslatorFactory;
 import de.prob.model.eventb.EventBModel;
 import de.prob.scripting.EventBFactory;
 import de.prob.statespace.History;
@@ -99,7 +106,26 @@ public class StartAnimationHandler extends AbstractHandler implements IHandler {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+
+		StringWriter writer = new StringWriter();
+		PrintWriter pto = new PrintWriter(writer);
+		try {
+			TranslatorFactory.translate(rootElement, pto);
+		} catch (TranslationFailedException e) {
+			e.printStackTrace();
+		}
+
 		StateSpace s = model.getStatespace();
+
+		Pattern p2 = Pattern.compile("^package\\((.*?)\\)\\.");
+		Matcher m2 = p2.matcher(writer.toString());
+		m2.find();
+		String cmd = m2.group(1);
+		
+
+		s.execute(new LoadEventBCommand(cmd));
+		s.execute(new StartAnimationCommand());
+
 		History h = new History(s);
 		Activator.setHistory(h);
 

@@ -36,12 +36,14 @@ import de.prob.core.domainobjects.Operation;
 import de.prob.core.domainobjects.State;
 import de.prob.logging.Logger;
 import de.prob.statespace.History;
+import de.prob.webconsole.WebConsole;
 import de.prob.webconsole.WebModule;
 
 public final class Activator extends Plugin {
 	private static History history;
 	private final static Injector INJECTOR = Guice.createInjector(
 			new MainModule(), new WebModule());
+
 	// The plug-in ID
 	public static final String PLUGIN_ID = "de.prob.core";
 	private static final String ANIMATION_EXTENSION_POINT = PLUGIN_ID
