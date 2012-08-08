@@ -164,6 +164,11 @@
       </command>
       <command
             categoryId="de.prob.ui.commands.category"
+            id="de.prob.ui.groovyconsole"
+            name="Open Groovy Console">
+      </command>
+      <command
+            categoryId="de.prob.ui.commands.category"
             id="de.prob.ui.probconfiguration"
             name="ProB Configuration Wizard">
       </command>
@@ -721,6 +726,12 @@
             </with>
          </enabledWhen>
       </handler>
+      <handler
+            commandId="de.prob.ui.groovyconsole">
+         <class
+               class="de.prob.ui.OpenGroovyConsole">
+         </class>
+      </handler>
 <!--      <handler
             commandId="de.prob.ui.startdmc">
          <class
@@ -757,6 +768,12 @@
                commandId="de.prob.ui.bugreport"
                label="Open Bugtracker Website"
                mnemonic="W"
+               style="push">
+         </command>
+         <command
+               commandId="de.prob.ui.groovyconsole"
+               label="Open Goovy Console"
+               mnemonic="G"
                style="push">
          </command>
       </menuContribution>
