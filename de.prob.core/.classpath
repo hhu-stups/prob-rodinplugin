@@ -57,6 +57,5 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="test"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
-	<classpathentry exported="true" kind="lib" path="/Users/bendisposto/.gradle/caches/artifacts-13/filestore/de.prob/answerparser/2.4.8-SNAPSHOT/jar/8240414a0eb84a4e921baf284f039793bc92b1dd/answerparser-2.4.8-SNAPSHOT.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
