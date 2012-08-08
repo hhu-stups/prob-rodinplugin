@@ -1,5 +1,7 @@
 package de.prob.ui.eventb;
 
+import groovy.lang.Binding;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -50,6 +52,7 @@ import de.prob.model.eventb.EventBModel;
 import de.prob.scripting.EventBFactory;
 import de.prob.statespace.History;
 import de.prob.statespace.StateSpace;
+import de.prob.webconsole.GroovyExecution;
 
 public class StartAnimationHandler extends AbstractHandler implements IHandler {
 
@@ -121,13 +124,17 @@ public class StartAnimationHandler extends AbstractHandler implements IHandler {
 		Matcher m2 = p2.matcher(writer.toString());
 		m2.find();
 		String cmd = m2.group(1);
-		
 
 		s.execute(new LoadEventBCommand(cmd));
 		s.execute(new StartAnimationCommand());
 
 		History h = new History(s);
 		Activator.setHistory(h);
+		final GroovyExecution ge = Activator.getInjector().getInstance(
+				GroovyExecution.class);
+		Binding bindings = ge.getBindings();
+		bindings.setVariable("defaultStateSpace", s);
+		bindings.setVariable("defaultHistory", h);
 
 		return null;
 	}
