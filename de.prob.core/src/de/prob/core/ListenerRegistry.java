@@ -6,9 +6,10 @@ package de.prob.core;
 import java.util.HashSet;
 import java.util.Set;
 
-import de.prob.core.domainobjects.Operation;
 import de.prob.core.domainobjects.State;
 import de.prob.logging.Logger;
+import de.prob.statespace.History;
+import de.prob.statespace.IAnimationListener;
 
 /**
  * @author plagge
@@ -72,11 +73,11 @@ public class ListenerRegistry implements ILifecycleListener,
 		}
 	}
 
-	public void currentStateChanged(final State currentState,
-			final Operation operation) {
-		for (final IAnimationListener listener : animationListeners) {
+	@Override
+	public void currentStateChanged(History history) {
+		for(final IAnimationListener listener : animationListeners) {
 			try {
-				listener.currentStateChanged(currentState, operation);
+				listener.currentStateChanged(history);
 			} catch (final RuntimeException e) {
 				final String classname = listener.getClass().getCanonicalName();
 				final String message = "Runtime Exception thrown in bad behaving listener class "
@@ -85,6 +86,7 @@ public class ListenerRegistry implements ILifecycleListener,
 				Logger.notifyUser(message, e);
 			}
 		}
+		
 	}
 
 }

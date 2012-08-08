@@ -11,12 +11,17 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.services.ISourceProviderService;
 
+import de.prob.animator.domainobjects.OpInfo;
 import de.prob.core.Animator;
-import de.prob.core.IAnimationListener;
+import de.prob.statespace.History;
+import de.prob.statespace.IAnimationListener;
+import de.prob.statespace.StateId;
 import de.prob.core.ILifecycleListener;
 import de.prob.core.domainobjects.Operation;
 import de.prob.core.domainobjects.State;
+import de.prob.core.internal.Activator;
 import de.prob.ui.services.HistoryActiveProvider;
+
 
 /**
  * This serves as a base class for views that depend on the current state of the
@@ -58,6 +63,9 @@ public abstract class StateBasedViewPart extends ViewPart implements
 	 */
 	protected void stateChanged(final State currentState,
 			final Operation operation) {
+	}
+	
+	protected void stateChanged(final History history) {
 	}
 
 	@Override
@@ -120,7 +128,6 @@ public abstract class StateBasedViewPart extends ViewPart implements
 		}
 	}
 
-	@Override
 	final public void currentStateChanged(final State currentState,
 			final Operation operation) {
 		final Runnable runnable = new Runnable() {
@@ -138,6 +145,12 @@ public abstract class StateBasedViewPart extends ViewPart implements
 				.getSourceProvider(HistoryActiveProvider.FORWARD_SERVICE);
 		sourceProvider.historyChange();
 
+	}
+	
+	@Override
+	public void currentStateChanged(History history) {
+		Activator.setHistory(history);
+		stateChanged(history);
 	}
 
 	@Override

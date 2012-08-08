@@ -6,8 +6,9 @@
 
 package de.prob.core;
 
-import de.prob.core.domainobjects.Operation;
 import de.prob.core.domainobjects.State;
+import de.prob.statespace.History;
+import de.prob.statespace.IAnimationListener;
 
 /**
  * The Registry is registered as a listener to the extension point. It is a
@@ -59,8 +60,8 @@ public final class StaticListenerRegistry implements ILifecycleListener,
 		registry.computedState(state);
 	}
 
-	public void currentStateChanged(final State currentState,
-			final Operation operation) {
-		registry.currentStateChanged(currentState, operation);
+	@Override
+	public void currentStateChanged(History history) {
+		registry.currentStateChanged(history);		
 	}
 }

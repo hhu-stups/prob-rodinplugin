@@ -20,8 +20,10 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.services.ISourceProviderService;
 
+import de.prob.animator.domainobjects.OpInfo;
 import de.prob.core.domainobjects.Operation;
 import de.prob.core.domainobjects.State;
+import de.prob.statespace.StateId;
 import de.prob.ui.StateBasedViewPart;
 import de.prob.ui.services.ModelLoadedProvider;
 

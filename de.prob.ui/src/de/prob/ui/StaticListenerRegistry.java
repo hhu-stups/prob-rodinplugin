@@ -6,7 +6,10 @@
 
 package de.prob.ui;
 
-import de.prob.core.IAnimationListener;
+import de.prob.statespace.History;
+import de.prob.statespace.IAnimationListener;
+import de.prob.statespace.StateId;
+import de.prob.animator.domainobjects.OpInfo;
 import de.prob.core.IComputationListener;
 import de.prob.core.ILifecycleListener;
 import de.prob.core.ListenerRegistry;
@@ -50,8 +53,9 @@ public class StaticListenerRegistry implements ILifecycleListener,
 		registry.computedState(state);
 	}
 
-	public void currentStateChanged(final State currentState,
-			final Operation operation) {
-		registry.currentStateChanged(currentState, operation);
+	@Override
+	public void currentStateChanged(History history) {
+		registry.currentStateChanged(history);		
 	}
+
 }

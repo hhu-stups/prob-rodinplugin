@@ -3,6 +3,7 @@
  */
 package de.prob.ui.historyview;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 import org.apache.commons.lang.ArrayUtils;
@@ -32,14 +33,18 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 
+import de.prob.animator.domainobjects.OpInfo;
 import de.prob.core.Animator;
-import de.prob.core.domainobjects.History;
+import de.prob.statespace.History;
+import de.prob.statespace.HistoryElement;
 import de.prob.core.domainobjects.HistoryItem;
 import de.prob.core.domainobjects.MachineDescription;
 import de.prob.core.domainobjects.Operation;
 import de.prob.core.domainobjects.State;
+import de.prob.core.internal.Activator;
 import de.prob.exceptions.ProBException;
 import de.prob.logging.Logger;
+import de.prob.statespace.StateId;
 import de.prob.ui.StateBasedViewPart;
 import de.prob.ui.dnd.StaticStateElementTransfer;
 import de.prob.ui.stateview.statetree.StaticStateElement;
@@ -202,36 +207,36 @@ public class HistoryView extends StateBasedViewPart {
 		layout.setColumnData(column, weightData);
 	}
 
-	@Override
-	protected void stateChanged(final State currentState,
-			final Operation operation) {
-		final Animator animator = Animator.getAnimator();
-		final History history = animator.getHistory();
-		final HistoryItem[] items = history.getAllItems();
-		final int size = items.length;
-		final HistViewItem[] vItems = new HistViewItem[size];
-		final HistViewItem current;
-		if (size > 0) {
-			final int activeItem = history.getCurrentPosition();
-			final State cs = items[activeItem].getState();
-			final State rootState = items[0].getState();
-			vItems[0] = new HistViewItem(0, activeItem, rootState, null, cs);
-			for (int i = 1; i < size; i++) {
-				final State state = items[i].getState();
-				final Operation op = items[i - 1].getOperation();
-				vItems[i] = new HistViewItem(i, activeItem, state, op, cs);
-			}
-			current = vItems[activeItem];
-			ArrayUtils.reverse(vItems);
-		} else {
-			current = null;
-		}
-		tableViewer.setInput(vItems);
-		tableViewer.refresh();
-		if (current != null) {
-			tableViewer.reveal(current);
-		}
-	}
+//	@Override
+//	protected void stateChanged(final State currentState,
+//			final Operation operation) {
+//		final Animator animator = Animator.getAnimator();
+//		final History history = animator.getHistory();
+//		final HistoryItem[] items = history.getAllItems();
+//		final int size = items.length;
+//		final HistViewItem[] vItems = new HistViewItem[size];
+//		final HistViewItem current;
+//		if (size > 0) {
+//			final int activeItem = history.getCurrentPosition();
+//			final State cs = items[activeItem].getState();
+//			final State rootState = items[0].getState();
+//			vItems[0] = new HistViewItem(0, activeItem, rootState, null, cs);
+//			for (int i = 1; i < size; i++) {
+//				final State state = items[i].getState();
+//				final Operation op = items[i - 1].getOperation();
+//				vItems[i] = new HistViewItem(i, activeItem, state, op, cs);
+//			}
+//			current = vItems[activeItem];
+//			ArrayUtils.reverse(vItems);
+//		} else {
+//			current = null;
+//		}
+//		tableViewer.setInput(vItems);
+//		tableViewer.refresh();
+//		if (current != null) {
+//			tableViewer.reveal(current);
+//		}
+//	}
 
 	static class HistViewItem {
 		private final int historyPosition;
@@ -281,10 +286,10 @@ public class HistoryView extends StateBasedViewPart {
 			return previousStateIsSameAsCurrent;
 		}
 
-		public void jumpToState() throws ProBException {
-			final History history = Animator.getAnimator().getHistory();
-			history.gotoPos(historyPosition);
-		}
+//		public void jumpToState() throws ProBException {
+//			final History history = Animator.getAnimator().getHistory();
+//			history.gotoPos(historyPosition);
+//		}
 	}
 
 	private static class HistContentProvider implements
@@ -311,13 +316,44 @@ public class HistoryView extends StateBasedViewPart {
 					.getSelection();
 			if (sel != null && !sel.isEmpty()) {
 				HistViewItem item = (HistViewItem) sel.getFirstElement();
-				try {
-					item.jumpToState();
-				} catch (ProBException e) {
-					Logger.notifyUser(EXCEPTION_MSG, e);
-				}
+//				try {
+//					item.jumpToState();
+//				} catch (ProBException e) {
+//					Logger.notifyUser(EXCEPTION_MSG, e);
+//				}
 			}
 		}
 	}
+
+	@Override
+	protected void stateChanged(History history) {
+		int count = countItems(history);
+		int currentPos = findCurrentPos(history);
+		History[] array = new History[1];
+		array[0] = history;
+		tableViewer.setInput(array);
+		tableViewer.refresh();
+	}
+	
+	private int countItems(History history) {
+		int count = 1;
+		HistoryElement he = history.getHead();
+		while(he != null) {
+			count++;
+			he = he.getPrevious();
+		}
+		return count;
+	}
+	
+	private int findCurrentPos(History history) {
+		int count = 0;
+		while(history.canGoBack()) {
+			count++;
+			history = history.back();
+		}
+		return count;
+		
+	}
+	
 
 }
