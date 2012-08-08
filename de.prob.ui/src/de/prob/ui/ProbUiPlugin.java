@@ -70,22 +70,8 @@ public class ProbUiPlugin extends AbstractUIPlugin {
 			public void run() {
 				try {
 					WebConsole.run(new Runnable() {
-
 						@Override
 						public void run() {
-
-							try {
-								IWorkbenchBrowserSupport browserSupport = PlatformUI
-										.getWorkbench().getBrowserSupport();
-								browserSupport.createBrowser(
-										IWorkbenchBrowserSupport.AS_EDITOR,
-										"prob", "prob2", "prob3").openURL(
-										new URL("http://localhost:8080"));
-							} catch (PartInitException e) {
-								e.printStackTrace();
-							} catch (MalformedURLException e) {
-								e.printStackTrace();
-							}
 						}
 					});
 				} catch (Exception e) {
