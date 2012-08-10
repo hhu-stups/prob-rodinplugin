@@ -1108,6 +1108,15 @@
               style="push">
           </command>
       </menuContribution>
+      <menuContribution
+            locationURI="menu:debug">
+         <command
+               commandId="de.prob.ui.groovyconsole"
+               label="Groovy Console"
+               mnemonic="G"
+               style="push">
+         </command>
+      </menuContribution>
       
    </extension>
    <extension

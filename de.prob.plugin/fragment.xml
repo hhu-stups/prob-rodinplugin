@@ -48,12 +48,13 @@
                      name="analyze">
                </separator>
             </menu>
-            <command
-                  commandId="de.prob.ui.groovyconsole"
-                  label="Open Goovy Console"
-                  mnemonic="G"
-                  style="push">
-            </command>
+            <menu
+                  id="debug"
+                  label="Debug">
+               <separator
+                     name="debug">
+               </separator>
+            </menu>
          </menu>
       </menuContribution>
       <menuContribution
