@@ -770,12 +770,6 @@
                mnemonic="W"
                style="push">
          </command>
-         <command
-               commandId="de.prob.ui.groovyconsole"
-               label="Open Goovy Console"
-               mnemonic="G"
-               style="push">
-         </command>
       </menuContribution>
 
       <menuContribution
@@ -919,14 +913,6 @@
                   name="de.prob.ui.randomoperation.steps"
                   value="-1">
             </parameter>
-         </command>
-      </menuContribution>
-      <menuContribution
-            locationURI="menu:de.prob.ui.filtermenu">
-         <command
-               commandId="de.prob.ui.filter_enabled_only"
-               label="Show only enabled Events"
-               style="toggle">
          </command>
       </menuContribution>
       <menuContribution
