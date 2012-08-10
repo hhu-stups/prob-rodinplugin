@@ -10,6 +10,8 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.browser.IWorkbenchBrowserSupport;
 
+import de.prob.webconsole.WebConsole;
+
 public class OpenGroovyConsole extends AbstractHandler {
 
 	@Override
@@ -19,7 +21,7 @@ public class OpenGroovyConsole extends AbstractHandler {
 					.getBrowserSupport();
 			browserSupport.createBrowser(IWorkbenchBrowserSupport.AS_EDITOR,
 					"prob", "prob2", "prob3").openURL(
-					new URL("http://localhost:8080"));
+					new URL("http://localhost:"+WebConsole.getPort()));
 		} catch (PartInitException e) {
 			e.printStackTrace();
 		} catch (MalformedURLException e) {
