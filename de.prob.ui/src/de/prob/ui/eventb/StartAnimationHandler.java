@@ -140,6 +140,9 @@ public class StartAnimationHandler extends AbstractHandler implements IHandler {
 		bindings.setVariable("defaultStateSpace", s);
 		bindings.setVariable("defaultHistory", h);
 		System.gc();
+		
+		Activator.currentStateChanged(null, null);
+		
 		return null;
 	}
 

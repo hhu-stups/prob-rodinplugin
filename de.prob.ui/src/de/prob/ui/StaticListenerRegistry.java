@@ -17,7 +17,13 @@ import de.prob.core.domainobjects.Operation;
 import de.prob.core.domainobjects.State;
 
 public class StaticListenerRegistry implements ILifecycleListener,
-		IComputationListener, IAnimationListener {
+		IComputationListener, IAnimationListener{
+	
+	
+	public StaticListenerRegistry() {
+		History h = new History(null);
+		h.registerAnimationListener(this);
+	}
 
 	private static final ListenerRegistry registry = new ListenerRegistry();
 
@@ -57,5 +63,6 @@ public class StaticListenerRegistry implements ILifecycleListener,
 	public void currentStateChanged(History history) {
 		registry.currentStateChanged(history);		
 	}
+
 
 }

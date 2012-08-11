@@ -71,8 +71,10 @@ public abstract class StateBasedViewPart extends ViewPart implements
 	@Override
 	public void createPartControl(final Composite parent) {
 		this.parent = parent;
-		StaticListenerRegistry.registerListener((ILifecycleListener) this);
-		StaticListenerRegistry.registerListener((IAnimationListener) this);
+//		StaticListenerRegistry.registerListener((ILifecycleListener) this);
+//		StaticListenerRegistry.registerListener((IAnimationListener) this);
+		History history = Activator.getHistory();
+		if (history != null) history.registerAnimationListener(this);
 		final Animator animator = Animator.getAnimator();
 		if (animator.isMachineLoaded()) {
 			createStateControl();
@@ -86,6 +88,8 @@ public abstract class StateBasedViewPart extends ViewPart implements
 		}
 	}
 
+	
+	
 	private void createNoStateMessage() {
 		if (noStateMessage == null) {
 			disposeStateView();
