@@ -2,6 +2,7 @@ package de.bmotionstudio.gef.editor.observer;
 
 import de.bmotionstudio.gef.editor.Animation;
 import de.bmotionstudio.gef.editor.AttributeConstants;
+import de.bmotionstudio.gef.editor.attribute.AbstractAttribute;
 import de.bmotionstudio.gef.editor.model.BControl;
 import de.bmotionstudio.gef.editor.observer.wizard.WizardTableObserver;
 import de.bmotionstudio.gef.editor.util.BMSUtil;
@@ -32,12 +33,16 @@ public class TableObserver extends Observer {
 
 			// ---------------------------------------------------------------
 
-			Integer numberOfOldRows = Integer.valueOf(control
-					.getAttributeValue(AttributeConstants.ATTRIBUTE_ROWS)
-					.toString());
-			Integer numberOfOldColumns = Integer.valueOf(control
-					.getAttributeValue(AttributeConstants.ATTRIBUTE_COLUMNS)
-					.toString());
+			AbstractAttribute attributeRows = control
+					.getAttribute(AttributeConstants.ATTRIBUTE_ROWS);
+			Integer numberOfOldRows = Integer.valueOf(attributeRows
+					.getInitValue().toString());
+
+			AbstractAttribute attributeColumns = control
+					.getAttribute(AttributeConstants.ATTRIBUTE_COLUMNS);
+			Integer numberOfOldColumns = Integer.valueOf(attributeColumns
+					.getInitValue().toString());
+
 			int numberOfNewRows = splitArray.length;
 
 			// Set the correct number of rows

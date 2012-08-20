@@ -45,8 +45,8 @@ public class BTable extends BControl {
 	protected void initAttributes() {
 		initAttribute(new BAttributeForegroundColor(
 				ColorConstants.black.getRGB()));
-		initAttribute(new BAttributeColumns(2));
-		initAttribute(new BAttributeRows(2));
+		initAttribute(new BAttributeColumns(1));
+		initAttribute(new BAttributeRows(1));
 		getAttributes().get(AttributeConstants.ATTRIBUTE_SIZE).setShow(false);
 		getAttributes().get(AttributeConstants.ATTRIBUTE_COORDINATES).setShow(
 				false);
