@@ -291,8 +291,12 @@
             name="External Observer Script">
       </observer>
       <observer
-            class="de.bmotionstudio.gef.editor.observer.ColumnObserver"
+            class="de.bmotionstudio.gef.editor.observer.TableObserver"
             name="Table Observer">
+      </observer>
+      <observer
+            class="de.bmotionstudio.gef.editor.observer.ColumnObserver"
+            name="Column Observer">
       </observer>
    </extension>
    <extension
@@ -537,7 +541,13 @@
          <observer
                id="de.bmotionstudio.gef.editor.observer.ColumnObserver">
             <control
-                  id="de.bmotionstudio.gef.editor.tablecell">
+                  id="de.bmotionstudio.gef.editor.tablecolumn">
+            </control>
+         </observer>
+         <observer
+               id="de.bmotionstudio.gef.editor.observer.TableObserver">
+            <control
+                  id="de.bmotionstudio.gef.editor.table">
             </control>
          </observer>
       </include>
