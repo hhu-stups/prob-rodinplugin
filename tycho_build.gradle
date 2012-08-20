@@ -128,8 +128,36 @@ def groupId(){
 *	This Group ID will be used in every sub project
 */
 
-
-
+def addLibToCP(def project, File filePar, def libPar){
+	
+	boolean notYetAdded = true	
+	filePar.eachLine{ line ->
+		def pattern = ".*${dependencyFolder}${libPar}.*"
+		if(line ==~ /${pattern}/){
+			notYetAdded = false
+		}
+		
+	}
+	if(notYetAdded){
+		File newCP = new File(project+'/.cp') 
+		filePar.eachLine{ line ->
+			 if(line ==~ /.*<\/classpath>.*/){
+				
+				String entry = '<classpathentry exported="true" kind="lib" path="lib/dependencies/'+libPar+'"/>'+'\n</classpath>\n'
+				line = line.replaceAll(/<\/classpath>/, entry)
+				println line
+				newCP << line+"\n"
+			}else{
+				newCP << line+"\n"
+			}
+		}
+		filePar.delete()
+		newCP.renameTo(project+'/.classpath')
+	}else{
+		println project + " : "+ libPar +" classpath entry already present"
+	}
+	
+}
 
 /////////////////////////////////////////////////////////////////////////////////////////
 //		--	!!! 				DEFINING SUB PROJECTS 							!!!	-- //
@@ -153,19 +181,39 @@ subprojects {
 			into "${dependencyFolder}" 	
 			
 	}
-	
-	
-	eclipse {
 
-	  classpath {
-	    //adding extra configurations:
-	    plusConfigurations += configurations.compile
+	
+	task setClassPath(dependsOn: 'collectDependencies'){
 
-	    //default settings for dependencies sources/javadoc download:
-	    downloadSources = true
-	    downloadJavadoc = false
-	  }
+		def dependencyList = []
+		try{
+			def dir = new File(project.name+"/"+dependencyFolder).eachFile() { file->  
+			    dependencyList << file.getName()  
+			}
+	
+			if(features.every{ it != project.name }){	
+			
+				def cpFile = new File(project.name+"/.classpath")
+				for(int icp = 0; icp < dependencyList.size; icp++){
+					addLibToCP(project.name, cpFile, dependencyList[icp])
+				}
+				/*dependencyList.each{ dep->
+					println project.name+": "+ dep	
+				}*/
+
+			}
+		}catch(Exception e){
+			println project.name+" has no dependencies in '${dependencyFolder}' defined: Classpath will not be changed"
+		}
+	
+	}// setClassPath
+	
+	eclipse.classpath.file {
+	    whenMerged { classpath ->
+	        classpath.entries.findAll { entry -> entry.kind == 'lib' }*.exported = true	
+	    }
 	}
+
 	////////////////////////////////////////////////////////////////////////////////////////////	
 	
 	task deploy() <<{
