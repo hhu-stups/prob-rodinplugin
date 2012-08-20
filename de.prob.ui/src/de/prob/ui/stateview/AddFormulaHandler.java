@@ -15,8 +15,7 @@ import org.eclipse.ui.handlers.HandlerUtil;
 
 import de.prob.core.Animator;
 import de.prob.core.LanguageDependendAnimationPart;
-import de.prob.core.command.EvaluationInsertFormulaCommand;
-import de.prob.core.domainobjects.EvaluationElement;
+//import de.prob.core.command.EvaluationInsertFormulaCommand;
 import de.prob.exceptions.ProBException;
 import de.prob.parserbase.ProBParseException;
 import de.prob.parserbase.ProBParserBaseAdapter;
@@ -40,38 +39,39 @@ public class AddFormulaHandler extends AbstractHandler implements IHandler {
 						validator);
 				int button = dialog.open();
 				if (button == InputDialog.OK) {
-					final String entered = dialog.getValue();
-					PrologTerm parsed = null;
-					try {
-						parsed = parser.parsePredicate(entered, false);
-					} catch (ProBParseException pe) {
-						try {
-							parsed = parser.parseExpression(entered, false);
-						} catch (ProBParseException ee) {
-							MessageDialog.openError(shell, title,
-									StateViewStrings.dialogSyntaxError);
-						}
-					}
-					if (parsed != null) {
-						try {
-							final EvaluationElement staticElement = EvaluationInsertFormulaCommand
-									.insertFormula(parsed);
-
-							final IWorkbenchPage activePage = PlatformUI
-									.getWorkbench().getActiveWorkbenchWindow()
-									.getActivePage();
-							final StateViewPart view = (StateViewPart) activePage
-									.findView(StateViewPart.STATE_VIEW_ID);
-							if (view != null) {
-								view.addUserDefinedExpression(staticElement);
-							} else {
-								MessageDialog.openError(shell, "Error",
-										"Unable to access state view");
-							}
-						} catch (ProBException e) {
-							e.notifyUserOnce();
-						}
-					}
+					//TODO: Refactor to replace EvaluationInsertFormulaCommand with new core
+//					final String entered = dialog.getValue();
+//					PrologTerm parsed = null;
+//					try {
+//						parsed = parser.parsePredicate(entered, false);
+//					} catch (ProBParseException pe) {
+//						try {
+//							parsed = parser.parseExpression(entered, false);
+//						} catch (ProBParseException ee) {
+//							MessageDialog.openError(shell, title,
+//									StateViewStrings.dialogSyntaxError);
+//						}
+//					}
+//					if (parsed != null) {
+//						try {
+//							final EvaluationElement staticElement = EvaluationInsertFormulaCommand
+//									.insertFormula(parsed);
+//
+//							final IWorkbenchPage activePage = PlatformUI
+//									.getWorkbench().getActiveWorkbenchWindow()
+//									.getActivePage();
+//							final StateViewPart view = (StateViewPart) activePage
+//									.findView(StateViewPart.STATE_VIEW_ID);
+//							if (view != null) {
+//								view.addUserDefinedExpression(staticElement);
+//							} else {
+//								MessageDialog.openError(shell, "Error",
+//										"Unable to access state view");
+//							}
+//						} catch (ProBException e) {
+//							e.notifyUserOnce();
+//						}
+//					}
 				}
 			}
 		};

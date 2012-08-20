@@ -48,9 +48,6 @@ import org.eclipse.ui.PlatformUI;
 import de.prob.core.Animator;
 import de.prob.core.LanguageDependendAnimationPart;
 import de.prob.core.LimitedLogger;
-import de.prob.core.command.EvaluationGetTopLevelCommand;
-import de.prob.core.command.EvaluationGetValuesCommand;
-import de.prob.core.domainobjects.EvaluationElement;
 import de.prob.core.domainobjects.MachineDescription;
 import de.prob.core.domainobjects.Operation;
 import de.prob.core.domainobjects.State;
@@ -87,7 +84,8 @@ public class StateViewPart extends StateBasedViewPart {
 
 	private LabelViewer modelchangeViewer;
 
-	private Collection<EvaluationElement> topEvaluationElements;
+	//TODO: Refactor to replace EvaluationElement
+	//private Collection<EvaluationElement> topEvaluationElements;
 	private StateTreeExpressionSection expressionSection;
 	private final VarLabelProvider varLabelProvider = new VarLabelProvider();
 
@@ -205,27 +203,28 @@ public class StateViewPart extends StateBasedViewPart {
 
 	private void loadEvaluationElements(final ShownState shownState,
 			final State current, final State last) {
-		Set<EvaluationElement> visibleElements = new HashSet<EvaluationElement>();
-		boolean errorShown = false;
-		visibleElements.addAll(topEvaluationElements);
-		try {
-			for (final Object obj : treeViewer.getVisibleExpandedElements()) {
-				if (obj instanceof StateTreeExpression) {
-					StateTreeExpression ste = (StateTreeExpression) obj;
-					EvaluationElement elem = ste.getStaticElement();
-					visibleElements.add(elem);
-					visibleElements.addAll(Arrays.asList(elem.getChildren()));
-				}
-			}
-			EvaluationGetValuesCommand.getValuesForExpressionsCached(current,
-					visibleElements);
-			EvaluationGetValuesCommand.getValuesForExpressionsCached(last,
-					visibleElements);
-		} catch (ProBException e) {
-			if (!errorShown) {
-				e.notifyUserOnce();
-			}
-		}
+		//TODO: Refactor to replace EvaluationGetValuesCommand with new core
+//		Set<EvaluationElement> visibleElements = new HashSet<EvaluationElement>();
+//		boolean errorShown = false;
+//		visibleElements.addAll(topEvaluationElements);
+//		try {
+//			for (final Object obj : treeViewer.getVisibleExpandedElements()) {
+//				if (obj instanceof StateTreeExpression) {
+//					StateTreeExpression ste = (StateTreeExpression) obj;
+//					EvaluationElement elem = ste.getStaticElement();
+//					visibleElements.add(elem);
+//					visibleElements.addAll(Arrays.asList(elem.getChildren()));
+//				}
+//			}
+//			EvaluationGetValuesCommand.getValuesForExpressionsCached(current,
+//					visibleElements);
+//			EvaluationGetValuesCommand.getValuesForExpressionsCached(last,
+//					visibleElements);
+//		} catch (ProBException e) {
+//			if (!errorShown) {
+//				e.notifyUserOnce();
+//			}
+//		}
 	}
 
 	@Override
@@ -236,31 +235,32 @@ public class StateViewPart extends StateBasedViewPart {
 
 	private void initShownState() {
 		if (shownState == null) {
-			try {
-				EvaluationElement[] tops = EvaluationGetTopLevelCommand
-						.retrieveTopLevelElements();
-				topEvaluationElements = new ArrayList<EvaluationElement>(
-						Arrays.asList(tops));
-			} catch (ProBException e) {
-				e.notifyUserOnce();
-				topEvaluationElements = Collections.emptyList();
-			}
-			shownState = new ShownState();
-			final MachineDescription md = Animator.getAnimator()
-					.getMachineDescription();
-			shownState.setMachineDescription(md);
-			final StateTreeElement[] topLevelElements = new StateTreeElement[shownState
-					.getSections().size() + 1];
-			int i = 0;
-			for (final String section : shownState.getSections()) {
-				topLevelElements[i] = new StateTreeSection(section, md);
-				i++;
-			}
-			expressionSection = new StateTreeExpressionSection(
-					StateViewStrings.formulasSectionLabel,
-					topEvaluationElements);
-			topLevelElements[i] = expressionSection;
-			treeViewer.setInput(topLevelElements);
+			//TODO: Refactor to replace EvaluationElement
+//			try {
+//				EvaluationElement[] tops = EvaluationGetTopLevelCommand
+//						.retrieveTopLevelElements();
+//				topEvaluationElements = new ArrayList<EvaluationElement>(
+//						Arrays.asList(tops));
+//			} catch (ProBException e) {
+//				e.notifyUserOnce();
+//				topEvaluationElements = Collections.emptyList();
+//			}
+//			shownState = new ShownState();
+//			final MachineDescription md = Animator.getAnimator()
+//					.getMachineDescription();
+//			shownState.setMachineDescription(md);
+//			final StateTreeElement[] topLevelElements = new StateTreeElement[shownState
+//					.getSections().size() + 1];
+//			int i = 0;
+//			for (final String section : shownState.getSections()) {
+//				topLevelElements[i] = new StateTreeSection(section, md);
+//				i++;
+//			}
+//			expressionSection = new StateTreeExpressionSection(
+//					StateViewStrings.formulasSectionLabel,
+//					topEvaluationElements);
+//			topLevelElements[i] = expressionSection;
+//			treeViewer.setInput(topLevelElements);
 		}
 	}
 
@@ -485,10 +485,11 @@ public class StateViewPart extends StateBasedViewPart {
 		}
 	}
 
-	public void addUserDefinedExpression(
-			final EvaluationElement userDefinedElement) {
-		this.expressionSection.addChild(userDefinedElement);
-		this.topEvaluationElements.add(userDefinedElement);
-		refreshTreeView();
-	}
+	//TODO: Refactor to replace EvaluationElement
+//	public void addUserDefinedExpression(
+//			final EvaluationElement userDefinedElement) {
+//		this.expressionSection.addChild(userDefinedElement);
+//		this.topEvaluationElements.add(userDefinedElement);
+//		refreshTreeView();
+//	}
 }
