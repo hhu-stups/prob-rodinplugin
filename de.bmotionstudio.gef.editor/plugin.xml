@@ -292,7 +292,7 @@
       </observer>
       <observer
             class="de.bmotionstudio.gef.editor.observer.ColumnObserver"
-            name="Column Observer">
+            name="Table Observer">
       </observer>
    </extension>
    <extension
@@ -537,7 +537,7 @@
          <observer
                id="de.bmotionstudio.gef.editor.observer.ColumnObserver">
             <control
-                  id="de.bmotionstudio.gef.editor.tablecolumn">
+                  id="de.bmotionstudio.gef.editor.tablecell">
             </control>
          </observer>
       </include>
