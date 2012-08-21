@@ -137,7 +137,7 @@ public class BTablePart extends AppAbstractEditPart {
 		for (int i = numberOfCurrentRows; i < numberOfRows; i++) {
 			CreateCommand cmd = new CreateCommand(new BTableCell(
 					column.getVisualization()), column);
-			cmd.setLayout(new Rectangle(0, 0, 50, 20));
+			cmd.setLayout(new Rectangle(0, 0, column.getDimension().width, 20));
 			cmd.execute();
 		}
 
