@@ -384,6 +384,9 @@
             <control
                   id="de.bmotionstudio.gef.editor.table">
             </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.tablecolumn">
+            </control>
          </observer>
          <observer
                id="de.bmotionstudio.gef.editor.observer.SwitchCoordinates">
@@ -474,6 +477,9 @@
             <control
                   id="de.bmotionstudio.gef.editor.table">
             </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.tablecolumn">
+            </control>
          </observer>
          <observer
                id="de.bmotionstudio.gef.editor.observer.SwitchChildCoordinates">
@@ -521,6 +527,9 @@
             </control>
             <control
                   id="de.bmotionstudio.gef.editor.table">
+            </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.tablecolumn">
             </control>
          </observer>
          <observer

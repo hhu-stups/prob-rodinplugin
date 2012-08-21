@@ -26,6 +26,8 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Text;
+import org.eventb.core.ast.Expression;
+import org.eventb.core.ast.FormulaFactory;
 import org.eventb.core.ast.PowerSetType;
 
 import de.bmotionstudio.gef.editor.eventb.EventBHelper;
@@ -34,6 +36,7 @@ import de.bmotionstudio.gef.editor.model.BControl;
 import de.bmotionstudio.gef.editor.observer.Observer;
 import de.bmotionstudio.gef.editor.observer.ObserverWizard;
 import de.bmotionstudio.gef.editor.observer.TableObserver;
+import de.prob.unicode.UnicodeTranslator;
 
 public class WizardTableObserver extends ObserverWizard {
 
@@ -90,15 +93,25 @@ public class WizardTableObserver extends ObserverWizard {
 			java.util.List<MachineContentObject> constants = EventBHelper
 					.getConstants(getBControl().getVisualization());
 			for (MachineContentObject mobj : constants) {
-				if (mobj.getType() instanceof PowerSetType)
+				if (mobj.getType() instanceof PowerSetType) {
+					Expression expression = ((PowerSetType) mobj.getType())
+							.toExpression(FormulaFactory.getDefault());
+					System.out.println(UnicodeTranslator.toAscii(expression
+							.toString()));
 					relationList.add(mobj.getLabel());
+				}
 			}
 
 			java.util.List<MachineContentObject> variables = EventBHelper
 					.getVariables(getBControl().getVisualization());
 			for (MachineContentObject mobj : variables) {
-				if (mobj.getType() instanceof PowerSetType)
+				if (mobj.getType() instanceof PowerSetType) {
+					Expression expression = ((PowerSetType) mobj.getType())
+							.toExpression(FormulaFactory.getDefault());
+					System.out.println(UnicodeTranslator.toAscii(expression
+							.toString()));
 					relationList.add(mobj.getLabel());
+				}
 			}
 
 			final List list = new List(conRight, SWT.SINGLE | SWT.BORDER);
