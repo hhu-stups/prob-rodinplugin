@@ -32,8 +32,8 @@ public class BTableCell extends BControl {
 		getAttributes().get(AttributeConstants.ATTRIBUTE_HEIGHT).setEditable(
 				false);
 		getAttributes().get(AttributeConstants.ATTRIBUTE_WIDTH).setEditable(
-				false);
-		getAttributes().get(AttributeConstants.ATTRIBUTE_SIZE).setShow(false);
+				true);
+		getAttributes().get(AttributeConstants.ATTRIBUTE_HEIGHT).setShow(false);
 		getAttributes().get(AttributeConstants.ATTRIBUTE_COORDINATES).setShow(
 				false);
 

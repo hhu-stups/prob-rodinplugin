@@ -62,6 +62,18 @@ public class BTableCellPart extends AppAbstractEditPart {
 
 	}
 
+	@Override
+	protected void refreshEditLayout(IFigure figure, BControl control) {
+
+		// Set size of parent column
+		int width = control.getDimension().width;
+		control.getParent().setAttributeValue(
+				AttributeConstants.ATTRIBUTE_WIDTH, width);
+
+		super.refreshEditLayout(figure, control);
+
+	}
+
 	private void performDirectEdit() {
 		new TextEditManager(this, new TextCellEditorLocator(
 				(IFigure) getFigure())).show();

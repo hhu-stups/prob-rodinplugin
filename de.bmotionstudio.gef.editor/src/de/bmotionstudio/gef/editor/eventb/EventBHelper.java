@@ -11,8 +11,8 @@ import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.core.resources.IFile;
-import org.eventb.core.IMachineRoot;
 import org.eventb.core.ISCConstant;
+import org.eventb.core.ISCContextRoot;
 import org.eventb.core.ISCEvent;
 import org.eventb.core.ISCGuard;
 import org.eventb.core.ISCInternalContext;
@@ -20,6 +20,10 @@ import org.eventb.core.ISCInvariant;
 import org.eventb.core.ISCMachineRoot;
 import org.eventb.core.ISCParameter;
 import org.eventb.core.ISCVariable;
+import org.eventb.core.ast.FormulaFactory;
+import org.eventb.core.basis.ContextRoot;
+import org.eventb.core.basis.EventBRoot;
+import org.eventb.core.basis.MachineRoot;
 import org.rodinp.core.IRodinFile;
 import org.rodinp.core.IRodinProject;
 import org.rodinp.core.RodinCore;
@@ -29,16 +33,17 @@ import de.bmotionstudio.gef.editor.model.Visualization;
 import de.prob.logging.Logger;
 
 public final class EventBHelper {
+	
+	private static FormulaFactory formularFactory = FormulaFactory.getDefault();
 
-	public static ISCMachineRoot getCorrespondingFile(IFile file,
+	public static EventBRoot getCorrespondingFile(IFile file,
 			String machineFileName) {
 		IRodinProject rProject = RodinCore.valueOf(file.getProject());
-		ISCMachineRoot machineRoot = null;
+		EventBRoot machineRoot = null;
 		if (rProject != null) {
 			IRodinFile rFile = rProject.getRodinFile(machineFileName);
-			if (rFile != null && rFile.getRoot() instanceof IMachineRoot)
-				machineRoot = ((IMachineRoot) rFile.getRoot())
-						.getSCMachineRoot();
+			if (rFile != null && rFile.getRoot() instanceof EventBRoot)
+				machineRoot = (EventBRoot) rFile.getRoot();
 		}
 		return machineRoot;
 	}
@@ -50,9 +55,10 @@ public final class EventBHelper {
 
 		if (visualization.getLanguage().equals("EventB")) {
 
-			ISCMachineRoot machineRoot = null;
-			machineRoot = getCorrespondingFile(visualization.getProjectFile(),
+			EventBRoot correspondingFile = getCorrespondingFile(
+					visualization.getProjectFile(),
 					visualization.getMachineName());
+			ISCMachineRoot machineRoot = correspondingFile.getSCMachineRoot();
 
 			if (machineRoot != null) {
 
@@ -98,10 +104,9 @@ public final class EventBHelper {
 	public static List<MachineContentObject> getVariables(
 			Visualization visualization) {
 
-		ISCMachineRoot machineRoot = null;
-
-		machineRoot = getCorrespondingFile(visualization.getProjectFile(),
-				visualization.getMachineName());
+		EventBRoot correspondingFile = getCorrespondingFile(
+				visualization.getProjectFile(), visualization.getMachineName());
+		ISCMachineRoot machineRoot = correspondingFile.getSCMachineRoot();
 
 		ISCVariable[] vars = null;
 		ArrayList<MachineContentObject> tmpSet = new ArrayList<MachineContentObject>();
@@ -113,6 +118,7 @@ public final class EventBHelper {
 
 				MachineContentObject machinevar = new MachineContentObject(
 						var.getIdentifierString());
+				machinevar.setType(var.getType(formularFactory));
 				tmpSet.add(machinevar);
 
 			}
@@ -131,10 +137,10 @@ public final class EventBHelper {
 	public static List<MachineContentObject> getInvariants(
 			Visualization visualization) {
 
-		ISCMachineRoot machineRoot = null;
-
-		machineRoot = getCorrespondingFile(visualization.getProjectFile(),
+		EventBRoot correspondingFile = getCorrespondingFile(
+				visualization.getProjectFile(),
 				visualization.getMachineName());
+		ISCMachineRoot machineRoot = correspondingFile.getSCMachineRoot();
 
 		ISCInvariant[] invariants = null;
 		ArrayList<MachineContentObject> tmpSet = new ArrayList<MachineContentObject>();
@@ -163,24 +169,40 @@ public final class EventBHelper {
 	public static List<MachineContentObject> getConstants(
 			Visualization visualization) {
 
-		ISCMachineRoot machineRoot = null;
-
-		machineRoot = getCorrespondingFile(visualization.getProjectFile(),
-				visualization.getMachineName());
+		EventBRoot correspondingFile = getCorrespondingFile(
+				visualization.getProjectFile(), visualization.getMachineName());
 
 		ArrayList<MachineContentObject> tmpSet = new ArrayList<MachineContentObject>();
-
 		try {
+			if (correspondingFile instanceof MachineRoot) {
 
-			ISCInternalContext[] seenContexts = machineRoot.getSCSeenContexts();
-			for (ISCInternalContext context : seenContexts) {
+				ISCMachineRoot machineRoot = correspondingFile
+						.getSCMachineRoot();
 
-				for (ISCConstant constant : context.getSCConstants()) {
+				ISCInternalContext[] seenContexts = machineRoot
+						.getSCSeenContexts();
+				for (ISCInternalContext context : seenContexts) {
 
+					for (ISCConstant constant : context.getSCConstants()) {
+
+						MachineContentObject machineinv = new MachineContentObject(
+								constant.getIdentifierString());
+						machineinv.setType(constant.getType(formularFactory));
+						tmpSet.add(machineinv);
+
+					}
+
+				}
+
+			} else if (correspondingFile instanceof ContextRoot) {
+
+				ISCContextRoot contextRoot = correspondingFile
+						.getSCContextRoot();
+				for (ISCConstant constant : contextRoot.getSCConstants()) {
 					MachineContentObject machineinv = new MachineContentObject(
 							constant.getIdentifierString());
+					machineinv.setType(constant.getType(formularFactory));
 					tmpSet.add(machineinv);
-
 				}
 
 			}
@@ -194,6 +216,8 @@ public final class EventBHelper {
 		}
 
 		return tmpSet;
+
 	}
+
 
 }

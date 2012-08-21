@@ -17,8 +17,8 @@ public class BTable extends BControl {
 
 		super(visualization);
 
-		int numberOfColumns = 2;
-		int numberOfRows = 2;
+		int numberOfColumns = 1;
+		int numberOfRows = 1;
 
 		CreateCommand cmd;
 		for (int i = 0; i < numberOfColumns; i++) {
@@ -49,7 +49,7 @@ public class BTable extends BControl {
 		initAttribute(new BAttributeRows(1));
 		getAttributes().get(AttributeConstants.ATTRIBUTE_SIZE).setShow(false);
 		getAttributes().get(AttributeConstants.ATTRIBUTE_COORDINATES).setShow(
-				false);
+				true);
 		getAttributes().get(AttributeConstants.ATTRIBUTE_HEIGHT).setEditable(
 				false);
 		getAttributes().get(AttributeConstants.ATTRIBUTE_WIDTH).setEditable(

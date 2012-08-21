@@ -26,16 +26,10 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Text;
-import org.eventb.core.ISCConstant;
-import org.eventb.core.ISCInternalContext;
-import org.eventb.core.ISCMachineRoot;
-import org.eventb.core.ISCVariable;
-import org.eventb.core.ast.FormulaFactory;
 import org.eventb.core.ast.PowerSetType;
-import org.eventb.core.ast.Type;
-import org.rodinp.core.RodinDBException;
 
 import de.bmotionstudio.gef.editor.eventb.EventBHelper;
+import de.bmotionstudio.gef.editor.eventb.MachineContentObject;
 import de.bmotionstudio.gef.editor.model.BControl;
 import de.bmotionstudio.gef.editor.observer.Observer;
 import de.bmotionstudio.gef.editor.observer.ObserverWizard;
@@ -93,38 +87,18 @@ public class WizardTableObserver extends ObserverWizard {
 
 			ArrayList<String> relationList = new ArrayList<String>();
 			
-			try {
-				ISCMachineRoot machineRoot = EventBHelper.getCorrespondingFile(
-						getBControl().getVisualization().getProjectFile(),
-						getBControl().getVisualization().getMachineName());
-				ISCVariable[] scVariables;
+			java.util.List<MachineContentObject> constants = EventBHelper
+					.getConstants(getBControl().getVisualization());
+			for (MachineContentObject mobj : constants) {
+				if (mobj.getType() instanceof PowerSetType)
+					relationList.add(mobj.getLabel());
+			}
 
-				scVariables = machineRoot.getSCVariables();
-				for (ISCVariable var : scVariables) {
-					Type type = var.getType(FormulaFactory.getDefault());
-					if (type instanceof PowerSetType) {
-						relationList.add(var.getElementName());
-					}
-				}
-
-				ISCInternalContext[] scSeenContexts = machineRoot
-						.getSCSeenContexts();
-				for (ISCInternalContext ctx : scSeenContexts) {
-
-					ISCConstant[] scConstants = ctx.getSCConstants();
-					for (ISCConstant constant : scConstants) {
-						Type type = constant.getType(FormulaFactory
-								.getDefault());
-						if (type instanceof PowerSetType) {
-							relationList.add(constant.getElementName());
-						}
-					}
-
-				}
-
-			} catch (RodinDBException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			java.util.List<MachineContentObject> variables = EventBHelper
+					.getVariables(getBControl().getVisualization());
+			for (MachineContentObject mobj : variables) {
+				if (mobj.getType() instanceof PowerSetType)
+					relationList.add(mobj.getLabel());
 			}
 
 			final List list = new List(conRight, SWT.SINGLE | SWT.BORDER);

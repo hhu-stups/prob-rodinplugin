@@ -67,12 +67,25 @@ public class BTableColumnPart extends AppAbstractEditPart {
 
 	@Override
 	protected void refreshEditLayout(IFigure figure, BControl control) {
+
+		int width = control.getDimension().width;
+
+		// Change width of all cells
+		List<BControl> cells = control.getChildrenArray();
+		for (BControl cell : cells) {
+			cell.setAttributeValue(AttributeConstants.ATTRIBUTE_WIDTH, width,
+					true, true);
+		}
+
+		// Notify parent table about change
 		if (getParent() instanceof AppAbstractEditPart) {
 			AppAbstractEditPart tablePart = (AppAbstractEditPart) getParent();
 			tablePart.refreshEditLayout(tablePart.getFigure(),
 					control.getParent());
 		}
+
 		super.refreshEditLayout(figure, control);
+
 	}
 
 	@Override
