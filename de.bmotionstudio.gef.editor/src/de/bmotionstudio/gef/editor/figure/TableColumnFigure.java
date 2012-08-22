@@ -10,7 +10,7 @@ public class TableColumnFigure extends AbstractTableFigure {
 	public TableColumnFigure() {
 		ToolbarLayout toolbarLayout = new ToolbarLayout();
 		setLayoutManager(toolbarLayout);
-		setOpaque(true);
+		setOpaque(false);
 	}
 
 	@Override
@@ -19,7 +19,6 @@ public class TableColumnFigure extends AbstractTableFigure {
 		Color foregroundColor = getForegroundColor();
 		if (foregroundColor != null)
 			g.setForegroundColor(foregroundColor);
-
 		// g.drawLine(r.x, r.y, r.x + r.width, r.y);
 		// Left line
 		g.drawLine(r.x, r.y, r.x, r.y + r.height - 15);

@@ -27,7 +27,6 @@ public class BTablePart extends AppAbstractEditPart {
 	protected IFigure createEditFigure() {
 		TableFigure tableFigure = new TableFigure();
 		Label figure = new Label();
-		figure.setOpaque(true);
 		tableFigure.add(figure);
 		if (!isRunning()) {
 			figure.setIcon(BMotionStudioImage

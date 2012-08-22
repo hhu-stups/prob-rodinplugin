@@ -16,7 +16,7 @@ public class TableFigure extends AbstractTableFigure {
 		ToolbarLayout toolbarLayout = new ToolbarLayout();
 		toolbarLayout.setHorizontal(true);
 		setLayoutManager(toolbarLayout);
-		setOpaque(true);
+		setOpaque(false);
 	}
 
 	@Override

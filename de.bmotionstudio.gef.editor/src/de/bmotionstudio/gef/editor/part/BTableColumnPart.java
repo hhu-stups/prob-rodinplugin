@@ -22,7 +22,6 @@ public class BTableColumnPart extends AppAbstractEditPart {
 	protected IFigure createEditFigure() {
 		TableColumnFigure tableColumnFigure = new TableColumnFigure();
 		Label figure = new Label();
-		figure.setOpaque(true);
 		tableColumnFigure.add(figure);
 		if (!isRunning()) {
 			figure.setIcon(BMotionStudioImage

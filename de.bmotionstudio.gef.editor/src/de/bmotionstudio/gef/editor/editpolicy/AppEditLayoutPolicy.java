@@ -143,8 +143,8 @@ public class AppEditLayoutPolicy extends XYLayoutEditPolicy {
 
 				BControl newObj = (BControl) request.getNewObject();
 
-				CreateCommand createCmd = new CreateCommand(
-						newObj, (BControl) getHost().getModel());
+				CreateCommand createCmd = new CreateCommand(newObj,
+						(BControl) getHost().getModel());
 
 				Rectangle constraint = (Rectangle) getConstraintFor(request);
 				constraint.x = (constraint.x < 0) ? 0 : constraint.x;
@@ -157,7 +157,7 @@ public class AppEditLayoutPolicy extends XYLayoutEditPolicy {
 						.getAttributes().get(
 								AttributeConstants.ATTRIBUTE_HEIGHT);
 
-				if (atrWidth != null) {
+				if (atrWidth != null && !atrWidth.isEditable()) {
 					constraint.width = Integer.valueOf(atrWidth.getValue()
 							.toString());
 				} else {
@@ -165,7 +165,7 @@ public class AppEditLayoutPolicy extends XYLayoutEditPolicy {
 							: constraint.width;
 				}
 
-				if (atrHeight != null) {
+				if (atrHeight != null && !atrHeight.isEditable()) {
 					constraint.height = Integer.valueOf(atrHeight.getValue()
 							.toString());
 				} else {
