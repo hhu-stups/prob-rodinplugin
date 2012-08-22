@@ -128,8 +128,9 @@ def groupId(){
 *	This Group ID will be used in every sub project
 */
 
-def addLibToCP(def project, File filePar, def libPar){
+def addLibToCP(def project, def libPar){
 	
+	def filePar = new File(workspacePath+project+"/.classpath")
 	boolean notYetAdded = true	
 	filePar.eachLine{ line ->
 		def pattern = ".*${dependencyFolder}${libPar}.*"
@@ -139,25 +140,60 @@ def addLibToCP(def project, File filePar, def libPar){
 		
 	}
 	if(notYetAdded){
-		File newCP = new File(project+'/.cp') 
+		File newCP = new File(workspacePath+project+'/.cp') 
 		filePar.eachLine{ line ->
+
 			 if(line ==~ /.*<\/classpath>.*/){
 				
-				String entry = '<classpathentry exported="true" kind="lib" path="lib/dependencies/'+libPar+'"/>'+'\n</classpath>\n'
+				String entry = '\t<classpathentry exported="true" kind="lib" path="'+dependencyFolder+libPar+'"/>'+'\n</classpath>\n'
 				line = line.replaceAll(/<\/classpath>/, entry)
-				println line
-				newCP << line+"\n"
+				println project + " : "+ libPar +" added to classpath"
+				newCP << line
 			}else{
 				newCP << line+"\n"
 			}
 		}
 		filePar.delete()
-		newCP.renameTo(project+'/.classpath')
+		newCP.renameTo(workspacePath+project+'/.classpath')
 	}else{
 		println project + " : "+ libPar +" classpath entry already present"
 	}
 	
 }
+
+
+
+def deleteLibFromCP(def project){
+	
+	def filePar = new File(workspacePath+project+"/.classpath")
+	boolean deleteCP = false
+	def newCP = new File(workspacePath+project+'/cp')
+	def pattern = ".*${dependencyFolder}[^<].*/>"
+
+	filePar.eachLine{ line ->
+	
+		if(line ==~ /\n(\ |\t)*/) line = line.replaceAll(/\n(\ |\t)*/, '')		// delete empty lines
+		if(line ==~ /${pattern}/){
+			deleteCP = true 
+			def pattern2 =  '(\\ |\\t)*<classpathentry exported="true" kind="lib" path="'+dependencyFolder+"[^<].*"+'"/>(\\ |\\t)*'
+			line = line.replaceAll(/${pattern2}/, '')
+			newCP << line
+		}else{
+			newCP << line+"\n"
+		}
+	}
+	if(!deleteCP){
+		println project + " : no dependencies from "+ dependencyFolder+" found in classpath file! "
+		newCP.delete()
+	}else{
+		filePar.delete()
+		newCP.renameTo(workspacePath+project+'/.classpath')	
+		println workspacePath+project+'/.classpath' +"!"
+	}
+}
+
+
+
 
 /////////////////////////////////////////////////////////////////////////////////////////
 //		--	!!! 				DEFINING SUB PROJECTS 							!!!	-- //
@@ -167,7 +203,7 @@ subprojects {
 	
 	apply plugin: 'base'
 	apply plugin: 'java'
-	apply plugin: 'eclipse'
+//	apply plugin: 'eclipse'
 	
 	task deleteArtifacts(type: Delete) {
   		delete 'target','pom.xml'
@@ -183,22 +219,22 @@ subprojects {
 	}
 
 	
-	task setClassPath(dependsOn: 'collectDependencies'){
-
+	task setClassPath(dependsOn: 'collectDependencies')<<{
+		
+		description = "\tAdds all your Dependencies from your local lib folder in each project to it's classpath"
+		
 		def dependencyList = []
 		try{
-			def dir = new File(project.name+"/"+dependencyFolder).eachFile() { file->  
+			def dir = new File(workspacePath+project.name+"/"+dependencyFolder).eachFile() { file->  		
 			    dependencyList << file.getName()  
-			}
+				}
 	
 			if(features.every{ it != project.name }){	
-			
-				def cpFile = new File(project.name+"/.classpath")
 				for(int icp = 0; icp < dependencyList.size; icp++){
-					addLibToCP(project.name, cpFile, dependencyList[icp])
+					addLibToCP(project.name, dependencyList[icp])
 				}
 				/*dependencyList.each{ dep->
-					println project.name+": "+ dep	
+					println project.name+": "+ dep	// could still be usefull for debugging, that's why it's not deleted
 				}*/
 
 			}
@@ -208,11 +244,32 @@ subprojects {
 	
 	}// setClassPath
 	
-	eclipse.classpath.file {
-	    whenMerged { classpath ->
-	        classpath.entries.findAll { entry -> entry.kind == 'lib' }*.exported = true	
-	    }
+	
+	task deleteFromClassPath()<<{			//AKTUELLE BAUSTELLE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! !!! !! !! !! !!!!!!!!!!!!!!!!!!######!!!!#!!!
+		
+		description = "\tDeletes all your Dependencies located in your local lib folder from each project's classpath"
+		
+		try{
+			
+			boolean depsDelete = false
+			def depsFolder = new File(workspacePath+project.name+'/'+dependencyFolder)
+			if(depsFolder.exists()) depsDelete = true
+			depsFolder.deleteDir()
+
+			if(features.every{ it != project.name } && depsDelete){	
+				deleteLibFromCP(project.name)
+			}
+	
+		}catch(Exception e){
+			println project.name+" has no dependencies in '${dependencyFolder}' defined: Classpath will not be changed"
+		}
+			
 	}
+	
+	task flushDependencies( dependsOn: ['deleteFromClassPath'])<<{
+		tasks.setClassPath.execute()
+	}
+
 
 	////////////////////////////////////////////////////////////////////////////////////////////	
 	
