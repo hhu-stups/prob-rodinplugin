@@ -102,11 +102,15 @@ public class WizardTableObserver extends ObserverWizard {
 			txtExpression.setLayoutData(new GridData(GridData.FILL_BOTH));
 
 			Composite conRight = new Composite(container, SWT.NONE);
-			conRight.setLayoutData(new GridData(GridData.FILL_BOTH));
+
+			GridData gData = new GridData(GridData.FILL_VERTICAL);
+			gData.widthHint = 125;
+
+			conRight.setLayoutData(gData);
 			conRight.setLayout(new GridLayout(1, false));
 
-			lb = new Label(conRight, SWT.NONE);
-			lb.setText("List of available power sets:");
+			lb = new Label(conRight, SWT.WRAP);
+			lb.setText("Power sets:");
 			lb.setLayoutData(new GridData(GridData.VERTICAL_ALIGN_BEGINNING));
 
 			ArrayList<String> relationList = new ArrayList<String>();
