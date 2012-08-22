@@ -30,6 +30,7 @@ public class BTableCellPart extends AppAbstractEditPart {
 		installEditPolicy(EditPolicy.NODE_ROLE, new RenamePolicy());
 	}
 
+
 	@Override
 	protected void prepareRunPolicies() {
 	}

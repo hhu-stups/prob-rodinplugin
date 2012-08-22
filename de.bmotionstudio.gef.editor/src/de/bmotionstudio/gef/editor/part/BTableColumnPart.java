@@ -4,10 +4,13 @@ import java.beans.PropertyChangeEvent;
 import java.util.List;
 
 import org.eclipse.draw2d.IFigure;
+import org.eclipse.draw2d.Label;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.swt.graphics.RGB;
 
 import de.bmotionstudio.gef.editor.AttributeConstants;
+import de.bmotionstudio.gef.editor.BMotionStudioImage;
+import de.bmotionstudio.gef.editor.EditorImageRegistry;
 import de.bmotionstudio.gef.editor.editpolicy.BMotionNodeEditPolicy;
 import de.bmotionstudio.gef.editor.editpolicy.BMotionStudioFlowEditPolicy;
 import de.bmotionstudio.gef.editor.figure.TableColumnFigure;
@@ -17,7 +20,15 @@ public class BTableColumnPart extends AppAbstractEditPart {
 
 	@Override
 	protected IFigure createEditFigure() {
-		return new TableColumnFigure();
+		TableColumnFigure tableColumnFigure = new TableColumnFigure();
+		Label figure = new Label();
+		figure.setOpaque(true);
+		tableColumnFigure.add(figure);
+		if (!isRunning()) {
+			figure.setIcon(BMotionStudioImage
+					.getImage(EditorImageRegistry.IMG_ICON_TR_UP));
+		}
+		return tableColumnFigure;
 	}
 
 	@Override

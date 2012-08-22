@@ -32,6 +32,7 @@ public class TableCellFigure extends AbstractTableFigure {
 		Color foregroundColor = getForegroundColor();
 		if (foregroundColor != null)
 			g.setForegroundColor(foregroundColor);
+		// Bottom cell line
 		g.drawLine(r.x, r.y, r.x + r.width, r.y);
 	}
 

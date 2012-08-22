@@ -25,6 +25,7 @@ public class EditorImageRegistry implements IBMotionStudioImageRegistry {
 	public static final String IMG_ICON_CONNECTION24 = "icon_connection24";
 	public static final String IMG_ICON_NEW_WIZ = "icon_new_wiz";
 	public static final String IMG_ICON_DELETE_EDIT = "icon_delete_edit";
+	public static final String IMG_ICON_TR_UP = "icon_tr_up";
 
 	public static final String IMG_ICON_JPG = "icon_jpg";
 	public static final String IMG_ICON_GIF = "icon_gif";
@@ -65,6 +66,10 @@ public class EditorImageRegistry implements IBMotionStudioImageRegistry {
 				"$nl$/icons/full/etool16/new_wiz.gif");
 		BMotionStudioImage.registerImage(IMG_ICON_DELETE_EDIT,
 				"org.eclipse.ui", "$nl$/icons/full/etool16/delete_edit.gif");
+
+		BMotionStudioImage
+				.registerImage(IMG_ICON_TR_UP, BMotionEditorPlugin.PLUGIN_ID,
+						"icons/eclipse16/updated_co.gif");
 
 		BMotionStudioImage.registerImage(IMG_ICON_JPG,
 				BMotionEditorPlugin.PLUGIN_ID, "icons/icon_jpg.gif");

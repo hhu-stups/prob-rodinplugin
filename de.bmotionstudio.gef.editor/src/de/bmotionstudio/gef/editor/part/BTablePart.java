@@ -54,7 +54,9 @@ public class BTablePart extends AppAbstractEditPart {
 		figure.getParent().setConstraint(
 				figure,
 				new Rectangle(control.getLocation().x, control.getLocation().y,
-						width + 1, (rows * 20) + 1));
+						width + 1, (rows * 20) + 15));
+
+		// super.refreshEditLayout(figure, control);
 
 	}
 
@@ -93,7 +95,7 @@ public class BTablePart extends AppAbstractEditPart {
 				BTableColumn bTableColumn = new BTableColumn(
 						model.getVisualization());
 				CreateCommand cmd = new CreateCommand(bTableColumn, model);
-				cmd.setLayout(new Rectangle(0, 0, 50, 25));
+				// cmd.setLayout(new Rectangle(0, 0, 50, 40));
 				cmd.execute();
 				Integer numberOfRows = Integer.valueOf(model.getAttributeValue(
 						AttributeConstants.ATTRIBUTE_ROWS).toString());

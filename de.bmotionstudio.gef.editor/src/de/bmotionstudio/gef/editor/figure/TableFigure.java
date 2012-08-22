@@ -24,8 +24,9 @@ public class TableFigure extends AbstractTableFigure {
 	protected void paintBorder(Graphics g) {
 		Rectangle r = getClientArea();
 		g.setForegroundColor(getForegroundColor());
+		// Right table border line
 		g.drawLine(r.x + r.width - 1, r.y, r.x + r.width - 1, r.y + r.height
-				- 1);
+				- 15);
 		super.paintBorder(g);
 	}
 

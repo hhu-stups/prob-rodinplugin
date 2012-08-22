@@ -1,11 +1,7 @@
 package de.bmotionstudio.gef.editor.observer;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.regex.MatchResult;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import de.bmotionstudio.gef.editor.Animation;
 import de.bmotionstudio.gef.editor.AttributeConstants;
@@ -21,10 +17,6 @@ public class TableObserver extends Observer {
 	private String predicate;
 
 	public static List<String> split(String input, char tempReplacement) {
-		while (input.matches(".*\"[^\\{\\}]+,[^\\{\\}]+.*")) {
-			input = input.replaceAll("([^\\{\\}]+),([^\\{\\}]+)", "$1"
-					+ tempReplacement + "$2");
-		}
 		while (input.matches(".*\\{[^\\}]+,[^\\}]+\\}.*")) {
 			input = input.replaceAll("(\\{[^\\}]+),([^\\}]+\\})", "$1"
 					+ tempReplacement + "$2");
@@ -38,10 +30,6 @@ public class TableObserver extends Observer {
 	}
 
 	public static List<String> split2(String input, char tempReplacement) {
-		while (input.matches(".*\"[^\\(\\)]+\\|->[^\\(\\)]+.*")) {
-			input = input.replaceAll("(\"[^\\(\\)]+)\\|->([^\\(\\)]+)", "$1"
-					+ tempReplacement + "$2");
-		}
 		while (input.matches(".*\\([^\\)]+\\|->[^\\)]+\\).*")) {
 			input = input.replaceAll("(\\([^\\)]+)\\|->([^\\)]+\\))", "$1"
 					+ tempReplacement + "$2");
@@ -135,12 +123,13 @@ public class TableObserver extends Observer {
 
 	}
 
-	private Iterable<MatchResult> findMatches(String pattern, CharSequence s) {
-		List<MatchResult> results = new ArrayList<MatchResult>();
-		for (Matcher m = Pattern.compile(pattern).matcher(s); m.find();)
-			results.add(m.toMatchResult());
-		return results;
-	}
+	// private Iterable<MatchResult> findMatches(String pattern, CharSequence s)
+	// {
+	// List<MatchResult> results = new ArrayList<MatchResult>();
+	// for (Matcher m = Pattern.compile(pattern).matcher(s); m.find();)
+	// results.add(m.toMatchResult());
+	// return results;
+	// }
 
 	public void setExpression(String expression) {
 		this.expression = expression;
