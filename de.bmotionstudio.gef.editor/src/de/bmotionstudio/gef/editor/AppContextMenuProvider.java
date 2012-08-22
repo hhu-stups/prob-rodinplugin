@@ -102,7 +102,7 @@ public class AppContextMenuProvider extends ContextMenuProvider {
 
 	private void buildObserverMenu(IMenuManager menu) {
 
-		final MenuManager handleObserverMenu = new MenuManager("Observers",
+		final MenuManager handleObserverMenu = new MenuManager("Observer",
 				BMotionStudioImage.getImageDescriptor(
 						BMotionEditorPlugin.PLUGIN_ID,
 						"icons/icon_observer.gif"), "observerMenu");
