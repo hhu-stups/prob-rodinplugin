@@ -39,13 +39,13 @@ public final class EventBHelper {
 	public static EventBRoot getCorrespondingFile(IFile file,
 			String machineFileName) {
 		IRodinProject rProject = RodinCore.valueOf(file.getProject());
-		EventBRoot machineRoot = null;
+		EventBRoot root = null;
 		if (rProject != null) {
 			IRodinFile rFile = rProject.getRodinFile(machineFileName);
 			if (rFile != null && rFile.getRoot() instanceof EventBRoot)
-				machineRoot = (EventBRoot) rFile.getRoot();
+				root = (EventBRoot) rFile.getRoot();
 		}
-		return machineRoot;
+		return root;
 	}
 
 	public static List<MachineOperation> getOperations(
@@ -58,9 +58,12 @@ public final class EventBHelper {
 			EventBRoot correspondingFile = getCorrespondingFile(
 					visualization.getProjectFile(),
 					visualization.getMachineName());
-			ISCMachineRoot machineRoot = correspondingFile.getSCMachineRoot();
 
-			if (machineRoot != null) {
+			if (correspondingFile instanceof MachineRoot
+					&& correspondingFile.exists()) {
+
+				ISCMachineRoot machineRoot = correspondingFile
+						.getSCMachineRoot();
 
 				try {
 
@@ -91,10 +94,10 @@ public final class EventBHelper {
 							.unmodifiableList(new ArrayList<MachineOperation>());
 				}
 
+			} else if (visualization.getLanguage().equals("ClassicalB")) {
+				// TODO: Implement me!!!
 			}
 
-		} else if (visualization.getLanguage().equals("ClassicalB")) {
-			// TODO: Implement me!!!
 		}
 
 		return tmpSet;
@@ -106,28 +109,30 @@ public final class EventBHelper {
 
 		EventBRoot correspondingFile = getCorrespondingFile(
 				visualization.getProjectFile(), visualization.getMachineName());
-		ISCMachineRoot machineRoot = correspondingFile.getSCMachineRoot();
 
-		ISCVariable[] vars = null;
 		ArrayList<MachineContentObject> tmpSet = new ArrayList<MachineContentObject>();
 
-		try {
-			vars = machineRoot.getSCVariables();
+		if (correspondingFile instanceof MachineRoot
+				&& correspondingFile.exists()) {
 
-			for (ISCVariable var : vars) {
+			ISCMachineRoot machineRoot = correspondingFile.getSCMachineRoot();
 
-				MachineContentObject machinevar = new MachineContentObject(
-						var.getIdentifierString());
-				machinevar.setType(var.getType(formularFactory));
-				tmpSet.add(machinevar);
-
+			try {
+				ISCVariable[] vars = machineRoot.getSCVariables();
+				for (ISCVariable var : vars) {
+					MachineContentObject machinevar = new MachineContentObject(
+							var.getIdentifierString());
+					machinevar.setType(var.getType(formularFactory));
+					tmpSet.add(machinevar);
+				}
+			} catch (RodinDBException e) {
+				String message = "Rodin DB Exception while getting variables: "
+						+ e.getLocalizedMessage();
+				Logger.notifyUser(message, e);
+				return Collections
+						.unmodifiableList(new ArrayList<MachineContentObject>());
 			}
-		} catch (RodinDBException e) {
-			String message = "Rodin DB Exception while getting variables: "
-					+ e.getLocalizedMessage();
-			Logger.notifyUser(message, e);
-			return Collections
-					.unmodifiableList(new ArrayList<MachineContentObject>());
+
 		}
 
 		return tmpSet;
@@ -138,32 +143,34 @@ public final class EventBHelper {
 			Visualization visualization) {
 
 		EventBRoot correspondingFile = getCorrespondingFile(
-				visualization.getProjectFile(),
-				visualization.getMachineName());
-		ISCMachineRoot machineRoot = correspondingFile.getSCMachineRoot();
+				visualization.getProjectFile(), visualization.getMachineName());
 
-		ISCInvariant[] invariants = null;
 		ArrayList<MachineContentObject> tmpSet = new ArrayList<MachineContentObject>();
 
-		try {
-			invariants = machineRoot.getSCInvariants();
+		if (correspondingFile instanceof MachineRoot
+				&& correspondingFile.exists()) {
 
-			for (ISCInvariant inv : invariants) {
+			ISCMachineRoot machineRoot = correspondingFile.getSCMachineRoot();
 
-				MachineContentObject machineinv = new MachineContentObject(
-						inv.getPredicateString());
-				tmpSet.add(machineinv);
-
+			try {
+				ISCInvariant[] invariants = machineRoot.getSCInvariants();
+				for (ISCInvariant inv : invariants) {
+					MachineContentObject machineinv = new MachineContentObject(
+							inv.getPredicateString());
+					tmpSet.add(machineinv);
+				}
+			} catch (RodinDBException e) {
+				String message = "Rodin DB Exception while getting invariants: "
+						+ e.getLocalizedMessage();
+				Logger.notifyUser(message, e);
+				return Collections
+						.unmodifiableList(new ArrayList<MachineContentObject>());
 			}
-		} catch (RodinDBException e) {
-			String message = "Rodin DB Exception while getting invariants: "
-					+ e.getLocalizedMessage();
-			Logger.notifyUser(message, e);
-			return Collections
-					.unmodifiableList(new ArrayList<MachineContentObject>());
+
 		}
 
 		return tmpSet;
+
 	}
 
 	public static List<MachineContentObject> getConstants(
@@ -173,46 +180,52 @@ public final class EventBHelper {
 				visualization.getProjectFile(), visualization.getMachineName());
 
 		ArrayList<MachineContentObject> tmpSet = new ArrayList<MachineContentObject>();
-		try {
-			if (correspondingFile instanceof MachineRoot) {
 
-				ISCMachineRoot machineRoot = correspondingFile
-						.getSCMachineRoot();
+		if (correspondingFile.exists()) {
 
-				ISCInternalContext[] seenContexts = machineRoot
-						.getSCSeenContexts();
-				for (ISCInternalContext context : seenContexts) {
+			try {
+				if (correspondingFile instanceof MachineRoot) {
 
-					for (ISCConstant constant : context.getSCConstants()) {
+					ISCMachineRoot machineRoot = correspondingFile
+							.getSCMachineRoot();
 
+					ISCInternalContext[] seenContexts = machineRoot
+							.getSCSeenContexts();
+					for (ISCInternalContext context : seenContexts) {
+
+						for (ISCConstant constant : context.getSCConstants()) {
+
+							MachineContentObject machineinv = new MachineContentObject(
+									constant.getIdentifierString());
+							machineinv.setType(constant
+									.getType(formularFactory));
+							tmpSet.add(machineinv);
+
+						}
+
+					}
+
+				} else if (correspondingFile instanceof ContextRoot) {
+
+					ISCContextRoot contextRoot = correspondingFile
+							.getSCContextRoot();
+					for (ISCConstant constant : contextRoot.getSCConstants()) {
 						MachineContentObject machineinv = new MachineContentObject(
 								constant.getIdentifierString());
 						machineinv.setType(constant.getType(formularFactory));
 						tmpSet.add(machineinv);
-
 					}
 
 				}
 
-			} else if (correspondingFile instanceof ContextRoot) {
-
-				ISCContextRoot contextRoot = correspondingFile
-						.getSCContextRoot();
-				for (ISCConstant constant : contextRoot.getSCConstants()) {
-					MachineContentObject machineinv = new MachineContentObject(
-							constant.getIdentifierString());
-					machineinv.setType(constant.getType(formularFactory));
-					tmpSet.add(machineinv);
-				}
-
+			} catch (RodinDBException e) {
+				String message = "Rodin DB Exception while getting constants: "
+						+ e.getLocalizedMessage();
+				Logger.notifyUser(message, e);
+				return Collections
+						.unmodifiableList(new ArrayList<MachineContentObject>());
 			}
 
-		} catch (RodinDBException e) {
-			String message = "Rodin DB Exception while getting constants: "
-					+ e.getLocalizedMessage();
-			Logger.notifyUser(message, e);
-			return Collections
-					.unmodifiableList(new ArrayList<MachineContentObject>());
 		}
 
 		return tmpSet;

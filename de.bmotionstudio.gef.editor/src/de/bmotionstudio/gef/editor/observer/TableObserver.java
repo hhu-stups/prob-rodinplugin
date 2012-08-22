@@ -15,6 +15,8 @@ public class TableObserver extends Observer {
 
 	private String expression;
 	private String predicate;
+	private boolean overrideCells;
+	private boolean keepHeader;
 
 	public static List<String> split(String input, char tempReplacement) {
 		while (input.matches(".*\\{[^\\}]+,[^\\}]+\\}.*")) {
@@ -60,21 +62,24 @@ public class TableObserver extends Observer {
 			fEval = fEval.replaceAll("^\\{", "");
 			fEval = fEval.replaceAll("\\}$", "");
 
-			// System.out.println(fEval);
-
-			// String input = "aa, a, aa, {bb, 1, 2}, {cc}, {dd,5}";
 			String input = fEval;
 			List<String> rows = split(input, '#');
 
-			AbstractAttribute attributeRows = control
-					.getAttribute(AttributeConstants.ATTRIBUTE_ROWS);
-			Integer numberOfOldRows = Integer.valueOf(attributeRows
-					.getInitValue().toString());
+			Integer numberOfOldRows = 0;
+			Integer numberOfOldColumns = 0;
 
-			AbstractAttribute attributeColumns = control
-					.getAttribute(AttributeConstants.ATTRIBUTE_COLUMNS);
-			Integer numberOfOldColumns = Integer.valueOf(attributeColumns
-					.getInitValue().toString());
+			if (!overrideCells) {
+				AbstractAttribute attributeRows = control
+						.getAttribute(AttributeConstants.ATTRIBUTE_ROWS);
+				numberOfOldRows = Integer.valueOf(attributeRows.getInitValue()
+						.toString());
+				AbstractAttribute attributeColumns = control
+						.getAttribute(AttributeConstants.ATTRIBUTE_COLUMNS);
+				numberOfOldColumns = Integer.valueOf(attributeColumns
+						.getInitValue().toString());
+			} else if (keepHeader) {
+				numberOfOldRows = 1;
+			}
 
 			int numberOfNewRows = rows.size();
 
@@ -123,14 +128,6 @@ public class TableObserver extends Observer {
 
 	}
 
-	// private Iterable<MatchResult> findMatches(String pattern, CharSequence s)
-	// {
-	// List<MatchResult> results = new ArrayList<MatchResult>();
-	// for (Matcher m = Pattern.compile(pattern).matcher(s); m.find();)
-	// results.add(m.toMatchResult());
-	// return results;
-	// }
-
 	public void setExpression(String expression) {
 		this.expression = expression;
 	}
@@ -150,6 +147,22 @@ public class TableObserver extends Observer {
 	@Override
 	public ObserverWizard getWizard(BControl control) {
 		return new WizardTableObserver(control, this);
+	}
+
+	public boolean isOverrideCells() {
+		return overrideCells;
+	}
+
+	public void setOverrideCells(boolean overrideCells) {
+		this.overrideCells = overrideCells;
+	}
+
+	public boolean isKeepHeader() {
+		return keepHeader;
+	}
+
+	public void setKeepHeader(boolean keepHeader) {
+		this.keepHeader = keepHeader;
 	}
 
 }

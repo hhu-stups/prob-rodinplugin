@@ -21,13 +21,14 @@ import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.layout.RowLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Text;
-import org.eventb.core.ast.Expression;
-import org.eventb.core.ast.FormulaFactory;
 import org.eventb.core.ast.PowerSetType;
 
 import de.bmotionstudio.gef.editor.eventb.EventBHelper;
@@ -36,7 +37,6 @@ import de.bmotionstudio.gef.editor.model.BControl;
 import de.bmotionstudio.gef.editor.observer.Observer;
 import de.bmotionstudio.gef.editor.observer.ObserverWizard;
 import de.bmotionstudio.gef.editor.observer.TableObserver;
-import de.prob.unicode.UnicodeTranslator;
 
 public class WizardTableObserver extends ObserverWizard {
 
@@ -44,6 +44,8 @@ public class WizardTableObserver extends ObserverWizard {
 
 		private Text txtExpression;
 		private Text txtPredicate;
+		private Button cbOverrideCells;
+		private Button cbKeepHeader;
 
 		public Text getTxtExpression() {
 			return txtExpression;
@@ -57,8 +59,27 @@ public class WizardTableObserver extends ObserverWizard {
 
 			final DataBindingContext dbc = new DataBindingContext();
 
-			Composite container = new Composite(parent, SWT.NONE);
+			parent.setLayout(new GridLayout(1, true));
+
+			Group group = new Group(parent, SWT.None);
+			group.setText("General settings");
+			RowLayout rowLayout = new RowLayout();
+			rowLayout.marginLeft = 10;
+			rowLayout.marginTop = 10;
+			rowLayout.marginBottom = 10;
+			group.setLayout(rowLayout);
+			group.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+
+			cbOverrideCells = new Button(group, SWT.CHECK);
+			cbOverrideCells.setText("Override cells");
+
+			cbKeepHeader = new Button(group, SWT.CHECK);
+			cbKeepHeader.setText("Keep header");
+
+			Group container = new Group(parent, SWT.None);
+			container.setText("Formal model");
 			container.setLayout(new GridLayout(2, false));
+			container.setLayoutData(new GridData(GridData.FILL_BOTH));
 
 			Composite conLeft = new Composite(container, SWT.NONE);
 			conLeft.setLayoutData(new GridData(GridData.FILL_BOTH));
@@ -94,10 +115,6 @@ public class WizardTableObserver extends ObserverWizard {
 					.getConstants(getBControl().getVisualization());
 			for (MachineContentObject mobj : constants) {
 				if (mobj.getType() instanceof PowerSetType) {
-					Expression expression = ((PowerSetType) mobj.getType())
-							.toExpression(FormulaFactory.getDefault());
-					System.out.println(UnicodeTranslator.toAscii(expression
-							.toString()));
 					relationList.add(mobj.getLabel());
 				}
 			}
@@ -106,10 +123,6 @@ public class WizardTableObserver extends ObserverWizard {
 					.getVariables(getBControl().getVisualization());
 			for (MachineContentObject mobj : variables) {
 				if (mobj.getType() instanceof PowerSetType) {
-					Expression expression = ((PowerSetType) mobj.getType())
-							.toExpression(FormulaFactory.getDefault());
-					System.out.println(UnicodeTranslator.toAscii(expression
-							.toString()));
 					relationList.add(mobj.getLabel());
 				}
 			}
@@ -142,6 +155,14 @@ public class WizardTableObserver extends ObserverWizard {
 					SWTObservables.observeText(txtExpression, SWT.Modify),
 					BeansObservables.observeValue(
 							(TableObserver) getObserver(), "expression"));
+
+			dbc.bindValue(SWTObservables.observeSelection(cbOverrideCells),
+					BeansObservables.observeValue(
+							(TableObserver) getObserver(), "overrideCells"));
+
+			dbc.bindValue(SWTObservables.observeSelection(cbKeepHeader),
+					BeansObservables.observeValue(
+							(TableObserver) getObserver(), "keepHeader"));
 
 		}
 
