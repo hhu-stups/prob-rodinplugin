@@ -9,7 +9,6 @@ public class TableColumnFigure extends AbstractTableFigure {
 
 	public TableColumnFigure() {
 		ToolbarLayout toolbarLayout = new ToolbarLayout();
-		toolbarLayout.setSpacing(0);
 		setLayoutManager(toolbarLayout);
 		setOpaque(true);
 	}

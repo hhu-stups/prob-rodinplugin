@@ -4,11 +4,14 @@ import java.beans.PropertyChangeEvent;
 import java.util.List;
 
 import org.eclipse.draw2d.IFigure;
+import org.eclipse.draw2d.Label;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.swt.graphics.RGB;
 
 import de.bmotionstudio.gef.editor.AttributeConstants;
+import de.bmotionstudio.gef.editor.BMotionStudioImage;
+import de.bmotionstudio.gef.editor.EditorImageRegistry;
 import de.bmotionstudio.gef.editor.command.CreateCommand;
 import de.bmotionstudio.gef.editor.editpolicy.AppDeletePolicy;
 import de.bmotionstudio.gef.editor.editpolicy.BMotionNodeEditPolicy;
@@ -22,7 +25,15 @@ public class BTablePart extends AppAbstractEditPart {
 
 	@Override
 	protected IFigure createEditFigure() {
-		return new TableFigure();
+		TableFigure tableFigure = new TableFigure();
+		Label figure = new Label();
+		figure.setOpaque(true);
+		tableFigure.add(figure);
+		if (!isRunning()) {
+			figure.setIcon(BMotionStudioImage
+					.getImage(EditorImageRegistry.IMG_ICON_TR_LEFT));
+		}
+		return tableFigure;
 	}
 
 	@Override
@@ -54,7 +65,7 @@ public class BTablePart extends AppAbstractEditPart {
 		figure.getParent().setConstraint(
 				figure,
 				new Rectangle(control.getLocation().x, control.getLocation().y,
-						width + 1, (rows * 20) + 15));
+						width + 21, (rows * 20) + 15));
 
 		// super.refreshEditLayout(figure, control);
 

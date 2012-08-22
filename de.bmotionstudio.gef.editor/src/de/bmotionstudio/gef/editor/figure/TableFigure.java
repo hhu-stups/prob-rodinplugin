@@ -15,7 +15,6 @@ public class TableFigure extends AbstractTableFigure {
 	public TableFigure() {
 		ToolbarLayout toolbarLayout = new ToolbarLayout();
 		toolbarLayout.setHorizontal(true);
-		toolbarLayout.setStretchMinorAxis(false);
 		setLayoutManager(toolbarLayout);
 		setOpaque(true);
 	}
@@ -25,7 +24,7 @@ public class TableFigure extends AbstractTableFigure {
 		Rectangle r = getClientArea();
 		g.setForegroundColor(getForegroundColor());
 		// Right table border line
-		g.drawLine(r.x + r.width - 1, r.y, r.x + r.width - 1, r.y + r.height
+		g.drawLine(r.x + r.width - 21, r.y, r.x + r.width - 21, r.y + r.height
 				- 15);
 		super.paintBorder(g);
 	}

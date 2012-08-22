@@ -26,6 +26,7 @@ public class EditorImageRegistry implements IBMotionStudioImageRegistry {
 	public static final String IMG_ICON_NEW_WIZ = "icon_new_wiz";
 	public static final String IMG_ICON_DELETE_EDIT = "icon_delete_edit";
 	public static final String IMG_ICON_TR_UP = "icon_tr_up";
+	public static final String IMG_ICON_TR_LEFT = "icon_tr_left";
 
 	public static final String IMG_ICON_JPG = "icon_jpg";
 	public static final String IMG_ICON_GIF = "icon_gif";
@@ -70,6 +71,9 @@ public class EditorImageRegistry implements IBMotionStudioImageRegistry {
 		BMotionStudioImage
 				.registerImage(IMG_ICON_TR_UP, BMotionEditorPlugin.PLUGIN_ID,
 						"icons/eclipse16/updated_co.gif");
+		BMotionStudioImage.registerImage(IMG_ICON_TR_LEFT,
+				BMotionEditorPlugin.PLUGIN_ID,
+				"icons/eclipse16/updated_col.gif");
 
 		BMotionStudioImage.registerImage(IMG_ICON_JPG,
 				BMotionEditorPlugin.PLUGIN_ID, "icons/icon_jpg.gif");
