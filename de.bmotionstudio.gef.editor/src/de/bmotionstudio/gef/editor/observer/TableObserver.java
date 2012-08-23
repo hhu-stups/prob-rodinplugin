@@ -23,10 +23,12 @@ public class TableObserver extends Observer {
 			input = input.replaceAll("(\\{[^\\}]+),([^\\}]+\\})", "$1"
 					+ tempReplacement + "$2");
 		}
-		String[] split = input.split(",");
 		List<String> output = new LinkedList<String>();
-		for (String s : split) {
-			output.add(s.replaceAll(tempReplacement + "", ",").trim());
+		if (input.length() > 0) {
+			String[] split = input.split(",");
+			for (String s : split) {
+				output.add(s.replaceAll(tempReplacement + "", ",").trim());
+			}
 		}
 		return output;
 	}
@@ -36,10 +38,12 @@ public class TableObserver extends Observer {
 			input = input.replaceAll("(\\([^\\)]+)\\|->([^\\)]+\\))", "$1"
 					+ tempReplacement + "$2");
 		}
-		String[] split = input.split("\\|->");
 		List<String> output = new LinkedList<String>();
-		for (String s : split) {
-			output.add(s.replaceAll(tempReplacement + "", "\\|->").trim());
+		if (input.length() > 0) {
+			String[] split = input.split("\\|->");
+			for (String s : split) {
+				output.add(s.replaceAll(tempReplacement + "", "\\|->").trim());
+			}
 		}
 		return output;
 	}
@@ -58,6 +62,7 @@ public class TableObserver extends Observer {
 
 			String fEval = BMSUtil.parseExpression(expression, control,
 					animation);
+
 			fEval = UnicodeTranslator.toAscii(fEval);
 			fEval = fEval.replaceAll("^\\{", "");
 			fEval = fEval.replaceAll("\\}$", "");
@@ -92,8 +97,10 @@ public class TableObserver extends Observer {
 			// Set content and the correct number of columns
 			for (int i = numberOfOldRows; i < numberOfNewRows + numberOfOldRows; i++) {
 
-				String content = UnicodeTranslator.toAscii(rows.get(i
-						- numberOfOldRows));
+				String content = rows.get(i - numberOfOldRows);
+
+				if (content != null && content.length() > 0)
+					content = UnicodeTranslator.toAscii(content);
 
 				content = content.replaceAll("^\\(", "");
 				content = content.replaceAll("\\)$", "");

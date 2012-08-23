@@ -11,10 +11,6 @@ import org.eclipse.ui.views.properties.PropertyDescriptor;
 
 public class BAttributeConnection extends AbstractAttribute {
 
-	public BAttributeConnection(Object value) {
-		super(value);
-	}
-
 	@Override
 	public PropertyDescriptor preparePropertyDescriptor() {
 		PropertyDescriptor descriptor = new PropertyDescriptor(getID(),

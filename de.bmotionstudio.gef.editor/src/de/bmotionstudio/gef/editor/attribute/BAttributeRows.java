@@ -13,10 +13,6 @@ import de.bmotionstudio.gef.editor.property.IntegerPropertyDescriptor;
 
 public class BAttributeRows extends AbstractAttribute {
 
-	public BAttributeRows(Object value) {
-		super(value);
-	}
-
 	public PropertyDescriptor preparePropertyDescriptor() {
 		IntegerPropertyDescriptor descriptor = new IntegerPropertyDescriptor(
 				getID(), getName());

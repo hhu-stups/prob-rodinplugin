@@ -17,10 +17,6 @@ public class BAttributeLineStyle extends AbstractAttribute {
 	public static final int DASHED_DOTTED_CONNECTION = 3;
 	public static final int DASHED_DOTTED_DOTTED_CONNECTION = 4;
 
-	public BAttributeLineStyle(Object value) {
-		super(value);
-	}
-
 	@Override
 	protected PropertyDescriptor preparePropertyDescriptor() {
 		return new ComboBoxPropertyDescriptor(getID(), getName(), new String[] {

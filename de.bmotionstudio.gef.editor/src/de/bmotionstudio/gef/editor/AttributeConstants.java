@@ -51,6 +51,7 @@ public final class AttributeConstants {
 	public static final String ATTRIBUTE_COORDINATES = "de.bmotionstudio.gef.editor.attribute.BAttributeCoordinates";
 	public static final String ATTRIBUTE_MISC = "de.bmotionstudio.gef.editor.attribute.BAttributeMisc";
 	public static final String ATTRIBUTE_MAIN = "de.bmotionstudio.gef.editor.attribute.BAttributeMain";
+	public static final String ATTRIBUTE_CONNECTION = "de.bmotionstudio.gef.editor.attribute.BAttributeConnection";
 
 	public static final String EVENT_MOUSECLICK = "de.bmotionstudio.gef.editor.event.OnClickEvent";
 	public static final String EVENT_MOUSEDBLCLICK = "de.bmotionstudio.gef.editor.event.OnDblClickEvent";

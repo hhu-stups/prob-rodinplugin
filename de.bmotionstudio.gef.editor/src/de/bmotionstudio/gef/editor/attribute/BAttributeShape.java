@@ -16,10 +16,6 @@ public class BAttributeShape extends AbstractAttribute {
 	public static final int SHAPE_TRIANGLE = 2;
 	public static final int SHAPE_DIAMOND = 3;
 
-	public BAttributeShape(Object value) {
-		super(value);
-	}
-
 	@Override
 	protected PropertyDescriptor preparePropertyDescriptor() {
 		return new ComboBoxPropertyDescriptor(getID(), getName(), new String[] {

@@ -31,23 +31,29 @@ public abstract class AbstractAttribute implements IPropertySource, Cloneable {
 	private transient BControl control;
 	private transient PropertyDescriptor propertyDescriptor;
 	private transient Object initValue;
+	private transient Object defaultValue;
 	private transient boolean editable;
 	private transient boolean show;
 	private transient String group;
+	private transient boolean isInitialized;
 
+	// The current value of the attribute
 	private Object value;
 
-	public AbstractAttribute(Object value) {
-		this(value, true, true);
+	public AbstractAttribute() {
 	}
-	
-	public AbstractAttribute(Object value, boolean isEditable,
-			boolean showInPropertiesView) {
-		this.value = value;
-		this.initValue = value;
-		this.editable = isEditable;
-		this.show = showInPropertiesView;
-	}
+
+	// public AbstractAttribute(Object value) {
+	// this(value, true, true);
+	// }
+	//
+	// public AbstractAttribute(Object value, boolean isEditable,
+	// boolean showInPropertiesView) {
+	// this.value = value;
+	// this.initValue = value;
+	// this.editable = isEditable;
+	// this.show = showInPropertiesView;
+	// }
 
 	private Object readResolve() {
 		this.initValue = this.value;
@@ -200,6 +206,22 @@ public abstract class AbstractAttribute implements IPropertySource, Cloneable {
 
 	public void setControl(BControl control) {
 		this.control = control;
+	}
+
+	public Object getDefaultValue() {
+		return defaultValue;
+	}
+
+	public void setDefaultValue(Object defaultValue) {
+		this.defaultValue = defaultValue;
+	}
+
+	public boolean isInitialized() {
+		return isInitialized;
+	}
+
+	public void setInitialized(boolean isInitialized) {
+		this.isInitialized = isInitialized;
 	}
 
 }

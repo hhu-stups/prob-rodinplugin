@@ -8,14 +8,10 @@ package de.bmotionstudio.gef.editor.model;
 
 import org.eclipse.swt.graphics.RGB;
 
-import de.bmotionstudio.gef.editor.attribute.BAttributeConnection;
+import de.bmotionstudio.gef.editor.AttributeConstants;
 import de.bmotionstudio.gef.editor.attribute.BAttributeConnectionSourceDecoration;
 import de.bmotionstudio.gef.editor.attribute.BAttributeConnectionTargetDecoration;
-import de.bmotionstudio.gef.editor.attribute.BAttributeForegroundColor;
-import de.bmotionstudio.gef.editor.attribute.BAttributeLabel;
 import de.bmotionstudio.gef.editor.attribute.BAttributeLineStyle;
-import de.bmotionstudio.gef.editor.attribute.BAttributeLineWidth;
-import de.bmotionstudio.gef.editor.internal.BControlPropertySource;
 
 public class BConnection extends BControl {
 
@@ -121,21 +117,24 @@ public class BConnection extends BControl {
 
 	@Override
 	protected void initAttributes() {
-		BAttributeConnection bAttributeConnection = new BAttributeConnection(
-				null);
-		initAttribute(bAttributeConnection, BControlPropertySource.ROOT);
-		initAttribute(new BAttributeLineWidth(1), bAttributeConnection);
-		initAttribute(new BAttributeLineStyle(
-				BAttributeLineStyle.SOLID_CONNECTION), bAttributeConnection);
-		initAttribute(new BAttributeForegroundColor(new RGB(0, 0, 0)),
-				bAttributeConnection);
-		initAttribute(new BAttributeConnectionSourceDecoration(
-				BAttributeConnectionSourceDecoration.DECORATION_NONE),
-				bAttributeConnection);
-		initAttribute(new BAttributeConnectionTargetDecoration(
-				BAttributeConnectionTargetDecoration.DECORATION_NONE),
-				bAttributeConnection);
-		initAttribute(new BAttributeLabel("Label..."), bAttributeConnection);
+		initAttribute(AttributeConstants.ATTRIBUTE_CONNECTION, null);
+		initAttribute(AttributeConstants.ATTRIBUTE_LINEWIDTH, 1,
+				AttributeConstants.ATTRIBUTE_CONNECTION);
+		initAttribute(AttributeConstants.ATTRIBUTE_LINESTYLE,
+				BAttributeLineStyle.SOLID_CONNECTION,
+				AttributeConstants.ATTRIBUTE_CONNECTION);
+		initAttribute(AttributeConstants.ATTRIBUTE_FOREGROUND_COLOR, new RGB(0,
+				0, 0), AttributeConstants.ATTRIBUTE_CONNECTION);
+		initAttribute(
+				AttributeConstants.ATTRIBUTE_CONNECTION_SOURCE_DECORATION,
+				BAttributeConnectionSourceDecoration.DECORATION_NONE,
+				AttributeConstants.ATTRIBUTE_CONNECTION);
+		initAttribute(
+				AttributeConstants.ATTRIBUTE_CONNECTION_TARGET_DECORATION,
+				BAttributeConnectionTargetDecoration.DECORATION_NONE,
+				AttributeConstants.ATTRIBUTE_CONNECTION);
+		initAttribute(AttributeConstants.ATTRIBUTE_LABEL, "Label...",
+				AttributeConstants.ATTRIBUTE_CONNECTION);
 	}
 
 }

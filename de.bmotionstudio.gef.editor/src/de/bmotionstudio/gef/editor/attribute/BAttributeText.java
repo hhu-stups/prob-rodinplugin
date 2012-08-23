@@ -11,10 +11,6 @@ import org.eclipse.ui.views.properties.TextPropertyDescriptor;
 
 public class BAttributeText extends AbstractAttribute {
 
-	public BAttributeText(Object value) {
-		super(value);
-	}
-
 	public PropertyDescriptor preparePropertyDescriptor() {
 		return new TextPropertyDescriptor(getID(), getName());
 	}

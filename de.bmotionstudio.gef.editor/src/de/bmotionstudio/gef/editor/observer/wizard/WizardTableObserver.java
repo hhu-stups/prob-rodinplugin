@@ -131,7 +131,8 @@ public class WizardTableObserver extends ObserverWizard {
 				}
 			}
 
-			final List list = new List(conRight, SWT.SINGLE | SWT.BORDER);
+			final List list = new List(conRight, SWT.SINGLE | SWT.BORDER
+					| SWT.V_SCROLL);
 			list.setLayoutData(new GridData(GridData.FILL_BOTH));
 			list.setItems(relationList.toArray(new String[relationList.size()]));
 

@@ -147,6 +147,7 @@ public class AppEditLayoutPolicy extends XYLayoutEditPolicy {
 						(BControl) getHost().getModel());
 
 				Rectangle constraint = (Rectangle) getConstraintFor(request);
+
 				constraint.x = (constraint.x < 0) ? 0 : constraint.x;
 				constraint.y = (constraint.y < 0) ? 0 : constraint.y;
 
@@ -157,19 +158,21 @@ public class AppEditLayoutPolicy extends XYLayoutEditPolicy {
 						.getAttributes().get(
 								AttributeConstants.ATTRIBUTE_HEIGHT);
 
-				if (atrWidth != null && !atrWidth.isEditable()) {
-					constraint.width = Integer.valueOf(atrWidth.getValue()
-							.toString());
+				Integer cWidth = Integer.valueOf(atrWidth.getDefaultValue()
+						.toString());
+				if (!atrWidth.isEditable()) {
+					constraint.width = cWidth;
 				} else {
-					constraint.width = (constraint.width <= 0) ? 100
+					constraint.width = (constraint.width <= 0) ? cWidth
 							: constraint.width;
 				}
 
-				if (atrHeight != null && !atrHeight.isEditable()) {
-					constraint.height = Integer.valueOf(atrHeight.getValue()
-							.toString());
+				Integer cHeight = Integer.valueOf(atrHeight.getDefaultValue()
+						.toString());
+				if (!atrHeight.isEditable()) {
+					constraint.height = cHeight;
 				} else {
-					constraint.height = (constraint.height <= 0) ? 100
+					constraint.height = (constraint.height <= 0) ? cHeight
 							: constraint.height;
 				}
 

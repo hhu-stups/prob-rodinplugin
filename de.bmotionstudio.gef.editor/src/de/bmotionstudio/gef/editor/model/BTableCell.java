@@ -3,10 +3,6 @@ package de.bmotionstudio.gef.editor.model;
 import org.eclipse.draw2d.ColorConstants;
 
 import de.bmotionstudio.gef.editor.AttributeConstants;
-import de.bmotionstudio.gef.editor.attribute.BAttributeBackgroundColor;
-import de.bmotionstudio.gef.editor.attribute.BAttributeForegroundColor;
-import de.bmotionstudio.gef.editor.attribute.BAttributeText;
-import de.bmotionstudio.gef.editor.attribute.BAttributeTextColor;
 
 public class BTableCell extends BControl {
 
@@ -18,25 +14,15 @@ public class BTableCell extends BControl {
 
 	@Override
 	protected void initAttributes() {
-
-		initAttribute(new BAttributeBackgroundColor(
-				ColorConstants.white.getRGB()));
-		BAttributeForegroundColor bAttributeForegroundColor = new BAttributeForegroundColor(
+		initAttribute(AttributeConstants.ATTRIBUTE_BACKGROUND_COLOR,
+				ColorConstants.white.getRGB());
+		initAttribute(AttributeConstants.ATTRIBUTE_FOREGROUND_COLOR,
+				ColorConstants.black.getRGB(), true, false);
+		initAttribute(AttributeConstants.ATTRIBUTE_TEXT_COLOR,
 				ColorConstants.black.getRGB());
-		bAttributeForegroundColor.setShow(false);
-		initAttribute(bAttributeForegroundColor);
-		initAttribute(new BAttributeTextColor(ColorConstants.black.getRGB()));
-		initAttribute(new BAttributeText(""));
-		setAttributeValue(AttributeConstants.ATTRIBUTE_HEIGHT, 20);
-		setAttributeValue(AttributeConstants.ATTRIBUTE_WIDTH, 50);
-		getAttributes().get(AttributeConstants.ATTRIBUTE_HEIGHT).setEditable(
-				false);
-		getAttributes().get(AttributeConstants.ATTRIBUTE_WIDTH).setEditable(
-				true);
-		getAttributes().get(AttributeConstants.ATTRIBUTE_HEIGHT).setShow(false);
-		getAttributes().get(AttributeConstants.ATTRIBUTE_COORDINATES).setShow(
-				false);
-
+		initAttribute(AttributeConstants.ATTRIBUTE_TEXT, "");
+		initAttribute(AttributeConstants.ATTRIBUTE_HEIGHT, 20, false, false,
+				AttributeConstants.ATTRIBUTE_SIZE);
 	}
 
 	@Override

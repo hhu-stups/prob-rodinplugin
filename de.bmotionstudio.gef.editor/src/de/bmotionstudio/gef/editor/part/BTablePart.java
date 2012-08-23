@@ -138,6 +138,8 @@ public class BTablePart extends AppAbstractEditPart {
 
 	private void refreshRows(BControl column, int numberOfRows) {
 
+		System.out.println(numberOfRows);
+
 		Integer numberOfCurrentRows = column.getChildrenArray().size();
 
 		if (numberOfRows < numberOfCurrentRows) {
