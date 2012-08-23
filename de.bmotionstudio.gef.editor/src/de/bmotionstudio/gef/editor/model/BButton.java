@@ -36,8 +36,10 @@ public class BButton extends BControl {
 				192, 192, 192));
 		initAttribute(AttributeConstants.ATTRIBUTE_TEXT_COLOR, new RGB(0, 0, 0));
 		initAttribute(AttributeConstants.ATTRIBUTE_ENABLED, true);
-		initAttribute(AttributeConstants.ATTRIBUTE_HEIGHT, 25);
-		initAttribute(AttributeConstants.ATTRIBUTE_WIDTH, 100);
+		initAttribute(AttributeConstants.ATTRIBUTE_HEIGHT, 25,
+				AttributeConstants.ATTRIBUTE_SIZE);
+		initAttribute(AttributeConstants.ATTRIBUTE_WIDTH, 100,
+				AttributeConstants.ATTRIBUTE_SIZE);
 	}
 
 }
