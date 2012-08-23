@@ -137,24 +137,18 @@ public class BTablePart extends AppAbstractEditPart {
 	}
 
 	private void refreshRows(BControl column, int numberOfRows) {
-
-		System.out.println(numberOfRows);
-
 		Integer numberOfCurrentRows = column.getChildrenArray().size();
-
 		if (numberOfRows < numberOfCurrentRows) {
 			for (int i = numberOfCurrentRows - 1; i >= numberOfRows; i--) {
 				column.removeChild(i);
 			}
 		}
-
 		for (int i = numberOfCurrentRows; i < numberOfRows; i++) {
 			CreateCommand cmd = new CreateCommand(new BTableCell(
 					column.getVisualization()), column);
 			cmd.setLayout(new Rectangle(0, 0, column.getDimension().width, 20));
 			cmd.execute();
 		}
-
 	}
 
 	@Override
