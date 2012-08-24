@@ -11,12 +11,12 @@ import org.eclipse.swt.graphics.RGB;
 import de.bmotionstudio.gef.editor.AttributeConstants;
 import de.bmotionstudio.gef.editor.BMotionStudioImage;
 import de.bmotionstudio.gef.editor.EditorImageRegistry;
-import de.bmotionstudio.gef.editor.editpolicy.BMotionNodeEditPolicy;
-import de.bmotionstudio.gef.editor.editpolicy.BMotionStudioFlowEditPolicy;
+import de.bmotionstudio.gef.editor.editpolicy.BMSNodeEditPolicy;
+import de.bmotionstudio.gef.editor.editpolicy.BMSFlowEditPolicy;
 import de.bmotionstudio.gef.editor.figure.TableColumnFigure;
 import de.bmotionstudio.gef.editor.model.BControl;
 
-public class BTableColumnPart extends AppAbstractEditPart {
+public class BTableColumnPart extends BMSAbstractEditPart {
 
 	@Override
 	protected IFigure createEditFigure() {
@@ -33,9 +33,9 @@ public class BTableColumnPart extends AppAbstractEditPart {
 	@Override
 	protected void prepareEditPolicies() {
 		installEditPolicy(EditPolicy.LAYOUT_ROLE,
-				new BMotionStudioFlowEditPolicy());
+				new BMSFlowEditPolicy());
 		installEditPolicy(EditPolicy.GRAPHICAL_NODE_ROLE,
-				new BMotionNodeEditPolicy());
+				new BMSNodeEditPolicy());
 	}
 
 	@Override
@@ -88,8 +88,8 @@ public class BTableColumnPart extends AppAbstractEditPart {
 		}
 
 		// Notify parent table about change
-		if (getParent() instanceof AppAbstractEditPart) {
-			AppAbstractEditPart tablePart = (AppAbstractEditPart) getParent();
+		if (getParent() instanceof BMSAbstractEditPart) {
+			BMSAbstractEditPart tablePart = (BMSAbstractEditPart) getParent();
 			tablePart.refreshEditLayout(tablePart.getFigure(),
 					control.getParent());
 		}

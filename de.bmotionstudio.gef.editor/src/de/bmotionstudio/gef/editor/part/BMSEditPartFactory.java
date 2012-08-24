@@ -17,7 +17,7 @@ import de.bmotionstudio.gef.editor.IBControlService;
 import de.bmotionstudio.gef.editor.model.BControl;
 import de.bmotionstudio.gef.editor.model.Visualization;
 
-public class AppEditPartFactory implements EditPartFactory {
+public class BMSEditPartFactory implements EditPartFactory {
 
 	@Override
 	public EditPart createEditPart(EditPart context, Object model) {

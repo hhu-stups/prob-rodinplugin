@@ -13,7 +13,7 @@ import org.eclipse.gef.requests.GroupRequest;
 import de.bmotionstudio.gef.editor.command.DeleteCommand;
 import de.bmotionstudio.gef.editor.model.BControl;
 
-public class AppDeletePolicy extends ComponentEditPolicy {
+public class BMSDeletePolicy extends ComponentEditPolicy {
 
 	protected Command createDeleteCommand(GroupRequest deleteRequest) {
 		DeleteCommand command = new DeleteCommand((BControl) getHost()

@@ -15,7 +15,7 @@ import org.eclipse.gef.GraphicalEditPart;
 import org.eclipse.gef.LayerConstants;
 import org.eclipse.gef.editpolicies.ResizableEditPolicy;
 
-public class BMotionStudioResizableEditPolicy extends ResizableEditPolicy {
+public class BMSResizableEditPolicy extends ResizableEditPolicy {
 
 	/**
 	 * Creates the figure used for feedback.

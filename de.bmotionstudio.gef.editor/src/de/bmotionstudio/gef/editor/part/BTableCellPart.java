@@ -16,7 +16,7 @@ import de.bmotionstudio.gef.editor.editpolicy.RenamePolicy;
 import de.bmotionstudio.gef.editor.figure.TableCellFigure;
 import de.bmotionstudio.gef.editor.model.BControl;
 
-public class BTableCellPart extends AppAbstractEditPart {
+public class BTableCellPart extends BMSAbstractEditPart {
 
 	@Override
 	protected IFigure createEditFigure() {

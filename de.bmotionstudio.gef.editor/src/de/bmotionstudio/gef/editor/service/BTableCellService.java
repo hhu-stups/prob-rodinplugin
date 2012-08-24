@@ -5,7 +5,7 @@ import de.bmotionstudio.gef.editor.IBControlService;
 import de.bmotionstudio.gef.editor.model.BControl;
 import de.bmotionstudio.gef.editor.model.BTableCell;
 import de.bmotionstudio.gef.editor.model.Visualization;
-import de.bmotionstudio.gef.editor.part.AppAbstractEditPart;
+import de.bmotionstudio.gef.editor.part.BMSAbstractEditPart;
 import de.bmotionstudio.gef.editor.part.BTableCellPart;
 
 public class BTableCellService extends AbstractBControlService implements
@@ -17,7 +17,7 @@ public class BTableCellService extends AbstractBControlService implements
 	}
 
 	@Override
-	public AppAbstractEditPart createEditPart() {
+	public BMSAbstractEditPart createEditPart() {
 		return new BTableCellPart();
 	}
 

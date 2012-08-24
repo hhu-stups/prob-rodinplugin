@@ -11,7 +11,7 @@ import org.eclipse.gef.palette.ToolEntry;
 
 import de.bmotionstudio.gef.editor.model.BControl;
 import de.bmotionstudio.gef.editor.model.Visualization;
-import de.bmotionstudio.gef.editor.part.AppAbstractEditPart;
+import de.bmotionstudio.gef.editor.part.BMSAbstractEditPart;
 
 /**
  * @author Lukas Ladenberger
@@ -21,7 +21,7 @@ public interface IBControlService {
 
 	public BControl createControl(Visualization visualization);
 
-	public AppAbstractEditPart createEditPart();
+	public BMSAbstractEditPart createEditPart();
 
 	public ToolEntry createToolEntry(Visualization visualization,
 			IConfigurationElement configurationElement);

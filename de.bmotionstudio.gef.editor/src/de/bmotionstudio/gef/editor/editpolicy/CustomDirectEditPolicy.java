@@ -12,7 +12,7 @@ import org.eclipse.gef.requests.DirectEditRequest;
 
 import de.bmotionstudio.gef.editor.command.RenameCommand;
 import de.bmotionstudio.gef.editor.model.BControl;
-import de.bmotionstudio.gef.editor.part.AppAbstractEditPart;
+import de.bmotionstudio.gef.editor.part.BMSAbstractEditPart;
 
 public class CustomDirectEditPolicy extends DirectEditPolicy {
 
@@ -21,7 +21,7 @@ public class CustomDirectEditPolicy extends DirectEditPolicy {
 	 */
 	protected Command getDirectEditCommand(DirectEditRequest edit) {
 		String labelText = (String) edit.getCellEditor().getValue();
-		AppAbstractEditPart label = (AppAbstractEditPart) getHost();
+		BMSAbstractEditPart label = (BMSAbstractEditPart) getHost();
 		RenameCommand command = new RenameCommand();
 		command.setControl((BControl) label.getModel());
 		command.setNewString(labelText);

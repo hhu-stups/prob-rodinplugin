@@ -10,17 +10,28 @@ import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPartFactory;
 
 import de.bmotionstudio.gef.editor.model.BControl;
+import de.bmotionstudio.gef.editor.model.ObserverRootVirtualTreeNode;
+import de.bmotionstudio.gef.editor.observer.Observer;
 
-public class AppTreeEditPartFactory implements EditPartFactory {
+public class BMSTreeEditPartFactory implements EditPartFactory {
 
 	public EditPart createEditPart(EditPart context, Object model) {
-		BControlTreeEditPart part = null;
+
+		BMSAbstractTreeEditPart part = null;
+
 		if (model instanceof BControl) {
 			part = new BControlTreeEditPart();
-			if (part != null)
-				part.setModel(model);
+		} else if (model instanceof Observer) {
+			part = new ObserverTreeEditPart();
+		} else if (model instanceof ObserverRootVirtualTreeNode) {
+			part = new ObserverRootTreeEditpart();
 		}
+
+		if (part != null)
+			part.setModel(model);
+
 		return part;
+
 	}
 
 }

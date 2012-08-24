@@ -24,7 +24,7 @@ import org.eclipse.ui.actions.ActionFactory;
 
 import de.bmotionstudio.gef.editor.action.OpenSchedulerEventAction;
 import de.bmotionstudio.gef.editor.model.BControl;
-import de.bmotionstudio.gef.editor.part.AppAbstractEditPart;
+import de.bmotionstudio.gef.editor.part.BMSAbstractEditPart;
 import de.bmotionstudio.gef.editor.part.VisualizationPart;
 import de.bmotionstudio.gef.editor.scheduler.SchedulerEvent;
 
@@ -112,9 +112,9 @@ public class AppContextMenuProvider extends ContextMenuProvider {
 				.getActiveEditor().getEditorSite().getSelectionProvider()
 				.getSelection();
 
-		if (selection.getFirstElement() instanceof AppAbstractEditPart) {
+		if (selection.getFirstElement() instanceof BMSAbstractEditPart) {
 
-			BControl bcontrol = (BControl) ((AppAbstractEditPart) selection
+			BControl bcontrol = (BControl) ((BMSAbstractEditPart) selection
 					.getFirstElement()).getModel();
 
 			IExtensionPoint extensionPoint = registry
@@ -224,10 +224,10 @@ public class AppContextMenuProvider extends ContextMenuProvider {
 				.getActiveEditor().getEditorSite().getSelectionProvider()
 				.getSelection();
 
-		if ((selection.getFirstElement() instanceof AppAbstractEditPart)
+		if ((selection.getFirstElement() instanceof BMSAbstractEditPart)
 				&& !(selection.getFirstElement() instanceof VisualizationPart)) {
 
-			BControl bcontrol = (BControl) ((AppAbstractEditPart) selection
+			BControl bcontrol = (BControl) ((BMSAbstractEditPart) selection
 					.getFirstElement()).getModel();
 
 			// Has event

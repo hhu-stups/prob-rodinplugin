@@ -13,15 +13,15 @@ import de.bmotionstudio.gef.editor.AttributeConstants;
 import de.bmotionstudio.gef.editor.BMotionStudioImage;
 import de.bmotionstudio.gef.editor.EditorImageRegistry;
 import de.bmotionstudio.gef.editor.command.CreateCommand;
-import de.bmotionstudio.gef.editor.editpolicy.AppDeletePolicy;
-import de.bmotionstudio.gef.editor.editpolicy.BMotionNodeEditPolicy;
-import de.bmotionstudio.gef.editor.editpolicy.BMotionStudioFlowEditPolicy;
+import de.bmotionstudio.gef.editor.editpolicy.BMSDeletePolicy;
+import de.bmotionstudio.gef.editor.editpolicy.BMSNodeEditPolicy;
+import de.bmotionstudio.gef.editor.editpolicy.BMSFlowEditPolicy;
 import de.bmotionstudio.gef.editor.figure.TableFigure;
 import de.bmotionstudio.gef.editor.model.BControl;
 import de.bmotionstudio.gef.editor.model.BTableCell;
 import de.bmotionstudio.gef.editor.model.BTableColumn;
 
-public class BTablePart extends AppAbstractEditPart {
+public class BTablePart extends BMSAbstractEditPart {
 
 	@Override
 	protected IFigure createEditFigure() {
@@ -38,10 +38,10 @@ public class BTablePart extends AppAbstractEditPart {
 	@Override
 	protected void prepareEditPolicies() {
 		installEditPolicy(EditPolicy.LAYOUT_ROLE,
-				new BMotionStudioFlowEditPolicy());
-		installEditPolicy(EditPolicy.COMPONENT_ROLE, new AppDeletePolicy());
+				new BMSFlowEditPolicy());
+		installEditPolicy(EditPolicy.COMPONENT_ROLE, new BMSDeletePolicy());
 		installEditPolicy(EditPolicy.GRAPHICAL_NODE_ROLE,
-				new BMotionNodeEditPolicy());
+				new BMSNodeEditPolicy());
 	}
 
 	@Override

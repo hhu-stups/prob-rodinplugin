@@ -70,6 +70,7 @@ import org.eclipse.gef.ui.rulers.RulerComposite;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.DisposeEvent;
@@ -104,8 +105,9 @@ import de.bmotionstudio.gef.editor.library.AttributeTransferDropTargetListener;
 import de.bmotionstudio.gef.editor.model.BMotionRuler;
 import de.bmotionstudio.gef.editor.model.BMotionRulerProvider;
 import de.bmotionstudio.gef.editor.model.Visualization;
-import de.bmotionstudio.gef.editor.part.AppEditPartFactory;
-import de.bmotionstudio.gef.editor.part.AppTreeEditPartFactory;
+import de.bmotionstudio.gef.editor.part.BMSAbstractEditPart;
+import de.bmotionstudio.gef.editor.part.BMSEditPartFactory;
+import de.bmotionstudio.gef.editor.part.BMSTreeEditPartFactory;
 
 public class BMotionStudioEditorPage extends GraphicalEditorWithFlyoutPalette {
 
@@ -152,10 +154,19 @@ public class BMotionStudioEditorPage extends GraphicalEditorWithFlyoutPalette {
 
 	@Override
 	public void selectionChanged(IWorkbenchPart part, ISelection selection) {
+
 		// If not the active editor, ignore selection changed.
-		if (getBMotionStudioEditor().equals(
+		if (!getBMotionStudioEditor().equals(
 				getSite().getPage().getActiveEditor()))
-			updateActions(getSelectionActions());
+			return;
+
+		Object selectedElement = ((IStructuredSelection) selection)
+				.getFirstElement();
+		if (!(selectedElement instanceof BMSAbstractEditPart))
+			return;
+
+		updateActions(getSelectionActions());
+
 	}
 
 	/**
@@ -495,7 +506,7 @@ public class BMotionStudioEditorPage extends GraphicalEditorWithFlyoutPalette {
 		super.configureGraphicalViewer();
 		ScrollingGraphicalViewer viewer = (ScrollingGraphicalViewer) getGraphicalViewer();
 
-		viewer.setEditPartFactory(new AppEditPartFactory());
+		viewer.setEditPartFactory(new BMSEditPartFactory());
 
 		ScalableRootEditPart rootEditPart = new ScalableRootEditPart();
 		GridLayer gridLayer = (GridLayer) rootEditPart
@@ -670,7 +681,7 @@ public class BMotionStudioEditorPage extends GraphicalEditorWithFlyoutPalette {
 
 		protected void configureOutlineViewer() {
 			getViewer().setEditDomain(getEditDomain());
-			getViewer().setEditPartFactory(new AppTreeEditPartFactory());
+			getViewer().setEditPartFactory(new BMSTreeEditPartFactory());
 			ContextMenuProvider provider = new AppContextMenuProvider(
 					getViewer(), getActionRegistry());
 			getViewer().setContextMenu(provider);

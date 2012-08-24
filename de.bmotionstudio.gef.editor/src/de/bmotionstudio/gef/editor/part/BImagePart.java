@@ -13,8 +13,8 @@ import org.eclipse.draw2d.IFigure;
 import org.eclipse.gef.EditPolicy;
 
 import de.bmotionstudio.gef.editor.AttributeConstants;
-import de.bmotionstudio.gef.editor.editpolicy.AppDeletePolicy;
-import de.bmotionstudio.gef.editor.editpolicy.BMotionNodeEditPolicy;
+import de.bmotionstudio.gef.editor.editpolicy.BMSDeletePolicy;
+import de.bmotionstudio.gef.editor.editpolicy.BMSNodeEditPolicy;
 import de.bmotionstudio.gef.editor.editpolicy.ChangeAttributePolicy;
 import de.bmotionstudio.gef.editor.figure.BMSImageFigure;
 import de.bmotionstudio.gef.editor.library.AbstractLibraryCommand;
@@ -22,7 +22,7 @@ import de.bmotionstudio.gef.editor.library.AttributeRequest;
 import de.bmotionstudio.gef.editor.library.LibraryImageCommand;
 import de.bmotionstudio.gef.editor.model.BControl;
 
-public class BImagePart extends AppAbstractEditPart {
+public class BImagePart extends BMSAbstractEditPart {
 
 	@Override
 	public void refreshEditFigure(IFigure figure, BControl model,
@@ -67,9 +67,9 @@ public class BImagePart extends AppAbstractEditPart {
 
 	@Override
 	protected void prepareEditPolicies() {
-		installEditPolicy(EditPolicy.COMPONENT_ROLE, new AppDeletePolicy());
+		installEditPolicy(EditPolicy.COMPONENT_ROLE, new BMSDeletePolicy());
 		installEditPolicy(EditPolicy.GRAPHICAL_NODE_ROLE,
-				new BMotionNodeEditPolicy());
+				new BMSNodeEditPolicy());
 		installEditPolicy(ChangeAttributePolicy.CHANGE_ATTRIBUTE_POLICY,
 				new ChangeAttributePolicy());
 	}

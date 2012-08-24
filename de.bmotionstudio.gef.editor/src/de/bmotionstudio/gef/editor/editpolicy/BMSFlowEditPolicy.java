@@ -34,7 +34,7 @@ import de.bmotionstudio.gef.editor.model.BTable;
 import de.bmotionstudio.gef.editor.model.BTableCell;
 import de.bmotionstudio.gef.editor.model.BTableColumn;
 
-public class BMotionStudioFlowEditPolicy extends FlowLayoutEditPolicy {
+public class BMSFlowEditPolicy extends FlowLayoutEditPolicy {
 
 	private static final Dimension PREFERRED_SIZE = new Dimension(-1, -1);
 
@@ -228,7 +228,7 @@ public class BMotionStudioFlowEditPolicy extends FlowLayoutEditPolicy {
 	 * @see org.eclipse.gef.editpolicies.LayoutEditPolicy#createChildEditPolicy(org.eclipse.gef.EditPart)
 	 */
 	protected EditPolicy createChildEditPolicy(EditPart child) {
-		BMotionStudioResizableEditPolicy policy = new BMotionStudioResizableEditPolicy();
+		BMSResizableEditPolicy policy = new BMSResizableEditPolicy();
 		policy.setResizeDirections(PositionConstants.EAST
 				| PositionConstants.WEST);
 		return policy;
