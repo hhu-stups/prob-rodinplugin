@@ -462,6 +462,10 @@ public abstract class BControl implements IAdaptable, Cloneable {
 		}
 	}
 
+	public void removeObserver(Observer observer) {
+		removeObserver(observer.getID());
+	}
+
 	public void removeObserver(String observerID) {
 		if (hasObserver(observerID))
 			observers.get(observerID).beforeDelete(this);
