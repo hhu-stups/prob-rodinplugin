@@ -106,6 +106,7 @@ import de.bmotionstudio.gef.editor.model.BMotionRuler;
 import de.bmotionstudio.gef.editor.model.BMotionRulerProvider;
 import de.bmotionstudio.gef.editor.model.Visualization;
 import de.bmotionstudio.gef.editor.part.BMSAbstractEditPart;
+import de.bmotionstudio.gef.editor.part.BMSAbstractTreeEditPart;
 import de.bmotionstudio.gef.editor.part.BMSEditPartFactory;
 import de.bmotionstudio.gef.editor.part.BMSTreeEditPartFactory;
 
@@ -162,10 +163,9 @@ public class BMotionStudioEditorPage extends GraphicalEditorWithFlyoutPalette {
 
 		Object selectedElement = ((IStructuredSelection) selection)
 				.getFirstElement();
-		if (!(selectedElement instanceof BMSAbstractEditPart))
-			return;
-
-		updateActions(getSelectionActions());
+		if (selectedElement instanceof BMSAbstractEditPart
+				|| selectedElement instanceof BMSAbstractTreeEditPart)
+			updateActions(getSelectionActions());
 
 	}
 
@@ -544,7 +544,7 @@ public class BMotionStudioEditorPage extends GraphicalEditorWithFlyoutPalette {
 		getActionRegistry().registerAction(
 				new ToggleGridAction(getGraphicalViewer()));
 
-		ContextMenuProvider provider = new AppContextMenuProvider(viewer,
+		ContextMenuProvider provider = new BMSContextMenuProvider(viewer,
 				getActionRegistry());
 		viewer.setContextMenu(provider);
 		
@@ -682,7 +682,7 @@ public class BMotionStudioEditorPage extends GraphicalEditorWithFlyoutPalette {
 		protected void configureOutlineViewer() {
 			getViewer().setEditDomain(getEditDomain());
 			getViewer().setEditPartFactory(new BMSTreeEditPartFactory());
-			ContextMenuProvider provider = new AppContextMenuProvider(
+			ContextMenuProvider provider = new BMSContextMenuProvider(
 					getViewer(), getActionRegistry());
 			getViewer().setContextMenu(provider);
 			getViewer().setKeyHandler(getCommonKeyHandler());
@@ -747,13 +747,6 @@ public class BMotionStudioEditorPage extends GraphicalEditorWithFlyoutPalette {
 				}
 
 			};
-			// collapseAllAction
-			// .setImageDescriptor(ImageDescriptor
-			// .createFromImage(PlatformUI
-			// .getWorkbench()
-			// .getSharedImages()
-			// .getImage(
-			// ISharedImages.IMG_ELCL_COLLAPSEALL)));
 
 			getSite().getActionBars().getMenuManager().add(expandAllAction);
 			getSite().getActionBars().getMenuManager().add(collapseAllAction);

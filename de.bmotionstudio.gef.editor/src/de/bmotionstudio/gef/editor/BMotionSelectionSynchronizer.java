@@ -23,9 +23,7 @@ public class BMotionSelectionSynchronizer extends SelectionSynchronizer {
 	}
 
 	protected EditPart convert(EditPartViewer viewer, EditPart part) {
-
 		EditPart p = super.convert(viewer, part);
-
 		if (viewer instanceof ScrollingGraphicalViewer
 				|| viewer instanceof TreeViewer) {
 			Object model = part.getModel();
@@ -42,9 +40,7 @@ public class BMotionSelectionSynchronizer extends SelectionSynchronizer {
 				return newPart;
 			}
 		}
-
 		return p;
-
 	}
 
 }

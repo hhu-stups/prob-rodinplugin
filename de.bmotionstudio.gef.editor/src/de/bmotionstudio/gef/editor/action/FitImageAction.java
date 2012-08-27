@@ -54,10 +54,12 @@ public class FitImageAction extends SelectionAction {
 		for (Object obj : selectedObjects) {
 			if (obj instanceof EditPart) {
 				EditPart part = (EditPart) obj;
-				BControl bcontrol = (BControl) part.getModel();
-				if (bcontrol
-						.getAttributeValue(AttributeConstants.ATTRIBUTE_IMAGE) != null) {
-					return true;
+				if (part.getModel() instanceof BControl) {
+					BControl bcontrol = (BControl) part.getModel();
+					if (bcontrol
+							.getAttributeValue(AttributeConstants.ATTRIBUTE_IMAGE) != null) {
+						return true;
+					}
 				}
 			}
 		}

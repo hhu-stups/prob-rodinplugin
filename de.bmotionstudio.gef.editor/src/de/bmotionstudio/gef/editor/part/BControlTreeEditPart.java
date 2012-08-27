@@ -27,10 +27,11 @@ import de.bmotionstudio.gef.editor.model.BConnection;
 import de.bmotionstudio.gef.editor.model.BControl;
 import de.bmotionstudio.gef.editor.model.ObserverRootVirtualTreeNode;
 import de.bmotionstudio.gef.editor.model.Visualization;
+import de.bmotionstudio.gef.editor.observer.IObserverListener;
 import de.bmotionstudio.gef.editor.observer.Observer;
 
 public class BControlTreeEditPart extends BMSAbstractTreeEditPart implements
-		PropertyChangeListener {
+		PropertyChangeListener, IObserverListener {
 
 	public void propertyChange(final PropertyChangeEvent evt) {
 		if (evt.getPropertyName().equals(BControl.PROPERTY_ADD)
@@ -84,6 +85,7 @@ public class BControlTreeEditPart extends BMSAbstractTreeEditPart implements
 		if (!isActive()) {
 			super.activate();
 			((BControl) getModel()).addPropertyChangeListener(this);
+			((BControl) getModel()).addObserverListener(this);
 		}
 	}
 
@@ -91,6 +93,7 @@ public class BControlTreeEditPart extends BMSAbstractTreeEditPart implements
 		if (isActive()) {
 			super.deactivate();
 			((BControl) getModel()).removePropertyChangeListener(this);
+			((BControl) getModel()).removeObserverListener(this);
 		}
 	}
 
@@ -125,6 +128,16 @@ public class BControlTreeEditPart extends BMSAbstractTreeEditPart implements
 				e.printStackTrace();
 			}
 		}
+	}
+
+	@Override
+	public void addedObserver(BControl control, Observer observer) {
+		refreshChildren();
+	}
+
+	@Override
+	public void removedObserver(BControl control) {
+		refreshChildren();
 	}
 
 }
