@@ -1,3 +1,13 @@
+/*
+	Build Script can be executed via 'gradle install'
+	Build Script Dependencies can be downloaded via 'gradle collectDepenencies'
+	Executing the Build Script and download Dependencies can be executed via 'gradle completeInstall'
+ 	For a complete classPath Refresh please execute 'gradle deleteFromClassPath setClassPath'	
+	Pom Generation can be executed via gradle deploy
+
+*/
+
+
 apply plugin: 'base'
 
 import groovy.io.FileType
@@ -160,7 +170,7 @@ def addLibToCP(def project, def libPar){
 	}
 	
 }
-
+// Add certain Jar to Library
 
 
 def deleteLibFromCP(def project){
@@ -191,7 +201,7 @@ def deleteLibFromCP(def project){
 		println workspacePath+project+'/.classpath' +"!"
 	}
 }
-
+// deletes whole DependenciesLibrary Folder
 
 
 
@@ -210,7 +220,7 @@ subprojects {
 	}
 	
 	/////				Copy Dependencies into subprojects DependencyFolder 				///// 
-	task collectDependencies(type: Copy){
+	task collectDependencies(type: Copy) {
 
 		   	from configurations.compile
 	   	
@@ -235,9 +245,15 @@ subprojects {
 				}
 				/*dependencyList.each{ dep->
 					println project.name+": "+ dep	// could still be usefull for debugging, that's why it's not deleted
-				}*/
-
+				}*/	
 			}
+			def warningReadMe = new File(workspacePath+project.name+"/"+dependencyFolder+"_README.txt")
+			warningReadMe.delete()
+			warningReadMe << "Do Not Remove any Jars/Libraries in this Folder!\nThis folder contains all of your dependencies defined in your gradle script.\n"
+			warningReadMe << "Removing or renaming any of these files will result in an Error in your .classpath file\n"
+			warningReadMe << "If any error concerning missing dependencies should occur please run 'gradle deleteFromClassPath setClassPath' in your workspace folder from your shell."
+			
+			
 		}catch(Exception e){
 			println project.name+" has no dependencies in '${dependencyFolder}' defined: Classpath will not be changed"
 		}
@@ -245,7 +261,7 @@ subprojects {
 	}// setClassPath
 	
 	
-	task deleteFromClassPath()<<{			//AKTUELLE BAUSTELLE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! !!! !! !! !! !!!!!!!!!!!!!!!!!!######!!!!#!!!
+	task deleteFromClassPath()<<{		
 		
 		description = "\tDeletes all your Dependencies located in your local lib folder from each project's classpath"
 		
@@ -266,10 +282,7 @@ subprojects {
 			
 	}
 	
-	task flushDependencies( dependsOn: ['deleteFromClassPath'])<<{
-		tasks.setClassPath.execute()
-	}
-
+	/////---- 			For a complete classPath Refresh please execute 'gradle deleteFromClassPath setClassPath'				----///////
 
 	////////////////////////////////////////////////////////////////////////////////////////////	
 	
@@ -629,5 +642,6 @@ def feature(artifactId, versionNumber) { """
 // end of feature pom
 
 //	Build Script can be executed via gradle install
+// 	For a complete classPath Refresh please execute 'gradle deleteFromClassPath setClassPath'	
 //	Pom Generation can be executed via gradle deploy
 
