@@ -14,7 +14,7 @@
     	Generate Eclipse help content for the BMotion Studio user guide
     </description>
 
-	<property name="help.doc.url.base" value="http://cobra.cs.uni-duesseldorf.de/bmotionstudio"/>
+	<property name="help.doc.url.base" value="http://www.stups.uni-duesseldorf.de/bmotionstudio"/>
 	<property name="wiki.url.base" value="${help.doc.url.base}"/>
 	<property name="imageFolder" value="images"/>
 
@@ -56,8 +56,7 @@
     	    		<pageAppendum>
 = Updating This Document =
 
-This document is maintained in a collaborative wiki.  If you wish to update or modify this document please visit 
-{url}
+This document is maintained in a collaborative wiki.  If you wish to update or modify this document please visit http://www.stups.uni-duesseldorf.de/bmotionstudio.
     	  			</pageAppendum>
     	</mediawiki-to-eclipse-help>
     	
