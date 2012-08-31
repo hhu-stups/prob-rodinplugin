@@ -18,11 +18,6 @@
             file="User-Guide-Reference-toc.xml"
             primary="false">
       </toc>
-      <toc
-            category="BMS"
-            file="User-Guide-Glossary-toc.xml"
-            primary="false">
-      </toc>      
    </extension>
 
 </plugin>

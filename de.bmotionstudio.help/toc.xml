@@ -14,12 +14,6 @@
     <anchor id="after-reference-content"/>
     <anchor id="additions-reference" />
   </topic>
-  <topic label="Glossary">
-    <anchor id="before-glossary-content"/>
-    <link toc="User-Guide-Glossary-toc.xml"/>
-    <anchor id="after-glossary-content"/>
-    <anchor id="additions-glossary"/>
-  </topic>  
    <anchor id="after-reference"/>
    <anchor id="additions"/>
  	<topic href="doc/notices.html" label="Legal" />

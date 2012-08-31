@@ -52,7 +52,6 @@
     	    		generateUnifiedToc="false">
     	    		<path name="User_Guide/Tutorial" title="BMotion Studio Tutorial" generateToc="true"/>
     	    		<path name="User_Guide/Reference" title="BMotion Studio Reference" generateToc="true"/>
-    		        <path name="User_Guide/Glossary" title="BMotion Studio Glossary" generateToc="true"/>
     	    		<pageAppendum>
 = Updating This Document =
 
