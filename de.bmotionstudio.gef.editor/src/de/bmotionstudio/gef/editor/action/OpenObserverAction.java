@@ -112,7 +112,8 @@ public class OpenObserverAction extends SelectionAction {
 
 					// Reset observer without using a command!
 					if (oldObserver != null)
-						actionControl.addObserver(oldObserver);
+						actionControl.getObservers().put(oldObserver.getID(),
+								oldObserver);
 
 					// else the user clicked on the delete button in order to
 					// delete the observer
