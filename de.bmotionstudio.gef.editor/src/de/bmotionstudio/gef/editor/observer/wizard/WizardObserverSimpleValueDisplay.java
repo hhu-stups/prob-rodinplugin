@@ -10,7 +10,6 @@ import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.beans.BeansObservables;
 import org.eclipse.jface.databinding.swt.SWTObservables;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
@@ -29,7 +28,8 @@ import de.bmotionstudio.gef.editor.observer.SimpleValueDisplay;
 
 public class WizardObserverSimpleValueDisplay extends ObserverWizard {
 
-	private class ObserverSimpleValueDisplayPage extends WizardPage {
+	private class ObserverSimpleValueDisplayPage extends
+			AbstractObserverWizardPage {
 
 		private Text txtReplacementString;
 		private Text txtExpression;
@@ -40,10 +40,12 @@ public class WizardObserverSimpleValueDisplay extends ObserverWizard {
 		}
 
 		protected ObserverSimpleValueDisplayPage(final String pageName) {
-			super(pageName);
+			super(pageName, getObserver());
 		}
 
 		public void createControl(final Composite parent) {
+
+			super.createControl(parent);
 
 			final DataBindingContext dbc = new DataBindingContext();
 

@@ -19,5 +19,12 @@
             primary="false">
       </toc>
    </extension>
+   <extension
+         point="org.eclipse.help.contexts">
+      <contexts
+            file="contextDefinitionFile.xml"
+            plugin="de.bmotionstudio.gef.editor.observer">
+      </contexts>
+   </extension>
 
 </plugin>

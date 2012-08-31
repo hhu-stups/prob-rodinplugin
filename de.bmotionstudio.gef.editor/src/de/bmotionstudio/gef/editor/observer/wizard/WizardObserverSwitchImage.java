@@ -22,7 +22,6 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
-import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -56,15 +55,17 @@ import de.bmotionstudio.gef.editor.util.BMotionWizardUtil;
 
 public class WizardObserverSwitchImage extends ObserverWizard {
 
-	private class ObserverSwitchImagePage extends WizardPage {
+	private class ObserverSwitchImagePage extends AbstractObserverWizardPage {
 
 		private TableViewer tableViewer;
 
 		protected ObserverSwitchImagePage(final String pageName) {
-			super(pageName);
+			super(pageName, getObserver());
 		}
 
 		public void createControl(final Composite parent) {
+
+
 
 			DataBindingContext dbc = new DataBindingContext();
 

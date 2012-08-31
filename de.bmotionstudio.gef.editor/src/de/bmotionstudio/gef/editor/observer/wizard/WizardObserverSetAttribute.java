@@ -29,7 +29,6 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
-import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.FocusEvent;
@@ -68,17 +67,19 @@ public class WizardObserverSetAttribute extends ObserverWizard {
 
 	private String lastChangedAttributeID;
 
-	private class WizardSetAttributePage extends WizardPage {
+	private class WizardSetAttributePage extends AbstractObserverWizardPage {
 
 		private WritableList input;
 
 		private TableViewer tableViewer;
 
 		protected WizardSetAttributePage(final String pageName) {
-			super(pageName);
+			super(pageName, getObserver());
 		}
 
 		public void createControl(Composite parent) {
+
+			super.createControl(parent);
 
 			DataBindingContext dbc = new DataBindingContext();
 

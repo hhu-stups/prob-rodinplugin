@@ -21,7 +21,6 @@ import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
-import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -55,15 +54,18 @@ public class WizardObserverCSwitchCoordinates extends ObserverWizard {
 
 	private String lastChangedControlID;
 
-	private class ObserverCSwitchCoordinatesPage extends WizardPage {
+	private class ObserverCSwitchCoordinatesPage extends
+			AbstractObserverWizardPage {
 
 		private TableViewer tableViewer;
 
 		protected ObserverCSwitchCoordinatesPage(final String pageName) {
-			super(pageName);
+			super(pageName, getObserver());
 		}
 
 		public void createControl(Composite parent) {
+
+			super.createControl(parent);
 
 			DataBindingContext dbc = new DataBindingContext();
 
