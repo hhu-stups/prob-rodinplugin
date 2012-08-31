@@ -65,7 +65,7 @@ public class WizardObserverSwitchImage extends ObserverWizard {
 
 		public void createControl(final Composite parent) {
 
-
+			super.createControl(parent);
 
 			DataBindingContext dbc = new DataBindingContext();
 
