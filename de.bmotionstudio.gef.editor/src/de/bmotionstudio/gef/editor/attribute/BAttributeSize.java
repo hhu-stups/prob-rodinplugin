@@ -14,9 +14,7 @@ import de.bmotionstudio.gef.editor.AttributeConstants;
 
 public class BAttributeSize extends AbstractAttribute {
 
-	public BAttributeSize(Object value) {
-		super(value);
-	}
+	public static final String ID = "de.bmotionstudio.gef.editor.attribute.BAttributeSize";
 
 	@Override
 	public PropertyDescriptor preparePropertyDescriptor() {

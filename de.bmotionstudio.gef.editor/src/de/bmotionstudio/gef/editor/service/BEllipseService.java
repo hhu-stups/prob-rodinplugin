@@ -7,7 +7,7 @@ import de.bmotionstudio.gef.editor.attribute.BAttributeShape;
 import de.bmotionstudio.gef.editor.model.BControl;
 import de.bmotionstudio.gef.editor.model.BShape;
 import de.bmotionstudio.gef.editor.model.Visualization;
-import de.bmotionstudio.gef.editor.part.AppAbstractEditPart;
+import de.bmotionstudio.gef.editor.part.BMSAbstractEditPart;
 import de.bmotionstudio.gef.editor.part.BShapePart;
 
 public class BEllipseService extends AbstractBControlService implements
@@ -26,7 +26,7 @@ public class BEllipseService extends AbstractBControlService implements
 	}
 
 	@Override
-	public AppAbstractEditPart createEditPart() {
+	public BMSAbstractEditPart createEditPart() {
 		return new BShapePart();
 	}
 

@@ -23,23 +23,24 @@ public class BMotionSelectionSynchronizer extends SelectionSynchronizer {
 	}
 
 	protected EditPart convert(EditPartViewer viewer, EditPart part) {
-
+		EditPart p = super.convert(viewer, part);
 		if (viewer instanceof ScrollingGraphicalViewer
 				|| viewer instanceof TreeViewer) {
-			BControl control = (BControl) part.getModel();
-			String id = control.getID();
-			BControl editControl = editor.getEditPage().getVisualization()
-					.getBControl(id);
-			Object temp = viewer.getEditPartRegistry().get(editControl);
-			EditPart newPart = null;
-			if (temp != null) {
-				newPart = (EditPart) temp;
+			Object model = part.getModel();
+			if (model instanceof BControl) {
+				BControl control = (BControl) model;
+				String id = control.getID();
+				BControl editControl = editor.getEditPage().getVisualization()
+						.getBControl(id);
+				Object temp = viewer.getEditPartRegistry().get(editControl);
+				EditPart newPart = null;
+				if (temp != null) {
+					newPart = (EditPart) temp;
+				}
+				return newPart;
 			}
-			return newPart;
-		} else {
-			return super.convert(viewer, part);
 		}
-
+		return p;
 	}
 
 }

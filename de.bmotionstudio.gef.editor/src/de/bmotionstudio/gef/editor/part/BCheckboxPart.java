@@ -23,15 +23,15 @@ import de.bmotionstudio.gef.editor.BMotionStudioImage;
 import de.bmotionstudio.gef.editor.EditorImageRegistry;
 import de.bmotionstudio.gef.editor.edit.TextCellEditorLocator;
 import de.bmotionstudio.gef.editor.edit.TextEditManager;
-import de.bmotionstudio.gef.editor.editpolicy.AppDeletePolicy;
-import de.bmotionstudio.gef.editor.editpolicy.BMotionNodeEditPolicy;
+import de.bmotionstudio.gef.editor.editpolicy.BMSDeletePolicy;
+import de.bmotionstudio.gef.editor.editpolicy.BMSNodeEditPolicy;
 import de.bmotionstudio.gef.editor.editpolicy.CustomDirectEditPolicy;
 import de.bmotionstudio.gef.editor.editpolicy.RenamePolicy;
 import de.bmotionstudio.gef.editor.figure.AbstractBMotionFigure;
 import de.bmotionstudio.gef.editor.figure.CheckboxFigure;
 import de.bmotionstudio.gef.editor.model.BControl;
 
-public class BCheckboxPart extends AppAbstractEditPart {
+public class BCheckboxPart extends BMSAbstractEditPart {
 
 	private ChangeListener changeListener = new ChangeListener() {
 		@Override
@@ -125,12 +125,12 @@ public class BCheckboxPart extends AppAbstractEditPart {
 
 	@Override
 	protected void prepareEditPolicies() {
-		installEditPolicy(EditPolicy.COMPONENT_ROLE, new AppDeletePolicy());
+		installEditPolicy(EditPolicy.COMPONENT_ROLE, new BMSDeletePolicy());
 		installEditPolicy(EditPolicy.NODE_ROLE, new RenamePolicy());
 		installEditPolicy(EditPolicy.DIRECT_EDIT_ROLE,
 				new CustomDirectEditPolicy());
 		installEditPolicy(EditPolicy.GRAPHICAL_NODE_ROLE,
-				new BMotionNodeEditPolicy());
+				new BMSNodeEditPolicy());
 	}
 
 	@Override

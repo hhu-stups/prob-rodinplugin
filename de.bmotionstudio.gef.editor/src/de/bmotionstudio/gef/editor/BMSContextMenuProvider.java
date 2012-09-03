@@ -14,6 +14,7 @@ import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.gef.ContextMenuProvider;
 import org.eclipse.gef.EditPartViewer;
+import org.eclipse.gef.editparts.AbstractEditPart;
 import org.eclipse.gef.ui.actions.ActionRegistry;
 import org.eclipse.gef.ui.actions.GEFActionConstants;
 import org.eclipse.jface.action.IAction;
@@ -24,11 +25,11 @@ import org.eclipse.ui.actions.ActionFactory;
 
 import de.bmotionstudio.gef.editor.action.OpenSchedulerEventAction;
 import de.bmotionstudio.gef.editor.model.BControl;
-import de.bmotionstudio.gef.editor.part.AppAbstractEditPart;
-import de.bmotionstudio.gef.editor.part.VisualizationPart;
+import de.bmotionstudio.gef.editor.model.ObserverRootVirtualTreeNode;
+import de.bmotionstudio.gef.editor.model.Visualization;
 import de.bmotionstudio.gef.editor.scheduler.SchedulerEvent;
 
-public class AppContextMenuProvider extends ContextMenuProvider {
+public class BMSContextMenuProvider extends ContextMenuProvider {
 
 	private ActionRegistry actionRegistry;
 
@@ -36,7 +37,7 @@ public class AppContextMenuProvider extends ContextMenuProvider {
 
 	private String[] eventIDs = { AttributeConstants.EVENT_MOUSECLICK };
 
-	public AppContextMenuProvider(EditPartViewer viewer, ActionRegistry registry) {
+	public BMSContextMenuProvider(EditPartViewer viewer, ActionRegistry registry) {
 		super(viewer);
 		setActionRegistry(registry);
 	}
@@ -54,42 +55,53 @@ public class AppContextMenuProvider extends ContextMenuProvider {
 		action = getActionRegistry().getAction(ActionFactory.REDO.getId());
 		menu.appendToGroup(GEFActionConstants.GROUP_UNDO, action);
 
-		action = actionRegistry.getAction(ActionFactory.COPY.getId());
+		action = getActionRegistry().getAction(ActionFactory.COPY.getId());
 		menu.appendToGroup(GEFActionConstants.GROUP_COPY, action);
 
-		action = actionRegistry.getAction(ActionFactory.PASTE.getId());
+		action = getActionRegistry().getAction(ActionFactory.PASTE.getId());
 		menu.appendToGroup(GEFActionConstants.GROUP_COPY, action);
 
 		action = getActionRegistry().getAction(ActionFactory.DELETE.getId());
 		menu.appendToGroup(GEFActionConstants.GROUP_EDIT, action);
 
-		buildCustomMenu(menu);
+		Object sel = ((IStructuredSelection) getViewer().getSelection())
+				.getFirstElement();
 
-		buildObserverMenu(menu);
-
-		buildEventMenu(menu);
+		if (sel instanceof AbstractEditPart) {
+			AbstractEditPart editPart = (AbstractEditPart) sel;
+			buildCustomMenu(menu, editPart);
+			buildObserverMenu(menu, editPart);
+			buildEventMenu(menu, editPart);
+		}
 
 	}
 
-	private void buildCustomMenu(IMenuManager menu) {
+	private void buildCustomMenu(IMenuManager menu, AbstractEditPart editPart) {
 
-		IExtensionPoint extensionPoint = registry
-				.getExtensionPoint("de.bmotionstudio.gef.editor.installMenu");
-		for (IExtension extension : extensionPoint.getExtensions()) {
-			for (IConfigurationElement configurationElement : extension
-					.getConfigurationElements()) {
+		Object model = editPart.getModel();
 
-				if ("menu".equals(configurationElement.getName())) {
+		if (model instanceof BControl) {
 
-					try {
+			IExtensionPoint extensionPoint = registry
+					.getExtensionPoint("de.bmotionstudio.gef.editor.installMenu");
+			for (IExtension extension : extensionPoint.getExtensions()) {
+				for (IConfigurationElement configurationElement : extension
+						.getConfigurationElements()) {
 
-						IInstallMenu installMenuClass = (IInstallMenu) configurationElement
-								.createExecutableExtension("class");
+					if ("menu".equals(configurationElement.getName())) {
 
-						installMenuClass.installMenu(menu, getActionRegistry());
+						try {
 
-					} catch (final CoreException e) {
-						e.printStackTrace();
+							IInstallMenu installMenuClass = (IInstallMenu) configurationElement
+									.createExecutableExtension("class");
+
+							installMenuClass.installMenu(menu,
+									getActionRegistry());
+
+						} catch (final CoreException e) {
+							e.printStackTrace();
+						}
+
 					}
 
 				}
@@ -100,55 +112,55 @@ public class AppContextMenuProvider extends ContextMenuProvider {
 
 	}
 
-	private void buildObserverMenu(IMenuManager menu) {
+	private void buildObserverMenu(IMenuManager menu, AbstractEditPart editPart) {
 
-		final MenuManager handleObserverMenu = new MenuManager("Observers",
+		Object model = editPart.getModel();
+
+		BControl bcontrol = null;
+
+		if (model instanceof BControl)
+			bcontrol = (BControl) model;
+		else if (model instanceof ObserverRootVirtualTreeNode)
+			bcontrol = ((ObserverRootVirtualTreeNode) model).getControl();
+		else
+			return;
+
+		final MenuManager handleObserverMenu = new MenuManager("Observer",
 				BMotionStudioImage.getImageDescriptor(
 						BMotionEditorPlugin.PLUGIN_ID,
 						"icons/icon_observer.gif"), "observerMenu");
 		menu.appendToGroup(GEFActionConstants.GROUP_ADD, handleObserverMenu);
 
-		IStructuredSelection selection = (IStructuredSelection) BMotionEditorPlugin
-				.getActiveEditor().getEditorSite().getSelectionProvider()
-				.getSelection();
+		IExtensionPoint extensionPoint = registry
+				.getExtensionPoint("de.bmotionstudio.gef.editor.observer");
+		for (IExtension extension : extensionPoint.getExtensions()) {
+			for (IConfigurationElement configurationElement : extension
+					.getConfigurationElements()) {
 
-		if (selection.getFirstElement() instanceof AppAbstractEditPart) {
+				if ("observer".equals(configurationElement.getName())) {
 
-			BControl bcontrol = (BControl) ((AppAbstractEditPart) selection
-					.getFirstElement()).getModel();
+					final String observerClassName = configurationElement
+							.getAttribute("class");
+					final String observerName = configurationElement
+							.getAttribute("name");
 
-			IExtensionPoint extensionPoint = registry
-					.getExtensionPoint("de.bmotionstudio.gef.editor.observer");
-			for (IExtension extension : extensionPoint.getExtensions()) {
-				for (IConfigurationElement configurationElement : extension
-						.getConfigurationElements()) {
+					if (checkIncludeObserver(observerClassName, bcontrol)) {
 
-					if ("observer".equals(configurationElement.getName())) {
+						IAction action = getActionRegistry().getAction(
+								"de.bmotionstudio.gef.editor.observerAction."
+										+ observerClassName);
+						action.setText(observerName);
+						action.setToolTipText(observerName);
 
-						final String observerClassName = configurationElement
-								.getAttribute("class");
-						final String observerName = configurationElement
-								.getAttribute("name");
-
-						if (checkIncludeObserver(observerClassName, bcontrol)) {
-
-							IAction action = getActionRegistry().getAction(
-									"de.bmotionstudio.gef.editor.observerAction."
-											+ observerClassName);
-							action.setText(observerName);
-							action.setToolTipText(observerName);
-
-							if (bcontrol.hasObserver(observerClassName)) {
-								action.setImageDescriptor(BMotionStudioImage
-										.getImageDescriptor(
-												BMotionEditorPlugin.PLUGIN_ID,
-												"icons/icon_chop.gif"));
-							} else {
-								action.setImageDescriptor(null);
-							}
-							handleObserverMenu.add(action);
-
+						if (bcontrol.hasObserver(observerClassName)) {
+							action.setImageDescriptor(BMotionStudioImage
+									.getImageDescriptor(
+											BMotionEditorPlugin.PLUGIN_ID,
+											"icons/icon_chop.gif"));
+						} else {
+							action.setImageDescriptor(null);
 						}
+						handleObserverMenu.add(action);
 
 					}
 
@@ -212,23 +224,19 @@ public class AppContextMenuProvider extends ContextMenuProvider {
 
 	}
 
-	private void buildEventMenu(IMenuManager menu) {
+	private void buildEventMenu(IMenuManager menu, AbstractEditPart editPart) {
 
-		MenuManager handleEventMenu = new MenuManager("Events",
-				BMotionStudioImage.getImageDescriptor(
-						BMotionEditorPlugin.PLUGIN_ID, "icons/icon_event.png"),
-				"eventMenu");
-		menu.appendToGroup(GEFActionConstants.GROUP_ADD, handleEventMenu);
+		Object model = editPart.getModel();
 
-		IStructuredSelection selection = (IStructuredSelection) BMotionEditorPlugin
-				.getActiveEditor().getEditorSite().getSelectionProvider()
-				.getSelection();
+		if (model instanceof BControl && !(model instanceof Visualization)) {
 
-		if ((selection.getFirstElement() instanceof AppAbstractEditPart)
-				&& !(selection.getFirstElement() instanceof VisualizationPart)) {
+			MenuManager handleEventMenu = new MenuManager("Events",
+					BMotionStudioImage.getImageDescriptor(
+							BMotionEditorPlugin.PLUGIN_ID,
+							"icons/icon_event.png"), "eventMenu");
+			menu.appendToGroup(GEFActionConstants.GROUP_ADD, handleEventMenu);
 
-			BControl bcontrol = (BControl) ((AppAbstractEditPart) selection
-					.getFirstElement()).getModel();
+			BControl bcontrol = (BControl) model;
 
 			// Has event
 			if (bcontrol.hasEvent(eventIDs[0])) {
@@ -297,7 +305,6 @@ public class AppContextMenuProvider extends ContextMenuProvider {
 				}
 
 			}
-
 		}
 
 	}

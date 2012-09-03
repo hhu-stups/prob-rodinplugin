@@ -4,34 +4,44 @@ import java.beans.PropertyChangeEvent;
 import java.util.List;
 
 import org.eclipse.draw2d.IFigure;
+import org.eclipse.draw2d.Label;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.swt.graphics.RGB;
 
 import de.bmotionstudio.gef.editor.AttributeConstants;
+import de.bmotionstudio.gef.editor.BMotionStudioImage;
+import de.bmotionstudio.gef.editor.EditorImageRegistry;
 import de.bmotionstudio.gef.editor.command.CreateCommand;
-import de.bmotionstudio.gef.editor.editpolicy.AppDeletePolicy;
-import de.bmotionstudio.gef.editor.editpolicy.BMotionNodeEditPolicy;
-import de.bmotionstudio.gef.editor.editpolicy.BMotionStudioFlowEditPolicy;
+import de.bmotionstudio.gef.editor.editpolicy.BMSDeletePolicy;
+import de.bmotionstudio.gef.editor.editpolicy.BMSNodeEditPolicy;
+import de.bmotionstudio.gef.editor.editpolicy.BMSFlowEditPolicy;
 import de.bmotionstudio.gef.editor.figure.TableFigure;
 import de.bmotionstudio.gef.editor.model.BControl;
 import de.bmotionstudio.gef.editor.model.BTableCell;
 import de.bmotionstudio.gef.editor.model.BTableColumn;
 
-public class BTablePart extends AppAbstractEditPart {
+public class BTablePart extends BMSAbstractEditPart {
 
 	@Override
 	protected IFigure createEditFigure() {
-		return new TableFigure();
+		TableFigure tableFigure = new TableFigure();
+		Label figure = new Label();
+		tableFigure.add(figure);
+		if (!isRunning()) {
+			figure.setIcon(BMotionStudioImage
+					.getImage(EditorImageRegistry.IMG_ICON_TR_LEFT));
+		}
+		return tableFigure;
 	}
 
 	@Override
 	protected void prepareEditPolicies() {
 		installEditPolicy(EditPolicy.LAYOUT_ROLE,
-				new BMotionStudioFlowEditPolicy());
-		installEditPolicy(EditPolicy.COMPONENT_ROLE, new AppDeletePolicy());
+				new BMSFlowEditPolicy());
+		installEditPolicy(EditPolicy.COMPONENT_ROLE, new BMSDeletePolicy());
 		installEditPolicy(EditPolicy.GRAPHICAL_NODE_ROLE,
-				new BMotionNodeEditPolicy());
+				new BMSNodeEditPolicy());
 	}
 
 	@Override
@@ -54,7 +64,9 @@ public class BTablePart extends AppAbstractEditPart {
 		figure.getParent().setConstraint(
 				figure,
 				new Rectangle(control.getLocation().x, control.getLocation().y,
-						width + 1, (rows * 20) + 1));
+						width + 21, (rows * 20) + 15));
+
+		// super.refreshEditLayout(figure, control);
 
 	}
 
@@ -93,7 +105,7 @@ public class BTablePart extends AppAbstractEditPart {
 				BTableColumn bTableColumn = new BTableColumn(
 						model.getVisualization());
 				CreateCommand cmd = new CreateCommand(bTableColumn, model);
-				cmd.setLayout(new Rectangle(0, 0, 50, 25));
+				// cmd.setLayout(new Rectangle(0, 0, 50, 40));
 				cmd.execute();
 				Integer numberOfRows = Integer.valueOf(model.getAttributeValue(
 						AttributeConstants.ATTRIBUTE_ROWS).toString());
@@ -125,22 +137,18 @@ public class BTablePart extends AppAbstractEditPart {
 	}
 
 	private void refreshRows(BControl column, int numberOfRows) {
-
 		Integer numberOfCurrentRows = column.getChildrenArray().size();
-
 		if (numberOfRows < numberOfCurrentRows) {
 			for (int i = numberOfCurrentRows - 1; i >= numberOfRows; i--) {
 				column.removeChild(i);
 			}
 		}
-
 		for (int i = numberOfCurrentRows; i < numberOfRows; i++) {
 			CreateCommand cmd = new CreateCommand(new BTableCell(
 					column.getVisualization()), column);
-			cmd.setLayout(new Rectangle(0, 0, 50, 20));
+			cmd.setLayout(new Rectangle(0, 0, column.getDimension().width, 20));
 			cmd.execute();
 		}
-
 	}
 
 	@Override

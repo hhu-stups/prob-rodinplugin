@@ -31,7 +31,7 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.actions.ActionFactory;
 
 import de.bmotionstudio.gef.editor.model.Visualization;
-import de.bmotionstudio.gef.editor.part.AppEditPartFactory;
+import de.bmotionstudio.gef.editor.part.BMSEditPartFactory;
 
 public class BMotionStudioRunPage extends GraphicalEditor {
 
@@ -125,7 +125,7 @@ public class BMotionStudioRunPage extends GraphicalEditor {
 		super.configureGraphicalViewer();
 		ScrollingGraphicalViewer viewer = (ScrollingGraphicalViewer) getGraphicalViewer();
 
-		viewer.setEditPartFactory(new AppEditPartFactory());
+		viewer.setEditPartFactory(new BMSEditPartFactory());
 
 		ScalableRootEditPart rootEditPart = new ScalableRootEditPart();
 		viewer.setRootEditPart(rootEditPart);

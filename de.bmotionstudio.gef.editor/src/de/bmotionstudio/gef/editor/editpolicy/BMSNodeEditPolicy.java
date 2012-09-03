@@ -16,7 +16,7 @@ import de.bmotionstudio.gef.editor.command.ConnectionReconnectCommand;
 import de.bmotionstudio.gef.editor.model.BConnection;
 import de.bmotionstudio.gef.editor.model.BControl;
 
-public class BMotionNodeEditPolicy extends GraphicalNodeEditPolicy {
+public class BMSNodeEditPolicy extends GraphicalNodeEditPolicy {
 
 	/*
 	 * (non-Javadoc)

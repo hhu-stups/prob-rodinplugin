@@ -16,7 +16,7 @@ public class BMotionObserverWizardDialog extends BMotionAbstractWizardDialog {
 
 	public BMotionObserverWizardDialog(IWorkbenchPart workbenchPart, IWizard newWizard) {
 		super(workbenchPart, newWizard);
-		setShellStyle(SWT.CLOSE);
+		setShellStyle(SWT.CLOSE | SWT.RESIZE);
 		setDeleteToolTip("Delete Observer");
 	}
 

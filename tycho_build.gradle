@@ -1,3 +1,13 @@
+/*
+	Build Script can be executed via 'gradle install'
+	Build Script Dependencies can be downloaded via 'gradle collectDepenencies'
+	Executing the Build Script and download Dependencies can be executed via 'gradle completeInstall'
+ 	For a complete classPath Refresh please execute 'gradle deleteFromClassPath setClassPath'	
+	Pom Generation can be executed via gradle deploy
+
+*/
+
+
 apply plugin: 'base'
 
 import groovy.io.FileType
@@ -128,8 +138,9 @@ def groupId(){
 *	This Group ID will be used in every sub project
 */
 
-def addLibToCP(def project, File filePar, def libPar){
+def addLibToCP(def project, def libPar){
 	
+	def filePar = new File(workspacePath+project+"/.classpath")
 	boolean notYetAdded = true	
 	filePar.eachLine{ line ->
 		def pattern = ".*${dependencyFolder}${libPar}.*"
@@ -139,25 +150,60 @@ def addLibToCP(def project, File filePar, def libPar){
 		
 	}
 	if(notYetAdded){
-		File newCP = new File(project+'/.cp') 
+		File newCP = new File(workspacePath+project+'/.cp') 
 		filePar.eachLine{ line ->
+
 			 if(line ==~ /.*<\/classpath>.*/){
 				
-				String entry = '<classpathentry exported="true" kind="lib" path="lib/dependencies/'+libPar+'"/>'+'\n</classpath>\n'
+				String entry = '\t<classpathentry exported="true" kind="lib" path="'+dependencyFolder+libPar+'"/>'+'\n</classpath>\n'
 				line = line.replaceAll(/<\/classpath>/, entry)
-				println line
-				newCP << line+"\n"
+				println project + " : "+ libPar +" added to classpath"
+				newCP << line
 			}else{
 				newCP << line+"\n"
 			}
 		}
 		filePar.delete()
-		newCP.renameTo(project+'/.classpath')
+		newCP.renameTo(workspacePath+project+'/.classpath')
 	}else{
 		println project + " : "+ libPar +" classpath entry already present"
 	}
 	
 }
+// Add certain Jar to Library
+
+
+def deleteLibFromCP(def project){
+	
+	def filePar = new File(workspacePath+project+"/.classpath")
+	boolean deleteCP = false
+	def newCP = new File(workspacePath+project+'/cp')
+	def pattern = ".*${dependencyFolder}[^<].*/>"
+
+	filePar.eachLine{ line ->
+	
+		if(line ==~ /\n(\ |\t)*/) line = line.replaceAll(/\n(\ |\t)*/, '')		// delete empty lines
+		if(line ==~ /${pattern}/){
+			deleteCP = true 
+			def pattern2 =  '(\\ |\\t)*<classpathentry exported="true" kind="lib" path="'+dependencyFolder+"[^<].*"+'"/>(\\ |\\t)*'
+			line = line.replaceAll(/${pattern2}/, '')
+			newCP << line
+		}else{
+			newCP << line+"\n"
+		}
+	}
+	if(!deleteCP){
+		println project + " : no dependencies from "+ dependencyFolder+" found in classpath file! "
+		newCP.delete()
+	}else{
+		filePar.delete()
+		newCP.renameTo(workspacePath+project+'/.classpath')	
+		println workspacePath+project+'/.classpath' +"!"
+	}
+}
+// deletes whole DependenciesLibrary Folder
+
+
 
 /////////////////////////////////////////////////////////////////////////////////////////
 //		--	!!! 				DEFINING SUB PROJECTS 							!!!	-- //
@@ -167,14 +213,14 @@ subprojects {
 	
 	apply plugin: 'base'
 	apply plugin: 'java'
-	apply plugin: 'eclipse'
+//	apply plugin: 'eclipse'
 	
 	task deleteArtifacts(type: Delete) {
   		delete 'target','pom.xml'
 	}
 	
 	/////				Copy Dependencies into subprojects DependencyFolder 				///// 
-	task collectDependencies(type: Copy){
+	task collectDependencies(type: Copy) {
 
 		   	from configurations.compile
 	   	
@@ -183,36 +229,60 @@ subprojects {
 	}
 
 	
-	task setClassPath(dependsOn: 'collectDependencies'){
-
+	task setClassPath(dependsOn: 'collectDependencies')<<{
+		
+		description = "\tAdds all your Dependencies from your local lib folder in each project to it's classpath"
+		
 		def dependencyList = []
 		try{
-			def dir = new File(project.name+"/"+dependencyFolder).eachFile() { file->  
+			def dir = new File(workspacePath+project.name+"/"+dependencyFolder).eachFile() { file->  		
 			    dependencyList << file.getName()  
-			}
+				}
 	
 			if(features.every{ it != project.name }){	
-			
-				def cpFile = new File(project.name+"/.classpath")
 				for(int icp = 0; icp < dependencyList.size; icp++){
-					addLibToCP(project.name, cpFile, dependencyList[icp])
+					addLibToCP(project.name, dependencyList[icp])
 				}
 				/*dependencyList.each{ dep->
-					println project.name+": "+ dep	
-				}*/
-
+					println project.name+": "+ dep	// could still be usefull for debugging, that's why it's not deleted
+				}*/	
 			}
+			def warningReadMe = new File(workspacePath+project.name+"/"+dependencyFolder+"_README.txt")
+			warningReadMe.delete()
+			warningReadMe << "Do Not Remove any Jars/Libraries in this Folder!\nThis folder contains all of your dependencies defined in your gradle script.\n"
+			warningReadMe << "Removing or renaming any of these files will result in an Error in your .classpath file\n"
+			warningReadMe << "If any error concerning missing dependencies should occur please run 'gradle deleteFromClassPath setClassPath' in your workspace folder from your shell."
+			
+			
 		}catch(Exception e){
 			println project.name+" has no dependencies in '${dependencyFolder}' defined: Classpath will not be changed"
 		}
 	
 	}// setClassPath
 	
-	eclipse.classpath.file {
-	    whenMerged { classpath ->
-	        classpath.entries.findAll { entry -> entry.kind == 'lib' }*.exported = true	
-	    }
+	
+	task deleteFromClassPath()<<{		
+		
+		description = "\tDeletes all your Dependencies located in your local lib folder from each project's classpath"
+		
+		try{
+			
+			boolean depsDelete = false
+			def depsFolder = new File(workspacePath+project.name+'/'+dependencyFolder)
+			if(depsFolder.exists()) depsDelete = true
+			depsFolder.deleteDir()
+
+			if(features.every{ it != project.name } && depsDelete){	
+				deleteLibFromCP(project.name)
+			}
+	
+		}catch(Exception e){
+			println project.name+" has no dependencies in '${dependencyFolder}' defined: Classpath will not be changed"
+		}
+			
 	}
+	
+	/////---- 			For a complete classPath Refresh please execute 'gradle deleteFromClassPath setClassPath'				----///////
 
 	////////////////////////////////////////////////////////////////////////////////////////////	
 	
@@ -572,5 +642,6 @@ def feature(artifactId, versionNumber) { """
 // end of feature pom
 
 //	Build Script can be executed via gradle install
+// 	For a complete classPath Refresh please execute 'gradle deleteFromClassPath setClassPath'	
 //	Pom Generation can be executed via gradle deploy
 

@@ -14,11 +14,12 @@ import org.eclipse.gef.ui.actions.SelectionAction;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.ui.IWorkbenchPart;
 
-import de.bmotionstudio.gef.editor.AttributeConstants;
 import de.bmotionstudio.gef.editor.BMotionEditorPlugin;
 import de.bmotionstudio.gef.editor.BMotionStudioImage;
-import de.bmotionstudio.gef.editor.command.ObserverCommand;
+import de.bmotionstudio.gef.editor.command.RemoveObserverCommand;
+import de.bmotionstudio.gef.editor.command.SetObserverCommand;
 import de.bmotionstudio.gef.editor.model.BControl;
+import de.bmotionstudio.gef.editor.model.ObserverRootVirtualTreeNode;
 import de.bmotionstudio.gef.editor.observer.Observer;
 import de.bmotionstudio.gef.editor.observer.ObserverWizard;
 import de.prob.logging.Logger;
@@ -26,9 +27,6 @@ import de.prob.logging.Logger;
 public class OpenObserverAction extends SelectionAction {
 
 	private String className;
-	private Observer clonedObserver;
-	private Observer newObserver;
-	private BControl actionControl;
 
 	public OpenObserverAction(IWorkbenchPart part) {
 		super(part);
@@ -48,35 +46,35 @@ public class OpenObserverAction extends SelectionAction {
 	@Override
 	public void run() {
 
-		clonedObserver = null;
-
-		actionControl = getControl();
+		BControl actionControl = getControl();
 
 		if (actionControl != null) {
 
-			newObserver = getControl().getObserver(getClassName());
+			Observer oldObserver = null;
+			Observer observer = getControl().getObserver(getClassName());
 
-			// Add Observer
-			if (newObserver == null) {
+			// If an observer does not exist, add one
+			if (observer == null) {
 
 				try {
-					newObserver = (Observer) BMotionEditorPlugin
+					observer = (Observer) BMotionEditorPlugin
 							.getObserverExtension(getClassName())
 							.createExecutableExtension("class");
 				} catch (CoreException e) {
 				}
 
-			} else { // Edit Observer
+			} else { // else edit the current observer
 
-				// Clone Observer
+				// therefore, clone the current observer, if the user aborts
+				// editing the current observer
 				try {
-					clonedObserver = newObserver.clone();
+					oldObserver = observer.clone();
 				} catch (CloneNotSupportedException e) {
 				}
 
 			}
 
-			ObserverWizard wizard = newObserver.getWizard(getControl());
+			ObserverWizard wizard = observer.getWizard(actionControl);
 
 			if (wizard != null) {
 
@@ -84,65 +82,76 @@ public class OpenObserverAction extends SelectionAction {
 						getWorkbenchPart(), wizard);
 				dialog.create();
 				dialog.getShell().setSize(wizard.getSize());
-				String title = "Observer: "
-						+ newObserver.getName()
-						+ " Control: "
-						+ getControl().getAttributeValue(
-								AttributeConstants.ATTRIBUTE_ID);
+				String title = "Observer: " + observer.getName()
+						+ " Control: " + getControl().getID();
 				wizard.setWindowTitle("BMotion Studio Observer Wizard");
 				dialog.setTitle(title);
-				dialog.setMessage(newObserver.getDescription());
+				dialog.setMessage(observer.getDescription());
 				dialog.setTitleImage(BMotionStudioImage
 						.getImage(BMotionStudioImage.IMG_LOGO_BMOTION64));
 				int status = dialog.open();
 
+				// The user clicked on the "OK" button in order to confirm his
+				// changes on the observer
 				if (status == WizardDialog.OK) {
 
-					ObserverCommand observerCommand = createObserverCommandCommand();
-					observerCommand.setNewObserver(newObserver);
-
+					// If the observer delete flag is set to true, delete the
+					// observer anyway
 					if (wizard.isObserverDelete()) {
-
-						RemoveObserverAction action = new RemoveObserverAction(
-								getWorkbenchPart());
-						action.setControl(getControl());
-						action.setObserver(newObserver);
-						action.run();
-
+						RemoveObserverCommand cmd = createRemoveObserverCommand(
+								observer, actionControl);
+						execute(cmd);
 					} else {
-						if (clonedObserver != null) {
-							observerCommand.setClonedObserver(clonedObserver);
-						}
-						execute(observerCommand);
+						SetObserverCommand cmd = createObserverSetCommand(
+								actionControl, observer, oldObserver);
+						execute(cmd);
 					}
 
+					// else the user canceled his changes on the observer
 				} else if (status == WizardDialog.CANCEL) {
 
-					if (clonedObserver != null)
-						actionControl.addObserver(clonedObserver);
+					// Reset observer without using a command!
+					if (oldObserver != null)
+						actionControl.getObservers().put(oldObserver.getID(),
+								oldObserver);
 
+					// else the user clicked on the delete button in order to
+					// delete the observer
 				} else if (status == BMotionObserverWizardDialog.DELETE) {
-					RemoveObserverAction action = new RemoveObserverAction(
-							getWorkbenchPart());
-					action.setControl(getControl());
-					action.setObserver(newObserver);
-					action.run();
+					RemoveObserverCommand cmd = createRemoveObserverCommand(
+							observer, actionControl);
+					execute(cmd);
 				}
 
 			} else {
 				Logger.notifyUserWithoutBugreport("The Observer \""
-						+ newObserver.getName()
+						+ observer.getName()
 						+ "\" does not support a wizard.");
 			}
 		}
 
 	}
 
-	public ObserverCommand createObserverCommandCommand() {
-		ObserverCommand command = new ObserverCommand();
-		command.setClassName(getClassName());
-		command.setControl(actionControl);
-		return command;
+	private RemoveObserverCommand createRemoveObserverCommand(
+			Observer observer, BControl control) {
+		RemoveObserverCommand cmd = new RemoveObserverCommand();
+		cmd.setControl(control);
+		cmd.setObserver(observer);
+		return cmd;
+	}
+
+	public SetObserverCommand createObserverSetCommand(BControl control,
+			Observer newObserver, Observer oldObserver) {
+		SetObserverCommand cmd = new SetObserverCommand();
+		cmd.setNewObserver(newObserver);
+		cmd.setOldObserver(oldObserver);
+		cmd.setControl(control);
+		return cmd;
+	}
+
+	public SetObserverCommand createObserverSetCommand(BControl control,
+			Observer newObserver) {
+		return createObserverSetCommand(control, newObserver, null);
 	}
 
 	public void setClassName(String className) {
@@ -162,8 +171,15 @@ public class OpenObserverAction extends SelectionAction {
 
 		if ((objects.get(0) instanceof EditPart)) {
 			EditPart part = (EditPart) objects.get(0);
-			return (BControl) part.getModel();
+			BControl control = null;
+			if (part.getModel() instanceof ObserverRootVirtualTreeNode)
+				control = ((ObserverRootVirtualTreeNode) part.getModel())
+						.getControl();
+			else if (part.getModel() instanceof BControl)
+				control = (BControl) part.getModel();
+			return control;
 		}
+
 		return null;
 
 	}

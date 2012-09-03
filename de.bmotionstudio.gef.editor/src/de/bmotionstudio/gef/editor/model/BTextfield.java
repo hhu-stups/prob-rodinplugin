@@ -7,7 +7,6 @@
 package de.bmotionstudio.gef.editor.model;
 
 import de.bmotionstudio.gef.editor.AttributeConstants;
-import de.bmotionstudio.gef.editor.attribute.BAttributeText;
 
 /**
  * @author Lukas Ladenberger
@@ -30,8 +29,9 @@ public class BTextfield extends BControl {
 
 	@Override
 	protected void initAttributes() {
-		initAttribute(new BAttributeText(DEFAULT_TEXT));
-		getAttribute(AttributeConstants.ATTRIBUTE_HEIGHT).setValue(21);
+		initAttribute(AttributeConstants.ATTRIBUTE_TEXT, DEFAULT_TEXT);
+		initAttribute(AttributeConstants.ATTRIBUTE_HEIGHT, 21,
+				AttributeConstants.ATTRIBUTE_SIZE);
 	}
 
 	@Override

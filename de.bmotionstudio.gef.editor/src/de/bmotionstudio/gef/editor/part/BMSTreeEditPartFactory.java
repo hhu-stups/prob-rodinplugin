@@ -10,42 +10,44 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPartFactory;
-import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
 
 import de.bmotionstudio.gef.editor.BMotionEditorPlugin;
 import de.bmotionstudio.gef.editor.IBControlService;
 import de.bmotionstudio.gef.editor.model.BControl;
-import de.bmotionstudio.gef.editor.model.Visualization;
+import de.bmotionstudio.gef.editor.model.ObserverRootVirtualTreeNode;
+import de.bmotionstudio.gef.editor.observer.Observer;
 
-public class AppEditPartFactory implements EditPartFactory {
+public class BMSTreeEditPartFactory implements EditPartFactory {
 
-	@Override
 	public EditPart createEditPart(EditPart context, Object model) {
 
-		AbstractGraphicalEditPart part = null;
+		BMSAbstractTreeEditPart part = null;
 
-		BControl control = (BControl) model;
+		if (model instanceof BControl) {
 
-		if (control instanceof Visualization) {
-			part = new VisualizationPart();
-		} else {
+			BControl control = (BControl) model;
+
 			try {
 				IConfigurationElement configElement = BMotionEditorPlugin
 						.getControlServices().get(control.getType());
 				if (configElement != null) {
 					IBControlService service = (IBControlService) configElement
 							.createExecutableExtension("service");
-					part = service.createEditPart();
+					part = service.createTreeEditPart();
 				}
 			} catch (CoreException e) {
 				e.printStackTrace();
 			}
+
+		} else if (model instanceof Observer) {
+			part = new ObserverTreeEditPart();
+		} else if (model instanceof ObserverRootVirtualTreeNode) {
+			part = new ObserverRootTreeEditpart();
 		}
 
 		if (part != null)
-			part.setModel(control);
+			part.setModel(model);
 
-		// TODO: check if part == null
 		return part;
 
 	}

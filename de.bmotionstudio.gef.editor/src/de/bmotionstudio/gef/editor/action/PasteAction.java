@@ -52,10 +52,11 @@ public class PasteAction extends SelectionAction {
 			Object nextElement = it.next();
 			if (nextElement instanceof EditPart) {
 				EditPart ep = (EditPart) nextElement;
-				BControl node = (BControl) ep.getModel();
-				if (!cmd.isContainer(node))
-					return null;
-				cmd.addElement(node);
+				if (ep.getModel() instanceof BControl) {
+					BControl node = (BControl) ep.getModel();
+					if (cmd.isContainer(node))
+						cmd.addElement(node);
+				}
 			}
 		}
 

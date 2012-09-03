@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: BMotion Studio Help
+Bundle-SymbolicName: de.bmotionstudio.help;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Require-Bundle: org.eclipse.help;bundle-version="3.5.100"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Vendor: HHU Düsseldorf STUPS Group
+Eclipse-RegisterBuddy: de.bmotionstudio.gef.editor
+Bundle-ClassPath: lib/org.eclipse.mylyn.wikitext.core_1.7.0.I20120513-1032.jar,
+ lib/org.eclipse.mylyn.wikitext.mediawiki.core_1.7.0.I20120513-1032.jar,
+ .

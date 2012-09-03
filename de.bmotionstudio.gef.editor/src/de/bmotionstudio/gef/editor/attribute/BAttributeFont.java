@@ -12,10 +12,6 @@ import de.bmotionstudio.gef.editor.property.FontPropertyDescriptor;
 
 public class BAttributeFont extends AbstractAttribute {
 
-	public BAttributeFont(Object value) {
-		super(value);
-	}
-
 	public PropertyDescriptor preparePropertyDescriptor() {
 		return new FontPropertyDescriptor(getID(), getName());
 	}

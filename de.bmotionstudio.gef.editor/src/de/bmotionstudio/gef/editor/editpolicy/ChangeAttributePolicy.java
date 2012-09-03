@@ -13,7 +13,7 @@ import org.eclipse.gef.editpolicies.AbstractEditPolicy;
 
 import de.bmotionstudio.gef.editor.library.AbstractLibraryCommand;
 import de.bmotionstudio.gef.editor.library.AttributeRequest;
-import de.bmotionstudio.gef.editor.part.AppAbstractEditPart;
+import de.bmotionstudio.gef.editor.part.BMSAbstractEditPart;
 
 public class ChangeAttributePolicy extends AbstractEditPolicy {
 
@@ -25,7 +25,7 @@ public class ChangeAttributePolicy extends AbstractEditPolicy {
 				&& request instanceof AttributeRequest) {
 			AttributeRequest changeAttributeReq = (AttributeRequest) request;
 			if (changeAttributeReq.getAttributeTransferObject() != null) {
-				AbstractLibraryCommand command = ((AppAbstractEditPart) getHost())
+				AbstractLibraryCommand command = ((BMSAbstractEditPart) getHost())
 						.getLibraryCommand(changeAttributeReq);
 				if (command != null) {
 					command.setEditPart(getHost());

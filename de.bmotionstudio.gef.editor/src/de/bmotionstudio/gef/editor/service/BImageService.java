@@ -11,7 +11,7 @@ import de.bmotionstudio.gef.editor.IBControlService;
 import de.bmotionstudio.gef.editor.model.BControl;
 import de.bmotionstudio.gef.editor.model.BImage;
 import de.bmotionstudio.gef.editor.model.Visualization;
-import de.bmotionstudio.gef.editor.part.AppAbstractEditPart;
+import de.bmotionstudio.gef.editor.part.BMSAbstractEditPart;
 import de.bmotionstudio.gef.editor.part.BImagePart;
 
 /**
@@ -39,7 +39,7 @@ public class BImageService extends AbstractBControlService implements
 	 * @see de.bmotionstudio.gef.editor.IBControlService#createEditPart()
 	 */
 	@Override
-	public AppAbstractEditPart createEditPart() {
+	public BMSAbstractEditPart createEditPart() {
 		return new BImagePart();
 	}
 

@@ -17,12 +17,12 @@ import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
 
 import de.bmotionstudio.gef.editor.AttributeConstants;
-import de.bmotionstudio.gef.editor.editpolicy.AppDeletePolicy;
-import de.bmotionstudio.gef.editor.editpolicy.BMotionNodeEditPolicy;
+import de.bmotionstudio.gef.editor.editpolicy.BMSDeletePolicy;
+import de.bmotionstudio.gef.editor.editpolicy.BMSNodeEditPolicy;
 import de.bmotionstudio.gef.editor.figure.ShapeFigure;
 import de.bmotionstudio.gef.editor.model.BControl;
 
-public class BShapePart extends AppAbstractEditPart {
+public class BShapePart extends BMSAbstractEditPart {
 
 	@Override
 	public void refreshEditFigure(IFigure figure, BControl model,
@@ -117,9 +117,9 @@ public class BShapePart extends AppAbstractEditPart {
 
 	@Override
 	protected void prepareEditPolicies() {
-		installEditPolicy(EditPolicy.COMPONENT_ROLE, new AppDeletePolicy());
+		installEditPolicy(EditPolicy.COMPONENT_ROLE, new BMSDeletePolicy());
 		installEditPolicy(EditPolicy.GRAPHICAL_NODE_ROLE,
-				new BMotionNodeEditPolicy());
+				new BMSNodeEditPolicy());
 	}
 
 	@Override

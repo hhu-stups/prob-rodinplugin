@@ -13,7 +13,7 @@ import org.eclipse.draw2d.IFigure;
 import de.bmotionstudio.gef.editor.figure.UnknownBControl;
 import de.bmotionstudio.gef.editor.model.BControl;
 
-public class UnknownPart extends AppAbstractEditPart {
+public class UnknownPart extends BMSAbstractEditPart {
 
 	public static String ID = "de.bmotionstudio.gef.editor.unknown";
 

@@ -27,9 +27,9 @@ import de.bmotionstudio.gef.editor.command.ChangeGuideCommand;
 import de.bmotionstudio.gef.editor.command.CreateCommand;
 import de.bmotionstudio.gef.editor.model.BControl;
 import de.bmotionstudio.gef.editor.model.BMotionGuide;
-import de.bmotionstudio.gef.editor.part.AppAbstractEditPart;
+import de.bmotionstudio.gef.editor.part.BMSAbstractEditPart;
 
-public class AppEditLayoutPolicy extends XYLayoutEditPolicy {
+public class BMSEditLayoutPolicy extends XYLayoutEditPolicy {
 
 	@Override
 	protected Command createChangeConstraintCommand(EditPart child,
@@ -136,17 +136,18 @@ public class AppEditLayoutPolicy extends XYLayoutEditPolicy {
 	protected Command getCreateCommand(CreateRequest request) {
 
 		if (request.getType() == REQ_CREATE
-				&& getHost() instanceof AppAbstractEditPart) {
+				&& getHost() instanceof BMSAbstractEditPart) {
 
-			if (((BControl) ((AppAbstractEditPart) getHost()).getModel())
+			if (((BControl) ((BMSAbstractEditPart) getHost()).getModel())
 					.canHaveChildren()) {
 
 				BControl newObj = (BControl) request.getNewObject();
 
-				CreateCommand createCmd = new CreateCommand(
-						newObj, (BControl) getHost().getModel());
+				CreateCommand createCmd = new CreateCommand(newObj,
+						(BControl) getHost().getModel());
 
 				Rectangle constraint = (Rectangle) getConstraintFor(request);
+
 				constraint.x = (constraint.x < 0) ? 0 : constraint.x;
 				constraint.y = (constraint.y < 0) ? 0 : constraint.y;
 
@@ -157,19 +158,21 @@ public class AppEditLayoutPolicy extends XYLayoutEditPolicy {
 						.getAttributes().get(
 								AttributeConstants.ATTRIBUTE_HEIGHT);
 
-				if (atrWidth != null) {
-					constraint.width = Integer.valueOf(atrWidth.getValue()
-							.toString());
+				Integer cWidth = Integer.valueOf(atrWidth.getDefaultValue()
+						.toString());
+				if (!atrWidth.isEditable()) {
+					constraint.width = cWidth;
 				} else {
-					constraint.width = (constraint.width <= 0) ? 100
+					constraint.width = (constraint.width <= 0) ? cWidth
 							: constraint.width;
 				}
 
-				if (atrHeight != null) {
-					constraint.height = Integer.valueOf(atrHeight.getValue()
-							.toString());
+				Integer cHeight = Integer.valueOf(atrHeight.getDefaultValue()
+						.toString());
+				if (!atrHeight.isEditable()) {
+					constraint.height = cHeight;
 				} else {
-					constraint.height = (constraint.height <= 0) ? 100
+					constraint.height = (constraint.height <= 0) ? cHeight
 							: constraint.height;
 				}
 

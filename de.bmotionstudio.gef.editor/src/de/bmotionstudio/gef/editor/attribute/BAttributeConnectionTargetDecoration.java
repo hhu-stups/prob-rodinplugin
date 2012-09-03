@@ -14,10 +14,6 @@ public class BAttributeConnectionTargetDecoration extends AbstractAttribute {
 	public static int DECORATION_NONE = 0;
 	public static int DECORATION_TRIANGLE = 1;
 
-	public BAttributeConnectionTargetDecoration(Object value) {
-		super(value);
-	}
-
 	@Override
 	protected PropertyDescriptor preparePropertyDescriptor() {
 		return new ComboBoxPropertyDescriptor(getID(), getName(), new String[] {

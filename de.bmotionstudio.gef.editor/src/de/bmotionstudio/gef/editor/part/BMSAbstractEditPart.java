@@ -47,7 +47,7 @@ import de.bmotionstudio.gef.editor.model.Visualization;
 import de.bmotionstudio.gef.editor.observer.IObserverListener;
 import de.bmotionstudio.gef.editor.observer.Observer;
 
-public abstract class AppAbstractEditPart extends AbstractGraphicalEditPart
+public abstract class BMSAbstractEditPart extends AbstractGraphicalEditPart
 		implements PropertyChangeListener, IObserverListener, IAdaptable,
 		NodeEditPart {
 

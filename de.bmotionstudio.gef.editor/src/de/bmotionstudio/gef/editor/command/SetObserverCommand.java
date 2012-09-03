@@ -11,51 +11,44 @@ import org.eclipse.gef.commands.Command;
 import de.bmotionstudio.gef.editor.model.BControl;
 import de.bmotionstudio.gef.editor.observer.Observer;
 
-public class ObserverCommand extends Command {
+public class SetObserverCommand extends Command {
 
-	private String className;
-	private Observer clonedObserver;
+	private Observer oldObserver;
 	private Observer newObserver;
 	private Observer clonedNewObserver;
 	private BControl control;
 
 	public void execute() {
-
+		// Clone the new observer
 		try {
 			clonedNewObserver = newObserver.clone();
 		} catch (CloneNotSupportedException e) {
 			e.printStackTrace();
 		}
-
+		// Set the new observer
 		control.addObserver(newObserver);
-
 	}
 
 	public boolean canExecute() {
+		if (newObserver == null || control == null)
+			return false;
 		return true;
 	}
 
 	public void undo() {
-
-		// Remove completely new Observer
-		if (clonedObserver == null) {
-			control.removeObserver(getClassName());
-		} else { // Reset Observer
-			control.addObserver(clonedObserver);
+		// If we had an old observer, set the old one
+		if (oldObserver != null) {
+			control.addObserver(oldObserver);
+			// else remove the observer
+		} else {
+			control.removeObserver(newObserver);
 		}
-
 	}
 
 	public void redo() {
+		// Redo method adds the cloned observer, since the observer could be
+		// changed during set and redo action
 		control.addObserver(clonedNewObserver);
-	}
-
-	public void setClassName(String className) {
-		this.className = className;
-	}
-
-	public String getClassName() {
-		return className;
 	}
 
 	public void setControl(BControl control) {
@@ -66,12 +59,12 @@ public class ObserverCommand extends Command {
 		return this.control;
 	}
 
-	public Observer getClonedObserver() {
-		return clonedObserver;
+	public Observer getOldObserver() {
+		return oldObserver;
 	}
 
-	public void setClonedObserver(Observer clonedObserver) {
-		this.clonedObserver = clonedObserver;
+	public void setOldObserver(Observer oldObserver) {
+		this.oldObserver = oldObserver;
 	}
 
 	public Observer getNewObserver() {

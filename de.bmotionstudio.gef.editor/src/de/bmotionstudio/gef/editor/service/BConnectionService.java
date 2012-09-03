@@ -17,7 +17,7 @@ import de.bmotionstudio.gef.editor.IBControlService;
 import de.bmotionstudio.gef.editor.model.BConnection;
 import de.bmotionstudio.gef.editor.model.BControl;
 import de.bmotionstudio.gef.editor.model.Visualization;
-import de.bmotionstudio.gef.editor.part.AppAbstractEditPart;
+import de.bmotionstudio.gef.editor.part.BMSAbstractEditPart;
 import de.bmotionstudio.gef.editor.part.BConnectionEditPart;
 
 /**
@@ -47,7 +47,7 @@ public class BConnectionService extends AbstractBControlService implements
 	}
 
 	@Override
-	public AppAbstractEditPart createEditPart() {
+	public BMSAbstractEditPart createEditPart() {
 		return new BConnectionEditPart();
 	}
 
