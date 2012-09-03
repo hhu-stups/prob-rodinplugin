@@ -15,14 +15,13 @@ import de.prob.core.ILifecycleListener;
 import de.prob.core.ListenerRegistry;
 import de.prob.core.domainobjects.Operation;
 import de.prob.core.domainobjects.State;
+import de.prob.core.internal.Activator;
 
 public class StaticListenerRegistry implements ILifecycleListener,
 		IComputationListener, IAnimationListener{
 	
 	
 	public StaticListenerRegistry() {
-		History h = new History(null);
-		h.registerAnimationListener(this);
 	}
 
 	private static final ListenerRegistry registry = new ListenerRegistry();

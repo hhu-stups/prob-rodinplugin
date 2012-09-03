@@ -111,7 +111,6 @@ public class StartAnimationHandler extends AbstractHandler implements IHandler {
 		try {
 			model = instance.load(serialized, rootElement.getComponentName());
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 

@@ -17,7 +17,6 @@ public class StateTreeExpressionSection extends AbstractStateTreeElement {
 
 	public StateTreeExpressionSection(StaticStateElement parent) {
 		super(parent);
-		// TODO Auto-generated constructor stub
 	}
 	//TODO: Refactor to replace EvaluationElement
 //	private final String label;
@@ -68,31 +67,26 @@ public class StateTreeExpressionSection extends AbstractStateTreeElement {
 
 	@Override
 	public boolean hasChildren() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public StaticStateElement[] getChildren() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public String getLabel() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public StateDependendElement getValue(State state) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public boolean hasChanged(State current, State last) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 

@@ -16,12 +16,9 @@ import org.eclipse.swt.widgets.Display;
 import de.bmotionstudio.gef.editor.animation.StaticListenerRegistry;
 import de.bmotionstudio.gef.editor.model.BControl;
 import de.bmotionstudio.gef.editor.model.Visualization;
+import de.prob.animator.domainobjects.ClassicalBEvalElement;
 import de.prob.core.Animator;
 import de.prob.core.IAnimationListener;
-import de.prob.core.command.EvaluationGetValuesCommand;
-import de.prob.core.command.EvaluationInsertFormulaCommand;
-import de.prob.core.command.EvaluationInsertFormulaCommand.FormulaType;
-import de.prob.core.domainobjects.EvaluationElement;
 import de.prob.core.domainobjects.Operation;
 import de.prob.core.domainobjects.State;
 import de.prob.exceptions.ProBException;
@@ -33,7 +30,7 @@ public class Animation implements IAnimationListener {
 
 	private final Map<String, Operation> currentStateOperations;
 
-	private final Map<String, EvaluationElement> cachedEvalElements = new HashMap<String, EvaluationElement>();
+	private final Map<String, ClassicalBEvalElement> cachedEvalElements = new HashMap<String, ClassicalBEvalElement>();
 
 	private State currentState;
 
@@ -82,12 +79,12 @@ public class Animation implements IAnimationListener {
 	 * @param currentState
 	 */
 	private void updateCachedExpressions(State currentState) {
-		try {
-			EvaluationGetValuesCommand.getValuesForExpressionsCached(
-					currentState, cachedEvalElements.values());
-		} catch (ProBException e) {
-			// TODO Log this
-		}
+//		try {
+////			EvaluationGetValuesCommand.getValuesForExpressionsCached(
+////					currentState, cachedEvalElements.values());
+//		} catch (ProBException e) {
+//			// TODO Log this
+//		}
 	}
 
 	private void collectAllBControls(List<BControl> allBControls,

@@ -33,6 +33,7 @@ import de.prob.core.IAnimationListener;
 import de.prob.core.IComputationListener;
 import de.prob.core.ILifecycleListener;
 import de.prob.core.LimitedLogger;
+import de.prob.core.StaticListenerRegistry;
 import de.prob.core.domainobjects.Operation;
 import de.prob.core.domainobjects.State;
 import de.prob.logging.Logger;

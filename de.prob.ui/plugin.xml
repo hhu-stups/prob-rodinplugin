@@ -86,18 +86,6 @@
             restorable="true">
       </view>
    </extension>
-   <extension
-         point="de.prob.core.animation">
-      <listener
-            class="de.prob.ui.StaticListenerRegistry">
-      </listener>
-   </extension>
-   <extension
-         point="de.prob.core.lifecycle">
-      <listener
-            class="de.prob.ui.StaticListenerRegistry">
-      </listener>
-   </extension>
 
 
    <extension

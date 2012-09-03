@@ -485,11 +485,10 @@ public class StateViewPart extends StateBasedViewPart {
 		}
 	}
 
-	//TODO: Refactor to replace EvaluationElement
-//	public void addUserDefinedExpression(
-//			final EvaluationElement userDefinedElement) {
+	public void addUserDefinedExpression(
+			final String userDefinedElement) {
 //		this.expressionSection.addChild(userDefinedElement);
-//		this.topEvaluationElements.add(userDefinedElement);
-//		refreshTreeView();
-//	}
+	//	this.topEvaluationElements.add(userDefinedElement);
+		refreshTreeView();
+	}
 }
