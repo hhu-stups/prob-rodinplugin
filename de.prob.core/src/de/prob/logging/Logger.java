@@ -78,7 +78,8 @@ public final class Logger {
 	/**
 	 * Check a property. The method notifies the user and throws an exception if
 	 * the assertion fails. <br>
-	 * <b>Examples:</b><br>{@code Logger.assertProB(this.getClass(),"x != null", x
+	 * <b>Examples:</b><br>
+	 * {@code Logger.assertProB(this.getClass(),"x != null", x
 	 * != null); } <br>
 	 * {@code Logger.assertProB(this.getClass(),"x should not be null", x != null); }
 	 * <br>
@@ -112,7 +113,8 @@ public final class Logger {
 
 	/**
 	 * Failed assertion. The method notifies the user and throws an exception. <br>
-	 * <b>Examples:</b><br>{@code if (!file.exists()) String message =
+	 * <b>Examples:</b><br>
+	 * {@code if (!file.exists()) String message =
 	 * "Called open on nonexisting file " + file;
 	 * Logger.assertProB(EditorPlugin.class, message); }
 	 * 
@@ -148,5 +150,9 @@ public final class Logger {
 
 	private static void log(final IStatus status) {
 		Activator.getDefault().getLog().log(status);
+	}
+
+	public static void notifyUserAboutWarningWithoutBugreport(String string) {
+		log(IStatus.WARNING, NOBUGREPORT, string, null);
 	}
 }

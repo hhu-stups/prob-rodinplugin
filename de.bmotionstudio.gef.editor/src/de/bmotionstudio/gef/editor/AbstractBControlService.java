@@ -13,6 +13,8 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 
 import de.bmotionstudio.gef.editor.internal.BControlTemplate;
 import de.bmotionstudio.gef.editor.model.Visualization;
+import de.bmotionstudio.gef.editor.part.BControlTreeEditPart;
+import de.bmotionstudio.gef.editor.part.BMSAbstractTreeEditPart;
 
 /**
  * @author Lukas Ladenberger
@@ -27,9 +29,9 @@ public abstract class AbstractBControlService {
 		String type = configurationElement.getAttribute("id");
 		// Get the source plug-in (from the control extension)
 		String sourcePluginID = configurationElement.getContributor().getName();
-		return new CombinedTemplateCreationEntry(name,
-				"Create Control " + name, new BControlTemplate(type),
-				new BControlCreationFactory(type, visualization),
+		return new CombinedTemplateCreationEntry(name, "Create " + name,
+				new BControlTemplate(type), new BControlCreationFactory(type,
+						visualization),
 				AbstractUIPlugin
 						.imageDescriptorFromPlugin(sourcePluginID, icon),
 				AbstractUIPlugin
@@ -38,6 +40,10 @@ public abstract class AbstractBControlService {
 
 	public boolean showInPalette() {
 		return true;
+	}
+
+	public BMSAbstractTreeEditPart createTreeEditPart() {
+		return new BControlTreeEditPart();
 	}
 
 }

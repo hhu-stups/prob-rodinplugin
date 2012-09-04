@@ -18,11 +18,8 @@ import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 
 import org.eclipse.core.runtime.Assert;
@@ -261,6 +258,9 @@ public final class CliStarter {
 		final Path path = new Path("prob");
 		final URL fileURL = FileLocator.find(
 				Activator.getDefault().getBundle(), path, null);
+		if (fileURL==null) {
+			throw new CliException("Unable to find directory with prob executables.");
+		}
 		URL resolved;
 		try {
 			resolved = FileLocator.resolve(fileURL);

@@ -3,7 +3,6 @@
  * Heinrich Heine Universitaet Duesseldorf
  * This software is licenced under EPL 1.0 (http://www.eclipse.org/org/documents/epl-v10.html) 
  * */
-
 package de.bmotionstudio.gef.editor.observer.wizard;
 
 import java.util.ArrayList;
@@ -20,15 +19,16 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ComboBoxViewerCellEditor;
 import org.eclipse.jface.viewers.EditingSupport;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITableColorProvider;
 import org.eclipse.jface.viewers.ITableFontProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
-import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.FocusEvent;
@@ -47,8 +47,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 
 import de.be4.classicalb.core.parser.BParser;
+import de.bmotionstudio.gef.editor.BMotionAbstractWizard;
 import de.bmotionstudio.gef.editor.BMotionStudioImage;
-import de.bmotionstudio.gef.editor.BMotionStudioSWTConstants;
 import de.bmotionstudio.gef.editor.EditorImageRegistry;
 import de.bmotionstudio.gef.editor.attribute.AbstractAttribute;
 import de.bmotionstudio.gef.editor.edit.AttributeExpressionEdittingSupport;
@@ -56,22 +56,30 @@ import de.bmotionstudio.gef.editor.edit.IsExpressionModeEditingSupport;
 import de.bmotionstudio.gef.editor.edit.PredicateEditingSupport;
 import de.bmotionstudio.gef.editor.model.BControl;
 import de.bmotionstudio.gef.editor.observer.Observer;
+import de.bmotionstudio.gef.editor.observer.ObserverEvalObject;
 import de.bmotionstudio.gef.editor.observer.ObserverWizard;
 import de.bmotionstudio.gef.editor.observer.SetAttribute;
 import de.bmotionstudio.gef.editor.observer.SetAttributeObject;
 import de.bmotionstudio.gef.editor.property.CheckboxCellEditorHelper;
+import de.bmotionstudio.gef.editor.util.BMotionWizardUtil;
 
 public class WizardObserverSetAttribute extends ObserverWizard {
 
-	private class WizardSetAttributePage extends WizardPage {
+	private String lastChangedAttributeID;
+
+	private class WizardSetAttributePage extends AbstractObserverWizardPage {
+
+		private WritableList input;
 
 		private TableViewer tableViewer;
 
 		protected WizardSetAttributePage(final String pageName) {
-			super(pageName);
+			super(pageName, getObserver());
 		}
 
 		public void createControl(Composite parent) {
+
+			super.createControl(parent);
 
 			DataBindingContext dbc = new DataBindingContext();
 
@@ -84,14 +92,39 @@ public class WizardObserverSetAttribute extends ObserverWizard {
 			Composite container = new Composite(parent, SWT.NONE);
 			container.setLayout(gl);
 
-			tableViewer = new TableViewer(container, SWT.BORDER
-					| SWT.FULL_SELECTION);
-			tableViewer.getTable().setLinesVisible(true);
-			tableViewer.getTable().setHeaderVisible(true);
-			tableViewer.getTable().setLayoutData(
-					new GridData(GridData.FILL_BOTH));
-			tableViewer.getTable().setFont(
-					BMotionStudioSWTConstants.fontArial10);
+			tableViewer = BMotionWizardUtil.createBMotionWizardTableViewer(
+					container, SetAttributeObject.class,
+					((BMotionAbstractWizard) getWizard()).getName());
+
+			tableViewer
+					.addSelectionChangedListener(new ISelectionChangedListener() {
+
+						@Override
+						public void selectionChanged(SelectionChangedEvent event) {
+							IStructuredSelection selection = (IStructuredSelection) event
+									.getSelection();
+							Object firstElement = selection.getFirstElement();
+							if (firstElement instanceof ObserverEvalObject) {
+
+								ObserverEvalObject observerEvalObject = (ObserverEvalObject) firstElement;
+								BControl control = getBControl();
+
+								if (lastChangedAttributeID != null)
+									control.restoreDefaultValue(lastChangedAttributeID);
+
+								SetAttributeObject setAttributeObj = (SetAttributeObject) observerEvalObject;
+								String attribute = setAttributeObj
+										.getAttribute();
+								Object value = setAttributeObj.getValue();
+								control.setAttributeValue(attribute, value,
+										true, false);
+
+								lastChangedAttributeID = attribute;
+
+							}
+						}
+
+					});
 
 			TableViewerColumn column = new TableViewerColumn(tableViewer,
 					SWT.NONE);
@@ -129,7 +162,7 @@ public class WizardObserverSetAttribute extends ObserverWizard {
 							contentProvider.getKnownElements(), new String[] {
 									"eval", "attribute", "value",
 									"isExpressionMode" })));
-			final WritableList input = new WritableList(
+			input = new WritableList(
 					((SetAttribute) getObserver()).getSetAttributeObjects(),
 					SetAttributeObject.class);
 			tableViewer.setInput(input);
@@ -141,7 +174,7 @@ public class WizardObserverSetAttribute extends ObserverWizard {
 			Button btRemove = new Button(comp, SWT.PUSH);
 			btRemove.setText("Remove");
 			btRemove.setImage(BMotionStudioImage
-					.getImage(EditorImageRegistry.IMG_ICON_DELETE));
+					.getImage(EditorImageRegistry.IMG_ICON_DELETE_EDIT));
 			btRemove.addSelectionListener(new SelectionAdapter() {
 				@Override
 				public void widgetSelected(SelectionEvent e) {
@@ -160,7 +193,7 @@ public class WizardObserverSetAttribute extends ObserverWizard {
 			Button btAdd = new Button(comp, SWT.PUSH);
 			btAdd.setText("Add");
 			btAdd.setImage(BMotionStudioImage
-					.getImage(EditorImageRegistry.IMG_ICON_ADD));
+					.getImage(EditorImageRegistry.IMG_ICON_NEW_WIZ));
 			btAdd.addSelectionListener(new SelectionAdapter() {
 				@Override
 				public void widgetSelected(SelectionEvent e) {
@@ -186,7 +219,7 @@ public class WizardObserverSetAttribute extends ObserverWizard {
 
 			@Override
 			protected boolean canEdit(Object element) {
-				return true;
+				return BMotionWizardUtil.isEditElement(getViewer());
 			}
 
 			@Override
@@ -283,6 +316,7 @@ public class WizardObserverSetAttribute extends ObserverWizard {
 
 	@Override
 	protected Boolean prepareToFinish() {
+		getBControl().restoreDefaultValue(lastChangedAttributeID);
 		if (((SetAttribute) getObserver()).getSetAttributeObjects().size() == 0) {
 			setObserverDelete(true);
 		} else {
@@ -297,6 +331,12 @@ public class WizardObserverSetAttribute extends ObserverWizard {
 			}
 		}
 		return true;
+	}
+
+	@Override
+	public boolean performCancel() {
+		getBControl().restoreDefaultValue(lastChangedAttributeID);
+		return super.performCancel();
 	}
 
 	private class ObserverLabelProvider extends ObservableMapLabelProvider

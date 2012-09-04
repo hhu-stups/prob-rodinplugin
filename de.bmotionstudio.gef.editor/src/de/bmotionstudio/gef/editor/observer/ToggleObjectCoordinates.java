@@ -6,30 +6,34 @@
 
 package de.bmotionstudio.gef.editor.observer;
 
-
 public class ToggleObjectCoordinates extends ObserverEvalObject implements
 		Cloneable {
 
 	private String bcontrol;
 	private String x;
 	private String y;
-	private Boolean animate = false;
+
+	// private Boolean animate;
 
 	public ToggleObjectCoordinates() {
+		super();
+		this.x = "";
+		this.y = "";
+		// this.animate = false;
 	}
 
 	public ToggleObjectCoordinates(String type, String bcontrol, String x,
-			String y, String eval, Boolean animate) {
+			String y, String eval) {
 		super(type, eval);
 		this.bcontrol = bcontrol;
 		this.x = x;
 		this.y = y;
-		this.animate = animate;
+		// this.animate = animate;
 	}
 
 	public ToggleObjectCoordinates(String type, String x, String y,
-			String eval, Boolean animate) {
-		this(type, null, x, y, eval, animate);
+ String eval) {
+		this(type, null, x, y, eval);
 	}
 
 	public String getBcontrol() {
@@ -44,9 +48,9 @@ public class ToggleObjectCoordinates extends ObserverEvalObject implements
 		return y;
 	}
 
-	public Boolean getAnimate() {
-		return animate;
-	}
+	// public Boolean getAnimate() {
+	// return animate;
+	// }
 
 	public void setBcontrol(String bcontrol) {
 		Object oldValue = this.bcontrol;
@@ -66,11 +70,11 @@ public class ToggleObjectCoordinates extends ObserverEvalObject implements
 		firePropertyChange("y", oldValue, this.y);
 	}
 
-	public void setAnimate(Boolean animate) {
-		Object oldValue = this.animate;
-		this.animate = animate;
-		firePropertyChange("animate", oldValue, this.animate);
-	}
+	// public void setAnimate(Boolean animate) {
+	// Object oldValue = this.animate;
+	// this.animate = animate;
+	// firePropertyChange("animate", oldValue, this.animate);
+	// }
 
 	public ToggleObjectCoordinates clone() throws CloneNotSupportedException {
 		return (ToggleObjectCoordinates) super.clone();

@@ -16,10 +16,6 @@ public class BAttributeDirection extends AbstractAttribute {
 	public static final int WEST = 2;
 	public static final int EAST = 3;
 
-	public BAttributeDirection(Object value) {
-		super(value);
-	}
-
 	@Override
 	protected PropertyDescriptor preparePropertyDescriptor() {
 		return new ComboBoxPropertyDescriptor(getID(), getName(), new String[] {

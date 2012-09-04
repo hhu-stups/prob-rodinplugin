@@ -6,6 +6,8 @@
 
 package de.bmotionstudio.gef.editor;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -42,6 +44,7 @@ import org.eclipse.gef.SnapToGrid;
 import org.eclipse.gef.commands.CommandStack;
 import org.eclipse.gef.commands.CommandStackListener;
 import org.eclipse.gef.dnd.TemplateTransferDragSourceListener;
+import org.eclipse.gef.editparts.GridLayer;
 import org.eclipse.gef.editparts.ScalableRootEditPart;
 import org.eclipse.gef.editparts.ZoomManager;
 import org.eclipse.gef.palette.PaletteRoot;
@@ -67,10 +70,12 @@ import org.eclipse.gef.ui.rulers.RulerComposite;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -92,16 +97,18 @@ import org.eclipse.ui.views.properties.IPropertySheetPage;
 import com.thoughtworks.xstream.XStream;
 
 import de.bmotionstudio.gef.editor.action.CopyAction;
-import de.bmotionstudio.gef.editor.action.ObserverAction;
+import de.bmotionstudio.gef.editor.action.OpenObserverAction;
+import de.bmotionstudio.gef.editor.action.OpenSchedulerEventAction;
 import de.bmotionstudio.gef.editor.action.PasteAction;
-import de.bmotionstudio.gef.editor.action.SchedulerEventAction;
 import de.bmotionstudio.gef.editor.internal.BControlTransferDropTargetListener;
 import de.bmotionstudio.gef.editor.library.AttributeTransferDropTargetListener;
 import de.bmotionstudio.gef.editor.model.BMotionRuler;
 import de.bmotionstudio.gef.editor.model.BMotionRulerProvider;
 import de.bmotionstudio.gef.editor.model.Visualization;
-import de.bmotionstudio.gef.editor.part.AppEditPartFactory;
-import de.bmotionstudio.gef.editor.part.AppTreeEditPartFactory;
+import de.bmotionstudio.gef.editor.part.BMSAbstractEditPart;
+import de.bmotionstudio.gef.editor.part.BMSAbstractTreeEditPart;
+import de.bmotionstudio.gef.editor.part.BMSEditPartFactory;
+import de.bmotionstudio.gef.editor.part.BMSTreeEditPartFactory;
 
 public class BMotionStudioEditorPage extends GraphicalEditorWithFlyoutPalette {
 
@@ -121,8 +128,23 @@ public class BMotionStudioEditorPage extends GraphicalEditorWithFlyoutPalette {
 
 	private BMotionSelectionSynchronizer bmotionSelectionSynchronizer;
 
+	private Color gridColor = new Color(null, 240, 240, 240);
+
 	/** Palette component, holding the tools and b-controls. */
 	private PaletteRoot palette;
+
+	private PropertyChangeListener viewerListener = new PropertyChangeListener() {
+
+		@Override
+		public void propertyChange(PropertyChangeEvent event) {
+			String propertyName = event.getPropertyName();
+			if (propertyName.equals(SnapToGrid.PROPERTY_GRID_VISIBLE)
+					|| propertyName.equals(SnapToGrid.PROPERTY_GRID_ENABLED)) {
+				setDirty(true);
+			}
+		}
+
+	};
 
 	public BMotionStudioEditorPage(Visualization visualization,
 			BMotionStudioEditor bmotionStudioEditor) {
@@ -133,10 +155,18 @@ public class BMotionStudioEditorPage extends GraphicalEditorWithFlyoutPalette {
 
 	@Override
 	public void selectionChanged(IWorkbenchPart part, ISelection selection) {
+
 		// If not the active editor, ignore selection changed.
-		if (getBMotionStudioEditor().equals(
+		if (!getBMotionStudioEditor().equals(
 				getSite().getPage().getActiveEditor()))
+			return;
+
+		Object selectedElement = ((IStructuredSelection) selection)
+				.getFirstElement();
+		if (selectedElement instanceof BMSAbstractEditPart
+				|| selectedElement instanceof BMSAbstractTreeEditPart)
 			updateActions(getSelectionActions());
+
 	}
 
 	/**
@@ -235,6 +265,10 @@ public class BMotionStudioEditorPage extends GraphicalEditorWithFlyoutPalette {
 	public void dispose() {
 		// remove CommandStackListener
 		getCommandStack().removeCommandStackListener(getCommandStackListener());
+
+		// remove PropertyChangeListener from graphical viewer
+		getGraphicalViewer().removePropertyChangeListener(viewerListener);
+
 		// important: always call super implementation of dispose
 		super.dispose();
 	}
@@ -355,10 +389,10 @@ public class BMotionStudioEditorPage extends GraphicalEditorWithFlyoutPalette {
 					String observerClassName = configurationElement
 							.getAttribute("class");
 
-					action = new ObserverAction(this);
+					action = new OpenObserverAction(this);
 					action.setId("de.bmotionstudio.gef.editor.observerAction."
 							+ observerClassName);
-					((ObserverAction) action).setClassName(observerClassName);
+					((OpenObserverAction) action).setClassName(observerClassName);
 					registry.registerAction(action);
 					getSelectionActions().add(
 							"de.bmotionstudio.gef.editor.observerAction."
@@ -390,10 +424,10 @@ public class BMotionStudioEditorPage extends GraphicalEditorWithFlyoutPalette {
 					String sClassName = configurationElement
 							.getAttribute("class");
 
-					action = new SchedulerEventAction(this);
+					action = new OpenSchedulerEventAction(this);
 					action.setId("de.bmotionstudio.gef.editor.SchedulerEventAction."
 							+ sClassName);
-					((SchedulerEventAction) action).setClassName(sClassName);
+					((OpenSchedulerEventAction) action).setClassName(sClassName);
 					registry.registerAction(action);
 					getSelectionActions().add(
 							"de.bmotionstudio.gef.editor.SchedulerEventAction."
@@ -472,9 +506,12 @@ public class BMotionStudioEditorPage extends GraphicalEditorWithFlyoutPalette {
 		super.configureGraphicalViewer();
 		ScrollingGraphicalViewer viewer = (ScrollingGraphicalViewer) getGraphicalViewer();
 
-		viewer.setEditPartFactory(new AppEditPartFactory());
+		viewer.setEditPartFactory(new BMSEditPartFactory());
 
 		ScalableRootEditPart rootEditPart = new ScalableRootEditPart();
+		GridLayer gridLayer = (GridLayer) rootEditPart
+				.getLayer(ScalableRootEditPart.GRID_LAYER);
+		gridLayer.setForegroundColor(gridColor);
 		viewer.setRootEditPart(rootEditPart);
 
 		ZoomManager manager = rootEditPart.getZoomManager();
@@ -507,9 +544,11 @@ public class BMotionStudioEditorPage extends GraphicalEditorWithFlyoutPalette {
 		getActionRegistry().registerAction(
 				new ToggleGridAction(getGraphicalViewer()));
 
-		ContextMenuProvider provider = new AppContextMenuProvider(viewer,
+		ContextMenuProvider provider = new BMSContextMenuProvider(viewer,
 				getActionRegistry());
 		viewer.setContextMenu(provider);
+		
+		viewer.addPropertyChangeListener(viewerListener);
 
 	}
 
@@ -642,8 +681,8 @@ public class BMotionStudioEditorPage extends GraphicalEditorWithFlyoutPalette {
 
 		protected void configureOutlineViewer() {
 			getViewer().setEditDomain(getEditDomain());
-			getViewer().setEditPartFactory(new AppTreeEditPartFactory());
-			ContextMenuProvider provider = new AppContextMenuProvider(
+			getViewer().setEditPartFactory(new BMSTreeEditPartFactory());
+			ContextMenuProvider provider = new BMSContextMenuProvider(
 					getViewer(), getActionRegistry());
 			getViewer().setContextMenu(provider);
 			getViewer().setKeyHandler(getCommonKeyHandler());
@@ -708,13 +747,6 @@ public class BMotionStudioEditorPage extends GraphicalEditorWithFlyoutPalette {
 				}
 
 			};
-			// collapseAllAction
-			// .setImageDescriptor(ImageDescriptor
-			// .createFromImage(PlatformUI
-			// .getWorkbench()
-			// .getSharedImages()
-			// .getImage(
-			// ISharedImages.IMG_ELCL_COLLAPSEALL)));
 
 			getSite().getActionBars().getMenuManager().add(expandAllAction);
 			getSite().getActionBars().getMenuManager().add(collapseAllAction);
@@ -756,6 +788,7 @@ public class BMotionStudioEditorPage extends GraphicalEditorWithFlyoutPalette {
 
 		public void dispose() {
 			unhookOutlineViewer();
+			gridColor.dispose();
 			super.dispose();
 		}
 

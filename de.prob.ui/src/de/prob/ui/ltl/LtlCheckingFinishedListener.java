@@ -12,9 +12,6 @@ import org.eclipse.core.runtime.jobs.JobChangeAdapter;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.PlatformUI;
 
 import de.prob.core.command.LtlCheckingCommand.Result;
 import de.prob.core.domainobjects.ltl.CounterExample;
@@ -46,16 +43,9 @@ public class LtlCheckingFinishedListener extends JobChangeAdapter {
 	protected void showCounterexampleInView(final Result modelCheckingResult) {
 		final CounterExample counterExample = new CounterExample(
 				modelCheckingResult);
-		final IWorkbenchPage workbenchPage = PlatformUI.getWorkbench()
-				.getActiveWorkbenchWindow().getActivePage();
-
-		try {
-			final CounterExampleViewPart counterExampleView = (CounterExampleViewPart) workbenchPage
-					.showView(CounterExampleViewPart.ID);
-			counterExampleView.addCounterExample(counterExample);
-		} catch (PartInitException e) {
-			Logger.notifyUser("Failed to show the LTL view.", e);
-		}
+		final CounterExampleViewPart counterExampleView = CounterExampleViewPart
+				.showDefault();
+		counterExampleView.addCounterExample(counterExample);
 	}
 
 	private void showResult(final Result modelCheckingResult) {

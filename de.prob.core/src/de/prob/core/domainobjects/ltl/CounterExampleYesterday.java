@@ -3,24 +3,17 @@ package de.prob.core.domainobjects.ltl;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.prob.core.command.LtlCheckingCommand.PathType;
-
 /**
- * Provides a "Yesterday" operator.
+ * Provides a "yesterday" operator.
  * 
  * @author Andriy Tolstoy
  * 
  */
 
 public final class CounterExampleYesterday extends CounterExampleUnaryOperator {
-	public CounterExampleYesterday(final PathType pathType,
-			final int loopEntry, final CounterExampleProposition argument) {
-		super("Y", "Yesterday", pathType, loopEntry, argument);
-	}
-
-	public CounterExampleYesterday(final PathType pathType,
+	public CounterExampleYesterday(final CounterExample counterExample,
 			final CounterExampleProposition argument) {
-		this(pathType, -1, argument);
+		super("Y", "Yesterday", counterExample, argument);
 	}
 
 	@Override

@@ -27,12 +27,14 @@ public final class ProBLogListener implements ILogListener {
 		final int code = status.getCode();
 
 		if (code == Logger.BUGREPORT || code == Logger.NOBUGREPORT) {
-			final boolean bugreport = code == Logger.BUGREPORT;
+			final boolean bugreport = false; // ;code == Logger.BUGREPORT;
 			display.asyncExec(new Runnable() {
 				public void run() {
+					String title = (status.getSeverity() == IStatus.ERROR) ? "An Error occured"
+							: "Warning";
 					// Notice: ErrorTICKETDialog to provide Bugreport-Button
 					ErrorTicketDialog.openError(display.getActiveShell(),
-							"Error", "An error occured.", status, bugreport);
+							"ProB Problem", title, status, bugreport);
 				}
 			});
 		}

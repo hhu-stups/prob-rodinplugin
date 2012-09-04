@@ -35,8 +35,7 @@ public class OpenClassicHandler extends AbstractHandler implements IHandler {
 			if (root != null) {
 				final File temp = createTempFile();
 				final String tmp = temp.getAbsolutePath();
-				ExportClassicHandler.exportToClassic(tmp, root);
-
+				ExportNewCoreHandler.exportToClassic(tmp, root);
 				runProBClassic(location, tmp);
 			}
 		}

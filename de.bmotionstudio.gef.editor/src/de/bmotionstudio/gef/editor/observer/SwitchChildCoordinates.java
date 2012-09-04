@@ -9,45 +9,21 @@ package de.bmotionstudio.gef.editor.observer;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.bmotionstudio.gef.editor.Animation;
 import de.bmotionstudio.gef.editor.AttributeConstants;
-import de.bmotionstudio.gef.editor.animation.AnimationMove;
-import de.bmotionstudio.gef.editor.internal.Animation;
 import de.bmotionstudio.gef.editor.model.BControl;
 import de.bmotionstudio.gef.editor.observer.wizard.WizardObserverCSwitchCoordinates;
+import de.bmotionstudio.gef.editor.util.BMSUtil;
 
 public class SwitchChildCoordinates extends Observer {
 
 	private List<ToggleObjectCoordinates> toggleObjects;
-
-	// private transient AnimationListener animationListener;
-
-	// private transient Boolean checked;
 
 	public SwitchChildCoordinates() {
 		toggleObjects = new ArrayList<ToggleObjectCoordinates>();
 	}
 
 	public void check(final Animation animation, final BControl control) {
-
-		// if (checked == null)
-		// checked = true;
-		//
-		// if (!checked)
-		// return;
-		//
-		// if (animationListener == null) {
-		// animationListener = new AnimationListener() {
-		// public void animationStopped(AnimationEvent evt) {
-		// setCallBack(true);
-		// // checked = true;
-		// }
-		//
-		// public void animationStarted(AnimationEvent evt) {
-		// setCallBack(false);
-		// checked = false;
-		// }
-		// };
-		// }
 
 		// Collect evaluate predicate objects in list
 		for (ToggleObjectCoordinates obj : toggleObjects) {
@@ -57,61 +33,63 @@ public class SwitchChildCoordinates extends Observer {
 			// First evaluate predicate (predicate field)
 			String bolValue = "true";
 			if (obj.getEval().length() > 0) {
-				bolValue = parsePredicate(obj.getEval(), control, animation,
-						obj);
+				bolValue = BMSUtil.parsePredicate(obj.getEval(), control,
+						animation);
 			}
 
 			if (!obj.hasError() && Boolean.valueOf(bolValue)) {
 
 				// Handle control field
 				BControl toggleControl = null;
-				String parsedControl = parseExpression(obj.getBcontrol(),
-						false, control, animation, obj, false);
+				String parsedControl = BMSUtil.parseExpression(
+						obj.getBcontrol(), control, animation, false);
 				toggleControl = control.getChild(parsedControl);
 				if (toggleControl == null) {
 					obj.setHasError(true);
-					addError(control, animation, "No such control: "
-							+ parsedControl);
+					// addError(control, animation, "No such control: "
+					// + parsedControl);
 				}
 
 				Integer parsedX = 0;
 				Integer parsedY = 0;
 				// Handle X field
 				try {
-					parsedX = Integer.valueOf(parseExpression(obj.getX(),
-							false, control, animation, obj, false));
+					parsedX = Integer.valueOf(BMSUtil.parseExpression(
+							obj.getX(), control, animation));
 				} catch (NumberFormatException n) {
 					obj.setHasError(true);
-					addError(control, animation, "x is not a valid integer: "
-							+ n.getMessage());
+					// addError(control, animation, "x is not a valid integer: "
+					// + n.getMessage());
 				}
 				// Handle Y field
 				try {
-					parsedY = Integer.valueOf(parseExpression(obj.getY(),
-							false, control, animation, obj, false));
+					parsedY = Integer.valueOf(BMSUtil.parseExpression(
+							obj.getY(), control, animation));
 				} catch (NumberFormatException n) {
 					obj.setHasError(true);
-					addError(control, animation, "y is not a valid integer: "
-							+ n.getMessage());
+					// addError(control, animation, "y is not a valid integer: "
+					// + n.getMessage());
 				}
 
 				if (!obj.hasError()) {
 					if (Boolean.valueOf(bolValue)) { // If true
-						if (obj.getAnimate()) {
+						// if (obj.getAnimate()) {
+						//
+						// AnimationMove aMove = new AnimationMove(500, true,
+						// toggleControl, parsedX, parsedY);
+						// // aMove.addAnimationListener(animationListener);
+						// aMove.start();
+						//
+						// } else {
 
-							AnimationMove aMove = new AnimationMove(500, true,
-									toggleControl, parsedX, parsedY);
-							// aMove.addAnimationListener(animationListener);
-							aMove.start();
+						toggleControl.setAttributeValue(
+								AttributeConstants.ATTRIBUTE_X, parsedX, true,
+								false);
+						toggleControl.setAttributeValue(
+								AttributeConstants.ATTRIBUTE_Y, parsedY, true,
+								false);
 
-						} else {
-
-							toggleControl.setAttributeValue(
-									AttributeConstants.ATTRIBUTE_X, parsedX);
-							toggleControl.setAttributeValue(
-									AttributeConstants.ATTRIBUTE_Y, parsedY);
-
-						}
+						// }
 					}
 				}
 

@@ -5,10 +5,6 @@ import org.eclipse.ui.views.properties.TextPropertyDescriptor;
 
 public class BAttributeFalseValue extends AbstractAttribute {
 
-	public BAttributeFalseValue(Object value) {
-		super(value);
-	}
-
 	@Override
 	public PropertyDescriptor preparePropertyDescriptor() {
 		return new TextPropertyDescriptor(getID(), getName());

@@ -16,28 +16,19 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
 
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.views.properties.IPropertySource;
 
+import de.bmotionstudio.gef.editor.Animation;
 import de.bmotionstudio.gef.editor.AttributeConstants;
 import de.bmotionstudio.gef.editor.BMotionEditorPlugin;
-import de.bmotionstudio.gef.editor.IBControlService;
+import de.bmotionstudio.gef.editor.BMotionStudioImage;
 import de.bmotionstudio.gef.editor.attribute.AbstractAttribute;
-import de.bmotionstudio.gef.editor.attribute.BAttributeCoordinates;
-import de.bmotionstudio.gef.editor.attribute.BAttributeCustom;
-import de.bmotionstudio.gef.editor.attribute.BAttributeHeight;
-import de.bmotionstudio.gef.editor.attribute.BAttributeID;
-import de.bmotionstudio.gef.editor.attribute.BAttributeSize;
-import de.bmotionstudio.gef.editor.attribute.BAttributeVisible;
-import de.bmotionstudio.gef.editor.attribute.BAttributeWidth;
-import de.bmotionstudio.gef.editor.attribute.BAttributeX;
-import de.bmotionstudio.gef.editor.attribute.BAttributeY;
-import de.bmotionstudio.gef.editor.internal.Animation;
 import de.bmotionstudio.gef.editor.internal.BControlPropertySource;
 import de.bmotionstudio.gef.editor.observer.IObserverListener;
 import de.bmotionstudio.gef.editor.observer.Observer;
@@ -102,6 +93,14 @@ public abstract class BControl implements IAdaptable, Cloneable {
 	/** Property ID to use when the list of incoming connections is modified. */
 	public static final String TARGET_CONNECTIONS_PROP = "BMS.TargetConn";
 
+	public static final String[] standardAttributes = {
+			AttributeConstants.ATTRIBUTE_X,
+			AttributeConstants.ATTRIBUTE_Y, AttributeConstants.ATTRIBUTE_WIDTH,
+			AttributeConstants.ATTRIBUTE_HEIGHT,
+			AttributeConstants.ATTRIBUTE_ID,
+			AttributeConstants.ATTRIBUTE_CUSTOM,
+			AttributeConstants.ATTRIBUTE_VISIBLE };
+
 	public BControl(Visualization visualization) {
 		this.visualization = visualization;
 		this.children = new BControlList();
@@ -119,6 +118,7 @@ public abstract class BControl implements IAdaptable, Cloneable {
 		// Populate parent
 		for (BControl child : getChildrenArray())
 			child.setParent(this);
+		init();
 		return this;
 	}
 
@@ -171,7 +171,17 @@ public abstract class BControl implements IAdaptable, Cloneable {
 
 	private void init() {
 
-		// Init ID
+		// Init custom control attributes
+		initAttributes();
+
+		// Init standard control attributes
+		initStandardAttributes();
+
+	}
+
+	private void initStandardAttributes() {
+
+		// Init unique ID
 		String ID;
 		if (this instanceof Visualization)
 			ID = "visualization";
@@ -179,25 +189,45 @@ public abstract class BControl implements IAdaptable, Cloneable {
 			ID = UUID.randomUUID().toString();
 		else
 			ID = (visualization.getMaxIDString(type));
-		initAttribute(new BAttributeID(ID), AbstractAttribute.ROOT);
+		initAttribute(AttributeConstants.ATTRIBUTE_ID, ID,
+				AbstractAttribute.ROOT);
 
-		// Init location and dimension attributes
-		BAttributeCoordinates coordinatesAtr = new BAttributeCoordinates(null);
-		initAttribute(coordinatesAtr, AbstractAttribute.ROOT);
-		initAttribute(new BAttributeX(100), coordinatesAtr);
-		initAttribute(new BAttributeY(100), coordinatesAtr);
+		initAttribute(AttributeConstants.ATTRIBUTE_MISC, "",
+				AbstractAttribute.ROOT);
 
-		BAttributeSize sizeAtr = new BAttributeSize(null);
-		initAttribute(sizeAtr, AbstractAttribute.ROOT);
-		initAttribute(new BAttributeWidth(100), sizeAtr);
-		initAttribute(new BAttributeHeight(100), sizeAtr);
+		// initAttribute(new BAttributeID(ID), AbstractAttribute.ROOT);
+
+		// Init location and size attributes
+		initAttribute(AttributeConstants.ATTRIBUTE_COORDINATES, null,
+				AbstractAttribute.ROOT);
+		initAttribute(AttributeConstants.ATTRIBUTE_X, 100,
+				AttributeConstants.ATTRIBUTE_COORDINATES);
+		initAttribute(AttributeConstants.ATTRIBUTE_Y, 100,
+				AttributeConstants.ATTRIBUTE_COORDINATES);
+
+		// BAttributeCoordinates coordinatesAtr = new
+		// BAttributeCoordinates(null);
+		// initAttribute(coordinatesAtr, AbstractAttribute.ROOT);
+		// initAttribute(new BAttributeX(100), coordinatesAtr);
+		// initAttribute(new BAttributeY(100), coordinatesAtr);
+
+		initAttribute(AttributeConstants.ATTRIBUTE_SIZE, null,
+				AbstractAttribute.ROOT);
+		initAttribute(AttributeConstants.ATTRIBUTE_WIDTH, 100,
+				AttributeConstants.ATTRIBUTE_SIZE);
+		initAttribute(AttributeConstants.ATTRIBUTE_HEIGHT, 100,
+				AttributeConstants.ATTRIBUTE_SIZE);
+
+		// BAttributeSize sizeAtr = new BAttributeSize(null);
+		// initAttribute(sizeAtr, AbstractAttribute.ROOT);
+		// initAttribute(new BAttributeWidth(100), sizeAtr);
+		// initAttribute(new BAttributeHeight(100), sizeAtr);
 
 		// Init visible and this attribute
-		initAttribute(new BAttributeVisible(true), AbstractAttribute.ROOT);
-		initAttribute(new BAttributeCustom(""), AbstractAttribute.ROOT);
-
-		// Init custom control attributes
-		initAttributes();
+		initAttribute(AttributeConstants.ATTRIBUTE_VISIBLE, true,
+				AbstractAttribute.ROOT);
+		initAttribute(AttributeConstants.ATTRIBUTE_CUSTOM, 100,
+				AbstractAttribute.ROOT);
 
 	}
 
@@ -225,11 +255,16 @@ public abstract class BControl implements IAdaptable, Cloneable {
 	}
 
 	public boolean setAttributeValue(String attributeID, Object value) {
-		return setAttributeValue(attributeID, value, true);
+		return setAttributeValue(attributeID, value, true, true);
 	}
 
 	public boolean setAttributeValue(String attributeID, Object value,
 			Boolean firePropertyChange) {
+		return setAttributeValue(attributeID, value, firePropertyChange, true);
+	}
+
+	public boolean setAttributeValue(String attributeID, Object value,
+			Boolean firePropertyChange, Boolean setInitVal) {
 
 		AbstractAttribute atr = attributes.get(attributeID);
 
@@ -244,7 +279,7 @@ public abstract class BControl implements IAdaptable, Cloneable {
 				|| !atr.isEditable())
 			return true;
 
-		atr.setValue(value, firePropertyChange);
+		atr.setValue(value, firePropertyChange, setInitVal);
 
 		return true;
 
@@ -278,23 +313,42 @@ public abstract class BControl implements IAdaptable, Cloneable {
 	}
 
 	public Rectangle getLayout() {
-		int width = Integer.valueOf(getAttributeValue(
-				AttributeConstants.ATTRIBUTE_WIDTH).toString());
-		int height = Integer.valueOf(getAttributeValue(
-				AttributeConstants.ATTRIBUTE_HEIGHT).toString());
-		int x = Integer.valueOf(getAttributeValue(
-				AttributeConstants.ATTRIBUTE_X).toString());
-		int y = Integer.valueOf(getAttributeValue(
-				AttributeConstants.ATTRIBUTE_Y).toString());
-		if (layout == null) {
-			layout = new Rectangle(x, y, width, height);
-		} else {
-			layout.x = x;
-			layout.y = y;
-			layout.width = width;
-			layout.height = height;
+
+		String widthStr = getAttributeValue(AttributeConstants.ATTRIBUTE_WIDTH)
+				.toString();
+		String heightStr = getAttributeValue(
+				AttributeConstants.ATTRIBUTE_HEIGHT).toString();
+		String xStr = getAttributeValue(AttributeConstants.ATTRIBUTE_X)
+				.toString();
+		String yStr = getAttributeValue(AttributeConstants.ATTRIBUTE_Y)
+				.toString();
+
+		// TODO: check if strings are a correct integers
+
+		try {
+
+			int width = Integer.valueOf(widthStr);
+			int height = Integer.valueOf(heightStr);
+			int x = Integer.valueOf(xStr);
+			int y = Integer.valueOf(yStr);
+
+			if (layout == null) {
+				layout = new Rectangle(x, y, width, height);
+			} else {
+				layout.x = x;
+				layout.y = y;
+				layout.width = width;
+				layout.height = height;
+			}
+
+		} catch (NumberFormatException e) {
+			// We ignore number format exceptions, however we should return an
+			// error message here
+			// TODO: return error message
 		}
+
 		return layout;
+
 	}
 
 	public void setLocation(Point newLocation) {
@@ -340,6 +394,16 @@ public abstract class BControl implements IAdaptable, Cloneable {
 			children.add(child);
 		}
 		getListeners().firePropertyChange(PROPERTY_ADD, index, child);
+	}
+
+	public void removeAllChildren() {
+		getChildrenArray().clear();
+		getListeners().firePropertyChange(PROPERTY_REMOVE, null, null);
+	}
+
+	public boolean removeChild(int index) {
+		BControl control = children.get(index);
+		return removeChild(control);
 	}
 
 	public boolean removeChild(BControl child) {
@@ -396,6 +460,10 @@ public abstract class BControl implements IAdaptable, Cloneable {
 		for (IObserverListener listener : getObserverListener()) {
 			listener.addedObserver(this, observer);
 		}
+	}
+
+	public void removeObserver(Observer observer) {
+		removeObserver(observer.getID());
 	}
 
 	public void removeObserver(String observerID) {
@@ -560,49 +628,37 @@ public abstract class BControl implements IAdaptable, Cloneable {
 
 		BControl clonedControl = (BControl) super.clone();
 
-		IConfigurationElement configElement = BMotionEditorPlugin
-				.getControlServices().get(getType());
-		if (configElement != null) {
+		clonedControl.setParent(getParent());
 
-			try {
+		String newID = clonedControl.getID();
 
-				IBControlService service = (IBControlService) configElement
-						.createExecutableExtension("service");
-				clonedControl = service.createControl(visualization);
-
-				clonedControl.setParent(getParent());
-
-				String newID = clonedControl.getID();
-
-				Map<String, AbstractAttribute> newProperties = new HashMap<String, AbstractAttribute>();
-				for (Entry<String, AbstractAttribute> e : getAttributes()
-						.entrySet()) {
-					AbstractAttribute idAtr = e.getValue().clone();
-					newProperties.put(e.getKey(), idAtr);
-				}
-
-				clonedControl.setAttributes(newProperties);
-				clonedControl.setAttributeValue(
-						AttributeConstants.ATTRIBUTE_ID, newID);
-
-				Iterator<BControl> it = getChildrenArray().iterator();
-				while (it.hasNext()) {
-					clonedControl.addChild(((BControl) it.next()).clone());
-				}
-
-				for (Observer observer : observers.values()) {
-					clonedControl.addObserver(observer.clone());
-				}
-
-				for (Map.Entry<String, SchedulerEvent> e : events.entrySet()) {
-					clonedControl.addEvent(e.getKey(), e.getValue().clone());
-				}
-
-			} catch (CoreException e) {
-				e.printStackTrace();
-			}
-
+		Map<String, AbstractAttribute> newProperties = new HashMap<String, AbstractAttribute>();
+		for (Entry<String, AbstractAttribute> e : getAttributes().entrySet()) {
+			AbstractAttribute idAtr = e.getValue().clone();
+			newProperties.put(e.getKey(), idAtr);
 		}
+
+		clonedControl.setAttributes(newProperties);
+		clonedControl.setAttributeValue(AttributeConstants.ATTRIBUTE_ID, newID);
+
+		clonedControl.setChildrenArray(new BControlList());
+		Iterator<BControl> it = getChildrenArray().iterator();
+		while (it.hasNext()) {
+			clonedControl.addChild(((BControl) it.next()).clone());
+		}
+
+		clonedControl.setObserverMap(new HashMap<String, Observer>());
+		for (Observer observer : observers.values()) {
+			clonedControl.addObserver(observer.clone());
+		}
+
+		clonedControl.setEventMap(new HashMap<String, SchedulerEvent>());
+		for (Map.Entry<String, SchedulerEvent> e : events.entrySet()) {
+			clonedControl.addEvent(e.getKey(), e.getValue().clone());
+		}
+
+		clonedControl.listeners = new PropertyChangeSupport(clonedControl);
+		clonedControl.observerListener = new ArrayList<IObserverListener>();
 
 		return clonedControl;
 
@@ -625,26 +681,6 @@ public abstract class BControl implements IAdaptable, Cloneable {
 			con.checkObserver(animation);
 		}
 
-		// Check Observers of children
-		if (getChildrenArray().size() > 0) {
-			for (BControl bcontrol : getChildrenArray()) {
-				bcontrol.checkObserver(animation);
-			}
-		}
-
-	}
-
-	public void afterCheckObserver(Animation animation) {
-		// Check all Observers
-		for (Observer observer : getObservers().values()) {
-			observer.afterCheck(animation, this);
-		}
-		// Check Observers of children
-		if (getChildrenArray().size() > 0) {
-			for (BControl bcontrol : getChildrenArray()) {
-				bcontrol.afterCheckObserver(animation);
-			}
-		}
 	}
 
 	public void executeEvent(String eventID) {
@@ -735,18 +771,102 @@ public abstract class BControl implements IAdaptable, Cloneable {
 
 	public abstract String getType();
 
-	protected void initAttribute(AbstractAttribute atr) {
-		getAttributes().put(atr.getID(), atr);
+	protected void initAttribute(String id, Object defaultValue) {
+		initAttribute(id, defaultValue, true, true,
+				AttributeConstants.ATTRIBUTE_MISC);
 	}
 
-	protected void initAttribute(AbstractAttribute atr, AbstractAttribute group) {
-		initAttribute(atr, group.getClass().getName());
+	protected void initAttribute(String id, Object defaultValue, String groupID) {
+		initAttribute(id, defaultValue, true, true, groupID);
 	}
 
-	protected void initAttribute(AbstractAttribute atr, String group) {
-		atr.setGroup(group);
-		initAttribute(atr);
+	protected void initAttribute(String id, Object defaultValue,
+			boolean editable, boolean show) {
+		initAttribute(id, defaultValue, editable, show,
+				AttributeConstants.ATTRIBUTE_MISC);
 	}
+
+	protected void initAttribute(String id, Object defaultValue,
+			boolean editable, boolean show, String groupID) {
+
+		AbstractAttribute atr = getAttribute(id);
+
+		// If no attribute exists yet, create a new one and set the value
+		if (atr == null) {
+			atr = (AbstractAttribute) reflectiveGet(id);
+			if (atr != null) {
+				atr.setValue(defaultValue);
+				getAttributes().put(atr.getID(), atr);
+			} else {
+				return;
+			}
+		}
+
+		if (!atr.isInitialized()) {
+			atr.setDefaultValue(defaultValue);
+			atr.setGroup(groupID);
+			atr.setEditable(editable);
+			atr.setShow(show);
+			atr.setInitialized(true);
+		}
+
+	}
+
+	// protected void initAttribute(AbstractAttribute atr) {
+	// AbstractAttribute matr = getAttributes().get(atr.getID());
+	// if (matr != null) {
+	// matr.setEditable(atr.isEditable());
+	// matr.setGroup(atr.getGroup());
+	// matr.setShow(atr.show());
+	// matr.setDefaultValue(atr.getValue());
+	// } else {
+	// atr.setDefaultValue(atr.getValue());
+	// getAttributes().put(atr.getID(), atr);
+	// }
+	// }
+
+	private Object reflectiveGet(String className) {
+		Object newInstance = null;
+		try {
+			Class<?> forName = Class.forName(className);
+			newInstance = forName.newInstance();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (InstantiationException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		}
+		return newInstance;
+	}
+
+	// protected void initAttribute(AbstractAttribute atr, AbstractAttribute
+	// group) {
+	// initAttribute(atr, group.getClass().getName());
+	// }
+	//
+	// protected void initAttribute(AbstractAttribute atr, String group) {
+	// atr.setGroup(group);
+	// initAttribute(atr);
+	// }
+	//
+	// protected void initAttribute(AbstractAttribute atr, boolean editable,
+	// boolean show) {
+	// atr.setEditable(editable);
+	// atr.setShow(show);
+	// initAttribute(atr);
+	// }
+	//
+	// protected void initAttribute(AbstractAttribute atr, boolean editable) {
+	// atr.setEditable(editable);
+	// initAttribute(atr);
+	// }
+	//
+	// protected void initAttribute(AbstractAttribute atr, String group,
+	// boolean editable) {
+	// atr.setEditable(editable);
+	// initAttribute(atr, group);
+	// }
 
 	public boolean canHaveChildren() {
 		return false;
@@ -755,6 +875,10 @@ public abstract class BControl implements IAdaptable, Cloneable {
 	public String getValueOfData() {
 		return getAttributeValue(AttributeConstants.ATTRIBUTE_CUSTOM)
 				.toString();
+	}
+
+	public Image getIcon() {
+		return BMotionStudioImage.getBControlImage(getType());
 	}
 
 }

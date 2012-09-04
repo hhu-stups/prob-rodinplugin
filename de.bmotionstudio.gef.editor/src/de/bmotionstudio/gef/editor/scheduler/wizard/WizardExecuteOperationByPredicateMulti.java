@@ -5,19 +5,14 @@
  * */
 package de.bmotionstudio.gef.editor.scheduler.wizard;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.beans.BeansObservables;
-import org.eclipse.core.databinding.observable.list.ComputedList;
 import org.eclipse.core.databinding.observable.list.WritableList;
 import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
 import org.eclipse.jface.databinding.viewers.ObservableMapLabelProvider;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnViewer;
-import org.eclipse.jface.viewers.ComboBoxViewerCellEditor;
 import org.eclipse.jface.viewers.EditingSupport;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
@@ -26,29 +21,26 @@ import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 
+import de.bmotionstudio.gef.editor.BMotionAbstractWizard;
 import de.bmotionstudio.gef.editor.BMotionStudioImage;
 import de.bmotionstudio.gef.editor.BindingObject;
 import de.bmotionstudio.gef.editor.EditorImageRegistry;
+import de.bmotionstudio.gef.editor.edit.OperationValueEditingSupport;
 import de.bmotionstudio.gef.editor.edit.PredicateEditingSupport;
-import de.bmotionstudio.gef.editor.eventb.EventBHelper;
-import de.bmotionstudio.gef.editor.eventb.MachineContentObject;
-import de.bmotionstudio.gef.editor.eventb.MachineOperation;
 import de.bmotionstudio.gef.editor.model.BControl;
 import de.bmotionstudio.gef.editor.property.IntegerCellEditor;
 import de.bmotionstudio.gef.editor.scheduler.ExecuteOperationByPredicateMulti;
 import de.bmotionstudio.gef.editor.scheduler.PredicateOperation;
 import de.bmotionstudio.gef.editor.scheduler.SchedulerEvent;
 import de.bmotionstudio.gef.editor.scheduler.SchedulerWizard;
+import de.bmotionstudio.gef.editor.util.BMotionWizardUtil;
 
 /**
  * @author Lukas Ladenberger
@@ -73,16 +65,10 @@ public class WizardExecuteOperationByPredicateMulti extends SchedulerWizard {
 
 			setControl(container);
 
-			tableViewer = new TableViewer(container, SWT.BORDER
-					| SWT.FULL_SELECTION);
-			tableViewer.getTable().setLinesVisible(true);
-			tableViewer.getTable().setHeaderVisible(true);
-			tableViewer.getTable().setLayoutData(
-					new GridData(GridData.FILL_BOTH));
-			tableViewer.getTable().setFont(
-					new Font(Display.getDefault(), new FontData("Arial", 10,
-							SWT.NONE)));
-
+			tableViewer = BMotionWizardUtil.createBMotionWizardTableViewer(
+					container, PredicateOperation.class,
+					((BMotionAbstractWizard) getWizard()).getName());
+			
 			TableViewerColumn column = new TableViewerColumn(tableViewer,
 					SWT.NONE);
 			column.getColumn().setText("Execute Rule");
@@ -94,8 +80,8 @@ public class WizardExecuteOperationByPredicateMulti extends SchedulerWizard {
 			column = new TableViewerColumn(tableViewer, SWT.NONE);
 			column.getColumn().setText("Operation");
 			column.getColumn().setWidth(150);
-			column.setEditingSupport(new OperationValueEditing(tableViewer,
-					getBControl()));
+			column.setEditingSupport(new OperationValueEditingSupport(
+					tableViewer, getBControl()));
 
 			column = new TableViewerColumn(tableViewer, SWT.NONE);
 			column.getColumn().setText("Parameter");
@@ -241,59 +227,6 @@ public class WizardExecuteOperationByPredicateMulti extends SchedulerWizard {
 			return true;
 		}
 
-	}
-
-	private static class OperationValueEditing extends EditingSupport {
-
-		private ComboBoxViewerCellEditor cellEditor = null;
-
-		private final BControl control;
-
-		public OperationValueEditing(final TableViewer cv,
-				final BControl control) {
-			super(cv);
-			this.control = control;
-		}
-
-		@Override
-		protected boolean canEdit(final Object element) {
-			return true;
-		}
-
-		@Override
-		protected Object getValue(final Object element) {
-			return ((PredicateOperation) element).getOperationName();
-		}
-
-		@Override
-		protected void setValue(final Object element, final Object value) {
-			if (value != null) {
-				((PredicateOperation) element).setOperationName(value
-						.toString());
-			}
-		}
-
-		@Override
-		protected CellEditor getCellEditor(final Object element) {
-			if (cellEditor == null) {
-				cellEditor = new ComboBoxViewerCellEditor(
-						(Composite) getViewer().getControl(), SWT.READ_ONLY);
-				cellEditor
-						.setContentProvider(new ObservableListContentProvider());
-				cellEditor.setInput(new ComputedList() {
-					@Override
-					protected List<String> calculate() {
-						ArrayList<String> tmpList = new ArrayList<String>();
-						for (MachineContentObject op : EventBHelper
-								.getOperations(control.getVisualization())) {
-							tmpList.add(((MachineOperation) op).getLabel());
-						}
-						return tmpList;
-					}
-				});
-			}
-			return cellEditor;
-		}
 	}
 
 	// private class ObserverLabelProvider extends ObservableMapLabelProvider

@@ -13,22 +13,19 @@ import org.eclipse.core.databinding.observable.map.IObservableMap;
 import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
 import org.eclipse.jface.databinding.viewers.ObservableMapLabelProvider;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.viewers.CellEditor;
-import org.eclipse.jface.viewers.CheckboxCellEditor;
-import org.eclipse.jface.viewers.EditingSupport;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITableColorProvider;
 import org.eclipse.jface.viewers.ITableFontProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
-import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
@@ -39,43 +36,76 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 
 import de.be4.classicalb.core.parser.BParser;
+import de.bmotionstudio.gef.editor.AttributeConstants;
+import de.bmotionstudio.gef.editor.BMotionAbstractWizard;
 import de.bmotionstudio.gef.editor.BMotionStudioImage;
 import de.bmotionstudio.gef.editor.EditorImageRegistry;
 import de.bmotionstudio.gef.editor.edit.PredicateEditingSupport;
 import de.bmotionstudio.gef.editor.edit.TextEditingSupport;
 import de.bmotionstudio.gef.editor.model.BControl;
 import de.bmotionstudio.gef.editor.observer.Observer;
+import de.bmotionstudio.gef.editor.observer.ObserverEvalObject;
 import de.bmotionstudio.gef.editor.observer.ObserverWizard;
 import de.bmotionstudio.gef.editor.observer.SwitchChildCoordinates;
 import de.bmotionstudio.gef.editor.observer.ToggleObjectCoordinates;
-import de.bmotionstudio.gef.editor.property.CheckboxCellEditorHelper;
+import de.bmotionstudio.gef.editor.util.BMotionWizardUtil;
 
 public class WizardObserverCSwitchCoordinates extends ObserverWizard {
 
-	private class ObserverCSwitchCoordinatesPage extends WizardPage {
+	private String lastChangedControlID;
+
+	private class ObserverCSwitchCoordinatesPage extends
+			AbstractObserverWizardPage {
 
 		private TableViewer tableViewer;
 
 		protected ObserverCSwitchCoordinatesPage(final String pageName) {
-			super(pageName);
+			super(pageName, getObserver());
 		}
 
 		public void createControl(Composite parent) {
+
+			super.createControl(parent);
 
 			DataBindingContext dbc = new DataBindingContext();
 
 			Composite container = new Composite(parent, SWT.NONE);
 			container.setLayout(new GridLayout(1, true));
 
-			tableViewer = new TableViewer(container, SWT.BORDER
-					| SWT.FULL_SELECTION);
-			tableViewer.getTable().setLinesVisible(true);
-			tableViewer.getTable().setHeaderVisible(true);
-			tableViewer.getTable().setLayoutData(
-					new GridData(GridData.FILL_BOTH));
-			tableViewer.getTable().setFont(
-					new Font(Display.getDefault(), new FontData("Arial", 10,
-							SWT.NONE)));
+			tableViewer = BMotionWizardUtil.createBMotionWizardTableViewer(
+					container, ToggleObjectCoordinates.class,
+					((BMotionAbstractWizard) getWizard()).getName());
+			tableViewer
+					.addSelectionChangedListener(new ISelectionChangedListener() {
+
+						@Override
+						public void selectionChanged(SelectionChangedEvent event) {
+							IStructuredSelection selection = (IStructuredSelection) event
+									.getSelection();
+							Object firstElement = selection.getFirstElement();
+							if (firstElement instanceof ObserverEvalObject) {
+								restorePreview();
+								ObserverEvalObject observerEvalObject = (ObserverEvalObject) firstElement;
+								BControl control = getBControl();
+								ToggleObjectCoordinates toggleObjectCoordinates = (ToggleObjectCoordinates) observerEvalObject;
+								String attributeX = AttributeConstants.ATTRIBUTE_X;
+								String attributeY = AttributeConstants.ATTRIBUTE_Y;
+								String x = toggleObjectCoordinates.getX();
+								String y = toggleObjectCoordinates.getY();
+								String controlID = toggleObjectCoordinates
+										.getBcontrol();
+								BControl bControl = control.getChild(controlID);
+								if (bControl != null) {
+									bControl.setAttributeValue(attributeX, x,
+											true, false);
+									bControl.setAttributeValue(attributeY, y,
+											true, false);
+								}
+								lastChangedControlID = controlID;
+							}
+						}
+
+					});
 
 			TableViewerColumn column = new TableViewerColumn(tableViewer,
 					SWT.NONE);
@@ -102,38 +132,38 @@ public class WizardObserverCSwitchCoordinates extends ObserverWizard {
 			column.setEditingSupport(new TextEditingSupport(tableViewer, dbc,
 					"y"));
 
-			column = new TableViewerColumn(tableViewer, SWT.NONE);
-			column.getColumn().setText("Animate?");
-			column.getColumn().setWidth(75);
-			column.setEditingSupport(new EditingSupport(tableViewer) {
-
-				private CellEditor cellEditor = new CheckboxCellEditor(
-						(Composite) tableViewer.getControl());
-
-				@Override
-				protected void setValue(Object element, Object value) {
-					((ToggleObjectCoordinates) element).setAnimate(Boolean
-							.valueOf(String.valueOf(value)));
-				}
-
-				@Override
-				protected Object getValue(Object element) {
-					Boolean b = ((ToggleObjectCoordinates) element)
-							.getAnimate();
-					return b != null ? b : false;
-				}
-
-				@Override
-				protected CellEditor getCellEditor(Object element) {
-					return cellEditor;
-				}
-
-				@Override
-				protected boolean canEdit(Object element) {
-					return true;
-				}
-
-			});
+			// column = new TableViewerColumn(tableViewer, SWT.NONE);
+			// column.getColumn().setText("Animate?");
+			// column.getColumn().setWidth(75);
+			// column.setEditingSupport(new EditingSupport(tableViewer) {
+			//
+			// private CellEditor cellEditor = new CheckboxCellEditor(
+			// (Composite) tableViewer.getControl());
+			//
+			// @Override
+			// protected void setValue(Object element, Object value) {
+			// ((ToggleObjectCoordinates) element).setAnimate(Boolean
+			// .valueOf(String.valueOf(value)));
+			// }
+			//
+			// @Override
+			// protected Object getValue(Object element) {
+			// Boolean b = ((ToggleObjectCoordinates) element)
+			// .getAnimate();
+			// return b != null ? b : false;
+			// }
+			//
+			// @Override
+			// protected CellEditor getCellEditor(Object element) {
+			// return cellEditor;
+			// }
+			//
+			// @Override
+			// protected boolean canEdit(Object element) {
+			// return true;
+			// }
+			//
+			// });
 
 			ObservableListContentProvider contentProvider = new ObservableListContentProvider();
 			tableViewer.setContentProvider(contentProvider);
@@ -156,7 +186,7 @@ public class WizardObserverCSwitchCoordinates extends ObserverWizard {
 			Button btRemove = new Button(comp, SWT.PUSH);
 			btRemove.setText("Remove");
 			btRemove.setImage(BMotionStudioImage
-					.getImage(EditorImageRegistry.IMG_ICON_DELETE));
+					.getImage(EditorImageRegistry.IMG_ICON_DELETE_EDIT));
 			btRemove.addSelectionListener(new SelectionAdapter() {
 				@Override
 				public void widgetSelected(SelectionEvent e) {
@@ -172,12 +202,12 @@ public class WizardObserverCSwitchCoordinates extends ObserverWizard {
 			Button btAdd = new Button(comp, SWT.PUSH);
 			btAdd.setText("Add");
 			btAdd.setImage(BMotionStudioImage
-					.getImage(EditorImageRegistry.IMG_ICON_ADD));
+					.getImage(EditorImageRegistry.IMG_ICON_NEW_WIZ));
 			btAdd.addSelectionListener(new SelectionAdapter() {
 				@Override
 				public void widgetSelected(SelectionEvent e) {
 					ToggleObjectCoordinates toggleObj = new ToggleObjectCoordinates(
-							BParser.PREDICATE_PREFIX, "", "", "", "", false);
+							BParser.PREDICATE_PREFIX, "", "", "", "");
 					input.add(toggleObj);
 				}
 			});
@@ -196,6 +226,7 @@ public class WizardObserverCSwitchCoordinates extends ObserverWizard {
 
 	@Override
 	protected Boolean prepareToFinish() {
+		restorePreview();
 		if (((SwitchChildCoordinates) getObserver()).getToggleObjects().size() == 0) {
 			setObserverDelete(true);
 		} else {
@@ -211,6 +242,22 @@ public class WizardObserverCSwitchCoordinates extends ObserverWizard {
 			}
 		}
 		return true;
+	}
+
+	private void restorePreview() {
+		if (lastChangedControlID != null) {
+			BControl bControl = getBControl().getChild(lastChangedControlID);
+			if (bControl != null) {
+				bControl.restoreDefaultValue(AttributeConstants.ATTRIBUTE_X);
+				bControl.restoreDefaultValue(AttributeConstants.ATTRIBUTE_Y);
+			}
+		}
+	}
+
+	@Override
+	public boolean performCancel() {
+		restorePreview();
+		return super.performCancel();
 	}
 
 	@Override
@@ -242,11 +289,11 @@ public class WizardObserverCSwitchCoordinates extends ObserverWizard {
 
 		@Override
 		public Image getColumnImage(Object element, int columnIndex) {
-			if (columnIndex == 4) {
-				return CheckboxCellEditorHelper
-						.getCellEditorImage(((ToggleObjectCoordinates) element)
-								.getAnimate());
-			}
+			// if (columnIndex == 4) {
+			// return CheckboxCellEditorHelper
+			// .getCellEditorImage(((ToggleObjectCoordinates) element)
+			// .getAnimate());
+			// }
 			return null;
 		}
 

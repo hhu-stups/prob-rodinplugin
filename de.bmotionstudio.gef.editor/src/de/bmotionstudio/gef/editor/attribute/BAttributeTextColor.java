@@ -14,10 +14,6 @@ import de.bmotionstudio.gef.editor.model.BControl;
 
 public class BAttributeTextColor extends AbstractAttribute {
 
-	public BAttributeTextColor(Object value) {
-		super(value);
-	}
-
 	public PropertyDescriptor preparePropertyDescriptor() {
 		return new ColorPropertyDescriptor(getID(), getName());
 	}

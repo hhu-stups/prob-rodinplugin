@@ -13,10 +13,6 @@ import de.bmotionstudio.gef.editor.property.SliderPropertyDescriptor;
 
 public class BAttributeOutlineAlpha extends AbstractAttribute {
 
-	public BAttributeOutlineAlpha(Object value) {
-		super(value);
-	}
-
 	public PropertyDescriptor preparePropertyDescriptor() {
 		SliderPropertyDescriptor descriptor = new SliderPropertyDescriptor(
 				getID(), getName());

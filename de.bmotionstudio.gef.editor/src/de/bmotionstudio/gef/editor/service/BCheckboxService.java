@@ -11,7 +11,7 @@ import de.bmotionstudio.gef.editor.IBControlService;
 import de.bmotionstudio.gef.editor.model.BCheckbox;
 import de.bmotionstudio.gef.editor.model.BControl;
 import de.bmotionstudio.gef.editor.model.Visualization;
-import de.bmotionstudio.gef.editor.part.AppAbstractEditPart;
+import de.bmotionstudio.gef.editor.part.BMSAbstractEditPart;
 import de.bmotionstudio.gef.editor.part.BCheckboxPart;
 
 /**
@@ -39,7 +39,7 @@ public class BCheckboxService extends AbstractBControlService implements
 	 * @see de.bmotionstudio.gef.editor.IBControlService#createEditPart()
 	 */
 	@Override
-	public AppAbstractEditPart createEditPart() {
+	public BMSAbstractEditPart createEditPart() {
 		return new BCheckboxPart();
 	}
 

@@ -8,8 +8,7 @@ package de.bmotionstudio.gef.editor.model;
 
 import org.eclipse.swt.graphics.RGB;
 
-import de.bmotionstudio.gef.editor.attribute.BAttributeBackgroundColor;
-import de.bmotionstudio.gef.editor.attribute.BAttributeImage;
+import de.bmotionstudio.gef.editor.AttributeConstants;
 
 /**
  * @author Lukas Ladenberger
@@ -30,8 +29,9 @@ public class BComposite extends BControl {
 
 	@Override
 	protected void initAttributes() {
-		initAttribute(new BAttributeBackgroundColor(new RGB(192, 192, 192)));
-		initAttribute(new BAttributeImage(null));
+		initAttribute(AttributeConstants.ATTRIBUTE_BACKGROUND_COLOR, new RGB(
+				192, 192, 192));
+		initAttribute(AttributeConstants.ATTRIBUTE_IMAGE, null);
 	}
 
 	@Override

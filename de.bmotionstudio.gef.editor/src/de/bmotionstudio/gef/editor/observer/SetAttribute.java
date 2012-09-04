@@ -11,10 +11,11 @@ import java.util.List;
 
 import org.eclipse.draw2d.IFigure;
 
+import de.bmotionstudio.gef.editor.Animation;
 import de.bmotionstudio.gef.editor.attribute.AbstractAttribute;
-import de.bmotionstudio.gef.editor.internal.Animation;
 import de.bmotionstudio.gef.editor.model.BControl;
 import de.bmotionstudio.gef.editor.observer.wizard.WizardObserverSetAttribute;
+import de.bmotionstudio.gef.editor.util.BMSUtil;
 
 public class SetAttribute extends Observer {
 
@@ -34,7 +35,7 @@ public class SetAttribute extends Observer {
 
 	@Override
 	public void check(Animation animation, BControl control) {
-
+		
 		this.setAttributes.clear();
 
 		// Collect evaluate predicate objects in list
@@ -45,8 +46,8 @@ public class SetAttribute extends Observer {
 			// First evaluate predicate (predicate field)
 			String bolValue = "true";
 			if (obj.getEval().length() > 0) {
-				bolValue = parsePredicate(obj.getEval(), control, animation,
-						obj);
+				bolValue = BMSUtil.parsePredicate(obj.getEval(), control,
+						animation);
 			}
 
 			if (!obj.hasError() && Boolean.valueOf(bolValue)) {
@@ -59,17 +60,18 @@ public class SetAttribute extends Observer {
 				Object attributeVal = obj.getValue();
 
 				if (obj.isExpressionMode()) {
-					String strAtrVal = parseExpression(attributeVal.toString(),
-							control, animation, obj);
+					String strAtrVal = BMSUtil.parseExpression(
+							attributeVal.toString(), control, animation);
 					String er = attributeObj.validateValue(strAtrVal, null);
 					if (er != null) {
-						addError(
-								control,
-								animation,
-								"You selected "
-										+ attributeObj.getName()
-										+ " as attribute. There is a problem with your value: "
-										+ strAtrVal + " - Reason: " + er);
+						// addError(
+						// control,
+						// animation,
+						// "You selected "
+						// + attributeObj.getName()
+						// +
+						// " as attribute. There is a problem with your value: "
+						// + strAtrVal + " - Reason: " + er);
 						obj.setHasError(true);
 					} else {
 						attributeVal = attributeObj.unmarshal(strAtrVal);
@@ -79,7 +81,8 @@ public class SetAttribute extends Observer {
 				if (!obj.hasError()) {
 					Object oldAttrVal = control.getAttributeValue(attributeID);
 					if (!oldAttrVal.equals(attributeVal)) {
-						control.setAttributeValue(attributeID, attributeVal);
+						control.setAttributeValue(attributeID, attributeVal,
+								true, false);
 					}
 				}
 

@@ -12,12 +12,6 @@ import org.eclipse.swt.graphics.RGB;
 
 import de.bmotionstudio.gef.editor.AttributeConstants;
 import de.bmotionstudio.gef.editor.ButtonGroupHelper;
-import de.bmotionstudio.gef.editor.attribute.BAttributeButtonGroup;
-import de.bmotionstudio.gef.editor.attribute.BAttributeChecked;
-import de.bmotionstudio.gef.editor.attribute.BAttributeEnabled;
-import de.bmotionstudio.gef.editor.attribute.BAttributeText;
-import de.bmotionstudio.gef.editor.attribute.BAttributeTextColor;
-import de.bmotionstudio.gef.editor.attribute.BAttributeValue;
 
 /**
  * @author Lukas Ladenberger
@@ -45,14 +39,14 @@ public class BRadioButton extends BControl {
 
 	@Override
 	protected void initAttributes() {
-		initAttribute(new BAttributeText(DEFAULT_TEXT));
-		initAttribute(new BAttributeTextColor(new RGB(0, 0, 0)));
-		initAttribute(new BAttributeChecked(true));
-		initAttribute(new BAttributeValue(""));
-		initAttribute(new BAttributeButtonGroup(""));
-		initAttribute(new BAttributeEnabled(true));
-		getAttribute(AttributeConstants.ATTRIBUTE_HEIGHT).setValue(21);
-		getAttribute(AttributeConstants.ATTRIBUTE_HEIGHT).setEditable(false);
+		initAttribute(AttributeConstants.ATTRIBUTE_TEXT, DEFAULT_TEXT);
+		initAttribute(AttributeConstants.ATTRIBUTE_TEXT_COLOR, new RGB(0, 0, 0));
+		initAttribute(AttributeConstants.ATTRIBUTE_CHECKED, true);
+		initAttribute(AttributeConstants.ATTRIBUTE_ENABLED, true);
+		initAttribute(AttributeConstants.ATTRIBUTE_VALUE, "");
+		initAttribute(AttributeConstants.ATTRIBUTE_BUTTONGROUP, "");
+		initAttribute(AttributeConstants.ATTRIBUTE_HEIGHT, 21, false, false,
+				AttributeConstants.ATTRIBUTE_SIZE);
 	}
 
 	@Override

@@ -11,6 +11,7 @@ import de.prob.core.domainobjects.History;
 import de.prob.core.domainobjects.ltl.CounterExample;
 import de.prob.exceptions.ProBException;
 import de.prob.logging.Logger;
+import de.prob.ui.ltl.handler.CounterExampleHistoryHandler;
 
 public final class CounterExampleTreeMouseAdapter extends MouseAdapter {
 	private final CounterExampleTreeViewer treeViewer;

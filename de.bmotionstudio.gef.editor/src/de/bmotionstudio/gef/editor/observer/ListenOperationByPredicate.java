@@ -10,12 +10,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.be4.classicalb.core.parser.exceptions.BException;
+import de.bmotionstudio.gef.editor.Animation;
 import de.bmotionstudio.gef.editor.AttributeConstants;
 import de.bmotionstudio.gef.editor.attribute.AbstractAttribute;
-import de.bmotionstudio.gef.editor.internal.Animation;
 import de.bmotionstudio.gef.editor.model.BControl;
 import de.bmotionstudio.gef.editor.observer.wizard.WizardObserverListenOperationByPredicate;
 import de.bmotionstudio.gef.editor.scheduler.PredicateOperation;
+import de.bmotionstudio.gef.editor.util.BMSUtil;
 import de.prob.core.Animator;
 import de.prob.core.command.GetOperationByPredicateCommand;
 import de.prob.core.domainobjects.Operation;
@@ -70,7 +71,7 @@ public class ListenOperationByPredicate extends Observer {
 				if (animation.getCurrentStateOperations().containsKey(fOpName)) {
 
 					if (fPredicate.length() > 0) {
-						fPredicate = parseControls(fPredicate, control);
+						fPredicate = BMSUtil.parseControls(fPredicate, control);
 					}
 
 					try {
@@ -89,20 +90,21 @@ public class ListenOperationByPredicate extends Observer {
 							Object attributeVal = pop.getValue();
 
 							if (pop.isExpressionMode()) {
-								String strAtrVal = parseExpression(
+								String strAtrVal = BMSUtil.parseExpression(
 										attributeVal.toString(), control,
-										animation, pop);
+										animation);
 								String er = attributeObj.validateValue(
 										strAtrVal, null);
 								if (er != null) {
-									addError(
-											control,
-											animation,
-											"You selected "
-													+ attributeObj.getName()
-													+ " as attribute. There is a problem with your value: "
-													+ strAtrVal + " - Reason: "
-													+ er);
+									// addError(
+									// control,
+									// animation,
+									// "You selected "
+									// + attributeObj.getName()
+									// +
+									// " as attribute. There is a problem with your value: "
+									// + strAtrVal + " - Reason: "
+									// + er);
 									pop.setHasError(true);
 								} else {
 									attributeVal = attributeObj
@@ -115,7 +117,7 @@ public class ListenOperationByPredicate extends Observer {
 										.getAttributeValue(attributeID);
 								if (!oldAttrVal.equals(attributeVal)) {
 									control.setAttributeValue(attributeID,
-											attributeVal);
+											attributeVal, true, false);
 								}
 							}
 
@@ -123,12 +125,12 @@ public class ListenOperationByPredicate extends Observer {
 
 						}
 					} catch (ProBException e) {
-						addError(control, animation,
-								"An error occurred while evaluating. Reason: "
-										+ e.getMessage());
+						// addError(control, animation,
+						// "An error occurred while evaluating. Reason: "
+						// + e.getMessage());
 					} catch (BException e) {
-						addError(control, animation, "Parsing error in: "
-								+ fPredicate + " Reason: " + e.getMessage());
+						// addError(control, animation, "Parsing error in: "
+						// + fPredicate + " Reason: " + e.getMessage());
 					}
 				}
 

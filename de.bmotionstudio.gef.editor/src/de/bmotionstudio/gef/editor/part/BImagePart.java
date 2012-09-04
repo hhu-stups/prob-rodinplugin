@@ -7,18 +7,14 @@
 package de.bmotionstudio.gef.editor.part;
 
 import java.beans.PropertyChangeEvent;
-import java.io.File;
-import java.util.HashMap;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.gef.EditPolicy;
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.widgets.Display;
 
 import de.bmotionstudio.gef.editor.AttributeConstants;
-import de.bmotionstudio.gef.editor.editpolicy.AppDeletePolicy;
-import de.bmotionstudio.gef.editor.editpolicy.BMotionNodeEditPolicy;
+import de.bmotionstudio.gef.editor.editpolicy.BMSDeletePolicy;
+import de.bmotionstudio.gef.editor.editpolicy.BMSNodeEditPolicy;
 import de.bmotionstudio.gef.editor.editpolicy.ChangeAttributePolicy;
 import de.bmotionstudio.gef.editor.figure.BMSImageFigure;
 import de.bmotionstudio.gef.editor.library.AbstractLibraryCommand;
@@ -26,9 +22,7 @@ import de.bmotionstudio.gef.editor.library.AttributeRequest;
 import de.bmotionstudio.gef.editor.library.LibraryImageCommand;
 import de.bmotionstudio.gef.editor.model.BControl;
 
-public class BImagePart extends AppAbstractEditPart {
-
-	private HashMap<String, File> fileMap = new HashMap<String, File>();
+public class BImagePart extends BMSAbstractEditPart {
 
 	@Override
 	public void refreshEditFigure(IFigure figure, BControl model,
@@ -44,17 +38,7 @@ public class BImagePart extends AppAbstractEditPart {
 					IFile pFile = model.getVisualization().getProjectFile();
 					String myPath = (pFile.getProject().getLocation()
 							+ "/images/" + imgPath).replace("file:", "");
-					File file = null;
-					if (fileMap.containsKey(myPath)) {
-						file = fileMap.get(myPath);
-					} else {
-						file = new File(myPath);
-						fileMap.put(myPath, file);
-					}
-					if (file.exists()) {
-						((BMSImageFigure) figure).setImage(new Image(Display
-								.getDefault(), myPath));
-					}
+					((BMSImageFigure) figure).setImage(myPath);
 				}
 			}
 		}
@@ -83,9 +67,9 @@ public class BImagePart extends AppAbstractEditPart {
 
 	@Override
 	protected void prepareEditPolicies() {
-		installEditPolicy(EditPolicy.COMPONENT_ROLE, new AppDeletePolicy());
+		installEditPolicy(EditPolicy.COMPONENT_ROLE, new BMSDeletePolicy());
 		installEditPolicy(EditPolicy.GRAPHICAL_NODE_ROLE,
-				new BMotionNodeEditPolicy());
+				new BMSNodeEditPolicy());
 		installEditPolicy(ChangeAttributePolicy.CHANGE_ATTRIBUTE_POLICY,
 				new ChangeAttributePolicy());
 	}

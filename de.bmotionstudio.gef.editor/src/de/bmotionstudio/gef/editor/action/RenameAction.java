@@ -21,7 +21,6 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 
 import de.bmotionstudio.gef.editor.AttributeConstants;
 import de.bmotionstudio.gef.editor.BMotionEditorPlugin;
-import de.bmotionstudio.gef.editor.internal.RenameWizard;
 import de.bmotionstudio.gef.editor.model.BControl;
 
 public class RenameAction extends SelectionAction {

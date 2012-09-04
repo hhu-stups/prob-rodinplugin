@@ -13,20 +13,20 @@ import org.eclipse.core.databinding.observable.map.IObservableMap;
 import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
 import org.eclipse.jface.databinding.viewers.ObservableMapLabelProvider;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITableColorProvider;
 import org.eclipse.jface.viewers.ITableFontProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
-import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
@@ -38,6 +38,7 @@ import org.eclipse.swt.widgets.Display;
 
 import de.be4.classicalb.core.parser.BParser;
 import de.bmotionstudio.gef.editor.AttributeConstants;
+import de.bmotionstudio.gef.editor.BMotionAbstractWizard;
 import de.bmotionstudio.gef.editor.BMotionStudioImage;
 import de.bmotionstudio.gef.editor.EditorImageRegistry;
 import de.bmotionstudio.gef.editor.edit.AttributeExpressionEdittingSupport;
@@ -45,37 +46,55 @@ import de.bmotionstudio.gef.editor.edit.IsExpressionModeEditingSupport;
 import de.bmotionstudio.gef.editor.edit.PredicateEditingSupport;
 import de.bmotionstudio.gef.editor.model.BControl;
 import de.bmotionstudio.gef.editor.observer.Observer;
+import de.bmotionstudio.gef.editor.observer.ObserverEvalObject;
 import de.bmotionstudio.gef.editor.observer.ObserverWizard;
 import de.bmotionstudio.gef.editor.observer.SwitchImage;
 import de.bmotionstudio.gef.editor.observer.ToggleObjectImage;
 import de.bmotionstudio.gef.editor.property.CheckboxCellEditorHelper;
+import de.bmotionstudio.gef.editor.util.BMotionWizardUtil;
 
 public class WizardObserverSwitchImage extends ObserverWizard {
 
-	private class ObserverSwitchImagePage extends WizardPage {
+	private class ObserverSwitchImagePage extends AbstractObserverWizardPage {
 
 		private TableViewer tableViewer;
 
 		protected ObserverSwitchImagePage(final String pageName) {
-			super(pageName);
+			super(pageName, getObserver());
 		}
 
 		public void createControl(final Composite parent) {
+
+			super.createControl(parent);
 
 			DataBindingContext dbc = new DataBindingContext();
 
 			Composite container = new Composite(parent, SWT.NONE);
 			container.setLayout(new GridLayout(1, true));
 
-			tableViewer = new TableViewer(container, SWT.BORDER
-					| SWT.FULL_SELECTION);
-			tableViewer.getTable().setLinesVisible(true);
-			tableViewer.getTable().setHeaderVisible(true);
-			tableViewer.getTable().setLayoutData(
-					new GridData(GridData.FILL_BOTH));
-			tableViewer.getTable().setFont(
-					new Font(Display.getDefault(), new FontData("Arial", 10,
-							SWT.NONE)));
+			tableViewer = BMotionWizardUtil.createBMotionWizardTableViewer(
+					container, ToggleObjectImage.class,
+					((BMotionAbstractWizard) getWizard()).getName());
+			tableViewer
+					.addSelectionChangedListener(new ISelectionChangedListener() {
+
+						@Override
+						public void selectionChanged(SelectionChangedEvent event) {
+							IStructuredSelection selection = (IStructuredSelection) event
+									.getSelection();
+							Object firstElement = selection.getFirstElement();
+							if (firstElement instanceof ObserverEvalObject) {
+								ObserverEvalObject observerEvalObject = (ObserverEvalObject) firstElement;
+								BControl control = getBControl();
+								ToggleObjectImage toggleObjImage = (ToggleObjectImage) observerEvalObject;
+								String attribute = AttributeConstants.ATTRIBUTE_IMAGE;
+								String image = toggleObjImage.getImage();
+								control.setAttributeValue(attribute, image,
+										true, false);
+							}
+						}
+
+					});
 
 			TableViewerColumn column = new TableViewerColumn(tableViewer,
 					SWT.NONE);
@@ -138,8 +157,9 @@ public class WizardObserverSwitchImage extends ObserverWizard {
 			comp.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));
 
 			Button btRemove = new Button(comp, SWT.PUSH);
+			btRemove.setText("Remove");
 			btRemove.setImage(BMotionStudioImage
-					.getImage(EditorImageRegistry.IMG_ICON_DELETE));
+					.getImage(EditorImageRegistry.IMG_ICON_DELETE_EDIT));
 			btRemove.addSelectionListener(new SelectionAdapter() {
 				@Override
 				public void widgetSelected(final SelectionEvent e) {
@@ -153,8 +173,9 @@ public class WizardObserverSwitchImage extends ObserverWizard {
 			});
 
 			Button btAdd = new Button(comp, SWT.PUSH);
+			btAdd.setText("Add");
 			btAdd.setImage(BMotionStudioImage
-					.getImage(EditorImageRegistry.IMG_ICON_ADD));
+					.getImage(EditorImageRegistry.IMG_ICON_NEW_WIZ));
 			btAdd.addSelectionListener(new SelectionAdapter() {
 				@Override
 				public void widgetSelected(final SelectionEvent e) {
@@ -180,6 +201,7 @@ public class WizardObserverSwitchImage extends ObserverWizard {
 
 	@Override
 	protected Boolean prepareToFinish() {
+		getBControl().restoreDefaultValue(AttributeConstants.ATTRIBUTE_IMAGE);
 		if (((SwitchImage) getObserver()).getToggleObjects().size() == 0) {
 			setObserverDelete(true);
 		} else {
@@ -194,6 +216,12 @@ public class WizardObserverSwitchImage extends ObserverWizard {
 			}
 		}
 		return true;
+	}
+
+	@Override
+	public boolean performCancel() {
+		getBControl().restoreDefaultValue(AttributeConstants.ATTRIBUTE_IMAGE);
+		return super.performCancel();
 	}
 
 	@Override

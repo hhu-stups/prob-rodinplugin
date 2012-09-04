@@ -26,7 +26,7 @@ import org.eclipse.ui.part.CellEditorActionHandler;
 
 import de.bmotionstudio.gef.editor.AttributeConstants;
 import de.bmotionstudio.gef.editor.model.BControl;
-import de.bmotionstudio.gef.editor.part.AppAbstractEditPart;
+import de.bmotionstudio.gef.editor.part.BMSAbstractEditPart;
 
 public class TextEditManager extends DirectEditManager {
 
@@ -41,7 +41,7 @@ public class TextEditManager extends DirectEditManager {
 		}
 	};
 
-	public TextEditManager(AppAbstractEditPart source, CellEditorLocator locator) {
+	public TextEditManager(BMSAbstractEditPart source, CellEditorLocator locator) {
 		super(source, null, locator);
 	}
 

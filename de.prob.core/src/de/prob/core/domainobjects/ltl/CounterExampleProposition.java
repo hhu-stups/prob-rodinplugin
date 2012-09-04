@@ -3,9 +3,11 @@ package de.prob.core.domainobjects.ltl;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import de.prob.core.command.LtlCheckingCommand.PathType;
+import de.prob.logging.Logger;
 
 /**
  * Provides an abstract class for all types of propositions.
@@ -18,8 +20,10 @@ public abstract class CounterExampleProposition {
 	protected final String fullName;
 	protected final int loopEntry;
 	protected final PathType pathType;
+	protected final CounterExample counterExample;
 	protected CounterExampleProposition parent;
 	private List<CounterExampleValueType> values;
+	private Collection<CounterExampleProposition> checks = new ArrayList<CounterExampleProposition>();
 
 	protected final PropertyChangeSupport listeners = new PropertyChangeSupport(
 			this);
@@ -27,11 +31,12 @@ public abstract class CounterExampleProposition {
 	protected int stateId = 0;
 
 	public CounterExampleProposition(final String name, final String fullName,
-			final PathType pathType, final int loopEntry) {
+			final CounterExample counterExample) {
 		this.name = name;
 		this.fullName = fullName;
-		this.loopEntry = loopEntry;
-		this.pathType = pathType;
+		this.loopEntry = counterExample.getLoopEntry();
+		this.pathType = counterExample.getPathType();
+		this.counterExample = counterExample;
 	}
 
 	public CounterExampleProposition getParent() {
@@ -49,6 +54,7 @@ public abstract class CounterExampleProposition {
 	public List<CounterExampleValueType> getValues() {
 		if (values == null) {
 			values = calculate();
+			performChecks(values);
 		}
 
 		return values;
@@ -98,18 +104,20 @@ public abstract class CounterExampleProposition {
 		listeners.removePropertyChangeListener(listener);
 	}
 
-	public List<Integer> fillPositions(int position, int index,
+	protected List<Integer> fillPositions(int position, int index,
 			int checkedSize, boolean isPastOperator) {
 		List<Integer> positions = new ArrayList<Integer>();
 
 		if (index != -1) {
 			int pos = isPastOperator ? index : index + position;
 			pos = calculatePosition(pos);
+			Logger.assertProB("Position invalid", pos >= 0);
 			positions.add(pos);
 		} else {
 			for (int i = 0; i < checkedSize; i++) {
 				int pos = isPastOperator ? position - i : position + i;
 				pos = calculatePosition(pos);
+				Logger.assertProB("Position invalid", pos >= 0);
 				positions.add(pos);
 			}
 		}
@@ -123,5 +131,27 @@ public abstract class CounterExampleProposition {
 
 	protected abstract List<CounterExampleValueType> calculate();
 
-	protected abstract int calculatePosition(int pos);
+	private int calculatePosition(int pos) {
+		final int size = counterExample.getCounterExampleSize();
+		return pos < size ? pos : pos - (size - loopEntry);
+	}
+
+	protected final void addCheck(CounterExampleProposition check) {
+		checks.add(check);
+	}
+
+	private void performChecks(List<CounterExampleValueType> values) {
+		for (final CounterExampleProposition check : checks) {
+			performCheck(check, values);
+		}
+	}
+
+	private void performCheck(CounterExampleProposition check,
+			List<CounterExampleValueType> values) {
+		List<CounterExampleValueType> values2 = check.getValues();
+		if (!values.equals(values2)) {
+			Logger.notifyUser("Encountered inconsistency in computation of LTL operator"
+					+ name);
+		}
+	}
 }

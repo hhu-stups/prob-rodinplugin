@@ -11,7 +11,6 @@ import org.eclipse.draw2d.IFigure;
 
 import de.bmotionstudio.gef.editor.AbstractExpressionControl;
 import de.bmotionstudio.gef.editor.BMotionEditorPlugin;
-import de.bmotionstudio.gef.editor.internal.Animation;
 import de.bmotionstudio.gef.editor.model.BControl;
 
 /**
@@ -27,9 +26,8 @@ import de.bmotionstudio.gef.editor.model.BControl;
  * @author Lukas Ladenberger
  * 
  */
-public abstract class Observer extends AbstractExpressionControl {
-
-	// private transient Boolean callBack = false;
+public abstract class Observer extends AbstractExpressionControl implements
+		IObserver {
 
 	public Observer() {
 		init();
@@ -37,7 +35,6 @@ public abstract class Observer extends AbstractExpressionControl {
 
 	protected Object readResolve() {
 		init();
-		// callBack = false;
 		return this;
 	}
 
@@ -64,26 +61,6 @@ public abstract class Observer extends AbstractExpressionControl {
 		return (Observer) super.clone();
 	}
 
-	// public void setCallBack(Boolean callBack) {
-	// this.callBack = callBack;
-	// }
-	//
-	// public Boolean isCallBack() {
-	// return callBack;
-	// }
-
-	/**
-	 * This method is called after every state change. The method tells the
-	 * control how it has to look like and how to behave.
-	 * 
-	 * @param animation
-	 *            The running animation
-	 * @param bcontrol
-	 *            The corresponding control
-	 * @throws BMotionObserverException
-	 */
-	public abstract void check(Animation animation, BControl control);
-
 	/**
 	 * Returns a corresponding wizard for the observer.
 	 * 
@@ -95,9 +72,6 @@ public abstract class Observer extends AbstractExpressionControl {
 
 	public IFigure getToolTip(BControl control) {
 		return null;
-	}
-
-	public void afterCheck(Animation animation, BControl control) {
 	}
 
 }

@@ -21,5 +21,7 @@ public abstract class AbstractComponentTranslator {
 	public Map<Node, IInternalElement> getLabelMapping() {
 		return Collections.unmodifiableMap(labelMapping);
 	}
+	
+	abstract public String getResource();
 
 }

@@ -23,6 +23,7 @@ import de.bmotionstudio.gef.editor.eventb.MachineContentObject;
 import de.bmotionstudio.gef.editor.eventb.MachineOperation;
 import de.bmotionstudio.gef.editor.model.BControl;
 import de.bmotionstudio.gef.editor.scheduler.PredicateOperation;
+import de.bmotionstudio.gef.editor.util.BMotionWizardUtil;
 
 public class OperationValueEditingSupport extends EditingSupport {
 
@@ -37,7 +38,7 @@ public class OperationValueEditingSupport extends EditingSupport {
 
 	@Override
 	protected boolean canEdit(Object element) {
-		return true;
+		return BMotionWizardUtil.isEditElement(getViewer());
 	}
 
 	@Override
@@ -71,4 +72,5 @@ public class OperationValueEditingSupport extends EditingSupport {
 		}
 		return cellEditor;
 	}
+
 }

@@ -5,8 +5,6 @@ import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.PlatformUI;
 
 import de.prob.core.domainobjects.ltl.CounterExampleProposition;
 import de.prob.core.domainobjects.ltl.CounterExampleState;
@@ -20,6 +18,10 @@ import de.prob.core.domainobjects.ltl.CounterExampleValueType;
  */
 public final class TreeColumnValueLabelProvider extends CellLabelProvider {
 	private final CounterExampleState state;
+	private final Font normal = new Font(Display.getDefault(), "Arial", 10,
+			SWT.NORMAL);
+	private final Font bold = new Font(Display.getDefault(), "Arial", 10,
+			SWT.BOLD);
 
 	public TreeColumnValueLabelProvider(CounterExampleState state) {
 		super();
@@ -39,25 +41,16 @@ public final class TreeColumnValueLabelProvider extends CellLabelProvider {
 						.get(index);
 				cell.setText(value.toString());
 
-				final IWorkbenchPage workbenchPage = PlatformUI.getWorkbench()
-						.getActiveWorkbenchWindow().getActivePage();
-				final CounterExampleViewPart counterExampleView = (CounterExampleViewPart) workbenchPage
-						.findView(CounterExampleViewPart.ID);
-
+				final CounterExampleViewPart counterExampleView = CounterExampleViewPart
+						.getDefault();
 				if (counterExampleView != null) {
 					final int currentIndex = counterExampleView
 							.getCurrentIndex();
 
-					int font = SWT.NORMAL;
-
-					if (index == currentIndex) {
-						font = SWT.BOLD;
-					}
-
-					Font currentFont = new Font(Display.getDefault(), "Arial",
-							10, font);
-
-					cell.setFont(currentFont);
+					if (index != currentIndex)
+						cell.setFont(normal);
+					else
+						cell.setFont(bold);
 				}
 			}
 		}

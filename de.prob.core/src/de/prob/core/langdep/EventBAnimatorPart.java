@@ -10,8 +10,10 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang.ObjectUtils;
+import org.eventb.core.IContextRoot;
 import org.eventb.core.IEventBRoot;
 import org.eventb.core.IMachineRoot;
+import org.eventb.core.ISCContextRoot;
 import org.eventb.core.ISCEvent;
 import org.eventb.core.ISCIdentifierElement;
 import org.eventb.core.ISCMachineRoot;
@@ -60,8 +62,7 @@ public class EventBAnimatorPart implements LanguageDependendAnimationPart {
 	public void parseExpression(final IPrologTermOutput pto,
 			final String expression1, final boolean wrap)
 			throws ProBParseException {
-		final String expression = FormulaTranslator.translate(
-				expression1);
+		final String expression = FormulaTranslator.translate(expression1);
 		final FormulaFactory ff = FormulaFactory.getDefault();
 		final IParseResult parseResult = ff.parseExpression(expression,
 				LanguageVersion.LATEST, null);
@@ -77,8 +78,7 @@ public class EventBAnimatorPart implements LanguageDependendAnimationPart {
 	public void parsePredicate(final IPrologTermOutput pto,
 			final String predicate1, final boolean wrap)
 			throws ProBParseException {
-		final String predicate = FormulaTranslator.translate(
-				predicate1);
+		final String predicate = FormulaTranslator.translate(predicate1);
 		final FormulaFactory ff = FormulaFactory.getDefault();
 		final IParseResult parseResult = ff.parsePredicate(predicate,
 				LanguageVersion.LATEST, null);
@@ -127,9 +127,18 @@ public class EventBAnimatorPart implements LanguageDependendAnimationPart {
 
 	private ITypeEnvironment getTypeEnvironment(final FormulaFactory ff)
 			throws ProBParseException {
-		final ITypeEnvironment typeEnv;
+		ITypeEnvironment typeEnv = null;
+
 		try {
-			typeEnv = root.getSCMachineRoot().getTypeEnvironment(ff);
+			if (root instanceof IMachineRoot)
+				typeEnv = root.getSCMachineRoot().getTypeEnvironment(ff);
+			if (root instanceof ISCMachineRoot)
+				typeEnv = root.getSCMachineRoot().getTypeEnvironment(ff);
+			if (root instanceof IContextRoot)
+				typeEnv = root.getSCContextRoot().getTypeEnvironment(ff);
+			if (root instanceof ISCContextRoot)
+				typeEnv = root.getSCContextRoot().getTypeEnvironment(ff);
+
 		} catch (RodinDBException e) {
 			throw rodin2parseException(e);
 		}
@@ -190,8 +199,7 @@ public class EventBAnimatorPart implements LanguageDependendAnimationPart {
 
 	private Predicate parseTransPredicate(final String predicateString,
 			final ISCEvent event) throws ProBParseException {
-		final String utf8String = FormulaTranslator.translate(
-				predicateString);
+		final String utf8String = FormulaTranslator.translate(predicateString);
 		final FormulaFactory ff = FormulaFactory.getDefault();
 		final IParseResult parseResult = ff.parsePredicate(utf8String,
 				LanguageVersion.LATEST, null);

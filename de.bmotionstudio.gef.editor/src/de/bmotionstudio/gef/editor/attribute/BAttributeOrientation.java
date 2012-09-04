@@ -8,10 +8,6 @@ public class BAttributeOrientation extends AbstractAttribute {
 	public static final int HORIZONTAL = 0;
 	public static final int VERTICAL = 1;
 
-	public BAttributeOrientation(Object value) {
-		super(value);
-	}
-
 	@Override
 	protected PropertyDescriptor preparePropertyDescriptor() {
 		return new ComboBoxPropertyDescriptor(getID(), getName(), new String[] {

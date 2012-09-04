@@ -6,9 +6,9 @@
 
 package de.bmotionstudio.gef.editor.scheduler;
 
-import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.swt.graphics.Point;
 
+import de.bmotionstudio.gef.editor.BMotionAbstractWizard;
 import de.bmotionstudio.gef.editor.model.BControl;
 
 /**
@@ -20,20 +20,15 @@ import de.bmotionstudio.gef.editor.model.BControl;
  * @author Lukas Ladenberger
  * 
  */
-public abstract class SchedulerWizard extends Wizard {
+public abstract class SchedulerWizard extends BMotionAbstractWizard {
 
-	private BControl bcontrol;
 	private SchedulerEvent event;
 
 	protected Boolean eventDelete = false;
 
-	public SchedulerWizard(BControl bcontrol, SchedulerEvent scheduler) {
-		this.bcontrol = bcontrol;
+	public SchedulerWizard(BControl control, SchedulerEvent scheduler) {
+		super(control);
 		this.event = scheduler;
-	}
-
-	public BControl getBControl() {
-		return this.bcontrol;
 	}
 
 	public SchedulerEvent getScheduler() {
@@ -57,4 +52,9 @@ public abstract class SchedulerWizard extends Wizard {
 
 	public abstract Point getSize();
 
+	@Override
+	public String getName() {
+		return event.getName();
+	}
+	
 }

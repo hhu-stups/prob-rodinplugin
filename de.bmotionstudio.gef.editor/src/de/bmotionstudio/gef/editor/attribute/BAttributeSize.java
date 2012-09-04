@@ -14,9 +14,7 @@ import de.bmotionstudio.gef.editor.AttributeConstants;
 
 public class BAttributeSize extends AbstractAttribute {
 
-	public BAttributeSize(Object value) {
-		super(value);
-	}
+	public static final String ID = "de.bmotionstudio.gef.editor.attribute.BAttributeSize";
 
 	@Override
 	public PropertyDescriptor preparePropertyDescriptor() {
@@ -27,9 +25,12 @@ public class BAttributeSize extends AbstractAttribute {
 				Point point = (Point) element;
 				StringBuffer buf = new StringBuffer();
 				buf.append("[");
-				buf.append(point.x);
-				buf.append(",  ");
-				buf.append(point.y);
+				if (point.x >= 0)
+					buf.append(point.x);
+				if (point.y >= 0) {
+					buf.append(",  ");
+					buf.append(point.y);
+				}
 				buf.append("]");
 				return buf.toString();
 			}
@@ -39,12 +40,22 @@ public class BAttributeSize extends AbstractAttribute {
 
 	@Override
 	public Object getEditableValue() {
-		int width = Integer.valueOf(getChildren()
-				.get(AttributeConstants.ATTRIBUTE_WIDTH).getValue().toString());
-		int height = Integer
-				.valueOf(getChildren().get(AttributeConstants.ATTRIBUTE_HEIGHT)
-						.getValue().toString());
+
+		AbstractAttribute atrWidth = getChildren().get(
+				AttributeConstants.ATTRIBUTE_WIDTH);
+		AbstractAttribute atrHeight = getChildren().get(
+				AttributeConstants.ATTRIBUTE_HEIGHT);
+
+		int width = -1;
+		int height = -1;
+
+		if (atrWidth != null)
+			width = Integer.valueOf(atrWidth.getValue().toString());
+		if (atrHeight != null)
+			height = Integer.valueOf(atrHeight.getValue().toString());
+
 		return new Point(width, height);
+
 	}
 
 	@Override

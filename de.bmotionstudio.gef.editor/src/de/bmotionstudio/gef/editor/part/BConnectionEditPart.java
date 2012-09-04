@@ -47,7 +47,7 @@ import de.bmotionstudio.gef.editor.command.ConnectionDeleteCommand;
 import de.bmotionstudio.gef.editor.model.BConnection;
 import de.bmotionstudio.gef.editor.model.BControl;
 
-public class BConnectionEditPart extends AppAbstractEditPart implements
+public class BConnectionEditPart extends BMSAbstractEditPart implements
 		ConnectionEditPart, LayerConstants {
 
 	protected Color foregroundColor;

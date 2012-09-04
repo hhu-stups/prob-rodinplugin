@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<contexts>
+  <context id="SwitchChildCoordinates">
+    <topic href="User_Guide/Reference/Observer.html#Switch_Child_Coordinates" label="Switch Child Coordinates Observer" />
+  </context>
+   <context id="SwitchCoordinates">
+      <topic href="User_Guide/Reference/Observer.html#Switch_Coordinates" label="Switch Coordinates Observer"/>
+   </context>
+   <context id="SetAttribute">
+      <topic href="User_Guide/Reference/Observer.html#Set_Attribute" label="Set Attribute Observer"/>
+   </context>
+   <context id="SimpleValueDisplay">
+      <topic href="User_Guide/Reference/Observer.html#Simple_Value_Display" label="Simple Value Display Observer"/>
+   </context>
+   <context id="SwitchImage">
+      <topic href="User_Guide/Reference/Observer.html#Switch_Image" label="Switch Image Observer"/>
+   </context>
+   <context id="ListenOperationByPredicate">
+      <topic href="User_Guide/Reference/Observer.html#Listen_Operation" label="Listen Operation Observer"/>
+   </context>
+</contexts> 

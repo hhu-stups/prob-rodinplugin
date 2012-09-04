@@ -341,6 +341,10 @@
           id="de.prob.ui.ltl.counterexampleprinthandler"
           name="CounterExample Print">
       </command>
+      <command
+            id="de.prob.ui.newcore.export"
+            name="Export for new Core">
+      </command>
    </extension>
    <extension
          point="org.eclipse.ui.handlers">
@@ -378,7 +382,7 @@
                </with>
          </enabledWhen>
          <class
-               class="de.prob.ui.ltl.LtlCommand">
+               class="de.prob.ui.ltl.handler.LtlCommand">
          </class>
       </handler>
       <handler
@@ -560,23 +564,6 @@
             </enabledWhen>
       </handler>
       <handler
-            commandId="de.prob.ui.classic.export">
-         <class
-               class="de.prob.ui.eventb.ExportClassicHandler">
-         </class>
-                              <enabledWhen>
-      <with
-            variable="selection">
-         <iterate
-               operator="or">
-            <instanceof
-                  value="org.eventb.core.IEventBRoot">
-            </instanceof>
-         </iterate>
-      </with>
-            </enabledWhen>
-      </handler>
-      <handler
             commandId="de.prob.ui.classic.open">
          <class
                class="de.prob.ui.eventb.OpenClassicHandler">
@@ -668,7 +655,7 @@
          </class>
       </handler>
       <handler commandId="de.prob.ui.ltl.counterexampleviewmenuhandler">
-            <class class="de.prob.ui.ltl.CounterExampleViewMenuHandler"/>
+            <class class="de.prob.ui.ltl.handler.CounterExampleViewMenuHandler"/>
             <enabledWhen>
             <with variable="de.prob.ui.ltl.counterexample_loaded">
                   <equals
@@ -678,7 +665,7 @@
          </enabledWhen>
       </handler>
       <handler commandId="de.prob.ui.ltl.counterexamplezoominhandler">
-            <class class="de.prob.ui.ltl.CounterExampleZoomInHandler"/>
+            <class class="de.prob.ui.ltl.handler.CounterExampleZoomInHandler"/>
             <enabledWhen>
             <with variable="de.prob.ui.ltl.counterexample_loaded">
                   <equals
@@ -688,7 +675,7 @@
          </enabledWhen>
       </handler>
       <handler commandId="de.prob.ui.ltl.counterexamplezoomouthandler">
-            <class class="de.prob.ui.ltl.CounterExampleZoomOutHandler"/>
+            <class class="de.prob.ui.ltl.handler.CounterExampleZoomOutHandler"/>
             <enabledWhen>
             <with variable="de.prob.ui.ltl.counterexample_loaded">
                   <equals
@@ -698,7 +685,7 @@
          </enabledWhen>
       </handler>
       <handler commandId="de.prob.ui.ltl.counterexampleprinthandler">
-            <class class="de.prob.ui.ltl.CounterExamplePrintHandler"/>
+            <class class="de.prob.ui.ltl.handler.CounterExamplePrintHandler"/>
             <enabledWhen>
             <with variable="de.prob.ui.ltl.counterexample_loaded">
                   <equals
@@ -708,12 +695,29 @@
          </enabledWhen>
       </handler>
       <handler commandId="de.prob.ui.ltl.showcounterexampleinhistory">
-            <class class="de.prob.ui.ltl.CounterExampleHistoryHandler"/>
+            <class class="de.prob.ui.ltl.handler.CounterExampleHistoryHandler"/>
             <enabledWhen>
             <with variable="de.prob.ui.ltl.counterexample_loaded">
                   <equals
                         value="enabled">
                   </equals>
+            </with>
+         </enabledWhen>
+      </handler>
+      <handler
+            commandId="de.prob.ui.newcore.export">
+         <class
+               class="de.prob.ui.eventb.ExportNewCoreHandler">
+         </class>
+         <enabledWhen>
+            <with
+                  variable="selection">
+               <iterate
+                     operator="or">
+                  <instanceof
+                        value="org.eventb.core.IEventBRoot">
+                  </instanceof>
+               </iterate>
             </with>
          </enabledWhen>
       </handler>
@@ -750,19 +754,9 @@
             </parameter>
          </command>
          <command
-               commandId="de.prob.ui.openWebsite"
+               commandId="de.prob.ui.bugreport"
                label="Open Bugtracker Website"
                mnemonic="W"
-               style="push">
-            <parameter
-                  name="de.prob.ui.openwebsite.url"
-                  value="https://cobra.cs.uni-duesseldorf.de/trac/newticket?type=bug&amp;priority=major&amp;component=Eclipse%20Plugin&amp;keywords=user%20discovered%20bug">
-            </parameter>
-         </command>
-         <command
-               commandId="de.prob.ui.bugreport"
-               label="Submit bugreport"
-               mnemonic="B"
                style="push">
          </command>
       </menuContribution>
@@ -984,7 +978,7 @@
                </with>
             </visibleWhen>
             <command
-                  commandId="de.prob.ui.classic.export"
+                  commandId="de.prob.ui.newcore.export"
                   icon="icons/prob_mini_logo.gif"
                   label="Export for use in ProB classic"
                   style="push">
@@ -1061,7 +1055,7 @@
                   style="radio">
                <parameter
                      name="org.eclipse.ui.commands.radioStateParameter"
-                     value="Table">
+                     value="TABLE">
                </parameter>
             </command>
             <command
@@ -1070,7 +1064,7 @@
                   style="radio">
                <parameter
                      name="org.eclipse.ui.commands.radioStateParameter"
-                     value="Tree">
+                     value="TREE">
                </parameter>
             </command>
             <command
@@ -1079,7 +1073,7 @@
                   style="radio">
                <parameter
                      name="org.eclipse.ui.commands.radioStateParameter"
-                     value="Interactive">
+                     value="INTERACTIVE">
                </parameter>
             </command>
          </menu>

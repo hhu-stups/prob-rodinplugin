@@ -22,6 +22,7 @@ import de.prob.core.domainobjects.ltl.CounterExampleProposition;
 import de.prob.core.domainobjects.ltl.CounterExampleUnaryOperator;
 import de.prob.exceptions.ProBException;
 import de.prob.logging.Logger;
+import de.prob.ui.ltl.handler.CounterExampleHistoryHandler;
 
 public final class CounterExampleUnaryFigure extends
 		CounterExamplePropositionFigure implements MouseMotionListener {
@@ -150,6 +151,8 @@ public final class CounterExampleUnaryFigure extends
 			argument.setStateId(stateId);
 			argument.setVisible(true);
 		}
+
+		repaint();
 	}
 
 	@Override

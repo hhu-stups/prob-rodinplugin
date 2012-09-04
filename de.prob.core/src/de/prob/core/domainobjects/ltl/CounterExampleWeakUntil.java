@@ -5,72 +5,65 @@ import java.util.Arrays;
 import java.util.List;
 
 import de.prob.core.command.LtlCheckingCommand.PathType;
-import de.prob.logging.Logger;
 
 /**
- * Provides a "Weak Until" operator.
+ * Provides a "weak until" operator.
  * 
  * @author Andriy Tolstoy
  * 
  */
 
 public final class CounterExampleWeakUntil extends CounterExampleBinaryOperator {
-	private final CounterExampleRelease release;
-	private final CounterExampleDisjunction or1;
-	private final CounterExampleDisjunction or2;
-
-	public CounterExampleWeakUntil(final PathType pathType,
-			final int loopEntry, final CounterExampleProposition firstArgument,
+	public CounterExampleWeakUntil(final CounterExample counterExample,
+			final CounterExampleProposition firstArgument,
 			final CounterExampleProposition secondArgument) {
-		super("W", "Weak Until", pathType, loopEntry, firstArgument,
-				secondArgument);
+		super("W", "Weak Until", counterExample, firstArgument, secondArgument);
 
-		release = new CounterExampleRelease(pathType, loopEntry,
-				secondArgument, new CounterExampleDisjunction(pathType,
-						loopEntry, secondArgument, firstArgument));
+		checkByRelease(counterExample, firstArgument, secondArgument);
+		checkByUntil(counterExample, firstArgument, secondArgument);
+	}
 
-		CounterExampleNegation not = new CounterExampleNegation(pathType,
-				loopEntry, firstArgument);
+	private void checkByUntil(final CounterExample counterExample,
+			final CounterExampleProposition firstArgument,
+			final CounterExampleProposition secondArgument) {
+		CounterExampleNegation not = new CounterExampleNegation(counterExample,
+				firstArgument);
 
 		CounterExampleValueType[] trueValues = new CounterExampleValueType[firstArgument
 				.getValues().size()];
 		Arrays.fill(trueValues, CounterExampleValueType.TRUE);
 
-		CounterExamplePredicate truePredicate = new CounterExamplePredicate(
-				pathType, loopEntry, Arrays.asList(trueValues));
+		CounterExamplePredicate truePredicate = new CounterExamplePredicate("",
+				counterExample, Arrays.asList(trueValues));
 
-		CounterExampleNegation notUntil = new CounterExampleNegation(pathType,
-				loopEntry, new CounterExampleUntil(pathType, loopEntry,
+		CounterExampleNegation notUntil = new CounterExampleNegation(
+				counterExample, new CounterExampleUntil(counterExample,
 						truePredicate, not));
 
-		CounterExampleUntil until = new CounterExampleUntil(pathType,
-				loopEntry, firstArgument, secondArgument);
+		CounterExampleUntil until = new CounterExampleUntil(counterExample,
+				firstArgument, secondArgument);
 
-		or1 = new CounterExampleDisjunction(pathType, loopEntry, notUntil,
-				until);
-		or2 = new CounterExampleDisjunction(pathType, loopEntry, until,
-				new CounterExampleGlobally(pathType, loopEntry, firstArgument));
+		addCheck(new CounterExampleDisjunction(counterExample, notUntil, until));
+		addCheck(new CounterExampleDisjunction(counterExample, until,
+				new CounterExampleGlobally(counterExample, firstArgument)));
+	}
+
+	private void checkByRelease(final CounterExample counterExample,
+			final CounterExampleProposition firstArgument,
+			final CounterExampleProposition secondArgument) {
+		addCheck(new CounterExampleRelease(counterExample, secondArgument,
+				new CounterExampleDisjunction(counterExample, secondArgument,
+						firstArgument)));
 	}
 
 	@Override
 	protected CounterExampleValueType calculate(final int position) {
-		CounterExampleValueType value = calculateWeakUntilOperator(position);
-
-		Logger.assertProB("Weak Until invalid", value == release.getValues()
-				.get(position));
-
-		Logger.assertProB("Weak Until invalid",
-				value == or1.getValues().get(position));
-
-		Logger.assertProB("Weak Until invalid",
-				value == or2.getValues().get(position));
-
-		return value;
+		return calculateWeakUntilOperator(position);
 	}
 
 	private CounterExampleValueType calculateWeakUntilOperator(
 			final int position) {
-		CounterExampleValueType result = CounterExampleValueType.UNDEFINED;
+		CounterExampleValueType result = CounterExampleValueType.UNKNOWN;
 
 		List<CounterExampleValueType> firstCheckedValues = new ArrayList<CounterExampleValueType>(
 				getFirstArgument().getValues());
@@ -101,35 +94,51 @@ public final class CounterExampleWeakUntil extends CounterExampleBinaryOperator 
 
 		if (secondIndex != -1) {
 			// look for a state with a false value in first argument
-			firstCheckedValues = firstCheckedValues.subList(0, secondIndex);
-			firstIndex = firstCheckedValues
-					.indexOf(CounterExampleValueType.FALSE);
+			firstIndex = firstCheckedValues.subList(0, secondIndex).indexOf(
+					CounterExampleValueType.FALSE);
 
 			if (firstIndex == -1) {
 				trueOrUnknown = true;
 
-				if (pathType != PathType.REDUCED) {
-					result = CounterExampleValueType.TRUE;
+				firstCheckedValues = firstCheckedValues.subList(0,
+						secondIndex + 1);
+				secondCheckedValues = secondCheckedValues.subList(0,
+						secondIndex + 1);
+
+				// look for a state with an unknown value in first and
+				// second argument
+				final int unknownStateIndex = indexOfUnknownState(
+						firstCheckedValues, secondCheckedValues, false);
+
+				if (unknownStateIndex != -1) {
+					firstCheckedValues = firstCheckedValues.subList(0,
+							unknownStateIndex + 1);
+					secondCheckedValues = secondCheckedValues.subList(0,
+							unknownStateIndex + 1);
+
+					secondIndex = -1;
 				} else {
-					// look for the state with an unknown value in first
-					// argument
-					if (firstCheckedValues
-							.contains(CounterExampleValueType.UNDEFINED)) {
-						secondCheckedValues = secondCheckedValues.subList(0,
-								secondIndex + 1);
-						secondIndex = -1;
-					} else {
+					firstCheckedValues = firstCheckedValues.subList(0,
+							secondIndex);
+
+					// look for a state with an unknown value in first argument
+					if (!firstCheckedValues
+							.contains(CounterExampleValueType.UNKNOWN)) {
 						result = CounterExampleValueType.TRUE;
+					} else {
+						secondIndex = -1;
 					}
 				}
 			}
 		} else {
-			// look for a state with a false value in first argument
-			if (!firstCheckedValues.contains(CounterExampleValueType.FALSE)) {
-				if (pathType != PathType.REDUCED) {
-					trueOrUnknown = true;
-					result = CounterExampleValueType.TRUE;
-				}
+			// all states of first argument are valid and all states of second
+			// argument are invalid on a finite or an infinite path
+			if (pathType != PathType.REDUCED
+					&& !firstCheckedValues
+							.contains(CounterExampleValueType.FALSE)) {
+				trueOrUnknown = true;
+				result = CounterExampleValueType.TRUE;
+				secondCheckedValues.clear();
 			}
 		}
 
@@ -143,36 +152,38 @@ public final class CounterExampleWeakUntil extends CounterExampleBinaryOperator 
 						firstIndex + 1);
 				secondIndex = -1;
 
-				if (pathType != PathType.REDUCED) {
+				// look for a state with an unknown value in second argument
+				if (!secondCheckedValues
+						.contains(CounterExampleValueType.UNKNOWN)) {
 					result = CounterExampleValueType.FALSE;
 				} else {
-					// look for a state with an unknown value in second argument
-					if (secondCheckedValues
-							.contains(CounterExampleValueType.UNDEFINED)) {
+					firstCheckedValues = firstCheckedValues.subList(0,
+							firstIndex + 1);
+					firstIndex = -1;
+
+					// look for a state with an unknown value in first and
+					// second argument
+					final int unknownStateIndex = indexOfUnknownState(
+							firstCheckedValues, secondCheckedValues, false);
+
+					if (unknownStateIndex != -1) {
 						firstCheckedValues = firstCheckedValues.subList(0,
-								firstIndex + 1);
-						firstIndex = -1;
-					} else {
-						result = CounterExampleValueType.FALSE;
+								unknownStateIndex + 1);
+						secondCheckedValues = secondCheckedValues.subList(0,
+								unknownStateIndex + 1);
 					}
 				}
 			} else {
-				if (pathType != PathType.REDUCED) {
-					result = CounterExampleValueType.FALSE;
-				} else {
-					for (int i = 0; i < firstCheckedValues.size(); i++) {
-						if (firstCheckedValues.get(i).equals(
-								CounterExampleValueType.UNDEFINED)
-								&& secondCheckedValues.get(i).equals(
-										CounterExampleValueType.UNDEFINED)) {
-							firstCheckedValues = firstCheckedValues.subList(0,
-									i + 1);
-							secondCheckedValues = secondCheckedValues.subList(
-									0, i + 1);
+				// look for a state with an unknown value in first and
+				// second argument
+				final int unknownStateIndex = indexOfUnknownState(
+						firstCheckedValues, secondCheckedValues, false);
 
-							break;
-						}
-					}
+				if (unknownStateIndex != -1) {
+					firstCheckedValues = firstCheckedValues.subList(0,
+							unknownStateIndex + 1);
+					secondCheckedValues = secondCheckedValues.subList(0,
+							unknownStateIndex + 1);
 				}
 			}
 		}

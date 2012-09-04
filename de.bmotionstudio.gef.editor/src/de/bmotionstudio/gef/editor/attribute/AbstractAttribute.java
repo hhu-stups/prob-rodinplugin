@@ -29,20 +29,31 @@ public abstract class AbstractAttribute implements IPropertySource, Cloneable {
 
 	private transient HashMap<String, AbstractAttribute> children;
 	private transient BControl control;
-	private String group;
-	private boolean editable;
-	private boolean show;
-	private Object value;
-
 	private transient PropertyDescriptor propertyDescriptor;
 	private transient Object initValue;
+	private transient Object defaultValue;
+	private transient boolean editable;
+	private transient boolean show;
+	private transient String group;
+	private transient boolean isInitialized;
 
-	public AbstractAttribute(Object value) {
-		this.value = value;
-		this.initValue = value;
-		this.editable = true;
-		this.show = true;
+	// The current value of the attribute
+	private Object value;
+
+	public AbstractAttribute() {
 	}
+
+	// public AbstractAttribute(Object value) {
+	// this(value, true, true);
+	// }
+	//
+	// public AbstractAttribute(Object value, boolean isEditable,
+	// boolean showInPropertiesView) {
+	// this.value = value;
+	// this.initValue = value;
+	// this.editable = isEditable;
+	// this.show = showInPropertiesView;
+	// }
 
 	private Object readResolve() {
 		this.initValue = this.value;
@@ -50,9 +61,7 @@ public abstract class AbstractAttribute implements IPropertySource, Cloneable {
 	}
 
 	public void addChild(AbstractAttribute atr) {
-		if (!getChildren().containsKey(atr.getID())) {
-			getChildren().put(atr.getID(), atr);
-		}
+		getChildren().put(atr.getID(), atr);
 	}
 
 	public Boolean hasChildren() {
@@ -132,12 +141,15 @@ public abstract class AbstractAttribute implements IPropertySource, Cloneable {
 	}
 
 	public void setValue(Object value) {
-		setValue(value, true);
+		setValue(value, true, true);
 	}
 
-	public void setValue(Object value, Boolean firePropertyChange) {
+	public void setValue(Object value, Boolean firePropertyChange,
+			Boolean setInitVal) {
 		Object oldVal = this.value;
 		this.value = value;
+		if (setInitVal)
+			this.initValue = value;
 		if (firePropertyChange && control != null)
 			control.getListeners().firePropertyChange(getID(), oldVal, value);
 	}
@@ -194,6 +206,22 @@ public abstract class AbstractAttribute implements IPropertySource, Cloneable {
 
 	public void setControl(BControl control) {
 		this.control = control;
+	}
+
+	public Object getDefaultValue() {
+		return defaultValue;
+	}
+
+	public void setDefaultValue(Object defaultValue) {
+		this.defaultValue = defaultValue;
+	}
+
+	public boolean isInitialized() {
+		return isInitialized;
+	}
+
+	public void setInitialized(boolean isInitialized) {
+		this.isInitialized = isInitialized;
 	}
 
 }

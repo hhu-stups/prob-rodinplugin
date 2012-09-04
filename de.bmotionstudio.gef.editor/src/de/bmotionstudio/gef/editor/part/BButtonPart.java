@@ -17,14 +17,14 @@ import org.eclipse.swt.graphics.RGB;
 import de.bmotionstudio.gef.editor.AttributeConstants;
 import de.bmotionstudio.gef.editor.edit.TextCellEditorLocator;
 import de.bmotionstudio.gef.editor.edit.TextEditManager;
-import de.bmotionstudio.gef.editor.editpolicy.AppDeletePolicy;
-import de.bmotionstudio.gef.editor.editpolicy.BMotionNodeEditPolicy;
+import de.bmotionstudio.gef.editor.editpolicy.BMSDeletePolicy;
+import de.bmotionstudio.gef.editor.editpolicy.BMSNodeEditPolicy;
 import de.bmotionstudio.gef.editor.editpolicy.CustomDirectEditPolicy;
 import de.bmotionstudio.gef.editor.editpolicy.RenamePolicy;
 import de.bmotionstudio.gef.editor.figure.ButtonFigure;
 import de.bmotionstudio.gef.editor.model.BControl;
 
-public class BButtonPart extends AppAbstractEditPart {
+public class BButtonPart extends BMSAbstractEditPart {
 
 	@Override
 	public void refreshEditFigure(IFigure figure, BControl model,
@@ -71,12 +71,12 @@ public class BButtonPart extends AppAbstractEditPart {
 
 	@Override
 	protected void prepareEditPolicies() {
-		installEditPolicy(EditPolicy.COMPONENT_ROLE, new AppDeletePolicy());
+		installEditPolicy(EditPolicy.COMPONENT_ROLE, new BMSDeletePolicy());
 		installEditPolicy(EditPolicy.NODE_ROLE, new RenamePolicy());
 		installEditPolicy(EditPolicy.DIRECT_EDIT_ROLE,
 				new CustomDirectEditPolicy());
 		installEditPolicy(EditPolicy.GRAPHICAL_NODE_ROLE,
-				new BMotionNodeEditPolicy());
+				new BMSNodeEditPolicy());
 	}
 
 	@Override

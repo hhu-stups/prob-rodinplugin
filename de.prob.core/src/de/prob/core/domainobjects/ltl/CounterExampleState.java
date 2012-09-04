@@ -1,6 +1,7 @@
 package de.prob.core.domainobjects.ltl;
 
 import de.prob.core.domainobjects.Operation;
+import de.prob.prolog.term.PrologTerm;
 
 /**
  * Provides a state of a counter-example.
@@ -10,25 +11,17 @@ import de.prob.core.domainobjects.Operation;
  */
 public final class CounterExampleState {
 	private final int index;
-	private final int stateId;
+	private final PrologTerm stateId;
 	private final Operation operation;
 
-	// private final boolean inLoop;
-
-	public CounterExampleState(final int index, final int stateId,
+	public CounterExampleState(final int index, final PrologTerm stateId,
 			final Operation operation/* , final boolean inLoop */) {
 		this.index = index;
 		this.stateId = stateId;
 		this.operation = operation;
-		// this.inLoop = inLoop;
 	}
 
-	// public CounterExampleState(final int index, final int stateId,
-	// final boolean inLoop) {
-	// this(index, stateId, null, inLoop);
-	// }
-
-	public int getState() {
+	public PrologTerm getState() {
 		return stateId;
 	}
 
@@ -40,7 +33,10 @@ public final class CounterExampleState {
 		return index;
 	}
 
-	// public boolean isInLoop() {
-	// return inLoop;
-	// }
+	@Override
+	public String toString() {
+		return "CounterExampleState [index=" + index + ", stateId=" + stateId
+				+ ", operation=" + operation + "]";
+	}
+
 }

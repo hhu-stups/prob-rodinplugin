@@ -3,8 +3,6 @@ package de.prob.core.domainobjects.ltl;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.prob.core.command.LtlCheckingCommand.PathType;
-
 /**
  * Provides operators with one parameter.
  * 
@@ -17,9 +15,9 @@ public abstract class CounterExampleUnaryOperator extends
 	protected List<List<Integer>> highlightedPositions = new ArrayList<List<Integer>>();
 
 	public CounterExampleUnaryOperator(final String name,
-			final String fullName, final PathType pathType,
-			final int loopEntry, final CounterExampleProposition argument) {
-		super(name, fullName, pathType, loopEntry);
+			final String fullName, final CounterExample counterExample,
+			final CounterExampleProposition argument) {
+		super(name, fullName, counterExample);
 		this.argument = argument;
 	}
 
@@ -69,11 +67,5 @@ public abstract class CounterExampleUnaryOperator extends
 			final int index, final int checkedSize, boolean isPast) {
 		highlightedPositions.add(fillPositions(position, index, checkedSize,
 				isPast));
-	}
-
-	@Override
-	protected int calculatePosition(int pos) {
-		int size = getArgument().getValues().size();
-		return pos < size ? pos : pos - (size - loopEntry);
 	}
 }

@@ -1,11 +1,35 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde version="3.6"?>
 
-<target name="prob_target" sequenceNumber="12">
+<target name="prob_target" sequenceNumber="18">
 <locations>
-<location includeAllPlatforms="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="de.prob.target.feature.feature.group" version="1.0.0.qualifier"/>
-<repository location="http://cobra.cs.uni-duesseldorf.de/prob_dev_target"/>
+<location includeAllPlatforms="false" includeMode="planner" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.equinox.p2.extras.feature.feature.group" version="1.0.1.v20110906-1605-7A4FD4DiVOMap8cHSc6vPuny4gqO"/>
+<unit id="org.eclipse.help.feature.group" version="1.3.0.v20110530-0844-7i7uFFmFFl8nvqbDpEqTvx"/>
+<unit id="org.eclipse.platform.feature.group" version="3.7.2.v20120207-1839-9gF7UHPDFxGjd-PqDr2jX_4yKaumkoHTz04_q-q"/>
+<unit id="org.eclipse.equinox.executable.feature.group" version="3.5.1.v20111216-1653-7P7NFUIFIbaUcU77s0KQWHw5HZTZ"/>
+<unit id="org.eclipse.rcp.feature.group" version="3.7.2.v20120120-1424-9DB5FmnFq5JCf1UA38R-kz0S0272"/>
+<unit id="org.eclipse.emf.edit.feature.group" version="2.7.2.v20120130-0943"/>
+<unit id="org.eclipse.equinox.p2.core.feature.feature.group" version="1.0.1.v20110906-1605-8290FZ9FVKHVRKtmx3fpNuo02129"/>
+<unit id="org.eclipse.equinox.p2.user.ui.feature.group" version="2.1.2.R37x_v20110815-1155-6-Bk8pYWZz0qUTX5I15GZWwbXkrl"/>
+<unit id="org.eclipse.equinox.p2.rcp.feature.feature.group" version="1.0.1.v20110906-1605-782EqBqNKGVkiV-PUsgz-uny4gqO"/>
+<unit id="org.eventb.ide.feature.group" version="2.5.0.r14636"/>
+<unit id="fr.systerel.editor.feature.group" version="0.6.2.r14636"/>
+<unit id="org.rodinp.feature.group" version="1.6.0.r14636"/>
+<unit id="org.rodinp.platform.product" version="2.5.0.r14636"/>
+<unit id="org.rodinp.platform.feature.group" version="2.5.0.r14636"/>
+<unit id="org.rodinp.platform.product.root.feature.feature.group" version="2.5.0.r14636"/>
+<repository location="http://rodin-b-sharp.sourceforge.net/core-updates"/>
+</location>
+<location includeAllPlatforms="false" includeMode="planner" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.gef.feature.group" version="3.7.2.v20110927-2020-777D381B4Bz0755B465D34242"/>
+<unit id="org.eclipse.gef.sdk.feature.group" version="3.7.2.v20110927-2020-7G7W77A5WNgIRPdWXDIbNTSQPdQL"/>
+<repository location="http://download.eclipse.org/releases/indigo/"/>
+</location>
+<location includeAllPlatforms="false" includeMode="planner" includeSource="true" type="InstallableUnit">
+<unit id="ac.soton.eventb.emf.core.extension.feature.feature.group" version="1.3.0.201206030057"/>
+<unit id="org.eventb.emf.feature.feature.group" version="3.7.0.201204300914"/>
+<repository location="http://rodin-b-sharp.sourceforge.net/updates"/>
 </location>
 </locations>
 </target>

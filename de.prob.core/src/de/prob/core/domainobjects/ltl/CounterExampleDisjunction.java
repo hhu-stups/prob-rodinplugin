@@ -1,9 +1,8 @@
 package de.prob.core.domainobjects.ltl;
 
-import de.prob.core.command.LtlCheckingCommand.PathType;
 
 /**
- * Provides an "Or" operator.
+ * Provides an "or" operator.
  * 
  * @author Andriy Tolstoy
  * 
@@ -11,17 +10,11 @@ import de.prob.core.command.LtlCheckingCommand.PathType;
 
 public final class CounterExampleDisjunction extends
 		CounterExampleBinaryOperator {
-	public CounterExampleDisjunction(final PathType pathType,
-			final int loopEntry, final CounterExampleProposition firstArgument,
-			final CounterExampleProposition secondArgument) {
-		super("or", "Disjunction", pathType, loopEntry, firstArgument,
-				secondArgument);
-	}
-
-	public CounterExampleDisjunction(final PathType pathType,
+	public CounterExampleDisjunction(final CounterExample counterExample,
 			final CounterExampleProposition firstArgument,
 			final CounterExampleProposition secondArgument) {
-		this(pathType, -1, firstArgument, secondArgument);
+		super("or", "Disjunction", counterExample, firstArgument,
+				secondArgument);
 	}
 
 	@Override
@@ -54,9 +47,9 @@ public final class CounterExampleDisjunction extends
 		if (firstValue == CounterExampleValueType.TRUE
 				|| secondValue == CounterExampleValueType.TRUE) {
 			result = CounterExampleValueType.TRUE;
-		} else if (firstValue == CounterExampleValueType.UNDEFINED
-				|| secondValue == CounterExampleValueType.UNDEFINED) {
-			result = CounterExampleValueType.UNDEFINED;
+		} else if (firstValue == CounterExampleValueType.UNKNOWN
+				|| secondValue == CounterExampleValueType.UNKNOWN) {
+			result = CounterExampleValueType.UNKNOWN;
 		}
 
 		return result;
