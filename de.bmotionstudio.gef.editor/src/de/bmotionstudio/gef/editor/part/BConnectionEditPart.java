@@ -53,9 +53,9 @@ public class BConnectionEditPart extends BMSAbstractEditPart implements
 	protected Color foregroundColor;
 	private Label conLabel;
 
-	private static final ConnectionAnchor DEFAULT_SOURCE_ANCHOR = new XYAnchor(
+	public static final ConnectionAnchor DEFAULT_SOURCE_ANCHOR = new XYAnchor(
 			new Point(10, 10));
-	private static final ConnectionAnchor DEFAULT_TARGET_ANCHOR = new XYAnchor(
+	public static final ConnectionAnchor DEFAULT_TARGET_ANCHOR = new XYAnchor(
 			new Point(100, 100));
 
 	/*

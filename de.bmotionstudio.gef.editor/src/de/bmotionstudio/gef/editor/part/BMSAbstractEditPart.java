@@ -41,7 +41,6 @@ import de.bmotionstudio.gef.editor.attribute.AbstractAttribute;
 import de.bmotionstudio.gef.editor.figure.AbstractBMotionFigure;
 import de.bmotionstudio.gef.editor.library.AbstractLibraryCommand;
 import de.bmotionstudio.gef.editor.library.AttributeRequest;
-import de.bmotionstudio.gef.editor.model.BConnection;
 import de.bmotionstudio.gef.editor.model.BControl;
 import de.bmotionstudio.gef.editor.model.Visualization;
 import de.bmotionstudio.gef.editor.observer.IObserverListener;
@@ -279,7 +278,7 @@ public abstract class BMSAbstractEditPart extends AbstractGraphicalEditPart
 	 * org.eclipse.gef.editparts.AbstractGraphicalEditPart#getModelSourceConnections
 	 * ()
 	 */
-	protected List<BConnection> getModelSourceConnections() {
+	protected List<?> getModelSourceConnections() {
 		return getCastedModel().getSourceConnections();
 	}
 
@@ -290,7 +289,7 @@ public abstract class BMSAbstractEditPart extends AbstractGraphicalEditPart
 	 * org.eclipse.gef.editparts.AbstractGraphicalEditPart#getModelTargetConnections
 	 * ()
 	 */
-	protected List<BConnection> getModelTargetConnections() {
+	protected List<?> getModelTargetConnections() {
 		return getCastedModel().getTargetConnections();
 	}
 

@@ -14,7 +14,7 @@ import de.bmotionstudio.gef.editor.BMotionStudioImage;
 import de.bmotionstudio.gef.editor.EditorImageRegistry;
 import de.bmotionstudio.gef.editor.command.CreateCommand;
 import de.bmotionstudio.gef.editor.editpolicy.BMSDeletePolicy;
-import de.bmotionstudio.gef.editor.editpolicy.BMSNodeEditPolicy;
+import de.bmotionstudio.gef.editor.editpolicy.BMSConnectionEditPolicy;
 import de.bmotionstudio.gef.editor.editpolicy.BMSFlowEditPolicy;
 import de.bmotionstudio.gef.editor.figure.TableFigure;
 import de.bmotionstudio.gef.editor.model.BControl;
@@ -41,7 +41,7 @@ public class BTablePart extends BMSAbstractEditPart {
 				new BMSFlowEditPolicy());
 		installEditPolicy(EditPolicy.COMPONENT_ROLE, new BMSDeletePolicy());
 		installEditPolicy(EditPolicy.GRAPHICAL_NODE_ROLE,
-				new BMSNodeEditPolicy());
+				new BMSConnectionEditPolicy());
 	}
 
 	@Override

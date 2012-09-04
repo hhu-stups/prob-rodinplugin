@@ -14,7 +14,7 @@ import org.eclipse.gef.EditPolicy;
 
 import de.bmotionstudio.gef.editor.AttributeConstants;
 import de.bmotionstudio.gef.editor.editpolicy.BMSDeletePolicy;
-import de.bmotionstudio.gef.editor.editpolicy.BMSNodeEditPolicy;
+import de.bmotionstudio.gef.editor.editpolicy.BMSConnectionEditPolicy;
 import de.bmotionstudio.gef.editor.editpolicy.ChangeAttributePolicy;
 import de.bmotionstudio.gef.editor.figure.BMSImageFigure;
 import de.bmotionstudio.gef.editor.library.AbstractLibraryCommand;
@@ -69,7 +69,7 @@ public class BImagePart extends BMSAbstractEditPart {
 	protected void prepareEditPolicies() {
 		installEditPolicy(EditPolicy.COMPONENT_ROLE, new BMSDeletePolicy());
 		installEditPolicy(EditPolicy.GRAPHICAL_NODE_ROLE,
-				new BMSNodeEditPolicy());
+				new BMSConnectionEditPolicy());
 		installEditPolicy(ChangeAttributePolicy.CHANGE_ATTRIBUTE_POLICY,
 				new ChangeAttributePolicy());
 	}

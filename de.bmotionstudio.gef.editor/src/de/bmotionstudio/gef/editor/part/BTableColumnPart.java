@@ -11,7 +11,7 @@ import org.eclipse.swt.graphics.RGB;
 import de.bmotionstudio.gef.editor.AttributeConstants;
 import de.bmotionstudio.gef.editor.BMotionStudioImage;
 import de.bmotionstudio.gef.editor.EditorImageRegistry;
-import de.bmotionstudio.gef.editor.editpolicy.BMSNodeEditPolicy;
+import de.bmotionstudio.gef.editor.editpolicy.BMSConnectionEditPolicy;
 import de.bmotionstudio.gef.editor.editpolicy.BMSFlowEditPolicy;
 import de.bmotionstudio.gef.editor.figure.TableColumnFigure;
 import de.bmotionstudio.gef.editor.model.BControl;
@@ -35,7 +35,7 @@ public class BTableColumnPart extends BMSAbstractEditPart {
 		installEditPolicy(EditPolicy.LAYOUT_ROLE,
 				new BMSFlowEditPolicy());
 		installEditPolicy(EditPolicy.GRAPHICAL_NODE_ROLE,
-				new BMSNodeEditPolicy());
+				new BMSConnectionEditPolicy());
 	}
 
 	@Override
