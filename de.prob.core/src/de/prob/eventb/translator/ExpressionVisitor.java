@@ -20,7 +20,10 @@ import org.eventb.core.ast.BoolExpression;
 import org.eventb.core.ast.BoundIdentDecl;
 import org.eventb.core.ast.BoundIdentifier;
 import org.eventb.core.ast.Expression;
+import org.eventb.core.ast.ExtendedExpression;
+import org.eventb.core.ast.ExtendedPredicate;
 import org.eventb.core.ast.Formula;
+import org.eventb.core.ast.FormulaFactory;
 import org.eventb.core.ast.FreeIdentifier;
 import org.eventb.core.ast.ISimpleVisitor;
 import org.eventb.core.ast.IntegerLiteral;
@@ -48,6 +51,8 @@ import de.be4.classicalb.core.parser.node.AEventBFirstProjectionV2Expression;
 import de.be4.classicalb.core.parser.node.AEventBIdentityExpression;
 import de.be4.classicalb.core.parser.node.AEventBSecondProjectionExpression;
 import de.be4.classicalb.core.parser.node.AEventBSecondProjectionV2Expression;
+import de.be4.classicalb.core.parser.node.AExtendedExprExpression;
+import de.be4.classicalb.core.parser.node.AExtendedPredPredicate;
 import de.be4.classicalb.core.parser.node.AFalseExpression;
 import de.be4.classicalb.core.parser.node.AFunctionExpression;
 import de.be4.classicalb.core.parser.node.AGeneralIntersectionExpression;
@@ -617,6 +622,33 @@ public class ExpressionVisitor extends SimpleVisitorAdapter implements // NOPMD
 		}
 		setExtensionExpression.setExpressions(list);
 		setExpression(setExtensionExpression);
+	}
+
+	@Override
+	public void visitExtendedExpression(ExtendedExpression expression) {
+		AExtendedExprExpression p = new AExtendedExprExpression();
+		String symbol = expression.getExtension().getSyntaxSymbol();
+		p.setIdentifier(new TIdentifierLiteral(symbol));
+		Expression[] expressions = expression.getChildExpressions();
+		List<PExpression> childExprs = new ArrayList<PExpression>();
+		for (Expression e : expressions) {
+			ExpressionVisitor v = new ExpressionVisitor(null);
+			e.accept(v);
+			childExprs.add(v.getExpression());
+		}
+		p.setExpressions(childExprs);
+		
+		Predicate[] childPredicates = expression.getChildPredicates();
+		List<PPredicate> childPreds = new ArrayList<PPredicate>();
+		for (Predicate pd : childPredicates) {
+			PredicateVisitor v = new PredicateVisitor(null);
+			pd.accept(v);
+			childPreds.add(v.getPredicate());
+		}
+		p.setPredicates(childPreds);
+		
+		setExpression(p);
+		
 	}
 
 	@SuppressWarnings("deprecation")

@@ -15,6 +15,7 @@ import org.eventb.core.ast.AssociativePredicate;
 import org.eventb.core.ast.BinaryPredicate;
 import org.eventb.core.ast.BoundIdentDecl;
 import org.eventb.core.ast.Expression;
+import org.eventb.core.ast.ExtendedPredicate;
 import org.eventb.core.ast.Formula;
 import org.eventb.core.ast.ISimpleVisitor;
 import org.eventb.core.ast.LiteralPredicate;
@@ -31,6 +32,7 @@ import de.be4.classicalb.core.parser.node.ADisjunctPredicate;
 import de.be4.classicalb.core.parser.node.AEqualPredicate;
 import de.be4.classicalb.core.parser.node.AEquivalencePredicate;
 import de.be4.classicalb.core.parser.node.AExistentialQuantificationPredicate;
+import de.be4.classicalb.core.parser.node.AExtendedPredPredicate;
 import de.be4.classicalb.core.parser.node.AFalsePredicate;
 import de.be4.classicalb.core.parser.node.AFinitePredicate;
 import de.be4.classicalb.core.parser.node.AGreaterEqualPredicate;
@@ -50,6 +52,7 @@ import de.be4.classicalb.core.parser.node.AUnequalPredicate;
 import de.be4.classicalb.core.parser.node.AUniversalQuantificationPredicate;
 import de.be4.classicalb.core.parser.node.PExpression;
 import de.be4.classicalb.core.parser.node.PPredicate;
+import de.be4.classicalb.core.parser.node.TIdentifierLiteral;
 import de.prob.eventb.translator.internal.SimpleVisitorAdapter;
 
 public class PredicateVisitor extends SimpleVisitorAdapter implements // NOPMD
@@ -403,4 +406,35 @@ public class PredicateVisitor extends SimpleVisitorAdapter implements // NOPMD
 		setPredicate(result);
 	}
 
+	@Override
+	public void visitExtendedPredicate(ExtendedPredicate predicate) {
+		AExtendedPredPredicate p = new AExtendedPredPredicate();
+		String symbol = predicate.getExtension().getSyntaxSymbol();
+		p.setIdentifier(new TIdentifierLiteral(symbol));
+
+		Expression[] expressions = predicate.getChildExpressions();
+		List<PExpression> childExprs = new ArrayList<PExpression>();
+		for (Expression e : expressions) {
+			ExpressionVisitor v = new ExpressionVisitor(null);
+			e.accept(v);
+			childExprs.add(v.getExpression());
+		}
+		p.setExpressions(childExprs);
+		
+		Predicate[] childPredicates = predicate.getChildPredicates();
+		List<PPredicate> childPreds = new ArrayList<PPredicate>();
+		for (Predicate pd : childPredicates) {
+			PredicateVisitor v = new PredicateVisitor(null);
+			pd.accept(v);
+			childPreds.add(v.getPredicate());
+		}
+		p.setPredicates(childPreds);
+		setPredicate(p);
+	}
+
+	
+	
+	
+	
+	
 }

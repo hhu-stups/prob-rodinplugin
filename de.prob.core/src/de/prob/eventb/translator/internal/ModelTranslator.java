@@ -23,6 +23,7 @@ import org.eventb.core.IPOSource;
 import org.eventb.core.IPSRoot;
 import org.eventb.core.IPSStatus;
 import org.eventb.core.ISCAction;
+import org.eventb.core.ISCContextRoot;
 import org.eventb.core.ISCEvent;
 import org.eventb.core.ISCGuard;
 import org.eventb.core.ISCInternalContext;
@@ -77,13 +78,13 @@ public class ModelTranslator extends AbstractComponentTranslator {
 
 	private final ISCMachineRoot machine;
 	private final AEventBModelParseUnit model = new AEventBModelParseUnit();
-	private final FormulaFactory ff = FormulaFactory.getDefault();;
+	private final FormulaFactory ff;
+	private final ITypeEnvironment te;
 	private final IMachineRoot origin;
 	private final List<DischargedProof> proofs = new ArrayList<DischargedProof>();
 	// private final List<String> depContext = new ArrayList<String>();
 
 	// Confined in the thread calling the factory method
-	private ITypeEnvironment te;
 	private String refines;
 	private boolean broken = false;
 
@@ -137,9 +138,18 @@ public class ModelTranslator extends AbstractComponentTranslator {
 	// ###############################################################################################################################################################
 	// Implementation
 
-	private ModelTranslator(final ISCMachineRoot currentMachine) {
-		this.machine = currentMachine;
+	private ModelTranslator(final ISCMachineRoot machine)
+			throws TranslationFailedException {
+		this.machine = machine;
 		origin = machine.getMachineRoot();
+		ff = ((ISCMachineRoot) machine).getFormulaFactory();
+		try {
+			te = ((ISCMachineRoot) machine).getTypeEnvironment(ff);
+		} catch (RodinDBException e) {
+			final String message = "A Rodin exception occured during translation process. Original Exception: ";
+			throw new TranslationFailedException(machine.getComponentName(),
+					message + e.getLocalizedMessage());
+		}
 	}
 
 	private void translate() throws RodinDBException,
@@ -151,8 +161,6 @@ public class ModelTranslator extends AbstractComponentTranslator {
 		broken = !machine.isAccurate(); // isAccurate() is not transitive, we
 		// need to collect the information also
 		// for the events
-		te = machine.getTypeEnvironment(ff);
-
 		translateMachine();
 
 		// Check for fully discharged Invariants and Events

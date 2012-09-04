@@ -26,6 +26,7 @@ import org.eventb.core.ISCInternalContext;
 import org.eventb.core.ISCMachineRoot;
 import org.eventb.core.ast.FormulaFactory;
 import org.eventb.core.ast.ITypeEnvironment;
+import org.eventb.core.ast.Predicate;
 import org.rodinp.core.IRodinFile;
 import org.rodinp.core.RodinDBException;
 
@@ -50,14 +51,13 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 	private final AEventBContextParseUnit model = new AEventBContextParseUnit();
 	private final Map<String, ISCContext> depContext = new HashMap<String, ISCContext>();
 	private final FormulaFactory ff;
-
-	// Confined in the thread calling the factory method
 	private ITypeEnvironment te;
 
 	public static ContextTranslator create(final ISCContext context)
 			throws TranslationFailedException {
 		ContextTranslator contextTranslator = new ContextTranslator(context);
 		try {
+(new TheoryTranslator()).translate();
 			contextTranslator.translate();
 		} catch (RodinDBException e) {
 			final String message = "A Rodin exception occured during translation process. Possible cause: building aborted or still in progress. Please wait until building has finished before starting ProB. If this does not help, perform a clean and start ProB after building has finished. Original Exception: ";
@@ -74,27 +74,34 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 	 * contains errors)
 	 * 
 	 * @param context
+	 * @throws TranslationFailedException
 	 * @throws RodinDBException
 	 */
-	private ContextTranslator(final ISCContext context) {
+	private ContextTranslator(final ISCContext context)
+			throws TranslationFailedException {
 		this.context = context;
-		ff = FormulaFactory.getDefault();
+		ff = ((ISCContextRoot) context).getFormulaFactory();
+		try {
+			te = ((ISCContextRoot) context).getTypeEnvironment(ff);
+		} catch (RodinDBException e) {
+			final String message = "A Rodin exception occured during translation process. Original Exception: ";
+			throw new TranslationFailedException(context.getComponentName(),
+					message + e.getLocalizedMessage());
+		}
 	}
 
 	private void translate() throws RodinDBException {
 		if (context instanceof ISCContextRoot) {
 			ISCContextRoot context_root = (ISCContextRoot) context;
 			Assert.isTrue(context_root.getRodinFile().isConsistent());
-			te = context_root.getTypeEnvironment(ff);
+		
 		} else if (context instanceof ISCInternalContext) {
 			ISCInternalContext context_internal = (ISCInternalContext) context;
 			ISCMachineRoot machine_root = (ISCMachineRoot) context_internal
 					.getRoot();
 			Assert.isTrue(machine_root.getRodinFile().isConsistent());
-			te = machine_root.getTypeEnvironment(ff);
 		}
 		translateContext();
-
 	}
 
 	public AEventBContextParseUnit getContextAST() {
@@ -237,7 +244,9 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 			}
 			final PredicateVisitor visitor = new PredicateVisitor(
 					new LinkedList<String>());
-			element.getPredicate(ff, te).accept(visitor);
+
+			Predicate ppp = element.getPredicate(ff, te);
+			ppp.accept(visitor);
 			final PPredicate predicate = visitor.getPredicate();
 			list.add(predicate);
 			labelMapping.put(predicate, element);
