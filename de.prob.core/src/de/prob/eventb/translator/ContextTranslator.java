@@ -32,6 +32,8 @@ import org.eventb.core.ISCInternalContext;
 import org.eventb.core.ISCMachineRoot;
 import org.eventb.core.ast.FormulaFactory;
 import org.eventb.core.ast.ITypeEnvironment;
+import org.eventb.core.seqprover.IConfidence;
+import org.rodinp.core.IRodinElement;
 import org.rodinp.core.IRodinFile;
 import org.rodinp.core.IRodinProject;
 import org.rodinp.core.RodinDBException;
@@ -70,7 +72,7 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 			throws TranslationFailedException {
 		ContextTranslator contextTranslator = new ContextTranslator(context);
 		try {
-(new TheoryTranslator()).translate();
+			(new TheoryTranslator()).translate();
 			contextTranslator.translate();
 		} catch (RodinDBException e) {
 			final String message = "A Rodin exception occured during translation process. Possible cause: building aborted or still in progress. Please wait until building has finished before starting ProB. If this does not help, perform a clean and start ProB after building has finished. Original Exception: ";
@@ -131,6 +133,49 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 			Assert.isTrue(machine_root.getRodinFile().isConsistent());
 		}
 		translateContext();
+
+	}
+
+	private void collectProofInfo(ISCContextRoot context_root)
+			throws RodinDBException {
+
+		IPSRoot proofStatus = context_root.getPSRoot();
+		IPSStatus[] statuses = proofStatus.getStatuses();
+
+		List<String> bugs = new LinkedList<String>();
+
+		for (IPSStatus status : statuses) {
+			final int confidence = status.getConfidence();
+			boolean broken = status.isBroken();
+			if (!broken && confidence == IConfidence.DISCHARGED_MAX) {
+				IPOSequent sequent = status.getPOSequent();
+				IPOSource[] sources = sequent.getSources();
+
+				for (IPOSource source : sources) {
+
+					IRodinElement srcElement = source.getSource();
+					if (!srcElement.exists()) {
+						bugs.add(status.getElementName());
+						break;
+					}
+
+					if (srcElement instanceof IAxiom) {
+						IAxiom tmp = (IAxiom) srcElement;
+						if (((IContextRoot) tmp.getParent())
+								.equals(context_root.getContextRoot())) {
+							proofs.add(new DischargedProof(context_root, tmp,
+									null));
+						}
+					}
+				}
+			}
+		}
+
+		if (!bugs.isEmpty()) {
+			String message = "Translation incomplete due to a Bug in Rodin. This does not affect correctness of the Animation/Model Checking but can decrease its performance. Skipped discharged information about: "
+					+ StringUtils.join(bugs, ",");
+			Logger.notifyUser(message);
+		}
 
 	}
 
@@ -227,7 +272,7 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 		final ISCCarrierSet[] carrierSets = context.getSCCarrierSets();
 		final List<PSet> setList = new ArrayList<PSet>(carrierSets.length);
 		for (final ISCCarrierSet carrierSet : carrierSets) {
-			final ADeferredSet deferredSet = new ADeferredSet(
+			final ADeferredSetSet deferredSet = new ADeferredSetSet(
 					Arrays.asList(new TIdentifierLiteral[] { new TIdentifierLiteral(
 							carrierSet.getIdentifierString()) }));
 			setList.add(deferredSet);
