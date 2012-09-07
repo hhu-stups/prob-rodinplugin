@@ -13,8 +13,9 @@ task bMotionStudioHelpCustumBuild(type: Exec){
 	commandLine 'ant', '-f','de.bmotionstudio.help/customBuild.xml'
 }
 
-
 install.dependsOn bMotionStudioHelpCustumBuild
+
+completeInstall.dependsOn bMotionStudioHelpCustumBuild
 
 project(':de.prob.core') {
 
@@ -93,6 +94,9 @@ task downloadCli << {
 	delete file(targetzip)
 	
 }
+
+
+completeInstall.dependsOn downloadCli
 
 task deleteOldArtifacts(type: Delete) {
   	String updateSite = workspacePath+'updatesite'
