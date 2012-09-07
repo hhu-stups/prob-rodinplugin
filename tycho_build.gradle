@@ -4,6 +4,8 @@
 	Executing the Build Script and download Dependencies can be executed via 'gradle completeInstall'
  	For a complete classPath Refresh please execute 'gradle deleteFromClassPath setClassPath'	
 	Pom Generation can be executed via gradle deploy
+	
+	If you have a product definition please add a buildProduct = true to your main build.gradle script
 
 */
 
@@ -97,6 +99,13 @@ try{
 	targetRepositories = targetRepositories
 }catch(MissingPropertyException e){
 	targetRepositories = ["http://download.eclipse.org/releases/indigo/"]
+}
+
+try{
+	buildProduct = buildProduct
+	
+}catch(MissingPropertyException e){
+	buildProduct = false
 }
 
 
@@ -592,8 +601,47 @@ def reposi() { """
     <artifactId>${repositoryName}</artifactId>
     <version>1.0.0.qualifier</version>
     <packaging>eclipse-repository</packaging>
-  </project>
+	
+	${reposiBuildStep()} 
+</project>
 """}
+
+def String reposiBuildStep(){
+	
+	if( buildProduct != false ){
+		return	"""
+		    <build>
+		  <plugins>
+		    <plugin>
+		      <groupId>org.eclipse.tycho</groupId>
+		      <artifactId>tycho-p2-director-plugin</artifactId>
+		      <version>\${tycho-version}</version>
+		      <executions>
+		        <execution>
+		          <!-- (optional) install the product for all configured os/ws/arch environments using p2 director -->
+		          <id>materialize-products</id>
+		          <goals>
+		            <goal>materialize-products</goal>
+		          </goals>
+		        </execution>
+
+			 		<execution>
+			            <!-- (optional) create product zips (one per os/ws/arch) -->
+			            <id>archive-products</id>
+			            <goals>
+			              <goal>archive-products</goal>
+			            </goals>
+			          </execution>
+
+				</executions>
+		    </plugin>
+		  </plugins>
+		</build>
+		"""
+	}else{
+		return "\n"
+	}
+}
 
 
 // creates a category in 
@@ -640,6 +688,88 @@ def feature(artifactId, versionNumber) { """
 	</project>
 """}
 // end of feature pom
+
+
+// 						-------- 					In case you want to generate the product definition  					 ------ 			//
+/*
+
+def productXML(){
+"""
+<?xml version="1.0" encoding="UTF-8"?>
+<?pde version="3.5"?>
+
+<product name="${groupID}.product" uid="${groupID}" id="${groupID}.product" application="${product}" version="1.0.0.qualifier" useFeatures="true" includeLaunchers="true">
+
+   <configIni use="default">
+   </configIni>
+
+   <launcherArgs>
+      <programArgs>-consoleLog</programArgs>
+      <vmArgs>-Xdock:icon=../Resources/Eclipse.icns -XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts -Xdock:icon=../Resources/Eclipse.icns -XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts -Xms40m -Xmx512m -Xdock:icon=../Resources/Eclipse.icns -XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts</vmArgs>
+      <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts</vmArgsMac>
+   </launcherArgs>
+
+   <plugins>
+     
+   </plugins>
+	<features>
+"""+listProductFeature()+"""
+   	<feature id="org.eclipse.rcp" version="3.7.2.v20120120-1424-9DB5FmnFq5JCf1UA38R-kz0S0272"/>
+	</features>  
+   <configurations>
+      <plugin id="org.eclipse.core.runtime" autoStart="true" startLevel="0" />
+      <plugin id="org.eclipse.equinox.common" autoStart="true" startLevel="2" />
+      <plugin id="org.eclipse.osgi" autoStart="true" startLevel="-1" />
+   </configurations>
+
+</product>
+
+
+"""
+
+/*
+"""
+<?xml version="1.0" encoding="UTF-8"?>
+<?pde version="3.5"?>
+
+<product name="de.prob.product" uid="de.prob" id="de.prob.standalone.product" application="de.prob.standalone.application" version="1.0.0.qualifier" useFeatures="true" includeLaunchers="true">
+
+   <configIni use="default">
+   </configIni>
+
+   <launcherArgs>
+      <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts</vmArgsMac>
+   </launcherArgs>
+
+   <plugins>
+   </plugins>
+
+
+</product>
+
+
+"""*/
+
+/*
+
+     <feature id="birkhoff.feature" version="1.0.0.qualifier"/>
+    
+
+*/	
+/*
+}
+
+def String listProductFeatures(){
+	String returnString = ""
+	for(int i = 0; i < features.size(); i++){
+		
+		returnString +=  '\n\t\t<feature id="${features[i]}" version="1.0.0.qualifier"/>'
+		
+	}
+	return returnString
+	
+}
+*/
 
 //	Build Script can be executed via gradle install
 // 	For a complete classPath Refresh please execute 'gradle deleteFromClassPath setClassPath'	
