@@ -25,7 +25,7 @@ For availability of commercial support, please contact Formal Mind (http://www.f
 
 - Install Eclipse (Indigo/Juno) for RCP Development
 
-- Import the projects into Eclipse. You can leave out de.prob.releng.  At this point Eclipse will complain about errors, the reason is that the target platform (i.e., Rodin) hasn't been setup yet).
+- Import the projects into Eclipse. At this point Eclipse will complain about errors, the reason is that the target platform (i.e., Rodin) hasn't been setup yet).
 
 - Open the file prob_target.target from the de.prob.core project and click on "Set as Target Platform". Grab a coffee. 
 
