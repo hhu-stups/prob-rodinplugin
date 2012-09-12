@@ -213,6 +213,81 @@ def deleteLibFromCP(def project){
 // deletes whole DependenciesLibrary Folder
 
 
+def addRunTimeLib( String libPar, String projectPar){
+	
+	def mf = new File(projectPar+"/META-INF/MANIFEST.MF")
+	def newMf = new File(projectPar+"/MF")
+	newMf.delete()
+	mf.eachLine{ line ->
+		if(line ==~ /.*Bundle-ClassPath:.*\.jar.*/){
+
+			libsInLine = line.replaceAll(/[\ \t]*Bundle-ClassPath:[\ \t]*/, '')
+			line = line.replaceFirst(/[^\ \t]*\.jar[\ \,]*/, dependencyFolder+libPar+",\n "+libsInLine)		// /[^\ \t]*.\.jar[\ \,]*/
+		}else{
+			if(line ==~ /.*Bundle-ClassPath: \.[\ \t]*/){
+				line = line+",\n "+dependencyFolder+libPar
+			}else{
+				if( line ==~ /.*Bundle-ClassPath: \.\,[\ \t]*/ ){
+					line = line+"\n "+dependencyFolder+libPar+","
+				}
+			}
+		}
+		
+		newMf << line+"\n"
+	}
+	mf.delete()
+	newMf.renameTo(projectPar+"/META-INF/MANIFEST.MF")
+	
+	
+} // Adds a Library to the current Bundle-ClassPath of the Manifest file
+
+
+def createRunTimeLib(String libPar, String projectPar){
+	def mf = new File(projectPar+"/META-INF/MANIFEST.MF")
+	mf << "Bundle-ClassPath: lib/dependencies/"+libPar
+} // Creates a Bundle-ClassPath Section in the Manifest file
+
+def boolean checkForRunTimeLibs(String projectPar){
+	boolean returnBool = false
+	def mf = new File(projectPar+"/META-INF/MANIFEST.MF")
+		mf.eachLine{ line ->
+			if(line ==~ /.*Bundle-ClassPath:.*/){
+				returnBool = true
+			}
+		}
+		return returnBool
+} // checks for a Bundle-ClassPath section in the Manifest file
+
+
+def boolean checkRunTimeLib(String libPar, String projectPar){								// checks if lib is in RunTimeLibrary present and 
+	def mf = new File(projectPar+"/META-INF/MANIFEST.MF")									// changes reference if necessary
+	def newMf = new File(projectPar+"/MF")
+	newMf.delete()
+	boolean returnBool = false
+	boolean changed = false
+		mf.eachLine{ line ->
+			if(line ==~ /.*${libPar}.*/){
+				if( !( line ==~ /.*(\ |\t)*${dependencyFolder}${libPar}(\ |\t)*.*/ ) ){			//if lib is already referenced
+					line = line.replaceFirst( /[^\ \t]*${libPar}/, dependencyFolder+libPar ) 		// reference lib from dependencyFolder	
+					changed = true
+					println line
+					println "yolo  ${libPar}\n"
+				}
+				returnBool = true
+			}
+			
+			newMf << line+"\n"
+		}
+		if(changed){
+			mf.delete()
+			newMf.renameTo(projectPar+"/META-INF/MANIFEST.MF")
+		}else{
+			newMf.delete()
+		}
+		return returnBool
+	
+}// checks if lib is already present in Manifest file
+// if lib is present but is referenced from another folder than dependencyFolder the library from dependencyFolder will be referenced
 
 /////////////////////////////////////////////////////////////////////////////////////////
 //		--	!!! 				DEFINING SUB PROJECTS 							!!!	-- //
@@ -236,21 +311,32 @@ subprojects {
 			into "${dependencyFolder}" 	
 			
 	}
-
 	
 	task setClassPath(dependsOn: 'collectDependencies')<<{
 		
 		description = "\tAdds all your Dependencies from your local lib folder in each project to it's classpath"
-		
+		//if(project.name ==~ /birkhoff.bundle.*/){
 		def dependencyList = []
 		try{
 			def dir = new File(workspacePath+project.name+"/"+dependencyFolder).eachFile() { file->  		
-			    dependencyList << file.getName()  
+			    if( !(file.getName() ==~/.*\.txt/) ){
+					dependencyList << file.getName()  
 				}
+			}
 	
 			if(features.every{ it != project.name }){	
+				boolean BundleClassPathPresent = checkForRunTimeLibs(project.name)
 				for(int icp = 0; icp < dependencyList.size; icp++){
-					addLibToCP(project.name, dependencyList[icp])
+					addLibToCP(project.name, dependencyList[icp])	//Adds Lib to .classPath file
+					
+					if(!BundleClassPathPresent){					// Adds Lib to Manifest File
+						createRunTimeLib(dependencyList[icp], project.name)
+						BundleClassPathPresent = true
+					}else{
+						if(!checkRunTimeLib(dependencyList[icp], project.name)){		// if library not present add it to RunTimeLibrary
+							addRunTimeLib( dependencyList[icp], project.name)
+						}
+					}
 				}
 				/*dependencyList.each{ dep->
 					println project.name+": "+ dep	// could still be usefull for debugging, that's why it's not deleted
@@ -266,7 +352,8 @@ subprojects {
 		}catch(Exception e){
 			println project.name+" has no dependencies in '${dependencyFolder}' defined: Classpath will not be changed"
 		}
-	
+	//}// if projectAbfrage
+		
 	}// setClassPath
 	
 	
@@ -774,4 +861,3 @@ def String listProductFeatures(){
 //	Build Script can be executed via gradle install
 // 	For a complete classPath Refresh please execute 'gradle deleteFromClassPath setClassPath'	
 //	Pom Generation can be executed via gradle deploy
-
