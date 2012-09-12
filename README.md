@@ -21,7 +21,7 @@ For availability of commercial support, please contact Formal Mind (http://www.f
 - We use gradle to manage the dependencies to the libraries, thus you will need gradle installed on your computer. 
   (see http://www.gradle.org/)
 
-- In the de.prob.releng directory run the downloadCli and collectDependencies tasks (gradle downloadCli collectDependencies). This will download the latest nightly build of the Prolog binary and the required Java libraries (such as apache commons, etc.)
+- In the workspace directory run the completeInstall task [gradle completeInstall]  (alternatively you can also run the downloadCli and collectDependencies tasks [gradle downloadCli collectDependencies]. This will download the latest nightly build of the Prolog binary and the required Java libraries (such as apache commons, etc.)
 
 - Install Eclipse (Indigo/Juno) for RCP Development
 
