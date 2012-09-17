@@ -19,7 +19,7 @@ For availability of commercial support, please contact Formal Mind (http://www.f
   We suggest to fork the project on github (see https://help.github.com/articles/fork-a-repo)
 
 - We use gradle to manage the dependencies to the libraries, thus you will need gradle installed on your computer. 
-  (see http://www.gradle.org/)   Please note that you currently will need  gradle version 1.0-rc-1 or  1.0-rc-3!
+  (see http://www.gradle.org/)
 
 - In the workspace directory run the completeInstall task (gradle completeInstall), alternatively you can also run the downloadCli and collectDependencies tasks (gradle downloadCli collectDependencies). This will download the latest nightly build of the Prolog binary and the required Java libraries (such as apache commons, etc.)
 
