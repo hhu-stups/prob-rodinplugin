@@ -97,7 +97,7 @@ task downloadCli << {
 
 
 completeInstall.dependsOn downloadCli
-//completeInstall.dependsOn subprojects.setClassPath setClassPath needs fix
+completeInstall.dependsOn subprojects.setClassPath setClassPath needs fix
 
 task deleteOldArtifacts(type: Delete) {
   	String updateSite = workspacePath+'updatesite'
