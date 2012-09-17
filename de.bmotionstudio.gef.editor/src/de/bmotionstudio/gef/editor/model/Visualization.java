@@ -25,7 +25,7 @@ import de.prob.exceptions.ProBException;
 
 public class Visualization extends BControl {
 
-	public static transient String TYPE = "de.bmotionstudio.gef.editor.text";
+	public static transient String TYPE = "de.bmotionstudio.gef.editor.visualization";
 
 	protected String bmachine, language, version;
 

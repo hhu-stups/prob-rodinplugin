@@ -18,7 +18,7 @@ import de.bmotionstudio.gef.editor.AttributeConstants;
 import de.bmotionstudio.gef.editor.edit.TextCellEditorLocator;
 import de.bmotionstudio.gef.editor.edit.TextEditManager;
 import de.bmotionstudio.gef.editor.editpolicy.BMSDeletePolicy;
-import de.bmotionstudio.gef.editor.editpolicy.BMSNodeEditPolicy;
+import de.bmotionstudio.gef.editor.editpolicy.BMSConnectionEditPolicy;
 import de.bmotionstudio.gef.editor.editpolicy.CustomDirectEditPolicy;
 import de.bmotionstudio.gef.editor.editpolicy.RenamePolicy;
 import de.bmotionstudio.gef.editor.figure.ButtonFigure;
@@ -76,7 +76,7 @@ public class BButtonPart extends BMSAbstractEditPart {
 		installEditPolicy(EditPolicy.DIRECT_EDIT_ROLE,
 				new CustomDirectEditPolicy());
 		installEditPolicy(EditPolicy.GRAPHICAL_NODE_ROLE,
-				new BMSNodeEditPolicy());
+				new BMSConnectionEditPolicy());
 	}
 
 	@Override

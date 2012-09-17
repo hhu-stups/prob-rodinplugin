@@ -4,6 +4,8 @@
 	Executing the Build Script and download Dependencies can be executed via 'gradle completeInstall'
  	For a complete classPath Refresh please execute 'gradle deleteFromClassPath setClassPath'	
 	Pom Generation can be executed via gradle deploy
+	
+	If you have a product definition please add a buildProduct = true to your main build.gradle script
 
 */
 
@@ -97,6 +99,13 @@ try{
 	targetRepositories = targetRepositories
 }catch(MissingPropertyException e){
 	targetRepositories = ["http://download.eclipse.org/releases/indigo/"]
+}
+
+try{
+	buildProduct = buildProduct
+	
+}catch(MissingPropertyException e){
+	buildProduct = false
 }
 
 
@@ -204,6 +213,81 @@ def deleteLibFromCP(def project){
 // deletes whole DependenciesLibrary Folder
 
 
+def addRunTimeLib( String libPar, String projectPar){
+	
+	def mf = new File(projectPar+"/META-INF/MANIFEST.MF")
+	def newMf = new File(projectPar+"/MF")
+	newMf.delete()
+	mf.eachLine{ line ->
+		if(line ==~ /.*Bundle-ClassPath:.*\.jar.*/){
+
+			libsInLine = line.replaceAll(/[\ \t]*Bundle-ClassPath:[\ \t]*/, '')
+			line = line.replaceFirst(/[^\ \t]*\.jar[\ \,]*/, dependencyFolder+libPar+",\n "+libsInLine)		// /[^\ \t]*.\.jar[\ \,]*/
+		}else{
+			if(line ==~ /.*Bundle-ClassPath: \.[\ \t]*/){
+				line = line+",\n "+dependencyFolder+libPar
+			}else{
+				if( line ==~ /.*Bundle-ClassPath: \.\,[\ \t]*/ ){
+					line = line+"\n "+dependencyFolder+libPar+","
+				}
+			}
+		}
+		
+		newMf << line+"\n"
+	}
+	mf.delete()
+	newMf.renameTo(projectPar+"/META-INF/MANIFEST.MF")
+	
+	
+} // Adds a Library to the current Bundle-ClassPath of the Manifest file
+
+
+def createRunTimeLib(String libPar, String projectPar){
+	def mf = new File(projectPar+"/META-INF/MANIFEST.MF")
+	mf << "Bundle-ClassPath: lib/dependencies/"+libPar
+} // Creates a Bundle-ClassPath Section in the Manifest file
+
+def boolean checkForRunTimeLibs(String projectPar){
+	boolean returnBool = false
+	def mf = new File(projectPar+"/META-INF/MANIFEST.MF")
+		mf.eachLine{ line ->
+			if(line ==~ /.*Bundle-ClassPath:.*/){
+				returnBool = true
+			}
+		}
+		return returnBool
+} // checks for a Bundle-ClassPath section in the Manifest file
+
+
+def boolean checkRunTimeLib(String libPar, String projectPar){								// checks if lib is in RunTimeLibrary present and 
+	def mf = new File(projectPar+"/META-INF/MANIFEST.MF")									// changes reference if necessary
+	def newMf = new File(projectPar+"/MF")
+	newMf.delete()
+	boolean returnBool = false
+	boolean changed = false
+		mf.eachLine{ line ->
+			if(line ==~ /.*${libPar}.*/){
+				if( !( line ==~ /.*(\ |\t)*${dependencyFolder}${libPar}(\ |\t)*.*/ ) ){			//if lib is already referenced
+					line = line.replaceFirst( /[^\ \t]*${libPar}/, dependencyFolder+libPar ) 		// reference lib from dependencyFolder	
+					changed = true
+					println line
+					println "yolo  ${libPar}\n"
+				}
+				returnBool = true
+			}
+			
+			newMf << line+"\n"
+		}
+		if(changed){
+			mf.delete()
+			newMf.renameTo(projectPar+"/META-INF/MANIFEST.MF")
+		}else{
+			newMf.delete()
+		}
+		return returnBool
+	
+}// checks if lib is already present in Manifest file
+// if lib is present but is referenced from another folder than dependencyFolder the library from dependencyFolder will be referenced
 
 /////////////////////////////////////////////////////////////////////////////////////////
 //		--	!!! 				DEFINING SUB PROJECTS 							!!!	-- //
@@ -227,21 +311,32 @@ subprojects {
 			into "${dependencyFolder}" 	
 			
 	}
-
 	
 	task setClassPath(dependsOn: 'collectDependencies')<<{
 		
 		description = "\tAdds all your Dependencies from your local lib folder in each project to it's classpath"
-		
+		//if(project.name ==~ /birkhoff.bundle.*/){
 		def dependencyList = []
 		try{
 			def dir = new File(workspacePath+project.name+"/"+dependencyFolder).eachFile() { file->  		
-			    dependencyList << file.getName()  
+			    if( !(file.getName() ==~/.*\.txt/) ){
+					dependencyList << file.getName()  
 				}
+			}
 	
 			if(features.every{ it != project.name }){	
+				boolean BundleClassPathPresent = checkForRunTimeLibs(project.name)
 				for(int icp = 0; icp < dependencyList.size; icp++){
-					addLibToCP(project.name, dependencyList[icp])
+					addLibToCP(project.name, dependencyList[icp])	//Adds Lib to .classPath file
+					
+					if(!BundleClassPathPresent){					// Adds Lib to Manifest File
+						createRunTimeLib(dependencyList[icp], project.name)
+						BundleClassPathPresent = true
+					}else{
+						if(!checkRunTimeLib(dependencyList[icp], project.name)){		// if library not present add it to RunTimeLibrary
+							addRunTimeLib( dependencyList[icp], project.name)
+						}
+					}
 				}
 				/*dependencyList.each{ dep->
 					println project.name+": "+ dep	// could still be usefull for debugging, that's why it's not deleted
@@ -257,7 +352,8 @@ subprojects {
 		}catch(Exception e){
 			println project.name+" has no dependencies in '${dependencyFolder}' defined: Classpath will not be changed"
 		}
-	
+	//}// if projectAbfrage
+		
 	}// setClassPath
 	
 	
@@ -592,8 +688,47 @@ def reposi() { """
     <artifactId>${repositoryName}</artifactId>
     <version>1.0.0.qualifier</version>
     <packaging>eclipse-repository</packaging>
-  </project>
+	
+	${reposiBuildStep()} 
+</project>
 """}
+
+def String reposiBuildStep(){
+	
+	if( buildProduct != false ){
+		return	"""
+		    <build>
+		  <plugins>
+		    <plugin>
+		      <groupId>org.eclipse.tycho</groupId>
+		      <artifactId>tycho-p2-director-plugin</artifactId>
+		      <version>\${tycho-version}</version>
+		      <executions>
+		        <execution>
+		          <!-- (optional) install the product for all configured os/ws/arch environments using p2 director -->
+		          <id>materialize-products</id>
+		          <goals>
+		            <goal>materialize-products</goal>
+		          </goals>
+		        </execution>
+
+			 		<execution>
+			            <!-- (optional) create product zips (one per os/ws/arch) -->
+			            <id>archive-products</id>
+			            <goals>
+			              <goal>archive-products</goal>
+			            </goals>
+			          </execution>
+
+				</executions>
+		    </plugin>
+		  </plugins>
+		</build>
+		"""
+	}else{
+		return "\n"
+	}
+}
 
 
 // creates a category in 
@@ -641,7 +776,88 @@ def feature(artifactId, versionNumber) { """
 """}
 // end of feature pom
 
+
+// 						-------- 					In case you want to generate the product definition  					 ------ 			//
+/*
+
+def productXML(){
+"""
+<?xml version="1.0" encoding="UTF-8"?>
+<?pde version="3.5"?>
+
+<product name="${groupID}.product" uid="${groupID}" id="${groupID}.product" application="${product}" version="1.0.0.qualifier" useFeatures="true" includeLaunchers="true">
+
+   <configIni use="default">
+   </configIni>
+
+   <launcherArgs>
+      <programArgs>-consoleLog</programArgs>
+      <vmArgs>-Xdock:icon=../Resources/Eclipse.icns -XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts -Xdock:icon=../Resources/Eclipse.icns -XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts -Xms40m -Xmx512m -Xdock:icon=../Resources/Eclipse.icns -XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts</vmArgs>
+      <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts</vmArgsMac>
+   </launcherArgs>
+
+   <plugins>
+     
+   </plugins>
+	<features>
+"""+listProductFeature()+"""
+   	<feature id="org.eclipse.rcp" version="3.7.2.v20120120-1424-9DB5FmnFq5JCf1UA38R-kz0S0272"/>
+	</features>  
+   <configurations>
+      <plugin id="org.eclipse.core.runtime" autoStart="true" startLevel="0" />
+      <plugin id="org.eclipse.equinox.common" autoStart="true" startLevel="2" />
+      <plugin id="org.eclipse.osgi" autoStart="true" startLevel="-1" />
+   </configurations>
+
+</product>
+
+
+"""
+
+/*
+"""
+<?xml version="1.0" encoding="UTF-8"?>
+<?pde version="3.5"?>
+
+<product name="de.prob.product" uid="de.prob" id="de.prob.standalone.product" application="de.prob.standalone.application" version="1.0.0.qualifier" useFeatures="true" includeLaunchers="true">
+
+   <configIni use="default">
+   </configIni>
+
+   <launcherArgs>
+      <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts</vmArgsMac>
+   </launcherArgs>
+
+   <plugins>
+   </plugins>
+
+
+</product>
+
+
+"""*/
+
+/*
+
+     <feature id="birkhoff.feature" version="1.0.0.qualifier"/>
+    
+
+*/	
+/*
+}
+
+def String listProductFeatures(){
+	String returnString = ""
+	for(int i = 0; i < features.size(); i++){
+		
+		returnString +=  '\n\t\t<feature id="${features[i]}" version="1.0.0.qualifier"/>'
+		
+	}
+	return returnString
+	
+}
+*/
+
 //	Build Script can be executed via gradle install
 // 	For a complete classPath Refresh please execute 'gradle deleteFromClassPath setClassPath'	
 //	Pom Generation can be executed via gradle deploy
-

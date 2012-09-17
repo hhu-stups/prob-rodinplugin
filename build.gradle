@@ -7,6 +7,16 @@ apply from: 'tycho_build.gradle'
 
 // Local tasks
 
+
+task bMotionStudioHelpCustumBuild(type: Exec){
+	
+	commandLine 'ant', '-f','de.bmotionstudio.help/customBuild.xml'
+}
+
+install.dependsOn bMotionStudioHelpCustumBuild
+
+completeInstall.dependsOn bMotionStudioHelpCustumBuild
+
 project(':de.prob.core') {
 
 	repositories {
@@ -84,6 +94,10 @@ task downloadCli << {
 	delete file(targetzip)
 	
 }
+
+
+completeInstall.dependsOn downloadCli
+//completeInstall.dependsOn subprojects.setClassPath setClassPath needs fix
 
 task deleteOldArtifacts(type: Delete) {
   	String updateSite = workspacePath+'updatesite'

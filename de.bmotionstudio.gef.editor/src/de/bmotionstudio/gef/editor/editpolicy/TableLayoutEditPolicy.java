@@ -34,7 +34,7 @@ import de.bmotionstudio.gef.editor.model.BTable;
 import de.bmotionstudio.gef.editor.model.BTableCell;
 import de.bmotionstudio.gef.editor.model.BTableColumn;
 
-public class BMSFlowEditPolicy extends FlowLayoutEditPolicy {
+public class TableLayoutEditPolicy extends FlowLayoutEditPolicy {
 
 	private static final Dimension PREFERRED_SIZE = new Dimension(-1, -1);
 
