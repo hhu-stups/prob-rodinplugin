@@ -21,11 +21,11 @@ For availability of commercial support, please contact Formal Mind (http://www.f
 - We use gradle to manage the dependencies to the libraries, thus you will need gradle installed on your computer. 
   (see http://www.gradle.org/)
 
-- In the de.prob.releng directory run the downloadCli and collectDependencies tasks (gradle downloadCli collectDependencies). This will download the latest nightly build of the Prolog binary and the required Java libraries (such as apache commons, etc.)
+- In the workspace directory run the completeInstall task (gradle completeInstall), alternatively you can also run the downloadCli and collectDependencies tasks (gradle downloadCli collectDependencies). This will download the latest nightly build of the Prolog binary and the required Java libraries (such as apache commons, etc.)
 
 - Install Eclipse (Indigo/Juno) for RCP Development
 
-- Import the projects into Eclipse. You can leave out de.prob.releng.  At this point Eclipse will complain about errors, the reason is that the target platform (i.e., Rodin) hasn't been setup yet).
+- Import the projects into Eclipse. At this point Eclipse will complain about errors, the reason is that the target platform (i.e., Rodin) hasn't been setup yet).
 
 - Open the file prob_target.target from the de.prob.core project and click on "Set as Target Platform". Grab a coffee. 
 

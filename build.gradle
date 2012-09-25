@@ -1,11 +1,21 @@
 
-targetRepositories = ["http://cobra.cs.uni-duesseldorf.de/prob_dev_target/","http://download.eclipse.org/releases/indigo/","http://rodin-b-sharp.sourceforge.net/updates"]	
+targetRepositories = ["http://www.stups.uni-duesseldorf.de/prob_dev_target/","http://download.eclipse.org/releases/indigo/","http://rodin-b-sharp.sourceforge.net/updates"]	
 
 groupID = "de.prob"
 
 apply from: 'tycho_build.gradle'
 
 // Local tasks
+
+
+task bMotionStudioHelpCustumBuild(type: Exec){
+	
+	commandLine 'ant', '-f','de.bmotionstudio.help/customBuild.xml'
+}
+
+install.dependsOn bMotionStudioHelpCustumBuild
+
+completeInstall.dependsOn bMotionStudioHelpCustumBuild
 
 project(':de.prob.core') {
 
@@ -84,6 +94,10 @@ task downloadCli << {
 	delete file(targetzip)
 	
 }
+
+
+completeInstall.dependsOn downloadCli
+completeInstall.dependsOn subprojects.setClassPath
 
 task deleteOldArtifacts(type: Delete) {
   	String updateSite = workspacePath+'updatesite'
