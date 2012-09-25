@@ -15,15 +15,20 @@ import de.bmotionstudio.gef.editor.BMotionEditorPlugin;
 import de.bmotionstudio.gef.editor.IBControlService;
 import de.bmotionstudio.gef.editor.model.BControl;
 import de.bmotionstudio.gef.editor.model.ObserverRootVirtualTreeNode;
+import de.bmotionstudio.gef.editor.model.Visualization;
 import de.bmotionstudio.gef.editor.observer.Observer;
 
 public class BMSTreeEditPartFactory implements EditPartFactory {
 
 	public EditPart createEditPart(EditPart context, Object model) {
 
+
 		BMSAbstractTreeEditPart part = null;
 
-		if (model instanceof BControl) {
+		if (model instanceof Visualization) {
+			part = new BControlTreeEditPart();
+		}
+		else if (model instanceof BControl) {
 
 			BControl control = (BControl) model;
 
