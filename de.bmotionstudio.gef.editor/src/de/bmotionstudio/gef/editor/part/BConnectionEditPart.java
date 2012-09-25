@@ -112,6 +112,10 @@ public class BConnectionEditPart extends BMSAbstractEditPart implements
 			((PolylineConnection) getFigure()).setLineStyle((Integer
 					.valueOf(value.toString()) + 1));
 
+		if (aID.equals(AttributeConstants.ATTRIBUTE_VISIBLE))
+			((PolylineConnection) getFigure()).setVisible(Boolean.valueOf(value
+					.toString()));
+
 		if (aID.equals(AttributeConstants.ATTRIBUTE_FOREGROUND_COLOR)) {
 			if (foregroundColor != null)
 				foregroundColor.dispose();
