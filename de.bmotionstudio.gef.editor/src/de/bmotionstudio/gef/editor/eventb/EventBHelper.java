@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.core.resources.IFile;
+import org.eventb.core.ISCAction;
 import org.eventb.core.ISCConstant;
 import org.eventb.core.ISCContextRoot;
 import org.eventb.core.ISCEvent;
@@ -81,7 +82,8 @@ public final class EventBHelper {
 							guardSet.add(guard.getPredicateString());
 
 						MachineOperation op = new MachineOperation(
-								event.getLabel(), parSet, guardSet);
+								event.getLabel(), parSet, guardSet,
+								renderEvent(event));
 						tmpSet.add(op);
 
 					}
@@ -232,5 +234,45 @@ public final class EventBHelper {
 
 	}
 
+	public static String renderEvent(ISCEvent event) throws RodinDBException {
+		StringBuffer sb = new StringBuffer();
+		sb.append("event ");
+		sb.append(event.getLabel());
+		sb.append("\n");
+
+		if (event.getSCParameters().length > 0) {
+			sb.append("  any ");
+			for (ISCParameter parameter : event.getSCParameters()) {
+				sb.append(parameter.getIdentifierString());
+				sb.append(" ");
+			}
+			sb.append("\n");
+
+		}
+
+		if (event.getSCGuards().length > 0) {
+			sb.append("  where\n");
+			for (ISCGuard guard : event.getSCGuards()) {
+				sb.append("    @");
+				sb.append(guard.getLabel());
+				sb.append(" ");
+				sb.append(guard.getPredicateString());
+				sb.append("\n");
+			}
+		}
+
+		if (event.getSCActions().length > 0) {
+			sb.append("  then\n");
+			for (ISCAction action : event.getSCActions()) {
+				sb.append("    @");
+				sb.append(action.getLabel());
+				sb.append(" ");
+				sb.append(action.getAssignmentString());
+				sb.append("\n");
+			}
+		}
+		sb.append("end");
+		return sb.toString();
+	}
 
 }
