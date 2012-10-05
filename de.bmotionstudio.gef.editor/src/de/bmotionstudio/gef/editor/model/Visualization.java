@@ -62,6 +62,7 @@ public class Visualization extends BControl {
 		this.version = version;
 		this.errorListener = new ArrayList<IAddErrorListener>();
 		this.isRunning = false;
+		this.snapToGeometry = true;
 		createRulers();
 		ButtonGroupHelper.reset();
 	}
