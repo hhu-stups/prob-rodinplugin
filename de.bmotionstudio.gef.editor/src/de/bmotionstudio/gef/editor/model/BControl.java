@@ -628,6 +628,9 @@ public abstract class BControl implements IAdaptable, Cloneable {
 
 		BControl clonedControl = (BControl) super.clone();
 
+		clonedControl.listeners = new PropertyChangeSupport(clonedControl);
+		clonedControl.observerListener = new ArrayList<IObserverListener>();
+
 		clonedControl.setParent(getParent());
 
 		String newID = clonedControl.getID();
@@ -656,9 +659,6 @@ public abstract class BControl implements IAdaptable, Cloneable {
 		for (Map.Entry<String, SchedulerEvent> e : events.entrySet()) {
 			clonedControl.addEvent(e.getKey(), e.getValue().clone());
 		}
-
-		clonedControl.listeners = new PropertyChangeSupport(clonedControl);
-		clonedControl.observerListener = new ArrayList<IObserverListener>();
 
 		return clonedControl;
 
