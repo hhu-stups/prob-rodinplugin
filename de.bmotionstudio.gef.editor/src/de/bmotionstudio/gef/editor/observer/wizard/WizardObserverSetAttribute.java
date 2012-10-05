@@ -113,13 +113,18 @@ public class WizardObserverSetAttribute extends ObserverWizard {
 									control.restoreDefaultValue(lastChangedAttributeID);
 
 								SetAttributeObject setAttributeObj = (SetAttributeObject) observerEvalObject;
-								String attribute = setAttributeObj
-										.getAttribute();
-								Object value = setAttributeObj.getValue();
-								control.setAttributeValue(attribute, value,
-										true, false);
 
-								lastChangedAttributeID = attribute;
+								if (!setAttributeObj.isExpressionMode()) {
+
+									String attribute = setAttributeObj
+											.getAttribute();
+									Object value = setAttributeObj.getValue();
+									control.setAttributeValue(attribute, value,
+											true, false);
+
+									lastChangedAttributeID = attribute;
+
+								}
 
 							}
 						}
