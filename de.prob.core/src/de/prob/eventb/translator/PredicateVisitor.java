@@ -17,7 +17,9 @@ import org.eventb.core.ast.BoundIdentDecl;
 import org.eventb.core.ast.Expression;
 import org.eventb.core.ast.ExtendedPredicate;
 import org.eventb.core.ast.Formula;
+import org.eventb.core.ast.FormulaFactory;
 import org.eventb.core.ast.ISimpleVisitor;
+import org.eventb.core.ast.ITypeEnvironment;
 import org.eventb.core.ast.LiteralPredicate;
 import org.eventb.core.ast.MultiplePredicate;
 import org.eventb.core.ast.Predicate;
@@ -25,6 +27,8 @@ import org.eventb.core.ast.QuantifiedPredicate;
 import org.eventb.core.ast.RelationalPredicate;
 import org.eventb.core.ast.SimplePredicate;
 import org.eventb.core.ast.UnaryPredicate;
+import org.eventb.core.ast.extension.IPredicateExtension;
+import org.eventb.theory.core.TheoryElement;
 
 import de.be4.classicalb.core.parser.node.AConjunctPredicate;
 import de.be4.classicalb.core.parser.node.ADisjunctPredicate;
@@ -67,6 +71,10 @@ public class PredicateVisitor extends SimpleVisitorAdapter implements // NOPMD
 
 	private boolean predicateSet = false;
 
+	private final FormulaFactory ff;
+
+	private final ITypeEnvironment typeEnvironment;
+
 	public PPredicate getPredicate() {
 		return p;
 	}
@@ -79,22 +87,28 @@ public class PredicateVisitor extends SimpleVisitorAdapter implements // NOPMD
 			predicateSet = true;
 			this.p = p;
 		}
-		//public ClassifiedPragma(String name, Node attachedTo, List<String> arguments, List<String> warnings, SourcePosition start, SourcePosition end) {
-		
-    //     new ClassifiedPragma("discharged", p, proof, Collections.emptyList(), new SourcePosition(-1, -1), new SourcePosition(-1, -1));
+		// public ClassifiedPragma(String name, Node attachedTo, List<String>
+		// arguments, List<String> warnings, SourcePosition start,
+		// SourcePosition end) {
+
+		// new ClassifiedPragma("discharged", p, proof, Collections.emptyList(),
+		// new SourcePosition(-1, -1), new SourcePosition(-1, -1));
 	}
 
-	public PredicateVisitor(final LinkedList<String> bounds) {
+	public PredicateVisitor() {
+		this(null, null, null);
+	}
+
+	public PredicateVisitor(LinkedList<String> bounds, FormulaFactory ff,
+			ITypeEnvironment localEnv) {
 		super();
 		if (bounds == null) {
 			this.bounds = new LinkedList<String>();
 		} else {
 			this.bounds = bounds;
 		}
-	}
-
-	public PredicateVisitor() {
-		this(null);
+		this.ff = ff;
+		this.typeEnvironment = localEnv;
 	}
 
 	@Override
@@ -106,7 +120,8 @@ public class PredicateVisitor extends SimpleVisitorAdapter implements // NOPMD
 		final List<ExpressionVisitor> ev = new LinkedList<ExpressionVisitor>();
 		final BoundIdentDecl[] decls = predicate.getBoundIdentDecls();
 		for (final BoundIdentDecl boundIdentDecl : decls) {
-			final ExpressionVisitor visitor = new ExpressionVisitor(bounds);
+			final ExpressionVisitor visitor = new ExpressionVisitor(bounds, ff,
+					typeEnvironment);
 			boundIdentDecl.accept(visitor);
 			ev.add(visitor);
 			bounds.addFirst(boundIdentDecl.getName());
@@ -119,7 +134,8 @@ public class PredicateVisitor extends SimpleVisitorAdapter implements // NOPMD
 		}
 
 		// Recursively analyze the predicate (important, bounds are already set)
-		final PredicateVisitor predicateVisitor = new PredicateVisitor(bounds);
+		final PredicateVisitor predicateVisitor = new PredicateVisitor(bounds,
+				ff, typeEnvironment);
 		predicate.getPredicate().accept(predicateVisitor);
 
 		switch (tag) {
@@ -164,7 +180,8 @@ public class PredicateVisitor extends SimpleVisitorAdapter implements // NOPMD
 		final LinkedList<PredicateVisitor> pv = new LinkedList<PredicateVisitor>();
 
 		for (final Predicate pr : children) {
-			final PredicateVisitor p = new PredicateVisitor(bounds);
+			final PredicateVisitor p = new PredicateVisitor(bounds, ff,
+					typeEnvironment);
 			pv.add(p);
 			pr.accept(p);
 		}
@@ -227,9 +244,11 @@ public class PredicateVisitor extends SimpleVisitorAdapter implements // NOPMD
 	public void visitBinaryPredicate(final BinaryPredicate predicate) {
 		final int tag = predicate.getTag();
 
-		final PredicateVisitor subLeft = new PredicateVisitor(bounds);
+		final PredicateVisitor subLeft = new PredicateVisitor(bounds, ff,
+				typeEnvironment);
 		predicate.getLeft().accept(subLeft);
-		final PredicateVisitor subRight = new PredicateVisitor(bounds);
+		final PredicateVisitor subRight = new PredicateVisitor(bounds, ff,
+				typeEnvironment);
 		predicate.getRight().accept(subRight);
 
 		switch (tag) {
@@ -271,9 +290,11 @@ public class PredicateVisitor extends SimpleVisitorAdapter implements // NOPMD
 		// High complexity is ok
 		// EQUAL, NOTEQUAL, LT, LE, GT, GE, IN, NOTIN, SUBSET,
 		// NOTSUBSET, SUBSETEQ, NOTSUBSETEQ
-		final ExpressionVisitor subLeft = new ExpressionVisitor(bounds);
+		final ExpressionVisitor subLeft = new ExpressionVisitor(bounds, ff,
+				typeEnvironment);
 		predicate.getLeft().accept(subLeft);
-		final ExpressionVisitor subRight = new ExpressionVisitor(bounds);
+		final ExpressionVisitor subRight = new ExpressionVisitor(bounds, ff,
+				typeEnvironment);
 		predicate.getRight().accept(subRight);
 
 		final int tag = predicate.getTag();
@@ -366,7 +387,8 @@ public class PredicateVisitor extends SimpleVisitorAdapter implements // NOPMD
 			throw new AssertionError(UNCOVERED_PREDICATE);
 		}
 		final AFinitePredicate finite = new AFinitePredicate();
-		final ExpressionVisitor subEx = new ExpressionVisitor(bounds);
+		final ExpressionVisitor subEx = new ExpressionVisitor(bounds, ff,
+				typeEnvironment);
 		predicate.getExpression().accept(subEx);
 		finite.setSet(subEx.getExpression());
 		setPredicate(finite);
@@ -378,7 +400,8 @@ public class PredicateVisitor extends SimpleVisitorAdapter implements // NOPMD
 			throw new AssertionError(UNCOVERED_PREDICATE);
 		}
 		final ANegationPredicate negationPredicate = new ANegationPredicate();
-		final PredicateVisitor sub = new PredicateVisitor(bounds);
+		final PredicateVisitor sub = new PredicateVisitor(bounds, ff,
+				typeEnvironment);
 		predicate.getChild().accept(sub);
 		negationPredicate.setPredicate(sub.getPredicate());
 		setPredicate(negationPredicate);
@@ -390,7 +413,8 @@ public class PredicateVisitor extends SimpleVisitorAdapter implements // NOPMD
 		final List<PExpression> expressions = new ArrayList<PExpression>(
 				subs.length);
 		for (Expression e : subs) {
-			final ExpressionVisitor sub = new ExpressionVisitor(bounds);
+			final ExpressionVisitor sub = new ExpressionVisitor(bounds, ff,
+					typeEnvironment);
 			e.accept(sub);
 			expressions.add(sub.getExpression());
 		}
@@ -412,22 +436,28 @@ public class PredicateVisitor extends SimpleVisitorAdapter implements // NOPMD
 	@Override
 	public void visitExtendedPredicate(ExtendedPredicate predicate) {
 		AExtendedPredPredicate p = new AExtendedPredPredicate();
-		String symbol = predicate.getExtension().getSyntaxSymbol();
+		IPredicateExtension extension = predicate.getExtension();
+		String symbol = extension.getSyntaxSymbol();
+		Object origin = extension.getOrigin();
+		Theories.add(symbol, origin, ff, typeEnvironment);
+
 		p.setIdentifier(new TIdentifierLiteral(symbol));
 
 		Expression[] expressions = predicate.getChildExpressions();
 		List<PExpression> childExprs = new ArrayList<PExpression>();
 		for (Expression e : expressions) {
-			ExpressionVisitor v = new ExpressionVisitor(null);
+			ExpressionVisitor v = new ExpressionVisitor(bounds, ff,
+					typeEnvironment);
 			e.accept(v);
 			childExprs.add(v.getExpression());
 		}
 		p.setExpressions(childExprs);
-		
+
 		Predicate[] childPredicates = predicate.getChildPredicates();
 		List<PPredicate> childPreds = new ArrayList<PPredicate>();
 		for (Predicate pd : childPredicates) {
-			PredicateVisitor v = new PredicateVisitor(null);
+			PredicateVisitor v = new PredicateVisitor(bounds, ff,
+					typeEnvironment);
 			pd.accept(v);
 			childPreds.add(v.getPredicate());
 		}
@@ -435,9 +465,4 @@ public class PredicateVisitor extends SimpleVisitorAdapter implements // NOPMD
 		setPredicate(p);
 	}
 
-	
-	
-	
-	
-	
 }

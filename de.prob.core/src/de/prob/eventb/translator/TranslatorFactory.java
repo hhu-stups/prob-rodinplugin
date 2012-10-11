@@ -34,10 +34,6 @@ public class TranslatorFactory {
 	public static void translate(final IEventBRoot root,
 			final IPrologTermOutput pto) throws TranslationFailedException {
 		
-		
-		
-		
-		
 		if (root instanceof IMachineRoot) {
 			final ISCMachineRoot scRoot = ((IMachineRoot) root)
 					.getSCMachineRoot();

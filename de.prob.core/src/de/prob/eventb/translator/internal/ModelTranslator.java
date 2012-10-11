@@ -252,7 +252,7 @@ public class ModelTranslator extends AbstractComponentTranslator {
 		final AVariantModelClause var;
 		if (variant.length == 1) {
 			final ExpressionVisitor visitor = new ExpressionVisitor(
-					new LinkedList<String>());
+					new LinkedList<String>(),ff,te);
 			variant[0].getExpression(ff, te).accept(visitor);
 			var = new AVariantModelClause(visitor.getExpression());
 		} else if (variant.length == 0) {
@@ -391,7 +391,7 @@ public class ModelTranslator extends AbstractComponentTranslator {
 		final ISCGuard[] guards = revent.getSCGuards();
 		for (final ISCGuard guard : guards) {
 			final PredicateVisitor visitor = new PredicateVisitor(
-					new LinkedList<String>());
+					new LinkedList<String>(),ff,localEnv);
 			final Predicate guardPredicate = guard.getPredicate(ff, localEnv);
 			// System.out.println("GUARD: " + guard.getLabel() + " -> "
 			// + guardPredicate);
@@ -432,7 +432,7 @@ public class ModelTranslator extends AbstractComponentTranslator {
 				witnesses.length);
 		for (final ISCWitness witness : witnesses) {
 			final PredicateVisitor visitor = new PredicateVisitor(
-					new LinkedList<String>());
+					new LinkedList<String>(),ff,localEnv);
 			final Predicate pp = witness.getPredicate(ff, localEnv);
 			pp.accept(visitor);
 			final PPredicate predicate = visitor.getPredicate();
@@ -449,7 +449,7 @@ public class ModelTranslator extends AbstractComponentTranslator {
 		final ISCAction[] actions = revent.getSCActions();
 		final List<PSubstitution> actionList = new ArrayList<PSubstitution>();
 		for (final ISCAction action : actions) {
-			final AssignmentVisitor visitor = new AssignmentVisitor();
+			final AssignmentVisitor visitor = new AssignmentVisitor(ff,localEnv);
 			action.getAssignment(ff, localEnv).accept(visitor);
 			final PSubstitution substitution = visitor.getSubstitution();
 			actionList.add(substitution);
@@ -499,7 +499,7 @@ public class ModelTranslator extends AbstractComponentTranslator {
 			// level, not in an abstract machine
 			if (!isDefinedInAbstraction(evPredicate)) {
 				final PredicateVisitor visitor = new PredicateVisitor(
-						new LinkedList<String>());
+						new LinkedList<String>(),ff,te);
 				evPredicate.getPredicate(ff, te).accept(visitor);
 				final PPredicate predicate = visitor.getPredicate();
 				list.add(predicate);

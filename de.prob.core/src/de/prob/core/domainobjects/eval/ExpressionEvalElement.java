@@ -9,6 +9,7 @@ package de.prob.core.domainobjects.eval;
 import java.util.LinkedList;
 
 import org.eventb.core.ast.Expression;
+import org.eventb.core.ast.FormulaFactory;
 
 import de.be4.classicalb.core.parser.BParser;
 import de.be4.classicalb.core.parser.exceptions.BException;
@@ -28,7 +29,7 @@ public final class ExpressionEvalElement extends AbstractEvalElement {
 			String message = "Expression input must not be null";
 			throw new BException("", new NullPointerException(message));
 		}
-		ExpressionVisitor ev = new ExpressionVisitor(new LinkedList<String>());
+		ExpressionVisitor ev = new ExpressionVisitor(new LinkedList<String>(),FormulaFactory.getDefault(),FormulaFactory.getDefault().makeTypeEnvironment());
 		expression.accept(ev);
 		AExpressionParseUnit epu = new AExpressionParseUnit(ev.getExpression());
 		Start start = new Start(epu, new EOF());

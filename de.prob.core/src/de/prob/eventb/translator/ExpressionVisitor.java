@@ -22,13 +22,20 @@ import org.eventb.core.ast.BoundIdentifier;
 import org.eventb.core.ast.Expression;
 import org.eventb.core.ast.ExtendedExpression;
 import org.eventb.core.ast.Formula;
+import org.eventb.core.ast.FormulaFactory;
 import org.eventb.core.ast.FreeIdentifier;
 import org.eventb.core.ast.ISimpleVisitor;
+import org.eventb.core.ast.ITypeEnvironment;
 import org.eventb.core.ast.IntegerLiteral;
 import org.eventb.core.ast.Predicate;
 import org.eventb.core.ast.QuantifiedExpression;
 import org.eventb.core.ast.SetExtension;
 import org.eventb.core.ast.UnaryExpression;
+import org.eventb.core.ast.extension.IExpressionExtension;
+import org.eventb.core.ast.extension.IPredicateExtension;
+import org.eventb.core.ast.extension.datatype.ITypeParameter;
+import org.eventb.internal.core.ast.extension.datatype.Datatype;
+import org.eventb.theory.core.TheoryElement;
 
 import de.be4.classicalb.core.parser.node.AAddExpression;
 import de.be4.classicalb.core.parser.node.ABoolSetExpression;
@@ -113,6 +120,8 @@ public class ExpressionVisitor extends SimpleVisitorAdapter implements // NOPMD
 	private final LinkedList<String> bounds; // NOPMD bendisposto
 	// we need some abilities of the linked list, using List is not an option
 	private boolean expressionSet = false;
+	private FormulaFactory ff;
+	private ITypeEnvironment typeEnvironment;
 
 	@SuppressWarnings("unused")
 	private ExpressionVisitor() { // we want to prevent clients from calling
@@ -121,9 +130,12 @@ public class ExpressionVisitor extends SimpleVisitorAdapter implements // NOPMD
 		throw new AssertionError("Do not call this constructor");
 	}
 
-	public ExpressionVisitor(final LinkedList<String> bounds) { // NOPMD
+	public ExpressionVisitor(final LinkedList<String> bounds,
+			FormulaFactory ff, ITypeEnvironment typeEnvironment) { // NOPMD
 		super();
 		this.bounds = bounds;
+		this.ff = ff;
+		this.typeEnvironment = typeEnvironment;
 	}
 
 	public PExpression getExpression() {
@@ -147,7 +159,8 @@ public class ExpressionVisitor extends SimpleVisitorAdapter implements // NOPMD
 
 		final BoundIdentDecl[] decls = expression.getBoundIdentDecls();
 		for (final BoundIdentDecl boundIdentDecl : decls) {
-			final ExpressionVisitor visitor = new ExpressionVisitor(bounds);
+			final ExpressionVisitor visitor = new ExpressionVisitor(bounds, ff,
+					typeEnvironment);
 			boundIdentDecl.accept(visitor);
 			ev.add(visitor);
 			bounds.addFirst(boundIdentDecl.getName());
@@ -161,13 +174,14 @@ public class ExpressionVisitor extends SimpleVisitorAdapter implements // NOPMD
 
 		// Process internal Expression and Predcate
 		final Predicate predicate = expression.getPredicate();
-		final PredicateVisitor predicateVisitor = new PredicateVisitor(bounds);
+		final PredicateVisitor predicateVisitor = new PredicateVisitor(bounds,
+				ff, typeEnvironment);
 		predicate.accept(predicateVisitor);
 
 		final PPredicate pr = predicateVisitor.getPredicate();
 
 		final ExpressionVisitor expressionVisitor = new ExpressionVisitor(
-				bounds);
+				bounds, ff, typeEnvironment);
 		expression.getExpression().accept(expressionVisitor);
 
 		final PExpression ex = expressionVisitor.getExpression();
@@ -212,7 +226,8 @@ public class ExpressionVisitor extends SimpleVisitorAdapter implements // NOPMD
 		final LinkedList<ExpressionVisitor> ev = new LinkedList<ExpressionVisitor>();
 
 		for (final Expression ex : children) {
-			final ExpressionVisitor e = new ExpressionVisitor(bounds);
+			final ExpressionVisitor e = new ExpressionVisitor(bounds, ff,
+					typeEnvironment);
 			ev.add(e);
 			ex.accept(e);
 		}
@@ -335,8 +350,10 @@ public class ExpressionVisitor extends SimpleVisitorAdapter implements // NOPMD
 	// this long method is far easier to read than smaller ones
 	public void visitBinaryExpression(final BinaryExpression expression) { // NOPMD
 		final int tag = expression.getTag();
-		final ExpressionVisitor visitorLeft = new ExpressionVisitor(bounds);
-		final ExpressionVisitor visitorRight = new ExpressionVisitor(bounds);
+		final ExpressionVisitor visitorLeft = new ExpressionVisitor(bounds, ff,
+				typeEnvironment);
+		final ExpressionVisitor visitorRight = new ExpressionVisitor(bounds,
+				ff, typeEnvironment);
 		expression.getLeft().accept(visitorLeft);
 		expression.getRight().accept(visitorRight);
 		final PExpression exL = visitorLeft.getExpression();
@@ -563,7 +580,8 @@ public class ExpressionVisitor extends SimpleVisitorAdapter implements // NOPMD
 	@Override
 	public void visitBoolExpression(final BoolExpression expression) {
 		final AConvertBoolExpression convertBoolExpression = new AConvertBoolExpression();
-		final PredicateVisitor visitor = new PredicateVisitor(bounds);
+		final PredicateVisitor visitor = new PredicateVisitor(bounds, ff,
+				typeEnvironment);
 		expression.getPredicate().accept(visitor);
 		convertBoolExpression.setPredicate(visitor.getPredicate());
 		setExpression(convertBoolExpression);
@@ -613,7 +631,8 @@ public class ExpressionVisitor extends SimpleVisitorAdapter implements // NOPMD
 		final ASetExtensionExpression setExtensionExpression = new ASetExtensionExpression();
 		final List<PExpression> list = new ArrayList<PExpression>();
 		for (final Expression e : members) {
-			final ExpressionVisitor visitor = new ExpressionVisitor(bounds);
+			final ExpressionVisitor visitor = new ExpressionVisitor(bounds, ff,
+					typeEnvironment);
 			e.accept(visitor);
 			list.add(visitor.getExpression());
 		}
@@ -624,28 +643,36 @@ public class ExpressionVisitor extends SimpleVisitorAdapter implements // NOPMD
 	@Override
 	public void visitExtendedExpression(ExtendedExpression expression) {
 		AExtendedExprExpression p = new AExtendedExprExpression();
-		String symbol = expression.getExtension().getSyntaxSymbol();
+
+		IExpressionExtension extension = expression.getExtension();
+		String symbol = extension.getSyntaxSymbol();
+		Object origin = extension.getOrigin();
+
+		
+		Theories.add(symbol, origin, ff, typeEnvironment);
+
 		p.setIdentifier(new TIdentifierLiteral(symbol));
 		Expression[] expressions = expression.getChildExpressions();
 		List<PExpression> childExprs = new ArrayList<PExpression>();
 		for (Expression e : expressions) {
-			ExpressionVisitor v = new ExpressionVisitor(null);
+			ExpressionVisitor v = new ExpressionVisitor(
+					new LinkedList<String>(), ff, typeEnvironment);
 			e.accept(v);
 			childExprs.add(v.getExpression());
 		}
 		p.setExpressions(childExprs);
-		
+
 		Predicate[] childPredicates = expression.getChildPredicates();
 		List<PPredicate> childPreds = new ArrayList<PPredicate>();
 		for (Predicate pd : childPredicates) {
-			PredicateVisitor v = new PredicateVisitor(null);
+			PredicateVisitor v = new PredicateVisitor(null, ff, typeEnvironment);
 			pd.accept(v);
 			childPreds.add(v.getPredicate());
 		}
 		p.setPredicates(childPreds);
-		
+
 		setExpression(p);
-		
+
 	}
 
 	@SuppressWarnings("deprecation")
@@ -654,7 +681,8 @@ public class ExpressionVisitor extends SimpleVisitorAdapter implements // NOPMD
 		// by
 		// bendisposto
 		final int tag = expression.getTag();
-		final ExpressionVisitor visitor = new ExpressionVisitor(bounds);
+		final ExpressionVisitor visitor = new ExpressionVisitor(bounds, ff,
+				typeEnvironment);
 		expression.getChild().accept(visitor);
 		final PExpression exp = visitor.getExpression();
 

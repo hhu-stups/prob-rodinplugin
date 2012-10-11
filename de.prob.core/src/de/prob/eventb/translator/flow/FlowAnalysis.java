@@ -55,7 +55,7 @@ public class FlowAnalysis {
 			pout.printAtom(evt.toString());
 			pout.openList();
 			final Predicate predicate = evt.getGuardsAfterAssignment();
-			PredicateVisitor pv = new PredicateVisitor(new LinkedList<String>());
+			PredicateVisitor pv = new PredicateVisitor(new LinkedList<String>(),FF,typeEnvironment);
 			predicate.accept(pv);
 			PPredicate p = pv.getPredicate();
 			p.apply(prolog);

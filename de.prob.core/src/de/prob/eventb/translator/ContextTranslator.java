@@ -318,7 +318,7 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 				continue;
 			}
 			final PredicateVisitor visitor = new PredicateVisitor(
-					new LinkedList<String>());
+					new LinkedList<String>(),ff,te);
 			element.getPredicate(ff, te).accept(visitor);
 			final PPredicate predicate = visitor.getPredicate();
 			list.add(predicate);
