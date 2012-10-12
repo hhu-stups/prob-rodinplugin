@@ -53,6 +53,17 @@ public final class AttributeConstants {
 	public static final String ATTRIBUTE_MAIN = "de.bmotionstudio.gef.editor.attribute.BAttributeMain";
 	public static final String ATTRIBUTE_CONNECTION = "de.bmotionstudio.gef.editor.attribute.BAttributeConnection";
 
+	public static final String ATTRIBUTE_TRACK_DIRECTION = "de.bmotionstudio.gef.editor.attribute.AttributeTrackDirection";
+	public static final String ATTRIBUTE_SWITCH_DIRECTION = "de.bmotionstudio.gef.editor.attribute.AttributeSwitchDirection";
+	public static final String ATTRIBUTE_SWITCH_POSITION = "de.bmotionstudio.gef.editor.attribute.AttributeSwitchPosition";
+	public static final String ATTRIBUTE_SIGNAL_COLOR = "de.bmotionstudio.gef.editor.attribute.AttributeSignalColor";
+	public static final String ATTRIBUTE_FILL_HEIGHT = "de.bmotionstudio.gef.editor.attribute.AttributeFillHeight";
+	public static final String ATTRIBUTE_FILL_COLOR = "de.bmotionstudio.gef.editor.attribute.AttributeFillColor";
+	public static final String ATTRIBUTE_SHOWS_MEASURE = "de.bmotionstudio.gef.editor.attribute.AttributeShowMeasure";
+	public static final String ATTRIBUTE_MEASURE_MAXPOS = "de.bmotionstudio.gef.editor.attribute.AttributeMeasureMaxPos";
+	public static final String ATTRIBUTE_MEASURE_INTERVAL = "de.bmotionstudio.gef.editor.attribute.AttributeMeasureInterval";
+	public static final String ATTRIBUTE_BLOCKS = "de.bmotionstudio.gef.editor.attribute.AttributeBlocks";
+
 	public static final String EVENT_MOUSECLICK = "de.bmotionstudio.gef.editor.event.OnClickEvent";
 	public static final String EVENT_MOUSEDBLCLICK = "de.bmotionstudio.gef.editor.event.OnDblClickEvent";
 

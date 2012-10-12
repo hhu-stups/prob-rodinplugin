@@ -255,6 +255,49 @@
             name="Cell"
             service="de.bmotionstudio.gef.editor.service.BTableCellService">
       </control>
+      <control
+            groupid="de.bmotionstudio.gef.editor.railway.group"
+            icon="icons/icon_signal.gif"
+            id="de.bmotionstudio.gef.editor.signal"
+            name="Signal"
+            service="de.bmotionstudio.gef.editor.service.SignalService">
+      </control>
+      <control
+            groupid="de.bmotionstudio.gef.editor.industry.group"
+            icon="icons/icon_tank.gif"
+            id="de.bmotionstudio.gef.editor.tank"
+            name="Tank"
+            service="de.bmotionstudio.gef.editor.service.TankService">
+      </control>
+      <control
+            groupid="de.bmotionstudio.gef.editor.railway.group"
+            icon="icons/icon_tracknode.gif"
+            id="de.bmotionstudio.gef.editor.tracknode"
+            name="Node"
+            service="de.bmotionstudio.gef.editor.service.TrackNodeService">
+      </control>
+      <control
+            groupid="de.bmotionstudio.gef.editor.railway.group"
+            icon="icons/icon_track.gif"
+            id="de.bmotionstudio.gef.editor.track"
+            name="Trac"
+            service="de.bmotionstudio.gef.editor.service.TrackService">
+      </control>
+      <control
+            groupid="de.bmotionstudio.gef.editor.railway"
+            icon="icons/icon_switch.gif"
+            id="de.bmotionstudio.gef.editor.switch"
+            name="Switch"
+            service="de.bmotionstudio.gef.editor.service.SwitchService">
+      </control>
+      <group
+            id="de.bmotionstudio.gef.editor.railway.group"
+            name="Railway">
+      </group>
+      <group
+            id="de.bmotionstudio.gef.editor.industry.group"
+            name="Industry">
+      </group>
    </extension>
    <extension
          point="de.bmotionstudio.gef.editor.observer">
@@ -560,5 +603,59 @@
             </control>
          </observer>
       </include>
+      <include
+            language="EventB">
+         <observer
+               id="de.bmotionstudio.gef.editor.observer.ListenOperationByPredicate">
+            <control
+                  id="de.bmotionstudio.gef.editor.signal">
+            </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.tank">
+            </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.switch">
+            </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.track">
+            </control>
+         </observer>
+         <observer
+               id="de.bmotionstudio.gef.editor.observer.SwitchCoordinates">
+            <control
+                  id="de.bmotionstudio.gef.editor.signal">
+            </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.tank">
+            </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.switch">
+            </control>
+         </observer>
+         <observer
+               id="de.bmotionstudio.gef.editor.observer.SetAttribute">
+            <control
+                  id="de.bmotionstudio.gef.editor.signal">
+            </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.tank">
+            </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.switch">
+            </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.track">
+            </control>
+         </observer>
+         <observer
+               id="de.bmotionstudio.gef.editor.observer.ExternalObserverScript">
+            <control
+                  id="de.bmotionstudio.gef.editor.signal">
+            </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.tank">
+            </control>
+         </observer>
+      </include>      
    </extension>   
 </plugin>
