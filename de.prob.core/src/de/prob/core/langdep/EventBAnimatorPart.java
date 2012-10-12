@@ -70,7 +70,7 @@ public class EventBAnimatorPart implements LanguageDependendAnimationPart {
 		final Expression ee = parseResult.getParsedExpression();
 		typeCheck(ff, ee);
 		final ExpressionVisitor visitor = new ExpressionVisitor(
-				new LinkedList<String>(), ff, ff.makeTypeEnvironment());
+				new LinkedList<String>());
 		ee.accept(visitor);
 		toPrologTerm(pto, visitor.getExpression(), wrap, EXPR_WRAPPER);
 	}
@@ -86,7 +86,7 @@ public class EventBAnimatorPart implements LanguageDependendAnimationPart {
 		final Predicate pp = parseResult.getParsedPredicate();
 		typeCheck(ff, pp);
 		final PredicateVisitor visitor = new PredicateVisitor(
-				new LinkedList<String>(), ff, ff.makeTypeEnvironment());
+				new LinkedList<String>());
 		pp.accept(visitor);
 		toPrologTerm(pto, visitor.getPredicate(), wrap, PRED_WRAPPER);
 	}
@@ -276,8 +276,7 @@ public class EventBAnimatorPart implements LanguageDependendAnimationPart {
 		pto.printAtom(eventName);
 		if (predicate != null) {
 			final PredicateVisitor visitor = new PredicateVisitor(
-					new LinkedList<String>(), FormulaFactory.getDefault(),
-					FormulaFactory.getDefault().makeTypeEnvironment());
+					new LinkedList<String>());
 			predicate.accept(visitor);
 			final ASTProlog prolog = new ASTProlog(pto, null);
 			visitor.getPredicate().apply(prolog);

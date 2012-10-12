@@ -140,7 +140,7 @@ public class Theories {
 	private static void printExpression(FormulaFactory ff, ITypeEnvironment te,
 			IPrologTermOutput prologOutput, Expression pp) {
 		ExpressionVisitor visitor = new ExpressionVisitor(
-				new LinkedList<String>(), ff, te);
+				new LinkedList<String>());
 		pp.accept(visitor);
 		PExpression ex = visitor.getExpression();
 		ASTProlog pv = new ASTProlog(prologOutput, null);
@@ -150,7 +150,7 @@ public class Theories {
 	private static void printPredicate(FormulaFactory ff, ITypeEnvironment te,
 			IPrologTermOutput prologOutput, Predicate pp) {
 		PredicateVisitor visitor = new PredicateVisitor(
-				new LinkedList<String>(), ff, te);
+				new LinkedList<String>());
 		pp.accept(visitor);
 		PPredicate predicate = visitor.getPredicate();
 		ASTProlog pv = new ASTProlog(prologOutput, null);

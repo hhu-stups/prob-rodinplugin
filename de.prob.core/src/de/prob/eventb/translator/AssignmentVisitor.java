@@ -15,10 +15,8 @@ import org.eventb.core.ast.BecomesEqualTo;
 import org.eventb.core.ast.BecomesMemberOf;
 import org.eventb.core.ast.BecomesSuchThat;
 import org.eventb.core.ast.Expression;
-import org.eventb.core.ast.FormulaFactory;
 import org.eventb.core.ast.FreeIdentifier;
 import org.eventb.core.ast.ISimpleVisitor;
-import org.eventb.core.ast.ITypeEnvironment;
 import org.eventb.core.ast.Predicate;
 
 import de.be4.classicalb.core.parser.node.AAssignSubstitution;
@@ -35,13 +33,6 @@ public class AssignmentVisitor extends SimpleVisitorAdapter implements
 
 	private PSubstitution sub;
 	private boolean substitutonSet = false;
-	private final FormulaFactory ff;
-	private final ITypeEnvironment typeEnvironment;
-	
-	public AssignmentVisitor(FormulaFactory ff, ITypeEnvironment typeEnvironment) {
-		this.ff = ff;
-		this.typeEnvironment = typeEnvironment;
-	}
 
 	public PSubstitution getSubstitution() {
 		return sub;
@@ -73,7 +64,7 @@ public class AssignmentVisitor extends SimpleVisitorAdapter implements
 		final List<PExpression> list = new ArrayList<PExpression>();
 		for (Expression e : expressions) {
 			final ExpressionVisitor visitor = new ExpressionVisitor(
-					new LinkedList<String>(),ff,typeEnvironment);
+					new LinkedList<String>());
 			e.accept(visitor);
 			list.add(visitor.getExpression());
 		}
@@ -103,7 +94,7 @@ public class AssignmentVisitor extends SimpleVisitorAdapter implements
 		final Expression set = assignment.getSet();
 
 		final ExpressionVisitor visitor = new ExpressionVisitor(
-				new LinkedList<String>(),ff,typeEnvironment);
+				new LinkedList<String>());
 		set.accept(visitor);
 
 		becomesElementOfSubstitution
@@ -121,7 +112,7 @@ public class AssignmentVisitor extends SimpleVisitorAdapter implements
 			list.addFirst(f.getName() + "'");
 		}
 		final Predicate predicate = assignment.getCondition();
-		final PredicateVisitor visitor = new PredicateVisitor(list,ff,typeEnvironment);
+		final PredicateVisitor visitor = new PredicateVisitor(list);
 		predicate.accept(visitor);
 		final ABecomesSuchSubstitution becomesSuchSubstitution = new ABecomesSuchSubstitution();
 		becomesSuchSubstitution

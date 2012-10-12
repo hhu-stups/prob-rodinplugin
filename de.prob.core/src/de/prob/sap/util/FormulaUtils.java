@@ -5,7 +5,6 @@ package de.prob.sap.util;
 
 import java.util.LinkedList;
 
-import org.eventb.core.ast.FormulaFactory;
 import org.eventb.core.ast.Predicate;
 
 import de.be4.classicalb.core.parser.analysis.prolog.ASTProlog;
@@ -29,7 +28,7 @@ public final class FormulaUtils {
 	static public void printPredicate(final Predicate predicate,
 			final IPrologTermOutput pto) {
 		final PredicateVisitor visitor = new PredicateVisitor(
-				new LinkedList<String>(),FormulaFactory.getDefault(), FormulaFactory.getDefault().makeTypeEnvironment());
+				new LinkedList<String>());
 		predicate.accept(visitor);
 		final PPredicate probPredicate = visitor.getPredicate();
 		final ASTProlog prolog = new ASTProlog(pto, null);

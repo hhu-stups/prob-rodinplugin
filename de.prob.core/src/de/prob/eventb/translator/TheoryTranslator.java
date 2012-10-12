@@ -6,12 +6,8 @@ import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
 
-import de.prob.core.internal.AnimationListenerProxy;
-
-
 public class TheoryTranslator {
 
-	
 	public void translate() {
 		final IExtensionRegistry extensionRegistry = Platform
 				.getExtensionRegistry();
@@ -24,7 +20,4 @@ public class TheoryTranslator {
 			}
 		}
 	}
-	
-
-	
 }
