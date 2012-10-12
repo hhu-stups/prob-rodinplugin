@@ -28,7 +28,6 @@ import org.eventb.core.ast.RelationalPredicate;
 import org.eventb.core.ast.SimplePredicate;
 import org.eventb.core.ast.UnaryPredicate;
 import org.eventb.core.ast.extension.IPredicateExtension;
-import org.eventb.theory.core.TheoryElement;
 
 import de.be4.classicalb.core.parser.node.AConjunctPredicate;
 import de.be4.classicalb.core.parser.node.ADisjunctPredicate;
@@ -439,7 +438,7 @@ public class PredicateVisitor extends SimpleVisitorAdapter implements // NOPMD
 		IPredicateExtension extension = predicate.getExtension();
 		String symbol = extension.getSyntaxSymbol();
 		Object origin = extension.getOrigin();
-		Theories.add(symbol, origin, ff, typeEnvironment);
+		Theories.addOrigin(origin);
 
 		p.setIdentifier(new TIdentifierLiteral(symbol));
 

@@ -32,10 +32,6 @@ import org.eventb.core.ast.QuantifiedExpression;
 import org.eventb.core.ast.SetExtension;
 import org.eventb.core.ast.UnaryExpression;
 import org.eventb.core.ast.extension.IExpressionExtension;
-import org.eventb.core.ast.extension.IPredicateExtension;
-import org.eventb.core.ast.extension.datatype.ITypeParameter;
-import org.eventb.internal.core.ast.extension.datatype.Datatype;
-import org.eventb.theory.core.TheoryElement;
 
 import de.be4.classicalb.core.parser.node.AAddExpression;
 import de.be4.classicalb.core.parser.node.ABoolSetExpression;
@@ -648,8 +644,7 @@ public class ExpressionVisitor extends SimpleVisitorAdapter implements // NOPMD
 		String symbol = extension.getSyntaxSymbol();
 		Object origin = extension.getOrigin();
 
-		
-		Theories.add(symbol, origin, ff, typeEnvironment);
+		Theories.addOrigin(origin);
 
 		p.setIdentifier(new TIdentifierLiteral(symbol));
 		Expression[] expressions = expression.getChildExpressions();
