@@ -18,7 +18,7 @@ import de.bmotionstudio.gef.editor.attribute.BAttributeLineStyle;
  */
 public class Track extends BControl {
 
-	public static transient String TYPE = "de.bmotionstudio.addon.industry.track";
+	public static transient String TYPE = "de.bmotionstudio.gef.editor.track";
 
 	/** True, if the connection is attached to its endpoints. */
 	private boolean isConnected;

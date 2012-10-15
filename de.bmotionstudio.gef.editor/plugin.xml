@@ -284,7 +284,7 @@
             service="de.bmotionstudio.gef.editor.service.TrackService">
       </control>
       <control
-            groupid="de.bmotionstudio.gef.editor.railway"
+            groupid="de.bmotionstudio.gef.editor.railway.group"
             icon="icons/icon_switch.gif"
             id="de.bmotionstudio.gef.editor.switch"
             name="Switch"

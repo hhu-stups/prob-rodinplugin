@@ -21,7 +21,7 @@ import de.bmotionstudio.gef.editor.attribute.BAttributeLineStyle;
  */
 public class TrackNode extends BControl {
 
-	public static transient String TYPE = "de.bmotionstudio.addon.industry.tracknode";
+	public static transient String TYPE = "de.bmotionstudio.gef.editor.tracknode";
 
 	private List<Track> sourceTracks;
 
