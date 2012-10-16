@@ -57,6 +57,7 @@ public final class AttributeConstants {
 	public static final String ATTRIBUTE_SWITCH_DIRECTION = "de.bmotionstudio.gef.editor.attribute.AttributeSwitchDirection";
 	public static final String ATTRIBUTE_SWITCH_POSITION = "de.bmotionstudio.gef.editor.attribute.AttributeSwitchPosition";
 	public static final String ATTRIBUTE_SIGNAL_COLOR = "de.bmotionstudio.gef.editor.attribute.AttributeSignalColor";
+	public static final String ATTRIBUTE_LIGHTS = "de.bmotionstudio.gef.editor.attribute.AttributeLights";
 	public static final String ATTRIBUTE_FILL_HEIGHT = "de.bmotionstudio.gef.editor.attribute.AttributeFillHeight";
 	public static final String ATTRIBUTE_FILL_COLOR = "de.bmotionstudio.gef.editor.attribute.AttributeFillColor";
 	public static final String ATTRIBUTE_SHOWS_MEASURE = "de.bmotionstudio.gef.editor.attribute.AttributeShowMeasure";

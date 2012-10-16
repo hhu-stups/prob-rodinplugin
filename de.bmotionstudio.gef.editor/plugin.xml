@@ -263,6 +263,13 @@
             service="de.bmotionstudio.gef.editor.service.SignalService">
       </control>
       <control
+            groupid="de.bmotionstudio.gef.editor.railway.group"
+            icon="icons/icon_signal.gif"
+            id="de.bmotionstudio.gef.editor.light"
+            name="Light"
+            service="de.bmotionstudio.gef.editor.service.LightService">
+      </control>
+      <control
             groupid="de.bmotionstudio.gef.editor.industry.group"
             icon="icons/icon_tank.gif"
             id="de.bmotionstudio.gef.editor.tank"
@@ -430,6 +437,21 @@
             <control
                   id="de.bmotionstudio.gef.editor.tablecolumn">
             </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.signal">
+            </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.tank">
+            </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.switch">
+            </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.track">
+            </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.light">
+            </control>            
          </observer>
          <observer
                id="de.bmotionstudio.gef.editor.observer.SwitchCoordinates">
@@ -463,6 +485,15 @@
             <control
                   id="de.bmotionstudio.gef.editor.table">
             </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.signal">
+            </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.tank">
+            </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.switch">
+            </control>            
          </observer>
          <observer
                id="de.bmotionstudio.gef.editor.observer.SimpleValueDisplay">
@@ -523,6 +554,21 @@
             <control
                   id="de.bmotionstudio.gef.editor.tablecolumn">
             </control>
+          <control
+                  id="de.bmotionstudio.gef.editor.signal">
+            </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.tank">
+            </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.switch">
+            </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.track">
+            </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.light">
+            </control>                
          </observer>
          <observer
                id="de.bmotionstudio.gef.editor.observer.SwitchChildCoordinates">
@@ -574,6 +620,12 @@
             <control
                   id="de.bmotionstudio.gef.editor.tablecolumn">
             </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.light">
+            </control>    
+            <control
+                  id="de.bmotionstudio.gef.editor.signal">
+            </control>                            
          </observer>
          <observer
                id="de.bmotionstudio.gef.editor.observer.SwitchImage">
@@ -602,60 +654,6 @@
                   id="de.bmotionstudio.gef.editor.table">
             </control>
          </observer>
-      </include>
-      <include
-            language="EventB">
-         <observer
-               id="de.bmotionstudio.gef.editor.observer.ListenOperationByPredicate">
-            <control
-                  id="de.bmotionstudio.gef.editor.signal">
-            </control>
-            <control
-                  id="de.bmotionstudio.gef.editor.tank">
-            </control>
-            <control
-                  id="de.bmotionstudio.gef.editor.switch">
-            </control>
-            <control
-                  id="de.bmotionstudio.gef.editor.track">
-            </control>
-         </observer>
-         <observer
-               id="de.bmotionstudio.gef.editor.observer.SwitchCoordinates">
-            <control
-                  id="de.bmotionstudio.gef.editor.signal">
-            </control>
-            <control
-                  id="de.bmotionstudio.gef.editor.tank">
-            </control>
-            <control
-                  id="de.bmotionstudio.gef.editor.switch">
-            </control>
-         </observer>
-         <observer
-               id="de.bmotionstudio.gef.editor.observer.SetAttribute">
-            <control
-                  id="de.bmotionstudio.gef.editor.signal">
-            </control>
-            <control
-                  id="de.bmotionstudio.gef.editor.tank">
-            </control>
-            <control
-                  id="de.bmotionstudio.gef.editor.switch">
-            </control>
-            <control
-                  id="de.bmotionstudio.gef.editor.track">
-            </control>
-         </observer>
-         <observer
-               id="de.bmotionstudio.gef.editor.observer.ExternalObserverScript">
-            <control
-                  id="de.bmotionstudio.gef.editor.signal">
-            </control>
-            <control
-                  id="de.bmotionstudio.gef.editor.tank">
-            </control>
-         </observer>
-      </include>      
+      </include>   
    </extension>   
 </plugin>

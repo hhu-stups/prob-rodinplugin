@@ -6,19 +6,13 @@
 package de.bmotionstudio.gef.editor.figure;
 
 import org.eclipse.draw2d.ColorConstants;
-import org.eclipse.draw2d.Ellipse;
 import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.Label;
-import org.eclipse.draw2d.RectangleFigure;
 import org.eclipse.draw2d.ToolbarLayout;
-import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.PointList;
 import org.eclipse.draw2d.geometry.Rectangle;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.widgets.Display;
 
 
 /**
@@ -31,37 +25,39 @@ public class SignalFigure extends AbstractBMotionFigure {
 	private PointList arrow = new PointList();
 	private boolean isEast;
 	private Figure panel;
-	private Ellipse light1;
-	private Ellipse light2;
-	private final Color green = Display.getDefault().getSystemColor(
-			SWT.COLOR_GREEN);
-	private final Color red = Display.getDefault()
-			.getSystemColor(SWT.COLOR_RED);
-	private final Color gray = Display.getDefault().getSystemColor(
-			SWT.COLOR_GRAY);
+	// private Ellipse light1;
+	// private Ellipse light2;
+
+	// private final Color green = Display.getDefault().getSystemColor(
+	// SWT.COLOR_GREEN);
+	// private final Color red = Display.getDefault()
+	// .getSystemColor(SWT.COLOR_RED);
+	// private final Color gray = Display.getDefault().getSystemColor(
+	// SWT.COLOR_GRAY);
 
 	public SignalFigure() {
 
 		ToolbarLayout layout = new ToolbarLayout();
 		layout.setMinorAlignment(ToolbarLayout.ALIGN_CENTER);
-
 		setLayoutManager(layout);
 
-		lb = new Label();
+		setOpaque(true);
 
-		Figure node = new RectangleFigure();
-		node.setBackgroundColor(ColorConstants.lightGray);
-		node.setLayoutManager(new ToolbarLayout());
-		node.setOpaque(true);
-		light1 = new Ellipse();
-		light1.setBackgroundColor(red);
-		light1.setSize(10, 10);
-		node.add(light1);
-		light2 = new Ellipse();
-		light2.setBackgroundColor(green);
-		light2.setSize(10, 10);
-		node.add(light2);
-		node.setMaximumSize(new Dimension(10, 20));
+		lb = new Label();
+		//
+		// Figure node = new RectangleFigure();
+		// node.setBackgroundColor(ColorConstants.lightGray);
+		// node.setLayoutManager(new ToolbarLayout());
+		// node.setOpaque(true);
+		// light1 = new Ellipse();
+		// light1.setBackgroundColor(red);
+		// light1.setSize(10, 10);
+		// node.add(light1);
+		// light2 = new Ellipse();
+		// light2.setBackgroundColor(green);
+		// light2.setSize(10, 10);
+		// node.add(light2);
+		// node.setMaximumSize(new Dimension(10, 20));
 
 		panel = new Figure() {
 			@Override
@@ -123,10 +119,9 @@ public class SignalFigure extends AbstractBMotionFigure {
 		};
 		panel.setPreferredSize(60, 10);
 
+		// add(node);
 		add(lb);
-		add(node);
 		add(panel);
-
 	}
 
 	/*
@@ -156,22 +151,22 @@ public class SignalFigure extends AbstractBMotionFigure {
 		this.lb.setText(lb);
 	}
 
-	public void setSignalColor(int color) {
-
-		switch (color) {
-		case 0: // Green
-			light1.setBackgroundColor(red);
-			light2.setBackgroundColor(gray);
-			break;
-		case 1: // Red
-			light1.setBackgroundColor(gray);
-			light2.setBackgroundColor(green);
-			break;
-		default: // No color
-			light1.setBackgroundColor(gray);
-			light2.setBackgroundColor(gray);
-			break;
-		}
-	}
+	// public void setSignalColor(int color) {
+	//
+	// switch (color) {
+	// case 0: // Green
+	// light1.setBackgroundColor(red);
+	// light2.setBackgroundColor(gray);
+	// break;
+	// case 1: // Red
+	// light1.setBackgroundColor(gray);
+	// light2.setBackgroundColor(green);
+	// break;
+	// default: // No color
+	// light1.setBackgroundColor(gray);
+	// light2.setBackgroundColor(gray);
+	// break;
+	// }
+	// }
 
 }
