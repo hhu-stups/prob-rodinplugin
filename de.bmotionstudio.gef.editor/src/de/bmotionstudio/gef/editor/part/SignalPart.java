@@ -92,12 +92,6 @@ public class SignalPart extends BMSAbstractEditPart {
 			((SignalFigure) figure)
 					.setVisible(Boolean.valueOf(value.toString()));
 
-		//
-		// if (aID.equals(AttributeConstants.ATTRIBUTE_SIGNAL_COLOR)) {
-		// int color = Integer.valueOf(value.toString());
-		// ((SignalFigure) getFigure()).setSignalColor(color);
-		// }
-
 	}
 
 	/*

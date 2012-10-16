@@ -42,8 +42,6 @@ public class Signal extends BControl {
 
 	@Override
 	protected void initAttributes() {
-		// initAttribute(AttributeConstants.ATTRIBUTE_SIGNAL_COLOR,
-		// AttributeSignalColor.NO_COLOR);
 		initAttribute(AttributeConstants.ATTRIBUTE_TRACK_DIRECTION,
 				AttributeTrackDirection.RIGHT);
 		initAttribute(AttributeConstants.ATTRIBUTE_HEIGHT, 48, false, false,

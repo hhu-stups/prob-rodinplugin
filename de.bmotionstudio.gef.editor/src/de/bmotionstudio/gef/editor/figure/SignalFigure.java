@@ -25,15 +25,6 @@ public class SignalFigure extends AbstractBMotionFigure {
 	private PointList arrow = new PointList();
 	private boolean isEast;
 	private Figure panel;
-	// private Ellipse light1;
-	// private Ellipse light2;
-
-	// private final Color green = Display.getDefault().getSystemColor(
-	// SWT.COLOR_GREEN);
-	// private final Color red = Display.getDefault()
-	// .getSystemColor(SWT.COLOR_RED);
-	// private final Color gray = Display.getDefault().getSystemColor(
-	// SWT.COLOR_GRAY);
 
 	public SignalFigure() {
 
@@ -44,20 +35,6 @@ public class SignalFigure extends AbstractBMotionFigure {
 		setOpaque(true);
 
 		lb = new Label();
-		//
-		// Figure node = new RectangleFigure();
-		// node.setBackgroundColor(ColorConstants.lightGray);
-		// node.setLayoutManager(new ToolbarLayout());
-		// node.setOpaque(true);
-		// light1 = new Ellipse();
-		// light1.setBackgroundColor(red);
-		// light1.setSize(10, 10);
-		// node.add(light1);
-		// light2 = new Ellipse();
-		// light2.setBackgroundColor(green);
-		// light2.setSize(10, 10);
-		// node.add(light2);
-		// node.setMaximumSize(new Dimension(10, 20));
 
 		panel = new Figure() {
 			@Override
@@ -150,23 +127,5 @@ public class SignalFigure extends AbstractBMotionFigure {
 	public void setLabel(String lb) {
 		this.lb.setText(lb);
 	}
-
-	// public void setSignalColor(int color) {
-	//
-	// switch (color) {
-	// case 0: // Green
-	// light1.setBackgroundColor(red);
-	// light2.setBackgroundColor(gray);
-	// break;
-	// case 1: // Red
-	// light1.setBackgroundColor(gray);
-	// light2.setBackgroundColor(green);
-	// break;
-	// default: // No color
-	// light1.setBackgroundColor(gray);
-	// light2.setBackgroundColor(gray);
-	// break;
-	// }
-	// }
 
 }
