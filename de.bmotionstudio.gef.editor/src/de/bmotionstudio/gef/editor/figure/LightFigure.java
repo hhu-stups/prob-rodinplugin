@@ -45,4 +45,10 @@ public class LightFigure extends AbstractBMotionFigure {
 		repaint();
 	}
 
+	@Override
+	public void deactivateFigure() {
+		if (lightColor != null)
+			lightColor.dispose();
+	}
+
 }

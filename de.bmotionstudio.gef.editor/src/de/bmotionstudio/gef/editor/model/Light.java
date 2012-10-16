@@ -25,7 +25,7 @@ public class Light extends BControl {
 		initAttribute(AttributeConstants.ATTRIBUTE_HEIGHT, 12, false, false,
 				AttributeConstants.ATTRIBUTE_SIZE);
 		initAttribute(AttributeConstants.ATTRIBUTE_BACKGROUND_COLOR,
-				ColorConstants.gray.getRGB());
+				ColorConstants.lightGray.getRGB());
 
 	}
 
