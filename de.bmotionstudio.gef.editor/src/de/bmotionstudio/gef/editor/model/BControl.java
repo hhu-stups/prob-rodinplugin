@@ -226,7 +226,7 @@ public abstract class BControl implements IAdaptable, Cloneable {
 		// Init visible and this attribute
 		initAttribute(AttributeConstants.ATTRIBUTE_VISIBLE, true,
 				AbstractAttribute.ROOT);
-		initAttribute(AttributeConstants.ATTRIBUTE_CUSTOM, 100,
+		initAttribute(AttributeConstants.ATTRIBUTE_CUSTOM, "",
 				AbstractAttribute.ROOT);
 
 	}
