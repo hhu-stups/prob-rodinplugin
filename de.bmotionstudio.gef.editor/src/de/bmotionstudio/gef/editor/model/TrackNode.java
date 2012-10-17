@@ -11,6 +11,7 @@ import java.util.List;
 
 import org.eclipse.draw2d.ColorConstants;
 
+import de.bmotionstudio.gef.editor.Animation;
 import de.bmotionstudio.gef.editor.AttributeConstants;
 import de.bmotionstudio.gef.editor.attribute.AbstractAttribute;
 import de.bmotionstudio.gef.editor.attribute.BAttributeLineStyle;
@@ -115,6 +116,20 @@ public class TrackNode extends BControl {
 		for (Track t : getSourceTracks())
 			t.setVisualization(visualization);
 		super.populateVisualization(visualization);
+	}
+
+	@Override
+	public void checkObserver(Animation animation) {
+		super.checkObserver(animation);
+		// TODO: Currently connection observer are checked twice (source +
+		// target) => change this, so that observer are checked only on time per
+		// state!!!
+		for (Track t : getTargetTracks()) {
+			t.checkObserver(animation);
+		}
+		for (Track t : getSourceTracks()) {
+			t.checkObserver(animation);
+		}
 	}
 
 }
