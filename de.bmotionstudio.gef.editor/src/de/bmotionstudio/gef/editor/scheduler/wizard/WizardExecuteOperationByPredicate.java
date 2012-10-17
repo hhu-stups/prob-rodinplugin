@@ -13,15 +13,18 @@ import org.eclipse.core.databinding.observable.map.IObservableMap;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.databinding.observable.value.IValueChangeListener;
 import org.eclipse.core.databinding.observable.value.ValueChangeEvent;
+import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.jface.databinding.swt.SWTObservables;
 import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
 import org.eclipse.jface.databinding.viewers.ObservableMapLabelProvider;
 import org.eclipse.jface.databinding.viewers.ViewersObservables;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.events.VerifyEvent;
@@ -37,6 +40,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
+import de.bmotionstudio.gef.editor.BMotionStudioSWTConstants;
 import de.bmotionstudio.gef.editor.eventb.EventBHelper;
 import de.bmotionstudio.gef.editor.eventb.MachineContentObject;
 import de.bmotionstudio.gef.editor.eventb.MachineOperation;
@@ -59,9 +63,11 @@ public class WizardExecuteOperationByPredicate extends SchedulerWizard {
 
 		private Composite container;
 
-		private Composite guardContainer;
+		private Label renderedOpLabel;
 
 		private Button checkboxRandomMode;
+
+		private ScrolledComposite c1;
 
 		public ComboViewer getCbOperation() {
 			return cbOperation;
@@ -144,7 +150,7 @@ public class WizardExecuteOperationByPredicate extends SchedulerWizard {
 					.getSelection();
 
 			if (!structuredSelection.isEmpty()) {
-				createGuardContainer((MachineOperation) structuredSelection
+				createRenderedOperationContainer((MachineOperation) structuredSelection
 						.getFirstElement());
 			}
 
@@ -196,7 +202,7 @@ public class WizardExecuteOperationByPredicate extends SchedulerWizard {
 			observeSelection.addValueChangeListener(new IValueChangeListener() {
 				public void handleValueChange(ValueChangeEvent event) {
 					Object sel = event.getObservableValue().getValue();
-					createGuardContainer((MachineOperation) sel);
+					createRenderedOperationContainer((MachineOperation) sel);
 				}
 			});
 
@@ -212,47 +218,38 @@ public class WizardExecuteOperationByPredicate extends SchedulerWizard {
 
 		}
 
-		private void createGuardContainer(MachineOperation op) {
+		private void createRenderedOperationContainer(MachineOperation op) {
 
-			if (guardContainer != null)
-				guardContainer.dispose();
+			if (c1 != null)
+				c1.dispose();
 
-			final StringBuilder allGuardString = new StringBuilder();
+			GridLayout gl = new GridLayout(1, true);
+			gl.marginLeft = 5;
+			gl.marginTop = 5;
 
-			if (op != null) {
+			GridData gd = new GridData(GridData.FILL_BOTH);
+			gd.horizontalSpan = 2;
+			
+			c1 = new ScrolledComposite(container, SWT.BORDER | SWT.H_SCROLL
+					| SWT.V_SCROLL);
+			c1.setBackground(ColorConstants.red);
+			c1.setLayoutData(gd);
 
-				GridData gd = new GridData(GridData.FILL_HORIZONTAL);
-				gd.horizontalSpan = 2;
+			Composite cp = new Composite(c1, SWT.NONE);
+			cp.setLayout(gl);
 
-				GridLayout gl = new GridLayout(2, false);
+			renderedOpLabel = new Label(cp, SWT.NONE);
+			renderedOpLabel.setLayoutData(gd);
+			renderedOpLabel.setText(op.getRenderedOperation());
+			renderedOpLabel.setFont(JFaceResources.getFontRegistry().get(
+					BMotionStudioSWTConstants.RODIN_FONT_KEY));
 
-				guardContainer = new Composite(container, SWT.NONE);
-				guardContainer.setLayoutData(gd);
-				guardContainer.setLayout(gl);
+			c1.setContent(cp);
+			c1.setExpandHorizontal(true);
+			c1.setExpandVertical(true);
+			c1.setMinSize(cp.computeSize(SWT.DEFAULT, SWT.DEFAULT));
 
-				for (String guard : op.getGuards()) {
-
-					if (allGuardString.length() == 0)
-						allGuardString.append(guard);
-					else
-						allGuardString.append(" & " + guard);
-
-					Label lb = new Label(guardContainer, SWT.NONE);
-					lb.setText("Guard: ");
-					lb.setLayoutData(new GridData(100, 15));
-
-					final Text txt = new Text(guardContainer, SWT.BORDER
-							| SWT.READ_ONLY);
-					txt.setText(guard);
-					txt.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-					// txt.setFont(JFaceResources.getFontRegistry().get(
-					// BMotionStudioConstants.RODIN_FONT_KEY));
-
-				}
-
-				container.layout();
-
-			}
+			container.layout();
 
 		}
 

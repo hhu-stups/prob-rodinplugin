@@ -13,12 +13,14 @@ public class MachineOperation extends MachineContentObject {
 
 	private List<String> parameters;
 	private List<String> guards;
+	private String renderedOperation;
 
 	public MachineOperation(String label, List<String> parameters,
-			List<String> guards) {
+			List<String> guards, String renderedOperation) {
 		super(label);
 		this.parameters = parameters;
 		this.guards = guards;
+		this.renderedOperation = renderedOperation;
 	}
 
 	public MachineOperation(String label) {
@@ -39,6 +41,14 @@ public class MachineOperation extends MachineContentObject {
 
 	public void setGuards(ArrayList<String> guards) {
 		this.guards = guards;
+	}
+
+	public String getRenderedOperation() {
+		return renderedOperation;
+	}
+
+	public void setRenderedOperation(String renderedOperation) {
+		this.renderedOperation = renderedOperation;
 	}
 
 }

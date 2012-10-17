@@ -1,0 +1,112 @@
+/** 
+ * (c) 2009 Lehrstuhl fuer Softwaretechnik und Programmiersprachen, 
+ * Heinrich Heine Universitaet Duesseldorf
+ * This software is licenced under EPL 1.0 (http://www.eclipse.org/org/documents/epl-v10.html) 
+ * */
+
+package de.bmotionstudio.gef.editor.model;
+
+import org.eclipse.draw2d.geometry.Rectangle;
+
+import de.bmotionstudio.gef.editor.AttributeConstants;
+import de.bmotionstudio.gef.editor.attribute.AttributeSwitchDirection;
+import de.bmotionstudio.gef.editor.attribute.AttributeSwitchPosition;
+import de.bmotionstudio.gef.editor.command.CreateCommand;
+import de.bmotionstudio.gef.editor.command.TrackCreateCommand;
+
+public class Switch extends BControl {
+
+	public static transient String TYPE = "de.bmotionstudio.gef.editor.switch";
+
+	private transient Track track1;
+
+	private transient Track track2;
+
+	public Switch(Visualization visualization) {
+
+		super(visualization);
+
+		// Build up switch
+		TrackNode tracknode1 = new TrackNode(getVisualization());
+		CreateCommand cmd = new CreateCommand(tracknode1, this);
+		cmd.setLayout(new Rectangle(5, 0, 50, 20));
+		cmd.execute();
+
+		TrackNode tracknode2 = new TrackNode(getVisualization());
+		cmd = new CreateCommand(tracknode2, this);
+		cmd.setLayout(new Rectangle(70, 0, 50, 20));
+		cmd.execute();
+
+		TrackNode tracknode3 = new TrackNode(getVisualization());
+		cmd = new CreateCommand(tracknode3, this);
+		cmd.setLayout(new Rectangle(70, 70, 50, 20));
+		cmd.execute();
+
+		TrackCreateCommand trackCreateCmd = new TrackCreateCommand(tracknode1);
+		trackCreateCmd.setTarget(tracknode2);
+		track1 = new Track(getVisualization());
+		trackCreateCmd.setTrack(track1);
+		trackCreateCmd.execute();
+
+		trackCreateCmd = new TrackCreateCommand(tracknode1);
+		trackCreateCmd.setTarget(tracknode3);
+		track2 = new Track(getVisualization());
+		trackCreateCmd.setTrack(track2);
+		trackCreateCmd.execute();
+
+		track1.setAttributeValue(AttributeConstants.ATTRIBUTE_LABEL, "");
+		track2.setAttributeValue(AttributeConstants.ATTRIBUTE_LABEL, "");
+
+		track1.setAttributeValue(AttributeConstants.ATTRIBUTE_CUSTOM, "LEFT");
+		track2.setAttributeValue(AttributeConstants.ATTRIBUTE_CUSTOM, "RIGHT");
+
+		tracknode1.setAttributeValue(AttributeConstants.ATTRIBUTE_CUSTOM, "1");
+		tracknode2.setAttributeValue(AttributeConstants.ATTRIBUTE_CUSTOM, "2");
+		tracknode3.setAttributeValue(AttributeConstants.ATTRIBUTE_CUSTOM, "3");
+
+	}
+
+	@Override
+	protected void initAttributes() {
+
+		initAttribute(AttributeConstants.ATTRIBUTE_WIDTH, 100,
+				AttributeConstants.ATTRIBUTE_SIZE);
+		initAttribute(AttributeConstants.ATTRIBUTE_HEIGHT, 50,
+				AttributeConstants.ATTRIBUTE_SIZE);
+
+		initAttribute(AttributeConstants.ATTRIBUTE_SWITCH_DIRECTION,
+				AttributeSwitchDirection.RIGHT_SOUTH);
+		initAttribute(AttributeConstants.ATTRIBUTE_SWITCH_POSITION,
+				AttributeSwitchPosition.UNKNOWN);
+
+		for (BControl c : getChildrenArray()) {
+			c.getAttribute(AttributeConstants.ATTRIBUTE_CUSTOM).setShow(false);
+			c.getAttribute(AttributeConstants.ATTRIBUTE_CUSTOM).setEditable(
+					false);
+			c.getAttribute(AttributeConstants.ATTRIBUTE_COORDINATES).setShow(
+					false);
+			c.getAttribute(AttributeConstants.ATTRIBUTE_COORDINATES)
+					.setEditable(false);
+		}
+
+	}
+
+	@Override
+	public String getType() {
+		return TYPE;
+	}
+
+	@Override
+	public boolean canHaveChildren() {
+		return true;
+	}
+
+	public Track getTrack1() {
+		return track1;
+	}
+
+	public Track getTrack2() {
+		return track2;
+	}
+
+}

@@ -1,5 +1,5 @@
 
-targetRepositories = ["http://cobra.cs.uni-duesseldorf.de/prob_dev_target/","http://download.eclipse.org/releases/indigo/","http://rodin-b-sharp.sourceforge.net/updates"]	
+targetRepositories = ["http://www.stups.uni-duesseldorf.de/prob_dev_target/","http://download.eclipse.org/releases/indigo/","http://rodin-b-sharp.sourceforge.net/updates"]	
 
 groupID = "de.prob"
 
@@ -97,7 +97,7 @@ task downloadCli << {
 
 
 completeInstall.dependsOn downloadCli
-//completeInstall.dependsOn subprojects.setClassPath setClassPath needs fix
+completeInstall.dependsOn subprojects.setClassPath
 
 task deleteOldArtifacts(type: Delete) {
   	String updateSite = workspacePath+'updatesite'

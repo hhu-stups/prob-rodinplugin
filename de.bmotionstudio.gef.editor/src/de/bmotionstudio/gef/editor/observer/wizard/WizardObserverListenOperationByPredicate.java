@@ -107,13 +107,17 @@ public class WizardObserverListenOperationByPredicate extends ObserverWizard {
 									control.restoreDefaultValue(lastChangedAttributeID);
 
 								PredicateOperation obj = (PredicateOperation) observerEvalObject;
-								String attribute = obj
-										.getAttribute();
-								Object value = obj.getValue();
-								control.setAttributeValue(attribute, value,
-										true, false);
 
-								lastChangedAttributeID = attribute;
+								if (!obj.isExpressionMode()) {
+
+									String attribute = obj.getAttribute();
+									Object value = obj.getValue();
+									control.setAttributeValue(attribute, value,
+											true, false);
+
+									lastChangedAttributeID = attribute;
+
+								}
 
 							}
 						}

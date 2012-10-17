@@ -86,22 +86,25 @@ public class WizardObserverCSwitchCoordinates extends ObserverWizard {
 							if (firstElement instanceof ObserverEvalObject) {
 								restorePreview();
 								ObserverEvalObject observerEvalObject = (ObserverEvalObject) firstElement;
-								BControl control = getBControl();
-								ToggleObjectCoordinates toggleObjectCoordinates = (ToggleObjectCoordinates) observerEvalObject;
-								String attributeX = AttributeConstants.ATTRIBUTE_X;
-								String attributeY = AttributeConstants.ATTRIBUTE_Y;
-								String x = toggleObjectCoordinates.getX();
-								String y = toggleObjectCoordinates.getY();
-								String controlID = toggleObjectCoordinates
-										.getBcontrol();
-								BControl bControl = control.getChild(controlID);
-								if (bControl != null) {
-									bControl.setAttributeValue(attributeX, x,
-											true, false);
-									bControl.setAttributeValue(attributeY, y,
-											true, false);
+								if (!observerEvalObject.isExpressionMode()) {
+									BControl control = getBControl();
+									ToggleObjectCoordinates toggleObjectCoordinates = (ToggleObjectCoordinates) observerEvalObject;
+									String attributeX = AttributeConstants.ATTRIBUTE_X;
+									String attributeY = AttributeConstants.ATTRIBUTE_Y;
+									String x = toggleObjectCoordinates.getX();
+									String y = toggleObjectCoordinates.getY();
+									String controlID = toggleObjectCoordinates
+											.getBcontrol();
+									BControl bControl = control
+											.getChild(controlID);
+									if (bControl != null) {
+										bControl.setAttributeValue(attributeX,
+												x, true, false);
+										bControl.setAttributeValue(attributeY,
+												y, true, false);
+									}
+									lastChangedControlID = controlID;
 								}
-								lastChangedControlID = controlID;
 							}
 						}
 

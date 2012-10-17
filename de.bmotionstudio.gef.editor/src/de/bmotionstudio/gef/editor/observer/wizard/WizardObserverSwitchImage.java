@@ -85,12 +85,14 @@ public class WizardObserverSwitchImage extends ObserverWizard {
 							Object firstElement = selection.getFirstElement();
 							if (firstElement instanceof ObserverEvalObject) {
 								ObserverEvalObject observerEvalObject = (ObserverEvalObject) firstElement;
-								BControl control = getBControl();
-								ToggleObjectImage toggleObjImage = (ToggleObjectImage) observerEvalObject;
-								String attribute = AttributeConstants.ATTRIBUTE_IMAGE;
-								String image = toggleObjImage.getImage();
-								control.setAttributeValue(attribute, image,
-										true, false);
+								if (!observerEvalObject.isExpressionMode()) {
+									BControl control = getBControl();
+									ToggleObjectImage toggleObjImage = (ToggleObjectImage) observerEvalObject;
+									String attribute = AttributeConstants.ATTRIBUTE_IMAGE;
+									String image = toggleObjImage.getImage();
+									control.setAttributeValue(attribute, image,
+											true, false);
+								}
 							}
 						}
 
