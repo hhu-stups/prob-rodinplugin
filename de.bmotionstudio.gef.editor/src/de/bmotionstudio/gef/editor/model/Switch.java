@@ -9,6 +9,7 @@ package de.bmotionstudio.gef.editor.model;
 import org.eclipse.draw2d.geometry.Rectangle;
 
 import de.bmotionstudio.gef.editor.AttributeConstants;
+import de.bmotionstudio.gef.editor.attribute.AbstractAttribute;
 import de.bmotionstudio.gef.editor.attribute.AttributeSwitchDirection;
 import de.bmotionstudio.gef.editor.attribute.AttributeSwitchPosition;
 import de.bmotionstudio.gef.editor.command.CreateCommand;
@@ -58,11 +59,30 @@ public class Switch extends BControl {
 		track2.setAttributeValue(AttributeConstants.ATTRIBUTE_LABEL, "");
 
 		track1.setAttributeValue(AttributeConstants.ATTRIBUTE_CUSTOM, "LEFT");
+		track1.getAttribute(AttributeConstants.ATTRIBUTE_CUSTOM).setEditable(
+				false);
+
 		track2.setAttributeValue(AttributeConstants.ATTRIBUTE_CUSTOM, "RIGHT");
+		track2.getAttribute(AttributeConstants.ATTRIBUTE_CUSTOM).setEditable(
+				false);
 
 		tracknode1.setAttributeValue(AttributeConstants.ATTRIBUTE_CUSTOM, "1");
+		tracknode1.getAttribute(AttributeConstants.ATTRIBUTE_CUSTOM)
+				.setEditable(false);
+		tracknode1.getAttribute(AttributeConstants.ATTRIBUTE_COORDINATES)
+				.setShow(false);
+
 		tracknode2.setAttributeValue(AttributeConstants.ATTRIBUTE_CUSTOM, "2");
+		tracknode2.getAttribute(AttributeConstants.ATTRIBUTE_CUSTOM)
+				.setEditable(false);
+		tracknode2.getAttribute(AttributeConstants.ATTRIBUTE_COORDINATES)
+				.setShow(false);
+
 		tracknode3.setAttributeValue(AttributeConstants.ATTRIBUTE_CUSTOM, "3");
+		tracknode3.getAttribute(AttributeConstants.ATTRIBUTE_CUSTOM)
+				.setEditable(false);
+		tracknode3.getAttribute(AttributeConstants.ATTRIBUTE_COORDINATES)
+				.setShow(false);
 
 	}
 
@@ -89,6 +109,25 @@ public class Switch extends BControl {
 					.setEditable(false);
 		}
 
+	}
+
+	// We have to set the two tracks of the switch, since their are set to
+	// transient
+	protected Object readResolve() {
+		super.readResolve();
+		for (BControl control : getChildrenArray()) {
+			for (Track n : ((TrackNode) control).getTargetTracks()) {
+				AbstractAttribute a2 = n
+						.getAttribute(AttributeConstants.ATTRIBUTE_CUSTOM);
+				a2.setEditable(false);
+				if (a2.getValue().equals("LEFT")) {
+					track1 = n;
+				} else if (a2.getValue().equals("RIGHT")) {
+					track2 = n;
+				}
+			}
+		}
+		return this;
 	}
 
 	@Override
