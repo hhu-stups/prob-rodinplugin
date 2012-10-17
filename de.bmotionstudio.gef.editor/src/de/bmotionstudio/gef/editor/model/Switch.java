@@ -116,6 +116,16 @@ public class Switch extends BControl {
 	protected Object readResolve() {
 		super.readResolve();
 		for (BControl control : getChildrenArray()) {
+			for (Track n : ((TrackNode) control).getSourceTracks()) {
+				AbstractAttribute a2 = n
+						.getAttribute(AttributeConstants.ATTRIBUTE_CUSTOM);
+				a2.setEditable(false);
+				if (a2.getValue().equals("LEFT")) {
+					track1 = n;
+				} else if (a2.getValue().equals("RIGHT")) {
+					track2 = n;
+				}
+			}
 			for (Track n : ((TrackNode) control).getTargetTracks()) {
 				AbstractAttribute a2 = n
 						.getAttribute(AttributeConstants.ATTRIBUTE_CUSTOM);
