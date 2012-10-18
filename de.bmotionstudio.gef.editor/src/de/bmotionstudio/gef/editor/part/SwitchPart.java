@@ -89,7 +89,7 @@ public class SwitchPart extends BMSAbstractEditPart {
 
 			switch (Integer.valueOf(trackNode.getAttributeValue(
 					AttributeConstants.ATTRIBUTE_CUSTOM).toString())) {
-			case 1: // top left
+			case 1: // top left (1)
 				if (dir == AttributeSwitchDirection.RIGHT_SOUTH) {
 					pt.y = 0;
 					pt.x = 5;
@@ -104,7 +104,7 @@ public class SwitchPart extends BMSAbstractEditPart {
 					pt.x = width - 25;
 				}
 				break;
-			case 2: // top right
+			case 2: // top right (2)
 				if (dir == AttributeSwitchDirection.RIGHT_SOUTH) {
 					pt.y = 0;
 					pt.x = width - 25;
@@ -119,7 +119,7 @@ public class SwitchPart extends BMSAbstractEditPart {
 					pt.x = 5;
 				}
 				break;
-			case 3: // left right
+			case 3: // left right (3)
 				if (dir == AttributeSwitchDirection.RIGHT_SOUTH) {
 					pt.y = height - 20;
 					pt.x = width - 25;
