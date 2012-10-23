@@ -285,6 +285,12 @@
             id="de.prob.ui.stateview.duplicateFilterState" />
       </command>
       <command
+            id="de.prob.ui.history.toggleShowParameters"
+            name="Show event parameters">
+         <state class="org.eclipse.jface.commands.ToggleState"
+            id="de.prob.ui.history.showParametersState" />
+      </command>
+      <command
             id="de.prob.ui.show_parameter_dialog"
             name="Show Parameter Dialog">
       </command>
@@ -609,6 +615,20 @@
          </enabledWhen>
       </handler>
       <handler
+            commandId="de.prob.ui.history.toggleShowParameters">
+         <class
+               class="de.prob.ui.historyview.ToggleShowParametersHandler">
+         </class>
+         <enabledWhen>
+            <with
+                  variable="de.prob.core.model_loaded">
+               <equals
+                     value="enabled">
+               </equals>
+            </with>
+         </enabledWhen>
+      </handler>
+      <handler
             commandId="de.prob.ui.show_parameter_dialog">
          <class
                class="de.prob.ui.operationview.ShowParameterDialogHandler">
@@ -788,6 +808,15 @@
                commandId="de.prob.ui.command.showInHistory"
                label="Show item in history"
                style="push">
+         </command>
+      </menuContribution>
+      <menuContribution
+            locationURI="toolbar:de.prob.ui.HistoryView">
+         <command
+               commandId="de.prob.ui.history.toggleShowParameters"
+               icon="icons/filter_ps.gif"
+               label="Show Parameters"
+               style="toggle">
          </command>
       </menuContribution>
       

@@ -24,6 +24,8 @@ public abstract class HistoryLabelProvider extends CellLabelProvider {
 	final Font bold = JFaceResources.getFontRegistry().getBold(
 			JFaceResources.BANNER_FONT);
 
+	protected boolean showParameters;
+
 	@Override
 	public void update(final ViewerCell cell) {
 		final Object element = cell.getElement();
@@ -50,5 +52,9 @@ public abstract class HistoryLabelProvider extends CellLabelProvider {
 
 	protected Color getForeground(final HistViewItem item) {
 		return null;
+	}
+
+	public void setShowParameters(final boolean show) {
+		showParameters = show;
 	}
 }
