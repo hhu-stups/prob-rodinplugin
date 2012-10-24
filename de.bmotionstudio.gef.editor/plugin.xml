@@ -264,7 +264,7 @@
       </control>
       <control
             groupid="de.bmotionstudio.gef.editor.railway.group"
-            icon="icons/icon_signal.gif"
+            icon="icons/eclipse16/smartmode_co.gif"
             id="de.bmotionstudio.gef.editor.light"
             name="Light"
             service="de.bmotionstudio.gef.editor.service.LightService">
