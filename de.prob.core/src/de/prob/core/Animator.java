@@ -6,11 +6,18 @@
 
 package de.prob.core;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.emf.common.command.Command;
 import org.osgi.service.prefs.Preferences;
+
+import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.io.json.JettisonMappedXmlDriver;
 
 import de.prob.core.command.IComposableCommand;
 import de.prob.core.domainobjects.History;
@@ -23,6 +30,8 @@ import de.prob.core.internal.AnimatorImpl;
 import de.prob.core.internal.ServerTraceConnection;
 import de.prob.core.internal.TraceConnectionProvider;
 import de.prob.exceptions.ProBException;
+import de.prob.model.eventb.Model;
+
 
 /**
  * Animator is a singleton Proxy used to communicate with ProB. The method
@@ -336,5 +345,18 @@ public final class Animator {
 	// if synchronized this will produce a deadlock. Ignore findbugs here
 	public  void sendUserInterruptSignal() {
 		if (implementation != null) implementation.sendUserInterruptSignal();
+	}
+	
+	public static void serializeModel(Model model) {
+		XStream xstream = new XStream(new JettisonMappedXmlDriver());
+		String xml = xstream.toXML(model);
+		try {
+			FileWriter fw = new FileWriter("model.xml");
+			final BufferedWriter bw = new BufferedWriter(fw);
+			bw.write(xml);
+			bw.close();
+		} catch (IOException e1) {
+			System.out.println("could not create file");
+		}
 	}
 }
