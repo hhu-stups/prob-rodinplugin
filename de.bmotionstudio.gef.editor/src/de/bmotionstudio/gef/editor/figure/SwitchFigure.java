@@ -21,7 +21,7 @@ public class SwitchFigure extends AbstractBMotionFigure {
 
 	public SwitchFigure() {
 		setLayoutManager(new XYLayout());
-		setOpaque(true);
+		setOpaque(false);
 	}
 
 	@Override
