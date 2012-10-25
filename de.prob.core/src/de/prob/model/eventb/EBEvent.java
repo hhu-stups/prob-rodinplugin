@@ -1,8 +1,7 @@
-package de.prob.animator.domainobjects;
+package de.prob.model.eventb;
 
 import java.util.Arrays;
 
-import de.prob.model.eventb.EventB;
 import de.prob.model.representation.IEntity;
 import de.prob.model.representation.Label;
 

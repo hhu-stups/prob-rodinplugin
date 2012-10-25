@@ -2,7 +2,6 @@ package de.prob.model.eventb;
 
 import java.util.Arrays;
 
-import de.prob.animator.domainobjects.EBEvent;
 import de.prob.model.representation.IEntity;
 import de.prob.model.representation.Label;
 
@@ -31,7 +30,7 @@ public class EBMachine extends Label {
 		this.variant.addChild(new EventB(variant));
 	}
 
-	public void addEvent(final String event) {
-		events.addChild(new EBEvent(event));
+	public void addEvent(final EBEvent event) {
+		events.addChild(event);
 	}
 }
