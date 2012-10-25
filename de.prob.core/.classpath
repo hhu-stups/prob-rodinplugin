@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
+	<classpathentry exported="true" kind="lib" path="lib/dependencies/xstream-1.2.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/dependencies/answerparser-2.4.8-SNAPSHOT.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/dependencies/bparser-2.4.8-SNAPSHOT.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/dependencies/cliparser-2.4.8-SNAPSHOT.jar"/>
