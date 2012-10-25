@@ -19,6 +19,7 @@ import de.bmotionstudio.gef.editor.editpolicy.BMSDeletePolicy;
 import de.bmotionstudio.gef.editor.figure.SwitchFigure;
 import de.bmotionstudio.gef.editor.model.BControl;
 import de.bmotionstudio.gef.editor.model.Switch;
+import de.bmotionstudio.gef.editor.model.Track;
 
 public class SwitchPart extends BMSAbstractEditPart {
 
@@ -38,19 +39,26 @@ public class SwitchPart extends BMSAbstractEditPart {
 
 			Switch sw = (Switch) model;
 
-			sw.getTrack1().setAttributeValue(
-					AttributeConstants.ATTRIBUTE_VISIBLE, true);
-			sw.getTrack2().setAttributeValue(
-					AttributeConstants.ATTRIBUTE_VISIBLE, true);
+			Track track1 = sw.getTrack1();
+			Track track2 = sw.getTrack2();
 
-			if (value.equals(AttributeSwitchPosition.LEFT)) {
-				sw.getTrack1().setAttributeValue(
-					AttributeConstants.ATTRIBUTE_VISIBLE, false);
-			} else if (value.equals(AttributeSwitchPosition.RIGHT)) {
-				sw.getTrack2().setAttributeValue(
-						AttributeConstants.ATTRIBUTE_VISIBLE, false);
+			if (track1 != null && track2 != null) {
+
+				track1.setAttributeValue(AttributeConstants.ATTRIBUTE_VISIBLE,
+						true);
+				track2.setAttributeValue(AttributeConstants.ATTRIBUTE_VISIBLE,
+						true);
+
+				if (value.equals(AttributeSwitchPosition.LEFT)) {
+					track1.setAttributeValue(
+							AttributeConstants.ATTRIBUTE_VISIBLE, false);
+				} else if (value.equals(AttributeSwitchPosition.RIGHT)) {
+					track2.setAttributeValue(
+							AttributeConstants.ATTRIBUTE_VISIBLE, false);
+				}
+
 			}
-			
+
 		}
 
 		if (aID.equals(AttributeConstants.ATTRIBUTE_SWITCH_DIRECTION))

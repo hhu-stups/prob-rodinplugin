@@ -6,6 +6,9 @@
 
 package de.bmotionstudio.gef.editor.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.draw2d.geometry.Rectangle;
 
 import de.bmotionstudio.gef.editor.AttributeConstants;
@@ -59,28 +62,37 @@ public class Switch extends BControl {
 		track2.setAttributeValue(AttributeConstants.ATTRIBUTE_LABEL, "");
 
 		track1.setAttributeValue(AttributeConstants.ATTRIBUTE_CUSTOM, "LEFT");
-		track1.getAttribute(AttributeConstants.ATTRIBUTE_CUSTOM).setEditable(
-				false);
+		AbstractAttribute a1 = track1
+				.getAttribute(AttributeConstants.ATTRIBUTE_CUSTOM);
+		a1.setEditable(false);
+		a1.setShow(false);
 
 		track2.setAttributeValue(AttributeConstants.ATTRIBUTE_CUSTOM, "RIGHT");
-		track2.getAttribute(AttributeConstants.ATTRIBUTE_CUSTOM).setEditable(
-				false);
+		AbstractAttribute a2 = track2.getAttribute(AttributeConstants.ATTRIBUTE_CUSTOM);
+		a2.setEditable(false);
+		a2.setShow(false);
 
 		tracknode1.setAttributeValue(AttributeConstants.ATTRIBUTE_CUSTOM, "1");
 		tracknode1.getAttribute(AttributeConstants.ATTRIBUTE_CUSTOM)
 				.setEditable(false);
+		tracknode1.getAttribute(AttributeConstants.ATTRIBUTE_CUSTOM).setShow(
+				false);
 		tracknode1.getAttribute(AttributeConstants.ATTRIBUTE_COORDINATES)
 				.setShow(false);
 
 		tracknode2.setAttributeValue(AttributeConstants.ATTRIBUTE_CUSTOM, "2");
 		tracknode2.getAttribute(AttributeConstants.ATTRIBUTE_CUSTOM)
 				.setEditable(false);
+		tracknode2.getAttribute(AttributeConstants.ATTRIBUTE_CUSTOM).setShow(
+				false);
 		tracknode2.getAttribute(AttributeConstants.ATTRIBUTE_COORDINATES)
 				.setShow(false);
 
 		tracknode3.setAttributeValue(AttributeConstants.ATTRIBUTE_CUSTOM, "3");
 		tracknode3.getAttribute(AttributeConstants.ATTRIBUTE_CUSTOM)
 				.setEditable(false);
+		tracknode3.getAttribute(AttributeConstants.ATTRIBUTE_CUSTOM).setShow(
+				false);
 		tracknode3.getAttribute(AttributeConstants.ATTRIBUTE_COORDINATES)
 				.setShow(false);
 
@@ -99,45 +111,38 @@ public class Switch extends BControl {
 		initAttribute(AttributeConstants.ATTRIBUTE_SWITCH_POSITION,
 				AttributeSwitchPosition.UNKNOWN);
 
-		for (BControl c : getChildrenArray()) {
-			c.getAttribute(AttributeConstants.ATTRIBUTE_CUSTOM).setShow(false);
-			c.getAttribute(AttributeConstants.ATTRIBUTE_CUSTOM).setEditable(
-					false);
-			c.getAttribute(AttributeConstants.ATTRIBUTE_COORDINATES).setShow(
-					false);
-			c.getAttribute(AttributeConstants.ATTRIBUTE_COORDINATES)
-					.setEditable(false);
-		}
-
 	}
 
 	// We have to set the two tracks of the switch, since their are set to
 	// transient
 	protected Object readResolve() {
+
 		super.readResolve();
+
 		for (BControl control : getChildrenArray()) {
-			for (Track n : ((TrackNode) control).getSourceTracks()) {
+
+			List<Track> tracks = new ArrayList<Track>();
+			tracks.addAll(((TrackNode) control).getSourceTracks());
+			tracks.addAll(((TrackNode) control).getTargetTracks());
+
+			for (Track n : tracks) {
 				AbstractAttribute a2 = n
 						.getAttribute(AttributeConstants.ATTRIBUTE_CUSTOM);
-				a2.setEditable(false);
 				if (a2.getValue().equals("LEFT")) {
+					a2.setEditable(false);
+					a2.setShow(false);
 					track1 = n;
 				} else if (a2.getValue().equals("RIGHT")) {
 					track2 = n;
+					a2.setEditable(false);
+					a2.setShow(false);
 				}
 			}
-			for (Track n : ((TrackNode) control).getTargetTracks()) {
-				AbstractAttribute a2 = n
-						.getAttribute(AttributeConstants.ATTRIBUTE_CUSTOM);
-				a2.setEditable(false);
-				if (a2.getValue().equals("LEFT")) {
-					track1 = n;
-				} else if (a2.getValue().equals("RIGHT")) {
-					track2 = n;
-				}
-			}
+
 		}
+
 		return this;
+
 	}
 
 	@Override
