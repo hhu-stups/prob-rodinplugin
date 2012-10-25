@@ -16,6 +16,7 @@ import de.bmotionstudio.gef.editor.AttributeConstants;
 import de.bmotionstudio.gef.editor.command.CreateCommand;
 import de.bmotionstudio.gef.editor.editpolicy.BMSConnectionEditPolicy;
 import de.bmotionstudio.gef.editor.editpolicy.BMSDeletePolicy;
+import de.bmotionstudio.gef.editor.editpolicy.SignalLayoutEditPolicy;
 import de.bmotionstudio.gef.editor.figure.SignalFigure;
 import de.bmotionstudio.gef.editor.model.BControl;
 import de.bmotionstudio.gef.editor.model.Light;
@@ -94,21 +95,9 @@ public class SignalPart extends BMSAbstractEditPart {
 
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * de.bmotionstudio.gef.editor.part.AppAbstractEditPart#createEditPolicies()
-	 */
-	@Override
-	protected void createEditPolicies() {
-		installEditPolicy(EditPolicy.GRAPHICAL_NODE_ROLE,
-				new BMSConnectionEditPolicy());
-		super.createEditPolicies();
-	}
-
 	@Override
 	protected void prepareEditPolicies() {
+		installEditPolicy(EditPolicy.LAYOUT_ROLE, new SignalLayoutEditPolicy());
 		installEditPolicy(EditPolicy.COMPONENT_ROLE, new BMSDeletePolicy());
 		installEditPolicy(EditPolicy.GRAPHICAL_NODE_ROLE,
 				new BMSConnectionEditPolicy());
