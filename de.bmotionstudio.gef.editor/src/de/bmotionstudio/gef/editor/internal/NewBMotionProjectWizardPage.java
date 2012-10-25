@@ -274,7 +274,7 @@ public class NewBMotionProjectWizardPage extends WizardPage {
 					final Object[] result = dialog.getResult();
 					if (result.length == 1) {
 						Path newPath = (Path) result[0];
-						IProject newProject = selectedProject.getWorkspace()
+						IProject newProject = ResourcesPlugin.getWorkspace()
 								.getRoot().getProject(newPath.toString());
 						selectedProject = newProject;
 						initContent();
