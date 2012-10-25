@@ -142,13 +142,13 @@
    <extension
          point="de.prob.core.animation">
       <listener
-            class="de.bmotionstudio.gef.editor.animation.StaticListenerRegistry">
+            class="de.bmotionstudio.gef.editor.StaticListenerRegistry">
       </listener>
    </extension>
    <extension
          point="de.prob.core.lifecycle">
       <listener
-            class="de.bmotionstudio.gef.editor.animation.StaticListenerRegistry">
+            class="de.bmotionstudio.gef.editor.StaticListenerRegistry">
       </listener>
    </extension>
    <extension
