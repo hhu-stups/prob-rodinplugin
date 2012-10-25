@@ -16,7 +16,7 @@ Require-Bundle: org.eclipse.ui;bundle-version="[3.5.0,4.0.0)",
  org.eventb.core;bundle-version="[2.1.0,2.6.0)"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Eclipse-BuddyPolicy: registered
+Eclipse-RegisterBuddy: de.prob.core
 Bundle-Vendor: HHU Düsseldorf STUPS Group
 Export-Package: de.bmotionstudio.gef.editor;
   uses:="org.eclipse.jface.wizard,
