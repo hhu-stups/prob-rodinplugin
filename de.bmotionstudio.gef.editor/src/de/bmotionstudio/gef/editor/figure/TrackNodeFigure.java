@@ -11,6 +11,10 @@ public class TrackNodeFigure extends AbstractBMotionFigure {
 	private int lineWidth;
 	private int lineStyle;
 
+	public TrackNodeFigure() {
+		setOpaque(false);
+	}
+
 	@Override
 	protected void paintFigure(Graphics g) {
 
