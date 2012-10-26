@@ -32,8 +32,15 @@ public class EventB implements IEvalElement, IEntity {
 	private String kind;
 	private Node ast = null;
 
-	public EventB(final String code) {
+	private final String name;
+
+	public EventB(final String code, String name) {
 		this.code = code;
+		this.name = name;
+	}
+
+	public EventB(String code) {
+		this(code, "");
 	}
 
 	private void ensureParsed() {
@@ -81,7 +88,7 @@ public class EventB implements IEvalElement, IEntity {
 		}
 		StringBuilder sb = new StringBuilder();
 		for (String string : msgs) {
-			sb.append(string+"\n");
+			sb.append(string + "\n");
 		}
 		final String error = sb.toString();
 		throw new RuntimeException("Cannot parse " + code + ":\n " + error); // FIXME
@@ -116,6 +123,10 @@ public class EventB implements IEvalElement, IEntity {
 	@Override
 	public boolean hasChildren() {
 		return false;
+	}
+
+	public String getName() {
+		return name;
 	}
 
 }

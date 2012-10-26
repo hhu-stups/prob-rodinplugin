@@ -13,7 +13,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.emf.common.command.Command;
 import org.osgi.service.prefs.Preferences;
 
 import com.thoughtworks.xstream.XStream;
@@ -347,16 +346,5 @@ public final class Animator {
 		if (implementation != null) implementation.sendUserInterruptSignal();
 	}
 	
-	public static void serializeModel(Model model) {
-		XStream xstream = new XStream(new JettisonMappedXmlDriver());
-		String xml = xstream.toXML(model);
-		try {
-			FileWriter fw = new FileWriter("model.xml");
-			final BufferedWriter bw = new BufferedWriter(fw);
-			bw.write(xml);
-			bw.close();
-		} catch (IOException e1) {
-			System.out.println("could not create file");
-		}
-	}
+
 }
