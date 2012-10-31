@@ -812,19 +812,6 @@ public abstract class BControl implements IAdaptable, Cloneable {
 
 	}
 
-	// protected void initAttribute(AbstractAttribute atr) {
-	// AbstractAttribute matr = getAttributes().get(atr.getID());
-	// if (matr != null) {
-	// matr.setEditable(atr.isEditable());
-	// matr.setGroup(atr.getGroup());
-	// matr.setShow(atr.show());
-	// matr.setDefaultValue(atr.getValue());
-	// } else {
-	// atr.setDefaultValue(atr.getValue());
-	// getAttributes().put(atr.getID(), atr);
-	// }
-	// }
-
 	private Object reflectiveGet(String className) {
 		Object newInstance = null;
 		try {
@@ -839,34 +826,6 @@ public abstract class BControl implements IAdaptable, Cloneable {
 		}
 		return newInstance;
 	}
-
-	// protected void initAttribute(AbstractAttribute atr, AbstractAttribute
-	// group) {
-	// initAttribute(atr, group.getClass().getName());
-	// }
-	//
-	// protected void initAttribute(AbstractAttribute atr, String group) {
-	// atr.setGroup(group);
-	// initAttribute(atr);
-	// }
-	//
-	// protected void initAttribute(AbstractAttribute atr, boolean editable,
-	// boolean show) {
-	// atr.setEditable(editable);
-	// atr.setShow(show);
-	// initAttribute(atr);
-	// }
-	//
-	// protected void initAttribute(AbstractAttribute atr, boolean editable) {
-	// atr.setEditable(editable);
-	// initAttribute(atr);
-	// }
-	//
-	// protected void initAttribute(AbstractAttribute atr, String group,
-	// boolean editable) {
-	// atr.setEditable(editable);
-	// initAttribute(atr, group);
-	// }
 
 	public boolean canHaveChildren() {
 		return false;
