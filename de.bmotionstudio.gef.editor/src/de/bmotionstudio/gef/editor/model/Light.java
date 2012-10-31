@@ -8,6 +8,7 @@ package de.bmotionstudio.gef.editor.model;
 import org.eclipse.draw2d.ColorConstants;
 
 import de.bmotionstudio.gef.editor.AttributeConstants;
+import de.bmotionstudio.gef.editor.attribute.AbstractAttribute;
 
 public class Light extends BControl {
 
@@ -20,6 +21,10 @@ public class Light extends BControl {
 	@Override
 	protected void initAttributes() {
 
+		initAttribute(AttributeConstants.ATTRIBUTE_SIZE, null, false, false,
+				AbstractAttribute.ROOT);
+		initAttribute(AttributeConstants.ATTRIBUTE_COORDINATES, null, false,
+				false, AbstractAttribute.ROOT);
 		initAttribute(AttributeConstants.ATTRIBUTE_WIDTH, 12, false, false,
 				AttributeConstants.ATTRIBUTE_SIZE);
 		initAttribute(AttributeConstants.ATTRIBUTE_HEIGHT, 12, false, false,
