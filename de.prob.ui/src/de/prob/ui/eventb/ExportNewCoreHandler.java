@@ -1,14 +1,12 @@
 package de.prob.ui.eventb;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.io.Writer;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.zip.GZIPOutputStream;
 
 import org.apache.commons.codec.binary.Base64;
 import org.eclipse.core.commands.AbstractHandler;
@@ -17,8 +15,6 @@ import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.IHandler;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.preferences.InstanceScope;
-import org.eclipse.emf.ecore.xmi.XMLResource;
-import org.eclipse.emf.ecore.xmi.impl.XMLResourceImpl;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -34,9 +30,12 @@ import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
 import org.rodinp.core.IRodinProject;
 
+import com.thoughtworks.xstream.XStream;
+
 import de.prob.core.translator.TranslationFailedException;
 import de.prob.eventb.translator.TranslatorFactory;
 import de.prob.logging.Logger;
+import de.prob.model.eventb.Model;
 
 public class ExportNewCoreHandler extends AbstractHandler implements IHandler {
 
@@ -117,8 +116,8 @@ public class ExportNewCoreHandler extends AbstractHandler implements IHandler {
 				TranslatorFactory.translate(root, new PrintWriter(fw));
 				fw.append('\n');
 
-				fw.append("emf_model('" + root.getComponentName() + "',\""
-						+ serialize(project) + "\").");
+				fw.append("eclipse_model('" + root.getComponentName() + "',\""
+						+ serialize(project, root.getComponentName()) + "\").");
 
 			} catch (TranslationFailedException e) {
 				e.notifyUserOnce();
@@ -135,22 +134,24 @@ public class ExportNewCoreHandler extends AbstractHandler implements IHandler {
 		}
 	}
 
-	private static String serialize(Project project) {
-
-		StringWriter sw = new StringWriter();
-		Map<Object, Object> options = new HashMap<Object, Object>();
-		options.put(XMLResource.OPTION_ROOT_OBJECTS,
-				Collections.singletonList(project));
-		options.put(XMLResource.OPTION_FORMATTED, false);
-		XMLResourceImpl ri = new XMLResourceImpl();
+	private static String serialize(Project project, String maincomponent) {
+		NewCoreModelTranslation translation = new NewCoreModelTranslation();
+		Model model = translation.translate(project, maincomponent);
+		// XStream xstream = new XStream(new JettisonMappedXmlDriver());
+		XStream xstream = new XStream();
+		String xml = xstream.toXML(model);
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+	    GZIPOutputStream gzip;
+	    byte[] bytes;
 		try {
-			ri.save(sw, options);
-		} catch (IOException e1) {
-			e1.printStackTrace();
+			gzip = new GZIPOutputStream(out);
+			gzip.write(xml.getBytes());
+			gzip.close();
+			bytes = out.toByteArray();
+		} catch (IOException e) {
+			bytes = xml.getBytes();
 		}
-
-		String xml = Base64.encodeBase64String(sw.toString().getBytes());
-		return xml;
+		return Base64.encodeBase64String(bytes);
 	}
 
 	private static boolean isSafeToWrite(final String filename) {

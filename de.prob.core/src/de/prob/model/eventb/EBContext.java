@@ -26,8 +26,8 @@ public class EBContext extends Label {
 		constants.addChild(new EventB(constant));
 	}
 
-	public void addAxiom(final String axiom) {
-		axioms.addChild(new EventB(axiom));
+	public void addAxiom(final String axiom, String aname) {
+		axioms.addChild(new EventB(axiom,aname));
 	}
 
 }

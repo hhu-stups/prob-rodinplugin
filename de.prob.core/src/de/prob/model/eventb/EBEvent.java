@@ -16,7 +16,7 @@ public class EBEvent extends Label {
 	public EBEvent(final String name) {
 		super(name);
 		children.addAll(Arrays.asList(new IEntity[] { refines, parameters,
-				guards, witnesses, actions }));
+				guards }));
 	}
 
 	@Override
@@ -32,15 +32,15 @@ public class EBEvent extends Label {
 		parameters.addChild(new EventB(parameter));
 	}
 
-	public void addGuard(final String guard) {
-		guards.addChild(new EventB(guard));
+	public void addGuard(final String guard, String gname) {
+		guards.addChild(new EventB(guard,gname));
 	}
 
-	public void addWitness(final String witness) {
-		witnesses.addChild(new EventB(witness));
+	public void addWitness(final String witness,String wname) {
+		witnesses.addChild(new EventB(witness,wname));
 	}
 
-	public void addAction(final String action) {
-		actions.addChild(new Label(action));
+	public void addAction(final String action, String aname) {
+		actions.addChild(new Action(action, aname));
 	}
 }

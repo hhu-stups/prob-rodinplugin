@@ -22,8 +22,8 @@ public class EBMachine extends Label {
 		variables.addChild(new EventB(variable));
 	}
 
-	public void addInvariant(final String invariant) {
-		invariants.addChild(new EventB(invariant));
+	public void addInvariant(final String invariant, String iname) {
+		invariants.addChild(new EventB(invariant, iname));
 	}
 
 	public void addVariant(final String variant) {
