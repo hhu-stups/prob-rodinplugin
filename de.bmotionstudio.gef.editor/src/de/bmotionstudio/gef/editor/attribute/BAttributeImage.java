@@ -16,6 +16,10 @@ import de.bmotionstudio.gef.editor.property.ImagePropertyDescriptor;
 
 public class BAttributeImage extends AbstractAttribute {
 
+	public BAttributeImage(Object value) {
+		super(value);
+	}
+
 	public PropertyDescriptor preparePropertyDescriptor() {
 		return new ImagePropertyDescriptor(getID(), getName());
 	}

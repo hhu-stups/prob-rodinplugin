@@ -14,6 +14,10 @@ import de.bmotionstudio.gef.editor.AttributeConstants;
 
 public class BAttributeCoordinates extends AbstractAttribute {
 
+	public BAttributeCoordinates(Object value) {
+		super(value);
+	}
+
 	@Override
 	public PropertyDescriptor preparePropertyDescriptor() {
 		PropertyDescriptor descriptor = new PropertyDescriptor(getID(),

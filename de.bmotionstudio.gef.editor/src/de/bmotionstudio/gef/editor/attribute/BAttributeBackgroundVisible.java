@@ -13,6 +13,10 @@ import de.bmotionstudio.gef.editor.property.CheckboxPropertyDescriptor;
 
 public class BAttributeBackgroundVisible extends AbstractAttribute {
 
+	public BAttributeBackgroundVisible(Object value) {
+		super(value);
+	}
+
 	public PropertyDescriptor preparePropertyDescriptor() {
 		return new CheckboxPropertyDescriptor(getID(), getName());
 	}

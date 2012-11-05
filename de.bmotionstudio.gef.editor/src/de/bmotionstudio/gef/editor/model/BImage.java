@@ -6,7 +6,7 @@
 
 package de.bmotionstudio.gef.editor.model;
 
-import de.bmotionstudio.gef.editor.AttributeConstants;
+import de.bmotionstudio.gef.editor.attribute.BAttributeImage;
 
 /**
  * @author Lukas Ladenberger
@@ -27,7 +27,9 @@ public class BImage extends BControl {
 
 	@Override
 	protected void initAttributes() {
-		initAttribute(AttributeConstants.ATTRIBUTE_IMAGE, null);
+
+		initAttribute(new BAttributeImage(null));
+
 	}
 
 }

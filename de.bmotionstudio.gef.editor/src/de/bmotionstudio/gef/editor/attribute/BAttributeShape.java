@@ -11,6 +11,10 @@ import org.eclipse.ui.views.properties.PropertyDescriptor;
 
 public class BAttributeShape extends AbstractAttribute {
 
+	public BAttributeShape(Object value) {
+		super(value);
+	}
+
 	public static final int SHAPE_RECTANGLE = 0;
 	public static final int SHAPE_OVAL = 1;
 	public static final int SHAPE_TRIANGLE = 2;

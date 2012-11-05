@@ -14,6 +14,7 @@ import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertySource;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
 
+import de.bmotionstudio.gef.editor.AttributeConstants;
 import de.bmotionstudio.gef.editor.model.BControl;
 
 /**
@@ -40,20 +41,13 @@ public abstract class AbstractAttribute implements IPropertySource, Cloneable {
 	// The current value of the attribute
 	private Object value;
 
-	public AbstractAttribute() {
+	public AbstractAttribute(Object value) {
+		this.value = value;
+		this.defaultValue = value;
+		this.group = AttributeConstants.ATTRIBUTE_MISC;
+		this.editable = true;
+		this.show = true;
 	}
-
-	// public AbstractAttribute(Object value) {
-	// this(value, true, true);
-	// }
-	//
-	// public AbstractAttribute(Object value, boolean isEditable,
-	// boolean showInPropertiesView) {
-	// this.value = value;
-	// this.initValue = value;
-	// this.editable = isEditable;
-	// this.show = showInPropertiesView;
-	// }
 
 	private Object readResolve() {
 		this.initValue = this.value;

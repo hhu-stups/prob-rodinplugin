@@ -13,6 +13,10 @@ import de.bmotionstudio.gef.editor.property.IntegerPropertyDescriptor;
 
 public class BAttributeY extends AbstractAttribute {
 
+	public BAttributeY(Object value) {
+		super(value);
+	}
+
 	public PropertyDescriptor preparePropertyDescriptor() {
 		IntegerPropertyDescriptor descriptor = new IntegerPropertyDescriptor(
 				getID(), getName());

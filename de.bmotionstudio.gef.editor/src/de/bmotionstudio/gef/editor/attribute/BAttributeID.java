@@ -13,6 +13,10 @@ import de.bmotionstudio.gef.editor.model.BControl;
 
 public class BAttributeID extends AbstractAttribute {
 
+	public BAttributeID(Object value) {
+		super(value);
+	}
+
 	public PropertyDescriptor preparePropertyDescriptor() {
 		TextPropertyDescriptor descriptor = new TextPropertyDescriptor(getID(),
 				getName());

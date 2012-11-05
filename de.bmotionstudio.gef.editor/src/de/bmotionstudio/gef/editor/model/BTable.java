@@ -9,8 +9,13 @@ package de.bmotionstudio.gef.editor.model;
 import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.draw2d.geometry.Rectangle;
 
-import de.bmotionstudio.gef.editor.AttributeConstants;
 import de.bmotionstudio.gef.editor.attribute.AbstractAttribute;
+import de.bmotionstudio.gef.editor.attribute.BAttributeColumns;
+import de.bmotionstudio.gef.editor.attribute.BAttributeForegroundColor;
+import de.bmotionstudio.gef.editor.attribute.BAttributeHeight;
+import de.bmotionstudio.gef.editor.attribute.BAttributeRows;
+import de.bmotionstudio.gef.editor.attribute.BAttributeSize;
+import de.bmotionstudio.gef.editor.attribute.BAttributeWidth;
 import de.bmotionstudio.gef.editor.command.CreateCommand;
 
 public class BTable extends BControl {
@@ -47,16 +52,30 @@ public class BTable extends BControl {
 
 	@Override
 	protected void initAttributes() {
-		initAttribute(AttributeConstants.ATTRIBUTE_SIZE, null, false, false,
-				AbstractAttribute.ROOT);
-		initAttribute(AttributeConstants.ATTRIBUTE_WIDTH, 0, false, false,
-				AttributeConstants.ATTRIBUTE_SIZE);
-		initAttribute(AttributeConstants.ATTRIBUTE_HEIGHT, 0, false, false,
-				AttributeConstants.ATTRIBUTE_SIZE);
-		initAttribute(AttributeConstants.ATTRIBUTE_FOREGROUND_COLOR,
-				ColorConstants.black.getRGB());
-		initAttribute(AttributeConstants.ATTRIBUTE_COLUMNS, 1);
-		initAttribute(AttributeConstants.ATTRIBUTE_ROWS, 1);
+
+		BAttributeSize aSize = new BAttributeSize(null);
+		aSize.setGroup(AbstractAttribute.ROOT);
+		aSize.setShow(false);
+		aSize.setEditable(false);
+		initAttribute(aSize);
+
+		BAttributeHeight aHeight = new BAttributeHeight(0);
+		aHeight.setGroup(BAttributeSize.ID);
+		aHeight.setShow(false);
+		aHeight.setEditable(false);
+		initAttribute(aHeight);
+
+		BAttributeWidth aWidth = new BAttributeWidth(0);
+		aWidth.setGroup(BAttributeSize.ID);
+		aWidth.setShow(false);
+		aWidth.setEditable(false);
+		initAttribute(aWidth);
+
+		initAttribute(new BAttributeForegroundColor(
+				ColorConstants.black.getRGB()));
+		initAttribute(new BAttributeColumns(1));
+		initAttribute(new BAttributeRows(1));
+
 	}
 
 	@Override

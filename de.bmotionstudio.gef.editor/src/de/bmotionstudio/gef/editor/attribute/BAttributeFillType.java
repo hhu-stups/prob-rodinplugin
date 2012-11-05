@@ -16,6 +16,10 @@ public class BAttributeFillType extends AbstractAttribute {
 	public static final int SHADED = 2;
 	public static final int GRADIENT = 3;
 
+	public BAttributeFillType(Object value) {
+		super(value);
+	}
+
 	@Override
 	protected PropertyDescriptor preparePropertyDescriptor() {
 		return new ComboBoxPropertyDescriptor(getID(), getName(), new String[] {

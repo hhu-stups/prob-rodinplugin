@@ -6,9 +6,15 @@
 
 package de.bmotionstudio.gef.editor.model;
 
-import org.eclipse.swt.graphics.RGB;
+import org.eclipse.draw2d.ColorConstants;
 
-import de.bmotionstudio.gef.editor.AttributeConstants;
+import de.bmotionstudio.gef.editor.attribute.AttributeFillColor;
+import de.bmotionstudio.gef.editor.attribute.AttributeFillHeight;
+import de.bmotionstudio.gef.editor.attribute.AttributeMeasureInterval;
+import de.bmotionstudio.gef.editor.attribute.AttributeMeasureMaxPos;
+import de.bmotionstudio.gef.editor.attribute.AttributeShowMeasure;
+import de.bmotionstudio.gef.editor.attribute.BAttributeAlpha;
+import de.bmotionstudio.gef.editor.attribute.BAttributeBackgroundColor;
 
 public class Tank extends BControl {
 
@@ -26,15 +32,14 @@ public class Tank extends BControl {
 	@Override
 	protected void initAttributes() {
 
-		initAttribute(AttributeConstants.ATTRIBUTE_SHOWS_MEASURE, true);
-		initAttribute(AttributeConstants.ATTRIBUTE_MEASURE_INTERVAL, 25);
-		initAttribute(AttributeConstants.ATTRIBUTE_MEASURE_MAXPOS, 100);
-		initAttribute(AttributeConstants.ATTRIBUTE_FILL_COLOR,
-				new RGB(0, 0, 255));
-		initAttribute(AttributeConstants.ATTRIBUTE_FILL_HEIGHT, 75);
-		initAttribute(AttributeConstants.ATTRIBUTE_BACKGROUND_COLOR, new RGB(
-				255, 255, 255));
-		initAttribute(AttributeConstants.ATTRIBUTE_ALPHA, 0);
+		initAttribute(new BAttributeBackgroundColor(
+				ColorConstants.black.getRGB()));
+		initAttribute(new AttributeShowMeasure(true));
+		initAttribute(new AttributeMeasureInterval(25));
+		initAttribute(new AttributeMeasureMaxPos(100));
+		initAttribute(new AttributeFillColor(ColorConstants.blue.getRGB()));
+		initAttribute(new AttributeFillHeight(75));
+		initAttribute(new BAttributeAlpha(0));
 
 	}
 

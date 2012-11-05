@@ -13,6 +13,10 @@ public class BAttributeLineWidth extends AbstractAttribute {
 		return descriptor;
 	}
 
+	public BAttributeLineWidth(Object value) {
+		super(value);
+	}
+
 	@Override
 	public String validateValue(Object value, BControl control) {
 		if (!(String.valueOf(value)).trim().matches("\\d*")) {

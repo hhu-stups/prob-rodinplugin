@@ -11,6 +11,10 @@ import org.eclipse.ui.views.properties.PropertyDescriptor;
 
 public class BAttributeMisc extends AbstractAttribute {
 
+	public BAttributeMisc(Object value) {
+		super(value);
+	}
+
 	@Override
 	public PropertyDescriptor preparePropertyDescriptor() {
 		PropertyDescriptor descriptor = new PropertyDescriptor(getID(),

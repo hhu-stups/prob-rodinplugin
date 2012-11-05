@@ -13,6 +13,10 @@ import org.eclipse.ui.views.properties.PropertyDescriptor;
 
 public class AttributeFillColor extends AbstractAttribute {
 
+	public AttributeFillColor(Object value) {
+		super(value);
+	}
+
 	public PropertyDescriptor preparePropertyDescriptor() {
 		return new ColorPropertyDescriptor(getID(), getName());
 	}

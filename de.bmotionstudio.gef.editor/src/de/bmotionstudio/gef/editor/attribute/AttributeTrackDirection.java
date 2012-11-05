@@ -8,11 +8,14 @@ package de.bmotionstudio.gef.editor.attribute;
 import org.eclipse.ui.views.properties.ComboBoxPropertyDescriptor;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
 
-
 public class AttributeTrackDirection extends AbstractAttribute {
 
 	public static final int RIGHT = 0;
 	public static final int LEFT = 1;
+
+	public AttributeTrackDirection(Object value) {
+		super(value);
+	}
 
 	@Override
 	public Object unmarshal(final String s) {

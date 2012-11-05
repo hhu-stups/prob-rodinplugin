@@ -16,6 +16,10 @@ public class AttributeSwitchDirection extends AbstractAttribute {
 	public static final int RIGHT_NORTH = 2;
 	public static final int LEFT_NORTH = 3;
 
+	public AttributeSwitchDirection(Object value) {
+		super(value);
+	}
+
 	@Override
 	public Object unmarshal(final String s) {
 		return Integer.valueOf(s);

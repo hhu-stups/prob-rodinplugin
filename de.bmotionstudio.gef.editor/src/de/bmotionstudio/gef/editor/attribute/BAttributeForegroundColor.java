@@ -14,6 +14,10 @@ import de.bmotionstudio.gef.editor.model.BControl;
 
 public class BAttributeForegroundColor extends AbstractAttribute {
 
+	public BAttributeForegroundColor(Object value) {
+		super(value);
+	}
+
 	public PropertyDescriptor preparePropertyDescriptor() {
 		return new ColorPropertyDescriptor(getID(), getName());
 	}

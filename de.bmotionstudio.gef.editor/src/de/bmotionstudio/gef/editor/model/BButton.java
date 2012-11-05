@@ -8,7 +8,13 @@ package de.bmotionstudio.gef.editor.model;
 
 import org.eclipse.swt.graphics.RGB;
 
-import de.bmotionstudio.gef.editor.AttributeConstants;
+import de.bmotionstudio.gef.editor.attribute.BAttributeBackgroundColor;
+import de.bmotionstudio.gef.editor.attribute.BAttributeEnabled;
+import de.bmotionstudio.gef.editor.attribute.BAttributeHeight;
+import de.bmotionstudio.gef.editor.attribute.BAttributeSize;
+import de.bmotionstudio.gef.editor.attribute.BAttributeText;
+import de.bmotionstudio.gef.editor.attribute.BAttributeTextColor;
+import de.bmotionstudio.gef.editor.attribute.BAttributeWidth;
 
 /**
  * @author Lukas Ladenberger
@@ -31,15 +37,20 @@ public class BButton extends BControl {
 
 	@Override
 	protected void initAttributes() {
-		initAttribute(AttributeConstants.ATTRIBUTE_TEXT, DEFAULT_TEXT);
-		initAttribute(AttributeConstants.ATTRIBUTE_BACKGROUND_COLOR, new RGB(
-				192, 192, 192));
-		initAttribute(AttributeConstants.ATTRIBUTE_TEXT_COLOR, new RGB(0, 0, 0));
-		initAttribute(AttributeConstants.ATTRIBUTE_ENABLED, true);
-		initAttribute(AttributeConstants.ATTRIBUTE_HEIGHT, 25,
-				AttributeConstants.ATTRIBUTE_SIZE);
-		initAttribute(AttributeConstants.ATTRIBUTE_WIDTH, 100,
-				AttributeConstants.ATTRIBUTE_SIZE);
+
+		initAttribute(new BAttributeText(DEFAULT_TEXT));
+		initAttribute(new BAttributeBackgroundColor(new RGB(192, 192, 192)));
+		initAttribute(new BAttributeTextColor(new RGB(0, 0, 0)));
+		initAttribute(new BAttributeEnabled(true));
+
+		BAttributeHeight aHeight = new BAttributeHeight(25);
+		aHeight.setGroup(BAttributeSize.ID);
+		initAttribute(aHeight);
+
+		BAttributeWidth aWidth = new BAttributeWidth(100);
+		aHeight.setGroup(BAttributeSize.ID);
+		initAttribute(aWidth);
+
 	}
 
 }

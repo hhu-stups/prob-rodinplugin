@@ -13,6 +13,10 @@ import de.bmotionstudio.gef.editor.property.CheckboxPropertyDescriptor;
 
 public class BAttributeChecked extends AbstractAttribute {
 
+	public BAttributeChecked(Object value) {
+		super(value);
+	}
+
 	@Override
 	protected PropertyDescriptor preparePropertyDescriptor() {
 		return new CheckboxPropertyDescriptor(getID(), getName());

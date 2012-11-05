@@ -7,8 +7,12 @@ package de.bmotionstudio.gef.editor.model;
 
 import org.eclipse.draw2d.ColorConstants;
 
-import de.bmotionstudio.gef.editor.AttributeConstants;
 import de.bmotionstudio.gef.editor.attribute.AbstractAttribute;
+import de.bmotionstudio.gef.editor.attribute.BAttributeBackgroundColor;
+import de.bmotionstudio.gef.editor.attribute.BAttributeCoordinates;
+import de.bmotionstudio.gef.editor.attribute.BAttributeHeight;
+import de.bmotionstudio.gef.editor.attribute.BAttributeSize;
+import de.bmotionstudio.gef.editor.attribute.BAttributeWidth;
 
 public class Light extends BControl {
 
@@ -21,16 +25,32 @@ public class Light extends BControl {
 	@Override
 	protected void initAttributes() {
 
-		initAttribute(AttributeConstants.ATTRIBUTE_SIZE, null, false, false,
-				AbstractAttribute.ROOT);
-		initAttribute(AttributeConstants.ATTRIBUTE_COORDINATES, null, false,
-				false, AbstractAttribute.ROOT);
-		initAttribute(AttributeConstants.ATTRIBUTE_WIDTH, 12, false, false,
-				AttributeConstants.ATTRIBUTE_SIZE);
-		initAttribute(AttributeConstants.ATTRIBUTE_HEIGHT, 12, false, false,
-				AttributeConstants.ATTRIBUTE_SIZE);
-		initAttribute(AttributeConstants.ATTRIBUTE_BACKGROUND_COLOR,
-				ColorConstants.lightGray.getRGB());
+		BAttributeCoordinates aCoordinates = new BAttributeCoordinates(null);
+		aCoordinates.setGroup(AbstractAttribute.ROOT);
+		aCoordinates.setShow(false);
+		aCoordinates.setEditable(false);
+		initAttribute(aCoordinates);
+
+		BAttributeSize aSize = new BAttributeSize(null);
+		aSize.setGroup(AbstractAttribute.ROOT);
+		aSize.setShow(false);
+		aSize.setEditable(false);
+		initAttribute(aSize);
+
+		BAttributeHeight aHeight = new BAttributeHeight(12);
+		aHeight.setGroup(BAttributeSize.ID);
+		aHeight.setShow(false);
+		aHeight.setEditable(false);
+		initAttribute(aHeight);
+
+		BAttributeWidth aWidth = new BAttributeWidth(12);
+		aWidth.setGroup(BAttributeSize.ID);
+		aWidth.setShow(false);
+		aWidth.setEditable(false);
+		initAttribute(aWidth);
+
+		initAttribute(new BAttributeBackgroundColor(
+				ColorConstants.lightGray.getRGB()));
 
 	}
 

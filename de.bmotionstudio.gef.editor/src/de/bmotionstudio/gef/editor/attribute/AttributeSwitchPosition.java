@@ -8,12 +8,15 @@ package de.bmotionstudio.gef.editor.attribute;
 import org.eclipse.ui.views.properties.ComboBoxPropertyDescriptor;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
 
-
 public class AttributeSwitchPosition extends AbstractAttribute {
 
 	public static final int LEFT = 0;
 	public static final int RIGHT = 1;
 	public static final int UNKNOWN = 2;
+
+	public AttributeSwitchPosition(Object value) {
+		super(value);
+	}
 
 	@Override
 	public Object unmarshal(final String s) {

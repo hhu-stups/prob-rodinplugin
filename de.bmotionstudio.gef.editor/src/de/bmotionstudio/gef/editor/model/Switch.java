@@ -15,6 +15,9 @@ import de.bmotionstudio.gef.editor.AttributeConstants;
 import de.bmotionstudio.gef.editor.attribute.AbstractAttribute;
 import de.bmotionstudio.gef.editor.attribute.AttributeSwitchDirection;
 import de.bmotionstudio.gef.editor.attribute.AttributeSwitchPosition;
+import de.bmotionstudio.gef.editor.attribute.BAttributeHeight;
+import de.bmotionstudio.gef.editor.attribute.BAttributeSize;
+import de.bmotionstudio.gef.editor.attribute.BAttributeWidth;
 import de.bmotionstudio.gef.editor.command.CreateCommand;
 import de.bmotionstudio.gef.editor.command.TrackCreateCommand;
 
@@ -101,15 +104,18 @@ public class Switch extends BControl {
 	@Override
 	protected void initAttributes() {
 
-		initAttribute(AttributeConstants.ATTRIBUTE_WIDTH, 100,
-				AttributeConstants.ATTRIBUTE_SIZE);
-		initAttribute(AttributeConstants.ATTRIBUTE_HEIGHT, 50,
-				AttributeConstants.ATTRIBUTE_SIZE);
+		BAttributeHeight aHeight = new BAttributeHeight(50);
+		aHeight.setGroup(BAttributeSize.ID);
+		initAttribute(aHeight);
 
-		initAttribute(AttributeConstants.ATTRIBUTE_SWITCH_DIRECTION,
-				AttributeSwitchDirection.RIGHT_SOUTH);
-		initAttribute(AttributeConstants.ATTRIBUTE_SWITCH_POSITION,
-				AttributeSwitchPosition.UNKNOWN);
+		BAttributeWidth aWidth = new BAttributeWidth(100);
+		aWidth.setGroup(BAttributeSize.ID);
+		initAttribute(aWidth);
+
+		initAttribute(new AttributeSwitchDirection(
+				AttributeSwitchDirection.RIGHT_SOUTH));
+		initAttribute(new AttributeSwitchPosition(
+				AttributeSwitchPosition.UNKNOWN));
 
 	}
 

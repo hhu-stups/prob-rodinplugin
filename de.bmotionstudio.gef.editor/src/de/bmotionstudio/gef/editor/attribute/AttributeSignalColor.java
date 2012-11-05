@@ -15,6 +15,10 @@ public class AttributeSignalColor extends AbstractAttribute {
 	public static final int GREEN = 1;
 	public static final int NO_COLOR = 2;
 
+	public AttributeSignalColor(Object value) {
+		super(value);
+	}
+
 	@Override
 	protected PropertyDescriptor preparePropertyDescriptor() {
 		return new ComboBoxPropertyDescriptor(getID(), getName(), new String[] {

@@ -19,8 +19,9 @@ public class BControlPropertySource extends AbstractAttribute {
 	private BAttributeMisc miscAttribute;
 
 	public BControlPropertySource(BControl control) {
+		super(null);
 		this.control = control;
-		this.miscAttribute = new BAttributeMisc();
+		this.miscAttribute = new BAttributeMisc("");
 		addChild(this.miscAttribute);
 		init();
 	}

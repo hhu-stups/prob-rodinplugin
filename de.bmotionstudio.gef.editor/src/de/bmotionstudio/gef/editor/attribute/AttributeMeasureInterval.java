@@ -13,6 +13,10 @@ import de.bmotionstudio.gef.editor.property.IntegerPropertyDescriptor;
 
 public class AttributeMeasureInterval extends AbstractAttribute {
 
+	public AttributeMeasureInterval(Object value) {
+		super(value);
+	}
+
 	public PropertyDescriptor preparePropertyDescriptor() {
 		IntegerPropertyDescriptor descriptor = new IntegerPropertyDescriptor(
 				getID(), getName());

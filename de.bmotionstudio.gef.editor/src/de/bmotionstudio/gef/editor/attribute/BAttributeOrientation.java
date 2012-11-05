@@ -5,6 +5,10 @@ import org.eclipse.ui.views.properties.PropertyDescriptor;
 
 public class BAttributeOrientation extends AbstractAttribute {
 
+	public BAttributeOrientation(Object value) {
+		super(value);
+	}
+
 	public static final int HORIZONTAL = 0;
 	public static final int VERTICAL = 1;
 

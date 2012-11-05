@@ -8,7 +8,9 @@ package de.bmotionstudio.gef.editor.model;
 
 import org.eclipse.draw2d.ColorConstants;
 
-import de.bmotionstudio.gef.editor.AttributeConstants;
+import de.bmotionstudio.gef.editor.attribute.BAttributeForegroundColor;
+import de.bmotionstudio.gef.editor.attribute.BAttributeHeight;
+import de.bmotionstudio.gef.editor.attribute.BAttributeSize;
 
 public class BTableColumn extends BControl {
 
@@ -20,10 +22,19 @@ public class BTableColumn extends BControl {
 
 	@Override
 	protected void initAttributes() {
-		initAttribute(AttributeConstants.ATTRIBUTE_FOREGROUND_COLOR,
-				ColorConstants.black.getRGB(), true, false);
-		initAttribute(AttributeConstants.ATTRIBUTE_HEIGHT, 0, false, false,
-				AttributeConstants.ATTRIBUTE_SIZE);
+
+		BAttributeForegroundColor aForegroundColor = new BAttributeForegroundColor(
+				ColorConstants.black.getRGB());
+		aForegroundColor.setEditable(true);
+		aForegroundColor.setShow(false);
+		initAttribute(aForegroundColor);
+
+		BAttributeHeight aHeight = new BAttributeHeight(0);
+		aHeight.setGroup(BAttributeSize.ID);
+		aHeight.setShow(false);
+		aHeight.setEditable(false);
+		initAttribute(aHeight);
+
 	}
 
 	@Override

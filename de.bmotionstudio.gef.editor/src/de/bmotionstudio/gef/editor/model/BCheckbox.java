@@ -9,6 +9,14 @@ package de.bmotionstudio.gef.editor.model;
 import org.eclipse.swt.graphics.RGB;
 
 import de.bmotionstudio.gef.editor.AttributeConstants;
+import de.bmotionstudio.gef.editor.attribute.BAttributeChecked;
+import de.bmotionstudio.gef.editor.attribute.BAttributeEnabled;
+import de.bmotionstudio.gef.editor.attribute.BAttributeFalseValue;
+import de.bmotionstudio.gef.editor.attribute.BAttributeHeight;
+import de.bmotionstudio.gef.editor.attribute.BAttributeSize;
+import de.bmotionstudio.gef.editor.attribute.BAttributeText;
+import de.bmotionstudio.gef.editor.attribute.BAttributeTextColor;
+import de.bmotionstudio.gef.editor.attribute.BAttributeTrueValue;
 
 /**
  * @author Lukas Ladenberger
@@ -31,14 +39,20 @@ public class BCheckbox extends BControl {
 
 	@Override
 	protected void initAttributes() {
-		initAttribute(AttributeConstants.ATTRIBUTE_TEXT, DEFAULT_TEXT);
-		initAttribute(AttributeConstants.ATTRIBUTE_TEXT_COLOR, new RGB(0, 0, 0));
-		initAttribute(AttributeConstants.ATTRIBUTE_CHECKED, true);
-		initAttribute(AttributeConstants.ATTRIBUTE_ENABLED, true);
-		initAttribute(AttributeConstants.ATTRIBUTE_TRUEVALUE, "");
-		initAttribute(AttributeConstants.ATTRIBUTE_FALSEVALUE, "");
-		initAttribute(AttributeConstants.ATTRIBUTE_HEIGHT, 21, false, false,
-				AttributeConstants.ATTRIBUTE_SIZE);
+
+		initAttribute(new BAttributeText(DEFAULT_TEXT));
+		initAttribute(new BAttributeTextColor(new RGB(0, 0, 0)));
+		initAttribute(new BAttributeEnabled(true));
+		initAttribute(new BAttributeChecked(true));
+		initAttribute(new BAttributeTrueValue(""));
+		initAttribute(new BAttributeFalseValue(""));
+
+		BAttributeHeight aHeight = new BAttributeHeight(21);
+		aHeight.setGroup(BAttributeSize.ID);
+		aHeight.setShow(false);
+		aHeight.setEditable(false);
+		initAttribute(aHeight);
+
 	}
 
 	@Override

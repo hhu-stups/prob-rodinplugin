@@ -11,6 +11,10 @@ import org.eclipse.ui.views.properties.TextPropertyDescriptor;
 
 public class BAttributeButtonGroup extends AbstractAttribute {
 
+	public BAttributeButtonGroup(Object value) {
+		super(value);
+	}
+
 	@Override
 	protected PropertyDescriptor preparePropertyDescriptor() {
 		return new TextPropertyDescriptor(getID(), getName());

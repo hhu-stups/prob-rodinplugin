@@ -29,6 +29,16 @@ import de.bmotionstudio.gef.editor.AttributeConstants;
 import de.bmotionstudio.gef.editor.BMotionEditorPlugin;
 import de.bmotionstudio.gef.editor.BMotionStudioImage;
 import de.bmotionstudio.gef.editor.attribute.AbstractAttribute;
+import de.bmotionstudio.gef.editor.attribute.BAttributeCoordinates;
+import de.bmotionstudio.gef.editor.attribute.BAttributeCustom;
+import de.bmotionstudio.gef.editor.attribute.BAttributeHeight;
+import de.bmotionstudio.gef.editor.attribute.BAttributeID;
+import de.bmotionstudio.gef.editor.attribute.BAttributeMisc;
+import de.bmotionstudio.gef.editor.attribute.BAttributeSize;
+import de.bmotionstudio.gef.editor.attribute.BAttributeVisible;
+import de.bmotionstudio.gef.editor.attribute.BAttributeWidth;
+import de.bmotionstudio.gef.editor.attribute.BAttributeX;
+import de.bmotionstudio.gef.editor.attribute.BAttributeY;
 import de.bmotionstudio.gef.editor.internal.BControlPropertySource;
 import de.bmotionstudio.gef.editor.observer.IObserverListener;
 import de.bmotionstudio.gef.editor.observer.Observer;
@@ -189,45 +199,47 @@ public abstract class BControl implements IAdaptable, Cloneable {
 			ID = UUID.randomUUID().toString();
 		else
 			ID = (visualization.getMaxIDString(type));
-		initAttribute(AttributeConstants.ATTRIBUTE_ID, ID,
-				AbstractAttribute.ROOT);
 
-		initAttribute(AttributeConstants.ATTRIBUTE_MISC, "",
-				AbstractAttribute.ROOT);
+		BAttributeID aID = new BAttributeID(ID);
+		aID.setGroup(AbstractAttribute.ROOT);
+		initAttribute(aID);
 
-		// initAttribute(new BAttributeID(ID), AbstractAttribute.ROOT);
-
+		BAttributeMisc aMisc = new BAttributeMisc("");
+		aMisc.setGroup(AbstractAttribute.ROOT);
+		initAttribute(aMisc);
+		
 		// Init location and size attributes
-		initAttribute(AttributeConstants.ATTRIBUTE_COORDINATES, null,
-				AbstractAttribute.ROOT);
-		initAttribute(AttributeConstants.ATTRIBUTE_X, 100,
-				AttributeConstants.ATTRIBUTE_COORDINATES);
-		initAttribute(AttributeConstants.ATTRIBUTE_Y, 100,
-				AttributeConstants.ATTRIBUTE_COORDINATES);
+		BAttributeCoordinates aCoordinates = new BAttributeCoordinates(null);
+		aCoordinates.setGroup(AbstractAttribute.ROOT);
+		initAttribute(aCoordinates);
+		
+		BAttributeX aX = new BAttributeX(100);
+		aX.setGroup(aCoordinates);
+		initAttribute(aX);
+		
+		BAttributeY aY = new BAttributeY(100);
+		aY.setGroup(aCoordinates);
+		initAttribute(aY);
+		
+		BAttributeSize aSize = new BAttributeSize(null);
+		initAttribute(aSize);
+		
+		BAttributeWidth aWidth = new BAttributeWidth(100);
+		aWidth.setGroup(aSize);
+		initAttribute(aWidth);
 
-		// BAttributeCoordinates coordinatesAtr = new
-		// BAttributeCoordinates(null);
-		// initAttribute(coordinatesAtr, AbstractAttribute.ROOT);
-		// initAttribute(new BAttributeX(100), coordinatesAtr);
-		// initAttribute(new BAttributeY(100), coordinatesAtr);
-
-		initAttribute(AttributeConstants.ATTRIBUTE_SIZE, null,
-				AbstractAttribute.ROOT);
-		initAttribute(AttributeConstants.ATTRIBUTE_WIDTH, 100,
-				AttributeConstants.ATTRIBUTE_SIZE);
-		initAttribute(AttributeConstants.ATTRIBUTE_HEIGHT, 100,
-				AttributeConstants.ATTRIBUTE_SIZE);
-
-		// BAttributeSize sizeAtr = new BAttributeSize(null);
-		// initAttribute(sizeAtr, AbstractAttribute.ROOT);
-		// initAttribute(new BAttributeWidth(100), sizeAtr);
-		// initAttribute(new BAttributeHeight(100), sizeAtr);
+		BAttributeHeight aHeight = new BAttributeHeight(100);
+		aHeight.setGroup(aSize);
+		initAttribute(aHeight);
 
 		// Init visible and this attribute
-		initAttribute(AttributeConstants.ATTRIBUTE_VISIBLE, true,
-				AbstractAttribute.ROOT);
-		initAttribute(AttributeConstants.ATTRIBUTE_CUSTOM, "",
-				AbstractAttribute.ROOT);
+		BAttributeVisible aVisible = new BAttributeVisible(true);
+		aVisible.setGroup(AbstractAttribute.ROOT);
+		initAttribute(aVisible);
+
+		BAttributeCustom aCustom = new BAttributeCustom("");
+		aCustom.setGroup(AbstractAttribute.ROOT);
+		initAttribute(aCustom);
 
 	}
 
@@ -771,60 +783,26 @@ public abstract class BControl implements IAdaptable, Cloneable {
 
 	public abstract String getType();
 
-	protected void initAttribute(String id, Object defaultValue) {
-		initAttribute(id, defaultValue, true, true,
-				AttributeConstants.ATTRIBUTE_MISC);
-	}
+	protected void initAttribute(AbstractAttribute atr) {
 
-	protected void initAttribute(String id, Object defaultValue, String groupID) {
-		initAttribute(id, defaultValue, true, true, groupID);
-	}
-
-	protected void initAttribute(String id, Object defaultValue,
-			boolean editable, boolean show) {
-		initAttribute(id, defaultValue, editable, show,
-				AttributeConstants.ATTRIBUTE_MISC);
-	}
-
-	protected void initAttribute(String id, Object defaultValue,
-			boolean editable, boolean show, String groupID) {
-
-		AbstractAttribute atr = getAttribute(id);
+		AbstractAttribute oldAtr = getAttribute(atr.getID());
 
 		// If no attribute exists yet, create a new one and set the value
-		if (atr == null) {
-			atr = (AbstractAttribute) reflectiveGet(id);
-			if (atr != null) {
-				atr.setValue(defaultValue);
-				getAttributes().put(atr.getID(), atr);
-			} else {
-				return;
-			}
+		if (oldAtr == null) {
+			oldAtr = atr;
+			getAttributes().put(oldAtr.getID(), oldAtr);
 		}
 
-		if (!atr.isInitialized()) {
-			atr.setDefaultValue(defaultValue);
-			atr.setGroup(groupID);
-			atr.setEditable(editable);
-			atr.setShow(show);
-			atr.setInitialized(true);
+		if (!oldAtr.isInitialized()) {
+
+			oldAtr.setDefaultValue(atr.getDefaultValue());
+			oldAtr.setGroup(atr.getGroup());
+			oldAtr.setEditable(atr.isEditable());
+			oldAtr.setShow(atr.show());
+			oldAtr.setInitialized(true);
+
 		}
 
-	}
-
-	private Object reflectiveGet(String className) {
-		Object newInstance = null;
-		try {
-			Class<?> forName = Class.forName(className);
-			newInstance = forName.newInstance();
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		} catch (InstantiationException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		}
-		return newInstance;
 	}
 
 	public boolean canHaveChildren() {
