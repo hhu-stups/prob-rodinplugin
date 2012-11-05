@@ -129,9 +129,12 @@ public abstract class BMSAbstractEditPart extends AbstractGraphicalEditPart
 		IFigure toolTipFigure = getToolTip();
 		if (toolTipFigure != null)
 			figure.setToolTip(toolTipFigure);
-		if (!isRunning()) {
-			if (figure instanceof AbstractBMotionFigure) {
-				((AbstractBMotionFigure) figure).setEnabled(false);
+		if (figure instanceof AbstractBMotionFigure) {
+			AbstractBMotionFigure bmsFigure = (AbstractBMotionFigure) figure;
+			Boolean isRunning = isRunning();
+			bmsFigure.setRunning(isRunning);
+			if (!isRunning) {
+				bmsFigure.setEnabled(false);
 			}
 		}
 		return figure;
