@@ -13,8 +13,8 @@ import de.bmotionstudio.gef.editor.AttributeConstants;
 import de.bmotionstudio.gef.editor.BMotionStudioImage;
 import de.bmotionstudio.gef.editor.EditorImageRegistry;
 import de.bmotionstudio.gef.editor.command.CreateCommand;
-import de.bmotionstudio.gef.editor.editpolicy.BMSDeletePolicy;
 import de.bmotionstudio.gef.editor.editpolicy.BMSConnectionEditPolicy;
+import de.bmotionstudio.gef.editor.editpolicy.BMSDeletePolicy;
 import de.bmotionstudio.gef.editor.editpolicy.TableLayoutEditPolicy;
 import de.bmotionstudio.gef.editor.figure.TableFigure;
 import de.bmotionstudio.gef.editor.model.BControl;
@@ -77,6 +77,10 @@ public class BTablePart extends BMSAbstractEditPart {
 		Object value = evt.getNewValue();
 		Object oldValue = evt.getOldValue();
 		String aID = evt.getPropertyName();
+
+		if (aID.equals(AttributeConstants.ATTRIBUTE_VISIBLE))
+			((TableFigure) figure)
+					.setVisible(Boolean.valueOf(value.toString()));
 
 		if (aID.equals(AttributeConstants.ATTRIBUTE_FOREGROUND_COLOR)) {
 			((TableFigure) figure).setForegroundColor((RGB) value);
