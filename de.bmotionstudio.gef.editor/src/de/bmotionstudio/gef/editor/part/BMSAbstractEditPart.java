@@ -23,6 +23,7 @@ import org.eclipse.draw2d.ConnectionAnchor;
 import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.FlowLayout;
 import org.eclipse.draw2d.IFigure;
+import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.ConnectionEditPart;
 import org.eclipse.gef.NodeEditPart;
 import org.eclipse.gef.Request;
@@ -173,10 +174,10 @@ public abstract class BMSAbstractEditPart extends AbstractGraphicalEditPart
 
 	protected void refreshEditLayout(IFigure figure, BControl control) {
 		if (!(control instanceof Visualization)) {
-			if (getFigure().getParent() != null)
-				getFigure().getParent().setConstraint((IFigure) figure,
-						control.getLayout());
-			getFigure().setPreferredSize(control.getDimension());
+			figure.setPreferredSize(control.getDimension());
+			if (figure.getParent() != null)
+				figure.getParent().setConstraint(figure,
+						new Rectangle(control.getLayout()));
 		}
 	}
 

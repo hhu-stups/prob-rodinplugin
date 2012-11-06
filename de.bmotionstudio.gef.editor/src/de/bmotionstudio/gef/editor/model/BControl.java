@@ -650,8 +650,6 @@ public abstract class BControl implements IAdaptable, Cloneable {
 
 		clonedControl.setParent(getParent());
 
-		String newID = clonedControl.getID();
-
 		Map<String, AbstractAttribute> newProperties = new HashMap<String, AbstractAttribute>();
 		for (Entry<String, AbstractAttribute> e : getAttributes().entrySet()) {
 			AbstractAttribute idAtr = e.getValue().clone();
@@ -659,7 +657,8 @@ public abstract class BControl implements IAdaptable, Cloneable {
 		}
 
 		clonedControl.setAttributes(newProperties);
-		clonedControl.setAttributeValue(AttributeConstants.ATTRIBUTE_ID, newID);
+		clonedControl.setAttributeValue(AttributeConstants.ATTRIBUTE_ID,
+				getVisualization().getMaxIDString(type));
 
 		clonedControl.setChildrenArray(new BControlList());
 		Iterator<BControl> it = getChildrenArray().iterator();

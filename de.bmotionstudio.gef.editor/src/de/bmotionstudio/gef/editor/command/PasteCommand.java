@@ -22,6 +22,7 @@ public class PasteCommand extends Command {
 
 	private CopyPasteHelper cHelper;
 
+	// List with mapping original BControl ==> cloned BControl
 	private HashMap<BControl, BControl> list = new HashMap<BControl, BControl>();
 
 	private List<BControl> parentControls = new ArrayList<BControl>();
@@ -68,6 +69,7 @@ public class PasteCommand extends Command {
 				BControl control = (BControl) it.next();
 				control.setParent(parent);
 				try {
+
 					BControl clone = (BControl) control.clone();
 					clone.setParent(parent);
 					int x = Integer.valueOf(Integer.valueOf(clone
