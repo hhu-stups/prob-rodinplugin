@@ -11,6 +11,7 @@ import org.eclipse.draw2d.ColorConstants;
 import de.bmotionstudio.gef.editor.attribute.BAttributeForegroundColor;
 import de.bmotionstudio.gef.editor.attribute.BAttributeHeight;
 import de.bmotionstudio.gef.editor.attribute.BAttributeSize;
+import de.bmotionstudio.gef.editor.attribute.BAttributeVisible;
 
 public class BTableColumn extends BControl {
 
@@ -34,6 +35,11 @@ public class BTableColumn extends BControl {
 		aHeight.setShow(false);
 		aHeight.setEditable(false);
 		initAttribute(aHeight);
+
+		BAttributeVisible aVisible = new BAttributeVisible(true);
+		aVisible.setShow(false);
+		aVisible.setEditable(false);
+		initAttribute(aVisible);
 
 	}
 

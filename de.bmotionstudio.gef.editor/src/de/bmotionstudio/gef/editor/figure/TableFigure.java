@@ -20,13 +20,13 @@ public class TableFigure extends AbstractTableFigure {
 	}
 
 	@Override
-	protected void paintBorder(Graphics g) {
+	public void paint(Graphics g) {
+		super.paint(g);
 		Rectangle r = getClientArea();
 		g.setForegroundColor(getForegroundColor());
 		// Right table border line
 		g.drawLine(r.x + r.width - 21, r.y, r.x + r.width - 21, r.y + r.height
 				- 15);
-		super.paintBorder(g);
 	}
 
 }

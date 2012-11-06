@@ -1,3 +1,9 @@
+/** 
+ * (c) 2009 Lehrstuhl fuer Softwaretechnik und Programmiersprachen, 
+ * Heinrich Heine Universitaet Duesseldorf
+ * This software is licenced under EPL 1.0 (http://www.eclipse.org/org/documents/epl-v10.html) 
+ * */
+
 package de.bmotionstudio.gef.editor.part;
 
 import java.beans.PropertyChangeEvent;
@@ -42,21 +48,17 @@ public class BTableCellPart extends BMSAbstractEditPart {
 		Object value = evt.getNewValue();
 		String aID = evt.getPropertyName();
 
-		if (aID.equals(AttributeConstants.ATTRIBUTE_TEXT)) {
+		if (aID.equals(AttributeConstants.ATTRIBUTE_TEXT))
 			((TableCellFigure) figure).setText(value.toString());
-		}
 
-		if (aID.equals(AttributeConstants.ATTRIBUTE_BACKGROUND_COLOR)) {
+		if (aID.equals(AttributeConstants.ATTRIBUTE_BACKGROUND_COLOR))
 			((TableCellFigure) figure).setBackgroundColor((RGB) value);
-		}
 
-		if (aID.equals(AttributeConstants.ATTRIBUTE_TEXT_COLOR)) {
+		if (aID.equals(AttributeConstants.ATTRIBUTE_TEXT_COLOR))
 			((TableCellFigure) figure).setTextColor((RGB) value);
-		}
 
-		if (aID.equals(AttributeConstants.ATTRIBUTE_FOREGROUND_COLOR)) {
+		if (aID.equals(AttributeConstants.ATTRIBUTE_FOREGROUND_COLOR))
 			((TableCellFigure) figure).setForegroundColor((RGB) value);
-		}
 
 		if (aID.equals(AttributeConstants.ATTRIBUTE_FONT))
 			((TableCellFigure) figure).setFont((value.toString()));

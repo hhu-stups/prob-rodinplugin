@@ -20,7 +20,8 @@ public class TableColumnFigure extends AbstractTableFigure {
 	}
 
 	@Override
-	protected void paintBorder(Graphics g) {
+	public void paint(Graphics g) {
+		super.paint(g);
 		Rectangle r = getClientArea();
 		Color foregroundColor = getForegroundColor();
 		if (foregroundColor != null)
@@ -30,7 +31,6 @@ public class TableColumnFigure extends AbstractTableFigure {
 		g.drawLine(r.x, r.y, r.x, r.y + r.height - 15);
 		// Bottom line
 		g.drawLine(r.x, r.y + r.height - 15, r.x + r.width, r.y + r.height - 15);
-		super.paintBorder(g);
 	}
 
 }

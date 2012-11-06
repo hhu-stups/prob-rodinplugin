@@ -7,9 +7,7 @@
 package de.bmotionstudio.gef.editor.figure;
 
 import org.eclipse.draw2d.Clickable;
-import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.draw2d.Graphics;
-import org.eclipse.draw2d.geometry.Rectangle;
 
 /**
  * @author Lukas Ladenberger
@@ -17,8 +15,13 @@ import org.eclipse.draw2d.geometry.Rectangle;
  */
 public class AbstractBMotionFigure extends Clickable {
 
-	private boolean visible = true;
-	private boolean isRunning = false;
+	private boolean visible;
+	private boolean isRunning;
+
+	public AbstractBMotionFigure() {
+		this.visible = true;
+		this.isRunning = false;
+	}
 
 	public void deactivateFigure() {
 	}
@@ -38,21 +41,9 @@ public class AbstractBMotionFigure extends Clickable {
 
 	@Override
 	public void paint(Graphics g) {
-
-		if (!this.visible && !isRunning) {
-
-			Rectangle r = getClientArea();
-
-			g.setForegroundColor(ColorConstants.lightGray);
-			g.setLineStyle(Graphics.LINE_DOT);
-			g.drawRectangle(r.x, r.y, r.width - 1, r.height - 1);
-
-			g.setAlpha(15);
-
-		}
-
+		if (!this.visible && !isRunning)
+			g.setAlpha(25);
 		super.paint(g);
-
 	}
 
 	public boolean isRunning() {

@@ -23,7 +23,8 @@ public class TableCellFigure extends AbstractTableFigure {
 	}
 
 	@Override
-	protected void paintBorder(Graphics g) {
+	public void paint(Graphics g) {
+		super.paint(g);
 		Rectangle r = getClientArea();
 		g.setBackgroundColor(backgroundColor);
 		g.fillRectangle(r.x, r.y, r.x + r.width, r.y + r.height);

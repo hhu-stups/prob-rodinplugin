@@ -14,6 +14,7 @@ import de.bmotionstudio.gef.editor.attribute.BAttributeHeight;
 import de.bmotionstudio.gef.editor.attribute.BAttributeSize;
 import de.bmotionstudio.gef.editor.attribute.BAttributeText;
 import de.bmotionstudio.gef.editor.attribute.BAttributeTextColor;
+import de.bmotionstudio.gef.editor.attribute.BAttributeVisible;
 
 public class BTableCell extends BControl {
 
@@ -43,6 +44,11 @@ public class BTableCell extends BControl {
 		aHeight.setShow(false);
 		aHeight.setEditable(false);
 		initAttribute(aHeight);
+
+		BAttributeVisible aVisible = new BAttributeVisible(true);
+		aVisible.setShow(false);
+		aVisible.setEditable(false);
+		initAttribute(aVisible);
 
 	}
 

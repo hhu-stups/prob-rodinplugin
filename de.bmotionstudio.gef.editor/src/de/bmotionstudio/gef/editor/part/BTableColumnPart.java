@@ -1,3 +1,9 @@
+/** 
+ * (c) 2009 Lehrstuhl fuer Softwaretechnik und Programmiersprachen, 
+ * Heinrich Heine Universitaet Duesseldorf
+ * This software is licenced under EPL 1.0 (http://www.eclipse.org/org/documents/epl-v10.html) 
+ * */
+
 package de.bmotionstudio.gef.editor.part;
 
 import java.beans.PropertyChangeEvent;
@@ -49,29 +55,12 @@ public class BTableColumnPart extends BMSAbstractEditPart {
 		Object value = evt.getNewValue();
 		String aID = evt.getPropertyName();
 
-		// if (aID.equals(AttributeConstants.ATTRIBUTE_BACKGROUND_COLOR)) {
-		// for (BControl cell : model.getChildrenArray())
-		// cell.setAttributeValue(
-		// AttributeConstants.ATTRIBUTE_BACKGROUND_COLOR, value);
-		// }
-		//
 		if (aID.equals(AttributeConstants.ATTRIBUTE_FOREGROUND_COLOR)) {
 			((TableColumnFigure) figure).setForegroundColor((RGB) value);
 			for (BControl cell : model.getChildrenArray())
 				cell.setAttributeValue(
 						AttributeConstants.ATTRIBUTE_FOREGROUND_COLOR, value);
 		}
-		//
-		// if (aID.equals(AttributeConstants.ATTRIBUTE_TEXT_COLOR)) {
-		// for (BControl cell : model.getChildrenArray())
-		// cell.setAttributeValue(AttributeConstants.ATTRIBUTE_TEXT_COLOR,
-		// value);
-		// }
-		//
-		// if (aID.equals(AttributeConstants.ATTRIBUTE_FONT)) {
-		// for (BControl cell : model.getChildrenArray())
-		// cell.setAttributeValue(AttributeConstants.ATTRIBUTE_FONT, value);
-		// }
 
 	}
 
