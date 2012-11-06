@@ -36,7 +36,6 @@ public abstract class AbstractAttribute implements IPropertySource, Cloneable {
 	private transient boolean editable;
 	private transient boolean show;
 	private transient String group;
-	private transient boolean isInitialized;
 
 	// The current value of the attribute
 	private Object value;
@@ -64,7 +63,7 @@ public abstract class AbstractAttribute implements IPropertySource, Cloneable {
 
 	public PropertyDescriptor getPropertyDescriptor() {
 		propertyDescriptor = new PropertyDescriptor(getID(), getName());
-		if (editable) {
+		if (isEditable()) {
 			propertyDescriptor = preparePropertyDescriptor();
 			if (propertyDescriptor != null) {
 				propertyDescriptor.setValidator(new ICellEditorValidator() {
@@ -208,14 +207,6 @@ public abstract class AbstractAttribute implements IPropertySource, Cloneable {
 
 	public void setDefaultValue(Object defaultValue) {
 		this.defaultValue = defaultValue;
-	}
-
-	public boolean isInitialized() {
-		return isInitialized;
-	}
-
-	public void setInitialized(boolean isInitialized) {
-		this.isInitialized = isInitialized;
 	}
 
 }

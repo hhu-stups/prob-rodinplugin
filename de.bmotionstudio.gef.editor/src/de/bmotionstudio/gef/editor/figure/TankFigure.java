@@ -121,22 +121,27 @@ public class TankFigure extends AbstractBMotionFigure {
 		if (fillColor != null)
 			fillColor.dispose();
 		fillColor = new Color(Display.getDefault(), rgb);
+		repaint();
 	}
 
 	public void setFillHeight(Integer height) {
 		this.fill_height = height;
+		repaint();
 	}
 
 	public void setMaxPos(Integer maxPos) {
 		this.positions = maxPos;
+		repaint();
 	}
 
 	public void setInterval(Integer interval) {
 		this.show_pos = interval;
+		repaint();
 	}
 
 	public void setMeasure(Boolean bol) {
 		this.showMeasure = bol;
+		repaint();
 	}
 
 	public void setBackgroundColor(RGB rgb) {

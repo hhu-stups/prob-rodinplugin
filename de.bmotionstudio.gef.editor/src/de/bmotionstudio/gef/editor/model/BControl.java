@@ -85,6 +85,8 @@ public abstract class BControl implements IAdaptable, Cloneable {
 	private transient PropertyChangeSupport listeners;
 
 	private transient ArrayList<IObserverListener> observerListener;
+	
+	private transient boolean newControl;
 
 	private BMotionGuide verticalGuide, horizontalGuide;
 
@@ -121,6 +123,7 @@ public abstract class BControl implements IAdaptable, Cloneable {
 		this.observerListener = new ArrayList<IObserverListener>();
 		this.sourceConnections = new ArrayList<BConnection>();
 		this.targetConnections = new ArrayList<BConnection>();
+		this.newControl = true;
 		init();
 	}
 
@@ -128,6 +131,7 @@ public abstract class BControl implements IAdaptable, Cloneable {
 		// Populate parent
 		for (BControl child : getChildrenArray())
 			child.setParent(this);
+		this.newControl = false;
 		init();
 		return this;
 	}
@@ -181,11 +185,11 @@ public abstract class BControl implements IAdaptable, Cloneable {
 
 	private void init() {
 
-		// Init custom control attributes
-		initAttributes();
-
 		// Init standard control attributes
 		initStandardAttributes();
+
+		// Init custom control attributes
+		initAttributes();
 
 	}
 
@@ -222,6 +226,7 @@ public abstract class BControl implements IAdaptable, Cloneable {
 		initAttribute(aY);
 		
 		BAttributeSize aSize = new BAttributeSize(null);
+		aSize.setGroup(AbstractAttribute.ROOT);
 		initAttribute(aSize);
 		
 		BAttributeWidth aWidth = new BAttributeWidth(100);
@@ -787,21 +792,14 @@ public abstract class BControl implements IAdaptable, Cloneable {
 
 		AbstractAttribute oldAtr = getAttribute(atr.getID());
 
-		// If no attribute exists yet, create a new one and set the value
-		if (oldAtr == null) {
-			oldAtr = atr;
-			getAttributes().put(oldAtr.getID(), oldAtr);
+		// If a new control is created via the editor (not from the saved file)
+		// set the saved value of the file
+		if (oldAtr != null && !newControl) {
+			atr.setValue(oldAtr.getValue());
+			atr.setDefaultValue(oldAtr.getDefaultValue());
 		}
 
-		if (!oldAtr.isInitialized()) {
-
-			oldAtr.setDefaultValue(atr.getDefaultValue());
-			oldAtr.setGroup(atr.getGroup());
-			oldAtr.setEditable(atr.isEditable());
-			oldAtr.setShow(atr.show());
-			oldAtr.setInitialized(true);
-
-		}
+		getAttributes().put(atr.getID(), atr);
 
 	}
 

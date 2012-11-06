@@ -22,34 +22,45 @@ public class TankPart extends BMSAbstractEditPart {
 
 	@Override
 	protected IFigure createEditFigure() {
-		IFigure figure = new TankFigure();
-		return figure;
+		return new TankFigure();
 	}
 
 	@Override
 	public void refreshEditFigure(IFigure figure, BControl model,
 			PropertyChangeEvent evt) {
-		((TankFigure) figure).setAlpha(Integer.valueOf(model
-				.getAttributeValue(AttributeConstants.ATTRIBUTE_ALPHA)
-				.toString()));
-		((TankFigure) figure).setFillColor((RGB) model
-				.getAttributeValue(AttributeConstants.ATTRIBUTE_FILL_COLOR));
-		((TankFigure) figure).setFillHeight(Integer.valueOf(model
-				.getAttributeValue(AttributeConstants.ATTRIBUTE_FILL_HEIGHT)
-				.toString()));
-		((TankFigure) figure).setMaxPos(Integer.valueOf(model
-				.getAttributeValue(AttributeConstants.ATTRIBUTE_MEASURE_MAXPOS)
-				.toString()));
-		((TankFigure) figure).setInterval(Integer.valueOf(model
-				.getAttributeValue(
-						AttributeConstants.ATTRIBUTE_MEASURE_INTERVAL)
-				.toString()));
-		((TankFigure) figure).setMeasure(Boolean.valueOf(model
-				.getAttributeValue(AttributeConstants.ATTRIBUTE_SHOWS_MEASURE)
-				.toString()));
-		((TankFigure) figure)
-				.setBackgroundColor((RGB) model
-						.getAttributeValue(AttributeConstants.ATTRIBUTE_BACKGROUND_COLOR));
+
+		Object value = evt.getNewValue();
+		String aID = evt.getPropertyName();
+
+		if (aID.equals(AttributeConstants.ATTRIBUTE_VISIBLE))
+			((TankFigure) figure).setVisible(Boolean.valueOf(value.toString()));
+
+		if (aID.equals(AttributeConstants.ATTRIBUTE_ALPHA))
+			((TankFigure) figure).setAlpha(Integer.valueOf(value.toString()));
+
+		if (aID.equals(AttributeConstants.ATTRIBUTE_FILL_COLOR))
+			((TankFigure) figure).setFillColor((RGB) value);
+
+		if (aID.equals(AttributeConstants.ATTRIBUTE_FILL_HEIGHT))
+			((TankFigure) figure).setFillHeight(Integer.valueOf(value
+					.toString()));
+
+		if (aID.equals(AttributeConstants.ATTRIBUTE_MEASURE_MAXPOS))
+			((TankFigure) figure).setMaxPos(Integer.valueOf(model
+					.getAttributeValue(
+							AttributeConstants.ATTRIBUTE_MEASURE_MAXPOS)
+					.toString()));
+
+		if (aID.equals(AttributeConstants.ATTRIBUTE_MEASURE_INTERVAL))
+			((TankFigure) figure)
+					.setInterval(Integer.valueOf(value.toString()));
+
+		if (aID.equals(AttributeConstants.ATTRIBUTE_SHOWS_MEASURE))
+			((TankFigure) figure).setMeasure(Boolean.valueOf(value.toString()));
+
+		if (aID.equals(AttributeConstants.ATTRIBUTE_BACKGROUND_COLOR))
+			((TankFigure) figure).setBackgroundColor((RGB) value);
+
 	}
 
 	@Override

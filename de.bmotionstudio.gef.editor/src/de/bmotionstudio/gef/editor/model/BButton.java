@@ -48,7 +48,7 @@ public class BButton extends BControl {
 		initAttribute(aHeight);
 
 		BAttributeWidth aWidth = new BAttributeWidth(100);
-		aHeight.setGroup(BAttributeSize.ID);
+		aWidth.setGroup(BAttributeSize.ID);
 		initAttribute(aWidth);
 
 	}
