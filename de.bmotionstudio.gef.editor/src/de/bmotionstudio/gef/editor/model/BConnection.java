@@ -8,6 +8,7 @@ package de.bmotionstudio.gef.editor.model;
 
 import org.eclipse.swt.graphics.RGB;
 
+import de.bmotionstudio.gef.editor.attribute.AbstractAttribute;
 import de.bmotionstudio.gef.editor.attribute.BAttributeConnection;
 import de.bmotionstudio.gef.editor.attribute.BAttributeConnectionSourceDecoration;
 import de.bmotionstudio.gef.editor.attribute.BAttributeConnectionTargetDecoration;
@@ -21,11 +22,11 @@ public class BConnection extends BControl {
 	public static String TYPE = "de.bmotionstudio.gef.editor.connection";
 
 	/** True, if the connection is attached to its endpoints. */
-	private boolean isConnected;
+	protected boolean isConnected;
 	/** Connection's source endpoint. */
-	private BControl source;
+	protected BControl source;
 	/** Connection's target endpoint. */
-	private BControl target;
+	protected BControl target;
 
 	/**
 	 * Create a (solid) connection between two distinct shapes.
@@ -122,6 +123,7 @@ public class BConnection extends BControl {
 	protected void initAttributes() {
 
 		BAttributeConnection aConnection = new BAttributeConnection(null);
+		aConnection.setGroup(AbstractAttribute.ROOT);
 		initAttribute(aConnection);
 
 		BAttributeLineWidth aLineWidth = new BAttributeLineWidth(1);
@@ -152,6 +154,13 @@ public class BConnection extends BControl {
 		aLabel.setGroup(aConnection);
 		initAttribute(aLabel);
 
+	}
+
+	@Override
+	public BControl clone() throws CloneNotSupportedException {
+		BConnection clonedControl = (BConnection) super.clone();
+		clonedControl.isConnected = false;
+		return clonedControl;
 	}
 
 }

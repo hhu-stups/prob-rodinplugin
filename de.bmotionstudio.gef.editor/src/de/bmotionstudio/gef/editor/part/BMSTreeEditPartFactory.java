@@ -22,7 +22,6 @@ public class BMSTreeEditPartFactory implements EditPartFactory {
 
 	public EditPart createEditPart(EditPart context, Object model) {
 
-
 		BMSAbstractTreeEditPart part = null;
 
 		if (model instanceof Visualization) {

@@ -14,7 +14,6 @@ import org.eclipse.draw2d.PositionConstants;
 
 import de.be4.classicalb.core.parser.exceptions.BException;
 import de.bmotionstudio.gef.editor.Animation;
-import de.bmotionstudio.gef.editor.AttributeConstants;
 import de.bmotionstudio.gef.editor.ButtonGroupHelper;
 import de.bmotionstudio.gef.editor.IAddErrorListener;
 import de.bmotionstudio.gef.editor.scheduler.PredicateOperation;
@@ -186,13 +185,18 @@ public class Visualization extends BControl {
 
 	private List<String> getAllBControlNames(List<BControl> children) {
 		List<String> list = new ArrayList<String>();
-		for (BControl bcontrol : children) {
-			list.add(bcontrol
-					.getAttributeValue(AttributeConstants.ATTRIBUTE_ID)
-					.toString());
-			if (bcontrol.getChildrenArray().size() > 0) {
-				list.addAll(getAllBControlNames(bcontrol.getChildrenArray()));
-			}
+		for (BControl control : children) {
+			list.add(control.getID());
+			// Check children
+			List<BControl> subchildren = control.getChildrenArray();
+			if (children.size() > 0)
+				list.addAll(getAllBControlNames(subchildren));
+			// Check connections
+			List<BControl> connections = new ArrayList<BControl>();
+			connections.addAll(control.getSourceConnections());
+			connections.addAll(control.getTargetConnections());
+			if (connections.size() > 0)
+				list.addAll(getAllBControlNames(connections));
 		}
 		return list;
 	}

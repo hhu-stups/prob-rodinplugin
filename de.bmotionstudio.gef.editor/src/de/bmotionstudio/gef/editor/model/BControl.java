@@ -647,30 +647,35 @@ public abstract class BControl implements IAdaptable, Cloneable {
 
 		clonedControl.listeners = new PropertyChangeSupport(clonedControl);
 		clonedControl.observerListener = new ArrayList<IObserverListener>();
+		clonedControl.sourceConnections = new ArrayList<BConnection>();
+		clonedControl.targetConnections = new ArrayList<BConnection>();
 
 		clonedControl.setParent(getParent());
 
+		// Clone attributes
 		Map<String, AbstractAttribute> newProperties = new HashMap<String, AbstractAttribute>();
 		for (Entry<String, AbstractAttribute> e : getAttributes().entrySet()) {
 			AbstractAttribute idAtr = e.getValue().clone();
 			newProperties.put(e.getKey(), idAtr);
 		}
-
 		clonedControl.setAttributes(newProperties);
 		clonedControl.setAttributeValue(AttributeConstants.ATTRIBUTE_ID,
 				getVisualization().getMaxIDString(type));
 
+		// Clone children
 		clonedControl.setChildrenArray(new BControlList());
 		Iterator<BControl> it = getChildrenArray().iterator();
 		while (it.hasNext()) {
 			clonedControl.addChild(((BControl) it.next()).clone());
 		}
 
+		// Clone observer
 		clonedControl.setObserverMap(new HashMap<String, Observer>());
 		for (Observer observer : observers.values()) {
 			clonedControl.addObserver(observer.clone());
 		}
 
+		// Clone events
 		clonedControl.setEventMap(new HashMap<String, SchedulerEvent>());
 		for (Map.Entry<String, SchedulerEvent> e : events.entrySet()) {
 			clonedControl.addEvent(e.getKey(), e.getValue().clone());

@@ -15,6 +15,7 @@ import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.ui.actions.Clipboard;
 
 import de.bmotionstudio.gef.editor.AttributeConstants;
+import de.bmotionstudio.gef.editor.model.BConnection;
 import de.bmotionstudio.gef.editor.model.BControl;
 import de.bmotionstudio.gef.editor.model.Visualization;
 
@@ -26,6 +27,8 @@ public class PasteCommand extends Command {
 	private HashMap<BControl, BControl> list = new HashMap<BControl, BControl>();
 
 	private List<BControl> parentControls = new ArrayList<BControl>();
+
+	private List<ConnectionCreateCommand> connectionCreateCmds = new ArrayList<ConnectionCreateCommand>();
 
 	@Override
 	public boolean canExecute() {
@@ -69,7 +72,6 @@ public class PasteCommand extends Command {
 				BControl control = (BControl) it.next();
 				control.setParent(parent);
 				try {
-
 					BControl clone = (BControl) control.clone();
 					clone.setParent(parent);
 					int x = Integer.valueOf(Integer.valueOf(clone
@@ -84,6 +86,26 @@ public class PasteCommand extends Command {
 							+ cHelper.getDistance());
 					list.put(control, clone);
 					cHelper.setDistance(cHelper.getDistance() + 10);
+
+					// Clone connections
+					for (BConnection c : control.getSourceConnections()) {
+						BConnection cb = (BConnection) c.clone();
+						cb.setSource(clone);
+						ConnectionCreateCommand connectionCreateCommand = new ConnectionCreateCommand(
+								clone);
+						connectionCreateCommand.setConnection(cb);
+						connectionCreateCmds.add(connectionCreateCommand);
+					}
+
+					for (BConnection c : control.getTargetConnections()) {
+						BConnection cb = (BConnection) c.clone();
+						cb.setTarget(clone);
+						ConnectionCreateCommand connectionCreateCommand = new ConnectionCreateCommand(
+								cb.getSource());
+						connectionCreateCommand.setConnection(cb);
+						connectionCreateCmds.add(connectionCreateCommand);
+					}
+
 				} catch (CloneNotSupportedException e) {
 					e.printStackTrace();
 				}
@@ -101,6 +123,8 @@ public class PasteCommand extends Command {
 			BControl control = it.next();
 			if (isPastableControl(control)) {
 				control.getParent().addChild(control);
+				for (ConnectionCreateCommand cmd : connectionCreateCmds)
+					cmd.redo();
 			}
 		}
 	}
@@ -117,6 +141,8 @@ public class PasteCommand extends Command {
 			BControl bcontrol = it.next();
 			if (isPastableControl(bcontrol)) {
 				bcontrol.getParent().removeChild(bcontrol);
+				for (ConnectionCreateCommand cmd : connectionCreateCmds)
+					cmd.undo();
 			}
 		}
 	}

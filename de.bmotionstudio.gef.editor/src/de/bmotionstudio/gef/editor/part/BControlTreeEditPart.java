@@ -61,13 +61,15 @@ public class BControlTreeEditPart extends BMSAbstractTreeEditPart implements
 				List<BConnection> sourceConnections = control
 						.getSourceConnections();
 				for (BConnection con : sourceConnections) {
-					if (con.showInOutlineView())
+					if (con.showInOutlineView()
+							&& !toShowElements.contains(con))
 						toShowElements.add(con);
 				}
 				List<BConnection> targetConnections = control
 						.getTargetConnections();
 				for (BConnection con : targetConnections) {
-					if (con.showInOutlineView())
+					if (con.showInOutlineView()
+							&& !toShowElements.contains(con))
 						toShowElements.add(con);
 				}
 			}
