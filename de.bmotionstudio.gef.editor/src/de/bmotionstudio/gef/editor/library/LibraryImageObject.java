@@ -6,13 +6,12 @@
 
 package de.bmotionstudio.gef.editor.library;
 
-import java.io.File;
-
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
-
-import de.bmotionstudio.gef.editor.util.FileUtil;
 
 public class LibraryImageObject extends LibraryObject {
 
@@ -22,10 +21,19 @@ public class LibraryImageObject extends LibraryObject {
 
 	@Override
 	public void delete(LibraryPage page) {
-		String myPath = (page.getEditor().getVisualization().getProjectFile()
-				.getProject().getLocation()
-				+ "/images/" + getName()).replace("file:", "");
-		FileUtil.deleteFile(new File(myPath));
+
+		try {
+			IFolder imageFolder = page.getEditor().getVisualization()
+					.getProjectFile().getProject().getFolder("images");
+			if (imageFolder.exists()) {
+				IFile file = imageFolder.getFile(getName());
+				if (file.exists())
+					file.delete(true, new NullProgressMonitor());
+			}
+		} catch (CoreException e) {
+			e.printStackTrace();
+		}
+
 	}
 
 	@Override
