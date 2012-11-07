@@ -18,7 +18,7 @@ import org.eclipse.gef.editpolicies.ConnectionEditPolicy;
 import org.eclipse.gef.editpolicies.ConnectionEndpointEditPolicy;
 import org.eclipse.gef.requests.GroupRequest;
 
-import de.bmotionstudio.gef.editor.command.TrackDeleteCommand;
+import de.bmotionstudio.gef.editor.command.ConnectionDeleteCommand;
 import de.bmotionstudio.gef.editor.model.Track;
 
 public class TrackPart extends BConnectionEditPart {
@@ -34,7 +34,7 @@ public class TrackPart extends BConnectionEditPart {
 		installEditPolicy(EditPolicy.CONNECTION_ROLE,
 				new ConnectionEditPolicy() {
 					protected Command getDeleteCommand(GroupRequest request) {
-						return new TrackDeleteCommand((Track) getModel());
+						return new ConnectionDeleteCommand((Track) getModel());
 					}
 				});
 	}

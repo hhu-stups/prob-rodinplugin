@@ -18,8 +18,8 @@ import de.bmotionstudio.gef.editor.attribute.AttributeSwitchPosition;
 import de.bmotionstudio.gef.editor.attribute.BAttributeHeight;
 import de.bmotionstudio.gef.editor.attribute.BAttributeSize;
 import de.bmotionstudio.gef.editor.attribute.BAttributeWidth;
+import de.bmotionstudio.gef.editor.command.ConnectionCreateCommand;
 import de.bmotionstudio.gef.editor.command.CreateCommand;
-import de.bmotionstudio.gef.editor.command.TrackCreateCommand;
 
 public class Switch extends BControl {
 
@@ -49,16 +49,17 @@ public class Switch extends BControl {
 		cmd.setLayout(new Rectangle(70, 70, 50, 20));
 		cmd.execute();
 
-		TrackCreateCommand trackCreateCmd = new TrackCreateCommand(tracknode1);
+		ConnectionCreateCommand trackCreateCmd = new ConnectionCreateCommand(
+				tracknode1);
 		trackCreateCmd.setTarget(tracknode2);
 		track1 = new Track(getVisualization());
-		trackCreateCmd.setTrack(track1);
+		trackCreateCmd.setConnection(track1);
 		trackCreateCmd.execute();
 
-		trackCreateCmd = new TrackCreateCommand(tracknode1);
+		trackCreateCmd = new ConnectionCreateCommand(tracknode1);
 		trackCreateCmd.setTarget(tracknode3);
 		track2 = new Track(getVisualization());
-		trackCreateCmd.setTrack(track2);
+		trackCreateCmd.setConnection(track2);
 		trackCreateCmd.execute();
 
 		track1.setAttributeValue(AttributeConstants.ATTRIBUTE_LABEL, "");
@@ -128,9 +129,14 @@ public class Switch extends BControl {
 		for (BControl control : getChildrenArray()) {
 
 			List<Track> tracks = new ArrayList<Track>();
-			tracks.addAll(((TrackNode) control).getSourceTracks());
-			tracks.addAll(((TrackNode) control).getTargetTracks());
-
+			for (BConnection c : ((TrackNode) control).getSourceConnections()) {
+				if (c instanceof Track)
+					tracks.add((Track) c);
+			}
+			for (BConnection c : ((TrackNode) control).getTargetConnections()) {
+				if (c instanceof Track)
+					tracks.add((Track) c);
+			}
 			for (Track n : tracks) {
 				AbstractAttribute a2 = n
 						.getAttribute(AttributeConstants.ATTRIBUTE_CUSTOM);

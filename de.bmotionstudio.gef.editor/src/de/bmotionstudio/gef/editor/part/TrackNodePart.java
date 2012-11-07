@@ -7,8 +7,6 @@
 package de.bmotionstudio.gef.editor.part;
 
 import java.beans.PropertyChangeEvent;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.gef.EditPolicy;
@@ -21,7 +19,6 @@ import de.bmotionstudio.gef.editor.editpolicy.BMSDeletePolicy;
 import de.bmotionstudio.gef.editor.editpolicy.TrackEditPolicy;
 import de.bmotionstudio.gef.editor.figure.TrackNodeFigure;
 import de.bmotionstudio.gef.editor.model.BControl;
-import de.bmotionstudio.gef.editor.model.TrackNode;
 
 public class TrackNodePart extends BMSAbstractEditPart {
 
@@ -65,22 +62,6 @@ public class TrackNodePart extends BMSAbstractEditPart {
 
 	@Override
 	protected void prepareRunPolicies() {
-	}
-
-	@Override
-	protected List<?> getModelSourceConnections() {
-		List<BControl> all = new ArrayList<BControl>();
-		all.addAll(((TrackNode) getModel()).getSourceTracks());
-		all.addAll(((TrackNode) getModel()).getSourceConnections());
-		return all;
-	}
-
-	@Override
-	protected List<?> getModelTargetConnections() {
-		List<BControl> all = new ArrayList<BControl>();
-		all.addAll(((TrackNode) getModel()).getTargetTracks());
-		all.addAll(((TrackNode) getModel()).getTargetConnections());
-		return all;
 	}
 
 }

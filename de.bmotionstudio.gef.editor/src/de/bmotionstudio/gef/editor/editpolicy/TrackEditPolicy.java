@@ -12,8 +12,8 @@ import org.eclipse.gef.requests.CreateConnectionRequest;
 import org.eclipse.gef.requests.DropRequest;
 import org.eclipse.gef.requests.ReconnectRequest;
 
-import de.bmotionstudio.gef.editor.command.TrackCreateCommand;
-import de.bmotionstudio.gef.editor.command.TrackReconnectCommand;
+import de.bmotionstudio.gef.editor.command.ConnectionCreateCommand;
+import de.bmotionstudio.gef.editor.command.ConnectionReconnectCommand;
 import de.bmotionstudio.gef.editor.model.BConnection;
 import de.bmotionstudio.gef.editor.model.Track;
 import de.bmotionstudio.gef.editor.model.TrackNode;
@@ -34,9 +34,9 @@ public class TrackEditPolicy extends BMSConnectionEditPolicy {
 
 				Track track = (Track) newObject;
 				TrackNode trackNode = (TrackNode) model;
-				cmd = new TrackCreateCommand(trackNode);
+				cmd = new ConnectionCreateCommand(trackNode);
 				track.setVisualization(trackNode.getVisualization());
-				((TrackCreateCommand) cmd).setTrack(track);
+				((ConnectionCreateCommand) cmd).setConnection(track);
 				request.setStartCommand(cmd);
 
 			}
@@ -59,7 +59,7 @@ public class TrackEditPolicy extends BMSConnectionEditPolicy {
 		if (newObject instanceof Track) {
 
 			cmd = request.getStartCommand();
-			((TrackCreateCommand) cmd).setTarget((TrackNode) getHost()
+			((ConnectionCreateCommand) cmd).setTarget((TrackNode) getHost()
 					.getModel());
 
 		} else if (newObject instanceof BConnection) {
@@ -80,9 +80,9 @@ public class TrackEditPolicy extends BMSConnectionEditPolicy {
 
 			Track track = (Track) newObject;
 			TrackNode newSource = (TrackNode) getHost().getModel();
-			cmd = new TrackReconnectCommand();
-			((TrackReconnectCommand) cmd).setNewSource(newSource);
-			((TrackReconnectCommand) cmd).setConnection(track);
+			cmd = new ConnectionReconnectCommand();
+			((ConnectionReconnectCommand) cmd).setNewSource(newSource);
+			((ConnectionReconnectCommand) cmd).setConnection(track);
 
 		} else if (newObject instanceof BConnection) {
 			cmd = super.getReconnectSourceCommand(request);
@@ -102,9 +102,9 @@ public class TrackEditPolicy extends BMSConnectionEditPolicy {
 
 			Track track = (Track) newObject;
 			TrackNode newTarget = (TrackNode) getHost().getModel();
-			cmd = new TrackReconnectCommand();
-			((TrackReconnectCommand) cmd).setNewTarget(newTarget);
-			((TrackReconnectCommand) cmd).setConnection(track);
+			cmd = new ConnectionReconnectCommand();
+			((ConnectionReconnectCommand) cmd).setNewTarget(newTarget);
+			((ConnectionReconnectCommand) cmd).setConnection(track);
 
 		} else if (newObject instanceof BConnection) {
 			cmd = super.getReconnectTargetCommand(request);
