@@ -34,10 +34,9 @@ public class SwitchPart extends BMSAbstractEditPart {
 
 		Object value = evt.getNewValue();
 		String aID = evt.getPropertyName();
-
+		Switch sw = (Switch) model;
+		
 		if (aID.equals(AttributeConstants.ATTRIBUTE_SWITCH_POSITION)) {
-
-			Switch sw = (Switch) model;
 
 			Track track1 = sw.getTrack1();
 			Track track2 = sw.getTrack2();
@@ -64,9 +63,14 @@ public class SwitchPart extends BMSAbstractEditPart {
 		if (aID.equals(AttributeConstants.ATTRIBUTE_SWITCH_DIRECTION))
 			refreshEditLayout(figure, model);
 
-		if (aID.equals(AttributeConstants.ATTRIBUTE_VISIBLE))
-			((SwitchFigure) figure)
-					.setVisible(Boolean.valueOf(value.toString()));
+		if (aID.equals(AttributeConstants.ATTRIBUTE_VISIBLE)) {
+			Boolean visible = Boolean.valueOf(value.toString());
+			((SwitchFigure) figure).setVisible(visible);
+			sw.getTrack1().setAttributeValue(
+					AttributeConstants.ATTRIBUTE_VISIBLE, visible);
+			sw.getTrack2().setAttributeValue(
+					AttributeConstants.ATTRIBUTE_VISIBLE, visible);
+		}
 
 	}
 

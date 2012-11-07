@@ -13,6 +13,7 @@ import java.util.List;
 import org.eclipse.draw2d.ChopboxAnchor;
 import org.eclipse.draw2d.Connection;
 import org.eclipse.draw2d.ConnectionAnchor;
+import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.Label;
 import org.eclipse.draw2d.MidpointLocator;
@@ -21,6 +22,7 @@ import org.eclipse.draw2d.PolylineConnection;
 import org.eclipse.draw2d.PositionConstants;
 import org.eclipse.draw2d.XYAnchor;
 import org.eclipse.draw2d.geometry.Point;
+import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.AccessibleAnchorProvider;
 import org.eclipse.gef.ConnectionEditPart;
 import org.eclipse.gef.DragTracker;
@@ -42,8 +44,11 @@ import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
 
 import de.bmotionstudio.gef.editor.AttributeConstants;
+import de.bmotionstudio.gef.editor.BMotionStudioImage;
+import de.bmotionstudio.gef.editor.EditorImageRegistry;
 import de.bmotionstudio.gef.editor.attribute.BAttributeConnectionSourceDecoration;
 import de.bmotionstudio.gef.editor.command.ConnectionDeleteCommand;
+import de.bmotionstudio.gef.editor.figure.AbstractBMotionFigure;
 import de.bmotionstudio.gef.editor.model.BConnection;
 import de.bmotionstudio.gef.editor.model.BControl;
 
@@ -89,7 +94,34 @@ public class BConnectionEditPart extends BMSAbstractEditPart implements
 
 	@Override
 	protected IFigure createEditFigure() {
-		PolylineConnection connection = new PolylineConnection();
+		PolylineConnection connection = new PolylineConnection() {
+
+			private boolean visible;
+
+			@Override
+			public void paint(Graphics g) {
+				if (!visible && !isRunning()) {
+					Rectangle clientArea = getClientArea();
+					g.drawImage(
+							BMotionStudioImage
+									.getImage(EditorImageRegistry.IMG_ICON_CONTROL_HIDDEN),
+							clientArea.x, clientArea.y);
+					g.setAlpha(AbstractBMotionFigure.HIDDEN_ALPHA_VALUE);
+				}
+				super.paint(g);
+			}
+
+			@Override
+			public void setVisible(boolean visible) {
+				if (!isRunning()) {
+					this.visible = visible;
+					repaint();
+				} else {
+					super.setVisible(visible);
+				}
+			}
+
+		};
 		conLabel = new Label();
 		MidpointLocator locator = new MidpointLocator(connection, 0);
 		locator.setRelativePosition(PositionConstants.NORTH);
