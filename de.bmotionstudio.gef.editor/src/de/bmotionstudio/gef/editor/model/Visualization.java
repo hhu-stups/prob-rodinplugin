@@ -231,13 +231,21 @@ public class Visualization extends BControl {
 	}
 
 	private BControl getBControl(String ID, List<BControl> children) {
-		for (BControl bcontrol : children) {
-			if (bcontrol.getID().equals(ID)) {
-				return bcontrol;
+		for (BControl control : children) {
+			if (control.getID().equals(ID)) {
+				return control;
 			}
-			if (bcontrol.getChildrenArray().size() > 0) {
+			for (BConnection c : control.getSourceConnections()) {
+				if (c.getIcon().equals(ID))
+					return c;
+			}
+			for (BConnection c : control.getTargetConnections()) {
+				if (c.getIcon().equals(ID))
+					return c;
+			}
+			if (control.getChildrenArray().size() > 0) {
 				BControl childControl = getBControl(ID,
-						bcontrol.getChildrenArray());
+						control.getChildrenArray());
 				if (childControl != null)
 					return childControl;
 			}

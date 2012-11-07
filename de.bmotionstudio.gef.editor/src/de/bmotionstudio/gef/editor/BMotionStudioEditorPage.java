@@ -645,8 +645,7 @@ public class BMotionStudioEditorPage extends GraphicalEditorWithFlyoutPalette {
 	@Override
 	public SelectionSynchronizer getSelectionSynchronizer() {
 		if (bmotionSelectionSynchronizer == null)
-			bmotionSelectionSynchronizer = new BMotionSelectionSynchronizer(
-					bmotionStudioEditor);
+			bmotionSelectionSynchronizer = new BMotionSelectionSynchronizer();
 		return bmotionSelectionSynchronizer;
 	}
 
