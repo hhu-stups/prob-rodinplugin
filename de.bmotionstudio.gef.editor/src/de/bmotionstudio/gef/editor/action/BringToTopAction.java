@@ -33,8 +33,9 @@ public class BringToTopAction extends SelectionAction {
 		setText("Bring to top");
 		setToolTipText("Bring to top");
 		setId(ID);
-		ImageDescriptor icon = AbstractUIPlugin.imageDescriptorFromPlugin(
-				BMotionEditorPlugin.PLUGIN_ID, "icons/icon_bringtotop.gif");
+		ImageDescriptor icon = AbstractUIPlugin
+				.imageDescriptorFromPlugin(BMotionEditorPlugin.PLUGIN_ID,
+						"icons/eclipse16/caught_ovr.gif");
 		if (icon != null) {
 			setImageDescriptor(icon);
 		}

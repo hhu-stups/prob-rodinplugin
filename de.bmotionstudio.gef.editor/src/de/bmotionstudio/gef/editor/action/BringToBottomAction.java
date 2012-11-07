@@ -34,7 +34,8 @@ public class BringToBottomAction extends SelectionAction {
 		setToolTipText("Bring to bottom");
 		setId(ID);
 		ImageDescriptor icon = AbstractUIPlugin.imageDescriptorFromPlugin(
-				BMotionEditorPlugin.PLUGIN_ID, "icons/icon_bringtobottom.gif");
+				BMotionEditorPlugin.PLUGIN_ID,
+				"icons/eclipse16/caught_ovr_d.gif");
 		if (icon != null) {
 			setImageDescriptor(icon);
 		}

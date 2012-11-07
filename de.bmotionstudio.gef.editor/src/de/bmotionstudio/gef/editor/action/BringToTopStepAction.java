@@ -34,7 +34,8 @@ public class BringToTopStepAction extends SelectionAction {
 		setToolTipText("Bring to top (Step)");
 		setId(ID);
 		ImageDescriptor icon = AbstractUIPlugin.imageDescriptorFromPlugin(
-				BMotionEditorPlugin.PLUGIN_ID, "icons/icon_bringtotopstep.gif");
+				BMotionEditorPlugin.PLUGIN_ID,
+				"icons/eclipse16/uncaught_ovr.gif");
 		if (icon != null) {
 			setImageDescriptor(icon);
 		}

@@ -35,7 +35,7 @@ public class BringToBottomStepAction extends SelectionAction {
 		setId(ID);
 		ImageDescriptor icon = AbstractUIPlugin.imageDescriptorFromPlugin(
 				BMotionEditorPlugin.PLUGIN_ID,
-				"icons/icon_bringtobottomstep.gif");
+				"icons/eclipse16/uncaught_ovr_d.gif");
 		if (icon != null) {
 			setImageDescriptor(icon);
 		}
