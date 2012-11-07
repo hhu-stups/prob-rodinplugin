@@ -6,6 +6,7 @@
 
 package de.bmotionstudio.gef.editor.model;
 
+import de.bmotionstudio.gef.editor.attribute.BAttributeAlpha;
 import de.bmotionstudio.gef.editor.attribute.BAttributeImage;
 
 /**
@@ -27,9 +28,8 @@ public class BImage extends BControl {
 
 	@Override
 	protected void initAttributes() {
-
 		initAttribute(new BAttributeImage(null));
-
+		initAttribute(new BAttributeAlpha(255));
 	}
 
 }

@@ -13,8 +13,8 @@ import org.eclipse.draw2d.IFigure;
 import org.eclipse.gef.EditPolicy;
 
 import de.bmotionstudio.gef.editor.AttributeConstants;
-import de.bmotionstudio.gef.editor.editpolicy.BMSDeletePolicy;
 import de.bmotionstudio.gef.editor.editpolicy.BMSConnectionEditPolicy;
+import de.bmotionstudio.gef.editor.editpolicy.BMSDeletePolicy;
 import de.bmotionstudio.gef.editor.editpolicy.ChangeAttributePolicy;
 import de.bmotionstudio.gef.editor.figure.BMSImageFigure;
 import de.bmotionstudio.gef.editor.library.AbstractLibraryCommand;
@@ -46,6 +46,10 @@ public class BImagePart extends BMSAbstractEditPart {
 		if (aID.equals(AttributeConstants.ATTRIBUTE_VISIBLE))
 			((BMSImageFigure) figure).setVisible(Boolean.valueOf(value
 					.toString()));
+
+		if (aID.equals(AttributeConstants.ATTRIBUTE_ALPHA))
+			((BMSImageFigure) figure)
+					.setAlpha(Integer.valueOf(value.toString()));
 
 	}
 

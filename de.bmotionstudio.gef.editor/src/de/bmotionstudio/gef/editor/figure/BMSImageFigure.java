@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.ImageFigure;
 import org.eclipse.draw2d.StackLayout;
 import org.eclipse.draw2d.geometry.Rectangle;
@@ -23,6 +24,8 @@ import org.eclipse.swt.widgets.Display;
 public class BMSImageFigure extends AbstractBMotionFigure {
 
 	private ImageFigure imageFigure;
+
+	private int alpha;
 
 	final ImageLoader loader = new ImageLoader();
 
@@ -37,6 +40,12 @@ public class BMSImageFigure extends AbstractBMotionFigure {
 
 	public void setLayout(Rectangle rect) {
 		getParent().setConstraint(imageFigure, rect);
+	}
+
+	@Override
+	public void paint(Graphics g) {
+		g.setAlpha(alpha);
+		super.paint(g);
 	}
 
 	public void setImage(String myPath) {
@@ -137,6 +146,11 @@ public class BMSImageFigure extends AbstractBMotionFigure {
 			super.interrupt();
 		}
 
+	}
+
+	public void setAlpha(int alpha) {
+		this.alpha = alpha;
+		repaint();
 	}
 
 }
