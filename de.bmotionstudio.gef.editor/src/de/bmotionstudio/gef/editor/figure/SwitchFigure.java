@@ -14,7 +14,6 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
 
-
 public class SwitchFigure extends AbstractBMotionFigure {
 
 	Color borderColor = new Color(Display.getDefault(), new RGB(235, 235, 235));
@@ -27,6 +26,8 @@ public class SwitchFigure extends AbstractBMotionFigure {
 	@Override
 	protected void paintBorder(Graphics g) {
 		Rectangle r = getClientArea();
+		if (!this.visible && !isRunning())
+			g.setAlpha(255);
 		g.setForegroundColor(borderColor);
 		g.setLineStyle(SWT.LINE_DASH);
 		r.height += -1;

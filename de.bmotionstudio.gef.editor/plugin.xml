@@ -625,6 +625,15 @@
             </control>    
             <control
                   id="de.bmotionstudio.gef.editor.signal">
+            </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.switch">
+            </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.track">
+            </control>
+            <control
+                  id="de.bmotionstudio.gef.editor.tracknode">
             </control>                            
          </observer>
          <observer
