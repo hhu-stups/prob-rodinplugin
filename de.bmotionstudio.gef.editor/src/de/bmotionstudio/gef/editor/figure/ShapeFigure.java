@@ -83,7 +83,10 @@ public class ShapeFigure extends AbstractBMotionFigure {
 			@Override
 			protected void fillShape(Graphics g) {
 
-				g.setAlpha(alpha);
+				if (!visible && !isRunning)
+					g.setAlpha(AbstractBMotionFigure.HIDDEN_ALPHA_VALUE);
+				else
+					g.setAlpha(alpha);
 				g.setAntialias(SWT.ON);
 
 				if (fillType == FILL_TYPE_GRADIENT) { // Gradient fill type
@@ -168,7 +171,10 @@ public class ShapeFigure extends AbstractBMotionFigure {
 			@Override
 			protected void outlineShape(Graphics g) {
 
-				g.setAlpha(outlineAlpha);
+				if (!visible && !isRunning)
+					g.setAlpha(AbstractBMotionFigure.HIDDEN_ALPHA_VALUE);
+				else
+					g.setAlpha(outlineAlpha);
 				g.setAntialias(SWT.ON);
 				g.setForegroundColor(this.getForegroundColor());
 

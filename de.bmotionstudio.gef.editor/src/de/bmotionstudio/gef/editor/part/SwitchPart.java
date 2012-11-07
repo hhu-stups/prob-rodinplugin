@@ -64,6 +64,10 @@ public class SwitchPart extends BMSAbstractEditPart {
 		if (aID.equals(AttributeConstants.ATTRIBUTE_SWITCH_DIRECTION))
 			refreshEditLayout(figure, model);
 
+		if (aID.equals(AttributeConstants.ATTRIBUTE_VISIBLE))
+			((SwitchFigure) figure)
+					.setVisible(Boolean.valueOf(value.toString()));
+
 	}
 
 	@Override

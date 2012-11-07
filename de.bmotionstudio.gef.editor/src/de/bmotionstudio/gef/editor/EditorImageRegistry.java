@@ -27,6 +27,7 @@ public class EditorImageRegistry implements IBMotionStudioImageRegistry {
 	public static final String IMG_ICON_DELETE_EDIT = "icon_delete_edit";
 	public static final String IMG_ICON_TR_UP = "icon_tr_up";
 	public static final String IMG_ICON_TR_LEFT = "icon_tr_left";
+	public static final String IMG_ICON_CONTROL_HIDDEN = "icon_control_hidden";
 
 	public static final String IMG_ICON_JPG = "icon_jpg";
 	public static final String IMG_ICON_GIF = "icon_gif";
@@ -63,11 +64,14 @@ public class EditorImageRegistry implements IBMotionStudioImageRegistry {
 				BMotionEditorPlugin.PLUGIN_ID, "icons/icon_connection16.gif");
 		BMotionStudioImage.registerImage(IMG_ICON_CONNECTION24,
 				BMotionEditorPlugin.PLUGIN_ID, "icons/icon_connection24.gif");
+		BMotionStudioImage.registerImage(IMG_ICON_CONTROL_HIDDEN,
+				BMotionEditorPlugin.PLUGIN_ID, "icons/icon_invisible.gif");
 		BMotionStudioImage.registerImage(IMG_ICON_NEW_WIZ, "org.eclipse.ui",
 				"$nl$/icons/full/etool16/new_wiz.gif");
 		BMotionStudioImage.registerImage(IMG_ICON_DELETE_EDIT,
 				"org.eclipse.ui", "$nl$/icons/full/etool16/delete_edit.gif");
-
+		BMotionStudioImage.registerImage(IMG_ICON_DELETE_EDIT,
+				"org.eclipse.ui", "$nl$/icons/full/etool16/delete_edit.gif");
 		BMotionStudioImage
 				.registerImage(IMG_ICON_TR_UP, BMotionEditorPlugin.PLUGIN_ID,
 						"icons/eclipse16/updated_co.gif");

@@ -8,6 +8,10 @@ package de.bmotionstudio.gef.editor.figure;
 
 import org.eclipse.draw2d.Clickable;
 import org.eclipse.draw2d.Graphics;
+import org.eclipse.draw2d.geometry.Rectangle;
+
+import de.bmotionstudio.gef.editor.BMotionStudioImage;
+import de.bmotionstudio.gef.editor.EditorImageRegistry;
 
 /**
  * @author Lukas Ladenberger
@@ -15,8 +19,9 @@ import org.eclipse.draw2d.Graphics;
  */
 public class AbstractBMotionFigure extends Clickable {
 
-	private boolean visible;
-	private boolean isRunning;
+	protected boolean visible;
+	protected boolean isRunning;
+	public static final int HIDDEN_ALPHA_VALUE = 35;
 
 	public AbstractBMotionFigure() {
 		this.visible = true;
@@ -41,8 +46,13 @@ public class AbstractBMotionFigure extends Clickable {
 
 	@Override
 	public void paint(Graphics g) {
-		if (!this.visible && !isRunning)
-			g.setAlpha(25);
+		Rectangle clientArea = getClientArea();
+		if (!this.visible && !isRunning()) {
+			g.drawImage(BMotionStudioImage
+					.getImage(EditorImageRegistry.IMG_ICON_CONTROL_HIDDEN),
+					clientArea.x, clientArea.y);
+			g.setAlpha(HIDDEN_ALPHA_VALUE);
+		}
 		super.paint(g);
 	}
 
