@@ -27,12 +27,9 @@ public class BAttributeCoordinates extends AbstractAttribute {
 				Point point = (Point) element;
 				StringBuffer buf = new StringBuffer();
 				buf.append("[");
-				if (point.x >= 0)
-					buf.append(point.x);
-				if (point.y >= 0) {
-					buf.append(",  ");
-					buf.append(point.y);
-				}
+				buf.append(point.x);
+				buf.append(",  ");
+				buf.append(point.y);
 				buf.append("]");
 				return buf.toString();
 			}
