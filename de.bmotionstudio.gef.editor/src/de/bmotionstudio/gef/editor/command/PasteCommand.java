@@ -24,11 +24,10 @@ public class PasteCommand extends Command {
 	private CopyPasteHelper cHelper;
 
 	// List with mapping original BControl ==> cloned BControl
-	private HashMap<BControl, BControl> list = new HashMap<BControl, BControl>();
+	private HashMap<BControl, BControl> mappingControl = new HashMap<BControl, BControl>();
+	private HashMap<BConnection, BConnection> mappingConnection = new HashMap<BConnection, BConnection>();
 
 	private List<BControl> parentControls = new ArrayList<BControl>();
-
-	private List<ConnectionCreateCommand> connectionCreateCmds = new ArrayList<ConnectionCreateCommand>();
 
 	@Override
 	public boolean canExecute() {
@@ -42,7 +41,7 @@ public class PasteCommand extends Command {
 		while (it.hasNext()) {
 			BControl node = (BControl) it.next();
 			if (isPastableControl(node)) {
-				list.put(node, null);
+				mappingControl.put(node, null);
 			}
 		}
 		return true;
@@ -65,13 +64,15 @@ public class PasteCommand extends Command {
 		if (!canExecute())
 			return;
 
-		for (BControl parent : parentControls) {
+		try {
 
-			Iterator<BControl> it = list.keySet().iterator();
-			while (it.hasNext()) {
-				BControl control = (BControl) it.next();
-				control.setParent(parent);
-				try {
+			for (BControl parent : parentControls) {
+
+				// Copy/Paste controls
+				Iterator<BControl> it = mappingControl.keySet().iterator();
+				while (it.hasNext()) {
+					BControl control = (BControl) it.next();
+					control.setParent(parent);
 					BControl clone = (BControl) control.clone();
 					clone.setParent(parent);
 					int x = Integer.valueOf(Integer.valueOf(clone
@@ -84,67 +85,119 @@ public class PasteCommand extends Command {
 							+ cHelper.getDistance());
 					clone.setAttributeValue(AttributeConstants.ATTRIBUTE_Y, y
 							+ cHelper.getDistance());
-					list.put(control, clone);
+					mappingControl.put(control, clone);
 					cHelper.setDistance(cHelper.getDistance() + 10);
+				}
+				
+				// Copy/Paste connections
+				HashMap<BControl, BControl> helpMap = new HashMap<BControl, BControl>();
+				helpMap.putAll(cHelper.getAlreadyClonedMap());
+				helpMap.putAll(mappingControl);
+
+				Iterator<BControl> it2 = helpMap.keySet().iterator();
+				while (it2.hasNext()) {
+					BControl control = it2.next();
 
 					// Clone connections
 					for (BConnection c : control.getSourceConnections()) {
-						BConnection cb = (BConnection) c.clone();
-						cb.setSource(clone);
-						ConnectionCreateCommand connectionCreateCommand = new ConnectionCreateCommand(
-								clone);
-						connectionCreateCommand.setConnection(cb);
-						connectionCreateCmds.add(connectionCreateCommand);
+
+						BConnection newConnection = mappingConnection.get(c);
+						if (newConnection == null) {
+							newConnection = (BConnection) c.clone();
+							newConnection.disconnect();
+							mappingConnection.put(c, newConnection);
+						}
+
+						BControl s = helpMap.get(newConnection
+								.getSource());
+						if (s == null)
+							s = newConnection.getSource();
+						BControl t = helpMap.get(newConnection
+								.getTarget());
+						if (t == null)
+							t = newConnection.getTarget();
+
+						newConnection.setTarget(t);
+						newConnection.setSource(s);
+
 					}
 
 					for (BConnection c : control.getTargetConnections()) {
-						BConnection cb = (BConnection) c.clone();
-						cb.setTarget(clone);
-						ConnectionCreateCommand connectionCreateCommand = new ConnectionCreateCommand(
-								cb.getSource());
-						connectionCreateCommand.setConnection(cb);
-						connectionCreateCmds.add(connectionCreateCommand);
+
+						BConnection newConnection = mappingConnection.get(c);
+						if (newConnection == null) {
+							newConnection = (BConnection) c.clone();
+							newConnection.disconnect();
+							mappingConnection.put(c, newConnection);
+						}
+
+						BControl t = helpMap.get(newConnection
+								.getTarget());
+						if (t == null)
+							t = newConnection.getTarget();
+						BControl s = helpMap.get(newConnection
+								.getSource());
+						if (s == null)
+							s = newConnection.getSource();
+
+						newConnection.setTarget(t);
+						newConnection.setSource(s);
+
 					}
 
-				} catch (CloneNotSupportedException e) {
-					e.printStackTrace();
 				}
-			}
-			redo();
 
+				redo();
+
+			}
+
+		} catch (CloneNotSupportedException e) {
+			e.printStackTrace();
 		}
 
 	}
 
 	@Override
 	public void redo() {
-		Iterator<BControl> it = list.values().iterator();
+
+		Iterator<BControl> it = mappingControl.values().iterator();
 		while (it.hasNext()) {
 			BControl control = it.next();
 			if (isPastableControl(control)) {
 				control.getParent().addChild(control);
-				for (ConnectionCreateCommand cmd : connectionCreateCmds)
-					cmd.redo();
 			}
 		}
+
+		Iterator<BConnection> it2 = mappingConnection.values().iterator();
+		while (it2.hasNext()) {
+			BConnection connection = it2.next();
+			connection.reconnect();
+		}
+
 	}
 
 	@Override
 	public boolean canUndo() {
-		return !(list.isEmpty());
+		return !(mappingControl.isEmpty());
 	}
 
 	@Override
 	public void undo() {
-		Iterator<BControl> it = list.values().iterator();
+
+		Iterator<BControl> it = mappingControl.values().iterator();
 		while (it.hasNext()) {
 			BControl bcontrol = it.next();
 			if (isPastableControl(bcontrol)) {
 				bcontrol.getParent().removeChild(bcontrol);
-				for (ConnectionCreateCommand cmd : connectionCreateCmds)
-					cmd.undo();
 			}
 		}
+
+		Iterator<BConnection> it2 = mappingConnection.values().iterator();
+		while (it2.hasNext()) {
+			BConnection connection = it2.next();
+			connection.disconnect();
+		}
+
 	}
 
 	public boolean isPastableControl(BControl control) {
@@ -154,7 +207,7 @@ public class PasteCommand extends Command {
 	}
 
 	public HashMap<BControl, BControl> getList() {
-		return this.list;
+		return this.mappingControl;
 	}
 
 }

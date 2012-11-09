@@ -156,11 +156,4 @@ public class BConnection extends BControl {
 
 	}
 
-	@Override
-	public BControl clone() throws CloneNotSupportedException {
-		BConnection clonedControl = (BConnection) super.clone();
-		clonedControl.isConnected = false;
-		return clonedControl;
-	}
-
 }

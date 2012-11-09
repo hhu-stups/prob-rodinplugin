@@ -36,18 +36,15 @@ public class SwitchPart extends BMSAbstractEditPart {
 		String aID = evt.getPropertyName();
 		Switch sw = (Switch) model;
 		
+		Track track1 = sw.getTrack1();
+		Track track2 = sw.getTrack2();
+
 		if (aID.equals(AttributeConstants.ATTRIBUTE_SWITCH_POSITION)) {
-
-			Track track1 = sw.getTrack1();
-			Track track2 = sw.getTrack2();
-
 			if (track1 != null && track2 != null) {
-
 				track1.setAttributeValue(AttributeConstants.ATTRIBUTE_VISIBLE,
 						true);
 				track2.setAttributeValue(AttributeConstants.ATTRIBUTE_VISIBLE,
 						true);
-
 				if (value.equals(AttributeSwitchPosition.LEFT)) {
 					track1.setAttributeValue(
 							AttributeConstants.ATTRIBUTE_VISIBLE, false);
@@ -55,21 +52,21 @@ public class SwitchPart extends BMSAbstractEditPart {
 					track2.setAttributeValue(
 							AttributeConstants.ATTRIBUTE_VISIBLE, false);
 				}
-
 			}
-
 		}
 
 		if (aID.equals(AttributeConstants.ATTRIBUTE_SWITCH_DIRECTION))
 			refreshEditLayout(figure, model);
 
 		if (aID.equals(AttributeConstants.ATTRIBUTE_VISIBLE)) {
-			Boolean visible = Boolean.valueOf(value.toString());
-			((SwitchFigure) figure).setVisible(visible);
-			sw.getTrack1().setAttributeValue(
-					AttributeConstants.ATTRIBUTE_VISIBLE, visible);
-			sw.getTrack2().setAttributeValue(
-					AttributeConstants.ATTRIBUTE_VISIBLE, visible);
+			if (track1 != null && track2 != null) {
+				Boolean visible = Boolean.valueOf(value.toString());
+				((SwitchFigure) figure).setVisible(visible);
+				track1.setAttributeValue(
+						AttributeConstants.ATTRIBUTE_VISIBLE, visible);
+				track2.setAttributeValue(
+						AttributeConstants.ATTRIBUTE_VISIBLE, visible);
+			}
 		}
 
 	}

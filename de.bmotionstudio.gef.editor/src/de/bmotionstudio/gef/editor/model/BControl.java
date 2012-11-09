@@ -21,6 +21,7 @@ import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
+import org.eclipse.gef.ui.actions.Clipboard;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.views.properties.IPropertySource;
 
@@ -39,6 +40,7 @@ import de.bmotionstudio.gef.editor.attribute.BAttributeVisible;
 import de.bmotionstudio.gef.editor.attribute.BAttributeWidth;
 import de.bmotionstudio.gef.editor.attribute.BAttributeX;
 import de.bmotionstudio.gef.editor.attribute.BAttributeY;
+import de.bmotionstudio.gef.editor.command.CopyPasteHelper;
 import de.bmotionstudio.gef.editor.internal.BControlPropertySource;
 import de.bmotionstudio.gef.editor.observer.IObserverListener;
 import de.bmotionstudio.gef.editor.observer.Observer;
@@ -666,7 +668,13 @@ public abstract class BControl implements IAdaptable, Cloneable {
 		clonedControl.setChildrenArray(new BControlList());
 		Iterator<BControl> it = getChildrenArray().iterator();
 		while (it.hasNext()) {
-			clonedControl.addChild(((BControl) it.next()).clone());
+			BControl next = (BControl) it.next();
+			BControl childClone = next.clone();
+			CopyPasteHelper cHelper = (CopyPasteHelper) Clipboard.getDefault()
+					.getContents();
+			if (cHelper != null)
+				cHelper.getAlreadyClonedMap().put(next, childClone);
+			clonedControl.addChild(childClone);
 		}
 
 		// Clone observer
