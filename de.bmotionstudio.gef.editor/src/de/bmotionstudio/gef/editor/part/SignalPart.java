@@ -76,7 +76,7 @@ public class SignalPart extends BMSAbstractEditPart {
 
 		}
 
-		if (aID.equals(AttributeConstants.ATTRIBUTE_ID)) {
+		if (aID.equals(AttributeConstants.ATTRIBUTE_LABEL)) {
 			((SignalFigure) getFigure()).setLabel(value.toString());
 		}
 

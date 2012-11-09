@@ -10,6 +10,7 @@ import org.eclipse.draw2d.geometry.Rectangle;
 import de.bmotionstudio.gef.editor.attribute.AttributeLights;
 import de.bmotionstudio.gef.editor.attribute.AttributeTrackDirection;
 import de.bmotionstudio.gef.editor.attribute.BAttributeHeight;
+import de.bmotionstudio.gef.editor.attribute.BAttributeLabel;
 import de.bmotionstudio.gef.editor.attribute.BAttributeSize;
 import de.bmotionstudio.gef.editor.command.CreateCommand;
 
@@ -53,6 +54,9 @@ public class Signal extends BControl {
 
 		initAttribute(new AttributeTrackDirection(AttributeTrackDirection.RIGHT));
 		initAttribute(new AttributeLights(2));
+
+		BAttributeLabel aLabel = new BAttributeLabel("Signal");
+		initAttribute(aLabel);
 
 	}
 
