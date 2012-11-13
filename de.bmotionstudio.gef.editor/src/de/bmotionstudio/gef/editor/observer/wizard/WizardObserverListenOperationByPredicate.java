@@ -30,7 +30,6 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
-import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.FocusEvent;
@@ -68,15 +67,18 @@ public class WizardObserverListenOperationByPredicate extends ObserverWizard {
 
 	private String lastChangedAttributeID;
 
-	private class ObserverListenOperationByPredicatePage extends WizardPage {
+	private class ObserverListenOperationByPredicatePage extends
+			AbstractObserverWizardPage {
 
 		private TableViewer tableViewer;
 
 		protected ObserverListenOperationByPredicatePage(final String pageName) {
-			super(pageName);
+			super(pageName, getObserver());
 		}
 
 		public void createControl(final Composite parent) {
+
+			super.createControl(parent);
 
 			DataBindingContext dbc = new DataBindingContext();
 
@@ -105,13 +107,17 @@ public class WizardObserverListenOperationByPredicate extends ObserverWizard {
 									control.restoreDefaultValue(lastChangedAttributeID);
 
 								PredicateOperation obj = (PredicateOperation) observerEvalObject;
-								String attribute = obj
-										.getAttribute();
-								Object value = obj.getValue();
-								control.setAttributeValue(attribute, value,
-										true, false);
 
-								lastChangedAttributeID = attribute;
+								if (!obj.isExpressionMode()) {
+
+									String attribute = obj.getAttribute();
+									Object value = obj.getValue();
+									control.setAttributeValue(attribute, value,
+											true, false);
+
+									lastChangedAttributeID = attribute;
+
+								}
 
 							}
 						}

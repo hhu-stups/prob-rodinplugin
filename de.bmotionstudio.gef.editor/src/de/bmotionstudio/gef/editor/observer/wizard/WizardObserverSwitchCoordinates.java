@@ -22,7 +22,6 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
-import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -54,15 +53,18 @@ import de.bmotionstudio.gef.editor.util.BMotionWizardUtil;
 
 public class WizardObserverSwitchCoordinates extends ObserverWizard {
 
-	private class ObserverToggleCoordinatesPage extends WizardPage {
+	private class ObserverToggleCoordinatesPage extends
+			AbstractObserverWizardPage {
 
 		private TableViewer tableViewer;
 
 		protected ObserverToggleCoordinatesPage(final String pageName) {
-			super(pageName);
+			super(pageName, getObserver());
 		}
 
 		public void createControl(Composite parent) {
+
+			super.createControl(parent);
 
 			DataBindingContext dbc = new DataBindingContext();
 
@@ -83,16 +85,18 @@ public class WizardObserverSwitchCoordinates extends ObserverWizard {
 							Object firstElement = selection.getFirstElement();
 							if (firstElement instanceof ObserverEvalObject) {
 								ObserverEvalObject observerEvalObject = (ObserverEvalObject) firstElement;
-								BControl control = getBControl();
-								ToggleObjectCoordinates toggleObjectCoordinates = (ToggleObjectCoordinates) observerEvalObject;
-								String attributeX = AttributeConstants.ATTRIBUTE_X;
-								String attributeY = AttributeConstants.ATTRIBUTE_Y;
-								String x = toggleObjectCoordinates.getX();
-								String y = toggleObjectCoordinates.getY();
-								control.setAttributeValue(attributeX, x, true,
-										false);
-								control.setAttributeValue(attributeY, y, true,
-										false);
+								if (!observerEvalObject.isExpressionMode()) {
+									BControl control = getBControl();
+									ToggleObjectCoordinates toggleObjectCoordinates = (ToggleObjectCoordinates) observerEvalObject;
+									String attributeX = AttributeConstants.ATTRIBUTE_X;
+									String attributeY = AttributeConstants.ATTRIBUTE_Y;
+									String x = toggleObjectCoordinates.getX();
+									String y = toggleObjectCoordinates.getY();
+									control.setAttributeValue(attributeX, x,
+											true, false);
+									control.setAttributeValue(attributeY, y,
+											true, false);
+								}
 							}
 						}
 

@@ -252,13 +252,14 @@ public class NewBMotionProjectWizardPage extends WizardPage {
 		gd.grabExcessHorizontalSpace = true;
 
 		Label label = new Label(container, SWT.NULL);
-		label.setText("&Project name:");
+		label.setText("&Project folder:");
 
 		projectRootText = new Text(container, SWT.BORDER | SWT.SINGLE);
 		projectRootText.setLayoutData(gd);
 		if (selectedProject != null) {
 			projectRootText.setText(selectedProject.getFullPath().toOSString());
 		}
+		projectRootText.setEditable(false);
 		projectRootText.addModifyListener(listener);
 
 		final Button button = new Button(container, SWT.NULL);
@@ -273,7 +274,7 @@ public class NewBMotionProjectWizardPage extends WizardPage {
 					final Object[] result = dialog.getResult();
 					if (result.length == 1) {
 						Path newPath = (Path) result[0];
-						IProject newProject = selectedProject.getWorkspace()
+						IProject newProject = ResourcesPlugin.getWorkspace()
 								.getRoot().getProject(newPath.toString());
 						selectedProject = newProject;
 						initContent();
@@ -285,7 +286,7 @@ public class NewBMotionProjectWizardPage extends WizardPage {
 		});
 
 		label = new Label(container, SWT.NULL);
-		label.setText("&BMotion Studio Visualization filename:");
+		label.setText("&Project name:");
 
 		projectText = new Text(container, SWT.BORDER | SWT.SINGLE);
 		projectText.setText(DEFAULT_PROJECT_NAME);
@@ -297,7 +298,7 @@ public class NewBMotionProjectWizardPage extends WizardPage {
 		gd.horizontalSpan = 3;
 
 		label = new Label(container, SWT.NULL);
-		label.setText("&B-Machine:");
+		label.setText("&Formal model:");
 		label.setLayoutData(gd);
 
 		gd = new GridData(GridData.FILL_VERTICAL);
@@ -312,7 +313,7 @@ public class NewBMotionProjectWizardPage extends WizardPage {
 		table.setLinesVisible(true);
 		table.setLayoutData(gd);
 
-		final String[] columnsNames = new String[] { "Machine", "Language" };
+		final String[] columnsNames = new String[] { "Model", "Language" };
 		final int[] columnWidths = new int[] { 250, 100 };
 		final int[] columnAlignments = new int[] { SWT.LEFT, SWT.LEFT };
 

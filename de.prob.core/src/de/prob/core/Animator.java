@@ -24,6 +24,7 @@ import de.prob.core.internal.ServerTraceConnection;
 import de.prob.core.internal.TraceConnectionProvider;
 import de.prob.exceptions.ProBException;
 
+
 /**
  * Animator is a singleton Proxy used to communicate with ProB. The method
  * {@link Animator#getAnimator()} returns the current instance, that can be used
@@ -337,4 +338,6 @@ public final class Animator {
 	public  void sendUserInterruptSignal() {
 		if (implementation != null) implementation.sendUserInterruptSignal();
 	}
+	
+
 }

@@ -45,6 +45,7 @@ public class BShape extends BControl {
 
 	@Override
 	protected void initAttributes() {
+
 		initAttribute(new BAttributeBackgroundColor(new RGB(255, 0, 0)));
 		initAttribute(new BAttributeForegroundColor(new RGB(0, 0, 0)));
 		initAttribute(new BAttributeImage(null));
@@ -55,6 +56,7 @@ public class BShape extends BControl {
 				BAttributeOrientation.HORIZONTAL));
 		initAttribute(new BAttributeDirection(BAttributeDirection.NORTH));
 		initAttribute(new BAttributeFillType(BAttributeFillType.FILLED));
+
 	}
 
 	@Override

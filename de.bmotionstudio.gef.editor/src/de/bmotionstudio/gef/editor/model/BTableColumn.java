@@ -1,9 +1,17 @@
+/** 
+ * (c) 2009 Lehrstuhl fuer Softwaretechnik und Programmiersprachen, 
+ * Heinrich Heine Universitaet Duesseldorf
+ * This software is licenced under EPL 1.0 (http://www.eclipse.org/org/documents/epl-v10.html) 
+ * */
+
 package de.bmotionstudio.gef.editor.model;
 
 import org.eclipse.draw2d.ColorConstants;
 
-import de.bmotionstudio.gef.editor.AttributeConstants;
 import de.bmotionstudio.gef.editor.attribute.BAttributeForegroundColor;
+import de.bmotionstudio.gef.editor.attribute.BAttributeHeight;
+import de.bmotionstudio.gef.editor.attribute.BAttributeSize;
+import de.bmotionstudio.gef.editor.attribute.BAttributeVisible;
 
 public class BTableColumn extends BControl {
 
@@ -16,26 +24,22 @@ public class BTableColumn extends BControl {
 	@Override
 	protected void initAttributes() {
 
-		// initAttribute(new BAttributeBackgroundColor(
-		// ColorConstants.white.getRGB()));
-		BAttributeForegroundColor bAttributeForegroundColor = new BAttributeForegroundColor(
+		BAttributeForegroundColor aForegroundColor = new BAttributeForegroundColor(
 				ColorConstants.black.getRGB());
-		bAttributeForegroundColor.setShow(false);
-		initAttribute(bAttributeForegroundColor);
-		// initAttribute(new
-		// BAttributeTextColor(ColorConstants.black.getRGB()));
-		getAttributes().get(AttributeConstants.ATTRIBUTE_HEIGHT).setEditable(
-				false);
-		getAttributes().get(AttributeConstants.ATTRIBUTE_HEIGHT).setShow(false);
-		getAttributes().get(AttributeConstants.ATTRIBUTE_COORDINATES).setShow(
-				false);
+		aForegroundColor.setEditable(true);
+		aForegroundColor.setShow(false);
+		initAttribute(aForegroundColor);
 
-		// Background Color
-		// Font
-		// Foreground Color
+		BAttributeHeight aHeight = new BAttributeHeight(0);
+		aHeight.setGroup(BAttributeSize.ID);
+		aHeight.setShow(false);
+		aHeight.setEditable(false);
+		initAttribute(aHeight);
 
-		// Width
-		// Height (not editable) --> determined by number of cells
+		BAttributeVisible aVisible = new BAttributeVisible(true);
+		aVisible.setShow(false);
+		aVisible.setEditable(false);
+		initAttribute(aVisible);
 
 	}
 

@@ -7,6 +7,8 @@
 package de.bmotionstudio.gef.editor.model;
 
 import de.bmotionstudio.gef.editor.AttributeConstants;
+import de.bmotionstudio.gef.editor.attribute.BAttributeHeight;
+import de.bmotionstudio.gef.editor.attribute.BAttributeSize;
 import de.bmotionstudio.gef.editor.attribute.BAttributeText;
 
 /**
@@ -30,8 +32,15 @@ public class BTextfield extends BControl {
 
 	@Override
 	protected void initAttributes() {
+
 		initAttribute(new BAttributeText(DEFAULT_TEXT));
-		getAttribute(AttributeConstants.ATTRIBUTE_HEIGHT).setValue(21);
+
+		BAttributeHeight aHeight = new BAttributeHeight(21);
+		aHeight.setGroup(BAttributeSize.ID);
+		aHeight.setShow(false);
+		aHeight.setEditable(false);
+		initAttribute(aHeight);
+
 	}
 
 	@Override

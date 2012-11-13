@@ -17,7 +17,7 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 import de.bmotionstudio.gef.editor.BMotionEditorPlugin;
 import de.bmotionstudio.gef.editor.command.BringToBottomCommand;
 import de.bmotionstudio.gef.editor.model.BControl;
-import de.bmotionstudio.gef.editor.part.AppAbstractEditPart;
+import de.bmotionstudio.gef.editor.part.BMSAbstractEditPart;
 import de.bmotionstudio.gef.editor.part.VisualizationPart;
 
 public class BringToBottomAction extends SelectionAction {
@@ -34,7 +34,8 @@ public class BringToBottomAction extends SelectionAction {
 		setToolTipText("Bring to bottom");
 		setId(ID);
 		ImageDescriptor icon = AbstractUIPlugin.imageDescriptorFromPlugin(
-				BMotionEditorPlugin.PLUGIN_ID, "icons/icon_bringtobottom.gif");
+				BMotionEditorPlugin.PLUGIN_ID,
+				"icons/eclipse16/caught_ovr_d.gif");
 		if (icon != null) {
 			setImageDescriptor(icon);
 		}
@@ -66,9 +67,9 @@ public class BringToBottomAction extends SelectionAction {
 		List<?> selectedObjects = getSelectedObjects();
 
 		for (Object obj : selectedObjects) {
-			if (obj instanceof AppAbstractEditPart) {
+			if (obj instanceof BMSAbstractEditPart) {
 				modelList
-						.add((BControl) ((AppAbstractEditPart) obj).getModel());
+						.add((BControl) ((BMSAbstractEditPart) obj).getModel());
 			}
 		}
 

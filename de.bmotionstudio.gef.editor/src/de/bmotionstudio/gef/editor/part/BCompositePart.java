@@ -26,9 +26,9 @@ import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
 
 import de.bmotionstudio.gef.editor.AttributeConstants;
-import de.bmotionstudio.gef.editor.editpolicy.AppDeletePolicy;
-import de.bmotionstudio.gef.editor.editpolicy.AppEditLayoutPolicy;
-import de.bmotionstudio.gef.editor.editpolicy.BMotionNodeEditPolicy;
+import de.bmotionstudio.gef.editor.editpolicy.BMSDeletePolicy;
+import de.bmotionstudio.gef.editor.editpolicy.BMSEditLayoutPolicy;
+import de.bmotionstudio.gef.editor.editpolicy.BMSConnectionEditPolicy;
 import de.bmotionstudio.gef.editor.editpolicy.ChangeAttributePolicy;
 import de.bmotionstudio.gef.editor.figure.CompositeFigure;
 import de.bmotionstudio.gef.editor.library.AbstractLibraryCommand;
@@ -37,7 +37,7 @@ import de.bmotionstudio.gef.editor.library.LibraryImageCommand;
 import de.bmotionstudio.gef.editor.library.LibraryVariableCommand;
 import de.bmotionstudio.gef.editor.model.BControl;
 
-public class BCompositePart extends AppAbstractEditPart {
+public class BCompositePart extends BMSAbstractEditPart {
 
 	@Override
 	protected IFigure createEditFigure() {
@@ -130,12 +130,12 @@ public class BCompositePart extends AppAbstractEditPart {
 
 	@Override
 	protected void prepareEditPolicies() {
-		installEditPolicy(EditPolicy.COMPONENT_ROLE, new AppDeletePolicy());
-		installEditPolicy(EditPolicy.LAYOUT_ROLE, new AppEditLayoutPolicy());
+		installEditPolicy(EditPolicy.COMPONENT_ROLE, new BMSDeletePolicy());
+		installEditPolicy(EditPolicy.LAYOUT_ROLE, new BMSEditLayoutPolicy());
 		installEditPolicy(EditPolicy.SELECTION_FEEDBACK_ROLE, null);
 		installEditPolicy(EditPolicy.CONTAINER_ROLE, new SnapFeedbackPolicy());
 		installEditPolicy(EditPolicy.GRAPHICAL_NODE_ROLE,
-				new BMotionNodeEditPolicy());
+				new BMSConnectionEditPolicy());
 		installEditPolicy(ChangeAttributePolicy.CHANGE_ATTRIBUTE_POLICY,
 				new ChangeAttributePolicy());
 	}

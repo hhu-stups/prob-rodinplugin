@@ -275,19 +275,15 @@ public class CounterExampleTab {
 
 	public void zoomIn() {
 		final ZoomManager zoomManager = rootEditPart.getZoomManager();
-		if (zoomManager != null) {
-			if (zoomManager != null && zoomManager.canZoomIn()) {
-				zoomManager.setZoom(zoomManager.getNextZoomLevel());
-			}
+		if (zoomManager != null && zoomManager.canZoomIn()) {
+			zoomManager.setZoom(zoomManager.getNextZoomLevel());
 		}
 	}
 
 	public void zoomOut() {
 		final ZoomManager zoomManager = rootEditPart.getZoomManager();
-		if (zoomManager != null) {
-			if (zoomManager != null && zoomManager.canZoomOut()) {
-				zoomManager.setZoom(zoomManager.getPreviousZoomLevel());
-			}
+		if (zoomManager != null && zoomManager.canZoomOut()) {
+			zoomManager.setZoom(zoomManager.getPreviousZoomLevel());
 		}
 	}
 

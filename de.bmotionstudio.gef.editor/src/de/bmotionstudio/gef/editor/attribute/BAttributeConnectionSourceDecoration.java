@@ -11,12 +11,12 @@ import org.eclipse.ui.views.properties.PropertyDescriptor;
 
 public class BAttributeConnectionSourceDecoration extends AbstractAttribute {
 
-	public static int DECORATION_NONE = 0;
-	public static int DECORATION_TRIANGLE = 1;
-
 	public BAttributeConnectionSourceDecoration(Object value) {
 		super(value);
 	}
+
+	public static int DECORATION_NONE = 0;
+	public static int DECORATION_TRIANGLE = 1;
 
 	@Override
 	protected PropertyDescriptor preparePropertyDescriptor() {

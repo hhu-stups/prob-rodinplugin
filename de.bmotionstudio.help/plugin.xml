@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.help.toc">
+      <toc
+            category="BMS"
+            file="toc.xml"
+            primary="true">
+      </toc>
+      <toc
+            category="BMS"
+            file="User-Guide-Tutorial-toc.xml"
+            primary="false">
+      </toc>
+      <toc
+            category="BMS"
+            file="User-Guide-Reference-toc.xml"
+            primary="false">
+      </toc>
+   </extension>
+   <extension
+         point="org.eclipse.help.contexts">
+      <contexts
+            file="contextDefinitionFile.xml"
+            plugin="de.bmotionstudio.gef.editor.observer">
+      </contexts>
+   </extension>
+
+</plugin>

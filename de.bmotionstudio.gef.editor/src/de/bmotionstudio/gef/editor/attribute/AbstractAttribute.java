@@ -14,6 +14,7 @@ import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertySource;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
 
+import de.bmotionstudio.gef.editor.AttributeConstants;
 import de.bmotionstudio.gef.editor.model.BControl;
 
 /**
@@ -31,22 +32,20 @@ public abstract class AbstractAttribute implements IPropertySource, Cloneable {
 	private transient BControl control;
 	private transient PropertyDescriptor propertyDescriptor;
 	private transient Object initValue;
+	private transient Object defaultValue;
 	private transient boolean editable;
 	private transient boolean show;
 	private transient String group;
 
+	// The current value of the attribute
 	private Object value;
 
 	public AbstractAttribute(Object value) {
-		this(value, true, true);
-	}
-	
-	public AbstractAttribute(Object value, boolean isEditable,
-			boolean showInPropertiesView) {
 		this.value = value;
-		this.initValue = value;
-		this.editable = isEditable;
-		this.show = showInPropertiesView;
+		this.defaultValue = value;
+		this.group = AttributeConstants.ATTRIBUTE_MISC;
+		this.editable = true;
+		this.show = true;
 	}
 
 	private Object readResolve() {
@@ -64,7 +63,7 @@ public abstract class AbstractAttribute implements IPropertySource, Cloneable {
 
 	public PropertyDescriptor getPropertyDescriptor() {
 		propertyDescriptor = new PropertyDescriptor(getID(), getName());
-		if (editable) {
+		if (isEditable()) {
 			propertyDescriptor = preparePropertyDescriptor();
 			if (propertyDescriptor != null) {
 				propertyDescriptor.setValidator(new ICellEditorValidator() {
@@ -200,6 +199,14 @@ public abstract class AbstractAttribute implements IPropertySource, Cloneable {
 
 	public void setControl(BControl control) {
 		this.control = control;
+	}
+
+	public Object getDefaultValue() {
+		return defaultValue;
+	}
+
+	public void setDefaultValue(Object defaultValue) {
+		this.defaultValue = defaultValue;
 	}
 
 }

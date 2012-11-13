@@ -18,6 +18,8 @@ public class BAttributeSize extends AbstractAttribute {
 		super(value);
 	}
 
+	public static final String ID = "de.bmotionstudio.gef.editor.attribute.BAttributeSize";
+
 	@Override
 	public PropertyDescriptor preparePropertyDescriptor() {
 		PropertyDescriptor descriptor = new PropertyDescriptor(getID(),

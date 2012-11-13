@@ -13,7 +13,6 @@ import java.util.Map;
 
 import org.eclipse.swt.widgets.Display;
 
-import de.bmotionstudio.gef.editor.animation.StaticListenerRegistry;
 import de.bmotionstudio.gef.editor.model.BControl;
 import de.bmotionstudio.gef.editor.model.Visualization;
 import de.prob.core.Animator;

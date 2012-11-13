@@ -7,12 +7,15 @@
 package de.bmotionstudio.gef.editor.command;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import de.bmotionstudio.gef.editor.model.BControl;
 
 public class CopyPasteHelper {
 
 	private ArrayList<BControl> list = new ArrayList<BControl>();
+	private Map<BControl, BControl> alreadyCloned = new HashMap<BControl, BControl>();
 	private int distance = 10;
 
 	public CopyPasteHelper(ArrayList<BControl> list, int distance) {
@@ -34,6 +37,10 @@ public class CopyPasteHelper {
 
 	public int getDistance() {
 		return distance;
+	}
+
+	public Map<BControl, BControl> getAlreadyClonedMap() {
+		return alreadyCloned;
 	}
 
 }

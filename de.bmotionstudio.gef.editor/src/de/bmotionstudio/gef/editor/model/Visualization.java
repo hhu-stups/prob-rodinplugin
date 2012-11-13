@@ -14,7 +14,6 @@ import org.eclipse.draw2d.PositionConstants;
 
 import de.be4.classicalb.core.parser.exceptions.BException;
 import de.bmotionstudio.gef.editor.Animation;
-import de.bmotionstudio.gef.editor.AttributeConstants;
 import de.bmotionstudio.gef.editor.ButtonGroupHelper;
 import de.bmotionstudio.gef.editor.IAddErrorListener;
 import de.bmotionstudio.gef.editor.scheduler.PredicateOperation;
@@ -25,7 +24,7 @@ import de.prob.exceptions.ProBException;
 
 public class Visualization extends BControl {
 
-	public static transient String TYPE = "de.bmotionstudio.gef.editor.text";
+	public static transient String TYPE = "de.bmotionstudio.gef.editor.visualization";
 
 	protected String bmachine, language, version;
 
@@ -62,6 +61,7 @@ public class Visualization extends BControl {
 		this.version = version;
 		this.errorListener = new ArrayList<IAddErrorListener>();
 		this.isRunning = false;
+		this.snapToGeometry = true;
 		createRulers();
 		ButtonGroupHelper.reset();
 	}
@@ -185,13 +185,18 @@ public class Visualization extends BControl {
 
 	private List<String> getAllBControlNames(List<BControl> children) {
 		List<String> list = new ArrayList<String>();
-		for (BControl bcontrol : children) {
-			list.add(bcontrol
-					.getAttributeValue(AttributeConstants.ATTRIBUTE_ID)
-					.toString());
-			if (bcontrol.getChildrenArray().size() > 0) {
-				list.addAll(getAllBControlNames(bcontrol.getChildrenArray()));
-			}
+		for (BControl control : children) {
+			list.add(control.getID());
+			// Check children
+			List<BControl> subchildren = control.getChildrenArray();
+			if (children.size() > 0)
+				list.addAll(getAllBControlNames(subchildren));
+			// Check connections
+			List<BControl> connections = new ArrayList<BControl>();
+			connections.addAll(control.getSourceConnections());
+			connections.addAll(control.getTargetConnections());
+			if (connections.size() > 0)
+				list.addAll(getAllBControlNames(connections));
 		}
 		return list;
 	}
@@ -226,13 +231,21 @@ public class Visualization extends BControl {
 	}
 
 	private BControl getBControl(String ID, List<BControl> children) {
-		for (BControl bcontrol : children) {
-			if (bcontrol.getID().equals(ID)) {
-				return bcontrol;
+		for (BControl control : children) {
+			if (control.getID().equals(ID)) {
+				return control;
 			}
-			if (bcontrol.getChildrenArray().size() > 0) {
+			for (BConnection c : control.getSourceConnections()) {
+				if (c.getIcon().equals(ID))
+					return c;
+			}
+			for (BConnection c : control.getTargetConnections()) {
+				if (c.getIcon().equals(ID))
+					return c;
+			}
+			if (control.getChildrenArray().size() > 0) {
 				BControl childControl = getBControl(ID,
-						bcontrol.getChildrenArray());
+						control.getChildrenArray());
 				if (childControl != null)
 					return childControl;
 			}

@@ -1,12 +1,5 @@
 apply plugin: 'java'
 
-repositories {
-	maven {
-	  name "cobra"
-	  url "http://cobra.cs.uni-duesseldorf.de/artifactory/repo"
-	}
-}
-
 
 def parser_version = '2.4.8-SNAPSHOT'
 
@@ -21,4 +14,5 @@ dependencies {
  compile 'jgrapht:jgrapht:0.8.3'
  compile 'commons-lang:commons-lang:2.6'
  compile 'commons-codec:commons-codec:1.6'
+ compile 'com.thoughtworks.xstream:xstream:1.4.3'
 }

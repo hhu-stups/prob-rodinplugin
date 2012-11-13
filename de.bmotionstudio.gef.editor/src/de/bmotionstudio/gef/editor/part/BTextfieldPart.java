@@ -19,15 +19,15 @@ import org.eclipse.gef.RequestConstants;
 import de.bmotionstudio.gef.editor.AttributeConstants;
 import de.bmotionstudio.gef.editor.edit.TextCellEditorLocator;
 import de.bmotionstudio.gef.editor.edit.TextEditManager;
-import de.bmotionstudio.gef.editor.editpolicy.AppDeletePolicy;
-import de.bmotionstudio.gef.editor.editpolicy.BMotionNodeEditPolicy;
+import de.bmotionstudio.gef.editor.editpolicy.BMSDeletePolicy;
+import de.bmotionstudio.gef.editor.editpolicy.BMSConnectionEditPolicy;
 import de.bmotionstudio.gef.editor.editpolicy.CustomDirectEditPolicy;
 import de.bmotionstudio.gef.editor.editpolicy.RenamePolicy;
 import de.bmotionstudio.gef.editor.figure.AbstractBMotionFigure;
 import de.bmotionstudio.gef.editor.figure.TextfieldFigure;
 import de.bmotionstudio.gef.editor.model.BControl;
 
-public class BTextfieldPart extends AppAbstractEditPart {
+public class BTextfieldPart extends BMSAbstractEditPart {
 
 	private TextEditManager textEditManager;
 
@@ -111,12 +111,12 @@ public class BTextfieldPart extends AppAbstractEditPart {
 
 	@Override
 	protected void prepareEditPolicies() {
-		installEditPolicy(EditPolicy.COMPONENT_ROLE, new AppDeletePolicy());
+		installEditPolicy(EditPolicy.COMPONENT_ROLE, new BMSDeletePolicy());
 		installEditPolicy(EditPolicy.NODE_ROLE, new RenamePolicy());
 		installEditPolicy(EditPolicy.DIRECT_EDIT_ROLE,
 				new CustomDirectEditPolicy());
 		installEditPolicy(EditPolicy.GRAPHICAL_NODE_ROLE,
-				new BMotionNodeEditPolicy());
+				new BMSConnectionEditPolicy());
 	}
 
 	@Override

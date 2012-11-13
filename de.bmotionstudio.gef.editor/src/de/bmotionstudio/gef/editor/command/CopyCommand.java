@@ -12,6 +12,7 @@ import java.util.Iterator;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.ui.actions.Clipboard;
 
+import de.bmotionstudio.gef.editor.model.BConnection;
 import de.bmotionstudio.gef.editor.model.BControl;
 import de.bmotionstudio.gef.editor.model.Visualization;
 
@@ -51,7 +52,8 @@ public class CopyCommand extends Command {
 	}
 
 	public boolean isCopyableControl(BControl control) {
-		if (!(control instanceof Visualization))
+		if (!(control instanceof Visualization)
+				&& !(control instanceof BConnection))
 			return true;
 		return false;
 	}

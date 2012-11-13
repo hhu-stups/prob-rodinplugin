@@ -6,12 +6,15 @@
 
 package de.bmotionstudio.gef.editor.eventb;
 
+import org.eventb.core.ast.Type;
+
 import de.bmotionstudio.gef.editor.BindingObject;
 
 
 public class MachineContentObject extends BindingObject {
 
 	private String label;
+	private Type type;
 
 	public MachineContentObject(String label) {
 		this.setLabel(label);
@@ -27,6 +30,14 @@ public class MachineContentObject extends BindingObject {
 
 	public String toString() {
 		return this.label;
+	}
+
+	public Type getType() {
+		return type;
+	}
+
+	public void setType(Type type) {
+		this.type = type;
 	}
 
 }

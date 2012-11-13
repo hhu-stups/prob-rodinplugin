@@ -13,6 +13,8 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 
 import de.bmotionstudio.gef.editor.internal.BControlTemplate;
 import de.bmotionstudio.gef.editor.model.Visualization;
+import de.bmotionstudio.gef.editor.part.BControlTreeEditPart;
+import de.bmotionstudio.gef.editor.part.BMSAbstractTreeEditPart;
 
 /**
  * @author Lukas Ladenberger
@@ -38,6 +40,10 @@ public abstract class AbstractBControlService {
 
 	public boolean showInPalette() {
 		return true;
+	}
+
+	public BMSAbstractTreeEditPart createTreeEditPart() {
+		return new BControlTreeEditPart();
 	}
 
 }

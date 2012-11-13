@@ -98,28 +98,12 @@ public class SchedulerObjectDialog extends Dialog {
 		column.getColumn().setWidth(100);
 		column.setEditingSupport(new RandomModeEditingSupport(tableViewer));
 
-		// column = new TableViewerColumn(tableViewer, SWT.NONE);
-		// column.getColumn().setText("Callback");
-		// column.getColumn().setWidth(100);
-		// column
-		// .setEditingSupport(new ObserverCallbackEditingSupport(
-		// tableViewer));
-
 		ObservableListContentProvider contentProvider = new ObservableListContentProvider();
 		tableViewer.setContentProvider(contentProvider);
 		tableViewer.setLabelProvider(new ObservableMapLabelProvider(
 				BeansObservables.observeMaps(
 						contentProvider.getKnownElements(), new String[] {
 								"command", "parameter", "maxrandom" })) {
-
-			@Override
-			public String getColumnText(final Object element,
-					final int columnIndex) {
-				// if (columnIndex == 2) {
-				// return "Edit";
-				// }
-				return super.getColumnText(element, columnIndex);
-			}
 
 			@Override
 			public Image getColumnImage(final Object element,
@@ -194,57 +178,6 @@ public class SchedulerObjectDialog extends Dialog {
 	public AnimationScriptObject getAnimationScriptObject() {
 		return animationScriptObject;
 	}
-
-	// private class ObserverCallbackEditingSupport extends EditingSupport {
-	//
-	// public ObserverCallbackEditingSupport(ColumnViewer viewer) {
-	// super(viewer);
-	// }
-	//
-	// @Override
-	// protected boolean canEdit(Object element) {
-	// return true;
-	// }
-	//
-	// @Override
-	// protected CellEditor getCellEditor(Object element) {
-	// return new ObserverCallbackCellEditor((Composite) getViewer()
-	// .getControl(), (AnimationScriptStep) element);
-	// }
-	//
-	// @Override
-	// protected Object getValue(Object element) {
-	// return "Edit";
-	// }
-	//
-	// @Override
-	// protected void setValue(Object element, Object value) {
-	// }
-	//
-	// }
-
-	// private class ObserverCallbackCellEditor extends DialogCellEditor {
-	//
-	// private final AnimationScriptStep step;
-	//
-	// public ObserverCallbackCellEditor(final Composite parent,
-	// final AnimationScriptStep step) {
-	// super(parent);
-	// this.step = step;
-	// }
-	//
-	// @Override
-	// protected Object openDialogBox(final Control cellEditorWindow) {
-	// ObserverCallBackDialog dialog = new ObserverCallBackDialog(
-	// PlatformUI.getWorkbench().getActiveWorkbenchWindow()
-	// .getShell(), step, control);
-	// if (dialog.open() == Dialog.OK) {
-	// return getValue();
-	// }
-	// return null;
-	// }
-	//
-	// }
 
 	private static class RandomModeEditingSupport extends EditingSupport {
 

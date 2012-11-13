@@ -30,8 +30,10 @@ public class BComposite extends BControl {
 
 	@Override
 	protected void initAttributes() {
+
 		initAttribute(new BAttributeBackgroundColor(new RGB(192, 192, 192)));
 		initAttribute(new BAttributeImage(null));
+
 	}
 
 	@Override

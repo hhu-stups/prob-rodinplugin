@@ -21,7 +21,6 @@ import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
-import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -55,15 +54,18 @@ public class WizardObserverCSwitchCoordinates extends ObserverWizard {
 
 	private String lastChangedControlID;
 
-	private class ObserverCSwitchCoordinatesPage extends WizardPage {
+	private class ObserverCSwitchCoordinatesPage extends
+			AbstractObserverWizardPage {
 
 		private TableViewer tableViewer;
 
 		protected ObserverCSwitchCoordinatesPage(final String pageName) {
-			super(pageName);
+			super(pageName, getObserver());
 		}
 
 		public void createControl(Composite parent) {
+
+			super.createControl(parent);
 
 			DataBindingContext dbc = new DataBindingContext();
 
@@ -84,22 +86,25 @@ public class WizardObserverCSwitchCoordinates extends ObserverWizard {
 							if (firstElement instanceof ObserverEvalObject) {
 								restorePreview();
 								ObserverEvalObject observerEvalObject = (ObserverEvalObject) firstElement;
-								BControl control = getBControl();
-								ToggleObjectCoordinates toggleObjectCoordinates = (ToggleObjectCoordinates) observerEvalObject;
-								String attributeX = AttributeConstants.ATTRIBUTE_X;
-								String attributeY = AttributeConstants.ATTRIBUTE_Y;
-								String x = toggleObjectCoordinates.getX();
-								String y = toggleObjectCoordinates.getY();
-								String controlID = toggleObjectCoordinates
-										.getBcontrol();
-								BControl bControl = control.getChild(controlID);
-								if (bControl != null) {
-									bControl.setAttributeValue(attributeX, x,
-											true, false);
-									bControl.setAttributeValue(attributeY, y,
-											true, false);
+								if (!observerEvalObject.isExpressionMode()) {
+									BControl control = getBControl();
+									ToggleObjectCoordinates toggleObjectCoordinates = (ToggleObjectCoordinates) observerEvalObject;
+									String attributeX = AttributeConstants.ATTRIBUTE_X;
+									String attributeY = AttributeConstants.ATTRIBUTE_Y;
+									String x = toggleObjectCoordinates.getX();
+									String y = toggleObjectCoordinates.getY();
+									String controlID = toggleObjectCoordinates
+											.getBcontrol();
+									BControl bControl = control
+											.getChild(controlID);
+									if (bControl != null) {
+										bControl.setAttributeValue(attributeX,
+												x, true, false);
+										bControl.setAttributeValue(attributeY,
+												y, true, false);
+									}
+									lastChangedControlID = controlID;
 								}
-								lastChangedControlID = controlID;
 							}
 						}
 

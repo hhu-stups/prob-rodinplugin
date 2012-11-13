@@ -53,10 +53,11 @@ public class CopyAction extends SelectionAction {
 			Object nextElement = it.next();
 			if (nextElement instanceof EditPart) {
 				EditPart ep = (EditPart) nextElement;
-				BControl node = (BControl) ep.getModel();
-				if (!cmd.isCopyableControl(node))
-					return null;
-				cmd.addElement(node);
+				if (ep.getModel() instanceof BControl) {
+					BControl node = (BControl) ep.getModel();
+					if (cmd.isCopyableControl(node))
+						cmd.addElement(node);
+				}
 			}
 
 		}

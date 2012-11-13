@@ -10,7 +10,6 @@ import org.eclipse.draw2d.FreeformLayer;
 import org.eclipse.draw2d.FreeformLayout;
 import org.eclipse.draw2d.LayoutAnimator;
 import org.eclipse.draw2d.LayoutListener;
-import org.eclipse.draw2d.MarginBorder;
 import org.eclipse.draw2d.geometry.Rectangle;
 
 public class VisualizationFigure extends FreeformLayer {
@@ -19,7 +18,6 @@ public class VisualizationFigure extends FreeformLayer {
 
 	public VisualizationFigure() {
 		setLayoutManager(new FreeformLayout());
-		setBorder(new MarginBorder(5));
 		addLayoutListener(layoutListener);
 	}
 

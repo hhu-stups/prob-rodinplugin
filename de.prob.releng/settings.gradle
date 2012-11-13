@@ -1,1 +1,0 @@
-include 'de.prob.core', 'de.bmotionstudio.gef.editor' ,'de.bmotionstudio.rodin', 'de.prob.plugin', 'de.prob.ui', 'de.prob2.feature'

@@ -196,6 +196,7 @@ public class WizardExecuteScheduler extends SchedulerWizard {
 	private class AnimationScriptDialogCellEditor extends DialogCellEditor {
 
 		private AnimationScriptObject animObj;
+		private AnimationScriptObject clonedObj;
 
 		public AnimationScriptDialogCellEditor(Composite parent,
 				AnimationScriptObject animObj) {
@@ -205,13 +206,27 @@ public class WizardExecuteScheduler extends SchedulerWizard {
 
 		@Override
 		protected Object openDialogBox(Control cellEditorWindow) {
-			SchedulerObjectDialog dialog = new SchedulerObjectDialog(
-					PlatformUI.getWorkbench().getActiveWorkbenchWindow()
-							.getShell(), getBControl(), animObj);
-			if (dialog.open() == Dialog.OK) {
+
+			SchedulerObjectDialog dialog = new SchedulerObjectDialog(PlatformUI
+					.getWorkbench().getActiveWorkbenchWindow().getShell(),
+					getBControl(), animObj);
+
+			try {
+				clonedObj = animObj.clone();
+			} catch (CloneNotSupportedException e) {
+				// TODO return some error?!
 				return getValue();
 			}
-			return null;
+
+			int status = dialog.open();
+			if (status == Dialog.OK) {
+				return animObj;
+			}
+
+			animObj.setSteps(clonedObj.getSteps());
+
+			return getValue();
+
 		}
 
 	}

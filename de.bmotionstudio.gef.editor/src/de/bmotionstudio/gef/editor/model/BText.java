@@ -6,7 +6,7 @@
 
 package de.bmotionstudio.gef.editor.model;
 
-import org.eclipse.swt.graphics.RGB;
+import org.eclipse.draw2d.ColorConstants;
 
 import de.bmotionstudio.gef.editor.attribute.BAttributeBackgroundColor;
 import de.bmotionstudio.gef.editor.attribute.BAttributeBackgroundVisible;
@@ -35,12 +35,15 @@ public class BText extends BControl {
 
 	@Override
 	protected void initAttributes() {
+
 		initAttribute(new BAttributeText(DEFAULT_TEXT));
-		initAttribute(new BAttributeBackgroundColor(new RGB(255, 255, 255)));
-		initAttribute(new BAttributeTextColor(new RGB(0, 0, 0)));
+		initAttribute(new BAttributeTextColor(ColorConstants.black.getRGB()));
+		initAttribute(new BAttributeBackgroundColor(
+				ColorConstants.white.getRGB()));
 		initAttribute(new BAttributeBackgroundVisible(true));
 		initAttribute(new BAttributeFont(
 				"1||9.75|0|WINDOWS|1|-13|0|0|0|400|0|0|0|0|0|0|0|0|"));
+
 	}
 
 }

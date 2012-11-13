@@ -1,3 +1,9 @@
+/** 
+ * (c) 2009 Lehrstuhl fuer Softwaretechnik und Programmiersprachen, 
+ * Heinrich Heine Universitaet Duesseldorf
+ * This software is licenced under EPL 1.0 (http://www.eclipse.org/org/documents/epl-v10.html) 
+ * */
+
 package de.bmotionstudio.gef.editor.part;
 
 import java.beans.PropertyChangeEvent;
@@ -16,7 +22,7 @@ import de.bmotionstudio.gef.editor.editpolicy.RenamePolicy;
 import de.bmotionstudio.gef.editor.figure.TableCellFigure;
 import de.bmotionstudio.gef.editor.model.BControl;
 
-public class BTableCellPart extends AppAbstractEditPart {
+public class BTableCellPart extends BMSAbstractEditPart {
 
 	@Override
 	protected IFigure createEditFigure() {
@@ -30,6 +36,7 @@ public class BTableCellPart extends AppAbstractEditPart {
 		installEditPolicy(EditPolicy.NODE_ROLE, new RenamePolicy());
 	}
 
+
 	@Override
 	protected void prepareRunPolicies() {
 	}
@@ -41,24 +48,32 @@ public class BTableCellPart extends AppAbstractEditPart {
 		Object value = evt.getNewValue();
 		String aID = evt.getPropertyName();
 
-		if (aID.equals(AttributeConstants.ATTRIBUTE_TEXT)) {
+		if (aID.equals(AttributeConstants.ATTRIBUTE_TEXT))
 			((TableCellFigure) figure).setText(value.toString());
-		}
 
-		if (aID.equals(AttributeConstants.ATTRIBUTE_BACKGROUND_COLOR)) {
+		if (aID.equals(AttributeConstants.ATTRIBUTE_BACKGROUND_COLOR))
 			((TableCellFigure) figure).setBackgroundColor((RGB) value);
-		}
 
-		if (aID.equals(AttributeConstants.ATTRIBUTE_TEXT_COLOR)) {
+		if (aID.equals(AttributeConstants.ATTRIBUTE_TEXT_COLOR))
 			((TableCellFigure) figure).setTextColor((RGB) value);
-		}
 
-		if (aID.equals(AttributeConstants.ATTRIBUTE_FOREGROUND_COLOR)) {
+		if (aID.equals(AttributeConstants.ATTRIBUTE_FOREGROUND_COLOR))
 			((TableCellFigure) figure).setForegroundColor((RGB) value);
-		}
 
 		if (aID.equals(AttributeConstants.ATTRIBUTE_FONT))
 			((TableCellFigure) figure).setFont((value.toString()));
+
+	}
+
+	@Override
+	protected void refreshEditLayout(IFigure figure, BControl control) {
+
+		// Set size of parent column
+		int width = control.getDimension().width;
+		control.getParent().setAttributeValue(
+				AttributeConstants.ATTRIBUTE_WIDTH, width);
+
+		super.refreshEditLayout(figure, control);
 
 	}
 

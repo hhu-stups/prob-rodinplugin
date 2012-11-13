@@ -17,7 +17,7 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 import de.bmotionstudio.gef.editor.BMotionEditorPlugin;
 import de.bmotionstudio.gef.editor.command.BringToTopCommand;
 import de.bmotionstudio.gef.editor.model.BControl;
-import de.bmotionstudio.gef.editor.part.AppAbstractEditPart;
+import de.bmotionstudio.gef.editor.part.BMSAbstractEditPart;
 import de.bmotionstudio.gef.editor.part.VisualizationPart;
 
 public class BringToTopAction extends SelectionAction {
@@ -33,8 +33,9 @@ public class BringToTopAction extends SelectionAction {
 		setText("Bring to top");
 		setToolTipText("Bring to top");
 		setId(ID);
-		ImageDescriptor icon = AbstractUIPlugin.imageDescriptorFromPlugin(
-				BMotionEditorPlugin.PLUGIN_ID, "icons/icon_bringtotop.gif");
+		ImageDescriptor icon = AbstractUIPlugin
+				.imageDescriptorFromPlugin(BMotionEditorPlugin.PLUGIN_ID,
+						"icons/eclipse16/caught_ovr.gif");
 		if (icon != null) {
 			setImageDescriptor(icon);
 		}
@@ -62,8 +63,8 @@ public class BringToTopAction extends SelectionAction {
 		List<BControl> controlList = new ArrayList<BControl>();
 		List<?> selectedObjects = getSelectedObjects();
 		for (Object obj : selectedObjects) {
-			if (obj instanceof AppAbstractEditPart) {
-				controlList.add((BControl) ((AppAbstractEditPart) obj)
+			if (obj instanceof BMSAbstractEditPart) {
+				controlList.add((BControl) ((BMSAbstractEditPart) obj)
 						.getModel());
 			}
 		}

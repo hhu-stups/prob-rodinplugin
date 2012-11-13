@@ -17,7 +17,7 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 import de.bmotionstudio.gef.editor.BMotionEditorPlugin;
 import de.bmotionstudio.gef.editor.command.BringToTopStepCommand;
 import de.bmotionstudio.gef.editor.model.BControl;
-import de.bmotionstudio.gef.editor.part.AppAbstractEditPart;
+import de.bmotionstudio.gef.editor.part.BMSAbstractEditPart;
 import de.bmotionstudio.gef.editor.part.VisualizationPart;
 
 public class BringToTopStepAction extends SelectionAction {
@@ -34,7 +34,8 @@ public class BringToTopStepAction extends SelectionAction {
 		setToolTipText("Bring to top (Step)");
 		setId(ID);
 		ImageDescriptor icon = AbstractUIPlugin.imageDescriptorFromPlugin(
-				BMotionEditorPlugin.PLUGIN_ID, "icons/icon_bringtotopstep.gif");
+				BMotionEditorPlugin.PLUGIN_ID,
+				"icons/eclipse16/uncaught_ovr.gif");
 		if (icon != null) {
 			setImageDescriptor(icon);
 		}
@@ -66,9 +67,9 @@ public class BringToTopStepAction extends SelectionAction {
 		List<?> selectedObjects = getSelectedObjects();
 
 		for (Object obj : selectedObjects) {
-			if (obj instanceof AppAbstractEditPart) {
+			if (obj instanceof BMSAbstractEditPart) {
 				modelList
-						.add((BControl) ((AppAbstractEditPart) obj).getModel());
+						.add((BControl) ((BMSAbstractEditPart) obj).getModel());
 			}
 		}
 

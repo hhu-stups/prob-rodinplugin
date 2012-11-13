@@ -3,6 +3,7 @@
  */
 package de.prob.ui.historyview;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 import org.apache.commons.lang.ArrayUtils;
@@ -54,6 +55,7 @@ public class HistoryView extends StateBasedViewPart {
 	public static final String VIEW_ID = "de.prob.ui.HistoryView";
 
 	private TableViewer tableViewer;
+	private Collection<HistoryLabelProvider> labelProviders;
 
 	@Override
 	protected Control createStatePartControl(final Composite parent) {
@@ -164,21 +166,23 @@ public class HistoryView extends StateBasedViewPart {
 
 	private void createColumns(final Composite composite) {
 		final Animator animator = Animator.getAnimator();
-		MachineDescription machineDescription = animator.getMachineDescription();
+		MachineDescription machineDescription = animator
+				.getMachineDescription();
 		String[] models = new String[0];
 		if (machineDescription != null) {
-			models = machineDescription
-					.getModelNames().toArray(new String[0]);
+			models = machineDescription.getModelNames().toArray(new String[0]);
 			ArrayUtils.reverse(models);
 		}
 		final TableColumnLayout layout = new TableColumnLayout();
 		composite.setLayout(layout);
+		labelProviders = new ArrayList<HistoryLabelProvider>();
 		if (models.length > 0) {
 			int pos = 0;
 			for (final String model : models) {
 				final boolean isFirst = pos == 0;
-				createColumn(layout, model, new HistoryEventLabelProvider(pos),
-						isFirst);
+				final HistoryEventLabelProvider labelProvider = new HistoryEventLabelProvider(
+						pos);
+				createColumn(layout, model, labelProvider, isFirst);
 				pos++;
 			}
 		} else {
@@ -200,6 +204,7 @@ public class HistoryView extends StateBasedViewPart {
 		final ColumnWeightData weightData = setMinimumSize ? new ColumnWeightData(
 				1, 100) : new ColumnWeightData(1);
 		layout.setColumnData(column, weightData);
+		labelProviders.add(labelProvider);
 	}
 
 	@Override
@@ -318,6 +323,21 @@ public class HistoryView extends StateBasedViewPart {
 				}
 			}
 		}
+	}
+
+	public void setShowParameters(boolean show) {
+		if (labelProviders != null) {
+			for (HistoryLabelProvider provider : labelProviders) {
+				provider.setShowParameters(show);
+			}
+		}
+		final Runnable runnable = new Runnable() {
+			@Override
+			public void run() {
+				tableViewer.refresh();
+			}
+		};
+		Display.getDefault().asyncExec(runnable);
 	}
 
 }

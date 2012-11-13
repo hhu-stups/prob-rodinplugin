@@ -11,14 +11,14 @@ import org.eclipse.ui.views.properties.PropertyDescriptor;
 
 public class BAttributeDirection extends AbstractAttribute {
 
+	public BAttributeDirection(Object value) {
+		super(value);
+	}
+
 	public static final int NORTH = 0;
 	public static final int SOUTH = 1;
 	public static final int WEST = 2;
 	public static final int EAST = 3;
-
-	public BAttributeDirection(Object value) {
-		super(value);
-	}
 
 	@Override
 	protected PropertyDescriptor preparePropertyDescriptor() {
