@@ -727,7 +727,7 @@
       <handler
             commandId="de.prob.ui.newcore.export">
          <class
-               class="de.prob.ui.eventb.ExportNewCoreHandler">
+               class="de.prob.ui.eventb.ExportClassicHandler">
          </class>
          <enabledWhen>
             <with
