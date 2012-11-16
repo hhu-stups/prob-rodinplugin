@@ -15,6 +15,7 @@ import org.eventb.core.ast.AssociativePredicate;
 import org.eventb.core.ast.BinaryPredicate;
 import org.eventb.core.ast.BoundIdentDecl;
 import org.eventb.core.ast.Expression;
+import org.eventb.core.ast.ExtendedPredicate;
 import org.eventb.core.ast.Formula;
 import org.eventb.core.ast.ISimpleVisitor;
 import org.eventb.core.ast.LiteralPredicate;
@@ -24,12 +25,14 @@ import org.eventb.core.ast.QuantifiedPredicate;
 import org.eventb.core.ast.RelationalPredicate;
 import org.eventb.core.ast.SimplePredicate;
 import org.eventb.core.ast.UnaryPredicate;
+import org.eventb.core.ast.extension.IPredicateExtension;
 
 import de.be4.classicalb.core.parser.node.AConjunctPredicate;
 import de.be4.classicalb.core.parser.node.ADisjunctPredicate;
 import de.be4.classicalb.core.parser.node.AEqualPredicate;
 import de.be4.classicalb.core.parser.node.AEquivalencePredicate;
 import de.be4.classicalb.core.parser.node.AExistsPredicate;
+import de.be4.classicalb.core.parser.node.AExtendedPredPredicate;
 import de.be4.classicalb.core.parser.node.AFalsityPredicate;
 import de.be4.classicalb.core.parser.node.AFinitePredicate;
 import de.be4.classicalb.core.parser.node.AForallPredicate;
@@ -50,6 +53,7 @@ import de.be4.classicalb.core.parser.node.ASubsetStrictPredicate;
 import de.be4.classicalb.core.parser.node.ATruthPredicate;
 import de.be4.classicalb.core.parser.node.PExpression;
 import de.be4.classicalb.core.parser.node.PPredicate;
+import de.be4.classicalb.core.parser.node.TIdentifierLiteral;
 import de.prob.eventb.translator.internal.SimpleVisitorAdapter;
 
 public class PredicateVisitor extends SimpleVisitorAdapter implements // NOPMD
@@ -76,22 +80,25 @@ public class PredicateVisitor extends SimpleVisitorAdapter implements // NOPMD
 			predicateSet = true;
 			this.p = p;
 		}
-		//public ClassifiedPragma(String name, Node attachedTo, List<String> arguments, List<String> warnings, SourcePosition start, SourcePosition end) {
-		
-    //     new ClassifiedPragma("discharged", p, proof, Collections.emptyList(), new SourcePosition(-1, -1), new SourcePosition(-1, -1));
+		// public ClassifiedPragma(String name, Node attachedTo, List<String>
+		// arguments, List<String> warnings, SourcePosition start,
+		// SourcePosition end) {
+
+		// new ClassifiedPragma("discharged", p, proof, Collections.emptyList(),
+		// new SourcePosition(-1, -1), new SourcePosition(-1, -1));
 	}
 
-	public PredicateVisitor(final LinkedList<String> bounds) {
+	public PredicateVisitor() {
+		this(null);
+	}
+
+	public PredicateVisitor(LinkedList<String> bounds) {
 		super();
 		if (bounds == null) {
 			this.bounds = new LinkedList<String>();
 		} else {
 			this.bounds = bounds;
 		}
-	}
-
-	public PredicateVisitor() {
-		this(null);
 	}
 
 	@Override
@@ -404,6 +411,36 @@ public class PredicateVisitor extends SimpleVisitorAdapter implements // NOPMD
 			throw new AssertionError(UNCOVERED_PREDICATE);
 		}
 		setPredicate(result);
+	}
+
+	@Override
+	public void visitExtendedPredicate(ExtendedPredicate predicate) {
+		AExtendedPredPredicate p = new AExtendedPredPredicate();
+		IPredicateExtension extension = predicate.getExtension();
+		String symbol = extension.getSyntaxSymbol();
+		Object origin = extension.getOrigin();
+		Theories.addOrigin(origin);
+
+		p.setIdentifier(new TIdentifierLiteral(symbol));
+
+		Expression[] expressions = predicate.getChildExpressions();
+		List<PExpression> childExprs = new ArrayList<PExpression>();
+		for (Expression e : expressions) {
+			ExpressionVisitor v = new ExpressionVisitor(bounds);
+			e.accept(v);
+			childExprs.add(v.getExpression());
+		}
+		p.setExpressions(childExprs);
+
+		Predicate[] childPredicates = predicate.getChildPredicates();
+		List<PPredicate> childPreds = new ArrayList<PPredicate>();
+		for (Predicate pd : childPredicates) {
+			PredicateVisitor v = new PredicateVisitor(bounds);
+			pd.accept(v);
+			childPreds.add(v.getPredicate());
+		}
+		p.setPredicates(childPreds);
+		setPredicate(p);
 	}
 
 }

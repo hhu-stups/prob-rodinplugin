@@ -27,6 +27,7 @@ import de.prob.core.translator.ITranslator;
 import de.prob.core.translator.TranslationFailedException;
 import de.prob.eventb.translator.AbstractComponentTranslator;
 import de.prob.eventb.translator.ContextTranslator;
+import de.prob.eventb.translator.Theories;
 import de.prob.prolog.output.IPrologTermOutput;
 
 public abstract class EventBTranslator implements ITranslator {
@@ -143,6 +144,11 @@ public abstract class EventBTranslator implements ITranslator {
 		pout.openList();
 		printProofInformation(refinementChainTranslators, contextTranslators,
 				pout);
+		try {
+			Theories.translate(pout);
+		} catch (RodinDBException e) {
+			e.printStackTrace();
+		}
 		pout.closeList();
 		pout.printVariable("_Error");
 		pout.closeTerm();
