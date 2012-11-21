@@ -419,7 +419,10 @@ public class PredicateVisitor extends SimpleVisitorAdapter implements // NOPMD
 		IPredicateExtension extension = predicate.getExtension();
 		String symbol = extension.getSyntaxSymbol();
 		Object origin = extension.getOrigin();
-		Theories.addOrigin(origin);
+
+		// FIXME THEORY-PLUGIN re-enable when the theory plugin was released
+
+		// Theories.addOrigin(origin);
 
 		p.setIdentifier(new TIdentifierLiteral(symbol));
 

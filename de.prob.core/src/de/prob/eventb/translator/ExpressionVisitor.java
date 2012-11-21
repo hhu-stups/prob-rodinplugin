@@ -628,7 +628,8 @@ public class ExpressionVisitor extends SimpleVisitorAdapter implements // NOPMD
 		String symbol = extension.getSyntaxSymbol();
 		Object origin = extension.getOrigin();
 
-		Theories.addOrigin(origin);
+		// FIXME THEORY-PLUGIN re-enable when the theory plugin was released
+		// Theories.addOrigin(origin);
 
 		p.setIdentifier(new TIdentifierLiteral(symbol));
 		Expression[] expressions = expression.getChildExpressions();
