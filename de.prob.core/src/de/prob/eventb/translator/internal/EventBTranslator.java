@@ -144,13 +144,11 @@ public abstract class EventBTranslator implements ITranslator {
 		pout.openList();
 		printProofInformation(refinementChainTranslators, contextTranslators,
 				pout);
-		// FIXME THEORY-PLUGIN re-enable when the theory plugin was released
-
-		// try {
-		// Theories.translate(pout);
-		// } catch (RodinDBException e) {
-		// e.printStackTrace();
-		// }
+		try {
+			Theories.translate(project, pout);
+		} catch (RodinDBException e) {
+			e.printStackTrace();
+		}
 		pout.closeList();
 		pout.printVariable("_Error");
 		pout.closeTerm();
