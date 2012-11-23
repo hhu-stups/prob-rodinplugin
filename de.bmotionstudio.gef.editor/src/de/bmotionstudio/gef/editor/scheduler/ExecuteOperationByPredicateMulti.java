@@ -27,7 +27,7 @@ public class ExecuteOperationByPredicateMulti extends SchedulerEvent {
 			String executePredicate = ((PredicateOperation) op)
 					.getExecutePredicate();
 
-			if (executePredicate.length() > 0) {
+			if (executePredicate != null && executePredicate.length() > 0) {
 				bolValue = BMSUtil.parsePredicate(executePredicate, control,
 						animation);
 			}

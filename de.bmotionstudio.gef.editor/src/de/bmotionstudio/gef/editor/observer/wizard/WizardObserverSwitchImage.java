@@ -13,12 +13,10 @@ import org.eclipse.core.databinding.observable.map.IObservableMap;
 import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
 import org.eclipse.jface.databinding.viewers.ObservableMapLabelProvider;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITableColorProvider;
 import org.eclipse.jface.viewers.ITableFontProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
@@ -46,7 +44,6 @@ import de.bmotionstudio.gef.editor.edit.IsExpressionModeEditingSupport;
 import de.bmotionstudio.gef.editor.edit.PredicateEditingSupport;
 import de.bmotionstudio.gef.editor.model.BControl;
 import de.bmotionstudio.gef.editor.observer.Observer;
-import de.bmotionstudio.gef.editor.observer.ObserverEvalObject;
 import de.bmotionstudio.gef.editor.observer.ObserverWizard;
 import de.bmotionstudio.gef.editor.observer.SwitchImage;
 import de.bmotionstudio.gef.editor.observer.ToggleObjectImage;
@@ -75,28 +72,30 @@ public class WizardObserverSwitchImage extends ObserverWizard {
 			tableViewer = BMotionWizardUtil.createBMotionWizardTableViewer(
 					container, ToggleObjectImage.class,
 					((BMotionAbstractWizard) getWizard()).getName());
-			tableViewer
-					.addSelectionChangedListener(new ISelectionChangedListener() {
-
-						@Override
-						public void selectionChanged(SelectionChangedEvent event) {
-							IStructuredSelection selection = (IStructuredSelection) event
-									.getSelection();
-							Object firstElement = selection.getFirstElement();
-							if (firstElement instanceof ObserverEvalObject) {
-								ObserverEvalObject observerEvalObject = (ObserverEvalObject) firstElement;
-								if (!observerEvalObject.isExpressionMode()) {
-									BControl control = getBControl();
-									ToggleObjectImage toggleObjImage = (ToggleObjectImage) observerEvalObject;
-									String attribute = AttributeConstants.ATTRIBUTE_IMAGE;
-									String image = toggleObjImage.getImage();
-									control.setAttributeValue(attribute, image,
-											true, false);
-								}
-							}
-						}
-
-					});
+			// tableViewer
+			// .addSelectionChangedListener(new ISelectionChangedListener() {
+			//
+			// @Override
+			// public void selectionChanged(SelectionChangedEvent event) {
+			// IStructuredSelection selection = (IStructuredSelection) event
+			// .getSelection();
+			// Object firstElement = selection.getFirstElement();
+			// if (firstElement instanceof ObserverEvalObject) {
+			// ObserverEvalObject observerEvalObject = (ObserverEvalObject)
+			// firstElement;
+			// if (!observerEvalObject.isExpressionMode()) {
+			// BControl control = getBControl();
+			// ToggleObjectImage toggleObjImage = (ToggleObjectImage)
+			// observerEvalObject;
+			// String attribute = AttributeConstants.ATTRIBUTE_IMAGE;
+			// String image = toggleObjImage.getImage();
+			// control.setAttributeValue(attribute, image,
+			// true, false);
+			// }
+			// }
+			// }
+			//
+			// });
 
 			TableViewerColumn column = new TableViewerColumn(tableViewer,
 					SWT.NONE);
@@ -203,7 +202,7 @@ public class WizardObserverSwitchImage extends ObserverWizard {
 
 	@Override
 	protected Boolean prepareToFinish() {
-		getBControl().restoreDefaultValue(AttributeConstants.ATTRIBUTE_IMAGE);
+		// getBControl().restoreDefaultValue(AttributeConstants.ATTRIBUTE_IMAGE);
 		if (((SwitchImage) getObserver()).getToggleObjects().size() == 0) {
 			setObserverDelete(true);
 		} else {
@@ -222,7 +221,7 @@ public class WizardObserverSwitchImage extends ObserverWizard {
 
 	@Override
 	public boolean performCancel() {
-		getBControl().restoreDefaultValue(AttributeConstants.ATTRIBUTE_IMAGE);
+		// getBControl().restoreDefaultValue(AttributeConstants.ATTRIBUTE_IMAGE);
 		return super.performCancel();
 	}
 
