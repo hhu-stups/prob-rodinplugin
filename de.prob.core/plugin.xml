@@ -4,6 +4,7 @@
    <extension-point id="de.prob.core.lifecycle" name="Lifecycle Events" schema="schema/de.prob.core.lifecycle.exsd"/>
    <extension-point id="de.prob.core.computation" name="Computation Events" schema="schema/de.prob.core.computation.exsd"/>
    <extension-point id="de.prob.core.animation" name="Animation Events" schema="schema/de.prob.core.animation.exsd"/>
+   <extension-point id="de.prob.translator" name="Translator Extensions" schema="schema/de.prob.translator.exsd"/>
    <extension
          point="de.prob.core.animation">
       <listener

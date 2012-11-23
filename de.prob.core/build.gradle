@@ -1,7 +1,7 @@
 apply plugin: 'java'
 
 
-def parser_version = '2.4.8-SNAPSHOT'
+def parser_version = '2.4.12-SNAPSHOT'
 
 dependencies {
  compile group: "de.prob", name: "answerparser", version: parser_version , changing: true

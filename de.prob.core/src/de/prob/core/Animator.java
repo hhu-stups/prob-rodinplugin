@@ -6,17 +6,11 @@
 
 package de.prob.core;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.osgi.service.prefs.Preferences;
-
-import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.io.json.JettisonMappedXmlDriver;
 
 import de.prob.core.command.IComposableCommand;
 import de.prob.core.domainobjects.History;
@@ -29,7 +23,6 @@ import de.prob.core.internal.AnimatorImpl;
 import de.prob.core.internal.ServerTraceConnection;
 import de.prob.core.internal.TraceConnectionProvider;
 import de.prob.exceptions.ProBException;
-import de.prob.model.eventb.Model;
 
 
 /**

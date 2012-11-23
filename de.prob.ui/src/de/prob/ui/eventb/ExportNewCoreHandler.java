@@ -1,14 +1,11 @@
 package de.prob.ui.eventb;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Writer;
-import java.util.zip.GZIPOutputStream;
 
-import org.apache.commons.codec.binary.Base64;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
@@ -24,18 +21,12 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.eventb.core.IEventBRoot;
 import org.eventb.core.IMachineRoot;
-import org.eventb.emf.core.Project;
-import org.eventb.emf.persistence.ProjectResource;
 import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
-import org.rodinp.core.IRodinProject;
-
-import com.thoughtworks.xstream.XStream;
 
 import de.prob.core.translator.TranslationFailedException;
 import de.prob.eventb.translator.TranslatorFactory;
 import de.prob.logging.Logger;
-import de.prob.model.eventb.Model;
 
 public class ExportNewCoreHandler extends AbstractHandler implements IHandler {
 
@@ -100,24 +91,12 @@ public class ExportNewCoreHandler extends AbstractHandler implements IHandler {
 			final IEventBRoot root) {
 		final boolean isSafeToWrite = isSafeToWrite(filename);
 
-		IRodinProject rodinProject = root.getRodinProject();
-		ProjectResource resource = new ProjectResource(rodinProject);
-		try {
-			resource.load(null);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		Project project = (Project) resource.getContents().get(0);
-
 		if (isSafeToWrite) {
 			Writer fw = null;
 			try {
 				fw = new FileWriter(filename);
 				TranslatorFactory.translate(root, new PrintWriter(fw));
 				fw.append('\n');
-
-				fw.append("eclipse_model('" + root.getComponentName() + "',\""
-						+ serialize(project, root.getComponentName()) + "\").");
 
 			} catch (TranslationFailedException e) {
 				e.notifyUserOnce();
@@ -134,25 +113,25 @@ public class ExportNewCoreHandler extends AbstractHandler implements IHandler {
 		}
 	}
 
-	private static String serialize(Project project, String maincomponent) {
-		NewCoreModelTranslation translation = new NewCoreModelTranslation();
-		Model model = translation.translate(project, maincomponent);
-		// XStream xstream = new XStream(new JettisonMappedXmlDriver());
-		XStream xstream = new XStream();
-		String xml = xstream.toXML(model);
-		ByteArrayOutputStream out = new ByteArrayOutputStream();
-	    GZIPOutputStream gzip;
-	    byte[] bytes;
-		try {
-			gzip = new GZIPOutputStream(out);
-			gzip.write(xml.getBytes());
-			gzip.close();
-			bytes = out.toByteArray();
-		} catch (IOException e) {
-			bytes = xml.getBytes();
-		}
-		return Base64.encodeBase64String(bytes);
-	}
+	// private static String serialize(Project project, String maincomponent) {
+	// NewCoreModelTranslation translation = new NewCoreModelTranslation();
+	// Model model = translation.translate(project, maincomponent);
+	// // XStream xstream = new XStream(new JettisonMappedXmlDriver());
+	// XStream xstream = new XStream();
+	// String xml = xstream.toXML(model);
+	// ByteArrayOutputStream out = new ByteArrayOutputStream();
+	// GZIPOutputStream gzip;
+	// byte[] bytes;
+	// try {
+	// gzip = new GZIPOutputStream(out);
+	// gzip.write(xml.getBytes());
+	// gzip.close();
+	// bytes = out.toByteArray();
+	// } catch (IOException e) {
+	// bytes = xml.getBytes();
+	// }
+	// return Base64.encodeBase64String(bytes);
+	// }
 
 	private static boolean isSafeToWrite(final String filename) {
 		if (new File(filename).exists()) {

@@ -413,7 +413,7 @@ public final class LtlCheckingDialog extends TrayDialog {
 					Logger.notifyUser("Command exception", e);
 				} finally {
 					try {
-						reader.close();
+						if (reader != null) reader.close();
 					} catch (IOException e) {
 						Logger.notifyUser("Unexpected IO exception", e);
 					}
