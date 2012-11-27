@@ -476,9 +476,9 @@ public abstract class BControl implements IAdaptable, Cloneable {
 
 	public void addObserver(Observer observer) {
 		observers.put(observer.getID(), (Observer) observer);
-		for (IObserverListener listener : getObserverListener()) {
-			listener.addedObserver(this, observer);
-		}
+		// for (IObserverListener listener : getObserverListener()) {
+		// listener.addedObserver(this, observer);
+		// }
 	}
 
 	public void removeObserver(Observer observer) {
@@ -489,9 +489,9 @@ public abstract class BControl implements IAdaptable, Cloneable {
 		if (hasObserver(observerID))
 			observers.get(observerID).beforeDelete(this);
 		observers.remove(observerID);
-		for (IObserverListener listener : getObserverListener()) {
-			listener.removedObserver(this);
-		}
+		// for (IObserverListener listener : getObserverListener()) {
+		// listener.removedObserver(this);
+		// }
 	}
 
 	public Map<String, SchedulerEvent> getEvents() {
