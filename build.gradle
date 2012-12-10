@@ -1,3 +1,6 @@
+// to trigger a full tycho build please use 'gradle deleteFromClassPath completeInstall'
+
+
 project.ext{
 	
 	targetRepositories = ["http://www.stups.uni-duesseldorf.de/prob_dev_target/","http://download.eclipse.org/releases/indigo/","http://rodin-b-sharp.sourceforge.net/updates"]	
