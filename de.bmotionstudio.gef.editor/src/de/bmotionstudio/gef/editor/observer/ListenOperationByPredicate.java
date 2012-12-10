@@ -9,6 +9,8 @@ package de.bmotionstudio.gef.editor.observer;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.swt.widgets.Shell;
+
 import de.be4.classicalb.core.parser.exceptions.BException;
 import de.bmotionstudio.gef.editor.Animation;
 import de.bmotionstudio.gef.editor.AttributeConstants;
@@ -154,8 +156,9 @@ public class ListenOperationByPredicate extends Observer {
 	}
 
 	@Override
-	public ObserverWizard getWizard(BControl control) {
-		return new WizardObserverListenOperationByPredicate(control, this);
+	public ObserverWizard getWizard(Shell shell, BControl control) {
+		return new WizardObserverListenOperationByPredicate(shell, control,
+				this);
 	}
 
 	public void setList(ArrayList<PredicateOperation> list) {

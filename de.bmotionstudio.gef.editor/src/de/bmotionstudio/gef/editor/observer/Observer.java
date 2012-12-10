@@ -8,6 +8,7 @@ package de.bmotionstudio.gef.editor.observer;
 
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.draw2d.IFigure;
+import org.eclipse.swt.widgets.Shell;
 
 import de.bmotionstudio.gef.editor.AbstractExpressionControl;
 import de.bmotionstudio.gef.editor.BMotionEditorPlugin;
@@ -68,7 +69,7 @@ public abstract class Observer extends AbstractExpressionControl implements
 	 *            The corresponding control
 	 * @return the corresponding wizard
 	 */
-	public abstract ObserverWizard getWizard(BControl control);
+	public abstract ObserverWizard getWizard(Shell shell, BControl control);
 
 	public IFigure getToolTip(BControl control) {
 		return null;

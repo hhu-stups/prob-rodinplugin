@@ -6,29 +6,24 @@
 
 package de.bmotionstudio.gef.editor;
 
-import org.eclipse.jface.wizard.Wizard;
+import org.eclipse.jface.window.Window;
+import org.eclipse.swt.widgets.Shell;
 
 import de.bmotionstudio.gef.editor.model.BControl;
 
-public abstract class BMotionAbstractWizard extends Wizard {
+public abstract class BMotionAbstractWizard extends Window {
 
 	private BControl control;
 	
-	public BMotionAbstractWizard(BControl control) {
+	public BMotionAbstractWizard(Shell shell, BControl control) {
+		super(shell);
 		this.control = control;
 	}
 
-	@Override
-	public boolean performFinish() {
-		return prepareToFinish();
-	}
-	
 	public BControl getBControl() {
 		return this.control;
 	}
 
 	public abstract String getName();
-
-	protected abstract Boolean prepareToFinish();
 	
 }

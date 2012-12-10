@@ -7,6 +7,7 @@
 package de.bmotionstudio.gef.editor.command;
 
 import de.bmotionstudio.gef.editor.model.BControl;
+import de.bmotionstudio.gef.editor.model.BControlPropertyConstants;
 
 public class BringToBottomStepCommand extends AbstractBringToCommand {
 
@@ -18,8 +19,9 @@ public class BringToBottomStepCommand extends AbstractBringToCommand {
 			if (oldIndex > 0) {
 				parent.getChildrenArray().remove(control);
 				parent.getChildrenArray().add(oldIndex - 1, control);
-				parent.getListeners().firePropertyChange(BControl.PROPERTY_ADD,
-						null, null);
+				parent.getListeners().firePropertyChange(
+						BControlPropertyConstants.PROPERTY_ADD_CHILD, null,
+						null);
 			}
 		}
 	}
@@ -30,8 +32,8 @@ public class BringToBottomStepCommand extends AbstractBringToCommand {
 			parent.getChildrenArray().remove(control);
 			parent.getChildrenArray().add(getOldIndexMap().get(control),
 					control);
-			parent.getListeners().firePropertyChange(BControl.PROPERTY_ADD,
-					null, null);
+			parent.getListeners().firePropertyChange(
+					BControlPropertyConstants.PROPERTY_ADD_CHILD, null, null);
 		}
 	}
 

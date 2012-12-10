@@ -19,7 +19,6 @@ import org.eclipse.jface.viewers.EditingSupport;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
-import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -31,9 +30,9 @@ import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
 
-import de.bmotionstudio.gef.editor.BMotionAbstractWizard;
 import de.bmotionstudio.gef.editor.BMotionStudioImage;
 import de.bmotionstudio.gef.editor.EditorImageRegistry;
 import de.bmotionstudio.gef.editor.edit.PredicateEditingSupport;
@@ -46,119 +45,111 @@ import de.bmotionstudio.gef.editor.util.BMotionWizardUtil;
 
 public class WizardExecuteScheduler extends SchedulerWizard {
 
-	private class SchedulerPage extends WizardPage {
+	private TableViewer tableViewer;
+	
+	@Override
+	protected Control createContents(Composite parent) {
+		
+		DataBindingContext dbc = new DataBindingContext();
 
-		private TableViewer tableViewer;
+		Composite container = new Composite(parent, SWT.NONE);
+		container.setLayout(new GridLayout(1, true));
 
-		protected SchedulerPage(String pageName) {
-			super(pageName);
-		}
+		tableViewer = BMotionWizardUtil.createBMotionWizardTableViewer(
+				container, AnimationScriptObject.class, getName());
 
-		public void createControl(final Composite parent) {
+		TableViewerColumn column = new TableViewerColumn(tableViewer,
+				SWT.NONE);
+		column.getColumn().setText("Predicate");
+		column.getColumn().setWidth(225);
+		column.setEditingSupport(new PredicateEditingSupport(tableViewer,
+				dbc, "predicate", getBControl().getVisualization(),
+				getShell()));
 
-			DataBindingContext dbc = new DataBindingContext();
+		column = new TableViewerColumn(tableViewer, SWT.NONE);
+		column.getColumn().setText("Edit");
+		column.getColumn().setWidth(225);
+		column.setEditingSupport(new AnimationScriptEditingSupport(
+				tableViewer));
 
-			Composite container = new Composite(parent, SWT.NONE);
-			container.setLayout(new GridLayout(1, true));
+		ObservableListContentProvider contentProvider = new ObservableListContentProvider();
+		tableViewer.setContentProvider(contentProvider);
 
-			setControl(container);
+		tableViewer.setLabelProvider(new ObservableMapLabelProvider(
+				BeansObservables.observeMaps(
+						contentProvider.getKnownElements(),
+						new String[] { "predicate" })) {
 
-			tableViewer = BMotionWizardUtil.createBMotionWizardTableViewer(
-					container, AnimationScriptObject.class,
-					((BMotionAbstractWizard) getWizard()).getName());
-
-			TableViewerColumn column = new TableViewerColumn(tableViewer,
-					SWT.NONE);
-			column.getColumn().setText("Predicate");
-			column.getColumn().setWidth(225);
-			column.setEditingSupport(new PredicateEditingSupport(tableViewer,
-					dbc, "predicate", getBControl().getVisualization(),
-					getShell()));
-
-			column = new TableViewerColumn(tableViewer, SWT.NONE);
-			column.getColumn().setText("Edit");
-			column.getColumn().setWidth(225);
-			column.setEditingSupport(new AnimationScriptEditingSupport(
-					tableViewer));
-
-			ObservableListContentProvider contentProvider = new ObservableListContentProvider();
-			tableViewer.setContentProvider(contentProvider);
-
-			tableViewer.setLabelProvider(new ObservableMapLabelProvider(
-					BeansObservables.observeMaps(
-							contentProvider.getKnownElements(),
-							new String[] { "predicate" })) {
-
-				@Override
-				public String getColumnText(Object element, int columnIndex) {
-					if (columnIndex == 1) {
-						return "Edit Scheduler";
-					}
-					return super.getColumnText(element, columnIndex);
+			@Override
+			public String getColumnText(Object element, int columnIndex) {
+				if (columnIndex == 1) {
+					return "Edit Scheduler";
 				}
+				return super.getColumnText(element, columnIndex);
+			}
 
-				@Override
-				public Image getColumnImage(Object element, int columnIndex) {
-					return null;
+			@Override
+			public Image getColumnImage(Object element, int columnIndex) {
+				return null;
+			}
+
+		});
+
+		final WritableList input = new WritableList(
+				((ExecuteAnimationScript) getScheduler()).getList(),
+				AnimationScriptObject.class);
+		tableViewer.setInput(input);
+
+		Composite comp = new Composite(container, SWT.NONE);
+		comp.setLayout(new RowLayout());
+		comp.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));
+
+		Button btRemove = new Button(comp, SWT.PUSH);
+		btRemove.setText("Remove");
+		btRemove.setImage(BMotionStudioImage
+				.getImage(EditorImageRegistry.IMG_ICON_DELETE));
+		btRemove.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				if (tableViewer.getSelection().isEmpty()) {
+					return;
 				}
+				AnimationScriptObject obj = (AnimationScriptObject) ((IStructuredSelection) tableViewer
+						.getSelection()).getFirstElement();
+				input.remove(obj);
+			}
+		});
 
-			});
+		Button btAdd = new Button(comp, SWT.PUSH);
+		btAdd.setText("Add");
+		btAdd.setImage(BMotionStudioImage
+				.getImage(EditorImageRegistry.IMG_ICON_ADD));
+		btAdd.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				AnimationScriptObject obj = new AnimationScriptObject("");
+				input.add(obj);
+			}
+		});
 
-			final WritableList input = new WritableList(
-					((ExecuteAnimationScript) getScheduler()).getList(),
-					AnimationScriptObject.class);
-			tableViewer.setInput(input);
+		return container;
 
-			Composite comp = new Composite(container, SWT.NONE);
-			comp.setLayout(new RowLayout());
-			comp.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));
-
-			Button btRemove = new Button(comp, SWT.PUSH);
-			btRemove.setText("Remove");
-			btRemove.setImage(BMotionStudioImage
-					.getImage(EditorImageRegistry.IMG_ICON_DELETE));
-			btRemove.addSelectionListener(new SelectionAdapter() {
-				@Override
-				public void widgetSelected(SelectionEvent e) {
-					if (tableViewer.getSelection().isEmpty()) {
-						return;
-					}
-					AnimationScriptObject obj = (AnimationScriptObject) ((IStructuredSelection) tableViewer
-							.getSelection()).getFirstElement();
-					input.remove(obj);
-				}
-			});
-
-			Button btAdd = new Button(comp, SWT.PUSH);
-			btAdd.setText("Add");
-			btAdd.setImage(BMotionStudioImage
-					.getImage(EditorImageRegistry.IMG_ICON_ADD));
-			btAdd.addSelectionListener(new SelectionAdapter() {
-				@Override
-				public void widgetSelected(SelectionEvent e) {
-					AnimationScriptObject obj = new AnimationScriptObject("");
-					input.add(obj);
-				}
-			});
-
-		}
 	}
-
-	public WizardExecuteScheduler(BControl bcontrol,
+		
+	public WizardExecuteScheduler(Shell shell, BControl bcontrol,
 			SchedulerEvent scheduler) {
-		super(bcontrol, scheduler);
-		addPage(new SchedulerPage("SchedulerPage"));
+		super(shell, bcontrol, scheduler);
 	}
 
-	@Override
-	protected Boolean prepareToFinish() {
-		return true;
-	}
-
-	@Override
-	public boolean performCancel() {
-		return true;
-	}
+	// @Override
+	// protected Boolean prepareToFinish() {
+	// return true;
+	// }
+	//
+	// @Override
+	// public boolean performCancel() {
+	// return true;
+	// }
 
 	@Override
 	public Point getSize() {

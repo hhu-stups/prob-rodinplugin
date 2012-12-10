@@ -25,6 +25,7 @@ import de.bmotionstudio.gef.editor.EditorImageRegistry;
 import de.bmotionstudio.gef.editor.editpolicy.BMSDeletePolicy;
 import de.bmotionstudio.gef.editor.model.BConnection;
 import de.bmotionstudio.gef.editor.model.BControl;
+import de.bmotionstudio.gef.editor.model.BControlPropertyConstants;
 import de.bmotionstudio.gef.editor.model.Visualization;
 import de.bmotionstudio.gef.editor.observer.IObserverListener;
 import de.bmotionstudio.gef.editor.observer.Observer;
@@ -33,8 +34,10 @@ public class BControlTreeEditPart extends BMSAbstractTreeEditPart implements
 		PropertyChangeListener, IObserverListener {
 
 	public void propertyChange(final PropertyChangeEvent evt) {
-		if (evt.getPropertyName().equals(BControl.PROPERTY_ADD)
-				|| evt.getPropertyName().equals(BControl.PROPERTY_REMOVE)) {
+		if (evt.getPropertyName().equals(
+				BControlPropertyConstants.PROPERTY_ADD_CHILD)
+				|| evt.getPropertyName().equals(
+						BControlPropertyConstants.PROPERTY_REMOVE_CHILD)) {
 			refreshChildren();
 		}
 		refreshVisuals();
