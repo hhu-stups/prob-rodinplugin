@@ -1,7 +1,9 @@
+project.ext{
+	
+	targetRepositories = ["http://www.stups.uni-duesseldorf.de/prob_dev_target/","http://download.eclipse.org/releases/indigo/","http://rodin-b-sharp.sourceforge.net/updates"]	
 
-targetRepositories = ["http://www.stups.uni-duesseldorf.de/prob_dev_target/","http://download.eclipse.org/releases/indigo/","http://rodin-b-sharp.sourceforge.net/updates"]	
-
-groupID = "de.prob"
+	groupID = "de.prob"
+}
 
 apply from: 'tycho_build.gradle'
 
@@ -64,16 +66,16 @@ def download(address,target) {
 }
 
 task downloadCli << {
-		dir = workspacePath+'de.prob.core/prob/'
+		def dir = workspacePath+'de.prob.core/prob/'
 		delete file(dir)
 	    new File(dir).mkdirs() 
 	
 		['leopard64':'macos','linux':'linux','linux64':'linux64','win32':'windows'].each {
-		n = it.getKey()
+		def n = it.getKey()
 	
-		targetdir = dir+it.getValue()
-		targetzip = dir+"probcli_${n}.zip"
-		url = "http://nightly.cobra.cs.uni-duesseldorf.de/cli/probcli_${n}.zip"
+		def targetdir = dir+it.getValue()
+		def targetzip = dir+"probcli_${n}.zip"
+		def url = "http://nightly.cobra.cs.uni-duesseldorf.de/cli/probcli_${n}.zip"
 		download(url,targetzip)
 	    FileTree zip = zipTree(targetzip)
 	    copy {
@@ -83,8 +85,8 @@ task downloadCli << {
 		delete file(targetzip)
 	}
 
-	targetdir = dir+"windows/"
-	targetzip = targetdir+"windowslib.zip"
+	def targetdir = dir+"windows/"
+	def targetzip = targetdir+"windowslib.zip"
 	download("http://nightly.cobra.cs.uni-duesseldorf.de/cli/windowslib.zip",targetzip)
 	FileTree zip = zipTree(targetzip)
 	    copy {
