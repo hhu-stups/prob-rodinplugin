@@ -172,11 +172,11 @@ public class Visualization extends BControl {
 				return control;
 			}
 			for (BConnection c : control.getSourceConnections()) {
-				if (c.getIcon().equals(ID))
+				if (c.getID().equals(ID))
 					return c;
 			}
 			for (BConnection c : control.getTargetConnections()) {
-				if (c.getIcon().equals(ID))
+				if (c.getID().equals(ID))
 					return c;
 			}
 			if (control.getChildrenArray().size() > 0) {
