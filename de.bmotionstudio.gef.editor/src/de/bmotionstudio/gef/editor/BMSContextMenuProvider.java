@@ -25,7 +25,6 @@ import org.eclipse.ui.actions.ActionFactory;
 
 import de.bmotionstudio.gef.editor.action.OpenSchedulerEventAction;
 import de.bmotionstudio.gef.editor.model.BControl;
-import de.bmotionstudio.gef.editor.model.ObserverRootVirtualTreeNode;
 import de.bmotionstudio.gef.editor.model.Visualization;
 import de.bmotionstudio.gef.editor.scheduler.SchedulerEvent;
 
@@ -120,8 +119,6 @@ public class BMSContextMenuProvider extends ContextMenuProvider {
 
 		if (model instanceof BControl)
 			bcontrol = (BControl) model;
-		else if (model instanceof ObserverRootVirtualTreeNode)
-			bcontrol = ((ObserverRootVirtualTreeNode) model).getControl();
 		else
 			return;
 
@@ -131,51 +128,9 @@ public class BMSContextMenuProvider extends ContextMenuProvider {
 						"icons/icon_observer.gif"), "observerMenu");
 		menu.appendToGroup(GEFActionConstants.GROUP_ADD, handleObserverMenu);
 
-		IExtensionPoint extensionPoint = registry
-				.getExtensionPoint("de.bmotionstudio.gef.editor.observer");
-		for (IExtension extension : extensionPoint.getExtensions()) {
-			for (IConfigurationElement configurationElement : extension
-					.getConfigurationElements()) {
-
-				if ("observer".equals(configurationElement.getName())) {
-
-					final String observerClassName = configurationElement
-							.getAttribute("class");
-					final String observerName = configurationElement
-							.getAttribute("name");
-
-					if (checkIncludeObserver(observerClassName, bcontrol)) {
-
-						IAction action = getActionRegistry().getAction(
-								"de.bmotionstudio.gef.editor.observerAction."
-										+ observerClassName);
-						action.setText(observerName);
-						action.setToolTipText(observerName);
-
-						if (bcontrol.hasObserver(observerClassName)) {
-							action.setImageDescriptor(BMotionStudioImage
-									.getImageDescriptor(
-											BMotionEditorPlugin.PLUGIN_ID,
-											"icons/icon_chop.gif"));
-						} else {
-							action.setImageDescriptor(null);
-						}
-						handleObserverMenu.add(action);
-
-					}
-
-				}
-
-			}
-
-		}
-
-	}
-
-	private boolean checkIncludeObserver(String observerID, BControl control) {
-
-		IExtensionPoint extensionPoint = registry
-				.getExtensionPoint("de.bmotionstudio.gef.editor.includeObserver");
+		IExtensionPoint extensionPoint = Platform.getExtensionRegistry()
+				.getExtensionPoint(
+						"de.bmotionstudio.gef.editor.includeObserver");
 
 		for (IExtension extension : extensionPoint.getExtensions()) {
 			for (IConfigurationElement configurationElement : extension
@@ -187,25 +142,35 @@ public class BMSContextMenuProvider extends ContextMenuProvider {
 							.getAttribute("language");
 
 					if (langID != null
-							&& langID.equals(control.getVisualization()
-									.getLanguage())) {
+							&& langID.equals(bcontrol.getVisualization().getLanguage())) {
 
-						for (IConfigurationElement cObserver : configurationElement
-								.getChildren("observer")) {
+						for (IConfigurationElement configC : configurationElement
+								.getChildren("control")) {
 
-							String oID = cObserver.getAttribute("id");
+							String cID = configC.getAttribute("id");
 
-							if (observerID.equals(oID)) {
+							if (bcontrol.getType().equals(cID)) {
 
-								for (IConfigurationElement configBControl : cObserver
-										.getChildren("control")) {
+								for (IConfigurationElement configO : configC
+										.getChildren("observer")) {
 
-									String bID = configBControl
-											.getAttribute("id");
+									String oID = configO.getAttribute("id");
+									IAction action = getActionRegistry()
+											.getAction(
+													"de.bmotionstudio.gef.editor.observerAction."
+															+ oID);
 
-									if (control.getType().equals(bID)) {
-										return true;
-									}
+									String name = oID;
+
+									IConfigurationElement observerExtension = BMotionEditorPlugin
+											.getObserverExtension(oID);
+									if (observerExtension != null)
+										name = observerExtension
+												.getAttribute("name");
+
+									action.setText(name);
+
+									handleObserverMenu.add(action);
 
 								}
 
@@ -219,8 +184,6 @@ public class BMSContextMenuProvider extends ContextMenuProvider {
 
 			}
 		}
-
-		return false;
 
 	}
 
@@ -281,14 +244,6 @@ public class BMSContextMenuProvider extends ContextMenuProvider {
 								action.setEventID(eventIDs[0]);
 								action.setText(configSchedulerElement
 										.getAttribute("name"));
-
-								// if (bcontrol.hasEvent(eventIDs[0])) {
-								// action
-								// .setImageDescriptor(BMotionStudioImage
-								// .getImageDescriptor(
-								// BMotionEditorPlugin.PLUGIN_ID,
-								// "icons/icon_chop.gif"));
-								// } else {
 
 								action.setImageDescriptor(null);
 

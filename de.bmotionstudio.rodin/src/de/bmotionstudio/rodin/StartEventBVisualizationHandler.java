@@ -10,7 +10,7 @@ import org.eclipse.core.commands.IHandler;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.viewers.IStructuredSelection;
 
-import de.bmotionstudio.gef.editor.internal.StartVisualizationFileHandler;
+import de.bmotionstudio.gef.editor.handler.StartVisualizationFileHandler;
 
 /**
  * @author Lukas Ladenberger

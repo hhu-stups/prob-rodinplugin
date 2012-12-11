@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import org.eclipse.swt.widgets.Shell;
+
 import de.bmotionstudio.gef.editor.Animation;
 import de.bmotionstudio.gef.editor.model.BControl;
 import de.bmotionstudio.gef.editor.scheduler.wizard.WizardExecuteScheduler;
@@ -97,8 +99,8 @@ public class ExecuteAnimationScript extends SchedulerEvent {
 	}
 
 	@Override
-	public SchedulerWizard getWizard(final BControl bcontrol) {
-		return new WizardExecuteScheduler(bcontrol, this);
+	public SchedulerWizard getWizard(Shell shell, BControl bcontrol) {
+		return new WizardExecuteScheduler(shell, bcontrol, this);
 	}
 
 	public ExecuteAnimationScript clone() throws CloneNotSupportedException {

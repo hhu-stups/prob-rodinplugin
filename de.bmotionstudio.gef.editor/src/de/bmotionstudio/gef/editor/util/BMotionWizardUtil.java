@@ -17,7 +17,6 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.TableItem;
 
-import de.bmotionstudio.gef.editor.BMotionStudioSWTConstants;
 import de.bmotionstudio.gef.editor.action.BMotionWizardAddItemAction;
 import de.bmotionstudio.gef.editor.action.BMotionWizardDeleteItemsAction;
 import de.bmotionstudio.gef.editor.library.AttributeTransfer;
@@ -42,7 +41,7 @@ public class BMotionWizardUtil {
 		tableViewer.getTable().setLinesVisible(true);
 		tableViewer.getTable().setHeaderVisible(true);
 		tableViewer.getTable().setLayoutData(new GridData(GridData.FILL_BOTH));
-		tableViewer.getTable().setFont(BMotionStudioSWTConstants.fontArial10);
+		// tableViewer.getTable().setFont(BMotionStudioSWTConstants.fontArial10);
 		int operations = DND.DROP_COPY | DND.DROP_MOVE;
 		Transfer[] transferTypes = new Transfer[] { AttributeTransfer
 				.getInstance() };

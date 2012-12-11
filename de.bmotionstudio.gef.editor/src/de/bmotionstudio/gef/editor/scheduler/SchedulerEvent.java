@@ -7,6 +7,7 @@
 package de.bmotionstudio.gef.editor.scheduler;
 
 import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.swt.widgets.Shell;
 
 import de.bmotionstudio.gef.editor.AbstractExpressionControl;
 import de.bmotionstudio.gef.editor.Animation;
@@ -76,7 +77,7 @@ public abstract class SchedulerEvent extends AbstractExpressionControl
 	 *            The corresponding control
 	 * @return the corresponding wizard
 	 */
-	public abstract SchedulerWizard getWizard(BControl bcontrol);
+	public abstract SchedulerWizard getWizard(Shell shell, BControl bcontrol);
 
 	/**
 	 * Makes a copy of the scheduler event

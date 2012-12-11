@@ -18,7 +18,6 @@
       </annotation>
       <complexType>
          <sequence minOccurs="0" maxOccurs="unbounded">
-            <element ref="control" minOccurs="0" maxOccurs="1"/>
             <element ref="group" minOccurs="0" maxOccurs="1"/>
             <element ref="control" minOccurs="0" maxOccurs="1"/>
          </sequence>
@@ -75,9 +74,6 @@
          </appInfo>
       </annotation>
       <complexType>
-         <sequence>
-            <element ref="attributes" minOccurs="0" maxOccurs="1"/>
-         </sequence>
          <attribute name="id" type="string" use="required">
             <annotation>
                <documentation>
@@ -122,69 +118,14 @@
       </complexType>
    </element>
 
-   <element name="attribute-string">
-      <complexType>
-         <attribute name="id" type="string" use="required">
-            <annotation>
-               <documentation>
-                  The id of the referenced attribute. Since the same attribute could be assigned to different controls the corresponding attibute is defined in a seperate exention point (de.bmotionstudio.gef.editor.attribute).
-               </documentation>
-            </annotation>
-         </attribute>
-         <attribute name="default-value" type="string" use="required">
-            <annotation>
-               <documentation>
-                  The default value of this attribute for this control
-               </documentation>
-            </annotation>
-         </attribute>
-         <attribute name="editable" type="boolean" use="default" value="true">
-            <annotation>
-               <documentation>
-                  Boolean value - Option to decide whenever this attribute should be editable or not.
-               </documentation>
-            </annotation>
-         </attribute>
-         <attribute name="show" type="boolean" use="default" value="true">
-            <annotation>
-               <documentation>
-                  Boolean value - Option to decide whenever this attribute should be displayed in the properties view.
-               </documentation>
-            </annotation>
-         </attribute>
-      </complexType>
-   </element>
-
-   <element name="attribute-java">
-      <complexType>
-         <attribute name="id" type="string" use="required">
-            <annotation>
-               <documentation>
-                  
-               </documentation>
-            </annotation>
-         </attribute>
-         <attribute name="default-value" type="string" use="required">
-            <annotation>
-               <documentation>
-                  
-               </documentation>
-               <appInfo>
-                  <meta.attribute kind="java" basedOn=":de.bmotionstudio.core.IGetDefaultValue"/>
-               </appInfo>
-            </annotation>
-         </attribute>
-      </complexType>
-   </element>
-
-   <element name="attributes">
-      <complexType>
-         <sequence>
-            <element ref="attribute-java" minOccurs="0" maxOccurs="unbounded"/>
-            <element ref="attribute-string" minOccurs="0" maxOccurs="unbounded"/>
-         </sequence>
-      </complexType>
-   </element>
+   <annotation>
+      <appInfo>
+         <meta.section type="apiInfo"/>
+      </appInfo>
+      <documentation>
+         [Enter API information here.]
+      </documentation>
+   </annotation>
 
    <annotation>
       <appInfo>
@@ -201,15 +142,6 @@
       </appInfo>
       <documentation>
          [Enter extension point usage example here.]
-      </documentation>
-   </annotation>
-
-   <annotation>
-      <appInfo>
-         <meta.section type="apiInfo"/>
-      </appInfo>
-      <documentation>
-         [Enter API information here.]
       </documentation>
    </annotation>
 
