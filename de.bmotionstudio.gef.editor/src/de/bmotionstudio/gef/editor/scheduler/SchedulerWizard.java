@@ -7,6 +7,7 @@
 package de.bmotionstudio.gef.editor.scheduler;
 
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.widgets.Shell;
 
 import de.bmotionstudio.gef.editor.BMotionAbstractWizard;
 import de.bmotionstudio.gef.editor.model.BControl;
@@ -26,28 +27,14 @@ public abstract class SchedulerWizard extends BMotionAbstractWizard {
 
 	protected Boolean eventDelete = false;
 
-	public SchedulerWizard(BControl control, SchedulerEvent scheduler) {
-		super(control);
+	public SchedulerWizard(Shell shell, BControl control,
+			SchedulerEvent scheduler) {
+		super(shell, control);
 		this.event = scheduler;
 	}
 
 	public SchedulerEvent getScheduler() {
 		return this.event;
-	}
-
-	protected abstract Boolean prepareToFinish();
-
-	@Override
-	public boolean performFinish() {
-		return prepareToFinish();
-	}
-
-	protected void setEventDelete(Boolean b) {
-		this.eventDelete = b;
-	}
-
-	public Boolean isEventDelete() {
-		return this.eventDelete;
 	}
 
 	public abstract Point getSize();

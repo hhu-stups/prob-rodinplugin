@@ -9,6 +9,8 @@ package de.bmotionstudio.gef.editor.scheduler;
 import java.util.List;
 import java.util.Random;
 
+import org.eclipse.swt.widgets.Shell;
+
 import de.bmotionstudio.gef.editor.Animation;
 import de.bmotionstudio.gef.editor.model.BControl;
 import de.bmotionstudio.gef.editor.scheduler.wizard.WizardExecuteOperationByPredicate;
@@ -75,8 +77,8 @@ public class ExecuteOperationByPredicate extends SchedulerEvent {
 	}
 
 	@Override
-	public SchedulerWizard getWizard(BControl bcontrol) {
-		return new WizardExecuteOperationByPredicate(bcontrol, this);
+	public SchedulerWizard getWizard(Shell shell, BControl bcontrol) {
+		return new WizardExecuteOperationByPredicate(shell, bcontrol, this);
 	}
 
 	public void setPredicateOperation(PredicateOperation predicateOperation) {

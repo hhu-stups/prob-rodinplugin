@@ -9,6 +9,8 @@ package de.bmotionstudio.gef.editor.observer;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.swt.widgets.Shell;
+
 import de.bmotionstudio.gef.editor.Animation;
 import de.bmotionstudio.gef.editor.AttributeConstants;
 import de.bmotionstudio.gef.editor.model.BControl;
@@ -109,8 +111,8 @@ public class SwitchCoordinates extends Observer {
 
 	}
 
-	public ObserverWizard getWizard(final BControl bcontrol) {
-		return new WizardObserverSwitchCoordinates(bcontrol, this);
+	public ObserverWizard getWizard(Shell shell, final BControl bcontrol) {
+		return new WizardObserverSwitchCoordinates(shell, bcontrol, this);
 	}
 
 	public List<ToggleObjectCoordinates> getToggleObjects() {
