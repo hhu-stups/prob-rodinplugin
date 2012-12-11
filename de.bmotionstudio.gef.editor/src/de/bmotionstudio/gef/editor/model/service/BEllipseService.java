@@ -1,4 +1,4 @@
-package de.bmotionstudio.gef.editor.service;
+package de.bmotionstudio.gef.editor.model.service;
 
 import de.bmotionstudio.gef.editor.AbstractBControlService;
 import de.bmotionstudio.gef.editor.AttributeConstants;

@@ -4,7 +4,7 @@
  * This software is licenced under EPL 1.0 (http://www.eclipse.org/org/documents/epl-v10.html) 
  * */
 
-package de.bmotionstudio.gef.editor.service;
+package de.bmotionstudio.gef.editor.model.service;
 
 import de.bmotionstudio.gef.editor.AbstractBControlService;
 import de.bmotionstudio.gef.editor.IBControlService;

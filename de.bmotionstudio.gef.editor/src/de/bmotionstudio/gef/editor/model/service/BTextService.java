@@ -4,21 +4,21 @@
  * This software is licenced under EPL 1.0 (http://www.eclipse.org/org/documents/epl-v10.html) 
  * */
 
-package de.bmotionstudio.gef.editor.service;
+package de.bmotionstudio.gef.editor.model.service;
 
 import de.bmotionstudio.gef.editor.AbstractBControlService;
 import de.bmotionstudio.gef.editor.IBControlService;
 import de.bmotionstudio.gef.editor.model.BControl;
-import de.bmotionstudio.gef.editor.model.BRadioButton;
+import de.bmotionstudio.gef.editor.model.BText;
 import de.bmotionstudio.gef.editor.model.Visualization;
 import de.bmotionstudio.gef.editor.part.BMSAbstractEditPart;
-import de.bmotionstudio.gef.editor.part.BRadioButtonPart;
+import de.bmotionstudio.gef.editor.part.BTextPart;
 
 /**
  * @author Lukas Ladenberger
  * 
  */
-public class BRadioButtonService extends AbstractBControlService implements
+public class BTextService extends AbstractBControlService implements
 		IBControlService {
 
 	/*
@@ -30,7 +30,7 @@ public class BRadioButtonService extends AbstractBControlService implements
 	 */
 	@Override
 	public BControl createControl(Visualization visualization) {
-		return new BRadioButton(visualization);
+		return new BText(visualization);
 	}
 
 	/*
@@ -40,6 +40,7 @@ public class BRadioButtonService extends AbstractBControlService implements
 	 */
 	@Override
 	public BMSAbstractEditPart createEditPart() {
-		return new BRadioButtonPart();
+		return new BTextPart();
 	}
+
 }

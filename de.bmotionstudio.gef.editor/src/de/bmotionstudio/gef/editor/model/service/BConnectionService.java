@@ -4,7 +4,7 @@
  * This software is licenced under EPL 1.0 (http://www.eclipse.org/org/documents/epl-v10.html) 
  * */
 
-package de.bmotionstudio.gef.editor.service;
+package de.bmotionstudio.gef.editor.model.service;
 
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.gef.palette.ConnectionCreationToolEntry;
@@ -14,17 +14,17 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 import de.bmotionstudio.gef.editor.AbstractBControlService;
 import de.bmotionstudio.gef.editor.BControlCreationFactory;
 import de.bmotionstudio.gef.editor.IBControlService;
+import de.bmotionstudio.gef.editor.model.BConnection;
 import de.bmotionstudio.gef.editor.model.BControl;
-import de.bmotionstudio.gef.editor.model.Track;
 import de.bmotionstudio.gef.editor.model.Visualization;
 import de.bmotionstudio.gef.editor.part.BMSAbstractEditPart;
-import de.bmotionstudio.gef.editor.part.TrackPart;
+import de.bmotionstudio.gef.editor.part.BConnectionEditPart;
 
 /**
  * @author Lukas Ladenberger
  * 
  */
-public class TrackService extends AbstractBControlService implements
+public class BConnectionService extends AbstractBControlService implements
 		IBControlService {
 
 	@Override
@@ -34,7 +34,7 @@ public class TrackService extends AbstractBControlService implements
 		String name = configurationElement.getAttribute("name");
 		String icon = configurationElement.getAttribute("icon");
 		return new ConnectionCreationToolEntry(name, "Create " + name,
-				new BControlCreationFactory(Track.TYPE, visualization),
+				new BControlCreationFactory(BConnection.TYPE, visualization),
 				AbstractUIPlugin
 						.imageDescriptorFromPlugin(sourcePluginID, icon),
 				AbstractUIPlugin
@@ -43,12 +43,17 @@ public class TrackService extends AbstractBControlService implements
 
 	@Override
 	public BControl createControl(Visualization visualization) {
-		return new Track(visualization);
+		return new BConnection(visualization);
 	}
 
 	@Override
 	public BMSAbstractEditPart createEditPart() {
-		return new TrackPart();
+		return new BConnectionEditPart();
+	}
+
+	@Override
+	public boolean showInPalette() {
+		return false;
 	}
 
 }

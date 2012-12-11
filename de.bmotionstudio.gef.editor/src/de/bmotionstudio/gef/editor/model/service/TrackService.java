@@ -4,7 +4,7 @@
  * This software is licenced under EPL 1.0 (http://www.eclipse.org/org/documents/epl-v10.html) 
  * */
 
-package de.bmotionstudio.gef.editor.service;
+package de.bmotionstudio.gef.editor.model.service;
 
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.gef.palette.ConnectionCreationToolEntry;
@@ -14,17 +14,17 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 import de.bmotionstudio.gef.editor.AbstractBControlService;
 import de.bmotionstudio.gef.editor.BControlCreationFactory;
 import de.bmotionstudio.gef.editor.IBControlService;
-import de.bmotionstudio.gef.editor.model.BConnection;
 import de.bmotionstudio.gef.editor.model.BControl;
+import de.bmotionstudio.gef.editor.model.Track;
 import de.bmotionstudio.gef.editor.model.Visualization;
 import de.bmotionstudio.gef.editor.part.BMSAbstractEditPart;
-import de.bmotionstudio.gef.editor.part.BConnectionEditPart;
+import de.bmotionstudio.gef.editor.part.TrackPart;
 
 /**
  * @author Lukas Ladenberger
  * 
  */
-public class BConnectionService extends AbstractBControlService implements
+public class TrackService extends AbstractBControlService implements
 		IBControlService {
 
 	@Override
@@ -34,7 +34,7 @@ public class BConnectionService extends AbstractBControlService implements
 		String name = configurationElement.getAttribute("name");
 		String icon = configurationElement.getAttribute("icon");
 		return new ConnectionCreationToolEntry(name, "Create " + name,
-				new BControlCreationFactory(BConnection.TYPE, visualization),
+				new BControlCreationFactory(Track.TYPE, visualization),
 				AbstractUIPlugin
 						.imageDescriptorFromPlugin(sourcePluginID, icon),
 				AbstractUIPlugin
@@ -43,17 +43,12 @@ public class BConnectionService extends AbstractBControlService implements
 
 	@Override
 	public BControl createControl(Visualization visualization) {
-		return new BConnection(visualization);
+		return new Track(visualization);
 	}
 
 	@Override
 	public BMSAbstractEditPart createEditPart() {
-		return new BConnectionEditPart();
-	}
-
-	@Override
-	public boolean showInPalette() {
-		return false;
+		return new TrackPart();
 	}
 
 }

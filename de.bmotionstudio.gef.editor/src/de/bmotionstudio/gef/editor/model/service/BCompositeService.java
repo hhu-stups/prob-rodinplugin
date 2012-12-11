@@ -4,21 +4,21 @@
  * This software is licenced under EPL 1.0 (http://www.eclipse.org/org/documents/epl-v10.html) 
  * */
 
-package de.bmotionstudio.gef.editor.service;
+package de.bmotionstudio.gef.editor.model.service;
 
 import de.bmotionstudio.gef.editor.AbstractBControlService;
 import de.bmotionstudio.gef.editor.IBControlService;
+import de.bmotionstudio.gef.editor.model.BComposite;
 import de.bmotionstudio.gef.editor.model.BControl;
-import de.bmotionstudio.gef.editor.model.BShape;
 import de.bmotionstudio.gef.editor.model.Visualization;
 import de.bmotionstudio.gef.editor.part.BMSAbstractEditPart;
-import de.bmotionstudio.gef.editor.part.BShapePart;
+import de.bmotionstudio.gef.editor.part.BCompositePart;
 
 /**
  * @author Lukas Ladenberger
  * 
  */
-public class BRectangleService extends AbstractBControlService implements
+public class BCompositeService extends AbstractBControlService implements
 		IBControlService {
 
 	/*
@@ -30,7 +30,7 @@ public class BRectangleService extends AbstractBControlService implements
 	 */
 	@Override
 	public BControl createControl(Visualization visualization) {
-		return new BShape(visualization);
+		return new BComposite(visualization);
 	}
 
 	/*
@@ -40,7 +40,7 @@ public class BRectangleService extends AbstractBControlService implements
 	 */
 	@Override
 	public BMSAbstractEditPart createEditPart() {
-		return new BShapePart();
+		return new BCompositePart();
 	}
 
 }
