@@ -33,7 +33,7 @@ public class WizardColumnObserver extends ObserverWizard {
 	private Text txtPredicate;
 
 	@Override
-	protected Control createContents(Composite parent) {
+	public Control createWizardContent(Composite parent) {
 
 		final DataBindingContext dbc = new DataBindingContext();
 

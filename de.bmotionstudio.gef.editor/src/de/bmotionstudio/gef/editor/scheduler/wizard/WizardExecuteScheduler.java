@@ -48,7 +48,7 @@ public class WizardExecuteScheduler extends SchedulerWizard {
 	private TableViewer tableViewer;
 	
 	@Override
-	protected Control createContents(Composite parent) {
+	public Control createWizardContent(Composite parent) {
 		
 		DataBindingContext dbc = new DataBindingContext();
 
@@ -123,7 +123,7 @@ public class WizardExecuteScheduler extends SchedulerWizard {
 		Button btAdd = new Button(comp, SWT.PUSH);
 		btAdd.setText("Add");
 		btAdd.setImage(BMotionStudioImage
-				.getImage(EditorImageRegistry.IMG_ICON_ADD));
+				.getImage(EditorImageRegistry.IMG_ICON_NEW_WIZ));
 		btAdd.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {

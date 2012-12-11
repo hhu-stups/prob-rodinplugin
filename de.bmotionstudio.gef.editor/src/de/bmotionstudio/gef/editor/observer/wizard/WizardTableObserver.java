@@ -66,7 +66,7 @@ public class WizardTableObserver extends ObserverWizard {
 	}
 
 	@Override
-	protected Control createContents(Composite parent) {
+	public Control createWizardContent(Composite parent) {
 		final DataBindingContext dbc = new DataBindingContext();
 
 		parent.setLayout(new GridLayout(1, true));

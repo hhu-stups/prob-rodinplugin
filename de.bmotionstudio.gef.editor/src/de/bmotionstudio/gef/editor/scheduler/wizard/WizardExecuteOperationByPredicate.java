@@ -68,7 +68,7 @@ public class WizardExecuteOperationByPredicate extends SchedulerWizard {
 	private ScrolledComposite c1;
 
 	@Override
-	protected Control createContents(Composite parent) {
+	public Control createWizardContent(Composite parent) {
 
 		final DataBindingContext dbc = new DataBindingContext();
 

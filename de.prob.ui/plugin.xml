@@ -183,7 +183,6 @@
             name="Consistencychecking">
       </command>
       
-      
       <command
       defaultHandler="de.prob.ui.operationview.DoubleClickBehaviorHandler"
       id="de.prob.ui.doubleclickbehaviour"
@@ -350,6 +349,11 @@
       <command
             id="de.prob.ui.newcore.export"
             name="Export for new Core">
+      </command>
+      <command
+            defaultHandler="de.prob.ui.csp.StartCSPAnimationHandler"
+            id="de.prob.command.startCspAnimation"
+            name="Start CSP Animation">
       </command>
    </extension>
    <extension
@@ -1133,6 +1137,33 @@
               label="Show the counter-example in the history"
               style="push">
           </command>
+      </menuContribution>
+      <menuContribution
+            allPopups="false"
+            locationURI="popup:org.eclipse.ui.navigator.ProjectExplorer#PopupMenu">
+         <command
+               commandId="de.prob.command.startCspAnimation"
+               label="Start CSP Animation"
+               style="push">
+         <visibleWhen>
+               <with
+                     variable="selection">
+                  <iterate
+                        operator="or">
+                     <and>
+                        <instanceof
+                              value="org.eclipse.core.resources.IResource">
+                        </instanceof>
+                        <test
+                              forcePluginActivation="true"
+                              property="org.eclipse.core.resources.extension"
+                              value="csp">
+                        </test>
+                     </and>
+                  </iterate>
+               </with>
+            </visibleWhen>
+         </command>
       </menuContribution>
       
    </extension>

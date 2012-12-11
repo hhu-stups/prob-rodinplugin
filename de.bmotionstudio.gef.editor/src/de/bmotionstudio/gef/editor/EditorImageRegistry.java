@@ -8,7 +8,7 @@ package de.bmotionstudio.gef.editor;
 
 public class EditorImageRegistry implements IBMotionStudioImageRegistry {
 
-	public static final String IMG_ICON_ADD = "icon_add";
+	// public static final String IMG_ICON_ADD = "icon_add";
 	public static final String IMG_ICON_CHOP = "icon_chop";
 	public static final String IMG_ICON_DELETE = "icon_delete";
 	public static final String IMG_ICON_DELETE21 = "icon_delete21";
@@ -18,7 +18,6 @@ public class EditorImageRegistry implements IBMotionStudioImageRegistry {
 	public static final String IMG_ICON_OBSERVER = "icon_observer";
 	public static final String IMG_ICON_LOADING = "icon_loading";
 	public static final String IMG_ICON_LIBRARY = "icon_library";
-	public static final String IMG_ICON_ASCRIPT = "icon_ascript";
 	public static final String IMG_ICON_UP = "icon_up";
 	public static final String IMG_ICON_DOWN = "icon_down";
 	public static final String IMG_ICON_CONNECTION16 = "icon_connection16";
@@ -28,6 +27,7 @@ public class EditorImageRegistry implements IBMotionStudioImageRegistry {
 	public static final String IMG_ICON_TR_UP = "icon_tr_up";
 	public static final String IMG_ICON_TR_LEFT = "icon_tr_left";
 	public static final String IMG_ICON_CONTROL_HIDDEN = "icon_control_hidden";
+	public static final String IMG_ICON_HELP = "icon_help";
 
 	public static final String IMG_ICON_JPG = "icon_jpg";
 	public static final String IMG_ICON_GIF = "icon_gif";
@@ -36,8 +36,8 @@ public class EditorImageRegistry implements IBMotionStudioImageRegistry {
 
 	public void registerImages() {
 
-		BMotionStudioImage.registerImage(IMG_ICON_ADD,
-				BMotionEditorPlugin.PLUGIN_ID, "icons/icon_add.gif");
+		// BMotionStudioImage.registerImage(IMG_ICON_ADD,
+		// BMotionEditorPlugin.PLUGIN_ID, "icons/icon_add.gif");
 		BMotionStudioImage.registerImage(IMG_ICON_CHOP,
 				BMotionEditorPlugin.PLUGIN_ID, "icons/icon_chop.gif");
 		BMotionStudioImage.registerImage(IMG_ICON_DELETE,
@@ -54,8 +54,6 @@ public class EditorImageRegistry implements IBMotionStudioImageRegistry {
 				BMotionEditorPlugin.PLUGIN_ID, "icons/icon_loading.gif");
 		BMotionStudioImage.registerImage(IMG_ICON_LIBRARY,
 				BMotionEditorPlugin.PLUGIN_ID, "icons/icon_library.gif");
-		BMotionStudioImage.registerImage(IMG_ICON_ASCRIPT,
-				BMotionEditorPlugin.PLUGIN_ID, "icons/icon_ascript.png");
 		BMotionStudioImage.registerImage(IMG_ICON_UP,
 				BMotionEditorPlugin.PLUGIN_ID, "icons/icon_up.gif");
 		BMotionStudioImage.registerImage(IMG_ICON_DOWN,
@@ -72,6 +70,8 @@ public class EditorImageRegistry implements IBMotionStudioImageRegistry {
 				"org.eclipse.ui", "$nl$/icons/full/etool16/delete_edit.gif");
 		BMotionStudioImage.registerImage(IMG_ICON_DELETE_EDIT,
 				"org.eclipse.ui", "$nl$/icons/full/etool16/delete_edit.gif");
+		BMotionStudioImage.registerImage(IMG_ICON_HELP, "org.eclipse.ui",
+				"$nl$/icons/full/dlcl16/linkto_help.gif");
 		BMotionStudioImage
 				.registerImage(IMG_ICON_TR_UP, BMotionEditorPlugin.PLUGIN_ID,
 						"icons/eclipse16/updated_co.gif");

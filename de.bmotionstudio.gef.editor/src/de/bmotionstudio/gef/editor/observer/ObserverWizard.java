@@ -7,8 +7,6 @@
 package de.bmotionstudio.gef.editor.observer;
 
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 
 import de.bmotionstudio.gef.editor.BMotionAbstractWizard;
@@ -27,8 +25,6 @@ public abstract class ObserverWizard extends BMotionAbstractWizard {
 
 	private Observer observer;
 
-	protected Boolean observerDelete = false;
-
 	public ObserverWizard(Shell shell, BControl control, Observer observer) {
 		super(shell, control);
 		this.observer = observer;
@@ -43,10 +39,6 @@ public abstract class ObserverWizard extends BMotionAbstractWizard {
 	@Override
 	public String getName() {
 		return observer.getName();
-	}
-
-	public Control createControl(Composite parent) {
-		return createContents(parent);
 	}
 
 }

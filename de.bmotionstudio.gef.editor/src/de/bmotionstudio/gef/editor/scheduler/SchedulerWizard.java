@@ -37,21 +37,6 @@ public abstract class SchedulerWizard extends BMotionAbstractWizard {
 		return this.event;
 	}
 
-	// protected abstract Boolean prepareToFinish();
-
-	// @Override
-	// public boolean performFinish() {
-	// return prepareToFinish();
-	// }
-
-	// protected void setEventDelete(Boolean b) {
-	// this.eventDelete = b;
-	// }
-	//
-	// public Boolean isEventDelete() {
-	// return this.eventDelete;
-	// }
-
 	public abstract Point getSize();
 
 	@Override

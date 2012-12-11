@@ -35,7 +35,7 @@ public class WizardObserverSimpleValueDisplay extends ObserverWizard {
 	private Text txtPredicate;
 
 	@Override
-	protected Control createContents(Composite parent) {
+	public Control createWizardContent(Composite parent) {
 
 		parent.setLayout(new FillLayout());
 

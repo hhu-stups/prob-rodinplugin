@@ -50,7 +50,7 @@ public class WizardObserverCSwitchCoordinates extends ObserverWizard {
 	private TableViewer tableViewer;
 
 	@Override
-	protected Control createContents(Composite parent) {
+	public Control createWizardContent(Composite parent) {
 
 		DataBindingContext dbc = new DataBindingContext();
 

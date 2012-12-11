@@ -131,7 +131,7 @@ public class ObserverPage extends Page implements ISelectionListener {
 						rightContainer.setLayoutData(new GridData(
 								GridData.FILL_BOTH));
 						rightContainer.setLayout(new FillLayout());
-						wizard.createControl(rightContainer);
+						wizard.createWizardContent(rightContainer);
 					}
 				}
 				container.layout();

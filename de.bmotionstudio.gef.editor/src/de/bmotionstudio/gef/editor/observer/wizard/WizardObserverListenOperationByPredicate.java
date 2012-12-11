@@ -66,7 +66,7 @@ public class WizardObserverListenOperationByPredicate extends ObserverWizard {
 	private TableViewer tableViewer;
 
 	@Override
-	protected Control createContents(Composite parent) {
+	public Control createWizardContent(Composite parent) {
 
 		parent.setLayout(new FillLayout());
 
