@@ -21,6 +21,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.part.IPageSite;
 import org.eclipse.ui.part.Page;
 
 import de.bmotionstudio.gef.editor.BMotionStudioImage;
@@ -40,7 +41,7 @@ public class ObserverPage extends Page implements ISelectionListener {
 
 	private Composite rightContainer;
 
-	private Control oControl;
+	private HelpAction helpAction;
 
 	@Override
 	public void createControl(Composite parent) {
@@ -114,6 +115,7 @@ public class ObserverPage extends Page implements ISelectionListener {
 
 			@Override
 			public void selectionChanged(SelectionChangedEvent event) {
+				restoreHelpButton();
 				if (rightContainer != null)
 					rightContainer.dispose();
 				if (event.getSelection() != null
@@ -132,6 +134,8 @@ public class ObserverPage extends Page implements ISelectionListener {
 								GridData.FILL_BOTH));
 						rightContainer.setLayout(new FillLayout());
 						wizard.createWizardContent(rightContainer);
+						helpAction.setEnabled(true);
+						helpAction.setObserverID(o.getID());
 					}
 				}
 				container.layout();
@@ -139,7 +143,17 @@ public class ObserverPage extends Page implements ISelectionListener {
 		});
 		
 		getSite().getPage().addPostSelectionListener(this);
+		createActions();
+		createMenu(getSite());
 
+	}
+
+	private void createActions() {
+		helpAction = new HelpAction();
+	}
+
+	private void createMenu(final IPageSite pageSite) {
+		pageSite.getActionBars().getToolBarManager().add(helpAction);
 	}
 
 	@Override
@@ -170,8 +184,9 @@ public class ObserverPage extends Page implements ISelectionListener {
 						listViewer.setSelection(new StructuredSelection(
 								firstObserver));
 					} else {
-						if (oControl != null)
-							oControl.dispose();
+						restoreHelpButton();
+						if (rightContainer != null)
+							rightContainer.dispose();
 					}
 				}
 			}
@@ -182,6 +197,10 @@ public class ObserverPage extends Page implements ISelectionListener {
 	public void dispose() {
 		getSite().getPage().addPostSelectionListener(this);
 		super.dispose();
+	}
+
+	private void restoreHelpButton() {
+		helpAction.setEnabled(false);
 	}
 
 }

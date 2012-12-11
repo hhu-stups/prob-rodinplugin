@@ -49,7 +49,8 @@
             class="de.bmotionstudio.gef.editor.library.LibraryView"
             icon="icons/icon_library.gif"
             id="de.bmotionstudio.gef.editor.LibraryView"
-            name="BMS Library">
+            name="Library"
+            restorable="true">
       </view>
       <view
             allowMultiple="false"

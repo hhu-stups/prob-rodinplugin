@@ -32,8 +32,18 @@ public abstract class BMotionAbstractWizard extends TrayDialog {
 		return this.control;
 	}
 
+	@Override
+	protected void configureShell(Shell newShell) {
+		super.configureShell(newShell);
+	}
+
 	public abstract String getName();
 	
+	@Override
+	protected int getShellStyle() {
+		return SWT.SHELL_TRIM;
+	}
+
 	@Override
 	protected Control createDialogArea(Composite parent) {
 

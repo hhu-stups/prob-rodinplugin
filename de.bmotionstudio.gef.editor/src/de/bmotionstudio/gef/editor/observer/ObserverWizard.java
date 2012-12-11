@@ -8,6 +8,7 @@ package de.bmotionstudio.gef.editor.observer;
 
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.PlatformUI;
 
 import de.bmotionstudio.gef.editor.BMotionAbstractWizard;
 import de.bmotionstudio.gef.editor.model.BControl;
@@ -39,6 +40,13 @@ public abstract class ObserverWizard extends BMotionAbstractWizard {
 	@Override
 	public String getName() {
 		return observer.getName();
+	}
+
+	@Override
+	protected void configureShell(Shell newShell) {
+		super.configureShell(newShell);
+		PlatformUI.getWorkbench().getHelpSystem()
+				.setHelp(newShell, observer.getID());
 	}
 
 }

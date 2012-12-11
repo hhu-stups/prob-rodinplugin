@@ -70,8 +70,9 @@ public class EditorImageRegistry implements IBMotionStudioImageRegistry {
 				"org.eclipse.ui", "$nl$/icons/full/etool16/delete_edit.gif");
 		BMotionStudioImage.registerImage(IMG_ICON_DELETE_EDIT,
 				"org.eclipse.ui", "$nl$/icons/full/etool16/delete_edit.gif");
-		BMotionStudioImage.registerImage(IMG_ICON_HELP, "org.eclipse.ui",
-				"$nl$/icons/full/dlcl16/linkto_help.gif");
+		BMotionStudioImage.registerImage(IMG_ICON_HELP,
+				BMotionEditorPlugin.PLUGIN_ID,
+				"icons/eclipse16/linkto_help.gif");
 		BMotionStudioImage
 				.registerImage(IMG_ICON_TR_UP, BMotionEditorPlugin.PLUGIN_ID,
 						"icons/eclipse16/updated_co.gif");
