@@ -94,6 +94,7 @@ public final class LoadCspModelCommand {
 		final State commandResult = explore.getState();
 		animator.announceCurrentStateChanged(commandResult,
 				Operation.NULL_OPERATION);
+
 	}
 
 	private static IComposableCommand getLoadCommand(final File model,

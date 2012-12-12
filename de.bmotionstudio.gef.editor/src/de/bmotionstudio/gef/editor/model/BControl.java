@@ -186,6 +186,7 @@ public abstract class BControl implements IAdaptable, Cloneable {
 					String langID = configurationElement
 							.getAttribute("language");
 
+
 					if (langID != null
 							&& langID.equals(getVisualization()
 									.getLanguage())) {
@@ -194,7 +195,6 @@ public abstract class BControl implements IAdaptable, Cloneable {
 								.getChildren("control")) {
 
 							String cID = configC.getAttribute("id");
-
 							if (getType().equals(cID)) {
 
 								for (IConfigurationElement configO : configC
@@ -228,17 +228,22 @@ public abstract class BControl implements IAdaptable, Cloneable {
 			// Check if control has already the observer
 			if (!hasObserver(oID)) {
 
+
+
 				// If no, create a new instance and add the observer to the
 				// control
 				IConfigurationElement observerExtension = BMotionEditorPlugin
 						.getObserverExtension(oID);
-				
+
 				if (observerExtension != null) {
 					try {
 
 
 						Observer newObserver = (Observer) observerExtension
 								.createExecutableExtension("class");
+
+
+
 						addObserver(newObserver);
 					} catch (CoreException e) {
 						e.printStackTrace();

@@ -30,6 +30,8 @@ public class Animation implements IAnimationListener {
 
 	private Animator animator;
 
+	private Operation lastExecutedOperation;
+
 	private final Map<String, Operation> currentStateOperations;
 
 	private final Map<String, EvaluationElement> cachedEvalElements = new HashMap<String, EvaluationElement>();
@@ -58,19 +60,18 @@ public class Animation implements IAnimationListener {
 
 	@Override
 	public void currentStateChanged(State currentState, Operation operation) {
+		this.lastExecutedOperation = operation;
 		// set new state and remember old state, if possible
 		setNewState(currentState);
-		updateCachedExpressions(currentState);
-		if (currentState.isInitialized()) {
-
+		// updateCachedExpressions(currentState);
+		// if (currentState.isInitialized()) {
 			if (animator == null) {
 				animator = Animator.getAnimator();
 			}
 
+		if (!operation.getName().equals("start_cspm_MAIN"))
 			checkObserver();
-
-		}
-
+		// }
 	}
 
 	/**
@@ -174,5 +175,9 @@ public class Animation implements IAnimationListener {
 	public Map<String, Operation> getCurrentStateOperations() {
 		return currentStateOperations;
 	}
-	
+
+	public Operation getLastExecutedOperation() {
+		return lastExecutedOperation;
+	}
+
 }

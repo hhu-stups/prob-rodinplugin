@@ -91,10 +91,15 @@ public class NewBMotionProjectWizard extends Wizard implements INewWizard {
 		try {
 			getContainer().run(true, false, op);
 		} catch (final InterruptedException e) {
+			e.printStackTrace();
+			final Throwable realException = e.getCause();
+			MessageDialog.openError(getShell(), e.getMessage(),
+					realException.getMessage());
 			return false;
 		} catch (final InvocationTargetException e) {
+			e.printStackTrace();
 			final Throwable realException = e.getTargetException();
-			MessageDialog.openError(getShell(), "Error",
+			MessageDialog.openError(getShell(), e.getMessage(),
 					realException.getMessage());
 			return false;
 		}
