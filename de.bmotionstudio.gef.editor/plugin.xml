@@ -61,6 +61,21 @@
             name="Observer"
             restorable="true">
       </view>
+      <view
+            allowMultiple="true"
+            category="de.bmotionstudio.views"
+            class="de.bmotionstudio.gef.editor.VisualizationView"
+            id="de.bmotionstudio.gef.editor.VisualizationView"
+            name="Visualization"
+            restorable="true">
+      </view>
+      <view
+            category="de.bmotionstudio.views"
+            class="de.bmotionstudio.gef.editor.BMSPaletteView"
+            id="de.bmotionstudio.gef.editor.PaletteView"
+            name="Palette"
+            restorable="true">
+      </view>
    </extension>
    <extension
          point="org.eclipse.ui.menus">
@@ -649,6 +664,21 @@
             </observer>
             <observer
                   id="de.bmotionstudio.gef.editor.observer.SwitchCoordinates">
+            </observer>
+         </control>
+      </include>
+      <include
+            language="CSP">
+         <control
+               id="de.bmotionstudio.gef.editor.rectangle">
+            <observer
+                  id="de.bmotionstudio.gef.editor.observer.CSPEventObserver">
+            </observer>
+         </control>
+         <control
+               id="de.bmotionstudio.gef.editor.tank">
+            <observer
+                  id="de.bmotionstudio.gef.editor.observer.CSPEventObserver">
             </observer>
          </control>
       </include>   

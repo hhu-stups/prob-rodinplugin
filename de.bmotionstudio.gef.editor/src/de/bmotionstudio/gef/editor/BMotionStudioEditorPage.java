@@ -43,7 +43,6 @@ import org.eclipse.gef.SnapToGeometry;
 import org.eclipse.gef.SnapToGrid;
 import org.eclipse.gef.commands.CommandStack;
 import org.eclipse.gef.commands.CommandStackListener;
-import org.eclipse.gef.dnd.TemplateTransferDragSourceListener;
 import org.eclipse.gef.editparts.GridLayer;
 import org.eclipse.gef.editparts.ScalableRootEditPart;
 import org.eclipse.gef.editparts.ZoomManager;
@@ -57,11 +56,8 @@ import org.eclipse.gef.ui.actions.ToggleRulerVisibilityAction;
 import org.eclipse.gef.ui.actions.ToggleSnapToGeometryAction;
 import org.eclipse.gef.ui.actions.ZoomInAction;
 import org.eclipse.gef.ui.actions.ZoomOutAction;
-import org.eclipse.gef.ui.palette.FlyoutPaletteComposite;
-import org.eclipse.gef.ui.palette.PaletteViewer;
-import org.eclipse.gef.ui.palette.PaletteViewerProvider;
 import org.eclipse.gef.ui.parts.ContentOutlinePage;
-import org.eclipse.gef.ui.parts.GraphicalEditorWithFlyoutPalette;
+import org.eclipse.gef.ui.parts.GraphicalEditor;
 import org.eclipse.gef.ui.parts.GraphicalViewerKeyHandler;
 import org.eclipse.gef.ui.parts.ScrollingGraphicalViewer;
 import org.eclipse.gef.ui.parts.SelectionSynchronizer;
@@ -110,7 +106,7 @@ import de.bmotionstudio.gef.editor.part.BMSAbstractTreeEditPart;
 import de.bmotionstudio.gef.editor.part.BMSEditPartFactory;
 import de.bmotionstudio.gef.editor.part.BMSTreeEditPartFactory;
 
-public class BMotionStudioEditorPage extends GraphicalEditorWithFlyoutPalette {
+public class BMotionStudioEditorPage extends GraphicalEditor {
 
 	public final static String ID = "de.bmotionstudio.gef.editor";
 
@@ -185,7 +181,7 @@ public class BMotionStudioEditorPage extends GraphicalEditorWithFlyoutPalette {
 	 **/
 	protected void initializeGraphicalViewer() {
 
-		super.initializeGraphicalViewer();
+		// super.initializeGraphicalViewer();
 
 		getGraphicalViewer().setContents(getVisualization());
 
@@ -196,25 +192,25 @@ public class BMotionStudioEditorPage extends GraphicalEditorWithFlyoutPalette {
 				new AttributeTransferDropTargetListener(getGraphicalViewer(),
 						getSite().getPart()));
 
-		getPalettePreferences().setPaletteState(
-				FlyoutPaletteComposite.STATE_PINNED_OPEN);
+		// getPalettePreferences().setPaletteState(
+		// FlyoutPaletteComposite.STATE_PINNED_OPEN);
 
 	}
 
-	@Override
-	protected PaletteViewerProvider createPaletteViewerProvider() {
-		return new PaletteViewerProvider(getEditDomain()) {
-			protected void configurePaletteViewer(PaletteViewer viewer) {
-				super.configurePaletteViewer(viewer);
-				viewer.addDragSourceListener(new TemplateTransferDragSourceListener(
-						viewer));
-			}
-
-			protected void hookPaletteViewer(PaletteViewer viewer) {
-				super.hookPaletteViewer(viewer);
-			}
-		};
-	}
+	// @Override
+	// protected PaletteViewerProvider createPaletteViewerProvider() {
+	// return new PaletteViewerProvider(getEditDomain()) {
+	// protected void configurePaletteViewer(PaletteViewer viewer) {
+	// super.configurePaletteViewer(viewer);
+	// viewer.addDragSourceListener(new TemplateTransferDragSourceListener(
+	// viewer));
+	// }
+	//
+	// protected void hookPaletteViewer(PaletteViewer viewer) {
+	// super.hookPaletteViewer(viewer);
+	// }
+	// };
+	// }
 
 	/**
 	 * @see org.eclipse.ui.IEditorPart#isSaveAsAllowed()
@@ -580,8 +576,8 @@ public class BMotionStudioEditorPage extends GraphicalEditorWithFlyoutPalette {
 		getGraphicalViewer().setProperty(SnapToGrid.PROPERTY_GRID_VISIBLE,
 				getVisualization().isGridEnabled());
 
-		getPalettePreferences().setPaletteState(
-				FlyoutPaletteComposite.STATE_PINNED_OPEN);
+		// getPalettePreferences().setPaletteState(
+		// FlyoutPaletteComposite.STATE_PINNED_OPEN);
 
 	}
 

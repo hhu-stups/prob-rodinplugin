@@ -6,13 +6,6 @@
 
 package de.bmotionstudio.gef.editor.property;
 
-import java.io.File;
-import java.io.FilenameFilter;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.eclipse.core.databinding.observable.list.WritableList;
-import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.viewers.CellLabelProvider;
@@ -33,13 +26,8 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
-import de.bmotionstudio.gef.editor.BMotionEditorPlugin;
-import de.bmotionstudio.gef.editor.BMotionStudioImage;
-import de.bmotionstudio.gef.editor.EditorImageRegistry;
-import de.bmotionstudio.gef.editor.library.LibraryImageObject;
 import de.bmotionstudio.gef.editor.library.LibraryObject;
 
 public class ImageDialog extends Dialog {
@@ -105,19 +93,20 @@ public class ImageDialog extends Dialog {
 
 				previewImage = null;
 
-				if (obj != null) {
-					if (!obj.getName().equals("noimage")) {
-						IFile pFile = BMotionEditorPlugin.getActiveEditor()
-								.getVisualization().getProjectFile();
-						if (pFile != null) {
-							String myPath = (pFile.getProject()
-									.getLocationURI() + "/images/" + obj
-									.getName()).replace("file:", "");
-							previewImage = new Image(Display.getDefault(),
-									myPath);
-						}
-					}
-				}
+				// TODO Reimplement me!
+				// if (obj != null) {
+				// if (!obj.getName().equals("noimage")) {
+				// IFile pFile = BMotionEditorPlugin.getActiveEditor()
+				// .getVisualization().getProjectFile();
+				// if (pFile != null) {
+				// String myPath = (pFile.getProject()
+				// .getLocationURI() + "/images/" + obj
+				// .getName()).replace("file:", "");
+				// previewImage = new Image(Display.getDefault(),
+				// myPath);
+				// }
+				// }
+				// }
 
 				previewCanvas.redraw();
 
@@ -154,58 +143,60 @@ public class ImageDialog extends Dialog {
 			}
 		});
 
-		WritableList input = new WritableList(getLibraryObjects(),
-				LibraryObject.class);
-		tvLibrary.setInput(input);
+		// TODO Reimplement me!
+		// WritableList input = new WritableList(getLibraryObjects(),
+		// LibraryObject.class);
+		// tvLibrary.setInput(input);
 
 		return container;
 
 	}
 
-	private List<LibraryObject> getLibraryObjects() {
-
-		List<LibraryObject> tmpList = new ArrayList<LibraryObject>();
-		tmpList.add(new LibraryObject("noimage", "", BMotionStudioImage
-				.getImageDescriptor("org.eclipse.ui",
-						"$nl$/icons/full/etool16/delete_edit.gif")
-				.createImage()));
-
-		if (BMotionEditorPlugin.getActiveEditor() != null) {
-
-			String basePath = (BMotionEditorPlugin.getActiveEditor()
-					.getVisualization().getProjectFile().getProject()
-					.getLocation().toString()).replace("file:", "");
-			File dir = new File(basePath + "/images");
-			File[] fileList = dir.listFiles(new FilenameFilter() {
-				public boolean accept(final File dir, final String name) {
-					if (name.toLowerCase().endsWith(".jpg")
-							|| name.toLowerCase().endsWith(".gif")
-							|| name.toLowerCase().endsWith(".png")) {
-						return true;
-					}
-					return false;
-				}
-			});
-			if (fileList != null) {
-				for (File f : fileList) {
-					Image img = null;
-					if (f.getName().toLowerCase().endsWith(".jpg")) {
-						img = BMotionStudioImage
-								.getImage(EditorImageRegistry.IMG_ICON_JPG);
-					} else {
-						img = BMotionStudioImage
-								.getImage(EditorImageRegistry.IMG_ICON_GIF);
-					}
-					tmpList.add(new LibraryImageObject(f.getName(), "image",
-							img));
-				}
-			}
-
-		}
-
-		return tmpList;
-
-	}
+	// TODO Reimplement me!
+	// private List<LibraryObject> getLibraryObjects() {
+	//
+	// List<LibraryObject> tmpList = new ArrayList<LibraryObject>();
+	// tmpList.add(new LibraryObject("noimage", "", BMotionStudioImage
+	// .getImageDescriptor("org.eclipse.ui",
+	// "$nl$/icons/full/etool16/delete_edit.gif")
+	// .createImage()));
+	//
+	// if (BMotionEditorPlugin.getActiveEditor() != null) {
+	//
+	// String basePath = (BMotionEditorPlugin.getActiveEditor()
+	// .getVisualization().getProjectFile().getProject()
+	// .getLocation().toString()).replace("file:", "");
+	// File dir = new File(basePath + "/images");
+	// File[] fileList = dir.listFiles(new FilenameFilter() {
+	// public boolean accept(final File dir, final String name) {
+	// if (name.toLowerCase().endsWith(".jpg")
+	// || name.toLowerCase().endsWith(".gif")
+	// || name.toLowerCase().endsWith(".png")) {
+	// return true;
+	// }
+	// return false;
+	// }
+	// });
+	// if (fileList != null) {
+	// for (File f : fileList) {
+	// Image img = null;
+	// if (f.getName().toLowerCase().endsWith(".jpg")) {
+	// img = BMotionStudioImage
+	// .getImage(EditorImageRegistry.IMG_ICON_JPG);
+	// } else {
+	// img = BMotionStudioImage
+	// .getImage(EditorImageRegistry.IMG_ICON_GIF);
+	// }
+	// tmpList.add(new LibraryImageObject(f.getName(), "image",
+	// img));
+	// }
+	// }
+	//
+	// }
+	//
+	// return tmpList;
+	//
+	// }
 
 	LibraryObject getSelectedObject() {
 		IStructuredSelection sel = (IStructuredSelection) tvLibrary

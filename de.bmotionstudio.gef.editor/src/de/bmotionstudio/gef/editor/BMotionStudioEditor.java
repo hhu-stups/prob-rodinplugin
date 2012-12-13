@@ -6,154 +6,142 @@
 
 package de.bmotionstudio.gef.editor;
 
-import java.io.IOException;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.util.ArrayList;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.swt.widgets.Display;
+import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.preferences.IPreferenceFilter;
+import org.eclipse.core.runtime.preferences.IPreferencesService;
+import org.eclipse.core.runtime.preferences.InstanceScope;
+import org.eclipse.core.runtime.preferences.PreferenceFilterEntry;
+import org.eclipse.gef.EditDomain;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IEditorInput;
-import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IFileEditorInput;
+import org.eclipse.ui.IPerspectiveDescriptor;
+import org.eclipse.ui.IPerspectiveRegistry;
 import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.WorkbenchException;
-import org.eclipse.ui.part.MultiPageEditorPart;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
+import org.eclipse.ui.part.EditorPart;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.mapper.MapperWrapper;
 
-import de.bmotionstudio.gef.editor.internal.BMSConverter512;
 import de.bmotionstudio.gef.editor.model.Visualization;
-import de.prob.core.ILifecycleListener;
 import de.prob.logging.Logger;
 
-public class BMotionStudioEditor extends MultiPageEditorPart implements
-		ILifecycleListener {
+public class BMotionStudioEditor extends EditorPart {
 
-	private BMotionStudioEditorPage editPage;
+	// private BMotionStudioEditorPage editPage;
 
-	private BMotionStudioRunPage runPage;
+	// private BMotionStudioRunPage runPage;
 
 	private Visualization visualization;
 
-	private Animation animation;
+	private EditDomain editDomain;
 
-	private ArrayList<IRunPageListener> runPageListener = new ArrayList<IRunPageListener>();
+	private Composite container;
 
-	@Override
-	protected void createPages() {
-		createEditPage();
-	}
+	private IFile file;
 
-	private void createEditPage() {
-		editPage = new BMotionStudioEditorPage(getVisualization(), this);
-		try {
-			int index = addPage(editPage, getEditorInput());
-			setPageText(index, "Edit");
-		} catch (PartInitException e) {
-			e.printStackTrace();
-		}
-	}
+	// private Animation animation;
 
-	public void createRunPage(Visualization visualization, Animation animation) {
-		StaticListenerRegistry.registerListener(this);
-		this.animation = animation;
+	// private ArrayList<IRunPageListener> runPageListener = new
+	// ArrayList<IRunPageListener>();
 
-		if (runPage != null)
-			runPage.dispose();
+	// @Override
+	// protected void createPages() {
+	// createEditPage();
+	// }
 
-		runPage = new BMotionStudioRunPage(visualization);
-		try {
-			int index = addPage(runPage, getEditorInput());
-			setPageText(index, "Run");
-			setActivePage(index);
-			fireRunPageCreatedListener();
-		} catch (PartInitException e) {
-		}
-	}
+	// private void createEditPage() {
+	// editPage = new BMotionStudioEditorPage(getVisualization(), this);
+	// try {
+	// int index = addPage(editPage, getEditorInput());
+	// setPageText(index, "Edit");
+	// } catch (PartInitException e) {
+	// e.printStackTrace();
+	// }
+	// }
 
-	public void removeRunPage() {
-		fireRunPageRemovedListener();
-		if (runPage != null) {
-			Display.getDefault().asyncExec(new Runnable() {
-				public void run() {
-					removePage(1);
-				}
-			});
-		}
-		unregister();
-	}
+	// public void createRunPage(Visualization visualization, Animation
+	// animation) {
+	// StaticListenerRegistry.registerListener(this);
+	// this.animation = animation;
+	//
+	// if (runPage != null)
+	// runPage.dispose();
+	//
+	// runPage = new BMotionStudioRunPage(visualization);
+	// try {
+	// int index = addPage(runPage, getEditorInput());
+	// setPageText(index, "Run");
+	// setActivePage(index);
+	// fireRunPageCreatedListener();
+	// } catch (PartInitException e) {
+	// }
+	// }
 
-	private void fireRunPageCreatedListener() {
-		for (IRunPageListener listener : runPageListener) {
-			listener.runPageCreated(runPage);
-		}
-	}
+	// public void removeRunPage() {
+	// fireRunPageRemovedListener();
+	// if (runPage != null) {
+	// Display.getDefault().asyncExec(new Runnable() {
+	// public void run() {
+	// removePage(1);
+	// }
+	// });
+	// }
+	// unregister();
+	// }
 
-	private void fireRunPageRemovedListener() {
-		for (IRunPageListener listener : runPageListener) {
-			listener.runPageRemoved(runPage);
-		}
-	}
+	// private void fireRunPageCreatedListener() {
+	// for (IRunPageListener listener : runPageListener) {
+	// listener.runPageCreated(runPage);
+	// }
+	// }
+
+	// private void fireRunPageRemovedListener() {
+	// for (IRunPageListener listener : runPageListener) {
+	// listener.runPageRemoved(runPage);
+	// }
+	// }
 
 	@Override
 	public void dispose() {
-		unregister();
+		// unregister();
 		super.dispose();
 	}
 
-	public Visualization getVisualization() {
-		return visualization;
-	}
+	// public Visualization getVisualization() {
+	// return visualization;
+	// }
 
-	public void setDirty(boolean dirty) {
-		editPage.setDirty(dirty);
-	}
+	// public void setDirty(boolean dirty) {
+	// editPage.setDirty(dirty);
+	// }
 
-	/**
-	 * @see org.eclipse.ui.IEditorPart#init(IEditorSite, IEditorInput)
-	 **/
 	@Override
-	public void init(IEditorSite iSite, IEditorInput iInput)
+	public void init(IEditorSite site, IEditorInput input)
 			throws PartInitException {
 
-		super.init(iSite, iInput);
-
-		IFile file = ((IFileEditorInput) iInput).getFile();
+		file = ((IFileEditorInput) input).getFile();
 
 		try {
-
-			// -------------------------------------------------------
-
-			DocumentBuilderFactory dbFactory = DocumentBuilderFactory
-					.newInstance();
-			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-			Document doc = dBuilder.parse(file.getContents());
-			NodeList nList = doc.getElementsByTagName("version");
-			if (nList.item(0) != null) {
-				Element versionElement = (Element) nList.item(0);
-				String version = versionElement.getTextContent();
-				if (version.equals("5.1.2")) {
-					new BMSConverter512(file);
-				}
-			} else {
-				new BMSConverter512(file);
-			}
-
-			// -------------------------------------------------------
 
 			InputStream inputStream = file.getContents();
 
@@ -177,32 +165,166 @@ public class BMotionStudioEditor extends MultiPageEditorPart implements
 			BMotionEditorPlugin.setAliases(xstream);
 
 			visualization = (Visualization) xstream.fromXML(inputStream);
-			visualization.setProjectFile(((IFileEditorInput) getEditorInput())
-					.getFile());
-			// initLanguage(visualization);
+			visualization.setProjectFile(file);
 
-		} catch (SAXException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
+			editDomain = new EditDomain();
+
+			// Check if a perspective for this visualization exists
+			IPerspectiveRegistry perspectiveRegistry = PlatformUI
+					.getWorkbench().getPerspectiveRegistry();
+
+			String perspectiveId = "BMS_" + file.getName().replace(".bmso", "");
+			IPerspectiveDescriptor perspective = perspectiveRegistry
+					.findPerspectiveWithId(perspectiveId);
+
+			// Yes --> switch to this perspective
+			if (perspective != null) {
+				switchPerspective(perspectiveId);
+			} else {
+
+				// No --> create one
+				IWorkbenchWindow window = PlatformUI.getWorkbench()
+						.getActiveWorkbenchWindow();
+				IWorkbenchPage page = window.getActivePage();
+				if (page != null) {
+					IPerspectiveDescriptor personalPerspectiveDescriptor = perspectiveRegistry
+							.findPerspectiveWithId(perspectiveId);
+					if (personalPerspectiveDescriptor == null) {
+						IPerspectiveDescriptor originalPerspectiveDescriptor = perspectiveRegistry
+								.findPerspectiveWithId("de.bmotionstudio.perspective.run");
+						switchPerspective(originalPerspectiveDescriptor.getId());
+						personalPerspectiveDescriptor = perspectiveRegistry
+								.clonePerspective(perspectiveId, perspectiveId,
+										originalPerspectiveDescriptor);
+						// save the perspective
+						page.savePerspectiveAs(personalPerspectiveDescriptor);
+						exportPerspective(perspectiveId);
+					}
+				}
+
+			}
+
+			// System.out.println("===> "
+			// + service.getRootNode().nodeExists(
+			// "/instance/org.eclipse.ui.workbench"));
+			//
+			// Preferences node = node;
+			//
+			// System.out.println(service.getRootNode().node("instance")
+			// .node("org.eclipse.ui.workbench").childrenNames().length);
+			//
+			// for (String s1 : service.getRootNode().childrenNames()) {
+			//
+			// Preferences node2 = service.getRootNode().node(s1);
+			// for (String s2 : node2.childrenNames())
+			// for (String s3 : node2.node(s2)
+			// .childrenNames())
+			// System.out.println(s3);
+			// }
+
+			IWorkbenchWindow window = PlatformUI.getWorkbench()
+					.getActiveWorkbenchWindow();
+			IWorkbenchPage activePage = window.getActivePage();
+			VisualizationView visualizationView1 = (VisualizationView) activePage
+					.showView(VisualizationView.ID, "1",
+							IWorkbenchPage.VIEW_VISIBLE);
+			visualizationView1.initGraphicalViewer(editDomain, visualization);
+			//
+			// VisualizationView visualizationView2 = (VisualizationView)
+			// activePage
+			// .showView(VisualizationView.ID, "2",
+			// IWorkbenchPage.VIEW_VISIBLE);
+			// visualizationView2.initGraphicalViewer(editDomain,
+			// visualization);
+			//
+			// VisualizationView visualizationView3 = (VisualizationView)
+			// activePage
+			// .showView(VisualizationView.ID, "3",
+			// IWorkbenchPage.VIEW_VISIBLE);
+			// visualizationView3.initGraphicalViewer(editDomain,
+			// visualization);
+
 		} catch (CoreException e) {
 			e.printStackTrace();
-		} catch (ParserConfigurationException e) {
+		}
+
+		setSite(site);
+		setInput(input);
+
+	}
+
+	private void switchPerspective(String id) {
+		IWorkbench workbench = PlatformUI.getWorkbench();
+		try {
+			workbench.showPerspective(id, workbench.getActiveWorkbenchWindow());
+		} catch (WorkbenchException e) {
+			Logger.notifyUser(
+					"An error occured while trying to switch the perspective.",
+					e);
+		}
+	}
+
+	// @Override
+	// public String getPartName() {
+	// return file.getName().replace(".bmso", "")
+	// + " (" + file.getMachineName() + " - "
+	// + getVisualization().getLanguage() + ")";
+	// }
+
+	private void exportPerspective(final String perspectiveName) {
+
+		try {
+
+			IPreferenceFilter[] transfers = null;
+
+			// export all
+			transfers = new IPreferenceFilter[1];
+
+			// For export all create a preference filter that can export
+			// all nodes of the Instance and Configuration scopes
+			transfers[0] = new IPreferenceFilter() {
+				public String[] getScopes() {
+					return new String[] { InstanceScope.SCOPE };
+				}
+
+				public Map<String, PreferenceFilterEntry[]> getMapping(
+						String scope) {
+					Map<String, PreferenceFilterEntry[]> map = new HashMap<String, PreferenceFilterEntry[]>();
+					map.put("org.eclipse.ui.workbench",
+							new PreferenceFilterEntry[] { new PreferenceFilterEntry(
+									perspectiveName + "_persp") });
+					return map;
+				}
+			};
+
+			IFile pFile = file.getProject().getFile(
+					file.getName().replace(".bmso", ".bmsop"));
+
+			String content = "";
+
+			if (!pFile.exists())
+				pFile.create(new ByteArrayInputStream(content.getBytes()),
+						true,
+						new NullProgressMonitor());
+
+			File exportFile = new File(pFile.getLocationURI());
+			FileOutputStream fos = new FileOutputStream(exportFile);
+			IPreferencesService service = Platform.getPreferencesService();
+			service.exportPreferences(service.getRootNode(), transfers, fos);
+
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (CoreException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
 	}
 
 	@Override
-	public String getPartName() {
-		return visualization.getProjectFile().getName().replace(".bmso", "")
-				+ " (" + getVisualization().getMachineName() + " - "
-				+ getVisualization().getLanguage() + ")";
-	}
-
-	@Override
 	public void doSave(final IProgressMonitor monitor) {
-		editPage.doSave(monitor);
+		// editPage.doSave(monitor);
 	}
 
 	@Override
@@ -217,75 +339,92 @@ public class BMotionStudioEditor extends MultiPageEditorPart implements
 	}
 
 	@Override
-	protected void pageChange(int newPageIndex) {
-		String newPageString = getPageText(newPageIndex);
-		if (newPageString.equals("Run")) {
-			switchPerspective("de.bmotionstudio.perspective.run");
-		} else {
-			switchPerspective("de.bmotionstudio.perspective.edit");
-		}
-	}
-
-	private void switchPerspective(String id) {
-		IWorkbench workbench = PlatformUI.getWorkbench();
-		try {
-			workbench.showPerspective(id, workbench.getActiveWorkbenchWindow());
-		} catch (WorkbenchException e) {
-			Logger.notifyUser(
-					"An error occured while trying to switch the perspective.",
-					e);
-		}
-	}
-
-	public BMotionStudioEditorPage getEditPage() {
-		return this.editPage;
-	}
-
-	public BMotionStudioRunPage getRunPage() {
-		return this.runPage;
-	}
-
-	public void reset() {
-		removeRunPage();
-	}
-
-	private void unregister() {
-		getVisualization().setIsRunning(false);
-		StaticListenerRegistry.unregisterListener(this);
-		if (animation != null) {
-			animation.unregister();
-		}
-	}
-
-	public IEditorPart getCurrentPage() {
-		return getActiveEditor();
-	}
-
-	public void addRunPageListener(IRunPageListener listener) {
-		this.runPageListener.add(listener);
-	}
-
-	public void removeRunPageListener(IRunPageListener listener) {
-		this.runPageListener.remove(listener);
-	}
-
-	public double getZoomFactor() {
-		switch (getActivePage()) {
-		case 0:
-			return editPage.getRootEditPart().getZoomManager().getZoom();
-		case 1:
-			return runPage.getRootEditPart().getZoomManager().getZoom();
-		default:
-			return 1;
-		}
+	public boolean isDirty() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 	@Override
-	protected void setActivePage(int pageIndex) {
-		super.setActivePage(pageIndex);
-		// TODO: This is a hack for fixing the selection bug in the editor!
-		getSite().setSelectionProvider(
-				editPage.getSite().getSelectionProvider());
+	public void createPartControl(Composite parent) {
+		container = new Composite(parent, SWT.NONE);
 	}
+
+	@Override
+	public void setFocus() {
+		// TODO Auto-generated method stub
+
+	}
+
+	// @Override
+	// protected void pageChange(int newPageIndex) {
+	// String newPageString = getPageText(newPageIndex);
+	// if (newPageString.equals("Run")) {
+	// switchPerspective("de.bmotionstudio.perspective.run");
+	// } else {
+	// switchPerspective("de.bmotionstudio.perspective.edit");
+	// }
+	// }
+
+	// private void switchPerspective(String id) {
+	// IWorkbench workbench = PlatformUI.getWorkbench();
+	// try {
+	// workbench.showPerspective(id, workbench.getActiveWorkbenchWindow());
+	// } catch (WorkbenchException e) {
+	// Logger.notifyUser(
+	// "An error occured while trying to switch the perspective.",
+	// e);
+	// }
+	// }
+
+	// public BMotionStudioEditorPage getEditPage() {
+	// return this.editPage;
+	// }
+	//
+	// public BMotionStudioRunPage getRunPage() {
+	// return this.runPage;
+	// }
+
+	// public void reset() {
+	// removeRunPage();
+	// }
+	//
+	// private void unregister() {
+	// getVisualization().setIsRunning(false);
+	// StaticListenerRegistry.unregisterListener(this);
+	// if (animation != null) {
+	// animation.unregister();
+	// }
+	// }
+
+	// public IEditorPart getCurrentPage() {
+	// return getActiveEditor();
+	// }
+	//
+	// public void addRunPageListener(IRunPageListener listener) {
+	// this.runPageListener.add(listener);
+	// }
+	//
+	// public void removeRunPageListener(IRunPageListener listener) {
+	// this.runPageListener.remove(listener);
+	// }
+
+	// public double getZoomFactor() {
+	// switch (getActivePage()) {
+	// case 0:
+	// return editPage.getRootEditPart().getZoomManager().getZoom();
+	// case 1:
+	// return runPage.getRootEditPart().getZoomManager().getZoom();
+	// default:
+	// return 1;
+	// }
+	// }
+
+	// @Override
+	// protected void setActivePage(int pageIndex) {
+	// super.setActivePage(pageIndex);
+	// // TODO: This is a hack for fixing the selection bug in the editor!
+	// getSite().setSelectionProvider(
+	// editPage.getSite().getSelectionProvider());
+	// }
 
 }

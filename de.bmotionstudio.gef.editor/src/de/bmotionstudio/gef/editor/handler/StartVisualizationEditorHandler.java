@@ -10,18 +10,12 @@ import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.IHandler;
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.IWorkbench;
-import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.WorkbenchException;
 
 import de.bmotionstudio.gef.editor.BMotionEditorPlugin;
 import de.bmotionstudio.gef.editor.internal.VisualizationProgressBar;
-import de.prob.core.Animator;
-import de.prob.logging.Logger;
 
 public class StartVisualizationEditorHandler extends AbstractHandler implements
 		IHandler {
@@ -41,31 +35,32 @@ public class StartVisualizationEditorHandler extends AbstractHandler implements
 			}
 		}
 
-		IFile projectFile = BMotionEditorPlugin.getActiveEditor()
-				.getVisualization().getProjectFile();
-
-		// Get ProB Animator
-		Animator animator = Animator.getAnimator();
-
-		// Open Run Perspective
-		IWorkbench workbench = PlatformUI.getWorkbench();
-		try {
-			workbench.showPerspective("de.bmotionstudio.perspective.run",
-					workbench.getActiveWorkbenchWindow());
-		} catch (WorkbenchException e) {
-			Logger.notifyUser("Error opening BMotion Studio Run perspective.",
-					e);
-		}
-
-		// First, kill old visualization (only if exists)
-		if (dpb != null)
-			dpb.kill();
-		// Create a new visualization
-		dpb = new VisualizationProgressBar(Display.getDefault()
-				.getActiveShell(), animator,
-				BMotionEditorPlugin.getActiveEditor(), projectFile);
-		dpb.initGuage();
-		dpb.open();
+		// TODO Reimplement me!
+		// IFile projectFile = BMotionEditorPlugin.getActiveEditor()
+		// .getVisualization().getProjectFile();
+		//
+		// // Get ProB Animator
+		// Animator animator = Animator.getAnimator();
+		//
+		// // Open Run Perspective
+		// IWorkbench workbench = PlatformUI.getWorkbench();
+		// try {
+		// workbench.showPerspective("de.bmotionstudio.perspective.run",
+		// workbench.getActiveWorkbenchWindow());
+		// } catch (WorkbenchException e) {
+		// Logger.notifyUser("Error opening BMotion Studio Run perspective.",
+		// e);
+		// }
+		//
+		// // First, kill old visualization (only if exists)
+		// if (dpb != null)
+		// dpb.kill();
+		// // Create a new visualization
+		// dpb = new VisualizationProgressBar(Display.getDefault()
+		// .getActiveShell(), animator,
+		// BMotionEditorPlugin.getActiveEditor(), projectFile);
+		// dpb.initGuage();
+		// dpb.open();
 
 		return null;
 

@@ -6,8 +6,6 @@
 
 package de.bmotionstudio.gef.editor.library;
 
-import java.io.File;
-import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,8 +41,6 @@ import org.eclipse.ui.part.IPageSite;
 import org.eclipse.ui.part.Page;
 
 import de.bmotionstudio.gef.editor.BMotionStudioEditor;
-import de.bmotionstudio.gef.editor.BMotionStudioImage;
-import de.bmotionstudio.gef.editor.EditorImageRegistry;
 
 public class LibraryPage extends Page {
 
@@ -222,34 +218,36 @@ public class LibraryPage extends Page {
 
 		if (editor != null) {
 
-			String basePath = (editor.getVisualization().getProjectFile()
-					.getProject().getLocation().toString())
-					.replace("file:", "");
-			File dir = new File(basePath + "/images");
-			File[] fileList = dir.listFiles(new FilenameFilter() {
-				public boolean accept(final File dir, final String name) {
-					if (name.toLowerCase().endsWith(".jpg")
-							|| name.toLowerCase().endsWith(".gif")
-							|| name.toLowerCase().endsWith(".png")) {
-						return true;
-					}
-					return false;
-				}
-			});
-			if (fileList != null) {
-				for (File f : fileList) {
-					Image img = null;
-					if (f.getName().toLowerCase().endsWith(".jpg")) {
-						img = BMotionStudioImage
-								.getImage(EditorImageRegistry.IMG_ICON_JPG);
-					} else {
-						img = BMotionStudioImage
-								.getImage(EditorImageRegistry.IMG_ICON_GIF);
-					}
-					tmpList.add(new LibraryImageObject(f.getName(), "image",
-							img));
-				}
-			}
+			// TODO Reimplement me!
+
+			// String basePath = (editor.getVisualization().getProjectFile()
+			// .getProject().getLocation().toString())
+			// .replace("file:", "");
+			// File dir = new File(basePath + "/images");
+			// File[] fileList = dir.listFiles(new FilenameFilter() {
+			// public boolean accept(final File dir, final String name) {
+			// if (name.toLowerCase().endsWith(".jpg")
+			// || name.toLowerCase().endsWith(".gif")
+			// || name.toLowerCase().endsWith(".png")) {
+			// return true;
+			// }
+			// return false;
+			// }
+			// });
+			// if (fileList != null) {
+			// for (File f : fileList) {
+			// Image img = null;
+			// if (f.getName().toLowerCase().endsWith(".jpg")) {
+			// img = BMotionStudioImage
+			// .getImage(EditorImageRegistry.IMG_ICON_JPG);
+			// } else {
+			// img = BMotionStudioImage
+			// .getImage(EditorImageRegistry.IMG_ICON_GIF);
+			// }
+			// tmpList.add(new LibraryImageObject(f.getName(), "image",
+			// img));
+			// }
+			// }
 
 			// TODO: Reimplement me!!!
 			// Visualization vis = this.editor.getVisualization();

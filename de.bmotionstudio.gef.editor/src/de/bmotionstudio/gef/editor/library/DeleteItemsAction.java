@@ -6,9 +6,6 @@
 
 package de.bmotionstudio.gef.editor.library;
 
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.widgets.Display;
@@ -40,13 +37,14 @@ public class DeleteItemsAction extends AbstractLibraryAction {
 
 			getPage().refresh();
 
-			try {
-				getPage().getEditor().getVisualization().getProjectFile()
-						.getProject().getProject().refreshLocal(
-								IResource.DEPTH_ONE, new NullProgressMonitor());
-			} catch (CoreException e) {
-				e.printStackTrace();
-			}
+			// TODO Reimplement me!
+			// try {
+			// getPage().getEditor().getVisualization().getProjectFile()
+			// .getProject().getProject().refreshLocal(
+			// IResource.DEPTH_ONE, new NullProgressMonitor());
+			// } catch (CoreException e) {
+			// e.printStackTrace();
+			// }
 
 		}
 

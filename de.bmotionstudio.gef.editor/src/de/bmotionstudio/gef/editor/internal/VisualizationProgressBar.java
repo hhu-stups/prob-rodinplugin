@@ -229,7 +229,8 @@ public class VisualizationProgressBar extends ProgressBarDialog {
 	}
 
 	private void createShell() {
-		activeEditor.createRunPage(visualization, animation);
+		// TODO Reimplement me!
+		// activeEditor.createRunPage(visualization, animation);
 	}
 
 	private ILanguageService getGenericLoadMachine(String language) {

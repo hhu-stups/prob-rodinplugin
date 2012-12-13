@@ -25,8 +25,6 @@ import org.eclipse.swt.graphics.Pattern;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
 
-import de.bmotionstudio.gef.editor.BMotionEditorPlugin;
-
 public class ShapeFigure extends AbstractBMotionFigure {
 
 	private int alpha;
@@ -123,9 +121,10 @@ public class ShapeFigure extends AbstractBMotionFigure {
 				} else if (fillType == FILL_TYPE_FILLED && img != null) {
 
 					double zoom = 1;
-					if (BMotionEditorPlugin.getActiveEditor() != null)
-						zoom = BMotionEditorPlugin.getActiveEditor()
-								.getZoomFactor();
+					// TODO Reimplement me!
+					// if (BMotionEditorPlugin.getActiveEditor() != null)
+					// zoom = BMotionEditorPlugin.getActiveEditor()
+					// .getZoomFactor();
 
 					ImageData d = img.getImageData().scaledTo(
 							(int) (img.getBounds().width * zoom),
