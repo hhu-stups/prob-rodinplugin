@@ -275,4 +275,9 @@ public class Visualization extends BControl {
 		return true;
 	}
 
+	@Override
+	public Visualization getVisualization() {
+		return this;
+	}
+
 }
