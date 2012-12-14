@@ -1,5 +1,5 @@
 // to trigger a full tycho build please use 'gradle deleteFromClassPath completeInstall'
-
+import org.apache.tools.ant.taskdefs.condition.Os
 
 project.ext{
 	
@@ -97,6 +97,44 @@ task downloadCli << {
 		   into targetdir
 	    }
 	delete file(targetzip)
+	
+}
+
+task downloadCSPM ( type:Exec ) {
+	
+	def targetdir = workspacePath+"de.prob.core/lib/"
+	
+	if ( Os.isFamily(Os.FAMILY_WINDOWS) )
+	{
+		println "Downloading CSPM for Windows"
+			File f = new File(targetdir+"cspm.exe")
+			f.delete()
+			download( "http://nightly.cobra.cs.uni-duesseldorf.de/cspm/cspm-windows", targetdir+"cspm.exe" )
+	}
+	else if ( Os.isFamily(Os.FAMILY_MAC) )
+	{	
+		File f = new File(targetdir+"cspm")
+		f.delete()
+		print "Downloading CSPM for MAC "+Os.OS_ARCH
+		if( Os.OS_ARCH.contains("64") ){
+			download( "http://nightly.cobra.cs.uni-duesseldorf.de/cspm/cspm-leopard64", targetdir+"cspm" )
+		}else{
+			download( "http://nightly.cobra.cs.uni-duesseldorf.de/cspm/cspm-leopard", targetdir+"cspm" )
+		}
+		commandLine 'chmod', 'a+x', targetdir+"cspm"
+	}
+	else if( Os.isFamily(Os.FAMILY_UNIX) )
+	{
+		File f = new File(targetdir+"cspm")
+		f.delete()
+		println "Downloading CSPM for Linux "+Os.OS_ARCH
+		if( Os.OS_ARCH.contains("64") ){
+			download( "http://nightly.cobra.cs.uni-duesseldorf.de/cspm/cspm-linux64", targetdir+"cspm" )
+		}else{
+			download( "http://nightly.cobra.cs.uni-duesseldorf.de/cspm/cspm-linux32", targetdir+"cspm" )
+		}
+		commandLine 'chmod', 'a+x', targetdir+"cspm"
+	}
 	
 }
 
