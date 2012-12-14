@@ -23,7 +23,7 @@ public class BMSPaletteView extends PageBookView {
 	@Override
 	protected IWorkbenchPart getBootstrapPart() {
 		IWorkbenchPage page = getSite().getPage();
-		IViewPart view = page.findView(VisualizationView.ID);
+		IViewPart view = page.findView(VisualizationViewPart.ID);
 		if (view != null)
 			return view;
 		return null;
@@ -31,7 +31,7 @@ public class BMSPaletteView extends PageBookView {
 
 	@Override
 	protected PageRec doCreatePage(IWorkbenchPart part) {
-		if (part instanceof VisualizationView) {
+		if (part instanceof VisualizationViewPart) {
 			BMSPaletteViewPage page = new BMSPaletteViewPage();
 			initPage(page);
 			page.createControl(getPageBook());
@@ -47,7 +47,7 @@ public class BMSPaletteView extends PageBookView {
 
 	@Override
 	protected boolean isImportant(IWorkbenchPart part) {
-		return part instanceof VisualizationView;
+		return part instanceof VisualizationViewPart;
 	}
 
 	private class BMSPaletteViewPage extends Page {

@@ -26,7 +26,9 @@ import de.bmotionstudio.gef.editor.model.BConnection;
 import de.bmotionstudio.gef.editor.model.BControl;
 import de.bmotionstudio.gef.editor.model.BControlList;
 import de.bmotionstudio.gef.editor.model.BMotionGuide;
+import de.bmotionstudio.gef.editor.model.Simulation;
 import de.bmotionstudio.gef.editor.model.Visualization;
+import de.bmotionstudio.gef.editor.model.VisualizationView;
 
 /**
  * The activator class controls the plug-in life cycle
@@ -211,6 +213,8 @@ public class BMotionEditorPlugin extends AbstractUIPlugin {
 
 	public static void setAliases(XStream xstream) {
 		xstream.registerConverter(new BControlListConverter());
+		xstream.alias("simulation", Simulation.class);
+		xstream.alias("view", VisualizationView.class);
 		xstream.alias("control", BControl.class);
 		xstream.alias("visualization", Visualization.class);
 		xstream.alias("guide", BMotionGuide.class);

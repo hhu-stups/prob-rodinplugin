@@ -13,7 +13,7 @@ import org.eclipse.ui.views.properties.IPropertySheetPage;
 import de.bmotionstudio.gef.editor.model.Visualization;
 import de.bmotionstudio.gef.editor.part.BMSEditPartFactory;
 
-public class VisualizationView extends ViewPart {
+public class VisualizationViewPart extends ViewPart {
 
 	public static String ID = "de.bmotionstudio.gef.editor.VisualizationView";
 	
@@ -22,15 +22,6 @@ public class VisualizationView extends ViewPart {
 	private GraphicalViewer graphicalViewer;
 
 	private Visualization visualization;
-
-	public VisualizationView() {
-	}
-
-	// public VisualizationView(EditDomain editDomain, Visualization
-	// visualization) {
-	// this.editDomain = editDomain;
-	// this.visualization = visualization;
-	// }
 
 	public void initGraphicalViewer(EditDomain editDomain,
 			Visualization visualization) {
@@ -72,38 +63,28 @@ public class VisualizationView extends ViewPart {
 
 	}
 	
-	/**
-	 * Returns the <code>CommandStack</code> of this editor's
-	 * <code>EditDomain</code>.
-	 * 
-	 * @return the <code>CommandStack</code>
-	 */
 	public CommandStack getCommandStack() {
 		return getEditDomain().getCommandStack();
 	}
 	
-	/**
-	 * Returns the edit domain.
-	 * 
-	 * @return the edit domain
-	 */
 	protected EditDomain getEditDomain() {
 		return editDomain;
 	}
 
-	/**
-	 * Returns the graphical viewer.
-	 * 
-	 * @return the graphical viewer
-	 */
 	protected GraphicalViewer getGraphicalViewer() {
 		return graphicalViewer;
 	}
 	
 	@Override
 	public void setFocus() {
-		// TODO Auto-generated method stub
+	}
 
+	public Visualization getVisualization() {
+		return visualization;
+	}
+
+	public void setVisualization(Visualization visualization) {
+		this.visualization = visualization;
 	}
 
 }

@@ -64,7 +64,7 @@
       <view
             allowMultiple="true"
             category="de.bmotionstudio.views"
-            class="de.bmotionstudio.gef.editor.VisualizationView"
+            class="de.bmotionstudio.gef.editor.VisualizationViewPart"
             id="de.bmotionstudio.gef.editor.VisualizationView"
             name="Visualization"
             restorable="true">
