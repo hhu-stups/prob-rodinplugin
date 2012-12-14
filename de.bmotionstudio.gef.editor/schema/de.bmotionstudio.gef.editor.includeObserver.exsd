@@ -54,6 +54,9 @@
          </appInfo>
       </annotation>
       <complexType>
+         <sequence minOccurs="1" maxOccurs="unbounded">
+            <element ref="observer"/>
+         </sequence>
          <attribute name="id" type="string" use="required">
             <annotation>
                <documentation>
@@ -71,9 +74,6 @@
          </appInfo>
       </annotation>
       <complexType>
-         <sequence minOccurs="1" maxOccurs="unbounded">
-            <element ref="control"/>
-         </sequence>
          <attribute name="id" type="string" use="required">
             <annotation>
                <documentation>
@@ -87,7 +87,7 @@
    <element name="include">
       <complexType>
          <sequence minOccurs="1" maxOccurs="unbounded">
-            <element ref="observer"/>
+            <element ref="control"/>
          </sequence>
          <attribute name="language" type="string" use="required">
             <annotation>

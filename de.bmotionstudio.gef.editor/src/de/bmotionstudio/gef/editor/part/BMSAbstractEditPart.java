@@ -43,6 +43,7 @@ import de.bmotionstudio.gef.editor.figure.AbstractBMotionFigure;
 import de.bmotionstudio.gef.editor.library.AbstractLibraryCommand;
 import de.bmotionstudio.gef.editor.library.AttributeRequest;
 import de.bmotionstudio.gef.editor.model.BControl;
+import de.bmotionstudio.gef.editor.model.BControlPropertyConstants;
 import de.bmotionstudio.gef.editor.model.Visualization;
 import de.bmotionstudio.gef.editor.observer.IObserverListener;
 import de.bmotionstudio.gef.editor.observer.Observer;
@@ -73,8 +74,10 @@ public abstract class BMSAbstractEditPart extends AbstractGraphicalEditPart
 		}
 	};
 
-	private String[] layoutAttributes = { BControl.PROPERTY_LAYOUT,
-			BControl.PROPERTY_LOCATION, AttributeConstants.ATTRIBUTE_X,
+	private String[] layoutAttributes = {
+			BControlPropertyConstants.PROPERTY_LAYOUT,
+			BControlPropertyConstants.PROPERTY_LOCATION,
+			AttributeConstants.ATTRIBUTE_X,
 			AttributeConstants.ATTRIBUTE_Y, AttributeConstants.ATTRIBUTE_WIDTH,
 			AttributeConstants.ATTRIBUTE_HEIGHT };
 
@@ -82,7 +85,6 @@ public abstract class BMSAbstractEditPart extends AbstractGraphicalEditPart
 		if (!isActive()) {
 			super.activate();
 			((BControl) getModel()).addPropertyChangeListener(this);
-			((BControl) getModel()).addObserverListener(this);
 			if (getFigure() instanceof AbstractBMotionFigure) {
 				AbstractBMotionFigure af = (AbstractBMotionFigure) getFigure();
 				if (isRunning())
@@ -96,7 +98,6 @@ public abstract class BMSAbstractEditPart extends AbstractGraphicalEditPart
 		if (isActive()) {
 			super.deactivate();
 			((BControl) getModel()).removePropertyChangeListener(this);
-			((BControl) getModel()).removeObserverListener(this);
 			if (getFigure() instanceof AbstractBMotionFigure) {
 				AbstractBMotionFigure af = (AbstractBMotionFigure) getFigure();
 				if (isRunning())
@@ -187,13 +188,15 @@ public abstract class BMSAbstractEditPart extends AbstractGraphicalEditPart
 		final BControl model = (BControl) getModel();
 		String propName = evt.getPropertyName();
 
-		if (BControl.SOURCE_CONNECTIONS_PROP.equals(propName)) {
+		if (BControlPropertyConstants.SOURCE_CONNECTIONS.equals(propName)) {
 			refreshSourceConnections();
-		} else if (BControl.TARGET_CONNECTIONS_PROP.equals(propName)) {
+		} else if (BControlPropertyConstants.TARGET_CONNECTIONS
+				.equals(propName)) {
 			refreshTargetConnections();
 		}
-		if (propName.equals(BControl.PROPERTY_ADD)
-				|| propName.equals(BControl.PROPERTY_REMOVE)) {
+		if (propName.equals(BControlPropertyConstants.PROPERTY_ADD_CHILD)
+				|| propName
+						.equals(BControlPropertyConstants.PROPERTY_REMOVE_CHILD)) {
 			refreshChildren();
 		} else if (Arrays.asList(layoutAttributes).contains(propName)) {
 			// Layout attribute

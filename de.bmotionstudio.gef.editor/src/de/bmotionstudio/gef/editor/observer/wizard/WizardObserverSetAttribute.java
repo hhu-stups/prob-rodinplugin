@@ -19,13 +19,11 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ComboBoxViewerCellEditor;
 import org.eclipse.jface.viewers.EditingSupport;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITableColorProvider;
 import org.eclipse.jface.viewers.ITableFontProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
@@ -39,15 +37,16 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
 
-import de.be4.classicalb.core.parser.BParser;
-import de.bmotionstudio.gef.editor.BMotionAbstractWizard;
 import de.bmotionstudio.gef.editor.BMotionStudioImage;
 import de.bmotionstudio.gef.editor.EditorImageRegistry;
 import de.bmotionstudio.gef.editor.attribute.AbstractAttribute;
@@ -56,7 +55,6 @@ import de.bmotionstudio.gef.editor.edit.IsExpressionModeEditingSupport;
 import de.bmotionstudio.gef.editor.edit.PredicateEditingSupport;
 import de.bmotionstudio.gef.editor.model.BControl;
 import de.bmotionstudio.gef.editor.observer.Observer;
-import de.bmotionstudio.gef.editor.observer.ObserverEvalObject;
 import de.bmotionstudio.gef.editor.observer.ObserverWizard;
 import de.bmotionstudio.gef.editor.observer.SetAttribute;
 import de.bmotionstudio.gef.editor.observer.SetAttributeObject;
@@ -65,253 +63,109 @@ import de.bmotionstudio.gef.editor.util.BMotionWizardUtil;
 
 public class WizardObserverSetAttribute extends ObserverWizard {
 
-	private String lastChangedAttributeID;
+	private WritableList input;
 
-	private class WizardSetAttributePage extends AbstractObserverWizardPage {
+	private TableViewer tableViewer;
 
-		private WritableList input;
+	@Override
+	public Control createWizardContent(Composite parent) {
 
-		private TableViewer tableViewer;
+		parent.setLayout(new FillLayout());
 
-		protected WizardSetAttributePage(final String pageName) {
-			super(pageName, getObserver());
-		}
+		DataBindingContext dbc = new DataBindingContext();
 
-		public void createControl(Composite parent) {
+		GridLayout gl = new GridLayout(1, true);
+		gl.horizontalSpacing = 0;
+		gl.verticalSpacing = 0;
+		gl.marginHeight = 0;
+		gl.marginWidth = 0;
 
-			super.createControl(parent);
+		Composite container = new Composite(parent, SWT.NONE);
+		container.setLayout(gl);
 
-			DataBindingContext dbc = new DataBindingContext();
+		tableViewer = BMotionWizardUtil.createBMotionWizardTableViewer(
+				container, SetAttributeObject.class, getName());
 
-			GridLayout gl = new GridLayout(1, true);
-			gl.horizontalSpacing = 0;
-			gl.verticalSpacing = 0;
-			gl.marginHeight = 0;
-			gl.marginWidth = 0;
+		TableViewerColumn column = new TableViewerColumn(tableViewer, SWT.NONE);
+		column.getColumn().setText("Predicate");
+		column.getColumn().setWidth(300);
 
-			Composite container = new Composite(parent, SWT.NONE);
-			container.setLayout(gl);
+		PredicateEditingSupport pEditingSupport = new PredicateEditingSupport(
+				tableViewer, dbc, "eval", getBControl().getVisualization(),
+				getShell());
+		column.setEditingSupport(pEditingSupport);
 
-			tableViewer = BMotionWizardUtil.createBMotionWizardTableViewer(
-					container, SetAttributeObject.class,
-					((BMotionAbstractWizard) getWizard()).getName());
+		column = new TableViewerColumn(tableViewer, SWT.NONE);
+		column.getColumn().setText("Attribute");
+		column.getColumn().setWidth(150);
+		column.setEditingSupport(new AttributeObserverValueEditing(tableViewer));
 
-			tableViewer
-					.addSelectionChangedListener(new ISelectionChangedListener() {
+		column = new TableViewerColumn(tableViewer, SWT.NONE);
+		column.getColumn().setText("Value");
+		column.getColumn().setWidth(175);
+		column.setEditingSupport(new AttributeExpressionEdittingSupport(
+				tableViewer, getBControl()));
 
-						@Override
-						public void selectionChanged(SelectionChangedEvent event) {
-							IStructuredSelection selection = (IStructuredSelection) event
-									.getSelection();
-							Object firstElement = selection.getFirstElement();
-							if (firstElement instanceof ObserverEvalObject) {
+		column = new TableViewerColumn(tableViewer, SWT.NONE);
+		column.getColumn().setText("Expression?");
+		column.getColumn().setWidth(100);
+		column.setEditingSupport(new IsExpressionModeEditingSupport(
+				tableViewer, getBControl()));
 
-								ObserverEvalObject observerEvalObject = (ObserverEvalObject) firstElement;
-								BControl control = getBControl();
+		ObservableListContentProvider contentProvider = new ObservableListContentProvider();
+		tableViewer.setContentProvider(contentProvider);
 
-								if (lastChangedAttributeID != null)
-									control.restoreDefaultValue(lastChangedAttributeID);
+		tableViewer.setLabelProvider(new ObserverLabelProvider(BeansObservables
+				.observeMaps(contentProvider.getKnownElements(), new String[] {
+						"eval", "attribute", "value", "isExpressionMode" })));
+		input = new WritableList(
+				((SetAttribute) getObserver()).getSetAttributeObjects(),
+				SetAttributeObject.class);
+		tableViewer.setInput(input);
 
-								SetAttributeObject setAttributeObj = (SetAttributeObject) observerEvalObject;
+		Composite comp = new Composite(container, SWT.NONE);
+		comp.setLayout(new RowLayout());
+		comp.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));
 
-								if (!setAttributeObj.isExpressionMode()) {
-
-									String attribute = setAttributeObj
-											.getAttribute();
-									Object value = setAttributeObj.getValue();
-									control.setAttributeValue(attribute, value,
-											true, false);
-
-									lastChangedAttributeID = attribute;
-
-								}
-
-							}
-						}
-
-					});
-
-			TableViewerColumn column = new TableViewerColumn(tableViewer,
-					SWT.NONE);
-			column.getColumn().setText("Predicate");
-			column.getColumn().setWidth(300);
-
-			PredicateEditingSupport pEditingSupport = new PredicateEditingSupport(
-					tableViewer, dbc, "eval", getBControl().getVisualization(),
-					getShell());
-			column.setEditingSupport(pEditingSupport);
-
-			column = new TableViewerColumn(tableViewer, SWT.NONE);
-			column.getColumn().setText("Attribute");
-			column.getColumn().setWidth(150);
-			column.setEditingSupport(new AttributeObserverValueEditing(
-					tableViewer));
-
-			column = new TableViewerColumn(tableViewer, SWT.NONE);
-			column.getColumn().setText("Value");
-			column.getColumn().setWidth(175);
-			column.setEditingSupport(new AttributeExpressionEdittingSupport(
-					tableViewer, getBControl()));
-
-			column = new TableViewerColumn(tableViewer, SWT.NONE);
-			column.getColumn().setText("Expression?");
-			column.getColumn().setWidth(100);
-			column.setEditingSupport(new IsExpressionModeEditingSupport(
-					tableViewer, getBControl()));
-
-			ObservableListContentProvider contentProvider = new ObservableListContentProvider();
-			tableViewer.setContentProvider(contentProvider);
-
-			tableViewer.setLabelProvider(new ObserverLabelProvider(
-					BeansObservables.observeMaps(
-							contentProvider.getKnownElements(), new String[] {
-									"eval", "attribute", "value",
-									"isExpressionMode" })));
-			input = new WritableList(
-					((SetAttribute) getObserver()).getSetAttributeObjects(),
-					SetAttributeObject.class);
-			tableViewer.setInput(input);
-
-			Composite comp = new Composite(container, SWT.NONE);
-			comp.setLayout(new RowLayout());
-			comp.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));
-
-			Button btRemove = new Button(comp, SWT.PUSH);
-			btRemove.setText("Remove");
-			btRemove.setImage(BMotionStudioImage
-					.getImage(EditorImageRegistry.IMG_ICON_DELETE_EDIT));
-			btRemove.addSelectionListener(new SelectionAdapter() {
-				@Override
-				public void widgetSelected(SelectionEvent e) {
-					if (tableViewer.getSelection().isEmpty()) {
-						MessageDialog.openInformation(getShell(),
-								"Please select an entry.",
-								"Please select an entry.");
-						return;
-					}
-					SetAttributeObject toggleObj = (SetAttributeObject) ((IStructuredSelection) tableViewer
-							.getSelection()).getFirstElement();
-					input.remove(toggleObj);
-				}
-			});
-
-			Button btAdd = new Button(comp, SWT.PUSH);
-			btAdd.setText("Add");
-			btAdd.setImage(BMotionStudioImage
-					.getImage(EditorImageRegistry.IMG_ICON_NEW_WIZ));
-			btAdd.addSelectionListener(new SelectionAdapter() {
-				@Override
-				public void widgetSelected(SelectionEvent e) {
-					SetAttributeObject toggleObj = new SetAttributeObject(
-							BParser.PREDICATE_PREFIX, "");
-					input.add(toggleObj);
-					tableViewer
-							.setSelection(new StructuredSelection(toggleObj));
-				}
-			});
-
-			setControl(container);
-
-		}
-
-		private class AttributeObserverValueEditing extends EditingSupport {
-
-			private ComboBoxViewerCellEditor cellEditor = null;
-
-			public AttributeObserverValueEditing(TableViewer cv) {
-				super(cv);
-			}
-
+		Button btRemove = new Button(comp, SWT.PUSH);
+		btRemove.setText("Remove");
+		btRemove.setImage(BMotionStudioImage
+				.getImage(EditorImageRegistry.IMG_ICON_DELETE_EDIT));
+		btRemove.addSelectionListener(new SelectionAdapter() {
 			@Override
-			protected boolean canEdit(Object element) {
-				return BMotionWizardUtil.isEditElement(getViewer());
-			}
-
-			@Override
-			protected Object getValue(Object element) {
-				return ((SetAttributeObject) element).getAttribute();
-			}
-
-			@Override
-			protected void setValue(Object element, Object value) {
-				if (value != null) {
-					SetAttributeObject obj = (SetAttributeObject) element;
-					obj.setAttribute(value.toString());
-					obj.setIsExpressionMode(false);
+			public void widgetSelected(SelectionEvent e) {
+				if (tableViewer.getSelection().isEmpty()) {
+					MessageDialog.openInformation(getShell(),
+							"Please select an entry.",
+							"Please select an entry.");
+					return;
 				}
+				SetAttributeObject toggleObj = (SetAttributeObject) ((IStructuredSelection) tableViewer
+						.getSelection()).getFirstElement();
+				input.remove(toggleObj);
 			}
+		});
 
+		Button btAdd = new Button(comp, SWT.PUSH);
+		btAdd.setText("Add");
+		btAdd.setImage(BMotionStudioImage
+				.getImage(EditorImageRegistry.IMG_ICON_NEW_WIZ));
+		btAdd.addSelectionListener(new SelectionAdapter() {
 			@Override
-			protected CellEditor getCellEditor(Object element) {
-				if (cellEditor == null) {
-
-					cellEditor = new ComboBoxViewerCellEditor(
-							(Composite) tableViewer.getControl(), SWT.READ_ONLY);
-					cellEditor
-							.setContentProvider(new ObservableListContentProvider());
-					cellEditor.setLabelProvider(new LabelProvider() {
-						public String getText(Object element) {
-							return getBControl().getAttributes()
-									.get(element.toString()).getName();
-						}
-					});
-					cellEditor.setInput(new ComputedList() {
-						@Override
-						protected List<String> calculate() {
-							ArrayList<String> atrList = new ArrayList<String>();
-							for (AbstractAttribute atr : getBControl()
-									.getAttributes().values()) {
-								atrList.add(atr.getID());
-							}
-							return atrList;
-						}
-					});
-
-					((CCombo) cellEditor.getControl())
-							.addFocusListener(new FocusListener() {
-
-								String oldValue;
-
-								public void focusGained(FocusEvent e) {
-									oldValue = ((CCombo) cellEditor
-											.getControl()).getText();
-
-								}
-
-								public void focusLost(FocusEvent e) {
-
-									if (!oldValue.equals(((CCombo) cellEditor
-											.getControl()).getText())) {
-
-										IStructuredSelection selection = (IStructuredSelection) getViewer()
-												.getSelection();
-
-										SetAttributeObject p = (SetAttributeObject) selection
-												.getFirstElement();
-
-										AbstractAttribute atr = getBControl()
-												.getAttributes().get(
-														p.getAttribute());
-
-										p.setValue(atr.getValue());
-										tableViewer.refresh();
-
-									}
-								}
-
-							});
-
-				}
-				return cellEditor;
+			public void widgetSelected(SelectionEvent e) {
+				SetAttributeObject toggleObj = new SetAttributeObject("");
+				input.add(toggleObj);
+				tableViewer.setSelection(new StructuredSelection(toggleObj));
 			}
+		});
 
-		}
+		return container;
 
 	}
 
-	public WizardObserverSetAttribute(BControl control, Observer observer) {
-		super(control, observer);
-		addPage(new WizardSetAttributePage("WizardSetAttributePage"));
+	public WizardObserverSetAttribute(Shell shell, BControl control,
+			Observer observer) {
+		super(shell, control, observer);
 	}
 
 	@Override
@@ -319,30 +173,31 @@ public class WizardObserverSetAttribute extends ObserverWizard {
 		return new Point(800, 500);
 	}
 
-	@Override
-	protected Boolean prepareToFinish() {
-		getBControl().restoreDefaultValue(lastChangedAttributeID);
-		if (((SetAttribute) getObserver()).getSetAttributeObjects().size() == 0) {
-			setObserverDelete(true);
-		} else {
-			for (SetAttributeObject obj : ((SetAttribute) getObserver())
-					.getSetAttributeObjects()) {
-				if (obj.getAttribute() == null) {
-					MessageDialog
-							.openError(getShell(), "Please check your entries",
-									"Please check your entries. The attribute field must not be empty.");
-					return false;
-				}
-			}
-		}
-		return true;
-	}
+	// @Override
+	// protected Boolean prepareToFinish() {
+	// // getBControl().restoreDefaultValue(lastChangedAttributeID);
+	// if (((SetAttribute) getObserver()).getSetAttributeObjects().size() == 0)
+	// {
+	// setObserverDelete(true);
+	// } else {
+	// for (SetAttributeObject obj : ((SetAttribute) getObserver())
+	// .getSetAttributeObjects()) {
+	// if (obj.getAttribute() == null) {
+	// MessageDialog
+	// .openError(getShell(), "Please check your entries",
+	// "Please check your entries. The attribute field must not be empty.");
+	// return false;
+	// }
+	// }
+	// }
+	// return true;
+	// }
 
-	@Override
-	public boolean performCancel() {
-		getBControl().restoreDefaultValue(lastChangedAttributeID);
-		return super.performCancel();
-	}
+	// @Override
+	// public boolean performCancel() {
+	// // getBControl().restoreDefaultValue(lastChangedAttributeID);
+	// return super.performCancel();
+	// }
 
 	private class ObserverLabelProvider extends ObservableMapLabelProvider
 			implements ITableLabelProvider, ITableColorProvider,
@@ -414,9 +269,100 @@ public class WizardObserverSetAttribute extends ObserverWizard {
 		}
 
 		public Font getFont(final Object element, final int column) {
-			// return JFaceResources.getFontRegistry().get(
-			// BMotionStudioConstants.RODIN_FONT_KEY);
 			return null;
+		}
+
+	}
+
+	private class AttributeObserverValueEditing extends EditingSupport {
+
+		private ComboBoxViewerCellEditor cellEditor = null;
+
+		public AttributeObserverValueEditing(TableViewer cv) {
+			super(cv);
+		}
+
+		@Override
+		protected boolean canEdit(Object element) {
+			return BMotionWizardUtil.isEditElement(getViewer());
+		}
+
+		@Override
+		protected Object getValue(Object element) {
+			return ((SetAttributeObject) element).getAttribute();
+		}
+
+		@Override
+		protected void setValue(Object element, Object value) {
+			if (value != null) {
+				SetAttributeObject obj = (SetAttributeObject) element;
+				obj.setAttribute(value.toString());
+				obj.setIsExpressionMode(false);
+			}
+		}
+
+		@Override
+		protected CellEditor getCellEditor(Object element) {
+			if (cellEditor == null) {
+
+				cellEditor = new ComboBoxViewerCellEditor(
+						(Composite) tableViewer.getControl(), SWT.READ_ONLY);
+				cellEditor
+						.setContentProvider(new ObservableListContentProvider());
+				cellEditor.setLabelProvider(new LabelProvider() {
+					public String getText(Object element) {
+						return getBControl().getAttributes()
+								.get(element.toString()).getName();
+					}
+				});
+				cellEditor.setInput(new ComputedList() {
+					@Override
+					protected List<String> calculate() {
+						ArrayList<String> atrList = new ArrayList<String>();
+						for (AbstractAttribute atr : getBControl()
+								.getAttributes().values()) {
+							atrList.add(atr.getID());
+						}
+						return atrList;
+					}
+				});
+
+				((CCombo) cellEditor.getControl())
+						.addFocusListener(new FocusListener() {
+
+							String oldValue;
+
+							public void focusGained(FocusEvent e) {
+								oldValue = ((CCombo) cellEditor.getControl())
+										.getText();
+
+							}
+
+							public void focusLost(FocusEvent e) {
+
+								if (!oldValue.equals(((CCombo) cellEditor
+										.getControl()).getText())) {
+
+									IStructuredSelection selection = (IStructuredSelection) getViewer()
+											.getSelection();
+
+									SetAttributeObject p = (SetAttributeObject) selection
+											.getFirstElement();
+
+									AbstractAttribute atr = getBControl()
+											.getAttributes().get(
+													p.getAttribute());
+
+									p.setValue(atr.getValue());
+									tableViewer.refresh();
+
+								}
+							}
+
+						});
+
+			}
+			return cellEditor;
 		}
 
 	}

@@ -12,13 +12,10 @@ import org.eclipse.core.databinding.observable.list.WritableList;
 import org.eclipse.core.databinding.observable.map.IObservableMap;
 import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
 import org.eclipse.jface.databinding.viewers.ObservableMapLabelProvider;
-import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITableColorProvider;
 import org.eclipse.jface.viewers.ITableFontProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
@@ -33,18 +30,16 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
 
-import de.be4.classicalb.core.parser.BParser;
-import de.bmotionstudio.gef.editor.AttributeConstants;
-import de.bmotionstudio.gef.editor.BMotionAbstractWizard;
 import de.bmotionstudio.gef.editor.BMotionStudioImage;
 import de.bmotionstudio.gef.editor.EditorImageRegistry;
 import de.bmotionstudio.gef.editor.edit.PredicateEditingSupport;
 import de.bmotionstudio.gef.editor.edit.TextEditingSupport;
 import de.bmotionstudio.gef.editor.model.BControl;
 import de.bmotionstudio.gef.editor.observer.Observer;
-import de.bmotionstudio.gef.editor.observer.ObserverEvalObject;
 import de.bmotionstudio.gef.editor.observer.ObserverWizard;
 import de.bmotionstudio.gef.editor.observer.SwitchChildCoordinates;
 import de.bmotionstudio.gef.editor.observer.ToggleObjectCoordinates;
@@ -52,216 +47,137 @@ import de.bmotionstudio.gef.editor.util.BMotionWizardUtil;
 
 public class WizardObserverCSwitchCoordinates extends ObserverWizard {
 
-	private String lastChangedControlID;
-
-	private class ObserverCSwitchCoordinatesPage extends
-			AbstractObserverWizardPage {
-
-		private TableViewer tableViewer;
-
-		protected ObserverCSwitchCoordinatesPage(final String pageName) {
-			super(pageName, getObserver());
-		}
-
-		public void createControl(Composite parent) {
-
-			super.createControl(parent);
-
-			DataBindingContext dbc = new DataBindingContext();
-
-			Composite container = new Composite(parent, SWT.NONE);
-			container.setLayout(new GridLayout(1, true));
-
-			tableViewer = BMotionWizardUtil.createBMotionWizardTableViewer(
-					container, ToggleObjectCoordinates.class,
-					((BMotionAbstractWizard) getWizard()).getName());
-			tableViewer
-					.addSelectionChangedListener(new ISelectionChangedListener() {
-
-						@Override
-						public void selectionChanged(SelectionChangedEvent event) {
-							IStructuredSelection selection = (IStructuredSelection) event
-									.getSelection();
-							Object firstElement = selection.getFirstElement();
-							if (firstElement instanceof ObserverEvalObject) {
-								restorePreview();
-								ObserverEvalObject observerEvalObject = (ObserverEvalObject) firstElement;
-								if (!observerEvalObject.isExpressionMode()) {
-									BControl control = getBControl();
-									ToggleObjectCoordinates toggleObjectCoordinates = (ToggleObjectCoordinates) observerEvalObject;
-									String attributeX = AttributeConstants.ATTRIBUTE_X;
-									String attributeY = AttributeConstants.ATTRIBUTE_Y;
-									String x = toggleObjectCoordinates.getX();
-									String y = toggleObjectCoordinates.getY();
-									String controlID = toggleObjectCoordinates
-											.getBcontrol();
-									BControl bControl = control
-											.getChild(controlID);
-									if (bControl != null) {
-										bControl.setAttributeValue(attributeX,
-												x, true, false);
-										bControl.setAttributeValue(attributeY,
-												y, true, false);
-									}
-									lastChangedControlID = controlID;
-								}
-							}
-						}
-
-					});
-
-			TableViewerColumn column = new TableViewerColumn(tableViewer,
-					SWT.NONE);
-			column.getColumn().setText("Predicate");
-			column.getColumn().setWidth(100);
-			column.setEditingSupport(new PredicateEditingSupport(tableViewer,
-					dbc, "eval", getBControl().getVisualization(), getShell()));
-
-			column = new TableViewerColumn(tableViewer, SWT.NONE);
-			column.getColumn().setText("Control");
-			column.getColumn().setWidth(175);
-			column.setEditingSupport(new TextEditingSupport(tableViewer, dbc,
-					"bcontrol"));
-
-			column = new TableViewerColumn(tableViewer, SWT.NONE);
-			column.getColumn().setText("X");
-			column.getColumn().setWidth(125);
-			column.setEditingSupport(new TextEditingSupport(tableViewer, dbc,
-					"x"));
-
-			column = new TableViewerColumn(tableViewer, SWT.NONE);
-			column.getColumn().setText("Y");
-			column.getColumn().setWidth(125);
-			column.setEditingSupport(new TextEditingSupport(tableViewer, dbc,
-					"y"));
-
-			// column = new TableViewerColumn(tableViewer, SWT.NONE);
-			// column.getColumn().setText("Animate?");
-			// column.getColumn().setWidth(75);
-			// column.setEditingSupport(new EditingSupport(tableViewer) {
-			//
-			// private CellEditor cellEditor = new CheckboxCellEditor(
-			// (Composite) tableViewer.getControl());
-			//
-			// @Override
-			// protected void setValue(Object element, Object value) {
-			// ((ToggleObjectCoordinates) element).setAnimate(Boolean
-			// .valueOf(String.valueOf(value)));
-			// }
-			//
-			// @Override
-			// protected Object getValue(Object element) {
-			// Boolean b = ((ToggleObjectCoordinates) element)
-			// .getAnimate();
-			// return b != null ? b : false;
-			// }
-			//
-			// @Override
-			// protected CellEditor getCellEditor(Object element) {
-			// return cellEditor;
-			// }
-			//
-			// @Override
-			// protected boolean canEdit(Object element) {
-			// return true;
-			// }
-			//
-			// });
-
-			ObservableListContentProvider contentProvider = new ObservableListContentProvider();
-			tableViewer.setContentProvider(contentProvider);
-			tableViewer
-					.setLabelProvider(new ObserverLabelProvider(
-							BeansObservables.observeMaps(
-									contentProvider.getKnownElements(),
-									new String[] { "eval", "bcontrol", "x",
-											"y", "animate" })));
-
-			final WritableList input = new WritableList(
-					((SwitchChildCoordinates) getObserver()).getToggleObjects(),
-					ToggleObjectCoordinates.class);
-			tableViewer.setInput(input);
-
-			Composite comp = new Composite(container, SWT.NONE);
-			comp.setLayout(new RowLayout());
-			comp.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));
-
-			Button btRemove = new Button(comp, SWT.PUSH);
-			btRemove.setText("Remove");
-			btRemove.setImage(BMotionStudioImage
-					.getImage(EditorImageRegistry.IMG_ICON_DELETE_EDIT));
-			btRemove.addSelectionListener(new SelectionAdapter() {
-				@Override
-				public void widgetSelected(SelectionEvent e) {
-					if (tableViewer.getSelection().isEmpty()) {
-						return;
-					}
-					ToggleObjectCoordinates toggleObj = (ToggleObjectCoordinates) ((IStructuredSelection) tableViewer
-							.getSelection()).getFirstElement();
-					input.remove(toggleObj);
-				}
-			});
-
-			Button btAdd = new Button(comp, SWT.PUSH);
-			btAdd.setText("Add");
-			btAdd.setImage(BMotionStudioImage
-					.getImage(EditorImageRegistry.IMG_ICON_NEW_WIZ));
-			btAdd.addSelectionListener(new SelectionAdapter() {
-				@Override
-				public void widgetSelected(SelectionEvent e) {
-					ToggleObjectCoordinates toggleObj = new ToggleObjectCoordinates(
-							BParser.PREDICATE_PREFIX, "", "", "", "");
-					input.add(toggleObj);
-				}
-			});
-
-			setControl(container);
-
-		}
-	}
-
-	public WizardObserverCSwitchCoordinates(final BControl bcontrol,
-			final Observer bobserver) {
-		super(bcontrol, bobserver);
-		addPage(new ObserverCSwitchCoordinatesPage(
-				"ObserverCToggleCoordinatesPage"));
-	}
+	private TableViewer tableViewer;
 
 	@Override
-	protected Boolean prepareToFinish() {
-		restorePreview();
-		if (((SwitchChildCoordinates) getObserver()).getToggleObjects().size() == 0) {
-			setObserverDelete(true);
-		} else {
-			for (ToggleObjectCoordinates obj : ((SwitchChildCoordinates) getObserver())
-					.getToggleObjects()) {
-				if (obj.getX().isEmpty() || obj.getY().isEmpty()
-						|| obj.getBcontrol().isEmpty()) {
-					MessageDialog
-							.openError(getShell(), "Please check your entries",
-									"Please check your entries. The x , y and control fields must not be empty.");
-					return false;
+	public Control createWizardContent(Composite parent) {
+
+		DataBindingContext dbc = new DataBindingContext();
+
+		GridLayout gl = new GridLayout(1, true);
+		gl.horizontalSpacing = 0;
+		gl.verticalSpacing = 0;
+		gl.marginHeight = 0;
+		gl.marginWidth = 0;
+
+		Composite container = new Composite(parent, SWT.NONE);
+		container.setLayout(gl);
+
+		tableViewer = BMotionWizardUtil.createBMotionWizardTableViewer(
+				container, ToggleObjectCoordinates.class, getName());
+
+		TableViewerColumn column = new TableViewerColumn(tableViewer, SWT.NONE);
+		column.getColumn().setText("Predicate");
+		column.getColumn().setWidth(100);
+		column.setEditingSupport(new PredicateEditingSupport(tableViewer, dbc,
+				"eval", getBControl().getVisualization(), getShell()));
+
+		column = new TableViewerColumn(tableViewer, SWT.NONE);
+		column.getColumn().setText("Control");
+		column.getColumn().setWidth(175);
+		column.setEditingSupport(new TextEditingSupport(tableViewer, dbc,
+				"bcontrol"));
+
+		column = new TableViewerColumn(tableViewer, SWT.NONE);
+		column.getColumn().setText("X");
+		column.getColumn().setWidth(125);
+		column.setEditingSupport(new TextEditingSupport(tableViewer, dbc, "x"));
+
+		column = new TableViewerColumn(tableViewer, SWT.NONE);
+		column.getColumn().setText("Y");
+		column.getColumn().setWidth(125);
+		column.setEditingSupport(new TextEditingSupport(tableViewer, dbc, "y"));
+
+		ObservableListContentProvider contentProvider = new ObservableListContentProvider();
+		tableViewer.setContentProvider(contentProvider);
+		tableViewer.setLabelProvider(new ObserverLabelProvider(BeansObservables
+				.observeMaps(contentProvider.getKnownElements(), new String[] {
+						"eval", "bcontrol", "x", "y", "animate" })));
+
+		final WritableList input = new WritableList(
+				((SwitchChildCoordinates) getObserver()).getToggleObjects(),
+				ToggleObjectCoordinates.class);
+		tableViewer.setInput(input);
+
+		Composite comp = new Composite(container, SWT.NONE);
+		comp.setLayout(new RowLayout());
+		comp.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));
+
+		Button btRemove = new Button(comp, SWT.PUSH);
+		btRemove.setText("Remove");
+		btRemove.setImage(BMotionStudioImage
+				.getImage(EditorImageRegistry.IMG_ICON_DELETE_EDIT));
+		btRemove.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				if (tableViewer.getSelection().isEmpty()) {
+					return;
 				}
+				ToggleObjectCoordinates toggleObj = (ToggleObjectCoordinates) ((IStructuredSelection) tableViewer
+						.getSelection()).getFirstElement();
+				input.remove(toggleObj);
 			}
-		}
-		return true;
+		});
+
+		Button btAdd = new Button(comp, SWT.PUSH);
+		btAdd.setText("Add");
+		btAdd.setImage(BMotionStudioImage
+				.getImage(EditorImageRegistry.IMG_ICON_NEW_WIZ));
+		btAdd.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				ToggleObjectCoordinates toggleObj = new ToggleObjectCoordinates(
+						"", "", "", "");
+				input.add(toggleObj);
+			}
+		});
+
+		return container;
+
 	}
 
-	private void restorePreview() {
-		if (lastChangedControlID != null) {
-			BControl bControl = getBControl().getChild(lastChangedControlID);
-			if (bControl != null) {
-				bControl.restoreDefaultValue(AttributeConstants.ATTRIBUTE_X);
-				bControl.restoreDefaultValue(AttributeConstants.ATTRIBUTE_Y);
-			}
-		}
+	public WizardObserverCSwitchCoordinates(Shell shell, BControl bcontrol,
+			Observer bobserver) {
+		super(shell, bcontrol, bobserver);
 	}
 
-	@Override
-	public boolean performCancel() {
-		restorePreview();
-		return super.performCancel();
-	}
+	// @Override
+	// protected Boolean prepareToFinish() {
+	// // restorePreview();
+	// if (((SwitchChildCoordinates) getObserver()).getToggleObjects().size() ==
+	// 0) {
+	// setObserverDelete(true);
+	// } else {
+	// for (ToggleObjectCoordinates obj : ((SwitchChildCoordinates)
+	// getObserver())
+	// .getToggleObjects()) {
+	// if (obj.getX().isEmpty() || obj.getY().isEmpty()
+	// || obj.getBcontrol().isEmpty()) {
+	// MessageDialog
+	// .openError(getShell(), "Please check your entries",
+	// "Please check your entries. The x , y and control fields must not be empty.");
+	// return false;
+	// }
+	// }
+	// }
+	// return true;
+	// }
+
+	// private void restorePreview() {
+	// if (lastChangedControlID != null) {
+	// BControl bControl = getBControl().getChild(lastChangedControlID);
+	// if (bControl != null) {
+	// bControl.restoreDefaultValue(AttributeConstants.ATTRIBUTE_X);
+	// bControl.restoreDefaultValue(AttributeConstants.ATTRIBUTE_Y);
+	// }
+	// }
+	// }
+
+	// @Override
+	// public boolean performCancel() {
+	// // restorePreview();
+	// return super.performCancel();
+	// }
 
 	@Override
 	public Point getSize() {

@@ -16,8 +16,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.IExtension;
+import org.eclipse.core.runtime.IExtensionPoint;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
@@ -42,7 +46,6 @@ import de.bmotionstudio.gef.editor.attribute.BAttributeX;
 import de.bmotionstudio.gef.editor.attribute.BAttributeY;
 import de.bmotionstudio.gef.editor.command.CopyPasteHelper;
 import de.bmotionstudio.gef.editor.internal.BControlPropertySource;
-import de.bmotionstudio.gef.editor.observer.IObserverListener;
 import de.bmotionstudio.gef.editor.observer.Observer;
 import de.bmotionstudio.gef.editor.scheduler.SchedulerEvent;
 
@@ -61,12 +64,7 @@ import de.bmotionstudio.gef.editor.scheduler.SchedulerEvent;
  */
 public abstract class BControl implements IAdaptable, Cloneable {
 
-	/** The type of the control (e.g. label, button ...) */
 	protected String type;
-
-	private transient Rectangle layout = null;
-
-	private transient Point location = null;
 
 	private BControlList children;
 
@@ -76,44 +74,24 @@ public abstract class BControl implements IAdaptable, Cloneable {
 
 	private Map<String, AbstractAttribute> attributes;
 
-	/**
-	 * Since the parent is set via the method readResolve(), we mark the
-	 * variable as transient
-	 */
+	private BMotionGuide verticalGuide, horizontalGuide;
+
+	// List of outgoing Connections
+	private List<BConnection> sourceConnections;
+	// List of incoming Connections
+	private List<BConnection> targetConnections;
+
+	private transient Rectangle layout = null;
+
+	private transient Point location = null;
+
 	private transient BControl parent;
 
 	private transient Visualization visualization;
 
 	private transient PropertyChangeSupport listeners;
-
-	private transient ArrayList<IObserverListener> observerListener;
 	
 	private transient boolean newControl;
-
-	private BMotionGuide verticalGuide, horizontalGuide;
-
-	/** List of outgoing Connections. */
-	private List<BConnection> sourceConnections;
-	/** List of incoming Connections. */
-	private List<BConnection> targetConnections;
-
-	public static final transient String PROPERTY_LAYOUT = "NodeLayout";
-	public static final transient String PROPERTY_LOCATION = "NodeLocation";
-	public static final transient String PROPERTY_ADD = "NodeAddChild";
-	public static final transient String PROPERTY_REMOVE = "NodeRemoveChild";
-	public static final transient String PROPERTY_RENAME = "NodeRename";
-	/** Property ID to use when the list of outgoing connections is modified. */
-	public static final String SOURCE_CONNECTIONS_PROP = "BMS.SourceConn";
-	/** Property ID to use when the list of incoming connections is modified. */
-	public static final String TARGET_CONNECTIONS_PROP = "BMS.TargetConn";
-
-	public static final String[] standardAttributes = {
-			AttributeConstants.ATTRIBUTE_X,
-			AttributeConstants.ATTRIBUTE_Y, AttributeConstants.ATTRIBUTE_WIDTH,
-			AttributeConstants.ATTRIBUTE_HEIGHT,
-			AttributeConstants.ATTRIBUTE_ID,
-			AttributeConstants.ATTRIBUTE_CUSTOM,
-			AttributeConstants.ATTRIBUTE_VISIBLE };
 
 	public BControl(Visualization visualization) {
 		this.visualization = visualization;
@@ -122,7 +100,6 @@ public abstract class BControl implements IAdaptable, Cloneable {
 		this.events = new HashMap<String, SchedulerEvent>();
 		this.attributes = new HashMap<String, AbstractAttribute>();
 		this.listeners = new PropertyChangeSupport(this);
-		this.observerListener = new ArrayList<IObserverListener>();
 		this.sourceConnections = new ArrayList<BConnection>();
 		this.targetConnections = new ArrayList<BConnection>();
 		this.newControl = true;
@@ -134,7 +111,6 @@ public abstract class BControl implements IAdaptable, Cloneable {
 		for (BControl child : getChildrenArray())
 			child.setParent(this);
 		this.newControl = false;
-		init();
 		return this;
 	}
 
@@ -152,12 +128,12 @@ public abstract class BControl implements IAdaptable, Cloneable {
 		}
 		if (conn.getSource() == this) {
 			getSourceConnections().remove(conn);
-			getListeners().firePropertyChange(SOURCE_CONNECTIONS_PROP, null,
-					conn);
+			getListeners().firePropertyChange(
+					BControlPropertyConstants.SOURCE_CONNECTIONS, null, conn);
 		} else if (conn.getTarget() == this) {
 			getTargetConnections().remove(conn);
-			getListeners().firePropertyChange(TARGET_CONNECTIONS_PROP, null,
-					conn);
+			getListeners().firePropertyChange(
+					BControlPropertyConstants.TARGET_CONNECTIONS, null, conn);
 		}
 	}
 
@@ -173,25 +149,105 @@ public abstract class BControl implements IAdaptable, Cloneable {
 		if (conn == null || conn.getSource() == conn.getTarget()) {
 			throw new IllegalArgumentException();
 		}
-		conn.setVisualization(getVisualization());
 		if (conn.getSource() == this) {
 			getSourceConnections().add(conn);
-			getListeners().firePropertyChange(SOURCE_CONNECTIONS_PROP, null,
-					conn);
+			getListeners().firePropertyChange(
+					BControlPropertyConstants.SOURCE_CONNECTIONS, null, conn);
 		} else if (conn.getTarget() == this) {
 			getTargetConnections().add(conn);
-			getListeners().firePropertyChange(TARGET_CONNECTIONS_PROP, null,
-					conn);
+			getListeners().firePropertyChange(
+					BControlPropertyConstants.TARGET_CONNECTIONS, null, conn);
 		}
 	}
 
-	private void init() {
-
+	protected void init() {
 		// Init standard control attributes
 		initStandardAttributes();
-
 		// Init custom control attributes
 		initAttributes();
+		// Init observer
+		initObserver();
+	}
+
+	private List<String> getSupportedObserverList() {
+
+		List<String> supportedObserver = new ArrayList<String>();
+
+		IExtensionPoint extensionPoint = Platform.getExtensionRegistry()
+				.getExtensionPoint(
+						"de.bmotionstudio.gef.editor.includeObserver");
+
+		for (IExtension extension : extensionPoint.getExtensions()) {
+			for (IConfigurationElement configurationElement : extension
+					.getConfigurationElements()) {
+
+				if ("include".equals(configurationElement.getName())) {
+
+					String langID = configurationElement
+							.getAttribute("language");
+
+					if (langID != null
+							&& langID.equals(getVisualization()
+									.getLanguage())) {
+
+						for (IConfigurationElement configC : configurationElement
+								.getChildren("control")) {
+
+							String cID = configC.getAttribute("id");
+
+							if (getType().equals(cID)) {
+
+								for (IConfigurationElement configO : configC
+										.getChildren("observer")) {
+
+									supportedObserver.add(configO
+											.getAttribute("id"));
+
+								}
+
+							}
+
+						}
+
+					}
+
+				}
+
+			}
+		}
+
+		return supportedObserver;
+
+	}
+
+	private void initObserver() {
+
+		List<String> supportedObserverList = getSupportedObserverList();
+		for (String oID : supportedObserverList) {
+
+			// Check if control has already the observer
+			if (!hasObserver(oID)) {
+
+				// If no, create a new instance and add the observer to the
+				// control
+				IConfigurationElement observerExtension = BMotionEditorPlugin
+						.getObserverExtension(oID);
+				
+				if (observerExtension != null) {
+					try {
+
+
+						Observer newObserver = (Observer) observerExtension
+								.createExecutableExtension("class");
+						addObserver(newObserver);
+					} catch (CoreException e) {
+						e.printStackTrace();
+					}
+				}
+
+			}
+
+		}
 
 	}
 
@@ -328,7 +384,8 @@ public abstract class BControl implements IAdaptable, Cloneable {
 		setAttributeValue(AttributeConstants.ATTRIBUTE_HEIGHT,
 				newLayout.height, false);
 		getListeners()
-				.firePropertyChange(PROPERTY_LAYOUT, oldLayout, newLayout);
+				.firePropertyChange(BControlPropertyConstants.PROPERTY_LAYOUT,
+						oldLayout, newLayout);
 	}
 
 	public Rectangle getLayout() {
@@ -375,7 +432,8 @@ public abstract class BControl implements IAdaptable, Cloneable {
 		location = newLocation;
 		setAttributeValue(AttributeConstants.ATTRIBUTE_X, newLocation.x, false);
 		setAttributeValue(AttributeConstants.ATTRIBUTE_Y, newLocation.y, false);
-		getListeners().firePropertyChange(PROPERTY_LOCATION, oldLocation,
+		getListeners().firePropertyChange(
+				BControlPropertyConstants.PROPERTY_LOCATION, oldLocation,
 				newLocation);
 	}
 
@@ -412,12 +470,14 @@ public abstract class BControl implements IAdaptable, Cloneable {
 		} else {
 			children.add(child);
 		}
-		getListeners().firePropertyChange(PROPERTY_ADD, index, child);
+		getListeners().firePropertyChange(
+				BControlPropertyConstants.PROPERTY_ADD_CHILD, index, child);
 	}
 
 	public void removeAllChildren() {
 		getChildrenArray().clear();
-		getListeners().firePropertyChange(PROPERTY_REMOVE, null, null);
+		getListeners().firePropertyChange(
+				BControlPropertyConstants.PROPERTY_REMOVE_CHILD, null, null);
 	}
 
 	public boolean removeChild(int index) {
@@ -428,7 +488,9 @@ public abstract class BControl implements IAdaptable, Cloneable {
 	public boolean removeChild(BControl child) {
 		boolean b = children.remove(child);
 		if (b)
-			getListeners().firePropertyChange(PROPERTY_REMOVE, child, null);
+			getListeners().firePropertyChange(
+					BControlPropertyConstants.PROPERTY_REMOVE_CHILD, child,
+					null);
 		return b;
 	}
 
@@ -476,9 +538,10 @@ public abstract class BControl implements IAdaptable, Cloneable {
 
 	public void addObserver(Observer observer) {
 		observers.put(observer.getID(), (Observer) observer);
-		for (IObserverListener listener : getObserverListener()) {
-			listener.addedObserver(this, observer);
-		}
+		getListeners()
+				.firePropertyChange(
+						BControlPropertyConstants.PROPERTY_ADD_OBSERVER,
+						observer, null);
 	}
 
 	public void removeObserver(Observer observer) {
@@ -486,11 +549,13 @@ public abstract class BControl implements IAdaptable, Cloneable {
 	}
 
 	public void removeObserver(String observerID) {
-		if (hasObserver(observerID))
-			observers.get(observerID).beforeDelete(this);
-		observers.remove(observerID);
-		for (IObserverListener listener : getObserverListener()) {
-			listener.removedObserver(this);
+		Observer o = observers.remove(observerID);
+		if (o != null) {
+			o.beforeDelete(this);
+			getListeners()
+					.firePropertyChange(
+							BControlPropertyConstants.PROPERTY_REMOVE_OBSERVER,
+							o, null);
 		}
 	}
 
@@ -512,12 +577,18 @@ public abstract class BControl implements IAdaptable, Cloneable {
 
 	public void addEvent(String eventID, SchedulerEvent schedulerEvent) {
 		events.put(eventID, schedulerEvent);
+		getListeners().firePropertyChange(
+				BControlPropertyConstants.PROPERTY_ADD_EVENT, schedulerEvent,
+				null);
 	}
 
 	public void removeEvent(String eventID) {
-		if (hasEvent(eventID))
-			events.get(eventID).beforeDelete(this);
-		events.remove(eventID);
+		SchedulerEvent e = events.remove(eventID);
+		if (e != null) {
+			e.beforeDelete(this);
+			getListeners().firePropertyChange(
+					BControlPropertyConstants.PROPERTY_REMOVE_EVENT, e, null);
+		}
 	}
 
 	public Map<String, AbstractAttribute> getAttributes() {
@@ -631,24 +702,12 @@ public abstract class BControl implements IAdaptable, Cloneable {
 		this.visualization = visualization;
 	}
 
-	protected void populateVisualization(Visualization visualization) {
-		// Populate visualization node
-		setVisualization(visualization);
-		for (BControl child : getChildrenArray())
-			child.populateVisualization(visualization);
-		for (BConnection con : getTargetConnections())
-			con.populateVisualization(visualization);
-		for (BConnection con : getSourceConnections())
-			con.populateVisualization(visualization);
-	}
-
 	@Override
 	public BControl clone() throws CloneNotSupportedException {
 
 		BControl clonedControl = (BControl) super.clone();
 
 		clonedControl.listeners = new PropertyChangeSupport(clonedControl);
-		clonedControl.observerListener = new ArrayList<IObserverListener>();
 		clonedControl.sourceConnections = new ArrayList<BConnection>();
 		clonedControl.targetConnections = new ArrayList<BConnection>();
 
@@ -736,23 +795,6 @@ public abstract class BControl implements IAdaptable, Cloneable {
 
 	public BMotionGuide getHorizontalGuide() {
 		return horizontalGuide;
-	}
-
-	/**
-	 * @return the observerListener
-	 */
-	public ArrayList<IObserverListener> getObserverListener() {
-		if (observerListener == null)
-			observerListener = new ArrayList<IObserverListener>();
-		return observerListener;
-	}
-
-	public void addObserverListener(IObserverListener listener) {
-		getObserverListener().add(listener);
-	}
-
-	public void removeObserverListener(IObserverListener listener) {
-		getObserverListener().remove(listener);
 	}
 
 	/**

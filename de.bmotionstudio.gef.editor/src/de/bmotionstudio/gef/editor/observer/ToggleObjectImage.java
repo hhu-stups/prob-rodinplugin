@@ -14,8 +14,8 @@ public class ToggleObjectImage extends ObserverEvalObject implements Cloneable {
 	public ToggleObjectImage() {
 	}
 
-	public ToggleObjectImage(String type, String image, String eval) {
-		super(type, eval);
+	public ToggleObjectImage(String image, String eval) {
+		super(eval);
 		this.image = image;
 	}
 
