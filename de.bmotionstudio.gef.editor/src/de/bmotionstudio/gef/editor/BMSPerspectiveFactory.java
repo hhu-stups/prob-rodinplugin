@@ -60,7 +60,7 @@ public class BMSPerspectiveFactory implements IPerspectiveFactory {
 		// views
 		IFolderLayout bottom = layout.createFolder("bottom2",
 				IPageLayout.BOTTOM, 0.65f, "bottom1");
-		bottom.addView(IPageLayout.ID_PROP_SHEET);
+		bottom.addView(BMotionPropertyView.ID);
 		bottom.addView(ObserverView.ID);
 		
 	}

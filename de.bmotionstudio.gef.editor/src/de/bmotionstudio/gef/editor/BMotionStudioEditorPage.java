@@ -87,8 +87,6 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.part.IPageSite;
-import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
-import org.eclipse.ui.views.properties.IPropertySheetPage;
 
 import com.thoughtworks.xstream.XStream;
 
@@ -279,17 +277,17 @@ public class BMotionStudioEditorPage extends GraphicalEditor {
 
 	@Override
 	public Object getAdapter(@SuppressWarnings("rawtypes") Class type) {
-		if (type == ZoomManager.class)
-			return ((ScalableRootEditPart) getGraphicalViewer()
-					.getRootEditPart()).getZoomManager();
-		if (type == IContentOutlinePage.class)
-			return new BMotionOutlinePage();
-		if (type == IPropertySheetPage.class) {
-			BMotionStudioPropertySheet page = new BMotionStudioPropertySheet();
-			page.setRootEntry(new CustomSortPropertySheetEntry(
-					getCommandStack()));
-			return page;
-		}
+		// if (type == ZoomManager.class)
+		// return ((ScalableRootEditPart) getGraphicalViewer()
+		// .getRootEditPart()).getZoomManager();
+		// if (type == IContentOutlinePage.class)
+		// return new BMotionOutlinePage();
+		// if (type == IPropertySheetPage.class) {
+		// BMotionPropertyPage page = new BMotionPropertyPage();
+		// page.setRootEntry(new CustomSortPropertySheetEntry(
+		// getCommandStack()));
+		// return page;
+		// }
 		return super.getAdapter(type);
 	}
 

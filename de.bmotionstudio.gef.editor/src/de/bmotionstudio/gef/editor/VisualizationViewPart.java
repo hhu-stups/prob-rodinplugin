@@ -6,8 +6,10 @@ import org.eclipse.gef.EditDomain;
 import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.gef.SnapToGeometry;
 import org.eclipse.gef.SnapToGrid;
+import org.eclipse.gef.commands.CommandStack;
 import org.eclipse.gef.editparts.ScalableRootEditPart;
 import org.eclipse.gef.rulers.RulerProvider;
+import org.eclipse.gef.ui.actions.ActionRegistry;
 import org.eclipse.gef.ui.parts.ScrollingGraphicalViewer;
 import org.eclipse.gef.ui.rulers.RulerComposite;
 import org.eclipse.swt.SWT;
@@ -15,6 +17,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.part.IPage;
 import org.eclipse.ui.part.MessagePage;
 import org.eclipse.ui.part.Page;
@@ -41,8 +44,12 @@ public class VisualizationViewPart extends PageBookView {
 
 	private VisualizationViewPage page;
 
+	private ActionRegistry actionRegistry;
+
 	@Override
 	public Object getAdapter(@SuppressWarnings("rawtypes") Class type) {
+
+		// System.out.println("Try to get adapter: " + type);
 
 		// // Adapter for zoom manager
 		// if (type == ZoomManager.class)
@@ -54,9 +61,12 @@ public class VisualizationViewPart extends PageBookView {
 		//
 		// Adapter for property page
 		if (type == IPropertySheetPage.class) {
-			BMotionStudioPropertySheet page = new BMotionStudioPropertySheet();
-			page.setRootEntry(new CustomSortPropertySheetEntry(editDomain
-					.getCommandStack()));
+			BMotionPropertyPage page = new BMotionPropertyPage(
+					getCommandStack(), getActionRegistry().getAction(
+							ActionFactory.UNDO.getId()), getActionRegistry()
+							.getAction(ActionFactory.REDO.getId()));
+			page.setRootEntry(new CustomSortPropertySheetEntry(
+					getCommandStack()));
 			return page;
 		}
 
@@ -68,12 +78,20 @@ public class VisualizationViewPart extends PageBookView {
 	public void setFocus() {
 	}
 
+	protected ActionRegistry getActionRegistry() {
+		if (actionRegistry == null)
+			actionRegistry = new ActionRegistry();
+		return actionRegistry;
+	}
+
 	public Visualization getVisualization() {
 		return this.visualizationView.getVisualization();
 	}
 
 	public GraphicalViewer getGraphicalViewer() {
-		return page.getGraphicalViewer();
+		if (page != null)
+			return page.getGraphicalViewer();
+		return null;
 	}
 
 	@Override
@@ -87,6 +105,7 @@ public class VisualizationViewPart extends PageBookView {
 
 	@Override
 	protected PageRec doCreatePage(IWorkbenchPart part) {
+		System.out.println("DO CREATE PAGE");
 		if (part instanceof BMotionStudioEditor) {
 			BMotionStudioEditor editor = (BMotionStudioEditor) part;
 			Simulation simulation = editor.getSimulation();
@@ -125,6 +144,10 @@ public class VisualizationViewPart extends PageBookView {
 		return editDomain;
 	}
 
+	protected CommandStack getCommandStack() {
+		return getEditDomain().getCommandStack();
+	}
+
 	public void setEditDomain(EditDomain editDomain) {
 		this.editDomain = editDomain;
 	}
@@ -156,7 +179,13 @@ public class VisualizationViewPart extends PageBookView {
 			graphicalViewer.createControl(container);
 			configureGraphicalViewer();
 			initGraphicalViewer();
+			hookGraphicalViewer();
 			setPartName(getVisualizationView().getName());
+		}
+
+		protected void hookGraphicalViewer() {
+			// getSelectionSynchronizer().addViewer(getGraphicalViewer());
+			getSite().setSelectionProvider(getGraphicalViewer());
 		}
 
 		public void configureGraphicalViewer() {

@@ -33,6 +33,7 @@ public class CustomSortPropertySheetEntry extends UndoablePropertySheetEntry {
 		super(stack);
 	}
 
+	@Override
 	protected PropertySheetEntry createChildEntry() {
 		return new CustomSortPropertySheetEntry(getCommandStack());
 	}

@@ -43,16 +43,9 @@ public class BMSTreeEditPartFactory implements EditPartFactory {
 			}
 
 		}
-		// else if (model instanceof Observer) {
-		// part = new ObserverTreeEditPart();
-		// } else if (model instanceof ObserverRootVirtualTreeNode) {
-		// part = new ObserverRootTreeEditpart();
-		// }
 
 		if (part != null)
 			part.setModel(model);
-
-		System.out.println("CREATE EDIT PART!!! " + part);
 
 		return part;
 

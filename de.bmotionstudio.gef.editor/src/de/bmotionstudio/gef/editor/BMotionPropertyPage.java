@@ -6,18 +6,21 @@
 
 package de.bmotionstudio.gef.editor;
 
+import org.eclipse.gef.commands.CommandStack;
+import org.eclipse.gef.ui.properties.UndoablePropertySheetPage;
+import org.eclipse.jface.action.IAction;
 import org.eclipse.ui.views.properties.IPropertySheetEntry;
-import org.eclipse.ui.views.properties.PropertySheetPage;
 import org.eclipse.ui.views.properties.PropertySheetSorter;
 
 /**
  * @author Lukas Ladenberger
  * 
  */
-public class BMotionStudioPropertySheet extends PropertySheetPage {
+public class BMotionPropertyPage extends UndoablePropertySheetPage {
 
-	public BMotionStudioPropertySheet() {
-		super();
+	public BMotionPropertyPage(CommandStack commandStack, IAction undoAction,
+			IAction redoAction) {
+		super(commandStack, undoAction, redoAction);
 		setSorter(new PropertySheetSorter() {
 			@Override
 			public int compare(IPropertySheetEntry entryA,

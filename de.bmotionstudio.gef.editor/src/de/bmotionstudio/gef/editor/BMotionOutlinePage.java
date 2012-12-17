@@ -82,13 +82,15 @@ public class BMotionOutlinePage extends ContentOutlinePage {
 
 	@Override
 	public void createControl(Composite parent) {
-		initializeOverview(parent);
-		viewPart.getGraphicalViewer().getControl()
-				.addDisposeListener(disposeListener);
-		configureOutlineViewer();
-		// hookOutlineViewer();
-		initializeOutlineViewer();
-		createMenu();
+		GraphicalViewer graphicalViewer = viewPart.getGraphicalViewer();
+		if (graphicalViewer != null) {
+			initializeOverview(parent);
+			graphicalViewer.getControl().addDisposeListener(disposeListener);
+			configureOutlineViewer();
+			// hookOutlineViewer();
+			initializeOutlineViewer();
+			createMenu();
+		}
 	}
 
 	private void initializeOutlineViewer() {
@@ -129,7 +131,10 @@ public class BMotionOutlinePage extends ContentOutlinePage {
 
 	}
 
-	protected void initializeOverview(Composite parent) {
+	private void initializeOverview(Composite parent) {
+
+		GraphicalViewer graphicalViewer = this.viewPart.getGraphicalViewer();
+
 		sash = new SashForm(parent, SWT.VERTICAL);
 
 		getViewer().createControl(sash);
@@ -140,11 +145,10 @@ public class BMotionOutlinePage extends ContentOutlinePage {
 		LightweightSystem lws = new LightweightSystem(canvas);
 
 		thumbnail = new ScrollableThumbnail(
-				(Viewport) ((ScalableRootEditPart) this.viewPart
-						.getGraphicalViewer().getRootEditPart()).getFigure());
-		thumbnail.setSource(((ScalableRootEditPart) this.viewPart
-				.getGraphicalViewer().getRootEditPart())
-				.getLayer(LayerConstants.PRINTABLE_LAYERS));
+				(Viewport) ((ScalableRootEditPart) graphicalViewer
+						.getRootEditPart()).getFigure());
+		thumbnail.setSource(((ScalableRootEditPart) graphicalViewer
+				.getRootEditPart()).getLayer(LayerConstants.PRINTABLE_LAYERS));
 
 		lws.setContents(thumbnail);
 
@@ -156,6 +160,7 @@ public class BMotionOutlinePage extends ContentOutlinePage {
 				}
 			}
 		};
+
 	}
 
 	public Control getControl() {
