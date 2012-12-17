@@ -100,43 +100,52 @@ task downloadCli << {
 	
 }
 
-task downloadCSPM ( type:Exec ) {
+
+
+task downloadCli2 ( type: Exec ) {
 	
-	def targetdir = workspacePath+"de.prob.core/lib/"
+		def dir = workspacePath+'de.prob.core/prob/'
+		delete file(dir)
+	    new File(dir).mkdirs() 
 	
-	if ( Os.isFamily(Os.FAMILY_WINDOWS) )
-	{
-		println "Downloading CSPM for Windows"
-			File f = new File(targetdir+"cspm.exe")
-			f.delete()
-			download( "http://nightly.cobra.cs.uni-duesseldorf.de/cspm/cspm-windows", targetdir+"cspm.exe" )
-	}
-	else if ( Os.isFamily(Os.FAMILY_MAC) )
-	{	
-		File f = new File(targetdir+"cspm")
-		f.delete()
-		print "Downloading CSPM for MAC "+Os.OS_ARCH
-		if( Os.OS_ARCH.contains("64") ){
-			download( "http://nightly.cobra.cs.uni-duesseldorf.de/cspm/cspm-leopard64", targetdir+"cspm" )
-		}else{
-			download( "http://nightly.cobra.cs.uni-duesseldorf.de/cspm/cspm-leopard", targetdir+"cspm" )
-		}
-		commandLine 'chmod', 'a+x', targetdir+"cspm"
-	}
-	else if( Os.isFamily(Os.FAMILY_UNIX) )
-	{
-		File f = new File(targetdir+"cspm")
-		f.delete()
-		println "Downloading CSPM for Linux "+Os.OS_ARCH
-		if( Os.OS_ARCH.contains("64") ){
-			download( "http://nightly.cobra.cs.uni-duesseldorf.de/cspm/cspm-linux64", targetdir+"cspm" )
-		}else{
-			download( "http://nightly.cobra.cs.uni-duesseldorf.de/cspm/cspm-linux32", targetdir+"cspm" )
-		}
-		commandLine 'chmod', 'a+x', targetdir+"cspm"
-	}
+		['leopard64':'macos','linux':'linux','linux64':'linux64','win32':'windows'].each {
+		def n = it.getKey()
 	
+		def targetdir = dir+it.getValue()
+		def targetzip = dir+"probcli_${n}.zip"
+		def url = "http://nightly.cobra.cs.uni-duesseldorf.de/cli/probcli_${n}.zip"
+		download(url,targetzip)
+	    FileTree zip = zipTree(targetzip)
+	    copy {
+		   from zip
+		   into targetdir
+	    }
+		delete file(targetzip)
+	}
+
+	def targetdir = dir+"windows/"
+	def targetzip = targetdir+"windowslib.zip"
+	download("http://nightly.cobra.cs.uni-duesseldorf.de/cli/windowslib.zip",targetzip)
+	FileTree zip = zipTree(targetzip)
+	    copy {
+		   from zip
+		   into targetdir
+	    }
+	delete file(targetzip)
+			
+	['leopard64':'macos','linux32':'linux','linux64':'linux64'].each {
+	
+		def n = it.getKey()
+		targetdir = dir+it.getValue()
+
+		download( "http://nightly.cobra.cs.uni-duesseldorf.de/cspm/cspm-"+n, targetdir+"/cspm" )
+	}
+	commandLine 'chmod', 'a+x', dir+'linux'+'/cspm', dir+'linux64'+'/cspm', dir+'macos'+'/cspm' 
+	//commandLine 'chmod', 'a+x', dir+'*'+'/cspm' 
+	
+	download( "http://nightly.cobra.cs.uni-duesseldorf.de/cspm/cspm-windows", dir+"windows"+"/cspm.exe" )
 }
+
 
 
 completeInstall.dependsOn downloadCli
