@@ -6,7 +6,7 @@
 
 package de.bmotionstudio.gef.editor.library;
 
-import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.part.IPage;
@@ -14,7 +14,7 @@ import org.eclipse.ui.part.MessagePage;
 import org.eclipse.ui.part.PageBook;
 import org.eclipse.ui.part.PageBookView;
 
-import de.bmotionstudio.gef.editor.BMotionStudioEditor;
+import de.bmotionstudio.gef.editor.VisualizationViewPart;
 
 public class LibraryView extends PageBookView {
 
@@ -39,13 +39,10 @@ public class LibraryView extends PageBookView {
 
 	@Override
 	protected PageRec doCreatePage(IWorkbenchPart part) {
-		if (part instanceof BMotionStudioEditor) {
-			page = new LibraryPage((BMotionStudioEditor) part);
-			initPage(page);
-			page.createControl(getPageBook());
-			return new PageRec(part, page);
-		}
-		return null;
+		page = new LibraryPage();
+		initPage(page);
+		page.createControl(getPageBook());
+		return new PageRec(part, page);
 	}
 
 	@Override
@@ -58,11 +55,12 @@ public class LibraryView extends PageBookView {
 	@Override
 	protected IWorkbenchPart getBootstrapPart() {
 		IWorkbenchPage page = getSite().getPage();
-		if (page != null) {
-			return page.getActiveEditor();
-		}
+		IViewPart view = page.findView(VisualizationViewPart.ID);
+		if (view != null)
+			return view;
 		return null;
 	}
+
 
 	public void partBroughtToTop(IWorkbenchPart part) {
 		partActivated(part);
@@ -70,7 +68,8 @@ public class LibraryView extends PageBookView {
 
 	@Override
 	protected boolean isImportant(IWorkbenchPart part) {
-		return (part instanceof IEditorPart);
+		return part instanceof VisualizationViewPart;
 	}
+
 
 }

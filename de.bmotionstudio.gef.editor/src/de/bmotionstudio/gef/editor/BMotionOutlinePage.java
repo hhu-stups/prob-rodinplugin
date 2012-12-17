@@ -74,10 +74,12 @@ public class BMotionOutlinePage extends ContentOutlinePage {
 	protected void unhookOutlineViewer() {
 		GraphicalViewer graphicalViewer = viewPart.getGraphicalViewer();
 		// getSelectionSynchronizer().removeViewer(getViewer());
-		if (graphicalViewer.getControl() != null
-				&& !graphicalViewer.getControl().isDisposed())
-			graphicalViewer.getControl().removeDisposeListener(
-					disposeListener);
+		if (graphicalViewer != null) {
+			if (graphicalViewer.getControl() != null
+					&& !graphicalViewer.getControl().isDisposed())
+				graphicalViewer.getControl().removeDisposeListener(
+						disposeListener);
+		}
 	}
 
 	@Override
@@ -167,6 +169,7 @@ public class BMotionOutlinePage extends ContentOutlinePage {
 		return sash;
 	}
 
+	@Override
 	public void dispose() {
 		unhookOutlineViewer();
 		super.dispose();

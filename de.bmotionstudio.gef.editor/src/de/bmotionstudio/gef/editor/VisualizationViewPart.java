@@ -46,6 +46,8 @@ public class VisualizationViewPart extends PageBookView {
 
 	private ActionRegistry actionRegistry;
 
+	private Composite x;
+
 	@Override
 	public Object getAdapter(@SuppressWarnings("rawtypes") Class type) {
 
@@ -74,8 +76,11 @@ public class VisualizationViewPart extends PageBookView {
 
 	}
 
+	// Workaround for prevent recursive activiation of part
 	@Override
 	public void setFocus() {
+		x.setFocus();
+		super.setFocus();
 	}
 
 	protected ActionRegistry getActionRegistry() {
@@ -104,8 +109,25 @@ public class VisualizationViewPart extends PageBookView {
 	}
 
 	@Override
+	protected void partVisible(IWorkbenchPart part) {
+		// TODO Auto-generated method stub
+		super.partVisible(part);
+	}
+
+	@Override
+	public void partActivated(IWorkbenchPart part) {
+		// System.out.println(this + " : ACTIVATE: " + part);
+		super.partActivated(part);
+	}
+
+	@Override
+	public void createPartControl(Composite parent) {
+		this.x = parent;
+		super.createPartControl(parent);
+	}
+
+	@Override
 	protected PageRec doCreatePage(IWorkbenchPart part) {
-		System.out.println("DO CREATE PAGE");
 		if (part instanceof BMotionStudioEditor) {
 			BMotionStudioEditor editor = (BMotionStudioEditor) part;
 			Simulation simulation = editor.getSimulation();
@@ -123,7 +145,10 @@ public class VisualizationViewPart extends PageBookView {
 	}
 
 	@Override
-	protected void doDestroyPage(IWorkbenchPart part, PageRec pageRecord) {
+	protected void doDestroyPage(IWorkbenchPart part, PageRec rec) {
+		VisualizationViewPage page = (VisualizationViewPage) rec.page;
+		page.dispose();
+		rec.dispose();
 	}
 
 	@Override

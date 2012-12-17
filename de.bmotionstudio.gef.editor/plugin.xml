@@ -85,13 +85,6 @@
             name="Outline"
             restorable="true">
       </view>
-      <view
-            category="de.bmotionstudio.views"
-            class="de.bmotionstudio.gef.editor.BMotionPropertyView"
-            id="de.bmotionstudio.gef.editor.PropertyView"
-            name="Properties"
-            restorable="true">
-      </view>
    </extension>
    <extension
          point="org.eclipse.ui.menus">

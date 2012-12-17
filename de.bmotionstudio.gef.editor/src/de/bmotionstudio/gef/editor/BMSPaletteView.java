@@ -1,7 +1,6 @@
 package de.bmotionstudio.gef.editor;
 
 import org.eclipse.draw2d.ColorConstants;
-import org.eclipse.gef.EditDomain;
 import org.eclipse.gef.dnd.TemplateTransferDragSourceListener;
 import org.eclipse.gef.ui.palette.PaletteViewer;
 import org.eclipse.swt.SWT;
@@ -34,12 +33,12 @@ public class BMSPaletteView extends PageBookView {
 
 	@Override
 	public void partActivated(IWorkbenchPart part) {
-		if (part instanceof VisualizationViewPart) {
-			VisualizationViewPart visView = (VisualizationViewPart) part;
-			EditDomain domain = visView.getEditDomain();
-			if (domain != null)
-				domain.setPaletteViewer(paletteViewer);
-		}
+		// if (part instanceof VisualizationViewPart) {
+		// VisualizationViewPart visView = (VisualizationViewPart) part;
+		// EditDomain domain = visView.getEditDomain();
+		// if (domain != null)
+		// domain.setPaletteViewer(paletteViewer);
+		// }
 		super.partActivated(part);
 	}
 

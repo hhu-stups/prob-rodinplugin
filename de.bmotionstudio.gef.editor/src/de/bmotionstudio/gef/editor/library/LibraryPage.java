@@ -40,8 +40,6 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.part.IPageSite;
 import org.eclipse.ui.part.Page;
 
-import de.bmotionstudio.gef.editor.BMotionStudioEditor;
-
 public class LibraryPage extends Page {
 
 	private Image previewImage;
@@ -54,10 +52,9 @@ public class LibraryPage extends Page {
 
 	private Action importImagesAction, deleteItemAction;
 
-	private BMotionStudioEditor editor;
+	// private BMotionStudioEditor editor;
 
-	public LibraryPage(final BMotionStudioEditor editor) {
-		this.editor = editor;
+	public LibraryPage() {
 	}
 
 	@Override
@@ -216,7 +213,7 @@ public class LibraryPage extends Page {
 
 		List<LibraryObject> tmpList = new ArrayList<LibraryObject>();
 
-		if (editor != null) {
+		// if (editor != null) {
 
 			// TODO Reimplement me!
 
@@ -260,7 +257,7 @@ public class LibraryPage extends Page {
 			// }
 			// }
 
-		}
+		// }
 
 		return tmpList;
 
@@ -289,13 +286,13 @@ public class LibraryPage extends Page {
 		super.dispose();
 	}
 
-	public BMotionStudioEditor getEditor() {
-		return editor;
-	}
-
-	public void setEditor(final BMotionStudioEditor editor) {
-		this.editor = editor;
-	}
+	// public BMotionStudioEditor getEditor() {
+	// return editor;
+	// }
+	//
+	// public void setEditor(final BMotionStudioEditor editor) {
+	// this.editor = editor;
+	// }
 
 	public TableViewer getTableViewer() {
 		return tvLibrary;
