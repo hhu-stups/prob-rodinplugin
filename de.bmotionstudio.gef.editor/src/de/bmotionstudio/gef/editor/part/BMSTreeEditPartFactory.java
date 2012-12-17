@@ -18,6 +18,7 @@ import de.bmotionstudio.gef.editor.model.Visualization;
 
 public class BMSTreeEditPartFactory implements EditPartFactory {
 
+	@Override
 	public EditPart createEditPart(EditPart context, Object model) {
 
 		BMSAbstractTreeEditPart part = null;
@@ -50,6 +51,8 @@ public class BMSTreeEditPartFactory implements EditPartFactory {
 
 		if (part != null)
 			part.setModel(model);
+
+		System.out.println("CREATE EDIT PART!!! " + part);
 
 		return part;
 

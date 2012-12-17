@@ -19,7 +19,7 @@
             extensions="bmso"
             icon="icons/logo_bmotion.png"
             id="de.bmotionstudio.gef.editor.BMotionStudioEditor"
-            name="BMotion Studio Editor">
+            name="BMotion Studio">
       </editor>
    </extension>
    <extension
@@ -65,6 +65,7 @@
             allowMultiple="true"
             category="de.bmotionstudio.views"
             class="de.bmotionstudio.gef.editor.VisualizationViewPart"
+            icon="icons/logo_bmotion.png"
             id="de.bmotionstudio.gef.editor.VisualizationView"
             name="Visualization"
             restorable="true">
@@ -74,6 +75,14 @@
             class="de.bmotionstudio.gef.editor.BMSPaletteView"
             id="de.bmotionstudio.gef.editor.PaletteView"
             name="Palette"
+            restorable="true">
+      </view>
+      <view
+            allowMultiple="false"
+            category="de.bmotionstudio.views"
+            class="de.bmotionstudio.gef.editor.BMotionOutlineView"
+            id="de.bmotionstudio.gef.editor.OutlineView"
+            name="Outline"
             restorable="true">
       </view>
    </extension>
@@ -163,6 +172,15 @@
             </with>
          </enabledWhen>
       </handler>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectives">
+      <perspective
+            class="de.bmotionstudio.gef.editor.BMSPerspectiveFactory"
+            icon="icons/logo_bmotion.png"
+            id="de.bmotionstudio.gef.editor.perspective"
+            name="BMS">
+      </perspective>
    </extension>
    <extension
          point="de.prob.core.animation">
@@ -682,5 +700,5 @@
             </observer>
          </control>
       </include>   
-   </extension>   
+   </extension>
 </plugin>

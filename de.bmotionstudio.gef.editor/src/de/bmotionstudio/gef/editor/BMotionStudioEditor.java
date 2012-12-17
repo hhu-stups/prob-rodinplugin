@@ -15,6 +15,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
+import java.util.EventObject;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -31,6 +32,7 @@ import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.core.runtime.preferences.PreferenceFilterEntry;
 import org.eclipse.gef.EditDomain;
 import org.eclipse.gef.commands.CommandStack;
+import org.eclipse.gef.commands.CommandStackListener;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -47,7 +49,6 @@ import org.eclipse.ui.IPerspectiveRegistry;
 import org.eclipse.ui.IViewReference;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchPartReference;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
@@ -114,11 +115,12 @@ public class BMotionStudioEditor extends EditorPart implements IPartListener2 {
 
 		// Yes --> just switch to this perspective
 		if (perspective != null) {
+			System.out.println("Swtich perspective");
 			switchPerspective(perspective.getId());
 		} else {
 			// No --> create a new one
 			IPerspectiveDescriptor originalPerspectiveDescriptor = perspectiveRegistry
-					.findPerspectiveWithId("de.bmotionstudio.perspective.run");
+					.findPerspectiveWithId(BMSPerspectiveFactory.ID);
 			switchPerspective(originalPerspectiveDescriptor.getId());
 			perspective = perspectiveRegistry.clonePerspective(perspectiveId,
 					perspectiveId, originalPerspectiveDescriptor);
@@ -240,6 +242,7 @@ public class BMotionStudioEditor extends EditorPart implements IPartListener2 {
 
 	@Override
 	public void dispose() {
+		getCommandStack().removeCommandStackListener(getCommandStackListener());
 		IWorkbenchPage activePage = PlatformUI.getWorkbench()
 				.getActiveWorkbenchWindow().getActivePage();
 		if (activePage != null)
@@ -255,9 +258,11 @@ public class BMotionStudioEditor extends EditorPart implements IPartListener2 {
 
 		file = ((IFileEditorInput) input).getFile();
 
+		InputStream inputStream = null;
+		
 		try {
 
-			InputStream inputStream = file.getContents();
+			inputStream = file.getContents();
 
 			XStream xstream = new XStream() {
 				@Override
@@ -296,7 +301,8 @@ public class BMotionStudioEditor extends EditorPart implements IPartListener2 {
 						"New Visualization View", visualization);
 
 				String secId = UUID.randomUUID().toString();
-				createVisualizationViewPart(secId, editDomain, visualization);
+				createVisualizationViewPart(secId, editDomain,
+						visualizationView);
 
 				simulation.getVisualizationViews()
 						.put(secId, visualizationView);
@@ -316,47 +322,58 @@ public class BMotionStudioEditor extends EditorPart implements IPartListener2 {
 					vis.setProjectFile(file);
 					// String partName = visView.getPartName();
 					IViewReference viewReference = site.getPage()
-							.findViewReference(
-							VisualizationViewPart.ID, secId);
+							.findViewReference(VisualizationViewPart.ID, secId);
 					// Check if view already exists
+
 					if (viewReference != null) {
-						VisualizationViewPart visualizationView = (VisualizationViewPart) viewReference
-								.getView(false);
-						if (visualizationView != null) {
-							visualizationView.initGraphicalViewer(editDomain,
-									vis);
-						} else {
-							//TODO return some error!
-						}
 					} else {
 						// If not, create a new one
-						createVisualizationViewPart(secId, editDomain, vis);
+						createVisualizationViewPart(secId, editDomain, visView);
 					}
 
+				}
+
+				// Close all unused visualization views
+				for (IViewReference viewReference : site.getPage()
+						.getViewReferences()) {
+					if (viewReference.getId().equals(VisualizationViewPart.ID)) {
+						if (!simulation.getVisualizationViews().containsKey(
+								viewReference.getSecondaryId()))
+							site.getPage().hideView(viewReference);
+					}
 				}
 
 			}
 
 		} catch (CoreException e) {
 			e.printStackTrace();
+		} finally {
+			try {
+				if (inputStream != null)
+					inputStream.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 
 		setSite(site);
 		setInput(input);
 
+		getCommandStack().addCommandStackListener(getCommandStackListener());
+
 	}
 
 	private VisualizationViewPart createVisualizationViewPart(String secId,
-			EditDomain editDomain, Visualization visualization)
+			EditDomain editDomain, VisualizationView visualizationView)
 			throws PartInitException {
 		IWorkbenchWindow window = PlatformUI.getWorkbench()
 				.getActiveWorkbenchWindow();
 		IWorkbenchPage activePage = window.getActivePage();
-		VisualizationViewPart visualizationView = (VisualizationViewPart) activePage
+		VisualizationViewPart visualizationViewPart = (VisualizationViewPart) activePage
 				.showView(VisualizationViewPart.ID, secId,
 						IWorkbenchPage.VIEW_VISIBLE);
-		visualizationView.initGraphicalViewer(editDomain, visualization);
-		return visualizationView;
+		return visualizationViewPart;
 	}
 
 	private void switchPerspective(String id) {
@@ -386,13 +403,14 @@ public class BMotionStudioEditor extends EditorPart implements IPartListener2 {
 
 	@Override
 	public void doSave(final IProgressMonitor monitor) {
-
+		PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage()
+				.savePerspectiveAs(perspective);
 		exportPerspective(perspective);
-
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		OutputStreamWriter writer = null;
 		try {
 			// saveProperties();
-			OutputStreamWriter writer = new OutputStreamWriter(out, "UTF8");
+			writer = new OutputStreamWriter(out, "UTF8");
 			XStream xstream = new XStream();
 			BMotionEditorPlugin.setAliases(xstream);
 			xstream.toXML(simulation, writer);
@@ -404,8 +422,15 @@ public class BMotionStudioEditor extends EditorPart implements IPartListener2 {
 			ce.printStackTrace();
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
+		} finally {
+			try {
+				out.close();
+				if (writer != null)
+					writer.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
-
 	}
 
 	@Override
@@ -445,13 +470,13 @@ public class BMotionStudioEditor extends EditorPart implements IPartListener2 {
 					Visualization visualization = new Visualization(
 							"RushHour.bmso",
 							"EventB", version);
-					
-					createVisualizationViewPart(secId, editDomain,
-							visualization);
 
 					VisualizationView visualizationView = new VisualizationView(
 							"New Visulization View", visualization);
 					simulation.getVisualizationViews().put(secId,
+							visualizationView);
+					
+					createVisualizationViewPart(secId, editDomain,
 							visualizationView);
 
 					setDirty(true);
@@ -473,6 +498,24 @@ public class BMotionStudioEditor extends EditorPart implements IPartListener2 {
 	public void setFocus() {
 	}
 
+	public Simulation getSimulation() {
+		return simulation;
+	}
+
+	public void setSimulation(Simulation simulation) {
+		this.simulation = simulation;
+	}
+
+	private CommandStackListener commandStackListener = new CommandStackListener() {
+		public void commandStackChanged(EventObject event) {
+			setDirty(getCommandStack().isDirty());
+		}
+	};
+
+	protected CommandStackListener getCommandStackListener() {
+		return commandStackListener;
+	}
+
 	public CommandStack getCommandStack() {
 		return getEditDomain().getCommandStack();
 	}
@@ -483,9 +526,9 @@ public class BMotionStudioEditor extends EditorPart implements IPartListener2 {
 
 	@Override
 	public void partActivated(IWorkbenchPartReference partRef) {
-		IWorkbenchPart part = partRef.getPart(false);
-		if (part == this)
-			openPerspective(partRef.getPage());
+		// IWorkbenchPart part = partRef.getPart(false);
+		// if (part == this)
+		// openPerspective(partRef.getPage());
 	}
 
 	@Override
@@ -499,6 +542,11 @@ public class BMotionStudioEditor extends EditorPart implements IPartListener2 {
 			exportPerspective(perspective);
 			closePerspective(partRef.getPage(), perspective);
 			deletePerspective(partRef.getPage(), perspective);
+		} else if (partRef.getPart(true) instanceof VisualizationViewPart) {
+			VisualizationViewPart visPart = (VisualizationViewPart) partRef
+					.getPart(true);
+			String secondaryId = visPart.getViewSite().getSecondaryId();
+			simulation.getVisualizationViews().remove(secondaryId);
 		}
 	}
 

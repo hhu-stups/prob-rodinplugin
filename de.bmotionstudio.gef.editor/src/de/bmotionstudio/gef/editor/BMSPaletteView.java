@@ -2,6 +2,7 @@ package de.bmotionstudio.gef.editor;
 
 import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.gef.EditDomain;
+import org.eclipse.gef.dnd.TemplateTransferDragSourceListener;
 import org.eclipse.gef.ui.palette.PaletteViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
@@ -18,7 +19,9 @@ import org.eclipse.ui.part.PageBookView;
 
 public class BMSPaletteView extends PageBookView {
 
-	// private PaletteViewer paletteViewer;
+	private PaletteViewer paletteViewer;
+
+	public static String ID = "de.bmotionstudio.gef.editor.PaletteView";
 
 	@Override
 	protected IWorkbenchPart getBootstrapPart() {
@@ -27,6 +30,17 @@ public class BMSPaletteView extends PageBookView {
 		if (view != null)
 			return view;
 		return null;
+	}
+
+	@Override
+	public void partActivated(IWorkbenchPart part) {
+		if (part instanceof VisualizationViewPart) {
+			VisualizationViewPart visView = (VisualizationViewPart) part;
+			EditDomain domain = visView.getEditDomain();
+			if (domain != null)
+				domain.setPaletteViewer(paletteViewer);
+		}
+		super.partActivated(part);
 	}
 
 	@Override
@@ -41,11 +55,6 @@ public class BMSPaletteView extends PageBookView {
 	}
 
 	@Override
-	public void partActivated(IWorkbenchPart part) {
-		super.partActivated(part);
-	}
-
-	@Override
 	protected boolean isImportant(IWorkbenchPart part) {
 		return part instanceof VisualizationViewPart;
 	}
@@ -55,17 +64,19 @@ public class BMSPaletteView extends PageBookView {
 		private Composite container;
 
 		protected void createPaletteViewer(Composite parent) {
-			PaletteViewer viewer = new PaletteViewer();
-			viewer.createControl(parent);
-			viewer.getControl().setBackground(ColorConstants.green);
-			EditDomain domain = new EditDomain();
-			domain.setPaletteViewer(viewer);
+			paletteViewer = new PaletteViewer();
+			paletteViewer.createControl(parent);
+			paletteViewer.getControl().setBackground(ColorConstants.green);
+			paletteViewer.setPaletteRoot(new EditorPaletteFactory()
+					.createPalette(null));
+			paletteViewer
+					.addDragSourceListener(new TemplateTransferDragSourceListener(
+							paletteViewer));
 		}
 
 		@Override
 		public void createControl(Composite parent) {
 			container = new Composite(parent, SWT.NONE);
-			container.setBackground(ColorConstants.red);
 			container.setLayout(new FillLayout());
 			createPaletteViewer(container);
 		}
@@ -92,8 +103,6 @@ public class BMSPaletteView extends PageBookView {
 
 	@Override
 	protected void doDestroyPage(IWorkbenchPart part, PageRec pageRecord) {
-		// TODO Auto-generated method stub
-
 	}
 
 }
