@@ -138,7 +138,7 @@ task downloadCli2 ( type: Exec ) {
 
 		download( "http://nightly.cobra.cs.uni-duesseldorf.de/cspm/cspm-"+n, targetdir+"/lib/cspm" )
 	}
-	commandLine 'chmod', 'a+x', dir+'linux'+'/lib/cspm', dir+'linux64'+'/lib/cspm', dir+'macos'+'/lib/cspm' 
+	commandLine 'chmod', 'a+x', dir+'linux'+'/cspm', dir+'linux64'+'/cspm', dir+'macos'+'/lib/cspm' 
 	//commandLine 'chmod', 'a+x', dir+'*'+'/cspm' 
 	
 	download( "http://nightly.cobra.cs.uni-duesseldorf.de/cspm/cspm-windows", dir+"windows"+"/lib/cspm.exe" )
