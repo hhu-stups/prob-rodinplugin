@@ -1269,5 +1269,11 @@
                descriptionId="de.prob.ui.unitPragma">
          </attributeReference>
       </attributeRelation>
+      <attributeRelation
+            elementTypeId="org.eventb.core.constant">
+         <attributeReference
+               descriptionId="de.prob.ui.unitPragma">
+         </attributeReference>
+      </attributeRelation>
    </extension>
 </plugin>
