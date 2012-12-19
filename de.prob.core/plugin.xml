@@ -23,4 +23,12 @@
             class="de.prob.core.StaticListenerRegistry">
       </listener>
    </extension>
+   <extension
+         point="org.rodinp.core.attributeTypes">
+      <attributeType
+            id="unitPragma"
+            kind="string"
+            name="Content of a unit Pragma to send to ProB">
+      </attributeType>
+   </extension>
 </plugin>

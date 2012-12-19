@@ -1195,4 +1195,21 @@
          </variable>
       </sourceProvider>
         </extension>
+   <extension
+         point="org.eventb.ui.editorItems">
+      <textAttribute
+            class="de.prob.ui.pragmas.UnitPragma"
+            expandsHorizontally="true"
+            id="de.prob.ui.unitPragma"
+            isMath="true"
+            style="de.prob.ui.unitPragma"
+            typeId="de.prob.core.unitPragma">
+      </textAttribute>
+      <attributeRelation
+            elementTypeId="org.eventb.core.event">
+         <attributeReference
+               descriptionId="de.prob.ui.unitPragma">
+         </attributeReference>
+      </attributeRelation>
+   </extension>
 </plugin>
