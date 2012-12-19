@@ -355,6 +355,10 @@
             id="de.prob.command.startCspAnimation"
             name="Start CSP Animation">
       </command>
+      <command
+            id="de.prob.ui.startunitanalysis"
+            name="Analyse Physical Units">
+      </command>
    </extension>
    <extension
          point="org.eclipse.ui.handlers">
@@ -745,6 +749,42 @@
             </with>
          </enabledWhen>
       </handler>
+      <handler
+            commandId="de.prob.ui.startunitanalysis">
+         <class
+               class="de.prob.ui.eventb.StartUnitAnalysisHandler">
+         </class>
+         <enabledWhen>
+            <with
+                  variable="selection">
+               <iterate
+                     operator="or">
+                  <or>
+                     <instanceof
+                           value="org.eventb.core.IEventBRoot">
+                     </instanceof>
+                     <and>
+                        <instanceof
+                              value="org.eclipse.core.resources.IResource">
+                        </instanceof>
+                        <or>
+                           <test
+                                 forcePluginActivation="true"
+                                 property="org.eclipse.core.resources.extension"
+                                 value="bum">
+                           </test>
+                           <test
+                                 forcePluginActivation="true"
+                                 property="org.eclipse.core.resources.extension"
+                                 value="buc">
+                           </test>
+                        </or>
+                     </and>
+                  </or>
+               </iterate>
+            </with>
+         </enabledWhen>
+      </handler>
 <!--      <handler
             commandId="de.prob.ui.startdmc">
          <class
@@ -974,6 +1014,23 @@
             </instanceof>
          </iterate>
       </with>
+            </visibleWhen>
+         </command>
+         <command
+               commandId="de.prob.ui.startunitanalysis"
+               icon="icons/prob.png"
+               label="Analyse Physical Units"
+               style="push">
+            <visibleWhen>
+               <with
+                     variable="selection">
+                  <iterate
+                        operator="or">
+                     <instanceof
+                           value="org.eventb.core.IEventBRoot">
+                     </instanceof>
+                  </iterate>
+               </with>
             </visibleWhen>
          </command>
   <!--       <command
