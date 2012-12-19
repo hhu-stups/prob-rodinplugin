@@ -64,8 +64,6 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 	private final Map<String, ISCContext> depContext = new HashMap<String, ISCContext>();
 	private final List<ProofObligation> proofs = new ArrayList<ProofObligation>();
 	private final List<ClassifiedPragma> proofspragmas = new ArrayList<ClassifiedPragma>();
-	private final FormulaFactory ff;
-	private ITypeEnvironment te;
 
 	public static ContextTranslator create(final ISCContext context)
 			throws TranslationFailedException {
@@ -94,21 +92,12 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 	private ContextTranslator(final ISCContext context)
 			throws TranslationFailedException {
 		this.context = context;
-		ff = ((ISCContextRoot) context).getFormulaFactory();
-		try {
-			te = ((ISCContextRoot) context).getTypeEnvironment(ff);
-		} catch (RodinDBException e) {
-			final String message = "A Rodin exception occured during translation process. Original Exception: ";
-			throw new TranslationFailedException(context.getComponentName(),
-					message + e.getLocalizedMessage());
-		}
 	}
 
 	private void translate() throws RodinDBException {
 		if (context instanceof ISCContextRoot) {
 			ISCContextRoot context_root = (ISCContextRoot) context;
 			Assert.isTrue(context_root.getRodinFile().isConsistent());
-			te = context_root.getTypeEnvironment(ff);
 		} else if (context instanceof ISCInternalContext) {
 			ISCInternalContext context_internal = (ISCInternalContext) context;
 
@@ -155,7 +144,8 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 
 			String name = sequent.getDescription();
 
-			ArrayList<SequentSource> s = new ArrayList<SequentSource>(sources.length);
+			ArrayList<SequentSource> s = new ArrayList<SequentSource>(
+					sources.length);
 			for (IPOSource source : sources) {
 
 				IRodinElement srcElement = source.getSource();
@@ -167,7 +157,8 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 
 				ILabeledElement le = (ILabeledElement) srcElement;
 
-				s.add(new SequentSource(srcElement.getElementType(), le.getLabel()));
+				s.add(new SequentSource(srcElement.getElementType(), le
+						.getLabel()));
 
 			}
 			proofs.add(new ProofObligation(origin, s, name, discharged));
@@ -315,6 +306,8 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 			}
 			final PredicateVisitor visitor = new PredicateVisitor(
 					new LinkedList<String>());
+			final FormulaFactory ff = FormulaFactory.getDefault();
+			final ITypeEnvironment te = ff.makeTypeEnvironment();
 			element.getPredicate(ff, te).accept(visitor);
 			final PPredicate predicate = visitor.getPredicate();
 			list.add(predicate);
