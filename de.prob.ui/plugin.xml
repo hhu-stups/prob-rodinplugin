@@ -1206,7 +1206,7 @@
             typeId="de.prob.core.unitPragma">
       </textAttribute>
       <attributeRelation
-            elementTypeId="org.eventb.core.event">
+            elementTypeId="org.eventb.core.variable">
          <attributeReference
                descriptionId="de.prob.ui.unitPragma">
          </attributeReference>
