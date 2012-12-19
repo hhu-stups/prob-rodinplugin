@@ -25,6 +25,7 @@ import de.prob.core.translator.ITranslator;
 import de.prob.core.translator.TranslationFailedException;
 import de.prob.eventb.translator.AbstractComponentTranslator;
 import de.prob.eventb.translator.ContextTranslator;
+import de.prob.eventb.translator.UnitPragmaTranslator;
 import de.prob.prolog.output.IPrologTermOutput;
 
 public abstract class EventBTranslator implements ITranslator {
@@ -127,6 +128,7 @@ public abstract class EventBTranslator implements ITranslator {
 	protected void printProlog(
 			final Collection<ModelTranslator> refinementChainTranslators,
 			final Collection<ContextTranslator> contextTranslators,
+			final Collection<UnitPragmaTranslator> unitPragmaTranslators,
 			final IPrologTermOutput pout) throws TranslationFailedException {
 		final ASTProlog prolog = createAstVisitor(refinementChainTranslators,
 				contextTranslators, pout);
