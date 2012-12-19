@@ -1202,6 +1202,7 @@
             expandsHorizontally="true"
             id="de.prob.ui.unitPragma"
             isMath="true"
+            prefix="Physical Unit:"
             style="de.prob.ui.unitPragma"
             typeId="de.prob.core.unitPragma">
       </textAttribute>
