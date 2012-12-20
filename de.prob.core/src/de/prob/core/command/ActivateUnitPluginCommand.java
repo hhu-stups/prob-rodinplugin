@@ -48,7 +48,9 @@ public class ActivateUnitPluginCommand implements IComposableCommand {
 		}
 
 		public void writeCommand(final IPrologTermOutput pto) {
-			pto.openTerm("activate_plugin(units)").closeTerm();
+			pto.openTerm("activate_plugin");
+			pto.printAtom("units");
+			pto.closeTerm();
 		}
 	}
 
