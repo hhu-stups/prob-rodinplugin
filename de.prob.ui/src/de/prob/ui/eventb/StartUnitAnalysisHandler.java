@@ -8,6 +8,7 @@ package de.prob.ui.eventb;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -36,10 +37,15 @@ import org.rodinp.core.RodinCore;
 import de.prob.core.Animator;
 import de.prob.core.LimitedLogger;
 import de.prob.core.command.ActivateUnitPluginCommand;
-import de.prob.core.command.LoadEventBModelCommand;
+import de.prob.core.command.ClearMachineCommand;
+import de.prob.core.command.ComposedCommand;
+import de.prob.core.command.SetPreferencesCommand;
+import de.prob.core.command.StartAnimationCommand;
+import de.prob.core.command.internal.InternalLoadCommand;
+import de.prob.core.domainobjects.State;
+import de.prob.core.domainobjects.Variable;
 import de.prob.exceptions.ProBException;
 import de.prob.logging.Logger;
-import de.prob.ui.PerspectiveFactory;
 
 public class StartUnitAnalysisHandler extends AbstractHandler implements
 		IHandler {
@@ -101,14 +107,39 @@ public class StartUnitAnalysisHandler extends AbstractHandler implements
 			LimitedLogger.getLogger().log("user started animation",
 					rootElement.getElementName(), null);
 			registerModificationListener(resource);
-			PerspectiveFactory.openPerspective();
+
+			// do not change perspective - just start animator and shut it down
+			// after the analysis
+			// PerspectiveFactory.openPerspective();
 
 			final Animator animator = Animator.getAnimator();
 			try {
 				// load machine and activate plugin
-				LoadEventBModelCommand.load(animator, rootElement);
-				ActivateUnitPluginCommand.activateUnitPlugin(animator);
+				final ClearMachineCommand clear = new ClearMachineCommand();
+				final SetPreferencesCommand setPrefs = SetPreferencesCommand
+						.createSetPreferencesCommand(animator);
+
+				final InternalLoadCommand load = new InternalLoadCommand(
+						rootElement);
+				final StartAnimationCommand start = new StartAnimationCommand();
+
+				final ActivateUnitPluginCommand activatePlugin = new ActivateUnitPluginCommand();
+
+				final ComposedCommand composed = new ComposedCommand(clear,
+						setPrefs, load, start, activatePlugin);
+
+				animator.execute(composed);
+
 				// TODO: get resulting state and fill attributes
+				State state = animator.getCurrentState();
+				Map<String, Variable> values = state.getValues();
+
+				for (String s : values.keySet()) {
+					System.out.println(s);
+				}
+
+				// shutdown animator
+				animator.shutdown();
 			} catch (ProBException e) {
 				e.notifyUserOnce();
 				throw new ExecutionException("Loading the machine failed", e);
