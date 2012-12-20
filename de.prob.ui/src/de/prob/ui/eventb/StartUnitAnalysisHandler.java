@@ -8,7 +8,6 @@ package de.prob.ui.eventb;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -39,10 +38,11 @@ import de.prob.core.LimitedLogger;
 import de.prob.core.command.ActivateUnitPluginCommand;
 import de.prob.core.command.ClearMachineCommand;
 import de.prob.core.command.ComposedCommand;
+import de.prob.core.command.GetCurrentStateIdCommand;
+import de.prob.core.command.GetStateValuesCommand;
 import de.prob.core.command.SetPreferencesCommand;
 import de.prob.core.command.StartAnimationCommand;
 import de.prob.core.command.internal.InternalLoadCommand;
-import de.prob.core.domainobjects.State;
 import de.prob.core.domainobjects.Variable;
 import de.prob.exceptions.ProBException;
 import de.prob.logging.Logger;
@@ -131,11 +131,16 @@ public class StartUnitAnalysisHandler extends AbstractHandler implements
 				animator.execute(composed);
 
 				// TODO: get resulting state and fill attributes
-				State state = animator.getCurrentState();
-				Map<String, Variable> values = state.getValues();
+				String currentID = GetCurrentStateIdCommand.getID(animator);
+				GetStateValuesCommand stateValuesCommand = new GetStateValuesCommand(
+						currentID);
 
-				for (String s : values.keySet()) {
-					System.out.println(s);
+				animator.execute(stateValuesCommand);
+
+				List<Variable> vars = stateValuesCommand.getResult();
+
+				for (Variable v : vars) {
+					System.out.println(v.getIdentifier());
 				}
 
 				// shutdown animator
