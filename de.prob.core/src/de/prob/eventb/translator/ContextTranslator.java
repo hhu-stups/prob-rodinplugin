@@ -53,6 +53,7 @@ import de.be4.classicalb.core.parser.node.PSet;
 import de.be4.classicalb.core.parser.node.TIdentifierLiteral;
 import de.hhu.stups.sablecc.patch.SourcePosition;
 import de.prob.core.translator.TranslationFailedException;
+import de.prob.eventb.translator.internal.EProofStatus;
 import de.prob.eventb.translator.internal.ProofObligation;
 import de.prob.eventb.translator.internal.SequentSource;
 
@@ -135,8 +136,12 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 			final int confidence = status.getConfidence();
 			boolean broken = status.isBroken();
 
-			boolean discharged = !broken
-					&& confidence == IConfidence.DISCHARGED_MAX;
+			EProofStatus pstatus = EProofStatus.UNPROVEN;
+
+			if (!broken && confidence == IConfidence.REVIEWED_MAX)
+				pstatus = EProofStatus.REVIEWED;
+			if (!broken && confidence == IConfidence.DISCHARGED_MAX)
+				pstatus = EProofStatus.PROVEN;
 
 			IPOSequent sequent = status.getPOSequent();
 			IPOSource[] sources = sequent.getSources();
@@ -160,7 +165,7 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 						.getLabel()));
 
 			}
-			proofs.add(new ProofObligation(origin, s, name, discharged));
+			proofs.add(new ProofObligation(origin, s, name, pstatus));
 		}
 
 	}

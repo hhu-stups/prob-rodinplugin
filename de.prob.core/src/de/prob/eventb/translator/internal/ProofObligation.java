@@ -9,14 +9,14 @@ public class ProofObligation {
 	public final IEventBRoot origin;
 	public final ArrayList<SequentSource> sources;
 	public final String kind;
-	public final boolean discharged;
+	public final EProofStatus discharged;
 
 	public ProofObligation(IEventBRoot origin, ArrayList<SequentSource> s,
-			String name, boolean discharged) {
+			String name, EProofStatus pstatus) {
 		this.origin = origin;
 		this.sources = s;
 		this.kind = name;
-		this.discharged = discharged;
+		this.discharged = pstatus;
 	}
 
 }
