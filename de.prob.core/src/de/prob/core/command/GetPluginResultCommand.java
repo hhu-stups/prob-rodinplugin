@@ -47,7 +47,7 @@ public final class GetPluginResultCommand implements IComposableCommand {
 	}
 
 	public void writeCommand(final IPrologTermOutput pto) {
-		pto.openTerm("getPluginOutput").printAtomOrNumber(resultID)
+		pto.openTerm("get_plugin_output").printAtomOrNumber(resultID)
 				.printVariable("Bindings").closeTerm();
 	}
 
