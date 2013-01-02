@@ -11,6 +11,7 @@ import org.eclipse.gef.editparts.ScalableRootEditPart;
 import org.eclipse.gef.rulers.RulerProvider;
 import org.eclipse.gef.ui.actions.ActionRegistry;
 import org.eclipse.gef.ui.parts.ScrollingGraphicalViewer;
+import org.eclipse.gef.ui.parts.SelectionSynchronizer;
 import org.eclipse.gef.ui.rulers.RulerComposite;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
@@ -46,21 +47,23 @@ public class VisualizationViewPart extends PageBookView {
 
 	private ActionRegistry actionRegistry;
 
-	private Composite x;
+	private Composite container;
+
+	private BMotionSelectionSynchronizer selectionSynchronizer;
 
 	@Override
 	public Object getAdapter(@SuppressWarnings("rawtypes") Class type) {
-
-		// System.out.println("Try to get adapter: " + type);
 
 		// // Adapter for zoom manager
 		// if (type == ZoomManager.class)
 		// return ((ScalableRootEditPart) getGraphicalViewer()
 		// .getRootEditPart()).getZoomManager();
+
+		// Adapter for content outline page
 		if (type == IContentOutlinePage.class) {
 			return new BMotionOutlinePage(this);
 		}
-		//
+
 		// Adapter for property page
 		if (type == IPropertySheetPage.class) {
 			BMotionPropertyPage page = new BMotionPropertyPage(
@@ -76,10 +79,16 @@ public class VisualizationViewPart extends PageBookView {
 
 	}
 
+	public SelectionSynchronizer getSelectionSynchronizer() {
+		if (selectionSynchronizer == null)
+			selectionSynchronizer = new BMotionSelectionSynchronizer();
+		return selectionSynchronizer;
+	}
+
 	// Workaround for prevent recursive activiation of part
 	@Override
 	public void setFocus() {
-		x.setFocus();
+		container.setFocus();
 		super.setFocus();
 	}
 
@@ -109,20 +118,8 @@ public class VisualizationViewPart extends PageBookView {
 	}
 
 	@Override
-	protected void partVisible(IWorkbenchPart part) {
-		// TODO Auto-generated method stub
-		super.partVisible(part);
-	}
-
-	@Override
-	public void partActivated(IWorkbenchPart part) {
-		// System.out.println(this + " : ACTIVATE: " + part);
-		super.partActivated(part);
-	}
-
-	@Override
 	public void createPartControl(Composite parent) {
-		this.x = parent;
+		this.container = parent;
 		super.createPartControl(parent);
 	}
 
@@ -198,8 +195,6 @@ public class VisualizationViewPart extends PageBookView {
 		@Override
 		public void createControl(Composite parent) {
 			container = new RulerComposite(parent, SWT.NONE);
-			// container = new Composite(parent, SWT.NONE);
-			// container.setLayout(new FillLayout());
 			graphicalViewer = new ScrollingGraphicalViewer();
 			graphicalViewer.createControl(container);
 			configureGraphicalViewer();
@@ -209,7 +204,7 @@ public class VisualizationViewPart extends PageBookView {
 		}
 
 		protected void hookGraphicalViewer() {
-			// getSelectionSynchronizer().addViewer(getGraphicalViewer());
+			getSelectionSynchronizer().addViewer(getGraphicalViewer());
 			getSite().setSelectionProvider(getGraphicalViewer());
 		}
 

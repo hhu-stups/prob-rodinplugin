@@ -68,12 +68,12 @@ public class BMotionOutlinePage extends ContentOutlinePage {
 	}
 
 	protected void hookOutlineViewer() {
-		// getSelectionSynchronizer().addViewer(getViewer());
+		this.viewPart.getSelectionSynchronizer().addViewer(getViewer());
 	}
 
 	protected void unhookOutlineViewer() {
 		GraphicalViewer graphicalViewer = viewPart.getGraphicalViewer();
-		// getSelectionSynchronizer().removeViewer(getViewer());
+		this.viewPart.getSelectionSynchronizer().removeViewer(getViewer());
 		if (graphicalViewer != null) {
 			if (graphicalViewer.getControl() != null
 					&& !graphicalViewer.getControl().isDisposed())
@@ -89,7 +89,7 @@ public class BMotionOutlinePage extends ContentOutlinePage {
 			initializeOverview(parent);
 			graphicalViewer.getControl().addDisposeListener(disposeListener);
 			configureOutlineViewer();
-			// hookOutlineViewer();
+			hookOutlineViewer();
 			initializeOutlineViewer();
 			createMenu();
 		}
