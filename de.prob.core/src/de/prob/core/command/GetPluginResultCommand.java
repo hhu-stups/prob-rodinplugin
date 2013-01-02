@@ -16,33 +16,26 @@ import de.prob.prolog.term.PrologTerm;
 public final class GetPluginResultCommand implements IComposableCommand {
 
 	private final String resultID;
-	private String result;
+	private ListPrologTerm result;
 
 	public GetPluginResultCommand(final String resultID) {
 		this.resultID = resultID;
 	}
 
-	public String getResult() {
+	public ListPrologTerm getResult() {
 		return result;
 	}
 
 	public void processResult(
 			final ISimplifiedROMap<String, PrologTerm> bindings)
 			throws CommandException {
-		ListPrologTerm list;
 		try {
-			list = BindingGenerator.getList(bindings, "Bindings");
+			result = BindingGenerator.getList(bindings, "Bindings");
 		} catch (ResultParserException e) {
 			CommandException commandException = new CommandException(
 					e.getLocalizedMessage(), e);
 			commandException.notifyUserOnce();
 			throw commandException;
-		}
-
-		for (PrologTerm term : list) {
-			int nextCharCode = BindingGenerator.getInteger(term).getValue()
-					.intValue();
-			result += (char) nextCharCode;
 		}
 	}
 

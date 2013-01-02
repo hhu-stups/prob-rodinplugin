@@ -44,6 +44,7 @@ import de.prob.core.command.StartAnimationCommand;
 import de.prob.core.command.internal.InternalLoadCommand;
 import de.prob.exceptions.ProBException;
 import de.prob.logging.Logger;
+import de.prob.prolog.term.ListPrologTerm;
 
 public class StartUnitAnalysisHandler extends AbstractHandler implements
 		IHandler {
@@ -130,11 +131,11 @@ public class StartUnitAnalysisHandler extends AbstractHandler implements
 
 				// TODO: get resulting state and fill attributes
 				GetPluginResultCommand stateValuesCommand = new GetPluginResultCommand(
-						"Static Analysis Result");
+						"Grounded Result State");
 
 				animator.execute(stateValuesCommand);
 
-				String output = stateValuesCommand.getResult();
+				ListPrologTerm output = stateValuesCommand.getResult();
 
 				System.out.println(output);
 
