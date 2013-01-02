@@ -53,6 +53,7 @@ import de.be4.classicalb.core.parser.node.PSet;
 import de.be4.classicalb.core.parser.node.TIdentifierLiteral;
 import de.hhu.stups.sablecc.patch.SourcePosition;
 import de.prob.core.translator.TranslationFailedException;
+import de.prob.core.translator.pragmas.IPragma;
 import de.prob.eventb.translator.internal.EProofStatus;
 import de.prob.eventb.translator.internal.ProofObligation;
 import de.prob.eventb.translator.internal.SequentSource;
@@ -65,6 +66,7 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 	private final Map<String, ISCContext> depContext = new HashMap<String, ISCContext>();
 	private final List<ProofObligation> proofs = new ArrayList<ProofObligation>();
 	private final List<ClassifiedPragma> proofspragmas = new ArrayList<ClassifiedPragma>();
+	private final List<IPragma> pragmas = new ArrayList<IPragma>();
 
 	public static ContextTranslator create(final ISCContext context)
 			throws TranslationFailedException {
@@ -110,6 +112,7 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 				if (rodinFile.exists()) {
 					ISCContextRoot root = (ISCContextRoot) rodinFile.getRoot();
 					collectProofInfo(root);
+					collectPragmas(root);
 				}
 			} catch (Exception e) {
 				// We do not guarantee to include proof infos. If something goes
@@ -122,6 +125,10 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 		}
 		translateContext();
 
+	}
+
+	private void collectPragmas(ISCContextRoot origin) {
+		// TODO
 	}
 
 	private void collectProofInfo(ISCContextRoot origin)
@@ -325,6 +332,11 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 
 	public List<ProofObligation> getProofs() {
 		return proofs;
+	}
+
+	public List<IPragma> getPragmas() {
+		// TODO Auto-generated method stub
+		return pragmas;
 	}
 
 	public List<ClassifiedPragma> getProofspragmas() {

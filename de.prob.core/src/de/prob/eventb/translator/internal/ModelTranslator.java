@@ -67,6 +67,7 @@ import de.be4.classicalb.core.parser.node.PSubstitution;
 import de.be4.classicalb.core.parser.node.PWitness;
 import de.be4.classicalb.core.parser.node.TIdentifierLiteral;
 import de.prob.core.translator.TranslationFailedException;
+import de.prob.core.translator.pragmas.IPragma;
 import de.prob.eventb.translator.AbstractComponentTranslator;
 import de.prob.eventb.translator.AssignmentVisitor;
 import de.prob.eventb.translator.ExpressionVisitor;
@@ -81,6 +82,8 @@ public class ModelTranslator extends AbstractComponentTranslator {
 	private final ITypeEnvironment te;
 	private final IMachineRoot origin;
 	private final List<ProofObligation> proofs = new ArrayList<ProofObligation>();
+	private final List<IPragma> pragmas = new ArrayList<IPragma>();
+
 	// private final List<String> depContext = new ArrayList<String>();
 
 	// Confined in the thread calling the factory method
@@ -115,6 +118,10 @@ public class ModelTranslator extends AbstractComponentTranslator {
 
 	public List<ProofObligation> getProofs() {
 		return Collections.unmodifiableList(proofs);
+	}
+
+	public List<IPragma> getPragmas() {
+		return Collections.unmodifiableList(pragmas);
 	}
 
 	public AEventBModelParseUnit getModelAST() {
@@ -164,6 +171,13 @@ public class ModelTranslator extends AbstractComponentTranslator {
 
 		// Check for fully discharged Invariants and Events
 		collectProofInfo();
+
+		// Collect Pragmas, Units, etc.
+		collectPragmas();
+	}
+
+	private void collectPragmas() {
+		// TODO
 	}
 
 	private void collectProofInfo() throws RodinDBException {
@@ -179,7 +193,8 @@ public class ModelTranslator extends AbstractComponentTranslator {
 
 			EProofStatus pstatus = EProofStatus.UNPROVEN;
 
-			if (!broken && (confidence > IConfidence.PENDING && confidence <= IConfidence.REVIEWED_MAX))
+			if (!broken
+					&& (confidence > IConfidence.PENDING && confidence <= IConfidence.REVIEWED_MAX))
 				pstatus = EProofStatus.REVIEWED;
 			if (!broken && confidence == IConfidence.DISCHARGED_MAX)
 				pstatus = EProofStatus.PROVEN;

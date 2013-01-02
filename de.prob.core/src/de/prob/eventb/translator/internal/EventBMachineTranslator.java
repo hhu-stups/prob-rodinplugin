@@ -16,7 +16,6 @@ import org.rodinp.core.RodinDBException;
 
 import de.prob.core.translator.TranslationFailedException;
 import de.prob.eventb.translator.ContextTranslator;
-import de.prob.eventb.translator.UnitPragmaTranslator;
 import de.prob.eventb.translator.flow.FlowAnalysis;
 import de.prob.logging.Logger;
 import de.prob.prolog.output.IPrologTermOutput;
@@ -65,8 +64,7 @@ public final class EventBMachineTranslator extends EventBTranslator {
 		List<ISCMachineRoot> roots = collectRefinementChain();
 		final List<ModelTranslator> mchTranslators = getModelTranslators(roots);
 		final List<ContextTranslator> ctxTranslators = getContextTranslators(roots);
-		final List<UnitPragmaTranslator> unitPragmaTranslators = getUnitPragmaTranslators(roots);
-		printProlog(mchTranslators, ctxTranslators, unitPragmaTranslators, pto);
+		printProlog(mchTranslators, ctxTranslators, pto);
 	}
 
 	private List<ISCMachineRoot> collectRefinementChain()
@@ -99,18 +97,12 @@ public final class EventBMachineTranslator extends EventBTranslator {
 		return mchTranslators;
 	}
 
-	private List<UnitPragmaTranslator> getUnitPragmaTranslators(
-			final List<ISCMachineRoot> roots) throws TranslationFailedException {
-		final List<UnitPragmaTranslator> translators = new ArrayList<UnitPragmaTranslator>();
-		// TODO: do something brilliant
-		return translators;
-	}
-
 	private List<ContextTranslator> getContextTranslators(
 			final List<ISCMachineRoot> models)
 			throws TranslationFailedException {
 		final List<ContextTranslator> translators = new ArrayList<ContextTranslator>();
 		final List<String> processed = new ArrayList<String>();
+
 		for (ISCMachineRoot m : models) {
 			ISCInternalContext[] seenContexts;
 			try {
