@@ -157,6 +157,21 @@
             id="de.bmotionstudio.command.startVisualizationFromFile"
             name="Start Visualization from File">
       </command>
+      <command
+            description="SnapToGeometry"
+            id="org.eclipse.gef.toggle_snapto_geometry"
+            name="SnapToGeometry">
+      </command>
+      <command
+            description="ToggleGridVisibility"
+            id="org.eclipse.gef.toggle_grid_visibility"
+            name="ToggleGridVisibility">
+      </command>
+      <command
+            description="ToggleRulerVisibility"
+            id="org.eclipse.gef.toggle_ruler_visibility"
+            name="ToggleRulerVisibility">
+      </command>
    </extension>
    <extension
          point="org.eclipse.ui.handlers">

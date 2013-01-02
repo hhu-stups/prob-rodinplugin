@@ -15,7 +15,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
-import java.util.EventObject;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -30,9 +29,6 @@ import org.eclipse.core.runtime.preferences.IPreferenceFilter;
 import org.eclipse.core.runtime.preferences.IPreferencesService;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.core.runtime.preferences.PreferenceFilterEntry;
-import org.eclipse.gef.EditDomain;
-import org.eclipse.gef.commands.CommandStack;
-import org.eclipse.gef.commands.CommandStackListener;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -64,11 +60,10 @@ import de.bmotionstudio.gef.editor.model.Visualization;
 import de.bmotionstudio.gef.editor.model.VisualizationView;
 import de.prob.logging.Logger;
 
-public class BMotionStudioEditor extends EditorPart implements IPartListener2 {
+public class BMotionStudioEditor extends EditorPart implements
+		IPartListener2 {
 
 	private Simulation simulation;
-
-	private EditDomain editDomain;
 
 	private Composite container;
 
@@ -115,7 +110,6 @@ public class BMotionStudioEditor extends EditorPart implements IPartListener2 {
 
 		// Yes --> just switch to this perspective
 		if (perspective != null) {
-			System.out.println("Swtich perspective");
 			switchPerspective(perspective.getId());
 		} else {
 			// No --> create a new one
@@ -242,7 +236,7 @@ public class BMotionStudioEditor extends EditorPart implements IPartListener2 {
 
 	@Override
 	public void dispose() {
-		getCommandStack().removeCommandStackListener(getCommandStackListener());
+		// getCommandStack().removeCommandStackListener(getCommandStackListener());
 		IWorkbenchPage activePage = PlatformUI.getWorkbench()
 				.getActiveWorkbenchWindow().getActivePage();
 		if (activePage != null)
@@ -284,8 +278,6 @@ public class BMotionStudioEditor extends EditorPart implements IPartListener2 {
 			BMotionEditorPlugin.setAliases(xstream);
 			Object obj = xstream.fromXML(inputStream);
 
-			editDomain = new EditDomain();
-
 			importPerspective(file.getProject().getFile(
 					getPerspectiveFileName()));
 			openPerspective(site.getPage());
@@ -301,8 +293,7 @@ public class BMotionStudioEditor extends EditorPart implements IPartListener2 {
 						"New Visualization View", visualization);
 
 				String secId = UUID.randomUUID().toString();
-				createVisualizationViewPart(secId, editDomain,
-						visualizationView);
+				createVisualizationViewPart(secId, visualizationView);
 
 				simulation.getVisualizationViews()
 						.put(secId, visualizationView);
@@ -328,7 +319,7 @@ public class BMotionStudioEditor extends EditorPart implements IPartListener2 {
 					if (viewReference != null) {
 					} else {
 						// If not, create a new one
-						createVisualizationViewPart(secId, editDomain, visView);
+						createVisualizationViewPart(secId, visView);
 					}
 
 				}
@@ -360,12 +351,12 @@ public class BMotionStudioEditor extends EditorPart implements IPartListener2 {
 		setSite(site);
 		setInput(input);
 
-		getCommandStack().addCommandStackListener(getCommandStackListener());
+		// getCommandStack().addCommandStackListener(getCommandStackListener());
 
 	}
 
 	private VisualizationViewPart createVisualizationViewPart(String secId,
-			EditDomain editDomain, VisualizationView visualizationView)
+			VisualizationView visualizationView)
 			throws PartInitException {
 		IWorkbenchWindow window = PlatformUI.getWorkbench()
 				.getActiveWorkbenchWindow();
@@ -417,7 +408,7 @@ public class BMotionStudioEditor extends EditorPart implements IPartListener2 {
 			IFile file = ((IFileEditorInput) getEditorInput()).getFile();
 			file.setContents(new ByteArrayInputStream(out.toByteArray()), true,
 					false, monitor);
-			getCommandStack().markSaveLocation();
+			// getCommandStack().markSaveLocation();
 		} catch (CoreException ce) {
 			ce.printStackTrace();
 		} catch (IOException ioe) {
@@ -476,8 +467,7 @@ public class BMotionStudioEditor extends EditorPart implements IPartListener2 {
 					simulation.getVisualizationViews().put(secId,
 							visualizationView);
 					
-					createVisualizationViewPart(secId, editDomain,
-							visualizationView);
+					createVisualizationViewPart(secId, visualizationView);
 
 					setDirty(true);
 
@@ -506,23 +496,24 @@ public class BMotionStudioEditor extends EditorPart implements IPartListener2 {
 		this.simulation = simulation;
 	}
 
-	private CommandStackListener commandStackListener = new CommandStackListener() {
-		public void commandStackChanged(EventObject event) {
-			setDirty(getCommandStack().isDirty());
-		}
-	};
+	// private CommandStackListener commandStackListener = new
+	// CommandStackListener() {
+	// public void commandStackChanged(EventObject event) {
+	// setDirty(getCommandStack().isDirty());
+	// }
+	// };
 
-	protected CommandStackListener getCommandStackListener() {
-		return commandStackListener;
-	}
+	// protected CommandStackListener getCommandStackListener() {
+	// return commandStackListener;
+	// }
 
-	public CommandStack getCommandStack() {
-		return getEditDomain().getCommandStack();
-	}
+	// public CommandStack getCommandStack() {
+	// return getEditDomain().getCommandStack();
+	// }
 
-	protected EditDomain getEditDomain() {
-		return editDomain;
-	}
+	// protected EditDomain getEditDomain() {
+	// return editDomain;
+	// }
 
 	@Override
 	public void partActivated(IWorkbenchPartReference partRef) {
