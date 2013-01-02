@@ -1255,40 +1255,40 @@
    <extension
          point="org.eventb.ui.editorItems">
       <textAttribute
-            class="de.prob.ui.pragmas.UnitPragma"
+            class="de.prob.ui.pragmas.UnitPragmaAttribute"
             expandsHorizontally="true"
-            id="de.prob.ui.unitPragma"
+            id="de.prob.ui.unitPragmaAttribute"
             isMath="true"
             prefix="Physical Unit:"
-            style="de.prob.ui.unitPragma"
-            typeId="de.prob.core.unitPragma">
+            style="de.prob.ui.unitPragmaAttribute"
+            typeId="de.prob.core.unitPragmaAttribute">
       </textAttribute>
       <attributeRelation
             elementTypeId="org.eventb.core.variable">
          <attributeReference
-               descriptionId="de.prob.ui.unitPragma">
+               descriptionId="de.prob.ui.unitPragmaAttribute">
          </attributeReference>
          <attributeReference
-               descriptionId="de.prob.ui.inferredUnitPragma">
+               descriptionId="de.prob.ui.inferredUnitPragmaAttribute">
          </attributeReference>
       </attributeRelation>
       <attributeRelation
             elementTypeId="org.eventb.core.constant">
          <attributeReference
-               descriptionId="de.prob.ui.unitPragma">
+               descriptionId="de.prob.ui.unitPragmaAttribute">
          </attributeReference>
          <attributeReference
-               descriptionId="de.prob.ui.inferredUnitPragma">
+               descriptionId="de.prob.ui.inferredUnitPragmaAttribute">
          </attributeReference>
       </attributeRelation>
       <textAttribute
-            class="de.prob.ui.pragmas.InferredUnitPragma"
+            class="de.prob.ui.pragmas.InferredUnitPragmaAttribute"
             expandsHorizontally="true"
-            id="de.prob.ui.inferredUnitPragma"
+            id="de.prob.ui.inferredUnitPragmaAttribute"
             isMath="true"
             prefix="Inferred Physical Unit:"
-            style="de.prob.ui.inferredUnitPragma"
-            typeId="de.prob.core.inferredUnitPragma">
+            style="de.prob.ui.inferredUnitPragmaAttribute"
+            typeId="de.prob.core.inferredUnitPragmaAttribute">
       </textAttribute>
    </extension>
 </plugin>

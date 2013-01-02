@@ -26,12 +26,12 @@
    <extension
          point="org.rodinp.core.attributeTypes">
       <attributeType
-            id="unitPragma"
+            id="unitPragmaAttribute"
             kind="string"
             name="Content of a unit Pragma to send to ProB">
       </attributeType>
       <attributeType
-            id="inferredUnitPragma"
+            id="inferredUnitPragmaAttribute"
             kind="string"
             name="Content of a unit Pragma received from ProB">
       </attributeType>

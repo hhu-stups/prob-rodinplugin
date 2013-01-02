@@ -18,11 +18,11 @@ import org.rodinp.core.RodinDBException;
 
 import de.prob.core.internal.Activator;
 
-public class InferredUnitPragma implements IAttributeManipulation {
+public class UnitPragmaAttribute implements IAttributeManipulation {
 	public static IAttributeType.String ATTRIBUTE = RodinCore
-			.getStringAttrType(Activator.PLUGIN_ID + ".inferredUnitPragma");
+			.getStringAttrType(Activator.PLUGIN_ID + ".unitPragmaAttribute");
 
-	public InferredUnitPragma() {
+	public UnitPragmaAttribute() {
 		// empty constructor
 	}
 
