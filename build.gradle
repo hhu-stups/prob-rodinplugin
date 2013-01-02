@@ -1,5 +1,5 @@
 // to trigger a full tycho build please use 'gradle deleteFromClassPath completeInstall'
-
+import org.apache.tools.ant.taskdefs.condition.Os
 
 project.ext{
 	
@@ -99,6 +99,53 @@ task downloadCli << {
 	delete file(targetzip)
 	
 }
+
+
+
+task downloadCli2 ( type: Exec ) {
+	
+		def dir = workspacePath+'de.prob.core/prob/'
+		delete file(dir)
+	    new File(dir).mkdirs() 
+	
+		['leopard64':'macos','linux':'linux','linux64':'linux64','win32':'windows'].each {
+		def n = it.getKey()
+	
+		def targetdir = dir+it.getValue()
+		def targetzip = dir+"probcli_${n}.zip"
+		def url = "http://nightly.cobra.cs.uni-duesseldorf.de/cli/probcli_${n}.zip"
+		download(url,targetzip)
+	    FileTree zip = zipTree(targetzip)
+	    copy {
+		   from zip
+		   into targetdir
+	    }
+		delete file(targetzip)
+	}
+
+	def targetdir = dir+"windows/"
+	def targetzip = targetdir+"windowslib.zip"
+	download("http://nightly.cobra.cs.uni-duesseldorf.de/cli/windowslib.zip",targetzip)
+	FileTree zip = zipTree(targetzip)
+	    copy {
+		   from zip
+		   into targetdir
+	    }
+	delete file(targetzip)
+			
+	['leopard64':'macos','linux32':'linux','linux64':'linux64'].each {
+	
+		def n = it.getKey()
+		targetdir = dir+it.getValue()
+
+		download( "http://nightly.cobra.cs.uni-duesseldorf.de/cspm/cspm-"+n, targetdir+"/cspm" )
+	}
+	commandLine 'chmod', 'a+x', dir+'linux'+'/cspm', dir+'linux64'+'/cspm', dir+'macos'+'/cspm' 
+	//commandLine 'chmod', 'a+x', dir+'*'+'/cspm' 
+	
+	download( "http://nightly.cobra.cs.uni-duesseldorf.de/cspm/cspm-windows", dir+"windows"+"/cspm.exe" )
+}
+
 
 
 completeInstall.dependsOn downloadCli
