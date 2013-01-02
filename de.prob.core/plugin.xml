@@ -30,5 +30,10 @@
             kind="string"
             name="Content of a unit Pragma to send to ProB">
       </attributeType>
+      <attributeType
+            id="inferredUnitPragma"
+            kind="string"
+            name="Content of a unit Pragma received from ProB">
+      </attributeType>
    </extension>
 </plugin>

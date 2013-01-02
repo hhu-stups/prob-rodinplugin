@@ -1268,12 +1268,27 @@
          <attributeReference
                descriptionId="de.prob.ui.unitPragma">
          </attributeReference>
+         <attributeReference
+               descriptionId="de.prob.ui.inferredUnitPragma">
+         </attributeReference>
       </attributeRelation>
       <attributeRelation
             elementTypeId="org.eventb.core.constant">
          <attributeReference
                descriptionId="de.prob.ui.unitPragma">
          </attributeReference>
+         <attributeReference
+               descriptionId="de.prob.ui.inferredUnitPragma">
+         </attributeReference>
       </attributeRelation>
+      <textAttribute
+            class="de.prob.ui.pragmas.InferredUnitPragma"
+            expandsHorizontally="true"
+            id="de.prob.ui.inferredUnitPragma"
+            isMath="true"
+            prefix="Inferred Physical Unit:"
+            style="de.prob.ui.inferredUnitPragma"
+            typeId="de.prob.core.inferredUnitPragma">
+      </textAttribute>
    </extension>
 </plugin>
