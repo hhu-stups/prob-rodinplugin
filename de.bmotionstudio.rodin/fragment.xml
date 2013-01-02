@@ -2,21 +2,6 @@
 <?eclipse version="3.4"?>
 <fragment>
    <extension
-         point="org.eclipse.ui.perspectives">
-      <perspective
-            class="de.bmotionstudio.rodin.PerspectiveEditFactory"
-            icon="icons/logo_bmotion.png"
-            id="de.bmotionstudio.perspective.edit"
-            name="BMS Edit">
-      </perspective>
-      <perspective
-            class="de.bmotionstudio.rodin.PerspectiveRunFactory"
-            icon="icons/icon_run.png"
-            id="de.bmotionstudio.perspective.run"
-            name="BMS Run">
-      </perspective>
-   </extension>
-   <extension
          point="org.eclipse.ui.menus">
       <menuContribution
             locationURI="popup:fr.systerel.explorer.navigator.view">

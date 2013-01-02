@@ -68,7 +68,7 @@ public class BMSContextMenuProvider extends ContextMenuProvider {
 
 		if (sel instanceof AbstractEditPart) {
 			AbstractEditPart editPart = (AbstractEditPart) sel;
-			buildCustomMenu(menu, editPart);
+			// buildCustomMenu(menu, editPart);
 			buildObserverMenu(menu, editPart);
 			buildEventMenu(menu, editPart);
 		}

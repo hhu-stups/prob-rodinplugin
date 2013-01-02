@@ -103,7 +103,7 @@ public class Animation implements IAnimationListener {
 	}
 
 	public void checkObserver() {
-		if (visualization.isRunning()) {
+		// if (visualization.isRunning()) {
 			Display.getDefault().asyncExec(new Runnable() {
 				@Override
 				public void run() {
@@ -114,7 +114,7 @@ public class Animation implements IAnimationListener {
 						c.checkObserver(Animation.this);
 				}
 			});
-		}
+		// }
 	}
 
 	public State getState() {

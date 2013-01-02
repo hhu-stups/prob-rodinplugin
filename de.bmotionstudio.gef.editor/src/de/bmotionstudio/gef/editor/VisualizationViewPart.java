@@ -5,8 +5,14 @@ import java.util.EventObject;
 import java.util.Iterator;
 import java.util.List;
 
+import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.IExtension;
+import org.eclipse.core.runtime.IExtensionPoint;
+import org.eclipse.core.runtime.IExtensionRegistry;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.draw2d.PositionConstants;
+import org.eclipse.gef.ContextMenuProvider;
 import org.eclipse.gef.EditDomain;
 import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.gef.MouseWheelHandler;
@@ -19,6 +25,7 @@ import org.eclipse.gef.editparts.ScalableRootEditPart;
 import org.eclipse.gef.editparts.ZoomManager;
 import org.eclipse.gef.rulers.RulerProvider;
 import org.eclipse.gef.ui.actions.ActionRegistry;
+import org.eclipse.gef.ui.actions.DeleteAction;
 import org.eclipse.gef.ui.actions.GEFActionConstants;
 import org.eclipse.gef.ui.actions.RedoAction;
 import org.eclipse.gef.ui.actions.SelectAllAction;
@@ -53,6 +60,8 @@ import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
 
 import de.bmotionstudio.gef.editor.action.CopyAction;
+import de.bmotionstudio.gef.editor.action.OpenObserverAction;
+import de.bmotionstudio.gef.editor.action.OpenSchedulerEventAction;
 import de.bmotionstudio.gef.editor.action.PasteAction;
 import de.bmotionstudio.gef.editor.internal.BControlTransferDropTargetListener;
 import de.bmotionstudio.gef.editor.model.BMotionRuler;
@@ -261,8 +270,85 @@ public class VisualizationViewPart extends PageBookView implements
 		registry.registerAction(action);
 		getSelectionActions().add(action.getId());
 
+		action = new DeleteAction((IWorkbenchPart) this);
+		registry.registerAction(action);
+		getSelectionActions().add(action.getId());
+
 		action = new SelectAllAction(this);
 		registry.registerAction(action);
+
+		installObserverActions();
+		installSchedulerActions();
+
+	}
+
+	private void installObserverActions() {
+
+		IAction action;
+		ActionRegistry registry = getActionRegistry();
+
+		IExtensionRegistry reg = Platform.getExtensionRegistry();
+		IExtensionPoint extensionPoint = reg
+				.getExtensionPoint("de.bmotionstudio.gef.editor.observer");
+		for (IExtension extension : extensionPoint.getExtensions()) {
+			for (IConfigurationElement configurationElement : extension
+					.getConfigurationElements()) {
+
+				if ("observer".equals(configurationElement.getName())) {
+
+					String observerClassName = configurationElement
+							.getAttribute("class");
+
+					action = new OpenObserverAction(this);
+					action.setId("de.bmotionstudio.gef.editor.observerAction."
+							+ observerClassName);
+					((OpenObserverAction) action)
+							.setClassName(observerClassName);
+					registry.registerAction(action);
+					getSelectionActions().add(
+							"de.bmotionstudio.gef.editor.observerAction."
+									+ observerClassName);
+
+				}
+
+			}
+
+		}
+
+	}
+
+	private void installSchedulerActions() {
+
+		IAction action;
+		ActionRegistry registry = getActionRegistry();
+
+		IExtensionRegistry reg = Platform.getExtensionRegistry();
+		IExtensionPoint extensionPoint = reg
+				.getExtensionPoint("de.bmotionstudio.gef.editor.schedulerEvent");
+		for (IExtension extension : extensionPoint.getExtensions()) {
+			for (IConfigurationElement configurationElement : extension
+					.getConfigurationElements()) {
+
+				if ("schedulerEvent".equals(configurationElement.getName())) {
+
+					String sClassName = configurationElement
+							.getAttribute("class");
+
+					action = new OpenSchedulerEventAction(this);
+					action.setId("de.bmotionstudio.gef.editor.SchedulerEventAction."
+							+ sClassName);
+					((OpenSchedulerEventAction) action)
+							.setClassName(sClassName);
+					registry.registerAction(action);
+					getSelectionActions().add(
+							"de.bmotionstudio.gef.editor.SchedulerEventAction."
+									+ sClassName);
+
+				}
+
+			}
+
+		}
 
 	}
 
@@ -339,6 +425,9 @@ public class VisualizationViewPart extends PageBookView implements
 			bars.setGlobalActionHandler(ActionFactory.PASTE.getId(),
 					ar.getAction(ActionFactory.PASTE.getId()));
 
+			bars.setGlobalActionHandler(ActionFactory.DELETE.getId(),
+					ar.getAction(ActionFactory.DELETE.getId()));
+
 			bars.updateActionBars();
 
 		}
@@ -361,6 +450,10 @@ public class VisualizationViewPart extends PageBookView implements
 					.getToolBarManager()
 					.add(getActionRegistry().getAction(
 							ActionFactory.PASTE.getId()));
+			pageSite.getActionBars()
+					.getToolBarManager()
+					.add(getActionRegistry().getAction(
+							ActionFactory.DELETE.getId()));
 
 			pageSite.getActionBars().getToolBarManager().add(new Separator());
 
@@ -436,6 +529,11 @@ public class VisualizationViewPart extends PageBookView implements
 							updateActions(selectionActions);
 						}
 					});
+
+			ContextMenuProvider provider = new BMSContextMenuProvider(
+					graphicalViewer, getActionRegistry());
+			graphicalViewer.setContextMenu(provider);
+
 		}
 
 		public GraphicalViewer getGraphicalViewer() {

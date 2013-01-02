@@ -3,9 +3,11 @@ package de.bmotionstudio.gef.editor;
 import org.eclipse.draw2d.LightweightSystem;
 import org.eclipse.draw2d.Viewport;
 import org.eclipse.draw2d.parts.ScrollableThumbnail;
+import org.eclipse.gef.ContextMenuProvider;
 import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.gef.LayerConstants;
 import org.eclipse.gef.editparts.ScalableRootEditPart;
+import org.eclipse.gef.ui.actions.ActionRegistry;
 import org.eclipse.gef.ui.parts.ContentOutlinePage;
 import org.eclipse.gef.ui.parts.TreeViewer;
 import org.eclipse.jface.action.Action;
@@ -19,6 +21,8 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
+import org.eclipse.ui.IActionBars;
+import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.part.IPageSite;
 
 import de.bmotionstudio.gef.editor.part.BMSTreeEditPartFactory;
@@ -41,29 +45,28 @@ public class BMotionOutlinePage extends ContentOutlinePage {
 	@Override
 	public void init(IPageSite pageSite) {
 		super.init(pageSite);
-		// IActionBars bars = pageSite.getActionBars();
-		// ActionRegistry ar = getActionRegistry();
-		// bars.setGlobalActionHandler(ActionFactory.UNDO.getId(),
-		// ar.getAction(ActionFactory.UNDO.getId()));
-		// bars.setGlobalActionHandler(ActionFactory.REDO.getId(),
-		// ar.getAction(ActionFactory.REDO.getId()));
-		// bars.setGlobalActionHandler(ActionFactory.DELETE.getId(),
-		// ar.getAction(ActionFactory.DELETE.getId()));
-		// bars.setGlobalActionHandler(ActionFactory.COPY.getId(),
-		// ar.getAction(ActionFactory.COPY.getId()));
-		// bars.setGlobalActionHandler(ActionFactory.PASTE.getId(),
-		// ar.getAction(ActionFactory.PASTE.getId()));
+		IActionBars bars = pageSite.getActionBars();
+		ActionRegistry ar = viewPart.getActionRegistry();
+		bars.setGlobalActionHandler(ActionFactory.UNDO.getId(),
+				ar.getAction(ActionFactory.UNDO.getId()));
+		bars.setGlobalActionHandler(ActionFactory.REDO.getId(),
+				ar.getAction(ActionFactory.REDO.getId()));
+		bars.setGlobalActionHandler(ActionFactory.DELETE.getId(),
+				ar.getAction(ActionFactory.DELETE.getId()));
+		bars.setGlobalActionHandler(ActionFactory.COPY.getId(),
+				ar.getAction(ActionFactory.COPY.getId()));
+		bars.setGlobalActionHandler(ActionFactory.PASTE.getId(),
+				ar.getAction(ActionFactory.PASTE.getId()));
 		// buildCustomActions(bars, ar);
-		// bars.updateActionBars();
+		bars.updateActionBars();
 	}
 
 	protected void configureOutlineViewer() {
 		getViewer().setEditDomain(this.viewPart.getEditDomain());
 		getViewer().setEditPartFactory(new BMSTreeEditPartFactory());
-		// ContextMenuProvider provider = new
-		// BMSContextMenuProvider(getViewer(),
-		// getActionRegistry());
-		// getViewer().setContextMenu(provider);
+		ContextMenuProvider provider = new BMSContextMenuProvider(getViewer(),
+				viewPart.getActionRegistry());
+		getViewer().setContextMenu(provider);
 		// getViewer().setKeyHandler(getCommonKeyHandler());
 	}
 
