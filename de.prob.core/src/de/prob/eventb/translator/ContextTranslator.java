@@ -32,9 +32,11 @@ import org.eventb.core.ISCMachineRoot;
 import org.eventb.core.ast.FormulaFactory;
 import org.eventb.core.ast.ITypeEnvironment;
 import org.eventb.core.seqprover.IConfidence;
+import org.rodinp.core.IAttributeType;
 import org.rodinp.core.IRodinElement;
 import org.rodinp.core.IRodinFile;
 import org.rodinp.core.IRodinProject;
+import org.rodinp.core.RodinCore;
 import org.rodinp.core.RodinDBException;
 
 import de.be4.classicalb.core.parser.analysis.pragma.internal.ClassifiedPragma;
@@ -52,8 +54,10 @@ import de.be4.classicalb.core.parser.node.PPredicate;
 import de.be4.classicalb.core.parser.node.PSet;
 import de.be4.classicalb.core.parser.node.TIdentifierLiteral;
 import de.hhu.stups.sablecc.patch.SourcePosition;
+import de.prob.core.internal.Activator;
 import de.prob.core.translator.TranslationFailedException;
 import de.prob.core.translator.pragmas.IPragma;
+import de.prob.core.translator.pragmas.UnitPragma;
 import de.prob.eventb.translator.internal.EProofStatus;
 import de.prob.eventb.translator.internal.ProofObligation;
 import de.prob.eventb.translator.internal.SequentSource;
@@ -112,7 +116,6 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 				if (rodinFile.exists()) {
 					ISCContextRoot root = (ISCContextRoot) rodinFile.getRoot();
 					collectProofInfo(root);
-					collectPragmas(root);
 				}
 			} catch (Exception e) {
 				// We do not guarantee to include proof infos. If something goes
@@ -124,11 +127,23 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 			Assert.isTrue(machine_root.getRodinFile().isConsistent());
 		}
 		translateContext();
-
+		collectPragmas();
 	}
 
-	private void collectPragmas(ISCContextRoot origin) {
-		// TODO
+	private void collectPragmas() throws RodinDBException {
+		// unit pragma, attached to constants
+		final IAttributeType.String UNITATTRIBUTE = RodinCore
+				.getStringAttrType(Activator.PLUGIN_ID + ".unitPragmaAttribute");
+
+		final ISCConstant[] constants = context.getSCConstants();
+
+		for (final ISCConstant constant : constants) {
+			if (constant.hasAttribute(UNITATTRIBUTE)) {
+				pragmas.add(new UnitPragma(getResource(), constant
+						.getIdentifierString(), constant
+						.getAttributeValue(UNITATTRIBUTE)));
+			}
+		}
 	}
 
 	private void collectProofInfo(ISCContextRoot origin)

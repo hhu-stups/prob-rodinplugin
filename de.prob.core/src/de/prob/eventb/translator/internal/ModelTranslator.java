@@ -35,13 +35,16 @@ import org.eventb.core.ISCVariable;
 import org.eventb.core.ISCVariant;
 import org.eventb.core.ISCWitness;
 import org.eventb.core.ITraceableElement;
+import org.eventb.core.IVariable;
 import org.eventb.core.ast.FormulaFactory;
 import org.eventb.core.ast.ITypeEnvironment;
 import org.eventb.core.ast.Predicate;
 import org.eventb.core.seqprover.IConfidence;
+import org.rodinp.core.IAttributeType;
 import org.rodinp.core.IElementType;
 import org.rodinp.core.IRodinElement;
 import org.rodinp.core.IRodinFile;
+import org.rodinp.core.RodinCore;
 import org.rodinp.core.RodinDBException;
 
 import de.be4.classicalb.core.parser.node.AAnticipatedEventstatus;
@@ -66,8 +69,10 @@ import de.be4.classicalb.core.parser.node.PPredicate;
 import de.be4.classicalb.core.parser.node.PSubstitution;
 import de.be4.classicalb.core.parser.node.PWitness;
 import de.be4.classicalb.core.parser.node.TIdentifierLiteral;
+import de.prob.core.internal.Activator;
 import de.prob.core.translator.TranslationFailedException;
 import de.prob.core.translator.pragmas.IPragma;
+import de.prob.core.translator.pragmas.UnitPragma;
 import de.prob.eventb.translator.AbstractComponentTranslator;
 import de.prob.eventb.translator.AssignmentVisitor;
 import de.prob.eventb.translator.ExpressionVisitor;
@@ -176,8 +181,20 @@ public class ModelTranslator extends AbstractComponentTranslator {
 		collectPragmas();
 	}
 
-	private void collectPragmas() {
-		// TODO
+	private void collectPragmas() throws RodinDBException {
+		// unit pragma, attached to constants
+		final IAttributeType.String UNITATTRIBUTE = RodinCore
+				.getStringAttrType(Activator.PLUGIN_ID + ".unitPragmaAttribute");
+
+		final IVariable[] variables = origin.getVariables();
+
+		for (final IVariable variable : variables) {
+			if (variable.hasAttribute(UNITATTRIBUTE)) {
+				pragmas.add(new UnitPragma(getResource(), variable
+						.getIdentifierString(), variable
+						.getAttributeValue(UNITATTRIBUTE)));
+			}
+		}
 	}
 
 	private void collectProofInfo() throws RodinDBException {

@@ -56,7 +56,7 @@ import de.prob.parser.ResultParserException;
 import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
-import de.prob.ui.pragmas.InferredUnitPragma;
+import de.prob.ui.pragmas.InferredUnitPragmaAttribute;
 
 public class StartUnitAnalysisHandler extends AbstractHandler implements
 		IHandler {
@@ -178,7 +178,8 @@ public class StartUnitAnalysisHandler extends AbstractHandler implements
 					for (IVariable var : allVariables) {
 						String variableName = var.getIdentifierString();
 						if (variables.containsKey(variableName)) {
-							var.setAttributeValue(InferredUnitPragma.ATTRIBUTE,
+							var.setAttributeValue(
+									InferredUnitPragmaAttribute.ATTRIBUTE,
 									variables.get(variableName),
 									new NullProgressMonitor());
 						}
@@ -192,7 +193,8 @@ public class StartUnitAnalysisHandler extends AbstractHandler implements
 					for (IConstant var : allConstants) {
 						String constantName = var.getIdentifierString();
 						if (variables.containsKey(constantName)) {
-							var.setAttributeValue(InferredUnitPragma.ATTRIBUTE,
+							var.setAttributeValue(
+									InferredUnitPragmaAttribute.ATTRIBUTE,
 									variables.get(constantName),
 									new NullProgressMonitor());
 						}
