@@ -7,7 +7,9 @@
 package de.prob.ui.eventb;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -23,20 +25,25 @@ import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.handlers.HandlerUtil;
+import org.eventb.core.IConstant;
 import org.eventb.core.IContextRoot;
 import org.eventb.core.IEventBRoot;
 import org.eventb.core.IMachineRoot;
+import org.eventb.core.IVariable;
 import org.rodinp.core.IRodinFile;
 import org.rodinp.core.RodinCore;
+import org.rodinp.core.RodinDBException;
 
 import de.prob.core.Animator;
 import de.prob.core.LimitedLogger;
 import de.prob.core.command.ActivateUnitPluginCommand;
 import de.prob.core.command.ClearMachineCommand;
+import de.prob.core.command.CommandException;
 import de.prob.core.command.ComposedCommand;
 import de.prob.core.command.GetPluginResultCommand;
 import de.prob.core.command.SetPreferencesCommand;
@@ -44,7 +51,12 @@ import de.prob.core.command.StartAnimationCommand;
 import de.prob.core.command.internal.InternalLoadCommand;
 import de.prob.exceptions.ProBException;
 import de.prob.logging.Logger;
+import de.prob.parser.BindingGenerator;
+import de.prob.parser.ResultParserException;
+import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.ListPrologTerm;
+import de.prob.prolog.term.PrologTerm;
+import de.prob.ui.pragmas.InferredUnitPragma;
 
 public class StartUnitAnalysisHandler extends AbstractHandler implements
 		IHandler {
@@ -130,20 +142,76 @@ public class StartUnitAnalysisHandler extends AbstractHandler implements
 				animator.execute(composed);
 
 				// TODO: get resulting state and fill attributes
-				GetPluginResultCommand stateValuesCommand = new GetPluginResultCommand(
+				GetPluginResultCommand pluginResultCommand = new GetPluginResultCommand(
 						"Grounded Result State");
 
-				animator.execute(stateValuesCommand);
+				animator.execute(pluginResultCommand);
 
-				ListPrologTerm output = stateValuesCommand.getResult();
+				ListPrologTerm output = pluginResultCommand.getResult();
+				System.out.println("Resulting state: " + output);
 
-				System.out.println(output);
+				// preprocess the list into a map
+				Map<String, String> variables = new HashMap<String, String>();
+				for (PrologTerm term : output) {
+					CompoundPrologTerm compoundTerm;
+					try {
+						compoundTerm = BindingGenerator.getCompoundTerm(term,
+								"bind", 2);
+					} catch (ResultParserException e) {
+						CommandException commandException = new CommandException(
+								e.getLocalizedMessage(), e);
+						commandException.notifyUserOnce();
+						throw commandException;
+					}
+					variables.put(compoundTerm.getArgument(1).toString(),
+							compoundTerm.getArgument(2).toString());
+				}
+
+				// look up the variables / constants of the selected machine in
+				// the state
+				// and set the inferredUnitPragma attribute
+				if (rootElement instanceof IMachineRoot) {
+					// find and update variables
+					IVariable[] allVariables = rootElement.getMachineRoot()
+							.getVariables();
+
+					for (IVariable var : allVariables) {
+						String variableName = var.getIdentifierString();
+						if (variables.containsKey(variableName)) {
+							var.setAttributeValue(InferredUnitPragma.ATTRIBUTE,
+									variables.get(variableName),
+									new NullProgressMonitor());
+						}
+					}
+
+				} else if (rootElement instanceof IContextRoot) {
+					// find and update constants
+					IConstant[] allConstants = rootElement.getContextRoot()
+							.getConstants();
+
+					for (IConstant var : allConstants) {
+						String constantName = var.getIdentifierString();
+						if (variables.containsKey(constantName)) {
+							var.setAttributeValue(InferredUnitPragma.ATTRIBUTE,
+									variables.get(constantName),
+									new NullProgressMonitor());
+						}
+					}
+				} else {
+					throw new ExecutionException(
+							"Cannot translate anything else than IMachineRoot or IContextRoot. Type of "
+									+ rootElement.getComponentName() + " was: "
+									+ rootElement.getClass());
+				}
 
 				// shutdown animator
 				animator.shutdown();
 			} catch (ProBException e) {
 				e.notifyUserOnce();
-				throw new ExecutionException("Loading the machine failed", e);
+				throw new ExecutionException("Unit Analysis Failed", e);
+			} catch (RodinDBException e) {
+				throw new ExecutionException(
+						"Unit Analysis Failed with a RodinDBException", e);
 			}
 		}
 		return null;
