@@ -79,7 +79,8 @@ public class BMotionOutlinePage extends ContentOutlinePage {
 		this.viewPart.getSelectionSynchronizer().removeViewer(getViewer());
 		if (graphicalViewer != null) {
 			if (graphicalViewer.getControl() != null
-					&& !graphicalViewer.getControl().isDisposed())
+					&& !graphicalViewer.getControl().isDisposed()
+					&& disposeListener != null)
 				graphicalViewer.getControl().removeDisposeListener(
 						disposeListener);
 		}
@@ -88,7 +89,7 @@ public class BMotionOutlinePage extends ContentOutlinePage {
 	@Override
 	public void createControl(Composite parent) {
 		GraphicalViewer graphicalViewer = viewPart.getGraphicalViewer();
-		if (graphicalViewer != null) {
+		if (graphicalViewer != null && graphicalViewer.getControl() != null) {
 			initializeOverview(parent);
 			graphicalViewer.getControl().addDisposeListener(disposeListener);
 			configureOutlineViewer();

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.EventObject;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtension;
@@ -86,6 +87,8 @@ public class VisualizationViewPart extends PageBookView implements
 
 	private Composite container;
 
+	private Simulation simulation;
+
 	private BMotionStudioEditor editor;
 
 	private BMotionSelectionSynchronizer selectionSynchronizer;
@@ -134,15 +137,17 @@ public class VisualizationViewPart extends PageBookView implements
 		return selectionSynchronizer;
 	}
 
-	// Workaround for prevent recursive activiation of part
+	// Workaround for prevent recursive activation of part
 	@Override
 	public void setFocus() {
-		container.setFocus();
+		this.container.setFocus();
 		super.setFocus();
 	}
 
 	public Visualization getVisualization() {
-		return this.visualizationView.getVisualization();
+		if (this.visualizationView != null)
+			return this.visualizationView.getVisualization();
+		return null;
 	}
 
 	public GraphicalViewer getGraphicalViewer() {
@@ -171,19 +176,24 @@ public class VisualizationViewPart extends PageBookView implements
 
 		if (part instanceof BMotionStudioEditor) {
 
-			editor = (BMotionStudioEditor) part;
-			Simulation simulation = editor.getSimulation();
+			BMotionStudioEditor cEditor = (BMotionStudioEditor) part;
 
-			if (simulation == null)
+			this.simulation = cEditor.getSimulation();
+			if (this.simulation == null)
 				return null;
 
-			this.editDomain = new EditDomain();
-			getCommandStack().addCommandStackListener(this);
+			Map<String, VisualizationView> visualizationViews = this.simulation
+					.getVisualizationViews();
 
-			this.visualizationView = simulation.getVisualizationViews().get(
-					getViewSite().getSecondaryId());
+			this.visualizationView = visualizationViews
+					.get(getViewSite().getSecondaryId());
+
 			if (visualizationView == null)
 				return null;
+
+			this.editor = cEditor;
+			this.editDomain = new EditDomain();
+			this.editDomain.getCommandStack().addCommandStackListener(this);
 
 			createActions();
 
@@ -212,6 +222,7 @@ public class VisualizationViewPart extends PageBookView implements
 
 	@Override
 	protected void doDestroyPage(IWorkbenchPart part, PageRec rec) {
+		unregister();
 		VisualizationViewPage page = (VisualizationViewPage) rec.page;
 		page.dispose();
 		rec.dispose();
@@ -592,17 +603,21 @@ public class VisualizationViewPart extends PageBookView implements
 
 	@Override
 	public void dispose() {
+		unregister();
+		super.dispose();
+	}
+
+	private void unregister() {
 		if (getCommandStack() != null)
 			getCommandStack().removeCommandStackListener(this);
 		if (getActionRegistry() != null)
 			getActionRegistry().dispose();
-		super.dispose();
 	}
 
 	@Override
 	public void commandStackChanged(EventObject event) {
 		updateActions(stackActions);
-		editor.setDirty(getCommandStack().isDirty());
+		this.editor.setDirty(getCommandStack().isDirty());
 	}
 
 	/**

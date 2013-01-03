@@ -236,7 +236,6 @@ public class BMotionStudioEditor extends EditorPart implements
 
 	@Override
 	public void dispose() {
-		// getCommandStack().removeCommandStackListener(getCommandStackListener());
 		IWorkbenchPage activePage = PlatformUI.getWorkbench()
 				.getActiveWorkbenchWindow().getActivePage();
 		if (activePage != null)
@@ -312,15 +311,14 @@ public class BMotionStudioEditor extends EditorPart implements
 					Visualization vis = visView.getVisualization();
 					vis.setProjectFile(file);
 					// String partName = visView.getPartName();
-					IViewReference viewReference = site.getPage()
-							.findViewReference(VisualizationViewPart.ID, secId);
+					// IViewReference viewReference = site.getPage()
+					// .findViewReference(VisualizationViewPart.ID, secId);
 					// Check if view already exists
-
-					if (viewReference != null) {
-					} else {
-						// If not, create a new one
-						createVisualizationViewPart(secId, visView);
-					}
+					// if (viewReference != null) {
+					// } else {
+					// If not, create a new one
+					createVisualizationViewPart(secId, visView);
+					// }
 
 				}
 
@@ -358,6 +356,9 @@ public class BMotionStudioEditor extends EditorPart implements
 	private VisualizationViewPart createVisualizationViewPart(String secId,
 			VisualizationView visualizationView)
 			throws PartInitException {
+
+		System.out.println("CREATE VISUALIZATION PART: " + secId);
+
 		IWorkbenchWindow window = PlatformUI.getWorkbench()
 				.getActiveWorkbenchWindow();
 		IWorkbenchPage activePage = window.getActivePage();
@@ -496,30 +497,14 @@ public class BMotionStudioEditor extends EditorPart implements
 		this.simulation = simulation;
 	}
 
-	// private CommandStackListener commandStackListener = new
-	// CommandStackListener() {
-	// public void commandStackChanged(EventObject event) {
-	// setDirty(getCommandStack().isDirty());
-	// }
-	// };
-
-	// protected CommandStackListener getCommandStackListener() {
-	// return commandStackListener;
-	// }
-
-	// public CommandStack getCommandStack() {
-	// return getEditDomain().getCommandStack();
-	// }
-
-	// protected EditDomain getEditDomain() {
-	// return editDomain;
-	// }
-
 	@Override
 	public void partActivated(IWorkbenchPartReference partRef) {
-		// IWorkbenchPart part = partRef.getPart(false);
-		// if (part == this)
-		// openPerspective(partRef.getPage());
+		if (partRef.getPart(false) == this) {
+			IPerspectiveDescriptor currentPerspective = getSite().getPage()
+					.getPerspective();
+			if (!currentPerspective.getId().equals(perspective.getId()))
+				openPerspective(getSite().getPage());
+		}
 	}
 
 	@Override
@@ -529,6 +514,7 @@ public class BMotionStudioEditor extends EditorPart implements
 	@Override
 	public void partClosed(IWorkbenchPartReference partRef) {
 		if (partRef.getPart(false) == this) {
+			switchPerspective(perspective.getId());
 			partRef.getPage().savePerspectiveAs(perspective);
 			exportPerspective(perspective);
 			closePerspective(partRef.getPage(), perspective);

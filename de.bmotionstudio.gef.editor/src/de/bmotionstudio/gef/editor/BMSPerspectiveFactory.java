@@ -42,6 +42,7 @@ public class BMSPerspectiveFactory implements IPerspectiveFactory {
 		IFolderLayout right2 = layout.createFolder("right2",
 				IPageLayout.BOTTOM, 0.60f, "right1");
 		right2.addView(LibraryView.ID);
+		right2.addView("fr.systerel.explorer.navigator.view");
 
 		// ProB State View + ProB History + ProB Event Error View (Right)
 		// IFolderLayout right2 = layout.createFolder("right2",
