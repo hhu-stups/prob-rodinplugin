@@ -19,7 +19,9 @@ public class UnitPragma implements IPragma {
 		pout.printAtom("unit");
 		pout.printAtom(definedIn);
 		pout.printAtom(attachedTo);
+		pout.openList();
 		pout.printAtom(content);
+		pout.closeList();
 		pout.closeTerm();
 	}
 
