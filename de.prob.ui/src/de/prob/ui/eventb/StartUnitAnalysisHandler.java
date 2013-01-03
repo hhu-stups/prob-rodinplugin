@@ -206,8 +206,8 @@ public class StartUnitAnalysisHandler extends AbstractHandler implements
 									+ rootElement.getClass());
 				}
 
-				// shutdown animator
-				animator.shutdown();
+				// TODO: should i shutdown the animator?
+				// animator.shutdown();
 			} catch (ProBException e) {
 				e.notifyUserOnce();
 				throw new ExecutionException("Unit Analysis Failed", e);
