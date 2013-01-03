@@ -139,9 +139,12 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 
 		for (final ISCConstant constant : constants) {
 			if (constant.hasAttribute(UNITATTRIBUTE)) {
-				pragmas.add(new UnitPragma(getResource(), constant
-						.getIdentifierString(), constant
-						.getAttributeValue(UNITATTRIBUTE)));
+				String content = constant.getAttributeValue(UNITATTRIBUTE);
+
+				if (!content.isEmpty()) {
+					pragmas.add(new UnitPragma(getResource(), constant
+							.getIdentifierString(), content));
+				}
 			}
 		}
 	}

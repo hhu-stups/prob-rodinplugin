@@ -190,9 +190,12 @@ public class ModelTranslator extends AbstractComponentTranslator {
 
 		for (final IVariable variable : variables) {
 			if (variable.hasAttribute(UNITATTRIBUTE)) {
-				pragmas.add(new UnitPragma(getResource(), variable
-						.getIdentifierString(), variable
-						.getAttributeValue(UNITATTRIBUTE)));
+				String content = variable.getAttributeValue(UNITATTRIBUTE);
+
+				if (!content.isEmpty()) {
+					pragmas.add(new UnitPragma(getResource(), variable
+							.getIdentifierString(), content));
+				}
 			}
 		}
 	}
