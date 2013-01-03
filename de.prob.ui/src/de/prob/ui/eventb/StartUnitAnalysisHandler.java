@@ -148,7 +148,7 @@ public class StartUnitAnalysisHandler extends AbstractHandler implements
 				animator.execute(pluginResultCommand);
 
 				ListPrologTerm output = pluginResultCommand.getResult();
-				System.out.println("Resulting state: " + output);
+				// System.out.println("Resulting state: " + output);
 
 				// preprocess the list into a map
 				Map<String, String> variables = new HashMap<String, String>();
@@ -163,8 +163,9 @@ public class StartUnitAnalysisHandler extends AbstractHandler implements
 						commandException.notifyUserOnce();
 						throw commandException;
 					}
-					variables.put(compoundTerm.getArgument(1).toString(),
-							compoundTerm.getArgument(2).toString());
+					variables.put(PrologTerm.atomicString(compoundTerm
+							.getArgument(1)), PrologTerm
+							.atomicString(compoundTerm.getArgument(2)));
 				}
 
 				// look up the variables / constants of the selected machine in
