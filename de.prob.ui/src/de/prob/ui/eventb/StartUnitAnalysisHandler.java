@@ -45,7 +45,6 @@ import de.prob.core.command.ActivateUnitPluginCommand;
 import de.prob.core.command.ClearMachineCommand;
 import de.prob.core.command.CommandException;
 import de.prob.core.command.ComposedCommand;
-import de.prob.core.command.GetErrorsCommand;
 import de.prob.core.command.GetPluginResultCommand;
 import de.prob.core.command.SetPreferencesCommand;
 import de.prob.core.command.StartAnimationCommand;
@@ -142,9 +141,6 @@ public class StartUnitAnalysisHandler extends AbstractHandler implements
 				animator.execute(pluginResultCommand);
 
 				processResults(pluginResultCommand.getResult());
-
-				// TODO: should i shutdown the animator?
-				// animator.shutdown();
 			} catch (ProBException e) {
 				e.notifyUserOnce();
 				throw new ExecutionException("Unit Analysis Failed", e);
