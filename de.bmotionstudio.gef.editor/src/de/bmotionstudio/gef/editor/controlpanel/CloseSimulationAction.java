@@ -11,8 +11,6 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.ui.IPerspectiveDescriptor;
 import org.eclipse.ui.IPerspectiveRegistry;
-import org.eclipse.ui.IWorkbench;
-import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PlatformUI;
 
 import de.bmotionstudio.gef.editor.BMotionEditorPlugin;
@@ -38,22 +36,19 @@ public class CloseSimulationAction extends Action {
 		Object firstElement = sel.getFirstElement();
 		if (firstElement instanceof Simulation) {
 
-			IWorkbench workbench = PlatformUI.getWorkbench();
-			IWorkbenchPage page = workbench.getActiveWorkbenchWindow()
-					.getActivePage();
-
-			IPerspectiveRegistry perspectiveRegistry = workbench
-					.getPerspectiveRegistry();
+			IPerspectiveRegistry perspectiveRegistry = PlatformUI
+					.getWorkbench().getPerspectiveRegistry();
 
 			Simulation simulation = (Simulation) firstElement;
 			String perspectiveId = PerspectiveUtil
 					.getPerspectiveIdFromFile(simulation.getProjectFile());
-			IPerspectiveDescriptor perspectiveDescriptor = perspectiveRegistry.findPerspectiveWithId(perspectiveId);
-			if(perspectiveDescriptor != null) {
-				PerspectiveUtil.closePerspective(page, perspectiveDescriptor);
-				PerspectiveUtil.deletePerspective(page, perspectiveDescriptor);
+			IPerspectiveDescriptor perspectiveDescriptor = perspectiveRegistry
+					.findPerspectiveWithId(perspectiveId);
+			if (perspectiveDescriptor != null) {
+				PerspectiveUtil.closePerspective(perspectiveDescriptor);
+				PerspectiveUtil.deletePerspective(perspectiveDescriptor);
 			}
-			
+
 			BMotionEditorPlugin.closeSimulation(simulation);
 
 		}

@@ -46,13 +46,14 @@ public class BMSPerspectiveFactory implements IPerspectiveFactory {
 		IFolderLayout top = layout.createFolder("bottom1", IPageLayout.BOTTOM,
 				0.20f, IPageLayout.ID_EDITOR_AREA);
 		top.addPlaceholder(VisualizationViewPart.ID + ":*");
+		layout.getViewLayout(VisualizationViewPart.ID).setCloseable(false);
 
 		// Properties view + observer view + control panel
 		IFolderLayout bottom = layout.createFolder("bottom2",
 				IPageLayout.BOTTOM, 0.65f, "bottom1");
+		bottom.addView(ControlPanel.ID);
 		bottom.addView(IPageLayout.ID_PROP_SHEET);
 		bottom.addView(ObserverView.ID);
-		bottom.addView(ControlPanel.ID);
 		
 	}
 

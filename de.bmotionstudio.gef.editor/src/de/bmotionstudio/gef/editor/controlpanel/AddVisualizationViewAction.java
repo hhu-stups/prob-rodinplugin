@@ -16,6 +16,7 @@ import org.eclipse.ui.PartInitException;
 
 import de.bmotionstudio.gef.editor.BMotionEditorPlugin;
 import de.bmotionstudio.gef.editor.BMotionStudioImage;
+import de.bmotionstudio.gef.editor.VisualizationViewPart;
 import de.bmotionstudio.gef.editor.model.Simulation;
 import de.bmotionstudio.gef.editor.model.Visualization;
 import de.bmotionstudio.gef.editor.model.VisualizationView;
@@ -41,6 +42,8 @@ public class AddVisualizationViewAction extends Action {
 
 			Simulation simulation = (Simulation) firstElement;
 
+			PerspectiveUtil.openPerspective(simulation);
+
 			try {
 
 				String secId = UUID.randomUUID().toString();
@@ -56,8 +59,10 @@ public class AddVisualizationViewAction extends Action {
 				simulation.getVisualizationViews()
 						.put(secId, visualizationView);
 
-				PerspectiveUtil.createVisualizationViewPart(secId,
+				VisualizationViewPart visualizationViewPart = PerspectiveUtil
+						.createVisualizationViewPart(secId,
 						visualizationView);
+				visualizationViewPart.init(simulation, visualizationView);
 				
 				simulation.setDirty(true);
 				viewer.refresh();

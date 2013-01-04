@@ -722,4 +722,10 @@
          </control>
       </include>   
    </extension>
+   <extension
+         point="org.eclipse.ui.startup">
+      <startup
+            class="de.bmotionstudio.gef.editor.BMotionStartup">
+      </startup>
+   </extension>
 </plugin>

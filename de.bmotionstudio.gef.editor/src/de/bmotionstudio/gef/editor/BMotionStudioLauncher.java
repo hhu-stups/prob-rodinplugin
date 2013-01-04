@@ -1,10 +1,6 @@
 package de.bmotionstudio.gef.editor;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -12,15 +8,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.Platform;
-import org.eclipse.core.runtime.preferences.IExportedPreferences;
-import org.eclipse.core.runtime.preferences.IPreferenceFilter;
-import org.eclipse.core.runtime.preferences.IPreferencesService;
-import org.eclipse.core.runtime.preferences.InstanceScope;
-import org.eclipse.core.runtime.preferences.PreferenceFilterEntry;
 import org.eclipse.ui.IEditorLauncher;
-import org.eclipse.ui.IPerspectiveDescriptor;
-import org.eclipse.ui.IPerspectiveRegistry;
 import org.eclipse.ui.IViewReference;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPartSite;
@@ -37,8 +25,6 @@ import de.bmotionstudio.gef.editor.util.PerspectiveUtil;
 
 public class BMotionStudioLauncher implements IEditorLauncher {
 
-	private Simulation simulation;
-
 	private IFile file;
 
 	@Override
@@ -47,10 +33,40 @@ public class BMotionStudioLauncher implements IEditorLauncher {
 		file = ResourcesPlugin.getWorkspace().getRoot()
 				.getFileForLocation(path);
 
-		if (BMotionEditorPlugin.getOpenSimulations()
-				.containsKey(file.getName()))
-			return;
+		Simulation simulation = BMotionEditorPlugin.getOpenSimulations().get(
+				file.getName());
 
+		// final String perspectiveId = PerspectiveUtil
+		// .getPerspectiveIdFromFile(file);
+
+		// The simulation is already open
+		if (simulation != null) {
+			
+			PerspectiveUtil.openPerspective(simulation);
+//
+//			IPerspectiveDescriptor perspective = PlatformUI.getWorkbench()
+//					.getPerspectiveRegistry()
+//					.findPerspectiveWithId(perspectiveId);
+//
+//			// Check if a perspective already exists
+//			if (perspective != null) {
+//				// If yes, just switch the perspective
+//				PerspectiveUtil.switchPerspective(perspective);
+//			} else {
+//				
+//				
+//			}
+//
+//			IFile perspectiveFile = file.getProject().getFile(
+//					getPerspectiveFileName());
+//			if (perspectiveFile.exists()) {
+//
+//			}
+
+//			PerspectiveUtil.openPerspective(simulation);
+			return;
+		}
+		
 		InputStream inputStream = null;
 
 		try {
@@ -81,10 +97,6 @@ public class BMotionStudioLauncher implements IEditorLauncher {
 					.getActiveWorkbenchWindow().getActivePage();
 			IWorkbenchPartSite site = activePage.getActivePart().getSite();
 
-			importPerspective(file.getProject().getFile(
-					getPerspectiveFileName()));
-			openPerspective(site.getPage());
-
 			if (obj instanceof Visualization) {
 
 				simulation = new Simulation();
@@ -108,6 +120,9 @@ public class BMotionStudioLauncher implements IEditorLauncher {
 
 				simulation.setProjectFile(file);
 
+				System.out.println("Open Perspecitve");
+				PerspectiveUtil.openPerspective(simulation);
+
 				for (Map.Entry<String, VisualizationView> entry : simulation
 						.getVisualizationViews().entrySet()) {
 
@@ -116,18 +131,29 @@ public class BMotionStudioLauncher implements IEditorLauncher {
 					Visualization vis = visView.getVisualization();
 					vis.setProjectFile(file);
 					// String partName = visView.getPartName();
-					// IViewReference viewReference = site.getPage()
-					// .findViewReference(VisualizationViewPart.ID, secId);
+					IViewReference viewReference = site.getPage()
+							.findViewReference(VisualizationViewPart.ID, secId);
+					VisualizationViewPart visualizationViewPart;
 					// Check if view already exists
-					// if (viewReference != null) {
-					// } else {
-					// If not, create a new one
-					VisualizationViewPart visualizationViewPart = PerspectiveUtil
-							.createVisualizationViewPart(
-							secId, visView);
-					if (!visualizationViewPart.isInitialized())
+					if (viewReference != null) {
+						visualizationViewPart = (VisualizationViewPart) viewReference
+								.getPart(true);
+						System.out.println("    ===> Visualization found: "
+								+ visualizationViewPart);
+					} else {
+						// If not, create a new one
+						visualizationViewPart = PerspectiveUtil
+								.createVisualizationViewPart(secId, visView);
+						System.out.println("    ===> Visualization created: "
+								+ visualizationViewPart);
+					}
+
+					if (visualizationViewPart != null
+							&& !visualizationViewPart.isInitialized()) {
+						System.out
+								.println("       ===> Visualization initialized");
 						visualizationViewPart.init(simulation, visView);
-					// }
+					}
 
 				}
 
@@ -157,89 +183,6 @@ public class BMotionStudioLauncher implements IEditorLauncher {
 			}
 		}
 
-	}
-
-	private IPerspectiveDescriptor openPerspective(IWorkbenchPage page) {
-
-		if (page == null)
-			return null;
-
-		// Try to get the corresponding perspective
-		IPerspectiveRegistry perspectiveRegistry = page.getWorkbenchWindow()
-				.getWorkbench().getPerspectiveRegistry();
-		String perspectiveId = PerspectiveUtil.getPerspectiveIdFromFile(file);
-		IPerspectiveDescriptor perspective = perspectiveRegistry
-				.findPerspectiveWithId(perspectiveId);
-
-		// Yes --> just switch to this perspective
-		if (perspective != null) {
-			PerspectiveUtil.switchPerspective(perspective);
-		} else {
-			// No --> create a new one
-			IPerspectiveDescriptor originalPerspectiveDescriptor = perspectiveRegistry
-					.findPerspectiveWithId(BMSPerspectiveFactory.ID);
-			PerspectiveUtil.switchPerspective(originalPerspectiveDescriptor);
-			perspective = perspectiveRegistry.clonePerspective(perspectiveId,
-					perspectiveId, originalPerspectiveDescriptor);
-			// save the perspective
-			page.savePerspectiveAs(perspective);
-		}
-
-		return perspective;
-
-	}
-
-	private void importPerspective(IFile perspectiveFile) {
-
-		FileInputStream fis = null;
-
-		try {
-
-			IPreferenceFilter[] transfers = null;
-			transfers = new IPreferenceFilter[1];
-
-			// Only import if a perspective file exists
-			if (perspectiveFile.exists()) {
-
-				File exportFile = new File(perspectiveFile.getLocationURI());
-				fis = new FileInputStream(exportFile);
-				IPreferencesService service = Platform.getPreferencesService();
-				// service.importPreferences(fis);
-				IExportedPreferences prefs = service.readPreferences(fis);
-				transfers[0] = new IPreferenceFilter() {
-					public String[] getScopes() {
-						return new String[] { InstanceScope.SCOPE };
-					}
-
-					public Map<String, PreferenceFilterEntry[]> getMapping(
-							String scope) {
-						Map<String, PreferenceFilterEntry[]> map = new HashMap<String, PreferenceFilterEntry[]>();
-						map.put("org.eclipse.ui.workbench",
-								new PreferenceFilterEntry[] { new PreferenceFilterEntry(
-										PerspectiveUtil
-												.getPerspectiveIdFromFile(file)
-												+ "_persp") });
-						return map;
-					}
-				};
-				service.applyPreferences(prefs, transfers);
-			}
-
-		} catch (FileNotFoundException e) {
-		} catch (CoreException e) {
-		} finally {
-			try {
-				if (fis != null)
-					fis.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-
-	}
-
-	private String getPerspectiveFileName() {
-		return file.getName().replace(".bmso", ".bmsop");
 	}
 
 }

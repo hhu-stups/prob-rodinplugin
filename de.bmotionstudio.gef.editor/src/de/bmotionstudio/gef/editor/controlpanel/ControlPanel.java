@@ -8,6 +8,8 @@ import java.util.Map;
 
 import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.gef.commands.CommandStackListener;
+import org.eclipse.jface.action.IMenuListener;
+import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.viewers.DoubleClickEvent;
@@ -168,11 +170,30 @@ public class ControlPanel extends ViewPart implements ISimulationListener,
 			treeViewer.expandAll();
 		}
 
+		final CloseSimulationAction closeSimulationAction = new CloseSimulationAction(
+				treeViewer);
+		final SaveSimulationAction saveSimulationAction = new SaveSimulationAction(
+				treeViewer);
+		final AddVisualizationViewAction addVisualizationViewAction = new AddVisualizationViewAction(
+				treeViewer);
+		final Separator separator = new Separator();
+
 		MenuManager manager = new MenuManager();
-		manager.add(new CloseSimulationAction(treeViewer));
-		manager.add(new SaveSimulationAction(treeViewer));
-		manager.add(new Separator());
-		manager.add(new AddVisualizationViewAction(treeViewer));
+		manager.setRemoveAllWhenShown(true);
+		manager.addMenuListener(new IMenuListener() {
+			public void menuAboutToShow(IMenuManager manager) {
+				IStructuredSelection selection = (IStructuredSelection) treeViewer
+						.getSelection();
+				Object firstElement = selection.getFirstElement();
+				if (firstElement instanceof Simulation) {
+					manager.add(closeSimulationAction);
+					manager.add(saveSimulationAction);
+					manager.add(separator);
+					manager.add(addVisualizationViewAction);
+				}
+			}
+		});
+
 		treeViewer.getControl().setMenu(
 				manager.createContextMenu(treeViewer.getControl()));
 

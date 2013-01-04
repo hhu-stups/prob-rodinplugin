@@ -94,6 +94,7 @@ public class BMotionEditorPlugin extends AbstractUIPlugin {
 		super.stop(context);
 	}
 
+
 	/**
 	 * Returns the shared instance
 	 * 

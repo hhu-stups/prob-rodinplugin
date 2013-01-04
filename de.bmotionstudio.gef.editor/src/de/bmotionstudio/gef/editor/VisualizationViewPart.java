@@ -369,6 +369,7 @@ public class VisualizationViewPart extends ViewPart implements
 
 	@Override
 	public void setFocus() {
+		container.setFocus();
 	}
 
 	public void init(Simulation simulation, VisualizationView visualizationView) {
