@@ -116,13 +116,9 @@ public class StartUnitAnalysisHandler extends AbstractHandler implements
 		;
 
 		if (resource != null) {
-			LimitedLogger.getLogger().log("user started animation",
+			LimitedLogger.getLogger().log("user started unit analysis",
 					rootElement.getElementName(), null);
 			registerModificationListener(resource);
-
-			// do not change perspective - just start animator and shut it down
-			// after the analysis
-			// PerspectiveFactory.openPerspective();
 
 			final Animator animator = Animator.getAnimator();
 			try {
