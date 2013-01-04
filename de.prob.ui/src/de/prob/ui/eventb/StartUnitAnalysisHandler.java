@@ -45,6 +45,7 @@ import de.prob.core.command.ActivateUnitPluginCommand;
 import de.prob.core.command.ClearMachineCommand;
 import de.prob.core.command.CommandException;
 import de.prob.core.command.ComposedCommand;
+import de.prob.core.command.GetErrorsCommand;
 import de.prob.core.command.GetPluginResultCommand;
 import de.prob.core.command.SetPreferencesCommand;
 import de.prob.core.command.StartAnimationCommand;
@@ -129,15 +130,14 @@ public class StartUnitAnalysisHandler extends AbstractHandler implements
 				final ClearMachineCommand clear = new ClearMachineCommand();
 				final SetPreferencesCommand setPrefs = SetPreferencesCommand
 						.createSetPreferencesCommand(animator);
-
 				final InternalLoadCommand load = new InternalLoadCommand(
 						rootElement);
 				final StartAnimationCommand start = new StartAnimationCommand();
-
 				final ActivateUnitPluginCommand activatePlugin = new ActivateUnitPluginCommand();
+				final GetErrorsCommand getErrors = new GetErrorsCommand();
 
 				final ComposedCommand composed = new ComposedCommand(clear,
-						setPrefs, load, start, activatePlugin);
+						setPrefs, load, start, activatePlugin, getErrors);
 
 				animator.execute(composed);
 
@@ -147,64 +147,12 @@ public class StartUnitAnalysisHandler extends AbstractHandler implements
 
 				animator.execute(pluginResultCommand);
 
-				ListPrologTerm output = pluginResultCommand.getResult();
-				// System.out.println("Resulting state: " + output);
-
-				// preprocess the list into a map
-				Map<String, String> variables = new HashMap<String, String>();
-				for (PrologTerm term : output) {
-					CompoundPrologTerm compoundTerm;
-					try {
-						compoundTerm = BindingGenerator.getCompoundTerm(term,
-								"bind", 2);
-					} catch (ResultParserException e) {
-						CommandException commandException = new CommandException(
-								e.getLocalizedMessage(), e);
-						commandException.notifyUserOnce();
-						throw commandException;
-					}
-					variables.put(PrologTerm.atomicString(compoundTerm
-							.getArgument(1)), PrologTerm
-							.atomicString(compoundTerm.getArgument(2)));
-				}
-
-				// look up the variables / constants of the selected machine in
-				// the state
-				// and set the inferredUnitPragma attribute
-				if (rootElement instanceof IMachineRoot) {
-					// find and update variables
-					IVariable[] allVariables = rootElement.getMachineRoot()
-							.getVariables();
-
-					for (IVariable var : allVariables) {
-						String variableName = var.getIdentifierString();
-						if (variables.containsKey(variableName)) {
-							var.setAttributeValue(
-									InferredUnitPragmaAttribute.ATTRIBUTE,
-									variables.get(variableName),
-									new NullProgressMonitor());
-						}
-					}
-
-				} else if (rootElement instanceof IContextRoot) {
-					// find and update constants
-					IConstant[] allConstants = rootElement.getContextRoot()
-							.getConstants();
-
-					for (IConstant var : allConstants) {
-						String constantName = var.getIdentifierString();
-						if (variables.containsKey(constantName)) {
-							var.setAttributeValue(
-									InferredUnitPragmaAttribute.ATTRIBUTE,
-									variables.get(constantName),
-									new NullProgressMonitor());
-						}
-					}
+				// if no errors occured, insert the results into the rodin
+				// database
+				if (getErrors.getErrors().isEmpty()) {
+					processResults(pluginResultCommand.getResult());
 				} else {
-					throw new ExecutionException(
-							"Cannot translate anything else than IMachineRoot or IContextRoot. Type of "
-									+ rootElement.getComponentName() + " was: "
-									+ rootElement.getClass());
+					// TODO display errors
 				}
 
 				// TODO: should i shutdown the animator?
@@ -239,6 +187,67 @@ public class StartUnitAnalysisHandler extends AbstractHandler implements
 		} catch (CoreException e1) {
 		}
 		return result;
+	}
+
+	private void processResults(ListPrologTerm result) throws RodinDBException,
+			ExecutionException {
+		// preprocess the list into a map
+		Map<String, String> variables = new HashMap<String, String>();
+		for (PrologTerm term : result) {
+			CompoundPrologTerm compoundTerm;
+			try {
+				compoundTerm = BindingGenerator
+						.getCompoundTerm(term, "bind", 2);
+
+				variables.put(
+						PrologTerm.atomicString(compoundTerm.getArgument(1)),
+						PrologTerm.atomicString(compoundTerm.getArgument(2)));
+			} catch (ResultParserException e) {
+				CommandException commandException = new CommandException(
+						e.getLocalizedMessage(), e);
+				commandException.notifyUserOnce();
+			}
+		}
+
+		IEventBRoot rootElement = getRootElement();
+		// look up the variables / constants of the selected machine in
+		// the state
+		// and set the inferredUnitPragma attribute
+		if (rootElement instanceof IMachineRoot) {
+			// find and update variables
+			IVariable[] allVariables = rootElement.getMachineRoot()
+					.getVariables();
+
+			for (IVariable var : allVariables) {
+				String variableName = var.getIdentifierString();
+				if (variables.containsKey(variableName)) {
+					var.setAttributeValue(
+							InferredUnitPragmaAttribute.ATTRIBUTE,
+							variables.get(variableName),
+							new NullProgressMonitor());
+				}
+			}
+
+		} else if (rootElement instanceof IContextRoot) {
+			// find and update constants
+			IConstant[] allConstants = rootElement.getContextRoot()
+					.getConstants();
+
+			for (IConstant var : allConstants) {
+				String constantName = var.getIdentifierString();
+				if (variables.containsKey(constantName)) {
+					var.setAttributeValue(
+							InferredUnitPragmaAttribute.ATTRIBUTE,
+							variables.get(constantName),
+							new NullProgressMonitor());
+				}
+			}
+		} else {
+			throw new ExecutionException(
+					"Cannot execute unit analysis on this element type. Type of "
+							+ rootElement.getComponentName() + " was: "
+							+ rootElement.getClass());
+		}
 	}
 
 	private IEventBRoot getRootElement() {
