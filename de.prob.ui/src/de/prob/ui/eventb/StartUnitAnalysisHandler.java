@@ -137,7 +137,6 @@ public class StartUnitAnalysisHandler extends AbstractHandler implements
 
 				animator.execute(composed);
 
-				// TODO: get resulting state and fill attributes
 				GetPluginResultCommand pluginResultCommand = new GetPluginResultCommand(
 						"Grounded Result State");
 
