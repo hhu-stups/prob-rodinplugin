@@ -13,17 +13,15 @@
    <extension
          point="org.eclipse.ui.editors">
       <editor
-            class="de.bmotionstudio.gef.editor.BMotionStudioEditor"
-            contributorClass="de.bmotionstudio.gef.editor.BMotionStudioContributor"
             default="true"
             extensions="bmso"
             icon="icons/logo_bmotion.png"
             id="de.bmotionstudio.gef.editor.BMotionStudioEditor"
+            launcher="de.bmotionstudio.gef.editor.BMotionStudioLauncher"
             name="BMotion Studio">
-      </editor>
-   </extension>
-   <extension
-         point="org.eclipse.ui.newWizards">
+            </editor>
+            </extension>
+         <extension point="org.eclipse.ui.newWizards">
       <category
             id="de.bmotionstudio.gef.editor.wizards"
             name="BMotion Studio">
@@ -83,6 +81,14 @@
             class="de.bmotionstudio.gef.editor.BMotionOutlineView"
             id="de.bmotionstudio.gef.editor.OutlineView"
             name="Outline"
+            restorable="true">
+      </view>
+      <view
+            allowMultiple="false"
+            category="de.bmotionstudio.views"
+            class="de.bmotionstudio.gef.editor.controlpanel.ControlPanel"
+            id="de.bmotionstudio.gef.editor.ControlPanel"
+            name="Control Panel"
             restorable="true">
       </view>
    </extension>

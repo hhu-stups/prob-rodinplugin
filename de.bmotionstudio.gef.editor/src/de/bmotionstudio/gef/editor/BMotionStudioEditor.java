@@ -292,7 +292,6 @@ public class BMotionStudioEditor extends EditorPart implements
 						"New Visualization View", visualization);
 
 				String secId = UUID.randomUUID().toString();
-				createVisualizationViewPart(secId, visualizationView);
 
 				simulation.getVisualizationViews()
 						.put(secId, visualizationView);
@@ -317,7 +316,10 @@ public class BMotionStudioEditor extends EditorPart implements
 					// if (viewReference != null) {
 					// } else {
 					// If not, create a new one
-					createVisualizationViewPart(secId, visView);
+					VisualizationViewPart visualizationViewPart = createVisualizationViewPart(
+							secId, visView);
+					visualizationViewPart.init(simulation, visView);
+
 					// }
 
 				}
@@ -348,17 +350,13 @@ public class BMotionStudioEditor extends EditorPart implements
 
 		setSite(site);
 		setInput(input);
-
+		
 		// getCommandStack().addCommandStackListener(getCommandStackListener());
 
 	}
 
 	private VisualizationViewPart createVisualizationViewPart(String secId,
-			VisualizationView visualizationView)
-			throws PartInitException {
-
-		System.out.println("CREATE VISUALIZATION PART: " + secId);
-
+			VisualizationView visualizationView) throws PartInitException {
 		IWorkbenchWindow window = PlatformUI.getWorkbench()
 				.getActiveWorkbenchWindow();
 		IWorkbenchPage activePage = window.getActivePage();

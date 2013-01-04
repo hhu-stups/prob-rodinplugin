@@ -100,7 +100,7 @@ public class BMotionOutlinePage extends ContentOutlinePage {
 	}
 
 	private void initializeOutlineViewer() {
-		getViewer().setContents(viewPart.getVisualization());
+		// getViewer().setContents(viewPart.getVisualization());
 	}
 
 	/**

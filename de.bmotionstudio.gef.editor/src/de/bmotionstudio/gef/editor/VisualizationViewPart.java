@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.EventObject;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtension;
@@ -46,17 +45,11 @@ import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.IActionBars;
-import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.actions.ActionFactory;
-import org.eclipse.ui.part.IPage;
-import org.eclipse.ui.part.IPageSite;
-import org.eclipse.ui.part.MessagePage;
-import org.eclipse.ui.part.Page;
-import org.eclipse.ui.part.PageBook;
-import org.eclipse.ui.part.PageBookView;
+import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
 
@@ -72,7 +65,7 @@ import de.bmotionstudio.gef.editor.model.Visualization;
 import de.bmotionstudio.gef.editor.model.VisualizationView;
 import de.bmotionstudio.gef.editor.part.BMSEditPartFactory;
 
-public class VisualizationViewPart extends PageBookView implements
+public class VisualizationViewPart extends ViewPart implements
 		CommandStackListener {
 
 	public static String ID = "de.bmotionstudio.gef.editor.VisualizationView";
@@ -81,17 +74,21 @@ public class VisualizationViewPart extends PageBookView implements
 
 	private VisualizationView visualizationView;
 
-	private VisualizationViewPage page;
-
 	private ActionRegistry actionRegistry;
-
-	private Composite container;
-
-	private Simulation simulation;
 
 	private BMotionStudioEditor editor;
 
 	private BMotionSelectionSynchronizer selectionSynchronizer;
+
+	private RulerComposite container;
+
+	private GraphicalViewer graphicalViewer;
+
+	private ScalableRootEditPart rootEditPart;
+
+	private Simulation simulation;
+
+	private boolean isInitialized = false;
 
 	private List<String> selectionActions = new ArrayList<String>();
 	private List<String> stackActions = new ArrayList<String>();
@@ -137,76 +134,8 @@ public class VisualizationViewPart extends PageBookView implements
 		return selectionSynchronizer;
 	}
 
-	// Workaround for prevent recursive activation of part
-	@Override
-	public void setFocus() {
-		this.container.setFocus();
-		super.setFocus();
-	}
-
-	public Visualization getVisualization() {
-		if (this.visualizationView != null)
-			return this.visualizationView.getVisualization();
-		return null;
-	}
-
 	public GraphicalViewer getGraphicalViewer() {
-		if (page != null)
-			return page.getGraphicalViewer();
-		return null;
-	}
-
-	@Override
-	protected IPage createDefaultPage(PageBook book) {
-		MessagePage page = new MessagePage();
-		initPage(page);
-		page.createControl(book);
-		page.setMessage("NA");
-		return page;
-	}
-
-	@Override
-	public void createPartControl(Composite parent) {
-		this.container = parent;
-		super.createPartControl(parent);
-	}
-
-	@Override
-	protected PageRec doCreatePage(IWorkbenchPart part) {
-
-		if (part instanceof BMotionStudioEditor) {
-
-			BMotionStudioEditor cEditor = (BMotionStudioEditor) part;
-
-			this.simulation = cEditor.getSimulation();
-			if (this.simulation == null)
-				return null;
-
-			Map<String, VisualizationView> visualizationViews = this.simulation
-					.getVisualizationViews();
-
-			this.visualizationView = visualizationViews
-					.get(getViewSite().getSecondaryId());
-
-			if (visualizationView == null)
-				return null;
-
-			this.editor = cEditor;
-			this.editDomain = new EditDomain();
-			this.editDomain.getCommandStack().addCommandStackListener(this);
-
-			createActions();
-
-			page = new VisualizationViewPage();
-			initPage(page);
-			page.createControl(getPageBook());
-
-			return new PageRec(part, page);
-
-		}
-
-		return null;
-
+		return graphicalViewer;
 	}
 
 	/**
@@ -218,28 +147,6 @@ public class VisualizationViewPart extends PageBookView implements
 		if (actionRegistry == null)
 			actionRegistry = new ActionRegistry();
 		return actionRegistry;
-	}
-
-	@Override
-	protected void doDestroyPage(IWorkbenchPart part, PageRec rec) {
-		unregister();
-		VisualizationViewPage page = (VisualizationViewPage) rec.page;
-		page.dispose();
-		rec.dispose();
-	}
-
-	@Override
-	protected IWorkbenchPart getBootstrapPart() {
-		IWorkbenchPage page = getSite().getPage();
-		if (page != null) {
-			return page.getActiveEditor();
-		}
-		return null;
-	}
-
-	@Override
-	protected boolean isImportant(IWorkbenchPart part) {
-		return part instanceof BMotionStudioEditor;
 	}
 
 	public EditDomain getEditDomain() {
@@ -287,6 +194,47 @@ public class VisualizationViewPart extends PageBookView implements
 
 		action = new SelectAllAction(this);
 		registry.registerAction(action);
+
+		ZoomManager manager = rootEditPart.getZoomManager();
+		getActionRegistry().registerAction(new ZoomInAction(manager));
+		getActionRegistry().registerAction(new ZoomOutAction(manager));
+
+		double[] zoomLevels = new double[] { 0.25, 0.5, 0.75, 1.0, 1.5, 2.0,
+				2.5, 3.0, 4.0, 5.0, 10.0, 20.0 };
+		manager.setZoomLevels(zoomLevels);
+		ArrayList<String> zoomContributions = new ArrayList<String>();
+		zoomContributions.add(ZoomManager.FIT_ALL);
+		zoomContributions.add(ZoomManager.FIT_HEIGHT);
+		zoomContributions.add(ZoomManager.FIT_WIDTH);
+		manager.setZoomLevelContributions(zoomContributions);
+
+		getActionRegistry().registerAction(
+				new ToggleRulerVisibilityAction(getGraphicalViewer()) {
+					@Override
+					public void run() {
+						super.run();
+						setChecked(!isChecked());
+						editor.setDirty(true);
+					}
+				});
+		getActionRegistry().registerAction(
+				new ToggleSnapToGeometryAction(getGraphicalViewer()) {
+					@Override
+					public void run() {
+						super.run();
+						setChecked(!isChecked());
+						editor.setDirty(true);
+					}
+				});
+		getActionRegistry().registerAction(
+				new ToggleGridAction(getGraphicalViewer()) {
+					@Override
+					public void run() {
+						super.run();
+						setChecked(!isChecked());
+						editor.setDirty(true);
+					}
+				});
 
 		installObserverActions();
 		installSchedulerActions();
@@ -363,244 +311,6 @@ public class VisualizationViewPart extends PageBookView implements
 
 	}
 
-	private class VisualizationViewPage extends Page {
-
-		private RulerComposite container;
-
-		private GraphicalViewer graphicalViewer;
-
-		private ScalableRootEditPart rootEditPart;
-
-		@Override
-		public void init(IPageSite site) {
-			super.init(site);
-		}
-
-		private void createActions() {
-
-			ZoomManager manager = rootEditPart.getZoomManager();
-			getActionRegistry().registerAction(new ZoomInAction(manager));
-			getActionRegistry().registerAction(new ZoomOutAction(manager));
-
-			double[] zoomLevels = new double[] { 0.25, 0.5, 0.75, 1.0, 1.5,
-					2.0, 2.5, 3.0, 4.0, 5.0, 10.0, 20.0 };
-			manager.setZoomLevels(zoomLevels);
-			ArrayList<String> zoomContributions = new ArrayList<String>();
-			zoomContributions.add(ZoomManager.FIT_ALL);
-			zoomContributions.add(ZoomManager.FIT_HEIGHT);
-			zoomContributions.add(ZoomManager.FIT_WIDTH);
-			manager.setZoomLevelContributions(zoomContributions);
-
-			getActionRegistry().registerAction(
-					new ToggleRulerVisibilityAction(getGraphicalViewer()) {
-						@Override
-						public void run() {
-							super.run();
-							setChecked(!isChecked());
-							editor.setDirty(true);
-						}
-					});
-			getActionRegistry().registerAction(
-					new ToggleSnapToGeometryAction(getGraphicalViewer()) {
-						@Override
-						public void run() {
-							super.run();
-							setChecked(!isChecked());
-							editor.setDirty(true);
-						}
-					});
-			getActionRegistry().registerAction(
-					new ToggleGridAction(getGraphicalViewer()) {
-						@Override
-						public void run() {
-							super.run();
-							setChecked(!isChecked());
-							editor.setDirty(true);
-						}
-					});
-
-		}
-
-		private void buildActions() {
-
-			IActionBars bars = getSite().getActionBars();
-			ActionRegistry ar = getActionRegistry();
-
-			bars.setGlobalActionHandler(ActionFactory.UNDO.getId(),
-					ar.getAction(ActionFactory.UNDO.getId()));
-			bars.setGlobalActionHandler(ActionFactory.REDO.getId(),
-					ar.getAction(ActionFactory.REDO.getId()));
-
-			bars.setGlobalActionHandler(ActionFactory.COPY.getId(),
-					ar.getAction(ActionFactory.COPY.getId()));
-			bars.setGlobalActionHandler(ActionFactory.PASTE.getId(),
-					ar.getAction(ActionFactory.PASTE.getId()));
-
-			bars.setGlobalActionHandler(ActionFactory.DELETE.getId(),
-					ar.getAction(ActionFactory.DELETE.getId()));
-
-			bars.updateActionBars();
-
-		}
-
-		private void createMenu(final IPageSite pageSite) {
-
-			pageSite.getActionBars()
-					.getToolBarManager()
-					.add(getActionRegistry().getAction(
-							ActionFactory.UNDO.getId()));
-			pageSite.getActionBars()
-					.getToolBarManager()
-					.add(getActionRegistry().getAction(
-							ActionFactory.REDO.getId()));
-			pageSite.getActionBars()
-					.getToolBarManager()
-					.add(getActionRegistry().getAction(
-							ActionFactory.COPY.getId()));
-			pageSite.getActionBars()
-					.getToolBarManager()
-					.add(getActionRegistry().getAction(
-							ActionFactory.PASTE.getId()));
-			pageSite.getActionBars()
-					.getToolBarManager()
-					.add(getActionRegistry().getAction(
-							ActionFactory.DELETE.getId()));
-
-			pageSite.getActionBars().getToolBarManager().add(new Separator());
-
-			pageSite.getActionBars()
-					.getToolBarManager()
-					.add(getActionRegistry().getAction(
-							GEFActionConstants.ZOOM_IN));
-			pageSite.getActionBars()
-					.getToolBarManager()
-					.add(getActionRegistry().getAction(
-							GEFActionConstants.ZOOM_OUT));
-
-			pageSite.getActionBars()
-					.getMenuManager()
-					.add(getActionRegistry().getAction(
-							GEFActionConstants.TOGGLE_GRID_VISIBILITY));
-			pageSite.getActionBars()
-					.getMenuManager()
-					.add(getActionRegistry().getAction(
-							GEFActionConstants.TOGGLE_SNAP_TO_GEOMETRY));
-			pageSite.getActionBars()
-					.getMenuManager()
-					.add(getActionRegistry().getAction(
-							GEFActionConstants.TOGGLE_RULER_VISIBILITY));
-
-			pageSite.getActionBars().updateActionBars();
-
-			// TODO Reimplement me!
-			// pageSite.getActionBars().getToolBarManager()
-			// .add(new ZoomComboContributionItem(pageSite.getPage()));
-
-		}
-
-		@Override
-		public void createControl(Composite parent) {
-			container = new RulerComposite(parent, SWT.NONE);
-			graphicalViewer = new ScrollingGraphicalViewer();
-			graphicalViewer.createControl(container);
-			configureGraphicalViewer();
-			initGraphicalViewer();
-			hookGraphicalViewer();
-			loadProperties();
-			buildActions();
-			createActions();
-			createMenu(getSite());
-			setPartName(getVisualizationView().getName());
-		}
-
-		protected void hookGraphicalViewer() {
-			getSelectionSynchronizer().addViewer(getGraphicalViewer());
-			getSite().setSelectionProvider(getGraphicalViewer());
-		}
-
-		public void configureGraphicalViewer() {
-
-			rootEditPart = new ScalableRootEditPart();
-			rootEditPart.setViewer(graphicalViewer);
-			graphicalViewer.setRootEditPart(rootEditPart);
-			graphicalViewer.setEditPartFactory(new BMSEditPartFactory());
-			graphicalViewer.getControl().setBackground(ColorConstants.red);
-			container
-					.setGraphicalViewer((ScrollingGraphicalViewer) graphicalViewer);
-			graphicalViewer.setEditDomain(getEditDomain());
-			graphicalViewer
-					.addDropTargetListener(new BControlTransferDropTargetListener(
-							graphicalViewer, getVisualization()));
-			graphicalViewer.getControl().setBackground(ColorConstants.white);
-			
-			graphicalViewer
-					.addSelectionChangedListener(new ISelectionChangedListener() {
-						@Override
-						public void selectionChanged(SelectionChangedEvent event) {
-							updateActions(selectionActions);
-						}
-					});
-
-			ContextMenuProvider provider = new BMSContextMenuProvider(
-					graphicalViewer, getActionRegistry());
-			graphicalViewer.setContextMenu(provider);
-
-		}
-
-		public GraphicalViewer getGraphicalViewer() {
-			return graphicalViewer;
-		}
-
-		public void initGraphicalViewer() {
-			graphicalViewer.setContents(getVisualization());
-		}
-
-		@Override
-		public Control getControl() {
-			return container;
-		}
-
-		@Override
-		public void setFocus() {
-		}
-
-		protected void loadProperties() {
-
-			// Ruler properties
-			BMotionRuler ruler = getVisualization().getRuler(
-					PositionConstants.WEST);
-			RulerProvider provider = null;
-			if (ruler != null) {
-				provider = new BMotionRulerProvider(ruler);
-			}
-			getGraphicalViewer().setProperty(
-					RulerProvider.PROPERTY_VERTICAL_RULER, provider);
-			ruler = getVisualization().getRuler(PositionConstants.NORTH);
-			provider = null;
-			if (ruler != null) {
-				provider = new BMotionRulerProvider(ruler);
-			}
-			getGraphicalViewer().setProperty(
-					RulerProvider.PROPERTY_HORIZONTAL_RULER, provider);
-			getGraphicalViewer().setProperty(
-					RulerProvider.PROPERTY_RULER_VISIBILITY,
-					getVisualization().getRulerVisibility());
-			getGraphicalViewer().setProperty(
-					SnapToGeometry.PROPERTY_SNAP_ENABLED,
-					getVisualization().isSnapToGeometryEnabled());
-			getGraphicalViewer().setProperty(SnapToGrid.PROPERTY_GRID_ENABLED,
-					getVisualization().isGridEnabled());
-			getGraphicalViewer().setProperty(SnapToGrid.PROPERTY_GRID_VISIBLE,
-					getVisualization().isGridEnabled());
-
-			getGraphicalViewer().setProperty(
-					MouseWheelHandler.KeyGenerator.getKey(SWT.NONE),
-					MouseWheelZoomHandler.SINGLETON);
-
-		}
-
-	}
-
 	@Override
 	public void dispose() {
 		unregister();
@@ -617,7 +327,7 @@ public class VisualizationViewPart extends PageBookView implements
 	@Override
 	public void commandStackChanged(EventObject event) {
 		updateActions(stackActions);
-		this.editor.setDirty(getCommandStack().isDirty());
+		simulation.setDirty(getCommandStack().isDirty());
 	}
 
 	/**
@@ -650,6 +360,182 @@ public class VisualizationViewPart extends PageBookView implements
 
 	protected List<String> getSelectionActions() {
 		return selectionActions;
+	}
+
+	@Override
+	public void createPartControl(Composite parent) {
+		container = new RulerComposite(parent, SWT.NONE);
+	}
+
+	@Override
+	public void setFocus() {
+	}
+
+	public void init(Simulation simulation, VisualizationView visualizationView) {
+		this.simulation = simulation;
+		this.graphicalViewer = new ScrollingGraphicalViewer();
+		this.graphicalViewer.createControl(this.container);
+		Visualization visualization = visualizationView.getVisualization();
+		this.editDomain = new EditDomain();
+		this.editDomain.getCommandStack().addCommandStackListener(this);
+		configureGraphicalViewer(visualization);
+		hookGraphicalViewer();
+		loadProperties(visualization);
+		buildActions();
+		createActions();
+		createMenu(getViewSite());
+		setPartName(visualizationView.getName());
+		getGraphicalViewer().setContents(visualization);
+		setInitialized(true);
+	}
+
+	protected void hookGraphicalViewer() {
+		getSelectionSynchronizer().addViewer(getGraphicalViewer());
+		getSite().setSelectionProvider(getGraphicalViewer());
+	}
+
+	public void configureGraphicalViewer(Visualization visualization) {
+
+		rootEditPart = new ScalableRootEditPart();
+		rootEditPart.setViewer(graphicalViewer);
+		graphicalViewer.setRootEditPart(rootEditPart);
+		graphicalViewer.setEditPartFactory(new BMSEditPartFactory());
+		container
+				.setGraphicalViewer((ScrollingGraphicalViewer) graphicalViewer);
+		graphicalViewer.setEditDomain(getEditDomain());
+		graphicalViewer
+				.addDropTargetListener(new BControlTransferDropTargetListener(
+						graphicalViewer, visualization));
+		graphicalViewer.getControl().setBackground(ColorConstants.white);
+
+		graphicalViewer
+				.addSelectionChangedListener(new ISelectionChangedListener() {
+					@Override
+					public void selectionChanged(SelectionChangedEvent event) {
+						updateActions(selectionActions);
+					}
+				});
+
+		ContextMenuProvider provider = new BMSContextMenuProvider(
+				graphicalViewer, getActionRegistry());
+		graphicalViewer.setContextMenu(provider);
+
+	}
+
+	private void buildActions() {
+
+		IActionBars bars = getViewSite().getActionBars();
+		ActionRegistry ar = getActionRegistry();
+
+		bars.setGlobalActionHandler(ActionFactory.UNDO.getId(),
+				ar.getAction(ActionFactory.UNDO.getId()));
+		bars.setGlobalActionHandler(ActionFactory.REDO.getId(),
+				ar.getAction(ActionFactory.REDO.getId()));
+
+		bars.setGlobalActionHandler(ActionFactory.COPY.getId(),
+				ar.getAction(ActionFactory.COPY.getId()));
+		bars.setGlobalActionHandler(ActionFactory.PASTE.getId(),
+				ar.getAction(ActionFactory.PASTE.getId()));
+
+		bars.setGlobalActionHandler(ActionFactory.DELETE.getId(),
+				ar.getAction(ActionFactory.DELETE.getId()));
+
+		bars.updateActionBars();
+
+	}
+
+	private void createMenu(final IViewSite iViewSite) {
+
+		iViewSite.getActionBars().getToolBarManager()
+				.add(getActionRegistry().getAction(ActionFactory.UNDO.getId()));
+		iViewSite.getActionBars().getToolBarManager()
+				.add(getActionRegistry().getAction(ActionFactory.REDO.getId()));
+		iViewSite.getActionBars().getToolBarManager()
+				.add(getActionRegistry().getAction(ActionFactory.COPY.getId()));
+		iViewSite
+				.getActionBars()
+				.getToolBarManager()
+				.add(getActionRegistry().getAction(ActionFactory.PASTE.getId()));
+		iViewSite
+				.getActionBars()
+				.getToolBarManager()
+				.add(getActionRegistry()
+						.getAction(ActionFactory.DELETE.getId()));
+
+		iViewSite.getActionBars().getToolBarManager().add(new Separator());
+
+		iViewSite.getActionBars().getToolBarManager()
+				.add(getActionRegistry().getAction(GEFActionConstants.ZOOM_IN));
+		iViewSite
+				.getActionBars()
+				.getToolBarManager()
+				.add(getActionRegistry().getAction(GEFActionConstants.ZOOM_OUT));
+
+		iViewSite
+				.getActionBars()
+				.getMenuManager()
+				.add(getActionRegistry().getAction(
+						GEFActionConstants.TOGGLE_GRID_VISIBILITY));
+		iViewSite
+				.getActionBars()
+				.getMenuManager()
+				.add(getActionRegistry().getAction(
+						GEFActionConstants.TOGGLE_SNAP_TO_GEOMETRY));
+		iViewSite
+				.getActionBars()
+				.getMenuManager()
+				.add(getActionRegistry().getAction(
+						GEFActionConstants.TOGGLE_RULER_VISIBILITY));
+
+		iViewSite.getActionBars().updateActionBars();
+
+		// TODO Reimplement me!
+		// pageSite.getActionBars().getToolBarManager()
+		// .add(new ZoomComboContributionItem(pageSite.getPage()));
+
+	}
+
+	protected void loadProperties(Visualization visualization) {
+
+		// Ruler properties
+		BMotionRuler ruler = visualization.getRuler(
+				PositionConstants.WEST);
+		RulerProvider provider = null;
+		if (ruler != null) {
+			provider = new BMotionRulerProvider(ruler);
+		}
+		getGraphicalViewer().setProperty(
+				RulerProvider.PROPERTY_VERTICAL_RULER, provider);
+		ruler = visualization.getRuler(PositionConstants.NORTH);
+		provider = null;
+		if (ruler != null) {
+			provider = new BMotionRulerProvider(ruler);
+		}
+		getGraphicalViewer().setProperty(
+				RulerProvider.PROPERTY_HORIZONTAL_RULER, provider);
+		getGraphicalViewer().setProperty(
+				RulerProvider.PROPERTY_RULER_VISIBILITY,
+				visualization.getRulerVisibility());
+		getGraphicalViewer().setProperty(
+				SnapToGeometry.PROPERTY_SNAP_ENABLED,
+				visualization.isSnapToGeometryEnabled());
+		getGraphicalViewer().setProperty(SnapToGrid.PROPERTY_GRID_ENABLED,
+				visualization.isGridEnabled());
+		getGraphicalViewer().setProperty(SnapToGrid.PROPERTY_GRID_VISIBLE,
+				visualization.isGridEnabled());
+
+		getGraphicalViewer().setProperty(
+				MouseWheelHandler.KeyGenerator.getKey(SWT.NONE),
+				MouseWheelZoomHandler.SINGLETON);
+
+	}
+
+	public boolean isInitialized() {
+		return isInitialized;
+	}
+
+	public void setInitialized(boolean isInitialized) {
+		this.isInitialized = isInitialized;
 	}
 
 }

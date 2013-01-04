@@ -8,6 +8,8 @@ package de.bmotionstudio.gef.editor;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtension;
@@ -40,6 +42,8 @@ public class BMotionEditorPlugin extends AbstractUIPlugin {
 
 	public static final String FILEEXT_STUDIO = "bmso";
 
+	public static List<ISimulationListener> openSimulationListeners = new ArrayList<ISimulationListener>();
+
 	// The shared instance
 	private static BMotionEditorPlugin plugin;
 
@@ -54,6 +58,8 @@ public class BMotionEditorPlugin extends AbstractUIPlugin {
 	IExtensionRegistry registry = Platform.getExtensionRegistry();
 
 	static BMotionStudioEditorPage activeBMotionStudioEditor = null;
+
+	public static Map<String, Simulation> openSimulations = new HashMap<String, Simulation>();
 
 	/**
 	 * The constructor
@@ -220,6 +226,22 @@ public class BMotionEditorPlugin extends AbstractUIPlugin {
 		xstream.alias("guide", BMotionGuide.class);
 		xstream.alias("connection", BConnection.class);
 		xstream.alias("children", BControlList.class);
+	}
+
+	public static void openSimulation(Simulation simulation) {
+		openSimulations.put(simulation.getProjectFile().getName(), simulation);
+		for (ISimulationListener l : openSimulationListeners)
+			l.openSimulation(simulation);
+	}
+
+	public static void closeSimulation(Simulation simulation) {
+		openSimulations.remove(simulation.getProjectFile().getName());
+		for (ISimulationListener l : openSimulationListeners)
+			l.closeSimulation(simulation);
+	}
+
+	public static Map<String, Simulation> getOpenSimulations() {
+		return openSimulations;
 	}
 
 }
