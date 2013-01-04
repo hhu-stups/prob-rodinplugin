@@ -288,10 +288,10 @@ public class BMotionStudioEditor extends EditorPart implements
 				Visualization visualization = (Visualization) obj;
 				visualization.setProjectFile(file);
 
-				VisualizationView visualizationView = new VisualizationView(
-						"New Visualization View", visualization);
-
 				String secId = UUID.randomUUID().toString();
+
+				VisualizationView visualizationView = new VisualizationView(
+						"New Visualization View", visualization, secId);
 
 				simulation.getVisualizationViews()
 						.put(secId, visualizationView);
@@ -462,7 +462,7 @@ public class BMotionStudioEditor extends EditorPart implements
 							"EventB", version);
 
 					VisualizationView visualizationView = new VisualizationView(
-							"New Visulization View", visualization);
+							"New Visulization View", visualization, secId);
 					simulation.getVisualizationViews().put(secId,
 							visualizationView);
 					

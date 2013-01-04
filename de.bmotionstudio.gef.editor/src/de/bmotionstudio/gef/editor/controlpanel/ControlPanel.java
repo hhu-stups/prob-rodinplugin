@@ -176,6 +176,8 @@ public class ControlPanel extends ViewPart implements ISimulationListener,
 				treeViewer);
 		final AddVisualizationViewAction addVisualizationViewAction = new AddVisualizationViewAction(
 				treeViewer);
+		final RemoveVisualizationViewAction deleteVisualizationViewAction = new RemoveVisualizationViewAction(
+				treeViewer);
 		final Separator separator = new Separator();
 
 		MenuManager manager = new MenuManager();
@@ -190,6 +192,8 @@ public class ControlPanel extends ViewPart implements ISimulationListener,
 					manager.add(saveSimulationAction);
 					manager.add(separator);
 					manager.add(addVisualizationViewAction);
+				} else if (firstElement instanceof VisualizationView) {
+					manager.add(deleteVisualizationViewAction);
 				}
 			}
 		});

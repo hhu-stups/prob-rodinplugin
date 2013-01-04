@@ -4,10 +4,13 @@ public class VisualizationView {
 
 	private String name;
 	private Visualization visualization;
-
-	public VisualizationView(String name, Visualization visualization) {
+	private String viewId;
+	
+	public VisualizationView(String name, Visualization visualization,
+			String viewId) {
 		this.name = name;
 		this.visualization = visualization;
+		this.viewId = viewId;
 	}
 
 	public String getName() {
@@ -24,6 +27,14 @@ public class VisualizationView {
 
 	public void setVisualization(Visualization visualization) {
 		this.visualization = visualization;
+	}
+
+	public String getViewId() {
+		return viewId;
+	}
+
+	public void setViewId(String viewId) {
+		this.viewId = viewId;
 	}
 
 }

@@ -102,10 +102,10 @@ public class BMotionStudioLauncher implements IEditorLauncher {
 				Visualization visualization = (Visualization) obj;
 				visualization.setProjectFile(file);
 
-				VisualizationView visualizationView = new VisualizationView(
-						"New Visualization View", visualization);
-
 				String secId = UUID.randomUUID().toString();
+
+				VisualizationView visualizationView = new VisualizationView(
+						"New Visualization View", visualization, secId);
 
 				simulation.getVisualizationViews()
 						.put(secId, visualizationView);

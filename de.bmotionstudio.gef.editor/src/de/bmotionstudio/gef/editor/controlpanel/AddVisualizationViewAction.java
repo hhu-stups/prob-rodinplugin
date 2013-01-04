@@ -55,7 +55,7 @@ public class AddVisualizationViewAction extends Action {
 						.getProjectFile().getName(), "EventB", version);
 
 				VisualizationView visualizationView = new VisualizationView(
-						"New Visualization View", visualization);
+						"New Visualization View", visualization, secId);
 				simulation.getVisualizationViews()
 						.put(secId, visualizationView);
 
