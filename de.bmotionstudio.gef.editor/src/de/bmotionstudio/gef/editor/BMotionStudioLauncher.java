@@ -12,6 +12,7 @@ import org.eclipse.ui.IEditorLauncher;
 import org.eclipse.ui.IViewReference;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPartSite;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 
 import com.thoughtworks.xstream.XStream;
@@ -43,6 +44,7 @@ public class BMotionStudioLauncher implements IEditorLauncher {
 		if (simulation != null) {
 			
 			PerspectiveUtil.openPerspective(simulation);
+			initViews(simulation);
 //
 //			IPerspectiveDescriptor perspective = PlatformUI.getWorkbench()
 //					.getPerspectiveRegistry()
@@ -93,10 +95,6 @@ public class BMotionStudioLauncher implements IEditorLauncher {
 			BMotionEditorPlugin.setAliases(xstream);
 			Object obj = xstream.fromXML(inputStream);
 
-			IWorkbenchPage activePage = PlatformUI.getWorkbench()
-					.getActiveWorkbenchWindow().getActivePage();
-			IWorkbenchPartSite site = activePage.getActivePart().getSite();
-
 			if (obj instanceof Visualization) {
 
 				simulation = new Simulation();
@@ -120,53 +118,8 @@ public class BMotionStudioLauncher implements IEditorLauncher {
 
 				simulation.setProjectFile(file);
 
-				System.out.println("Open Perspecitve");
 				PerspectiveUtil.openPerspective(simulation);
-
-				for (Map.Entry<String, VisualizationView> entry : simulation
-						.getVisualizationViews().entrySet()) {
-
-					String secId = entry.getKey();
-					VisualizationView visView = entry.getValue();
-					Visualization vis = visView.getVisualization();
-					vis.setProjectFile(file);
-					// String partName = visView.getPartName();
-					IViewReference viewReference = site.getPage()
-							.findViewReference(VisualizationViewPart.ID, secId);
-					VisualizationViewPart visualizationViewPart;
-					// Check if view already exists
-					if (viewReference != null) {
-						visualizationViewPart = (VisualizationViewPart) viewReference
-								.getPart(true);
-						System.out.println("    ===> Visualization found: "
-								+ visualizationViewPart);
-					} else {
-						// If not, create a new one
-						visualizationViewPart = PerspectiveUtil
-								.createVisualizationViewPart(secId, visView);
-						System.out.println("    ===> Visualization created: "
-								+ visualizationViewPart);
-					}
-
-					if (visualizationViewPart != null
-							&& !visualizationViewPart.isInitialized()) {
-						System.out
-								.println("       ===> Visualization initialized");
-						visualizationViewPart.init(simulation, visView);
-					}
-
-				}
-
-				// Close all unused visualization views
-				for (IViewReference viewReference : site.getPage()
-						.getViewReferences()) {
-					if (viewReference.getId().equals(VisualizationViewPart.ID)) {
-						if (!simulation.getVisualizationViews().containsKey(
-								viewReference.getSecondaryId()))
-							site.getPage().hideView(viewReference);
-					}
-				}
-
+				initViews(simulation);
 				BMotionEditorPlugin.openSimulation(simulation);
 
 			}
@@ -178,8 +131,62 @@ public class BMotionStudioLauncher implements IEditorLauncher {
 				if (inputStream != null)
 					inputStream.close();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
+			}
+		}
+
+	}
+
+	private void initViews(Simulation simulation) {
+
+		IWorkbenchPage activePage = PlatformUI.getWorkbench()
+				.getActiveWorkbenchWindow().getActivePage();
+		IWorkbenchPartSite site = activePage.getActivePart().getSite();
+
+		for (Map.Entry<String, VisualizationView> entry : simulation
+				.getVisualizationViews().entrySet()) {
+
+			String secId = entry.getKey();
+			VisualizationView visView = entry.getValue();
+			Visualization vis = visView.getVisualization();
+			vis.setProjectFile(file);
+			// String partName = visView.getPartName();
+			IViewReference viewReference = site.getPage().findViewReference(
+					VisualizationViewPart.ID, secId);
+			VisualizationViewPart visualizationViewPart = null;
+			// Check if view already exists
+			if (viewReference != null) {
+				visualizationViewPart = (VisualizationViewPart) viewReference
+						.getPart(true);
+				System.out.println("    ===> Visualization found: "
+						+ visualizationViewPart);
+			} else {
+				// If not, create a new one
+				try {
+					visualizationViewPart = PerspectiveUtil
+							.createVisualizationViewPart(secId, visView);
+				} catch (PartInitException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				System.out.println("    ===> Visualization created: "
+						+ visualizationViewPart);
+			}
+
+			if (visualizationViewPart != null
+					&& !visualizationViewPart.isInitialized()) {
+				System.out.println("       ===> Visualization initialized");
+				visualizationViewPart.init(simulation, visView);
+			}
+
+		}
+
+		// Close all unused visualization views
+		for (IViewReference viewReference : site.getPage().getViewReferences()) {
+			if (viewReference.getId().equals(VisualizationViewPart.ID)) {
+				if (!simulation.getVisualizationViews().containsKey(
+						viewReference.getSecondaryId()))
+					site.getPage().hideView(viewReference);
 			}
 		}
 

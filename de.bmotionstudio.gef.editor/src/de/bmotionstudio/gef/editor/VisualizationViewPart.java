@@ -74,6 +74,8 @@ public class VisualizationViewPart extends ViewPart implements
 
 	private VisualizationView visualizationView;
 
+	private Visualization visualization;
+
 	private ActionRegistry actionRegistry;
 
 	private BMotionStudioEditor editor;
@@ -322,6 +324,7 @@ public class VisualizationViewPart extends ViewPart implements
 			getCommandStack().removeCommandStackListener(this);
 		if (getActionRegistry() != null)
 			getActionRegistry().dispose();
+		setInitialized(false);
 	}
 
 	@Override
@@ -374,6 +377,8 @@ public class VisualizationViewPart extends ViewPart implements
 
 	public void init(Simulation simulation, VisualizationView visualizationView) {
 		this.simulation = simulation;
+		this.visualizationView = visualizationView;
+		this.visualization = visualizationView.getVisualization();
 		this.graphicalViewer = new ScrollingGraphicalViewer();
 		this.graphicalViewer.createControl(this.container);
 		Visualization visualization = visualizationView.getVisualization();
@@ -537,6 +542,10 @@ public class VisualizationViewPart extends ViewPart implements
 
 	public void setInitialized(boolean isInitialized) {
 		this.isInitialized = isInitialized;
+	}
+
+	public Visualization getVisualization() {
+		return this.visualization;
 	}
 
 }
