@@ -39,7 +39,7 @@ public class InferredUnitPragmaAttribute implements IAttributeManipulation {
 	@Override
 	public String[] getPossibleValues(IRodinElement element,
 			IProgressMonitor monitor) {
-		return new String[] { "", "a", "b", "c" };
+		return null;
 	}
 
 	@Override
