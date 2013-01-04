@@ -130,10 +130,9 @@ public class StartUnitAnalysisHandler extends AbstractHandler implements
 						rootElement);
 				final StartAnimationCommand start = new StartAnimationCommand();
 				final ActivateUnitPluginCommand activatePlugin = new ActivateUnitPluginCommand();
-				final GetErrorsCommand getErrors = new GetErrorsCommand();
 
 				final ComposedCommand composed = new ComposedCommand(clear,
-						setPrefs, load, start, activatePlugin, getErrors);
+						setPrefs, load, start, activatePlugin);
 
 				animator.execute(composed);
 
@@ -142,13 +141,7 @@ public class StartUnitAnalysisHandler extends AbstractHandler implements
 
 				animator.execute(pluginResultCommand);
 
-				// if no errors occured, insert the results into the rodin
-				// database
-				if (getErrors.getErrors().isEmpty()) {
-					processResults(pluginResultCommand.getResult());
-				} else {
-					// TODO display errors
-				}
+				processResults(pluginResultCommand.getResult());
 
 				// TODO: should i shutdown the animator?
 				// animator.shutdown();
