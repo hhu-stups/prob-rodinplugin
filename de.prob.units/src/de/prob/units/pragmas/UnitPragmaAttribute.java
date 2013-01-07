@@ -4,7 +4,7 @@
  * (http://www.eclipse.org/org/documents/epl-v10.html)
  * */
 
-package de.prob.ui.pragmas;
+package de.prob.units.pragmas;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eventb.core.IVariable;
@@ -16,14 +16,13 @@ import org.rodinp.core.IRodinElement;
 import org.rodinp.core.RodinCore;
 import org.rodinp.core.RodinDBException;
 
-import de.prob.core.internal.Activator;
+import de.prob.units.Activator;
 
-public class InferredUnitPragmaAttribute implements IAttributeManipulation {
+public class UnitPragmaAttribute implements IAttributeManipulation {
 	public static IAttributeType.String ATTRIBUTE = RodinCore
-			.getStringAttrType(Activator.PLUGIN_ID
-					+ ".inferredUnitPragmaAttribute");
+			.getStringAttrType(Activator.PLUGIN_ID + ".unitPragmaAttribute");
 
-	public InferredUnitPragmaAttribute() {
+	public UnitPragmaAttribute() {
 		// empty constructor
 	}
 

@@ -69,7 +69,6 @@ import de.be4.classicalb.core.parser.node.PPredicate;
 import de.be4.classicalb.core.parser.node.PSubstitution;
 import de.be4.classicalb.core.parser.node.PWitness;
 import de.be4.classicalb.core.parser.node.TIdentifierLiteral;
-import de.prob.core.internal.Activator;
 import de.prob.core.translator.TranslationFailedException;
 import de.prob.core.translator.pragmas.IPragma;
 import de.prob.core.translator.pragmas.UnitPragma;
@@ -184,7 +183,7 @@ public class ModelTranslator extends AbstractComponentTranslator {
 	private void collectPragmas() throws RodinDBException {
 		// unit pragma, attached to constants
 		final IAttributeType.String UNITATTRIBUTE = RodinCore
-				.getStringAttrType(Activator.PLUGIN_ID + ".unitPragmaAttribute");
+				.getStringAttrType("de.prob.units.unitPragmaAttribute");
 
 		final IVariable[] variables = origin.getVariables();
 

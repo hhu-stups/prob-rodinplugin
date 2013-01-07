@@ -4,7 +4,7 @@
  * (http://www.eclipse.org/org/documents/epl-v10.html)
  * */
 
-package de.prob.ui.eventb;
+package de.prob.units.ui;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -56,7 +56,7 @@ import de.prob.parser.ResultParserException;
 import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
-import de.prob.ui.pragmas.InferredUnitPragmaAttribute;
+import de.prob.units.pragmas.InferredUnitPragmaAttribute;
 
 public class StartUnitAnalysisHandler extends AbstractHandler implements
 		IHandler {

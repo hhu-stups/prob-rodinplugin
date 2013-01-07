@@ -355,10 +355,6 @@
             id="de.prob.command.startCspAnimation"
             name="Start CSP Animation">
       </command>
-      <command
-            id="de.prob.ui.startunitanalysis"
-            name="Analyse Physical Units">
-      </command>
    </extension>
    <extension
          point="org.eclipse.ui.handlers">
@@ -749,42 +745,6 @@
             </with>
          </enabledWhen>
       </handler>
-      <handler
-            commandId="de.prob.ui.startunitanalysis">
-         <class
-               class="de.prob.ui.eventb.StartUnitAnalysisHandler">
-         </class>
-         <enabledWhen>
-            <with
-                  variable="selection">
-               <iterate
-                     operator="or">
-                  <or>
-                     <instanceof
-                           value="org.eventb.core.IEventBRoot">
-                     </instanceof>
-                     <and>
-                        <instanceof
-                              value="org.eclipse.core.resources.IResource">
-                        </instanceof>
-                        <or>
-                           <test
-                                 forcePluginActivation="true"
-                                 property="org.eclipse.core.resources.extension"
-                                 value="bum">
-                           </test>
-                           <test
-                                 forcePluginActivation="true"
-                                 property="org.eclipse.core.resources.extension"
-                                 value="buc">
-                           </test>
-                        </or>
-                     </and>
-                  </or>
-               </iterate>
-            </with>
-         </enabledWhen>
-      </handler>
 <!--      <handler
             commandId="de.prob.ui.startdmc">
          <class
@@ -1016,23 +976,6 @@
       </with>
             </visibleWhen>
          </command>
-         <command
-               commandId="de.prob.ui.startunitanalysis"
-               icon="icons/prob.png"
-               label="Analyse Physical Units"
-               style="push">
-            <visibleWhen>
-               <with
-                     variable="selection">
-                  <iterate
-                        operator="or">
-                     <instanceof
-                           value="org.eventb.core.IEventBRoot">
-                     </instanceof>
-                  </iterate>
-               </with>
-            </visibleWhen>
-         </command>
   <!--       <command
                commandId="de.prob.ui.startdmc"
                icon="icons/prob.png"
@@ -1252,43 +1195,4 @@
          </variable>
       </sourceProvider>
         </extension>
-   <extension
-         point="org.eventb.ui.editorItems">
-      <textAttribute
-            class="de.prob.ui.pragmas.UnitPragmaAttribute"
-            expandsHorizontally="true"
-            id="de.prob.ui.unitPragmaAttribute"
-            isMath="true"
-            prefix="Physical Unit:"
-            style="de.prob.ui.unitPragmaAttribute"
-            typeId="de.prob.core.unitPragmaAttribute">
-      </textAttribute>
-      <attributeRelation
-            elementTypeId="org.eventb.core.variable">
-         <attributeReference
-               descriptionId="de.prob.ui.unitPragmaAttribute">
-         </attributeReference>
-         <attributeReference
-               descriptionId="de.prob.ui.inferredUnitPragmaAttribute">
-         </attributeReference>
-      </attributeRelation>
-      <attributeRelation
-            elementTypeId="org.eventb.core.constant">
-         <attributeReference
-               descriptionId="de.prob.ui.unitPragmaAttribute">
-         </attributeReference>
-         <attributeReference
-               descriptionId="de.prob.ui.inferredUnitPragmaAttribute">
-         </attributeReference>
-      </attributeRelation>
-      <textAttribute
-            class="de.prob.ui.pragmas.InferredUnitPragmaAttribute"
-            expandsHorizontally="true"
-            id="de.prob.ui.inferredUnitPragmaAttribute"
-            isMath="true"
-            prefix="Inferred Physical Unit:"
-            style="de.prob.ui.inferredUnitPragmaAttribute"
-            typeId="de.prob.core.inferredUnitPragmaAttribute">
-      </textAttribute>
-   </extension>
 </plugin>

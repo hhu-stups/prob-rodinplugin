@@ -54,7 +54,6 @@ import de.be4.classicalb.core.parser.node.PPredicate;
 import de.be4.classicalb.core.parser.node.PSet;
 import de.be4.classicalb.core.parser.node.TIdentifierLiteral;
 import de.hhu.stups.sablecc.patch.SourcePosition;
-import de.prob.core.internal.Activator;
 import de.prob.core.translator.TranslationFailedException;
 import de.prob.core.translator.pragmas.IPragma;
 import de.prob.core.translator.pragmas.UnitPragma;
@@ -133,7 +132,7 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 	private void collectPragmas() throws RodinDBException {
 		// unit pragma, attached to constants
 		final IAttributeType.String UNITATTRIBUTE = RodinCore
-				.getStringAttrType(Activator.PLUGIN_ID + ".unitPragmaAttribute");
+				.getStringAttrType("de.prob.units.unitPragmaAttribute");
 
 		final ISCConstant[] constants = context.getSCConstants();
 
