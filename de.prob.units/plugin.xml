@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eventb.ui.editorItems">
+      <textAttribute
+            class="de.prob.units.pragmas.UnitPragmaAttribute"
+            expandsHorizontally="true"
+            id="de.prob.units.unitPragmaAttribute"
+            isMath="true"
+            prefix="Physical Unit:"
+            style="de.prob.units.unitPragmaAttribute"
+            typeId="de.prob.units.unitPragmaAttribute">
+      </textAttribute>
+      <attributeRelation
+            elementTypeId="org.eventb.core.variable">
+         <attributeReference
+               descriptionId="de.prob.units.unitPragmaAttribute">
+         </attributeReference>
+         <attributeReference
+               descriptionId="de.prob.units.inferredUnitPragmaAttribute">
+         </attributeReference>
+      </attributeRelation>
+      <attributeRelation
+            elementTypeId="org.eventb.core.constant">
+         <attributeReference
+               descriptionId="de.prob.units.unitPragmaAttribute">
+         </attributeReference>
+         <attributeReference
+               descriptionId="de.prob.units.inferredUnitPragmaAttribute">
+         </attributeReference>
+      </attributeRelation>
+      <textAttribute
+            class="de.prob.units.pragmas.InferredUnitPragmaAttribute"
+            expandsHorizontally="true"
+            id="de.prob.units.inferredUnitPragmaAttribute"
+            isMath="true"
+            prefix="Inferred Physical Unit:"
+            style="de.prob.units.inferredUnitPragmaAttribute"
+            typeId="de.prob.units.inferredUnitPragmaAttribute">
+      </textAttribute>
+   </extension>
+   <extension
+         point="org.eclipse.ui.handlers">
+      <handler
+            class="de.prob.units.ui.StartUnitAnalysisHandler"
+            commandId="de.prob.units.startunitanalysis">
+      </handler>
+   </extension>
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            locationURI="popup:fr.systerel.explorer.navigator.view">
+         <separator
+               name="de.prob.units.separator2"
+               visible="true">
+         </separator>
+         <command
+               commandId="de.prob.units.startunitanalysis"
+               icon="icons/unit_analysis.png"
+               label="Analyse Physical Units"
+               style="push">
+            <visibleWhen>
+               <with
+                     variable="selection">
+                  <iterate
+                        operator="or">
+                     <instanceof
+                           value="org.eventb.core.IEventBRoot">
+                     </instanceof>
+                  </iterate>
+               </with>
+            </visibleWhen>
+         </command>
+         <separator
+               name="de.prob.units.separator1"
+               visible="true">
+         </separator>
+      </menuContribution>
+   </extension>
+   <extension
+         point="org.eclipse.ui.commands">
+      <command
+            id="de.prob.units.startunitanalysis"
+            name="Analyse Physical Units">
+      </command>
+   </extension>
+   <extension
+         point="org.rodinp.core.attributeTypes">
+      <attributeType
+            id="unitPragmaAttribute"
+            kind="string"
+            name="Content of a unit Pragma to send to ProB">
+      </attributeType>
+      <attributeType
+            id="inferredUnitPragmaAttribute"
+            kind="string"
+            name="Content of a unit Pragma received from ProB">
+      </attributeType>
+   </extension>
+</plugin>

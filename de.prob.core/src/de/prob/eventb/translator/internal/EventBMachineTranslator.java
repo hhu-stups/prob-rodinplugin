@@ -102,6 +102,7 @@ public final class EventBMachineTranslator extends EventBTranslator {
 			throws TranslationFailedException {
 		final List<ContextTranslator> translators = new ArrayList<ContextTranslator>();
 		final List<String> processed = new ArrayList<String>();
+
 		for (ISCMachineRoot m : models) {
 			ISCInternalContext[] seenContexts;
 			try {

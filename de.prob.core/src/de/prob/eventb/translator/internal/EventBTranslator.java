@@ -23,6 +23,7 @@ import de.be4.classicalb.core.parser.node.AEventBModelParseUnit;
 import de.be4.classicalb.core.parser.node.Node;
 import de.prob.core.translator.ITranslator;
 import de.prob.core.translator.TranslationFailedException;
+import de.prob.core.translator.pragmas.IPragma;
 import de.prob.eventb.translator.AbstractComponentTranslator;
 import de.prob.eventb.translator.ContextTranslator;
 import de.prob.prolog.output.IPrologTermOutput;
@@ -112,6 +113,24 @@ public abstract class EventBTranslator implements ITranslator {
 			printFlowInformation(pout);
 	}
 
+	private void printPragmaContents(
+			Collection<ModelTranslator> refinementChainTranslators,
+			Collection<ContextTranslator> contextTranslators,
+			IPrologTermOutput pout) {
+		ArrayList<IPragma> pragmas = new ArrayList<IPragma>();
+
+		for (ContextTranslator contextTranslator : contextTranslators) {
+			pragmas.addAll(contextTranslator.getPragmas());
+		}
+		for (ModelTranslator modelTranslator : refinementChainTranslators) {
+			pragmas.addAll(modelTranslator.getPragmas());
+		}
+
+		for (IPragma pragma : pragmas) {
+			pragma.output(pout);
+		}
+	}
+
 	protected abstract void printFlowInformation(final IPrologTermOutput pout);
 
 	private ASTProlog createAstVisitor(
@@ -147,6 +166,8 @@ public abstract class EventBTranslator implements ITranslator {
 		// } catch (RodinDBException e) {
 		// e.printStackTrace();
 		// }
+		printPragmaContents(refinementChainTranslators, contextTranslators,
+				pout);
 		pout.closeList();
 		pout.printVariable("_Error");
 		pout.closeTerm();

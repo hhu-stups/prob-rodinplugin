@@ -32,9 +32,11 @@ import org.eventb.core.ISCMachineRoot;
 import org.eventb.core.ast.FormulaFactory;
 import org.eventb.core.ast.ITypeEnvironment;
 import org.eventb.core.seqprover.IConfidence;
+import org.rodinp.core.IAttributeType;
 import org.rodinp.core.IRodinElement;
 import org.rodinp.core.IRodinFile;
 import org.rodinp.core.IRodinProject;
+import org.rodinp.core.RodinCore;
 import org.rodinp.core.RodinDBException;
 
 import de.be4.classicalb.core.parser.analysis.pragma.internal.ClassifiedPragma;
@@ -53,6 +55,8 @@ import de.be4.classicalb.core.parser.node.PSet;
 import de.be4.classicalb.core.parser.node.TIdentifierLiteral;
 import de.hhu.stups.sablecc.patch.SourcePosition;
 import de.prob.core.translator.TranslationFailedException;
+import de.prob.core.translator.pragmas.IPragma;
+import de.prob.core.translator.pragmas.UnitPragma;
 import de.prob.eventb.translator.internal.EProofStatus;
 import de.prob.eventb.translator.internal.ProofObligation;
 import de.prob.eventb.translator.internal.SequentSource;
@@ -65,6 +69,7 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 	private final Map<String, ISCContext> depContext = new HashMap<String, ISCContext>();
 	private final List<ProofObligation> proofs = new ArrayList<ProofObligation>();
 	private final List<ClassifiedPragma> proofspragmas = new ArrayList<ClassifiedPragma>();
+	private final List<IPragma> pragmas = new ArrayList<IPragma>();
 
 	public static ContextTranslator create(final ISCContext context)
 			throws TranslationFailedException {
@@ -121,7 +126,26 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 			Assert.isTrue(machine_root.getRodinFile().isConsistent());
 		}
 		translateContext();
+		collectPragmas();
+	}
 
+	private void collectPragmas() throws RodinDBException {
+		// unit pragma, attached to constants
+		final IAttributeType.String UNITATTRIBUTE = RodinCore
+				.getStringAttrType("de.prob.units.unitPragmaAttribute");
+
+		final ISCConstant[] constants = context.getSCConstants();
+
+		for (final ISCConstant constant : constants) {
+			if (constant.hasAttribute(UNITATTRIBUTE)) {
+				String content = constant.getAttributeValue(UNITATTRIBUTE);
+
+				if (!content.isEmpty()) {
+					pragmas.add(new UnitPragma(getResource(), constant
+							.getIdentifierString(), content));
+				}
+			}
+		}
 	}
 
 	private void collectProofInfo(ISCContextRoot origin)
@@ -325,6 +349,11 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 
 	public List<ProofObligation> getProofs() {
 		return proofs;
+	}
+
+	public List<IPragma> getPragmas() {
+		// TODO Auto-generated method stub
+		return pragmas;
 	}
 
 	public List<ClassifiedPragma> getProofspragmas() {

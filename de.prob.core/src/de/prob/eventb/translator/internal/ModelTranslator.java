@@ -35,13 +35,16 @@ import org.eventb.core.ISCVariable;
 import org.eventb.core.ISCVariant;
 import org.eventb.core.ISCWitness;
 import org.eventb.core.ITraceableElement;
+import org.eventb.core.IVariable;
 import org.eventb.core.ast.FormulaFactory;
 import org.eventb.core.ast.ITypeEnvironment;
 import org.eventb.core.ast.Predicate;
 import org.eventb.core.seqprover.IConfidence;
+import org.rodinp.core.IAttributeType;
 import org.rodinp.core.IElementType;
 import org.rodinp.core.IRodinElement;
 import org.rodinp.core.IRodinFile;
+import org.rodinp.core.RodinCore;
 import org.rodinp.core.RodinDBException;
 
 import de.be4.classicalb.core.parser.node.AAnticipatedEventstatus;
@@ -67,6 +70,8 @@ import de.be4.classicalb.core.parser.node.PSubstitution;
 import de.be4.classicalb.core.parser.node.PWitness;
 import de.be4.classicalb.core.parser.node.TIdentifierLiteral;
 import de.prob.core.translator.TranslationFailedException;
+import de.prob.core.translator.pragmas.IPragma;
+import de.prob.core.translator.pragmas.UnitPragma;
 import de.prob.eventb.translator.AbstractComponentTranslator;
 import de.prob.eventb.translator.AssignmentVisitor;
 import de.prob.eventb.translator.ExpressionVisitor;
@@ -81,6 +86,8 @@ public class ModelTranslator extends AbstractComponentTranslator {
 	private final ITypeEnvironment te;
 	private final IMachineRoot origin;
 	private final List<ProofObligation> proofs = new ArrayList<ProofObligation>();
+	private final List<IPragma> pragmas = new ArrayList<IPragma>();
+
 	// private final List<String> depContext = new ArrayList<String>();
 
 	// Confined in the thread calling the factory method
@@ -115,6 +122,10 @@ public class ModelTranslator extends AbstractComponentTranslator {
 
 	public List<ProofObligation> getProofs() {
 		return Collections.unmodifiableList(proofs);
+	}
+
+	public List<IPragma> getPragmas() {
+		return Collections.unmodifiableList(pragmas);
 	}
 
 	public AEventBModelParseUnit getModelAST() {
@@ -164,6 +175,28 @@ public class ModelTranslator extends AbstractComponentTranslator {
 
 		// Check for fully discharged Invariants and Events
 		collectProofInfo();
+
+		// Collect Pragmas, Units, etc.
+		collectPragmas();
+	}
+
+	private void collectPragmas() throws RodinDBException {
+		// unit pragma, attached to constants
+		final IAttributeType.String UNITATTRIBUTE = RodinCore
+				.getStringAttrType("de.prob.units.unitPragmaAttribute");
+
+		final IVariable[] variables = origin.getVariables();
+
+		for (final IVariable variable : variables) {
+			if (variable.hasAttribute(UNITATTRIBUTE)) {
+				String content = variable.getAttributeValue(UNITATTRIBUTE);
+
+				if (!content.isEmpty()) {
+					pragmas.add(new UnitPragma(getResource(), variable
+							.getIdentifierString(), content));
+				}
+			}
+		}
 	}
 
 	private void collectProofInfo() throws RodinDBException {
@@ -179,7 +212,8 @@ public class ModelTranslator extends AbstractComponentTranslator {
 
 			EProofStatus pstatus = EProofStatus.UNPROVEN;
 
-			if (!broken && (confidence > IConfidence.PENDING && confidence <= IConfidence.REVIEWED_MAX))
+			if (!broken
+					&& (confidence > IConfidence.PENDING && confidence <= IConfidence.REVIEWED_MAX))
 				pstatus = EProofStatus.REVIEWED;
 			if (!broken && confidence == IConfidence.DISCHARGED_MAX)
 				pstatus = EProofStatus.PROVEN;
