@@ -32,14 +32,9 @@ public class BMSPerspectiveFactory implements IPerspectiveFactory {
 				0.65f, "left");
 		leftb.addView("fr.systerel.explorer.navigator.view");
 
-		// State View
-		IFolderLayout main1 = layout.createFolder("main1", IPageLayout.BOTTOM,
-				0.20f, editorArea);
-		main1.addView("de.prob.ui.StateView");
-
 		// Outline View + Palette View + Library View (Right)
 		IFolderLayout right = layout.createFolder("right", IPageLayout.RIGHT,
-				0.80f, "main1");
+				0.80f, editorArea);
 		right.addView(BMSPaletteView.ID);
 		right.addView(BMotionOutlineView.ID);
 
@@ -47,6 +42,11 @@ public class BMSPerspectiveFactory implements IPerspectiveFactory {
 		IFolderLayout rightb = layout.createFolder("rightb",
 				IPageLayout.BOTTOM, 0.65f, "right");
 		rightb.addView(LibraryView.ID);
+
+		// State View
+		IFolderLayout main1 = layout.createFolder("main1", IPageLayout.BOTTOM,
+				0.20f, editorArea);
+		main1.addView("de.prob.ui.StateView");
 
 		// Properties view + observer view + control panel
 		IFolderLayout bottom1 = layout.createFolder("bottom1",
