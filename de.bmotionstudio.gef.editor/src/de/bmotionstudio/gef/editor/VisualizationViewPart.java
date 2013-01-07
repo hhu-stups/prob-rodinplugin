@@ -1,5 +1,7 @@
 package de.bmotionstudio.gef.editor;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.EventObject;
 import java.util.Iterator;
@@ -66,7 +68,7 @@ import de.bmotionstudio.gef.editor.model.VisualizationView;
 import de.bmotionstudio.gef.editor.part.BMSEditPartFactory;
 
 public class VisualizationViewPart extends ViewPart implements
-		CommandStackListener {
+		CommandStackListener, PropertyChangeListener {
 
 	public static String ID = "de.bmotionstudio.gef.editor.VisualizationView";
 	
@@ -91,6 +93,8 @@ public class VisualizationViewPart extends ViewPart implements
 	private Simulation simulation;
 
 	private boolean isInitialized = false;
+
+	private Composite parent;
 
 	private List<String> selectionActions = new ArrayList<String>();
 	private List<String> stackActions = new ArrayList<String>();
@@ -163,10 +167,6 @@ public class VisualizationViewPart extends ViewPart implements
 
 	public VisualizationView getVisualizationView() {
 		return visualizationView;
-	}
-
-	public void setVisualizationView(VisualizationView visualizationView) {
-		this.visualizationView = visualizationView;
 	}
 
 	private void createActions() {
@@ -325,6 +325,8 @@ public class VisualizationViewPart extends ViewPart implements
 		if (getActionRegistry() != null)
 			getActionRegistry().dispose();
 		setInitialized(false);
+		if (getVisualizationView() != null)
+			getVisualizationView().removePropertyChangeListener(this);
 	}
 
 	@Override
@@ -367,17 +369,19 @@ public class VisualizationViewPart extends ViewPart implements
 
 	@Override
 	public void createPartControl(Composite parent) {
-		container = new RulerComposite(parent, SWT.NONE);
+		this.parent = parent;
+		this.container = new RulerComposite(parent, SWT.NONE);
 	}
 
 	@Override
 	public void setFocus() {
-		container.setFocus();
+		this.container.setFocus();
 	}
 
 	public void init(Simulation simulation, VisualizationView visualizationView) {
 		this.simulation = simulation;
 		this.visualizationView = visualizationView;
+		this.visualizationView.addPropertyChangeListener(this);
 		this.visualization = visualizationView.getVisualization();
 		this.graphicalViewer = new ScrollingGraphicalViewer();
 		this.graphicalViewer.createControl(this.container);
@@ -546,6 +550,16 @@ public class VisualizationViewPart extends ViewPart implements
 
 	public Visualization getVisualization() {
 		return this.visualization;
+	}
+
+	public Composite getParent() {
+		return parent;
+	}
+
+	@Override
+	public void propertyChange(PropertyChangeEvent evt) {
+		if (evt.getPropertyName().equals("name"))
+			setPartName(evt.getNewValue().toString());
 	}
 
 }

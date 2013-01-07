@@ -12,13 +12,17 @@ import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.DoubleClickEvent;
+import org.eclipse.jface.viewers.EditingSupport;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITableColorProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
+import org.eclipse.jface.viewers.ITreeSelection;
+import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.TreeViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
@@ -65,36 +69,52 @@ public class ControlPanel extends ViewPart implements ISimulationListener,
 		column1.getColumn().setAlignment(SWT.LEFT);
 		column1.getColumn().setText("Name");
 		column1.getColumn().setWidth(300);
-		// column1.setEditingSupport(new EditingSupport(treeViewer) {
-		//
-		// @Override
-		// protected void setValue(Object element, Object value) {
-		// if (element instanceof VisualizationView) {
-		// ((VisualizationView) element).setName(String.valueOf(value));
-		// treeViewer.update(element, null);
-		// }
-		// }
-		//
-		// @Override
-		// protected Object getValue(Object element) {
-		// if (element instanceof VisualizationView)
-		// return ((VisualizationView) element).getName();
-		// return null;
-		// }
-		//
-		// @Override
-		// protected CellEditor getCellEditor(Object element) {
-		// return new TextCellEditor(treeViewer.getTree());
-		// }
-		//
-		// @Override
-		// protected boolean canEdit(Object element) {
-		// if (element instanceof VisualizationView)
-		// return true;
-		// return false;
-		// }
-		//
-		// });
+		column1.setEditingSupport(new EditingSupport(treeViewer) {
+
+			@Override
+			protected void setValue(Object element, Object value) {
+				if (element instanceof VisualizationView) {
+
+					VisualizationView visView = (VisualizationView) element;
+					visView.setName(String.valueOf(value));
+
+					ITreeSelection selection = ((ITreeSelection) treeViewer
+							.getSelection());
+					Object parent = selection.getPaths()[0].getParentPath()
+							.getLastSegment();
+					if (parent instanceof Simulation)
+						((Simulation) parent).setDirty(true);
+					treeViewer.update(element, null);
+
+					// IWorkbenchPage page = PlatformUI.getWorkbench()
+					// .getActiveWorkbenchWindow().getActivePage();
+					// IViewReference viewReference = page.findViewReference(
+					// VisualizationViewPart.ID, visView.getViewId());
+					// IViewPart view = viewReference.getView(true);
+
+				}
+			}
+
+			@Override
+			protected Object getValue(Object element) {
+				if (element instanceof VisualizationView)
+					return ((VisualizationView) element).getName();
+				return null;
+			}
+
+			@Override
+			protected CellEditor getCellEditor(Object element) {
+				return new TextCellEditor(treeViewer.getTree());
+			}
+
+			@Override
+			protected boolean canEdit(Object element) {
+				if (element instanceof VisualizationView)
+					return true;
+				return false;
+			}
+
+		});
 
 		TreeViewerColumn column2 = new TreeViewerColumn(treeViewer, SWT.RIGHT);
 		column2.getColumn().setAlignment(SWT.LEFT);
