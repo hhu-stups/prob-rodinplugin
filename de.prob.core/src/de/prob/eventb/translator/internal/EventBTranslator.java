@@ -104,7 +104,7 @@ public abstract class EventBTranslator implements ITranslator {
 			}
 			pout.closeList();
 
-			pout.printAtom(Boolean.toString(proof.discharged));
+			pout.printAtom(proof.discharged.toString());
 			pout.closeTerm();
 		}
 

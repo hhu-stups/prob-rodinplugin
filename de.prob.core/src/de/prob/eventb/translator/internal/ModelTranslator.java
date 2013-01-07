@@ -177,8 +177,12 @@ public class ModelTranslator extends AbstractComponentTranslator {
 			final int confidence = status.getConfidence();
 			boolean broken = status.isBroken();
 
-			boolean discharged = !broken
-					&& confidence == IConfidence.DISCHARGED_MAX;
+			EProofStatus pstatus = EProofStatus.UNPROVEN;
+
+			if (!broken && (confidence > IConfidence.PENDING && confidence <= IConfidence.REVIEWED_MAX))
+				pstatus = EProofStatus.REVIEWED;
+			if (!broken && confidence == IConfidence.DISCHARGED_MAX)
+				pstatus = EProofStatus.PROVEN;
 
 			IPOSequent sequent = status.getPOSequent();
 			IPOSource[] sources = sequent.getSources();
@@ -202,7 +206,7 @@ public class ModelTranslator extends AbstractComponentTranslator {
 				s.add(new SequentSource(type, le.getLabel()));
 
 			}
-			proofs.add(new ProofObligation(origin, s, name, discharged));
+			proofs.add(new ProofObligation(origin, s, name, pstatus));
 		}
 
 		if (!bugs.isEmpty()) {

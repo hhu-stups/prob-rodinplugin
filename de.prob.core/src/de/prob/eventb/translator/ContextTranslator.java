@@ -53,6 +53,7 @@ import de.be4.classicalb.core.parser.node.PSet;
 import de.be4.classicalb.core.parser.node.TIdentifierLiteral;
 import de.hhu.stups.sablecc.patch.SourcePosition;
 import de.prob.core.translator.TranslationFailedException;
+import de.prob.eventb.translator.internal.EProofStatus;
 import de.prob.eventb.translator.internal.ProofObligation;
 import de.prob.eventb.translator.internal.SequentSource;
 
@@ -69,7 +70,6 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 			throws TranslationFailedException {
 		ContextTranslator contextTranslator = new ContextTranslator(context);
 		try {
-			(new TheoryTranslator()).translate();
 			contextTranslator.translate();
 		} catch (RodinDBException e) {
 			final String message = "A Rodin exception occured during translation process. Possible cause: building aborted or still in progress. Please wait until building has finished before starting ProB. If this does not help, perform a clean and start ProB after building has finished. Original Exception: ";
@@ -136,8 +136,12 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 			final int confidence = status.getConfidence();
 			boolean broken = status.isBroken();
 
-			boolean discharged = !broken
-					&& confidence == IConfidence.DISCHARGED_MAX;
+			EProofStatus pstatus = EProofStatus.UNPROVEN;
+
+			if (!broken && confidence == IConfidence.REVIEWED_MAX)
+				pstatus = EProofStatus.REVIEWED;
+			if (!broken && confidence == IConfidence.DISCHARGED_MAX)
+				pstatus = EProofStatus.PROVEN;
 
 			IPOSequent sequent = status.getPOSequent();
 			IPOSource[] sources = sequent.getSources();
@@ -161,7 +165,7 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 						.getLabel()));
 
 			}
-			proofs.add(new ProofObligation(origin, s, name, discharged));
+			proofs.add(new ProofObligation(origin, s, name, pstatus));
 		}
 
 	}
