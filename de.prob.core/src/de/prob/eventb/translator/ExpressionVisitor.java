@@ -115,6 +115,7 @@ public class ExpressionVisitor extends SimpleVisitorAdapter implements // NOPMD
 	// we need some abilities of the linked list, using List is not an option
 	private boolean expressionSet = false;
 
+	@SuppressWarnings("unused")
 	private ExpressionVisitor() { // we want to prevent clients from calling
 		// the default constructor
 		super();
@@ -166,7 +167,8 @@ public class ExpressionVisitor extends SimpleVisitorAdapter implements // NOPMD
 
 		final PPredicate pr = predicateVisitor.getPredicate();
 
-		final ExpressionVisitor expressionVisitor = new ExpressionVisitor();
+		final ExpressionVisitor expressionVisitor = new ExpressionVisitor(
+				bounds);
 		expression.getExpression().accept(expressionVisitor);
 
 		final PExpression ex = expressionVisitor.getExpression();
