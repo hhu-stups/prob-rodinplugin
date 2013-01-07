@@ -52,7 +52,8 @@
       <menuContribution
             locationURI="popup:fr.systerel.explorer.navigator.view">
          <separator
-               name="de.prob.units.separator2">
+               name="de.prob.units.separator2"
+               visible="true">
          </separator>
          <command
                commandId="de.prob.units.startunitanalysis"
@@ -72,7 +73,8 @@
             </visibleWhen>
          </command>
          <separator
-               name="de.prob.units.separator1">
+               name="de.prob.units.separator1"
+               visible="true">
          </separator>
       </menuContribution>
    </extension>
