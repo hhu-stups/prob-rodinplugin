@@ -29,6 +29,8 @@ public class BMotionStudioImage {
 	public static final String IMG_ICON_MOTION = "icon_motion";
 	public static final String IMG_ICON_MOTION_WIZ = "icon_motion_wiz";
 
+	public static final String IMG_ICON_BMOTION_RUN = "icon_bmotion_run";
+
 	public static ImageDescriptor getImageDescriptor(final String path) {
 		return getImageDescriptor(BMotionEditorPlugin.PLUGIN_ID, path);
 	}
@@ -68,6 +70,7 @@ public class BMotionStudioImage {
 		registerImage(IMG_LOGO_BMOTION64, "icons/logo_bmotion_64.png");
 		registerImage(IMG_ICON_MOTION, "icons/icon_motion.gif");
 		registerImage(IMG_ICON_MOTION_WIZ, "icons/icon_motion_wiz.gif");
+		registerImage(IMG_ICON_BMOTION_RUN, "icons/icon_run.png");
 
 		registerBControlImages();
 

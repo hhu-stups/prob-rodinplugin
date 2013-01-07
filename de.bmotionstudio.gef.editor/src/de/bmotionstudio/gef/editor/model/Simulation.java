@@ -6,6 +6,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
+import org.eventb.core.IEventBRoot;
+import org.rodinp.core.IRodinFile;
+import org.rodinp.core.IRodinProject;
+import org.rodinp.core.RodinCore;
+
+import de.bmotionstudio.gef.editor.Animation;
+import de.prob.core.Animator;
+import de.prob.core.command.LoadEventBModelCommand;
+import de.prob.exceptions.ProBException;
 
 public class Simulation {
 
@@ -17,8 +26,15 @@ public class Simulation {
 
 	private transient boolean dirty;
 
-	public Simulation() {
+	private transient Animation animation;
+
+	private transient boolean running;
+
+	private String model;
+
+	public Simulation(String model) {
 		this.views = new HashMap<String, VisualizationView>();
+		this.model = model;
 	}
 
 	public Map<String, VisualizationView> getVisualizationViews() {
@@ -42,10 +58,20 @@ public class Simulation {
 		return dirty;
 	}
 
+	public boolean isRunning() {
+		return running;
+	}
+
 	public void setDirty(boolean dirty) {
 		boolean oldVal = this.dirty;
 		this.dirty = dirty;		
 		listeners.firePropertyChange("dirty", oldVal, dirty);
+	}
+
+	public void setRunning(boolean running) {
+		boolean oldVal = this.running;
+		this.running = running;
+		listeners.firePropertyChange("running", oldVal, running);
 	}
 
 	public void addPropertyChangeListener(PropertyChangeListener listener) {
@@ -60,6 +86,33 @@ public class Simulation {
 
 	public void removePropertyChangeListener(PropertyChangeListener listener) {
 		getListeners().removePropertyChangeListener(listener);
+	}
+
+	public void start() {
+
+		Animator animator = Animator.getAnimator();
+		animation = new Animation(animator, this);
+		IEventBRoot modelRoot = getCorrespondingFile(getProjectFile(), model);
+		try {
+			LoadEventBModelCommand.load(animator, modelRoot);
+			setRunning(true);
+		} catch (ProBException e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	public void stop() {
+		if (animation != null)
+			animation.unregister();
+		setRunning(false);
+	}
+
+	private IEventBRoot getCorrespondingFile(IFile file, String machineFileName) {
+		IRodinProject rProject = RodinCore.valueOf(file.getProject());
+		IRodinFile rFile = rProject.getRodinFile(machineFileName);
+		IEventBRoot eventbRoot = (IEventBRoot) rFile.getRoot();
+		return eventbRoot;
 	}
 
 }

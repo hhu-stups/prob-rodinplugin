@@ -13,20 +13,19 @@ import org.eclipse.ui.IPerspectiveDescriptor;
 import org.eclipse.ui.IPerspectiveRegistry;
 import org.eclipse.ui.PlatformUI;
 
-import de.bmotionstudio.gef.editor.BMotionEditorPlugin;
 import de.bmotionstudio.gef.editor.BMotionStudioImage;
 import de.bmotionstudio.gef.editor.model.Simulation;
 import de.bmotionstudio.gef.editor.util.PerspectiveUtil;
 
-public class CloseSimulationAction extends Action {
+public class RunSimulationAction extends Action {
 
 	private TreeViewer viewer;
 
-	public CloseSimulationAction(TreeViewer viewer) {
+	public RunSimulationAction(TreeViewer viewer) {
 		this.viewer = viewer;
-		setText("Close Simulation");
-		setImageDescriptor(BMotionStudioImage.getImageDescriptor(
-				"org.eclipse.ui", "$nl$/icons/full/dlcl16/close_view.gif"));
+		setText("Run Simulation");
+		setImageDescriptor(BMotionStudioImage
+				.getImageDescriptor("icons/icon_run.png"));
 	}
 
 	@Override
@@ -36,21 +35,19 @@ public class CloseSimulationAction extends Action {
 		Object firstElement = sel.getFirstElement();
 		if (firstElement instanceof Simulation) {
 
+			Simulation simulation = (Simulation) firstElement;
+
 			IPerspectiveRegistry perspectiveRegistry = PlatformUI
 					.getWorkbench().getPerspectiveRegistry();
 
-			Simulation simulation = (Simulation) firstElement;
 			String perspectiveId = PerspectiveUtil
 					.getPerspectiveIdFromFile(simulation.getProjectFile());
 			IPerspectiveDescriptor perspectiveDescriptor = perspectiveRegistry
 					.findPerspectiveWithId(perspectiveId);
-			if (perspectiveDescriptor != null) {
-				PerspectiveUtil.closePerspective(perspectiveDescriptor);
-				PerspectiveUtil.deletePerspective(perspectiveDescriptor);
-			}
+			if (perspectiveDescriptor != null)
+				PerspectiveUtil.switchPerspective(perspectiveDescriptor);
 
-			simulation.stop();
-			BMotionEditorPlugin.closeSimulation(simulation);
+			simulation.start();
 
 		}
 

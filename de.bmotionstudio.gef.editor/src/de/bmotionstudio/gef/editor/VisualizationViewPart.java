@@ -169,6 +169,10 @@ public class VisualizationViewPart extends ViewPart implements
 		return visualizationView;
 	}
 
+	public Simulation getSimulation() {
+		return simulation;
+	}
+
 	private void createActions() {
 
 		ActionRegistry registry = getActionRegistry();
@@ -327,6 +331,8 @@ public class VisualizationViewPart extends ViewPart implements
 		setInitialized(false);
 		if (getVisualizationView() != null)
 			getVisualizationView().removePropertyChangeListener(this);
+		if (getSimulation() != null)
+			getSimulation().removePropertyChangeListener(this);
 	}
 
 	@Override
@@ -380,6 +386,7 @@ public class VisualizationViewPart extends ViewPart implements
 
 	public void init(Simulation simulation, VisualizationView visualizationView) {
 		this.simulation = simulation;
+		this.simulation.addPropertyChangeListener(this);
 		this.visualizationView = visualizationView;
 		this.visualizationView.addPropertyChangeListener(this);
 		this.visualization = visualizationView.getVisualization();
@@ -558,8 +565,33 @@ public class VisualizationViewPart extends ViewPart implements
 
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
-		if (evt.getPropertyName().equals("name"))
-			setPartName(evt.getNewValue().toString());
+
+		String name = visualizationView.getName();
+		Boolean running = simulation.isRunning();
+
+		String propertyName = evt.getPropertyName();
+
+		if (propertyName.equals("name"))
+			name = evt.getNewValue().toString();
+		
+		if (propertyName.equals("running"))
+			running = Boolean.valueOf(evt.getNewValue().toString());
+		
+		if (propertyName.equals("running")
+				|| propertyName.equals("name")) {
+
+			if (running) {
+				setPartName("(Running) " + name);
+				setTitleImage(BMotionStudioImage
+						.getImage(BMotionStudioImage.IMG_ICON_BMOTION_RUN));
+			} else {
+				setPartName(name);
+				setTitleImage(BMotionStudioImage
+						.getImage(BMotionStudioImage.IMG_LOGO_BMOTION));
+			}
+
+		}
+
 	}
 
 }

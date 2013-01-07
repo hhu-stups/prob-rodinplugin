@@ -155,7 +155,7 @@ public class VisualizationProgressBar extends ProgressBarDialog {
 	}
 
 	private void startProbAnimator() {
-		animation = new Animation(animator, visualization);
+		animation = new Animation(animator, null);
 		ILanguageService langService = getGenericLoadMachine(visualization
 				.getLanguage());
 		if (langService != null) {

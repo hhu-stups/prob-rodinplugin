@@ -25,6 +25,9 @@ public class SimpleValueDisplay extends Observer {
 
 	public void check(final Animation animation, final BControl bcontrol) {
 
+		if (eval == null)
+			return;
+
 		// First evaluate predicate (predicate field)
 		String bolValue = "true";
 		if (predicate != null && predicate.length() > 0) {

@@ -86,12 +86,6 @@ public class ControlPanel extends ViewPart implements ISimulationListener,
 						((Simulation) parent).setDirty(true);
 					treeViewer.update(element, null);
 
-					// IWorkbenchPage page = PlatformUI.getWorkbench()
-					// .getActiveWorkbenchWindow().getActivePage();
-					// IViewReference viewReference = page.findViewReference(
-					// VisualizationViewPart.ID, visView.getViewId());
-					// IViewPart view = viewReference.getView(true);
-
 				}
 			}
 
@@ -120,6 +114,11 @@ public class ControlPanel extends ViewPart implements ISimulationListener,
 		column2.getColumn().setAlignment(SWT.LEFT);
 		column2.getColumn().setText("Dirty");
 		column2.getColumn().setWidth(40);
+
+		TreeViewerColumn column3 = new TreeViewerColumn(treeViewer, SWT.RIGHT);
+		column3.getColumn().setAlignment(SWT.LEFT);
+		column3.getColumn().setText("Running");
+		column3.getColumn().setWidth(40);
 
 		treeViewer.setContentProvider(new ITreeContentProvider() {
 
@@ -194,6 +193,8 @@ public class ControlPanel extends ViewPart implements ISimulationListener,
 				treeViewer);
 		final SaveSimulationAction saveSimulationAction = new SaveSimulationAction(
 				treeViewer);
+		final RunSimulationAction runSimulationAction = new RunSimulationAction(
+				treeViewer);
 		final AddVisualizationViewAction addVisualizationViewAction = new AddVisualizationViewAction(
 				treeViewer);
 		final RemoveVisualizationViewAction deleteVisualizationViewAction = new RemoveVisualizationViewAction(
@@ -212,6 +213,8 @@ public class ControlPanel extends ViewPart implements ISimulationListener,
 					manager.add(saveSimulationAction);
 					manager.add(separator);
 					manager.add(addVisualizationViewAction);
+					manager.add(separator);
+					manager.add(runSimulationAction);
 				} else if (firstElement instanceof VisualizationView) {
 					manager.add(deleteVisualizationViewAction);
 				}
@@ -302,13 +305,21 @@ public class ControlPanel extends ViewPart implements ISimulationListener,
 						return ColorConstants.green;
 
 				}
+			case 2:
+				if (element instanceof Simulation) {
+					Simulation simulation = (Simulation) element;
+					if (simulation.isRunning())
+						return ColorConstants.green;
+					else
+						return ColorConstants.red;
+
+				}
 			}
 			return null;
 		}
 
 		@Override
 		public Image getColumnImage(Object element, int columnIndex) {
-			// TODO Auto-generated method stub
 			return null;
 		}
 
@@ -333,7 +344,8 @@ public class ControlPanel extends ViewPart implements ISimulationListener,
 
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
-		if (evt.getPropertyName().equals("dirty"))
+		if (evt.getPropertyName().equals("dirty")
+				|| evt.getPropertyName().equals("running"))
 			treeViewer.refresh();
 	}
 

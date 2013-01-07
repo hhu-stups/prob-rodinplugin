@@ -283,7 +283,7 @@ public class BMotionStudioEditor extends EditorPart implements
 
 			if (obj instanceof Visualization) {
 
-				simulation = new Simulation();
+				simulation = new Simulation("MLift.bum");
 
 				Visualization visualization = (Visualization) obj;
 				visualization.setProjectFile(file);

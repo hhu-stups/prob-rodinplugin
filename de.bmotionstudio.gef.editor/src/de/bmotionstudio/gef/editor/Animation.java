@@ -14,9 +14,12 @@ import java.util.Map;
 import org.eclipse.swt.widgets.Display;
 
 import de.bmotionstudio.gef.editor.model.BControl;
+import de.bmotionstudio.gef.editor.model.Simulation;
 import de.bmotionstudio.gef.editor.model.Visualization;
+import de.bmotionstudio.gef.editor.model.VisualizationView;
 import de.prob.core.Animator;
 import de.prob.core.IAnimationListener;
+import de.prob.core.ILifecycleListener;
 import de.prob.core.command.EvaluationGetValuesCommand;
 import de.prob.core.command.EvaluationInsertFormulaCommand;
 import de.prob.core.command.EvaluationInsertFormulaCommand.FormulaType;
@@ -26,7 +29,7 @@ import de.prob.core.domainobjects.State;
 import de.prob.exceptions.ProBException;
 import de.prob.parserbase.ProBParseException;
 
-public class Animation implements IAnimationListener {
+public class Animation implements IAnimationListener, ILifecycleListener {
 
 	private Animator animator;
 
@@ -36,16 +39,16 @@ public class Animation implements IAnimationListener {
 
 	private State currentState;
 
-	private Visualization visualization;
-
 	private Boolean observerCallBack = true;
 
-	public Animation(Animator anim, Visualization visualization) {
+	private Simulation simulation;
+
+	public Animation(Animator anim, Simulation simulation) {
 		StaticListenerRegistry.registerListener((IAnimationListener) this);
+		StaticListenerRegistry.registerListener((ILifecycleListener) this);
 		this.currentStateOperations = new HashMap<String, Operation>();
 		this.animator = anim;
-		this.visualization = visualization;
-		this.visualization.setAnimation(this);
+		this.simulation = simulation;
 	}
 
 	private void setNewState(State state) {
@@ -103,18 +106,31 @@ public class Animation implements IAnimationListener {
 	}
 
 	public void checkObserver() {
-		// if (visualization.isRunning()) {
-			Display.getDefault().asyncExec(new Runnable() {
-				@Override
-				public void run() {
+
+		Display.getDefault().asyncExec(new Runnable() {
+
+			@Override
+			public void run() {
+
+				System.out.println("CHECK OBSERVER OF "
+						+ simulation.getProjectFile().getName());
+
+				for (VisualizationView visView : simulation
+						.getVisualizationViews().values()) {
+
+					Visualization visualization = visView.getVisualization();
 					List<BControl> allBControls = new ArrayList<BControl>();
 					allBControls.add(visualization);
 					collectAllBControls(allBControls, visualization);
 					for (BControl c : allBControls)
 						c.checkObserver(Animation.this);
+
 				}
-			});
-		// }
+
+			}
+
+		});
+
 	}
 
 	public State getState() {
@@ -129,12 +145,9 @@ public class Animation implements IAnimationListener {
 		return currentStateOperations.get(operation);
 	}
 
-	public Visualization getVisualization() {
-		return this.visualization;
-	}
-
 	public void unregister() {
 		StaticListenerRegistry.unregisterListener((IAnimationListener) this);
+		// StaticListenerRegistry.unregisterListener((ILifecycleListener) this);
 	}
 
 	public void setObserverCallBack(Boolean observerCallBack) {
@@ -173,6 +186,15 @@ public class Animation implements IAnimationListener {
 
 	public Map<String, Operation> getCurrentStateOperations() {
 		return currentStateOperations;
+	}
+
+	@Override
+	public void reset() {
+		if (simulation.isRunning()) {
+			System.out.println("STOP SIMULATION "
+					+ simulation.getProjectFile().getName());
+			simulation.stop();
+		}
 	}
 	
 }

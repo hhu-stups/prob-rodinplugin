@@ -37,35 +37,10 @@ public class BMotionStudioLauncher implements IEditorLauncher {
 		Simulation simulation = BMotionEditorPlugin.getOpenSimulations().get(
 				file.getName());
 
-		// final String perspectiveId = PerspectiveUtil
-		// .getPerspectiveIdFromFile(file);
-
 		// The simulation is already open
 		if (simulation != null) {
-			
 			PerspectiveUtil.openPerspective(simulation);
 			initViews(simulation);
-//
-//			IPerspectiveDescriptor perspective = PlatformUI.getWorkbench()
-//					.getPerspectiveRegistry()
-//					.findPerspectiveWithId(perspectiveId);
-//
-//			// Check if a perspective already exists
-//			if (perspective != null) {
-//				// If yes, just switch the perspective
-//				PerspectiveUtil.switchPerspective(perspective);
-//			} else {
-//				
-//				
-//			}
-//
-//			IFile perspectiveFile = file.getProject().getFile(
-//					getPerspectiveFileName());
-//			if (perspectiveFile.exists()) {
-//
-//			}
-
-//			PerspectiveUtil.openPerspective(simulation);
 			return;
 		}
 		
@@ -97,10 +72,10 @@ public class BMotionStudioLauncher implements IEditorLauncher {
 
 			if (obj instanceof Visualization) {
 
-				simulation = new Simulation();
-
 				Visualization visualization = (Visualization) obj;
 				visualization.setProjectFile(file);
+
+				simulation = new Simulation(visualization.getMachineName());
 
 				String secId = UUID.randomUUID().toString();
 
@@ -158,8 +133,6 @@ public class BMotionStudioLauncher implements IEditorLauncher {
 			if (viewReference != null) {
 				visualizationViewPart = (VisualizationViewPart) viewReference
 						.getPart(true);
-				System.out.println("    ===> Visualization found: "
-						+ visualizationViewPart);
 			} else {
 				// If not, create a new one
 				try {
@@ -169,13 +142,10 @@ public class BMotionStudioLauncher implements IEditorLauncher {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				System.out.println("    ===> Visualization created: "
-						+ visualizationViewPart);
 			}
 
 			if (visualizationViewPart != null
 					&& !visualizationViewPart.isInitialized()) {
-				System.out.println("       ===> Visualization initialized");
 				visualizationViewPart.init(simulation, visView);
 			}
 
