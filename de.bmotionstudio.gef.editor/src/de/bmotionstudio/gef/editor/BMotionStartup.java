@@ -20,7 +20,7 @@ public class BMotionStartup implements IStartup {
 				IPerspectiveDescriptor[] perspectives = perspectiveRegistry
 						.getPerspectives();
 				for (IPerspectiveDescriptor p : perspectives) {
-					if (p.getId().startsWith("BMS_")) {
+					if (p.getId().replace("<", "").startsWith("BMS_")) {
 						PerspectiveUtil.closePerspective(p);
 						PerspectiveUtil.deletePerspective(p);
 					}
