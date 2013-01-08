@@ -1,4 +1,4 @@
-package de.prob.core.domainobjects.ltl.unittests;
+package de.prob.core.domainobjects.ltl.tests;
 
 import de.prob.core.command.LtlCheckingCommand.PathType;
 import de.prob.core.domainobjects.ltl.CounterExample;

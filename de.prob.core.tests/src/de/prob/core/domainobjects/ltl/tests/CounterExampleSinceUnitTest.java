@@ -1,51 +1,51 @@
-package de.prob.core.domainobjects.ltl.unittests;
+package de.prob.core.domainobjects.ltl.tests;
 
 
 /**
- * Unit test for a "trigger" operator.
+ * Unit test for a "since" operator.
  * 
  * @author Andriy Tolstoy
  * 
  */
-public final class CounterExampleTriggerUnitTest {
+public final class CounterExampleSinceUnitTest {
 	// /*
-	// * f-TFFF, g-TTTT, f T g-TTTT
+	// * f-FTTT, g-TFFF, f S g-TTTT
 	// */
 	// @Test
-	// public void testTriggerTrueDefinitionOnFinitePath1() {
+	// public void testSinceTrueDefinitionOnFinitePath() {
 	// // create first argument values
 	// final List<CounterExampleValueType> firstArgumentValues = Arrays
+	// .asList(new CounterExampleValueType[] {
+	// CounterExampleValueType.FALSE,
+	// CounterExampleValueType.TRUE,
+	// CounterExampleValueType.TRUE,
+	// CounterExampleValueType.TRUE });
+	//
+	// // create second argument values
+	// final List<CounterExampleValueType> secondArgumentValues = Arrays
 	// .asList(new CounterExampleValueType[] {
 	// CounterExampleValueType.TRUE,
 	// CounterExampleValueType.FALSE,
 	// CounterExampleValueType.FALSE,
 	// CounterExampleValueType.FALSE });
 	//
-	// // create second argument values
-	// final List<CounterExampleValueType> secondArgumentValues = Arrays
-	// .asList(new CounterExampleValueType[] {
-	// CounterExampleValueType.TRUE,
-	// CounterExampleValueType.TRUE,
-	// CounterExampleValueType.TRUE,
-	// CounterExampleValueType.TRUE });
-	//
 	// // create first argument
 	// final CounterExampleProposition firstArgument = new
 	// CounterExamplePredicate(
-	// PathType.FINITE, firstArgumentValues);
+	// "", PathType.FINITE, firstArgumentValues);
 	//
 	// // create second argument
 	// final CounterExampleProposition secondArgument = new
 	// CounterExamplePredicate(
-	// PathType.FINITE, secondArgumentValues);
+	// "", PathType.FINITE, secondArgumentValues);
 	//
 	// // create an operator
-	// CounterExampleBinaryOperator triggerOperator = new CounterExampleTrigger(
+	// final CounterExampleBinaryOperator sinceOperator = new
+	// CounterExampleSince(
 	// PathType.FINITE, firstArgument, secondArgument);
 	//
 	// // check result values
-	// final List<CounterExampleValueType> values = triggerOperator
-	// .getValues();
+	// final List<CounterExampleValueType> values = sinceOperator.getValues();
 	// assertTrue(values.size() == firstArgumentValues.size());
 	// assertTrue(values.size() == secondArgumentValues.size());
 	// assertTrue(values.get(0) == CounterExampleValueType.TRUE);
@@ -54,191 +54,9 @@ public final class CounterExampleTriggerUnitTest {
 	// assertTrue(values.get(3) == CounterExampleValueType.TRUE);
 	//
 	// // check highlighted positions
-	// final List<List<Integer>> firstHighlightedPositions = triggerOperator
+	// final List<List<Integer>> firstHighlightedPositions = sinceOperator
 	// .getFirstHighlightedPositions();
-	// final List<List<Integer>> secondHighlightedPositions = triggerOperator
-	// .getSecondHighlightedPositions();
-	// assertTrue(firstHighlightedPositions.size() == firstArgumentValues
-	// .size());
-	// assertTrue(secondHighlightedPositions.size() == secondArgumentValues
-	// .size());
-	//
-	// // State 0
-	// assertTrue(firstHighlightedPositions.get(0).size() == 1);
-	// assertTrue(Arrays.equals(
-	// firstHighlightedPositions.get(0).toArray(new Integer[0]),
-	// new Integer[] { 0 }));
-	// assertTrue(secondHighlightedPositions.get(0).size() == 1);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(0).toArray(new Integer[0]),
-	// new Integer[] { 0 }));
-	//
-	// // State 1
-	// assertTrue(firstHighlightedPositions.get(1).size() == 1);
-	// assertTrue(Arrays.equals(
-	// firstHighlightedPositions.get(1).toArray(new Integer[0]),
-	// new Integer[] { 0 }));
-	// assertTrue(secondHighlightedPositions.get(1).size() == 2);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(1).toArray(new Integer[0]),
-	// new Integer[] { 1, 0 }));
-	//
-	// // State 2
-	// assertTrue(firstHighlightedPositions.get(2).size() == 1);
-	// assertTrue(Arrays.equals(
-	// firstHighlightedPositions.get(2).toArray(new Integer[0]),
-	// new Integer[] { 0 }));
-	// assertTrue(secondHighlightedPositions.get(2).size() == 3);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(2).toArray(new Integer[0]),
-	// new Integer[] { 2, 1, 0 }));
-	//
-	// // State 3
-	// assertTrue(firstHighlightedPositions.get(3).size() == 1);
-	// assertTrue(Arrays.equals(
-	// firstHighlightedPositions.get(3).toArray(new Integer[0]),
-	// new Integer[] { 0 }));
-	// assertTrue(secondHighlightedPositions.get(3).size() == 4);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(3).toArray(new Integer[0]),
-	// new Integer[] { 3, 2, 1, 0 }));
-	// }
-	//
-	// /*
-	// * f-FFFF, g-TTTT, f T g-TTTT
-	// */
-	// @Test
-	// public void testTriggerTrueDefinitionOnFinitePath2() {
-	// // create first argument values
-	// final List<CounterExampleValueType> firstArgumentValues = Arrays
-	// .asList(new CounterExampleValueType[] {
-	// CounterExampleValueType.FALSE,
-	// CounterExampleValueType.FALSE,
-	// CounterExampleValueType.FALSE,
-	// CounterExampleValueType.FALSE });
-	//
-	// // create second argument values
-	// final List<CounterExampleValueType> secondArgumentValues = Arrays
-	// .asList(new CounterExampleValueType[] {
-	// CounterExampleValueType.TRUE,
-	// CounterExampleValueType.TRUE,
-	// CounterExampleValueType.TRUE,
-	// CounterExampleValueType.TRUE });
-	//
-	// // create first argument
-	// final CounterExampleProposition firstArgument = new
-	// CounterExamplePredicate(
-	// PathType.FINITE, firstArgumentValues);
-	//
-	// // create second argument
-	// final CounterExampleProposition secondArgument = new
-	// CounterExamplePredicate(
-	// PathType.FINITE, secondArgumentValues);
-	//
-	// // create an operator
-	// final CounterExampleBinaryOperator triggerOperator = new
-	// CounterExampleTrigger(
-	// PathType.FINITE, firstArgument, secondArgument);
-	//
-	// // check result values
-	// final List<CounterExampleValueType> values = triggerOperator
-	// .getValues();
-	// assertTrue(values.size() == firstArgumentValues.size());
-	// assertTrue(values.size() == secondArgumentValues.size());
-	// assertTrue(values.get(0) == CounterExampleValueType.TRUE);
-	// assertTrue(values.get(1) == CounterExampleValueType.TRUE);
-	// assertTrue(values.get(2) == CounterExampleValueType.TRUE);
-	// assertTrue(values.get(3) == CounterExampleValueType.TRUE);
-	//
-	// // check highlighted positions
-	// final List<List<Integer>> firstHighlightedPositions = triggerOperator
-	// .getFirstHighlightedPositions();
-	// final List<List<Integer>> secondHighlightedPositions = triggerOperator
-	// .getSecondHighlightedPositions();
-	// assertTrue(firstHighlightedPositions.size() == firstArgumentValues
-	// .size());
-	// assertTrue(secondHighlightedPositions.size() == secondArgumentValues
-	// .size());
-	//
-	// // State 0
-	// assertTrue(firstHighlightedPositions.get(0).size() == 0);
-	// assertTrue(secondHighlightedPositions.get(0).size() == 1);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(0).toArray(new Integer[0]),
-	// new Integer[] { 0 }));
-	//
-	// // State 1
-	// assertTrue(firstHighlightedPositions.get(1).size() == 0);
-	// assertTrue(secondHighlightedPositions.get(1).size() == 2);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(1).toArray(new Integer[0]),
-	// new Integer[] { 1, 0 }));
-	//
-	// // State 2
-	// assertTrue(firstHighlightedPositions.get(2).size() == 0);
-	// assertTrue(secondHighlightedPositions.get(2).size() == 3);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(2).toArray(new Integer[0]),
-	// new Integer[] { 2, 1, 0 }));
-	//
-	// // State 3
-	// assertTrue(firstHighlightedPositions.get(3).size() == 0);
-	// assertTrue(secondHighlightedPositions.get(3).size() == 4);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(3).toArray(new Integer[0]),
-	// new Integer[] { 3, 2, 1, 0 }));
-	// }
-	//
-	// /*
-	// * f-TFFF, g-FTTT, f T g-FFFF
-	// */
-	// @Test
-	// public void testTriggerFalseDefinitionOnFinitePath1() {
-	// // create first argument values
-	// final List<CounterExampleValueType> firstArgumentValues = Arrays
-	// .asList(new CounterExampleValueType[] {
-	// CounterExampleValueType.TRUE,
-	// CounterExampleValueType.FALSE,
-	// CounterExampleValueType.FALSE,
-	// CounterExampleValueType.FALSE });
-	//
-	// // create second argument values
-	// final List<CounterExampleValueType> secondArgumentValues = Arrays
-	// .asList(new CounterExampleValueType[] {
-	// CounterExampleValueType.FALSE,
-	// CounterExampleValueType.TRUE,
-	// CounterExampleValueType.TRUE,
-	// CounterExampleValueType.TRUE });
-	//
-	// // create first argument
-	// final CounterExampleProposition firstArgument = new
-	// CounterExamplePredicate(
-	// PathType.FINITE, firstArgumentValues);
-	//
-	// // create second argument
-	// final CounterExampleProposition secondArgument = new
-	// CounterExamplePredicate(
-	// PathType.FINITE, secondArgumentValues);
-	//
-	// // create an operator
-	// final CounterExampleBinaryOperator triggerOperator = new
-	// CounterExampleTrigger(
-	// PathType.FINITE, firstArgument, secondArgument);
-	//
-	// // check result values
-	// final List<CounterExampleValueType> values = triggerOperator
-	// .getValues();
-	// assertTrue(values.size() == firstArgumentValues.size());
-	// assertTrue(values.size() == secondArgumentValues.size());
-	// assertTrue(values.get(0) == CounterExampleValueType.FALSE);
-	// assertTrue(values.get(1) == CounterExampleValueType.FALSE);
-	// assertTrue(values.get(2) == CounterExampleValueType.FALSE);
-	// assertTrue(values.get(3) == CounterExampleValueType.FALSE);
-	//
-	// // check highlighted positions
-	// final List<List<Integer>> firstHighlightedPositions = triggerOperator
-	// .getFirstHighlightedPositions();
-	// final List<List<Integer>> secondHighlightedPositions = triggerOperator
+	// final List<List<Integer>> secondHighlightedPositions = sinceOperator
 	// .getSecondHighlightedPositions();
 	// assertTrue(firstHighlightedPositions.size() == firstArgumentValues
 	// .size());
@@ -284,44 +102,136 @@ public final class CounterExampleTriggerUnitTest {
 	// }
 	//
 	// /*
-	// * f-FFFF, g-FTTT, f T g-FFFF
+	// * f-FFTT, g-TFFF, f S g-TFFF
 	// */
 	// @Test
-	// public void testTriggerFalseDefinitionOnFinitePath2() {
+	// public void testSinceFalseDefinitionOnFinitePath1() {
 	// // create first argument values
 	// final List<CounterExampleValueType> firstArgumentValues = Arrays
 	// .asList(new CounterExampleValueType[] {
 	// CounterExampleValueType.FALSE,
 	// CounterExampleValueType.FALSE,
-	// CounterExampleValueType.FALSE,
-	// CounterExampleValueType.FALSE });
+	// CounterExampleValueType.TRUE,
+	// CounterExampleValueType.TRUE });
 	//
 	// // create second argument values
 	// final List<CounterExampleValueType> secondArgumentValues = Arrays
+	// .asList(new CounterExampleValueType[] {
+	// CounterExampleValueType.TRUE,
+	// CounterExampleValueType.FALSE,
+	// CounterExampleValueType.FALSE,
+	// CounterExampleValueType.FALSE });
+	//
+	// // create first argument
+	// final CounterExampleProposition firstArgument = new
+	// CounterExamplePredicate(
+	// "", PathType.FINITE, firstArgumentValues);
+	//
+	// // create second argument
+	// final CounterExampleProposition secondArgument = new
+	// CounterExamplePredicate(
+	// "", PathType.FINITE, secondArgumentValues);
+	//
+	// // create an operator
+	// final CounterExampleBinaryOperator sinceOperator = new
+	// CounterExampleSince(
+	// PathType.FINITE, firstArgument, secondArgument);
+	//
+	// // check result values
+	// final List<CounterExampleValueType> values = sinceOperator.getValues();
+	// assertTrue(values.size() == firstArgumentValues.size());
+	// assertTrue(values.size() == secondArgumentValues.size());
+	// assertTrue(values.get(0) == CounterExampleValueType.TRUE);
+	// assertTrue(values.get(1) == CounterExampleValueType.FALSE);
+	// assertTrue(values.get(2) == CounterExampleValueType.FALSE);
+	// assertTrue(values.get(3) == CounterExampleValueType.FALSE);
+	//
+	// // check highlighted positions
+	// final List<List<Integer>> firstHighlightedPositions = sinceOperator
+	// .getFirstHighlightedPositions();
+	// final List<List<Integer>> secondHighlightedPositions = sinceOperator
+	// .getSecondHighlightedPositions();
+	// assertTrue(firstHighlightedPositions.size() == firstArgumentValues
+	// .size());
+	// assertTrue(secondHighlightedPositions.size() == secondArgumentValues
+	// .size());
+	//
+	// // State 0
+	// assertTrue(firstHighlightedPositions.get(0).size() == 0);
+	// assertTrue(secondHighlightedPositions.get(0).size() == 1);
+	// assertTrue(Arrays.equals(
+	// secondHighlightedPositions.get(0).toArray(new Integer[0]),
+	// new Integer[] { 0 }));
+	//
+	// // State 1
+	// assertTrue(firstHighlightedPositions.get(1).size() == 1);
+	// assertTrue(Arrays.equals(
+	// firstHighlightedPositions.get(1).toArray(new Integer[0]),
+	// new Integer[] { 1 }));
+	// assertTrue(secondHighlightedPositions.get(1).size() == 1);
+	// assertTrue(Arrays.equals(
+	// secondHighlightedPositions.get(1).toArray(new Integer[0]),
+	// new Integer[] { 1 }));
+	//
+	// // State 2
+	// assertTrue(firstHighlightedPositions.get(2).size() == 1);
+	// assertTrue(Arrays.equals(
+	// firstHighlightedPositions.get(2).toArray(new Integer[0]),
+	// new Integer[] { 1 }));
+	// assertTrue(secondHighlightedPositions.get(2).size() == 2);
+	// assertTrue(Arrays.equals(
+	// secondHighlightedPositions.get(2).toArray(new Integer[0]),
+	// new Integer[] { 2, 1 }));
+	//
+	// // State 3
+	// assertTrue(firstHighlightedPositions.get(3).size() == 1);
+	// assertTrue(Arrays.equals(
+	// firstHighlightedPositions.get(3).toArray(new Integer[0]),
+	// new Integer[] { 1 }));
+	// assertTrue(secondHighlightedPositions.get(3).size() == 3);
+	// assertTrue(Arrays.equals(
+	// secondHighlightedPositions.get(3).toArray(new Integer[0]),
+	// new Integer[] { 3, 2, 1 }));
+	// }
+	//
+	// /*
+	// * f-FTTT, g-FFFF, f S g-FFFF
+	// */
+	// @Test
+	// public void testSinceFalseDefinitionOnFinitePath2() {
+	// // create first argument values
+	// final List<CounterExampleValueType> firstArgumentValues = Arrays
 	// .asList(new CounterExampleValueType[] {
 	// CounterExampleValueType.FALSE,
 	// CounterExampleValueType.TRUE,
 	// CounterExampleValueType.TRUE,
 	// CounterExampleValueType.TRUE });
 	//
+	// // create second argument values
+	// final List<CounterExampleValueType> secondArgumentValues = Arrays
+	// .asList(new CounterExampleValueType[] {
+	// CounterExampleValueType.FALSE,
+	// CounterExampleValueType.FALSE,
+	// CounterExampleValueType.FALSE,
+	// CounterExampleValueType.FALSE });
+	//
 	// // create first argument
 	// final CounterExampleProposition firstArgument = new
 	// CounterExamplePredicate(
-	// PathType.FINITE, firstArgumentValues);
+	// "", PathType.FINITE, firstArgumentValues);
 	//
 	// // create second argument
 	// final CounterExampleProposition secondArgument = new
 	// CounterExamplePredicate(
-	// PathType.FINITE, secondArgumentValues);
+	// "", PathType.FINITE, secondArgumentValues);
 	//
 	// // create an operator
-	// final CounterExampleBinaryOperator triggerOperator = new
-	// CounterExampleTrigger(
+	// final CounterExampleBinaryOperator sinceOperator = new
+	// CounterExampleSince(
 	// PathType.FINITE, firstArgument, secondArgument);
 	//
 	// // check result values
-	// final List<CounterExampleValueType> values = triggerOperator
-	// .getValues();
+	// final List<CounterExampleValueType> values = sinceOperator.getValues();
 	// assertTrue(values.size() == firstArgumentValues.size());
 	// assertTrue(values.size() == secondArgumentValues.size());
 	// assertTrue(values.get(0) == CounterExampleValueType.FALSE);
@@ -330,9 +240,277 @@ public final class CounterExampleTriggerUnitTest {
 	// assertTrue(values.get(3) == CounterExampleValueType.FALSE);
 	//
 	// // check highlighted positions
-	// final List<List<Integer>> firstHighlightedPositions = triggerOperator
+	// final List<List<Integer>> firstHighlightedPositions = sinceOperator
 	// .getFirstHighlightedPositions();
-	// final List<List<Integer>> secondHighlightedPositions = triggerOperator
+	// final List<List<Integer>> secondHighlightedPositions = sinceOperator
+	// .getSecondHighlightedPositions();
+	// assertTrue(firstHighlightedPositions.size() == firstArgumentValues
+	// .size());
+	// assertTrue(secondHighlightedPositions.size() == secondArgumentValues
+	// .size());
+	//
+	// // State 0
+	// assertTrue(firstHighlightedPositions.get(0).size() == 1);
+	// assertTrue(Arrays.equals(
+	// firstHighlightedPositions.get(0).toArray(new Integer[0]),
+	// new Integer[] { 0 }));
+	// assertTrue(secondHighlightedPositions.get(0).size() == 1);
+	// assertTrue(Arrays.equals(
+	// secondHighlightedPositions.get(0).toArray(new Integer[0]),
+	// new Integer[] { 0 }));
+	//
+	// // State 1
+	// assertTrue(firstHighlightedPositions.get(1).size() == 1);
+	// assertTrue(Arrays.equals(
+	// firstHighlightedPositions.get(1).toArray(new Integer[0]),
+	// new Integer[] { 0 }));
+	// assertTrue(secondHighlightedPositions.get(1).size() == 2);
+	// assertTrue(Arrays.equals(
+	// secondHighlightedPositions.get(1).toArray(new Integer[0]),
+	// new Integer[] { 1, 0 }));
+	//
+	// // State 2
+	// assertTrue(firstHighlightedPositions.get(2).size() == 1);
+	// assertTrue(Arrays.equals(
+	// firstHighlightedPositions.get(2).toArray(new Integer[0]),
+	// new Integer[] { 0 }));
+	// assertTrue(secondHighlightedPositions.get(2).size() == 3);
+	// assertTrue(Arrays.equals(
+	// secondHighlightedPositions.get(2).toArray(new Integer[0]),
+	// new Integer[] { 2, 1, 0 }));
+	//
+	// // State 3
+	// assertTrue(firstHighlightedPositions.get(3).size() == 1);
+	// assertTrue(Arrays.equals(
+	// firstHighlightedPositions.get(3).toArray(new Integer[0]),
+	// new Integer[] { 0 }));
+	// assertTrue(secondHighlightedPositions.get(3).size() == 4);
+	// assertTrue(Arrays.equals(
+	// secondHighlightedPositions.get(3).toArray(new Integer[0]),
+	// new Integer[] { 3, 2, 1, 0 }));
+	// }
+	//
+	// /*
+	// * f-TTTT, g-FFFF, f S g-FFFF
+	// */
+	// @Test
+	// public void testSinceFalseDefinitionOnFinitePath3() {
+	// // create first argument values
+	// final List<CounterExampleValueType> firstArgumentValues = Arrays
+	// .asList(new CounterExampleValueType[] {
+	// CounterExampleValueType.TRUE,
+	// CounterExampleValueType.TRUE,
+	// CounterExampleValueType.TRUE,
+	// CounterExampleValueType.TRUE });
+	//
+	// // create second argument values
+	// final List<CounterExampleValueType> secondArgumentValues = Arrays
+	// .asList(new CounterExampleValueType[] {
+	// CounterExampleValueType.FALSE,
+	// CounterExampleValueType.FALSE,
+	// CounterExampleValueType.FALSE,
+	// CounterExampleValueType.FALSE });
+	//
+	// // create first argument
+	// final CounterExampleProposition firstArgument = new
+	// CounterExamplePredicate(
+	// "", PathType.FINITE, firstArgumentValues);
+	//
+	// // create second argument
+	// final CounterExampleProposition secondArgument = new
+	// CounterExamplePredicate(
+	// "", PathType.FINITE, secondArgumentValues);
+	//
+	// // create an operator
+	// final CounterExampleBinaryOperator sinceOperator = new
+	// CounterExampleSince(
+	// PathType.FINITE, -1, firstArgument, secondArgument);
+	//
+	// // check result values
+	// final List<CounterExampleValueType> values = sinceOperator.getValues();
+	// assertTrue(values.size() == firstArgumentValues.size());
+	// assertTrue(values.size() == secondArgumentValues.size());
+	// assertTrue(values.get(0) == CounterExampleValueType.FALSE);
+	// assertTrue(values.get(1) == CounterExampleValueType.FALSE);
+	// assertTrue(values.get(2) == CounterExampleValueType.FALSE);
+	// assertTrue(values.get(3) == CounterExampleValueType.FALSE);
+	//
+	// // check highlighted positions
+	// final List<List<Integer>> firstHighlightedPositions = sinceOperator
+	// .getFirstHighlightedPositions();
+	// final List<List<Integer>> secondHighlightedPositions = sinceOperator
+	// .getSecondHighlightedPositions();
+	// assertTrue(firstHighlightedPositions.size() == firstArgumentValues
+	// .size());
+	// assertTrue(secondHighlightedPositions.size() == secondArgumentValues
+	// .size());
+	//
+	// // State 0
+	// assertTrue(firstHighlightedPositions.get(0).size() == 0);
+	// assertTrue(secondHighlightedPositions.get(0).size() == 1);
+	// assertTrue(Arrays.equals(
+	// secondHighlightedPositions.get(0).toArray(new Integer[0]),
+	// new Integer[] { 0 }));
+	//
+	// // State 1
+	// assertTrue(firstHighlightedPositions.get(1).size() == 0);
+	// assertTrue(secondHighlightedPositions.get(1).size() == 2);
+	// assertTrue(Arrays.equals(
+	// secondHighlightedPositions.get(1).toArray(new Integer[0]),
+	// new Integer[] { 1, 0 }));
+	//
+	// // State 2
+	// assertTrue(firstHighlightedPositions.get(2).size() == 0);
+	// assertTrue(secondHighlightedPositions.get(2).size() == 3);
+	// assertTrue(Arrays.equals(
+	// secondHighlightedPositions.get(2).toArray(new Integer[0]),
+	// new Integer[] { 2, 1, 0 }));
+	//
+	// // State 3
+	// assertTrue(firstHighlightedPositions.get(3).size() == 0);
+	// assertTrue(secondHighlightedPositions.get(3).size() == 4);
+	// assertTrue(Arrays.equals(
+	// secondHighlightedPositions.get(3).toArray(new Integer[0]),
+	// new Integer[] { 3, 2, 1, 0 }));
+	// }
+	//
+	// /*
+	// * f - TFFT g - FTFF f S g - FTFF
+	// */
+	// @Test
+	// public void testSinceOnFinitePath() {
+	// // create first argument values
+	// final List<CounterExampleValueType> firstArgumentValues = Arrays
+	// .asList(new CounterExampleValueType[] {
+	// CounterExampleValueType.TRUE,
+	// CounterExampleValueType.FALSE,
+	// CounterExampleValueType.FALSE,
+	// CounterExampleValueType.TRUE });
+	//
+	// // create second argument values
+	// final List<CounterExampleValueType> secondArgumentValues = Arrays
+	// .asList(new CounterExampleValueType[] {
+	// CounterExampleValueType.FALSE,
+	// CounterExampleValueType.TRUE,
+	// CounterExampleValueType.FALSE,
+	// CounterExampleValueType.FALSE });
+	//
+	// // create first argument
+	// final CounterExampleProposition firstArgument = new
+	// CounterExamplePredicate(
+	// "", PathType.FINITE, firstArgumentValues);
+	//
+	// // create second argument
+	// final CounterExampleProposition secondArgument = new
+	// CounterExamplePredicate(
+	// "", PathType.FINITE, secondArgumentValues);
+	//
+	// // create an operator
+	// final CounterExampleBinaryOperator sinceOperator = new
+	// CounterExampleSince(
+	// PathType.FINITE, firstArgument, secondArgument);
+	//
+	// // check result values
+	// final List<CounterExampleValueType> values = sinceOperator.getValues();
+	// assertTrue(values.size() == firstArgumentValues.size());
+	// assertTrue(values.size() == secondArgumentValues.size());
+	// assertTrue(values.get(0) == CounterExampleValueType.FALSE);
+	// assertTrue(values.get(1) == CounterExampleValueType.TRUE);
+	// assertTrue(values.get(2) == CounterExampleValueType.FALSE);
+	// assertTrue(values.get(3) == CounterExampleValueType.FALSE);
+	//
+	// // check highlighted positions
+	// final List<List<Integer>> firstHighlightedPositions = sinceOperator
+	// .getFirstHighlightedPositions();
+	// final List<List<Integer>> secondHighlightedPositions = sinceOperator
+	// .getSecondHighlightedPositions();
+	// assertTrue(firstHighlightedPositions.size() == firstArgumentValues
+	// .size());
+	// assertTrue(secondHighlightedPositions.size() == secondArgumentValues
+	// .size());
+	//
+	// // State 0
+	// assertTrue(firstHighlightedPositions.get(0).size() == 0);
+	// assertTrue(secondHighlightedPositions.get(0).size() == 1);
+	// assertTrue(Arrays.equals(
+	// secondHighlightedPositions.get(0).toArray(new Integer[0]),
+	// new Integer[] { 0 }));
+	//
+	// // State 1
+	// assertTrue(firstHighlightedPositions.get(1).size() == 0);
+	// assertTrue(secondHighlightedPositions.get(1).size() == 1);
+	// assertTrue(Arrays.equals(
+	// secondHighlightedPositions.get(1).toArray(new Integer[0]),
+	// new Integer[] { 1 }));
+	//
+	// // State 2
+	// assertTrue(firstHighlightedPositions.get(2).size() == 1);
+	// assertTrue(Arrays.equals(
+	// firstHighlightedPositions.get(2).toArray(new Integer[0]),
+	// new Integer[] { 2 }));
+	// assertTrue(secondHighlightedPositions.get(2).size() == 1);
+	// assertTrue(Arrays.equals(
+	// secondHighlightedPositions.get(2).toArray(new Integer[0]),
+	// new Integer[] { 2 }));
+	//
+	// // State 3
+	// assertTrue(firstHighlightedPositions.get(3).size() == 1);
+	// assertTrue(Arrays.equals(
+	// firstHighlightedPositions.get(3).toArray(new Integer[0]),
+	// new Integer[] { 2 }));
+	// assertTrue(secondHighlightedPositions.get(3).size() == 2);
+	// assertTrue(Arrays.equals(
+	// secondHighlightedPositions.get(3).toArray(new Integer[0]),
+	// new Integer[] { 3, 2 }));
+	// }
+	//
+	// /*
+	// * f-FTTT, g-TFFF, f S g-TTTT
+	// */
+	// @Test
+	// public void testSinceTrueDefinitionOnInfinitePath() {
+	// // create first argument values
+	// final List<CounterExampleValueType> firstArgumentValues = Arrays
+	// .asList(new CounterExampleValueType[] {
+	// CounterExampleValueType.FALSE,
+	// CounterExampleValueType.TRUE,
+	// CounterExampleValueType.TRUE,
+	// CounterExampleValueType.TRUE });
+	//
+	// // create second argument values
+	// final List<CounterExampleValueType> secondArgumentValues = Arrays
+	// .asList(new CounterExampleValueType[] {
+	// CounterExampleValueType.TRUE,
+	// CounterExampleValueType.FALSE,
+	// CounterExampleValueType.FALSE,
+	// CounterExampleValueType.FALSE });
+	//
+	// // Loop entry = 0
+	// // create first argument
+	// CounterExampleProposition firstArgument = new CounterExamplePredicate(
+	// "", PathType.INFINITE, 0, firstArgumentValues);
+	//
+	// // create second argument
+	// CounterExampleProposition secondArgument = new CounterExamplePredicate(
+	// "", PathType.INFINITE, 0, secondArgumentValues);
+	//
+	// // create an operator
+	// CounterExampleBinaryOperator sinceOperator = new CounterExampleSince(
+	// PathType.INFINITE, 0, firstArgument, secondArgument);
+	//
+	// // check result values
+	// List<CounterExampleValueType> values = sinceOperator.getValues();
+	// assertTrue(values.size() == firstArgumentValues.size());
+	// assertTrue(values.size() == secondArgumentValues.size());
+	// assertTrue(values.get(0) == CounterExampleValueType.TRUE);
+	// assertTrue(values.get(1) == CounterExampleValueType.TRUE);
+	// assertTrue(values.get(2) == CounterExampleValueType.TRUE);
+	// assertTrue(values.get(3) == CounterExampleValueType.TRUE);
+	//
+	// // check highlighted positions
+	// List<List<Integer>> firstHighlightedPositions = sinceOperator
+	// .getFirstHighlightedPositions();
+	// List<List<Integer>> secondHighlightedPositions = sinceOperator
 	// .getSecondHighlightedPositions();
 	// assertTrue(firstHighlightedPositions.size() == firstArgumentValues
 	// .size());
@@ -375,295 +553,22 @@ public final class CounterExampleTriggerUnitTest {
 	// assertTrue(Arrays.equals(
 	// secondHighlightedPositions.get(3).toArray(new Integer[0]),
 	// new Integer[] { 0 }));
-	// }
-	//
-	// /*
-	// * f-FTFT, g-TFFT, f T g-TFFT
-	// */
-	// @Test
-	// public void testTriggerOnFinitePath1() {
-	// // create first argument values
-	// final List<CounterExampleValueType> firstArgumentValues = Arrays
-	// .asList(new CounterExampleValueType[] {
-	// CounterExampleValueType.FALSE,
-	// CounterExampleValueType.TRUE,
-	// CounterExampleValueType.FALSE,
-	// CounterExampleValueType.TRUE });
-	//
-	// // create second argument values
-	// final List<CounterExampleValueType> secondArgumentValues = Arrays
-	// .asList(new CounterExampleValueType[] {
-	// CounterExampleValueType.TRUE,
-	// CounterExampleValueType.FALSE,
-	// CounterExampleValueType.FALSE,
-	// CounterExampleValueType.TRUE });
-	//
-	// // create first argument
-	// final CounterExampleProposition firstArgument = new
-	// CounterExamplePredicate(
-	// PathType.FINITE, firstArgumentValues);
-	//
-	// // create second argument
-	// final CounterExampleProposition secondArgument = new
-	// CounterExamplePredicate(
-	// PathType.FINITE, secondArgumentValues);
-	//
-	// // create an operator
-	// final CounterExampleBinaryOperator triggerOperator = new
-	// CounterExampleTrigger(
-	// PathType.FINITE, firstArgument, secondArgument);
-	//
-	// // check result values
-	// final List<CounterExampleValueType> values = triggerOperator
-	// .getValues();
-	// assertTrue(values.size() == firstArgumentValues.size());
-	// assertTrue(values.size() == secondArgumentValues.size());
-	// assertTrue(values.get(0) == CounterExampleValueType.TRUE);
-	// assertTrue(values.get(1) == CounterExampleValueType.FALSE);
-	// assertTrue(values.get(2) == CounterExampleValueType.FALSE);
-	// assertTrue(values.get(3) == CounterExampleValueType.TRUE);
-	//
-	// // check highlighted positions
-	// final List<List<Integer>> firstHighlightedPositions = triggerOperator
-	// .getFirstHighlightedPositions();
-	// final List<List<Integer>> secondHighlightedPositions = triggerOperator
-	// .getSecondHighlightedPositions();
-	// assertTrue(firstHighlightedPositions.size() == firstArgumentValues
-	// .size());
-	// assertTrue(secondHighlightedPositions.size() == secondArgumentValues
-	// .size());
-	//
-	// // State 0
-	// assertTrue(firstHighlightedPositions.get(0).size() == 0);
-	// assertTrue(secondHighlightedPositions.get(0).size() == 1);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(0).toArray(new Integer[0]),
-	// new Integer[] { 0 }));
-	//
-	// // State 1
-	// assertTrue(firstHighlightedPositions.get(1).size() == 0);
-	// assertTrue(secondHighlightedPositions.get(1).size() == 1);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(1).toArray(new Integer[0]),
-	// new Integer[] { 1 }));
-	//
-	// // State 2
-	// assertTrue(firstHighlightedPositions.get(2).size() == 0);
-	// assertTrue(secondHighlightedPositions.get(2).size() == 1);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(2).toArray(new Integer[0]),
-	// new Integer[] { 2 }));
-	//
-	// // State 3
-	// assertTrue(firstHighlightedPositions.get(3).size() == 1);
-	// assertTrue(Arrays.equals(
-	// firstHighlightedPositions.get(3).toArray(new Integer[0]),
-	// new Integer[] { 3 }));
-	// assertTrue(secondHighlightedPositions.get(3).size() == 1);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(3).toArray(new Integer[0]),
-	// new Integer[] { 3 }));
-	// }
-	//
-	// /*
-	// * f-FTTF, g-TTFT, f T g-TTFF
-	// */
-	// @Test
-	// public void testTriggerOnFinitePath2() {
-	// // create first argument values
-	// final List<CounterExampleValueType> firstArgumentValues = Arrays
-	// .asList(new CounterExampleValueType[] {
-	// CounterExampleValueType.FALSE,
-	// CounterExampleValueType.TRUE,
-	// CounterExampleValueType.TRUE,
-	// CounterExampleValueType.FALSE });
-	//
-	// // create second argument values
-	// final List<CounterExampleValueType> secondArgumentValues = Arrays
-	// .asList(new CounterExampleValueType[] {
-	// CounterExampleValueType.TRUE,
-	// CounterExampleValueType.TRUE,
-	// CounterExampleValueType.FALSE,
-	// CounterExampleValueType.TRUE });
-	//
-	// // create first argument
-	// final CounterExampleProposition firstArgument = new
-	// CounterExamplePredicate(
-	// PathType.FINITE, firstArgumentValues);
-	//
-	// // create second argument
-	// final CounterExampleProposition secondArgument = new
-	// CounterExamplePredicate(
-	// PathType.FINITE, secondArgumentValues);
-	//
-	// // create an operator
-	// final CounterExampleBinaryOperator triggerOperator = new
-	// CounterExampleTrigger(
-	// PathType.FINITE, firstArgument, secondArgument);
-	//
-	// // check result values
-	// final List<CounterExampleValueType> values = triggerOperator
-	// .getValues();
-	// assertTrue(values.size() == firstArgumentValues.size());
-	// assertTrue(values.size() == secondArgumentValues.size());
-	// assertTrue(values.get(0) == CounterExampleValueType.TRUE);
-	// assertTrue(values.get(1) == CounterExampleValueType.TRUE);
-	// assertTrue(values.get(2) == CounterExampleValueType.FALSE);
-	// assertTrue(values.get(3) == CounterExampleValueType.FALSE);
-	//
-	// // check highlighted positions
-	// final List<List<Integer>> firstHighlightedPositions = triggerOperator
-	// .getFirstHighlightedPositions();
-	// final List<List<Integer>> secondHighlightedPositions = triggerOperator
-	// .getSecondHighlightedPositions();
-	// assertTrue(firstHighlightedPositions.size() == firstArgumentValues
-	// .size());
-	// assertTrue(secondHighlightedPositions.size() == secondArgumentValues
-	// .size());
-	//
-	// // State 0
-	// assertTrue(firstHighlightedPositions.get(0).size() == 0);
-	// assertTrue(secondHighlightedPositions.get(0).size() == 1);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(0).toArray(new Integer[0]),
-	// new Integer[] { 0 }));
-	//
-	// // State 1
-	// assertTrue(firstHighlightedPositions.get(1).size() == 1);
-	// assertTrue(Arrays.equals(
-	// firstHighlightedPositions.get(1).toArray(new Integer[0]),
-	// new Integer[] { 1 }));
-	// assertTrue(secondHighlightedPositions.get(1).size() == 1);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(1).toArray(new Integer[0]),
-	// new Integer[] { 1 }));
-	//
-	// // State 2
-	// assertTrue(firstHighlightedPositions.get(2).size() == 0);
-	// assertTrue(secondHighlightedPositions.get(2).size() == 1);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(2).toArray(new Integer[0]),
-	// new Integer[] { 2 }));
-	//
-	// // State 3
-	// assertTrue(firstHighlightedPositions.get(3).size() == 1);
-	// assertTrue(Arrays.equals(
-	// firstHighlightedPositions.get(3).toArray(new Integer[0]),
-	// new Integer[] { 3 }));
-	// assertTrue(secondHighlightedPositions.get(3).size() == 1);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(3).toArray(new Integer[0]),
-	// new Integer[] { 2 }));
-	// }
-	//
-	// /*
-	// * f-TFFF, g-TTTT, f T g-TTTT
-	// */
-	// @Test
-	// public void testTriggerTrueDefinitionOnInfinitePath1() {
-	// // create first argument values
-	// final List<CounterExampleValueType> firstArgumentValues = Arrays
-	// .asList(new CounterExampleValueType[] {
-	// CounterExampleValueType.TRUE,
-	// CounterExampleValueType.FALSE,
-	// CounterExampleValueType.FALSE,
-	// CounterExampleValueType.FALSE });
-	//
-	// // create second argument values
-	// final List<CounterExampleValueType> secondArgumentValues = Arrays
-	// .asList(new CounterExampleValueType[] {
-	// CounterExampleValueType.TRUE,
-	// CounterExampleValueType.TRUE,
-	// CounterExampleValueType.TRUE,
-	// CounterExampleValueType.TRUE });
-	//
-	// // Loop entry = 0
-	// // create first argument
-	// CounterExampleProposition firstArgument = new CounterExamplePredicate(
-	// PathType.INFINITE, 0, firstArgumentValues);
-	//
-	// // create second argument
-	// CounterExampleProposition secondArgument = new CounterExamplePredicate(
-	// PathType.INFINITE, 0, secondArgumentValues);
-	//
-	// // create an operator
-	// CounterExampleBinaryOperator triggerOperator = new CounterExampleTrigger(
-	// PathType.INFINITE, 0, firstArgument, secondArgument);
-	//
-	// // check result values
-	// List<CounterExampleValueType> values = triggerOperator.getValues();
-	// assertTrue(values.size() == firstArgumentValues.size());
-	// assertTrue(values.size() == secondArgumentValues.size());
-	// assertTrue(values.get(0) == CounterExampleValueType.TRUE);
-	// assertTrue(values.get(1) == CounterExampleValueType.TRUE);
-	// assertTrue(values.get(2) == CounterExampleValueType.TRUE);
-	// assertTrue(values.get(3) == CounterExampleValueType.TRUE);
-	//
-	// // check highlighted positions
-	// List<List<Integer>> firstHighlightedPositions = triggerOperator
-	// .getFirstHighlightedPositions();
-	// List<List<Integer>> secondHighlightedPositions = triggerOperator
-	// .getSecondHighlightedPositions();
-	// assertTrue(firstHighlightedPositions.size() == firstArgumentValues
-	// .size());
-	// assertTrue(secondHighlightedPositions.size() == secondArgumentValues
-	// .size());
-	//
-	// // State 0
-	// assertTrue(firstHighlightedPositions.get(0).size() == 1);
-	// assertTrue(Arrays.equals(
-	// firstHighlightedPositions.get(0).toArray(new Integer[0]),
-	// new Integer[] { 0 }));
-	// assertTrue(secondHighlightedPositions.get(0).size() == 1);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(0).toArray(new Integer[0]),
-	// new Integer[] { 0 }));
-	//
-	// // State 1
-	// assertTrue(firstHighlightedPositions.get(1).size() == 1);
-	// assertTrue(Arrays.equals(
-	// firstHighlightedPositions.get(1).toArray(new Integer[0]),
-	// new Integer[] { 0 }));
-	// assertTrue(secondHighlightedPositions.get(1).size() == 2);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(1).toArray(new Integer[0]),
-	// new Integer[] { 1, 0 }));
-	//
-	// // State 2
-	// assertTrue(firstHighlightedPositions.get(2).size() == 1);
-	// assertTrue(Arrays.equals(
-	// firstHighlightedPositions.get(2).toArray(new Integer[0]),
-	// new Integer[] { 0 }));
-	// assertTrue(secondHighlightedPositions.get(2).size() == 3);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(2).toArray(new Integer[0]),
-	// new Integer[] { 2, 1, 0 }));
-	//
-	// // State 3
-	// assertTrue(firstHighlightedPositions.get(3).size() == 1);
-	// assertTrue(Arrays.equals(
-	// firstHighlightedPositions.get(3).toArray(new Integer[0]),
-	// new Integer[] { 0 }));
-	// assertTrue(secondHighlightedPositions.get(3).size() == 4);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(3).toArray(new Integer[0]),
-	// new Integer[] { 3, 2, 1, 0 }));
 	//
 	// // Loop entry = 1
 	// // create first argument
-	// firstArgument = new CounterExamplePredicate(PathType.INFINITE, 1,
+	// firstArgument = new CounterExamplePredicate("", PathType.INFINITE, 1,
 	// firstArgumentValues);
 	//
 	// // create second argument
-	// secondArgument = new CounterExamplePredicate(PathType.INFINITE, 1,
+	// secondArgument = new CounterExamplePredicate("", PathType.INFINITE, 1,
 	// secondArgumentValues);
 	//
 	// // create an operator
-	// triggerOperator = new CounterExampleTrigger(PathType.INFINITE, 1,
+	// sinceOperator = new CounterExampleSince(PathType.INFINITE, 1,
 	// firstArgument, secondArgument);
 	//
 	// // check result values
-	// values = triggerOperator.getValues();
+	// values = sinceOperator.getValues();
 	// assertTrue(values.size() == firstArgumentValues.size());
 	// assertTrue(values.size() == secondArgumentValues.size());
 	// assertTrue(values.get(0) == CounterExampleValueType.TRUE);
@@ -672,509 +577,9 @@ public final class CounterExampleTriggerUnitTest {
 	// assertTrue(values.get(3) == CounterExampleValueType.TRUE);
 	//
 	// // check highlighted positions
-	// firstHighlightedPositions = triggerOperator
+	// firstHighlightedPositions = sinceOperator
 	// .getFirstHighlightedPositions();
-	// secondHighlightedPositions = triggerOperator
-	// .getSecondHighlightedPositions();
-	// assertTrue(firstHighlightedPositions.size() == firstArgumentValues
-	// .size());
-	// assertTrue(secondHighlightedPositions.size() == secondArgumentValues
-	// .size());
-	//
-	// // State 0
-	// assertTrue(firstHighlightedPositions.get(0).size() == 1);
-	// assertTrue(Arrays.equals(
-	// firstHighlightedPositions.get(0).toArray(new Integer[0]),
-	// new Integer[] { 0 }));
-	// assertTrue(secondHighlightedPositions.get(0).size() == 1);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(0).toArray(new Integer[0]),
-	// new Integer[] { 0 }));
-	//
-	// // State 1
-	// assertTrue(firstHighlightedPositions.get(1).size() == 1);
-	// assertTrue(Arrays.equals(
-	// firstHighlightedPositions.get(1).toArray(new Integer[0]),
-	// new Integer[] { 0 }));
-	// assertTrue(secondHighlightedPositions.get(1).size() == 2);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(1).toArray(new Integer[0]),
-	// new Integer[] { 1, 0 }));
-	//
-	// // State 2
-	// assertTrue(firstHighlightedPositions.get(2).size() == 1);
-	// assertTrue(Arrays.equals(
-	// firstHighlightedPositions.get(2).toArray(new Integer[0]),
-	// new Integer[] { 0 }));
-	// assertTrue(secondHighlightedPositions.get(2).size() == 3);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(2).toArray(new Integer[0]),
-	// new Integer[] { 2, 1, 0 }));
-	//
-	// // State 3
-	// assertTrue(firstHighlightedPositions.get(3).size() == 1);
-	// assertTrue(Arrays.equals(
-	// firstHighlightedPositions.get(3).toArray(new Integer[0]),
-	// new Integer[] { 0 }));
-	// assertTrue(secondHighlightedPositions.get(3).size() == 4);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(3).toArray(new Integer[0]),
-	// new Integer[] { 3, 2, 1, 0 }));
-	//
-	// // Loop entry = 2
-	// // create first argument
-	// firstArgument = new CounterExamplePredicate(PathType.INFINITE, 2,
-	// firstArgumentValues);
-	//
-	// // create second argument
-	// secondArgument = new CounterExamplePredicate(PathType.INFINITE, 2,
-	// secondArgumentValues);
-	//
-	// // create an operator
-	// triggerOperator = new CounterExampleTrigger(PathType.INFINITE, 2,
-	// firstArgument, secondArgument);
-	//
-	// // check result values
-	// values = triggerOperator.getValues();
-	// assertTrue(values.size() == firstArgumentValues.size());
-	// assertTrue(values.size() == secondArgumentValues.size());
-	// assertTrue(values.get(0) == CounterExampleValueType.TRUE);
-	// assertTrue(values.get(1) == CounterExampleValueType.TRUE);
-	// assertTrue(values.get(2) == CounterExampleValueType.TRUE);
-	// assertTrue(values.get(3) == CounterExampleValueType.TRUE);
-	//
-	// // check highlighted positions
-	// firstHighlightedPositions = triggerOperator
-	// .getFirstHighlightedPositions();
-	// secondHighlightedPositions = triggerOperator
-	// .getSecondHighlightedPositions();
-	// assertTrue(firstHighlightedPositions.size() == firstArgumentValues
-	// .size());
-	// assertTrue(secondHighlightedPositions.size() == secondArgumentValues
-	// .size());
-	//
-	// // State 0
-	// assertTrue(firstHighlightedPositions.get(0).size() == 1);
-	// assertTrue(Arrays.equals(
-	// firstHighlightedPositions.get(0).toArray(new Integer[0]),
-	// new Integer[] { 0 }));
-	// assertTrue(secondHighlightedPositions.get(0).size() == 1);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(0).toArray(new Integer[0]),
-	// new Integer[] { 0 }));
-	//
-	// // State 1
-	// assertTrue(firstHighlightedPositions.get(1).size() == 1);
-	// assertTrue(Arrays.equals(
-	// firstHighlightedPositions.get(1).toArray(new Integer[0]),
-	// new Integer[] { 0 }));
-	// assertTrue(secondHighlightedPositions.get(1).size() == 2);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(1).toArray(new Integer[0]),
-	// new Integer[] { 1, 0 }));
-	//
-	// // State 2
-	// assertTrue(firstHighlightedPositions.get(2).size() == 1);
-	// assertTrue(Arrays.equals(
-	// firstHighlightedPositions.get(2).toArray(new Integer[0]),
-	// new Integer[] { 0 }));
-	// assertTrue(secondHighlightedPositions.get(2).size() == 3);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(2).toArray(new Integer[0]),
-	// new Integer[] { 2, 1, 0 }));
-	//
-	// // State 3
-	// assertTrue(firstHighlightedPositions.get(3).size() == 1);
-	// assertTrue(Arrays.equals(
-	// firstHighlightedPositions.get(3).toArray(new Integer[0]),
-	// new Integer[] { 0 }));
-	// assertTrue(secondHighlightedPositions.get(3).size() == 4);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(3).toArray(new Integer[0]),
-	// new Integer[] { 3, 2, 1, 0 }));
-	//
-	// // Loop entry = 3
-	// // create first argument
-	// firstArgument = new CounterExamplePredicate("", PathType.INFINITE, 3,
-	// firstArgumentValues);
-	//
-	// // create second argument
-	// secondArgument = new CounterExamplePredicate("", PathType.INFINITE, 3,
-	// secondArgumentValues);
-	//
-	// // create an operator
-	// triggerOperator = new CounterExampleTrigger(PathType.INFINITE, 3,
-	// firstArgument, secondArgument);
-	//
-	// // check result values
-	// values = triggerOperator.getValues();
-	// assertTrue(values.size() == firstArgumentValues.size());
-	// assertTrue(values.size() == secondArgumentValues.size());
-	// assertTrue(values.get(0) == CounterExampleValueType.TRUE);
-	// assertTrue(values.get(1) == CounterExampleValueType.TRUE);
-	// assertTrue(values.get(2) == CounterExampleValueType.TRUE);
-	// assertTrue(values.get(3) == CounterExampleValueType.TRUE);
-	//
-	// // check highlighted positions
-	// firstHighlightedPositions = triggerOperator
-	// .getFirstHighlightedPositions();
-	// secondHighlightedPositions = triggerOperator
-	// .getSecondHighlightedPositions();
-	// assertTrue(firstHighlightedPositions.size() == firstArgumentValues
-	// .size());
-	// assertTrue(secondHighlightedPositions.size() == secondArgumentValues
-	// .size());
-	//
-	// // State 0
-	// assertTrue(firstHighlightedPositions.get(0).size() == 1);
-	// assertTrue(Arrays.equals(
-	// firstHighlightedPositions.get(0).toArray(new Integer[0]),
-	// new Integer[] { 0 }));
-	// assertTrue(secondHighlightedPositions.get(0).size() == 1);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(0).toArray(new Integer[0]),
-	// new Integer[] { 0 }));
-	//
-	// // State 1
-	// assertTrue(firstHighlightedPositions.get(1).size() == 1);
-	// assertTrue(Arrays.equals(
-	// firstHighlightedPositions.get(1).toArray(new Integer[0]),
-	// new Integer[] { 0 }));
-	// assertTrue(secondHighlightedPositions.get(1).size() == 2);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(1).toArray(new Integer[0]),
-	// new Integer[] { 1, 0 }));
-	//
-	// // State 2
-	// assertTrue(firstHighlightedPositions.get(2).size() == 1);
-	// assertTrue(Arrays.equals(
-	// firstHighlightedPositions.get(2).toArray(new Integer[0]),
-	// new Integer[] { 0 }));
-	// assertTrue(secondHighlightedPositions.get(2).size() == 3);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(2).toArray(new Integer[0]),
-	// new Integer[] { 2, 1, 0 }));
-	//
-	// // State 3
-	// assertTrue(firstHighlightedPositions.get(3).size() == 1);
-	// assertTrue(Arrays.equals(
-	// firstHighlightedPositions.get(3).toArray(new Integer[0]),
-	// new Integer[] { 0 }));
-	// assertTrue(secondHighlightedPositions.get(3).size() == 4);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(3).toArray(new Integer[0]),
-	// new Integer[] { 3, 2, 1, 0 }));
-	// }
-	//
-	// /*
-	// * f-FFFF, g-TTTT, f T g-TTTT
-	// */
-	// @Test
-	// public void testTriggerTrueDefinitionOnInfinitePath2() {
-	// // create first argument values
-	// final List<CounterExampleValueType> firstArgumentValues = Arrays
-	// .asList(new CounterExampleValueType[] {
-	// CounterExampleValueType.FALSE,
-	// CounterExampleValueType.FALSE,
-	// CounterExampleValueType.FALSE,
-	// CounterExampleValueType.FALSE });
-	//
-	// // create second argument values
-	// final List<CounterExampleValueType> secondArgumentValues = Arrays
-	// .asList(new CounterExampleValueType[] {
-	// CounterExampleValueType.TRUE,
-	// CounterExampleValueType.TRUE,
-	// CounterExampleValueType.TRUE,
-	// CounterExampleValueType.TRUE });
-	//
-	// // Loop entry = 0
-	// // create first argument
-	// CounterExampleProposition firstArgument = new CounterExamplePredicate(
-	// PathType.INFINITE, 0, firstArgumentValues);
-	//
-	// // create second argument
-	// CounterExampleProposition secondArgument = new CounterExamplePredicate(
-	// PathType.INFINITE, 0, secondArgumentValues);
-	//
-	// // create an operator
-	// CounterExampleBinaryOperator triggerOperator = new CounterExampleTrigger(
-	// PathType.INFINITE, 0, firstArgument, secondArgument);
-	//
-	// // check result values
-	// List<CounterExampleValueType> values = triggerOperator.getValues();
-	// assertTrue(values.size() == firstArgumentValues.size());
-	// assertTrue(values.size() == secondArgumentValues.size());
-	// assertTrue(values.get(0) == CounterExampleValueType.TRUE);
-	// assertTrue(values.get(1) == CounterExampleValueType.TRUE);
-	// assertTrue(values.get(2) == CounterExampleValueType.TRUE);
-	// assertTrue(values.get(3) == CounterExampleValueType.TRUE);
-	//
-	// // check highlighted positions
-	// List<List<Integer>> firstHighlightedPositions = triggerOperator
-	// .getFirstHighlightedPositions();
-	// List<List<Integer>> secondHighlightedPositions = triggerOperator
-	// .getSecondHighlightedPositions();
-	// assertTrue(firstHighlightedPositions.size() == firstArgumentValues
-	// .size());
-	// assertTrue(secondHighlightedPositions.size() == secondArgumentValues
-	// .size());
-	//
-	// // State 0
-	// assertTrue(firstHighlightedPositions.get(0).size() == 0);
-	// assertTrue(secondHighlightedPositions.get(0).size() == 1);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(0).toArray(new Integer[0]),
-	// new Integer[] { 0 }));
-	//
-	// // State 1
-	// assertTrue(firstHighlightedPositions.get(1).size() == 0);
-	// assertTrue(secondHighlightedPositions.get(1).size() == 2);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(1).toArray(new Integer[0]),
-	// new Integer[] { 1, 0 }));
-	//
-	// // State 2
-	// assertTrue(firstHighlightedPositions.get(2).size() == 0);
-	// assertTrue(secondHighlightedPositions.get(2).size() == 3);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(2).toArray(new Integer[0]),
-	// new Integer[] { 2, 1, 0 }));
-	//
-	// // State 3
-	// assertTrue(firstHighlightedPositions.get(3).size() == 0);
-	// assertTrue(secondHighlightedPositions.get(3).size() == 4);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(3).toArray(new Integer[0]),
-	// new Integer[] { 3, 2, 1, 0 }));
-	//
-	// // Loop entry = 1
-	// // create first argument
-	// firstArgument = new CounterExamplePredicate(PathType.INFINITE, 1,
-	// firstArgumentValues);
-	//
-	// // create second argument
-	// secondArgument = new CounterExamplePredicate(PathType.INFINITE, 1,
-	// secondArgumentValues);
-	//
-	// // create an operator
-	// triggerOperator = new CounterExampleTrigger(PathType.INFINITE, 1,
-	// firstArgument, secondArgument);
-	//
-	// // check result values
-	// values = triggerOperator.getValues();
-	// assertTrue(values.size() == firstArgumentValues.size());
-	// assertTrue(values.size() == secondArgumentValues.size());
-	// assertTrue(values.get(0) == CounterExampleValueType.TRUE);
-	// assertTrue(values.get(1) == CounterExampleValueType.TRUE);
-	// assertTrue(values.get(2) == CounterExampleValueType.TRUE);
-	// assertTrue(values.get(3) == CounterExampleValueType.TRUE);
-	//
-	// // check highlighted positions
-	// firstHighlightedPositions = triggerOperator
-	// .getFirstHighlightedPositions();
-	// secondHighlightedPositions = triggerOperator
-	// .getSecondHighlightedPositions();
-	// assertTrue(firstHighlightedPositions.size() == firstArgumentValues
-	// .size());
-	// assertTrue(secondHighlightedPositions.size() == secondArgumentValues
-	// .size());
-	//
-	// // State 0
-	// assertTrue(firstHighlightedPositions.get(0).size() == 0);
-	// assertTrue(secondHighlightedPositions.get(0).size() == 1);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(0).toArray(new Integer[0]),
-	// new Integer[] { 0 }));
-	//
-	// // State 1
-	// assertTrue(firstHighlightedPositions.get(1).size() == 0);
-	// assertTrue(secondHighlightedPositions.get(1).size() == 2);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(1).toArray(new Integer[0]),
-	// new Integer[] { 1, 0 }));
-	//
-	// // State 2
-	// assertTrue(firstHighlightedPositions.get(2).size() == 0);
-	// assertTrue(secondHighlightedPositions.get(2).size() == 3);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(2).toArray(new Integer[0]),
-	// new Integer[] { 2, 1, 0 }));
-	//
-	// // State 3
-	// assertTrue(firstHighlightedPositions.get(3).size() == 0);
-	// assertTrue(secondHighlightedPositions.get(3).size() == 4);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(3).toArray(new Integer[0]),
-	// new Integer[] { 3, 2, 1, 0 }));
-	//
-	// // Loop entry = 2
-	// // create first argument
-	// firstArgument = new CounterExamplePredicate(PathType.INFINITE, 2,
-	// firstArgumentValues);
-	//
-	// // create second argument
-	// secondArgument = new CounterExamplePredicate(PathType.INFINITE, 2,
-	// secondArgumentValues);
-	//
-	// // create an operator
-	// triggerOperator = new CounterExampleTrigger(PathType.INFINITE, 2,
-	// firstArgument, secondArgument);
-	//
-	// // check result values
-	// values = triggerOperator.getValues();
-	// assertTrue(values.size() == firstArgumentValues.size());
-	// assertTrue(values.size() == secondArgumentValues.size());
-	// assertTrue(values.get(0) == CounterExampleValueType.TRUE);
-	// assertTrue(values.get(1) == CounterExampleValueType.TRUE);
-	// assertTrue(values.get(2) == CounterExampleValueType.TRUE);
-	// assertTrue(values.get(3) == CounterExampleValueType.TRUE);
-	//
-	// // check highlighted positions
-	// firstHighlightedPositions = triggerOperator
-	// .getFirstHighlightedPositions();
-	// secondHighlightedPositions = triggerOperator
-	// .getSecondHighlightedPositions();
-	// assertTrue(firstHighlightedPositions.size() == firstArgumentValues
-	// .size());
-	// assertTrue(secondHighlightedPositions.size() == secondArgumentValues
-	// .size());
-	//
-	// // State 0
-	// assertTrue(firstHighlightedPositions.get(0).size() == 0);
-	// assertTrue(secondHighlightedPositions.get(0).size() == 1);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(0).toArray(new Integer[0]),
-	// new Integer[] { 0 }));
-	//
-	// // State 1
-	// assertTrue(firstHighlightedPositions.get(1).size() == 0);
-	// assertTrue(secondHighlightedPositions.get(1).size() == 2);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(1).toArray(new Integer[0]),
-	// new Integer[] { 1, 0 }));
-	//
-	// // State 2
-	// assertTrue(firstHighlightedPositions.get(2).size() == 0);
-	// assertTrue(secondHighlightedPositions.get(2).size() == 3);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(2).toArray(new Integer[0]),
-	// new Integer[] { 2, 1, 0 }));
-	//
-	// // State 3
-	// assertTrue(firstHighlightedPositions.get(3).size() == 0);
-	// assertTrue(secondHighlightedPositions.get(3).size() == 4);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(3).toArray(new Integer[0]),
-	// new Integer[] { 3, 2, 1, 0 }));
-	//
-	// // Loop entry = 3
-	// // create first argument
-	// firstArgument = new CounterExamplePredicate("", PathType.INFINITE, 3,
-	// firstArgumentValues);
-	//
-	// // create second argument
-	// secondArgument = new CounterExamplePredicate("", PathType.INFINITE, 3,
-	// secondArgumentValues);
-	//
-	// // create an operator
-	// triggerOperator = new CounterExampleTrigger(PathType.INFINITE, 3,
-	// firstArgument, secondArgument);
-	//
-	// // check result values
-	// values = triggerOperator.getValues();
-	// assertTrue(values.size() == firstArgumentValues.size());
-	// assertTrue(values.size() == secondArgumentValues.size());
-	// assertTrue(values.get(0) == CounterExampleValueType.TRUE);
-	// assertTrue(values.get(1) == CounterExampleValueType.TRUE);
-	// assertTrue(values.get(2) == CounterExampleValueType.TRUE);
-	// assertTrue(values.get(3) == CounterExampleValueType.TRUE);
-	//
-	// // check highlighted positions
-	// firstHighlightedPositions = triggerOperator
-	// .getFirstHighlightedPositions();
-	// secondHighlightedPositions = triggerOperator
-	// .getSecondHighlightedPositions();
-	// assertTrue(firstHighlightedPositions.size() == firstArgumentValues
-	// .size());
-	// assertTrue(secondHighlightedPositions.size() == secondArgumentValues
-	// .size());
-	//
-	// // State 0
-	// assertTrue(firstHighlightedPositions.get(0).size() == 0);
-	// assertTrue(secondHighlightedPositions.get(0).size() == 1);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(0).toArray(new Integer[0]),
-	// new Integer[] { 0 }));
-	//
-	// // State 1
-	// assertTrue(firstHighlightedPositions.get(1).size() == 0);
-	// assertTrue(secondHighlightedPositions.get(1).size() == 2);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(1).toArray(new Integer[0]),
-	// new Integer[] { 1, 0 }));
-	//
-	// // State 2
-	// assertTrue(firstHighlightedPositions.get(2).size() == 0);
-	// assertTrue(secondHighlightedPositions.get(2).size() == 3);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(2).toArray(new Integer[0]),
-	// new Integer[] { 2, 1, 0 }));
-	//
-	// // State 3
-	// assertTrue(firstHighlightedPositions.get(3).size() == 0);
-	// assertTrue(secondHighlightedPositions.get(3).size() == 4);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(3).toArray(new Integer[0]),
-	// new Integer[] { 3, 2, 1, 0 }));
-	// }
-	//
-	// /*
-	// * f-TFFF, g-FTTT, f T g-FFFF
-	// */
-	// @Test
-	// public void testTriggerFalseDefinitionOnInfinitePath1() {
-	// // create first argument values
-	// final List<CounterExampleValueType> firstArgumentValues = Arrays
-	// .asList(new CounterExampleValueType[] {
-	// CounterExampleValueType.TRUE,
-	// CounterExampleValueType.FALSE,
-	// CounterExampleValueType.FALSE,
-	// CounterExampleValueType.FALSE });
-	//
-	// // create second argument values
-	// final List<CounterExampleValueType> secondArgumentValues = Arrays
-	// .asList(new CounterExampleValueType[] {
-	// CounterExampleValueType.FALSE,
-	// CounterExampleValueType.TRUE,
-	// CounterExampleValueType.TRUE,
-	// CounterExampleValueType.TRUE });
-	//
-	// // Loop entry = 0
-	// // create first argument
-	// CounterExampleProposition firstArgument = new CounterExamplePredicate(
-	// PathType.INFINITE, 0, firstArgumentValues);
-	//
-	// // create second argument
-	// CounterExampleProposition secondArgument = new CounterExamplePredicate(
-	// PathType.INFINITE, 0, secondArgumentValues);
-	//
-	// // create an operator
-	// CounterExampleBinaryOperator triggerOperator = new CounterExampleTrigger(
-	// PathType.INFINITE, 0, firstArgument, secondArgument);
-	//
-	// // check result values
-	// List<CounterExampleValueType> values = triggerOperator.getValues();
-	// assertTrue(values.size() == firstArgumentValues.size());
-	// assertTrue(values.size() == secondArgumentValues.size());
-	// assertTrue(values.get(0) == CounterExampleValueType.FALSE);
-	// assertTrue(values.get(1) == CounterExampleValueType.FALSE);
-	// assertTrue(values.get(2) == CounterExampleValueType.FALSE);
-	// assertTrue(values.get(3) == CounterExampleValueType.FALSE);
-	//
-	// // check highlighted positions
-	// List<List<Integer>> firstHighlightedPositions = triggerOperator
-	// .getFirstHighlightedPositions();
-	// List<List<Integer>> secondHighlightedPositions = triggerOperator
+	// secondHighlightedPositions = sinceOperator
 	// .getSecondHighlightedPositions();
 	// assertTrue(firstHighlightedPositions.size() == firstArgumentValues
 	// .size());
@@ -1212,664 +617,11 @@ public final class CounterExampleTriggerUnitTest {
 	// assertTrue(firstHighlightedPositions.get(3).size() == 3);
 	// assertTrue(Arrays.equals(
 	// firstHighlightedPositions.get(3).toArray(new Integer[0]),
-	// new Integer[] { 3, 2, 1, }));
+	// new Integer[] { 3, 2, 1 }));
 	// assertTrue(secondHighlightedPositions.get(3).size() == 1);
 	// assertTrue(Arrays.equals(
 	// secondHighlightedPositions.get(3).toArray(new Integer[0]),
 	// new Integer[] { 0 }));
-	//
-	// // Loop entry = 1
-	// // create first argument
-	// firstArgument = new CounterExamplePredicate(PathType.INFINITE, 1,
-	// firstArgumentValues);
-	//
-	// // create second argument
-	// secondArgument = new CounterExamplePredicate(PathType.INFINITE, 1,
-	// secondArgumentValues);
-	//
-	// // create an operator
-	// triggerOperator = new CounterExampleTrigger(PathType.INFINITE, 1,
-	// firstArgument, secondArgument);
-	//
-	// // check result values
-	// values = triggerOperator.getValues();
-	// assertTrue(values.size() == firstArgumentValues.size());
-	// assertTrue(values.size() == secondArgumentValues.size());
-	// assertTrue(values.get(0) == CounterExampleValueType.FALSE);
-	// assertTrue(values.get(1) == CounterExampleValueType.FALSE);
-	// assertTrue(values.get(2) == CounterExampleValueType.FALSE);
-	// assertTrue(values.get(3) == CounterExampleValueType.FALSE);
-	//
-	// // check highlighted positions
-	// firstHighlightedPositions = triggerOperator
-	// .getFirstHighlightedPositions();
-	// secondHighlightedPositions = triggerOperator
-	// .getSecondHighlightedPositions();
-	// assertTrue(firstHighlightedPositions.size() == firstArgumentValues
-	// .size());
-	// assertTrue(secondHighlightedPositions.size() == secondArgumentValues
-	// .size());
-	//
-	// // State 0
-	// assertTrue(firstHighlightedPositions.get(0).size() == 0);
-	// assertTrue(secondHighlightedPositions.get(0).size() == 1);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(0).toArray(new Integer[0]),
-	// new Integer[] { 0 }));
-	//
-	// // State 1
-	// assertTrue(firstHighlightedPositions.get(1).size() == 1);
-	// assertTrue(Arrays.equals(
-	// firstHighlightedPositions.get(1).toArray(new Integer[0]),
-	// new Integer[] { 1 }));
-	// assertTrue(secondHighlightedPositions.get(1).size() == 1);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(1).toArray(new Integer[0]),
-	// new Integer[] { 0 }));
-	//
-	// // State 2
-	// assertTrue(firstHighlightedPositions.get(2).size() == 2);
-	// assertTrue(Arrays.equals(
-	// firstHighlightedPositions.get(2).toArray(new Integer[0]),
-	// new Integer[] { 2, 1 }));
-	// assertTrue(secondHighlightedPositions.get(2).size() == 1);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(2).toArray(new Integer[0]),
-	// new Integer[] { 0 }));
-	//
-	// // State 3
-	// assertTrue(firstHighlightedPositions.get(3).size() == 3);
-	// assertTrue(Arrays.equals(
-	// firstHighlightedPositions.get(3).toArray(new Integer[0]),
-	// new Integer[] { 3, 2, 1, }));
-	// assertTrue(secondHighlightedPositions.get(3).size() == 1);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(3).toArray(new Integer[0]),
-	// new Integer[] { 0 }));
-	//
-	// // Loop entry = 2
-	// // create first argument
-	// firstArgument = new CounterExamplePredicate(PathType.INFINITE, 2,
-	// firstArgumentValues);
-	//
-	// // create second argument
-	// secondArgument = new CounterExamplePredicate(PathType.INFINITE, 2,
-	// secondArgumentValues);
-	//
-	// // create an operator
-	// triggerOperator = new CounterExampleTrigger(PathType.INFINITE, 2,
-	// firstArgument, secondArgument);
-	//
-	// // check result values
-	// values = triggerOperator.getValues();
-	// assertTrue(values.size() == firstArgumentValues.size());
-	// assertTrue(values.size() == secondArgumentValues.size());
-	// assertTrue(values.get(0) == CounterExampleValueType.FALSE);
-	// assertTrue(values.get(1) == CounterExampleValueType.FALSE);
-	// assertTrue(values.get(2) == CounterExampleValueType.FALSE);
-	// assertTrue(values.get(3) == CounterExampleValueType.FALSE);
-	//
-	// // check highlighted positions
-	// firstHighlightedPositions = triggerOperator
-	// .getFirstHighlightedPositions();
-	// secondHighlightedPositions = triggerOperator
-	// .getSecondHighlightedPositions();
-	// assertTrue(firstHighlightedPositions.size() == firstArgumentValues
-	// .size());
-	// assertTrue(secondHighlightedPositions.size() == secondArgumentValues
-	// .size());
-	//
-	// // State 0
-	// assertTrue(firstHighlightedPositions.get(0).size() == 0);
-	// assertTrue(secondHighlightedPositions.get(0).size() == 1);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(0).toArray(new Integer[0]),
-	// new Integer[] { 0 }));
-	//
-	// // State 1
-	// assertTrue(firstHighlightedPositions.get(1).size() == 1);
-	// assertTrue(Arrays.equals(
-	// firstHighlightedPositions.get(1).toArray(new Integer[0]),
-	// new Integer[] { 1 }));
-	// assertTrue(secondHighlightedPositions.get(1).size() == 1);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(1).toArray(new Integer[0]),
-	// new Integer[] { 0 }));
-	//
-	// // State 2
-	// assertTrue(firstHighlightedPositions.get(2).size() == 2);
-	// assertTrue(Arrays.equals(
-	// firstHighlightedPositions.get(2).toArray(new Integer[0]),
-	// new Integer[] { 2, 1 }));
-	// assertTrue(secondHighlightedPositions.get(2).size() == 1);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(2).toArray(new Integer[0]),
-	// new Integer[] { 0 }));
-	//
-	// // State 3
-	// assertTrue(firstHighlightedPositions.get(3).size() == 3);
-	// assertTrue(Arrays.equals(
-	// firstHighlightedPositions.get(3).toArray(new Integer[0]),
-	// new Integer[] { 3, 2, 1, }));
-	// assertTrue(secondHighlightedPositions.get(3).size() == 1);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(3).toArray(new Integer[0]),
-	// new Integer[] { 0 }));
-	//
-	// // Loop entry = 3
-	// // create first argument
-	// firstArgument = new CounterExamplePredicate("", PathType.INFINITE, 3,
-	// firstArgumentValues);
-	//
-	// // create second argument
-	// secondArgument = new CounterExamplePredicate("", PathType.INFINITE, 3,
-	// secondArgumentValues);
-	//
-	// // create an operator
-	// triggerOperator = new CounterExampleTrigger(PathType.INFINITE, 3,
-	// firstArgument, secondArgument);
-	//
-	// // check result values
-	// values = triggerOperator.getValues();
-	// assertTrue(values.size() == firstArgumentValues.size());
-	// assertTrue(values.size() == secondArgumentValues.size());
-	// assertTrue(values.get(0) == CounterExampleValueType.FALSE);
-	// assertTrue(values.get(1) == CounterExampleValueType.FALSE);
-	// assertTrue(values.get(2) == CounterExampleValueType.FALSE);
-	// assertTrue(values.get(3) == CounterExampleValueType.FALSE);
-	//
-	// // check highlighted positions
-	// firstHighlightedPositions = triggerOperator
-	// .getFirstHighlightedPositions();
-	// secondHighlightedPositions = triggerOperator
-	// .getSecondHighlightedPositions();
-	// assertTrue(firstHighlightedPositions.size() == firstArgumentValues
-	// .size());
-	// assertTrue(secondHighlightedPositions.size() == secondArgumentValues
-	// .size());
-	//
-	// // State 0
-	// assertTrue(firstHighlightedPositions.get(0).size() == 0);
-	// assertTrue(secondHighlightedPositions.get(0).size() == 1);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(0).toArray(new Integer[0]),
-	// new Integer[] { 0 }));
-	//
-	// // State 1
-	// assertTrue(firstHighlightedPositions.get(1).size() == 1);
-	// assertTrue(Arrays.equals(
-	// firstHighlightedPositions.get(1).toArray(new Integer[0]),
-	// new Integer[] { 1 }));
-	// assertTrue(secondHighlightedPositions.get(1).size() == 1);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(1).toArray(new Integer[0]),
-	// new Integer[] { 0 }));
-	//
-	// // State 2
-	// assertTrue(firstHighlightedPositions.get(2).size() == 2);
-	// assertTrue(Arrays.equals(
-	// firstHighlightedPositions.get(2).toArray(new Integer[0]),
-	// new Integer[] { 2, 1 }));
-	// assertTrue(secondHighlightedPositions.get(2).size() == 1);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(2).toArray(new Integer[0]),
-	// new Integer[] { 0 }));
-	//
-	// // State 3
-	// assertTrue(firstHighlightedPositions.get(3).size() == 3);
-	// assertTrue(Arrays.equals(
-	// firstHighlightedPositions.get(3).toArray(new Integer[0]),
-	// new Integer[] { 3, 2, 1, }));
-	// assertTrue(secondHighlightedPositions.get(3).size() == 1);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(3).toArray(new Integer[0]),
-	// new Integer[] { 0 }));
-	// }
-	//
-	// /*
-	// * f-FFFF, g-FTTT, f T g-FFFF
-	// */
-	// @Test
-	// public void testTriggerFalseDefinitionOnInfinitePath2() {
-	// // create first argument values
-	// final List<CounterExampleValueType> firstArgumentValues = Arrays
-	// .asList(new CounterExampleValueType[] {
-	// CounterExampleValueType.FALSE,
-	// CounterExampleValueType.FALSE,
-	// CounterExampleValueType.FALSE,
-	// CounterExampleValueType.FALSE });
-	//
-	// // create second argument values
-	// final List<CounterExampleValueType> secondArgumentValues = Arrays
-	// .asList(new CounterExampleValueType[] {
-	// CounterExampleValueType.FALSE,
-	// CounterExampleValueType.TRUE,
-	// CounterExampleValueType.TRUE,
-	// CounterExampleValueType.TRUE });
-	//
-	// // Loop entry = 0
-	// // create first argument
-	// CounterExampleProposition firstArgument = new CounterExamplePredicate(
-	// PathType.INFINITE, 0, firstArgumentValues);
-	//
-	// // create second argument
-	// CounterExampleProposition secondArgument = new CounterExamplePredicate(
-	// PathType.INFINITE, 0, secondArgumentValues);
-	//
-	// // create an operator
-	// CounterExampleBinaryOperator triggerOperator = new CounterExampleTrigger(
-	// PathType.INFINITE, 0, firstArgument, secondArgument);
-	//
-	// // check result values
-	// List<CounterExampleValueType> values = triggerOperator.getValues();
-	// assertTrue(values.size() == firstArgumentValues.size());
-	// assertTrue(values.size() == secondArgumentValues.size());
-	// assertTrue(values.get(0) == CounterExampleValueType.FALSE);
-	// assertTrue(values.get(1) == CounterExampleValueType.FALSE);
-	// assertTrue(values.get(2) == CounterExampleValueType.FALSE);
-	// assertTrue(values.get(3) == CounterExampleValueType.FALSE);
-	//
-	// // check highlighted positions
-	// List<List<Integer>> firstHighlightedPositions = triggerOperator
-	// .getFirstHighlightedPositions();
-	// List<List<Integer>> secondHighlightedPositions = triggerOperator
-	// .getSecondHighlightedPositions();
-	// assertTrue(firstHighlightedPositions.size() == firstArgumentValues
-	// .size());
-	// assertTrue(secondHighlightedPositions.size() == secondArgumentValues
-	// .size());
-	//
-	// // State 0
-	// assertTrue(firstHighlightedPositions.get(0).size() == 0);
-	// assertTrue(secondHighlightedPositions.get(0).size() == 1);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(0).toArray(new Integer[0]),
-	// new Integer[] { 0 }));
-	//
-	// // State 1
-	// assertTrue(firstHighlightedPositions.get(1).size() == 1);
-	// assertTrue(Arrays.equals(
-	// firstHighlightedPositions.get(1).toArray(new Integer[0]),
-	// new Integer[] { 1 }));
-	// assertTrue(secondHighlightedPositions.get(1).size() == 1);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(1).toArray(new Integer[0]),
-	// new Integer[] { 0 }));
-	//
-	// // State 2
-	// assertTrue(firstHighlightedPositions.get(2).size() == 2);
-	// assertTrue(Arrays.equals(
-	// firstHighlightedPositions.get(2).toArray(new Integer[0]),
-	// new Integer[] { 2, 1 }));
-	// assertTrue(secondHighlightedPositions.get(2).size() == 1);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(2).toArray(new Integer[0]),
-	// new Integer[] { 0 }));
-	//
-	// // State 3
-	// assertTrue(firstHighlightedPositions.get(3).size() == 3);
-	// assertTrue(Arrays.equals(
-	// firstHighlightedPositions.get(3).toArray(new Integer[0]),
-	// new Integer[] { 3, 2, 1, }));
-	// assertTrue(secondHighlightedPositions.get(3).size() == 1);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(3).toArray(new Integer[0]),
-	// new Integer[] { 0 }));
-	//
-	// // Loop entry = 1
-	// // create first argument
-	// firstArgument = new CounterExamplePredicate(PathType.INFINITE, 1,
-	// firstArgumentValues);
-	//
-	// // create second argument
-	// secondArgument = new CounterExamplePredicate(PathType.INFINITE, 1,
-	// secondArgumentValues);
-	//
-	// // create an operator
-	// triggerOperator = new CounterExampleTrigger(PathType.INFINITE, 1,
-	// firstArgument, secondArgument);
-	//
-	// // check result values
-	// values = triggerOperator.getValues();
-	// assertTrue(values.size() == firstArgumentValues.size());
-	// assertTrue(values.size() == secondArgumentValues.size());
-	// assertTrue(values.get(0) == CounterExampleValueType.FALSE);
-	// assertTrue(values.get(1) == CounterExampleValueType.FALSE);
-	// assertTrue(values.get(2) == CounterExampleValueType.FALSE);
-	// assertTrue(values.get(3) == CounterExampleValueType.FALSE);
-	//
-	// // check highlighted positions
-	// firstHighlightedPositions = triggerOperator
-	// .getFirstHighlightedPositions();
-	// secondHighlightedPositions = triggerOperator
-	// .getSecondHighlightedPositions();
-	// assertTrue(firstHighlightedPositions.size() == firstArgumentValues
-	// .size());
-	// assertTrue(secondHighlightedPositions.size() == secondArgumentValues
-	// .size());
-	//
-	// // State 0
-	// assertTrue(firstHighlightedPositions.get(0).size() == 0);
-	// assertTrue(secondHighlightedPositions.get(0).size() == 1);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(0).toArray(new Integer[0]),
-	// new Integer[] { 0 }));
-	//
-	// // State 1
-	// assertTrue(firstHighlightedPositions.get(1).size() == 1);
-	// assertTrue(Arrays.equals(
-	// firstHighlightedPositions.get(1).toArray(new Integer[0]),
-	// new Integer[] { 1 }));
-	// assertTrue(secondHighlightedPositions.get(1).size() == 1);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(1).toArray(new Integer[0]),
-	// new Integer[] { 0 }));
-	//
-	// // State 2
-	// assertTrue(firstHighlightedPositions.get(2).size() == 2);
-	// assertTrue(Arrays.equals(
-	// firstHighlightedPositions.get(2).toArray(new Integer[0]),
-	// new Integer[] { 2, 1 }));
-	// assertTrue(secondHighlightedPositions.get(2).size() == 1);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(2).toArray(new Integer[0]),
-	// new Integer[] { 0 }));
-	//
-	// // State 3
-	// assertTrue(firstHighlightedPositions.get(3).size() == 3);
-	// assertTrue(Arrays.equals(
-	// firstHighlightedPositions.get(3).toArray(new Integer[0]),
-	// new Integer[] { 3, 2, 1, }));
-	// assertTrue(secondHighlightedPositions.get(3).size() == 1);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(3).toArray(new Integer[0]),
-	// new Integer[] { 0 }));
-	//
-	// // Loop entry = 2
-	// // create first argument
-	// firstArgument = new CounterExamplePredicate(PathType.INFINITE, 2,
-	// firstArgumentValues);
-	//
-	// // create second argument
-	// secondArgument = new CounterExamplePredicate(PathType.INFINITE, 2,
-	// secondArgumentValues);
-	//
-	// // create an operator
-	// triggerOperator = new CounterExampleTrigger(PathType.INFINITE, 2,
-	// firstArgument, secondArgument);
-	//
-	// // check result values
-	// values = triggerOperator.getValues();
-	// assertTrue(values.size() == firstArgumentValues.size());
-	// assertTrue(values.size() == secondArgumentValues.size());
-	// assertTrue(values.get(0) == CounterExampleValueType.FALSE);
-	// assertTrue(values.get(1) == CounterExampleValueType.FALSE);
-	// assertTrue(values.get(2) == CounterExampleValueType.FALSE);
-	// assertTrue(values.get(3) == CounterExampleValueType.FALSE);
-	//
-	// // check highlighted positions
-	// firstHighlightedPositions = triggerOperator
-	// .getFirstHighlightedPositions();
-	// secondHighlightedPositions = triggerOperator
-	// .getSecondHighlightedPositions();
-	// assertTrue(firstHighlightedPositions.size() == firstArgumentValues
-	// .size());
-	// assertTrue(secondHighlightedPositions.size() == secondArgumentValues
-	// .size());
-	//
-	// // State 0
-	// assertTrue(firstHighlightedPositions.get(0).size() == 0);
-	// assertTrue(secondHighlightedPositions.get(0).size() == 1);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(0).toArray(new Integer[0]),
-	// new Integer[] { 0 }));
-	//
-	// // State 1
-	// assertTrue(firstHighlightedPositions.get(1).size() == 1);
-	// assertTrue(Arrays.equals(
-	// firstHighlightedPositions.get(1).toArray(new Integer[0]),
-	// new Integer[] { 1 }));
-	// assertTrue(secondHighlightedPositions.get(1).size() == 1);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(1).toArray(new Integer[0]),
-	// new Integer[] { 0 }));
-	//
-	// // State 2
-	// assertTrue(firstHighlightedPositions.get(2).size() == 2);
-	// assertTrue(Arrays.equals(
-	// firstHighlightedPositions.get(2).toArray(new Integer[0]),
-	// new Integer[] { 2, 1 }));
-	// assertTrue(secondHighlightedPositions.get(2).size() == 1);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(2).toArray(new Integer[0]),
-	// new Integer[] { 0 }));
-	//
-	// // State 3
-	// assertTrue(firstHighlightedPositions.get(3).size() == 3);
-	// assertTrue(Arrays.equals(
-	// firstHighlightedPositions.get(3).toArray(new Integer[0]),
-	// new Integer[] { 3, 2, 1, }));
-	// assertTrue(secondHighlightedPositions.get(3).size() == 1);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(3).toArray(new Integer[0]),
-	// new Integer[] { 0 }));
-	//
-	// // Loop entry = 3
-	// // create first argument
-	// firstArgument = new CounterExamplePredicate("", PathType.INFINITE, 3,
-	// firstArgumentValues);
-	//
-	// // create second argument
-	// secondArgument = new CounterExamplePredicate("", PathType.INFINITE, 3,
-	// secondArgumentValues);
-	//
-	// // create an operator
-	// triggerOperator = new CounterExampleTrigger(PathType.INFINITE, 3,
-	// firstArgument, secondArgument);
-	//
-	// // check result values
-	// values = triggerOperator.getValues();
-	// assertTrue(values.size() == firstArgumentValues.size());
-	// assertTrue(values.size() == secondArgumentValues.size());
-	// assertTrue(values.get(0) == CounterExampleValueType.FALSE);
-	// assertTrue(values.get(1) == CounterExampleValueType.FALSE);
-	// assertTrue(values.get(2) == CounterExampleValueType.FALSE);
-	// assertTrue(values.get(3) == CounterExampleValueType.FALSE);
-	//
-	// // check highlighted positions
-	// firstHighlightedPositions = triggerOperator
-	// .getFirstHighlightedPositions();
-	// secondHighlightedPositions = triggerOperator
-	// .getSecondHighlightedPositions();
-	// assertTrue(firstHighlightedPositions.size() == firstArgumentValues
-	// .size());
-	// assertTrue(secondHighlightedPositions.size() == secondArgumentValues
-	// .size());
-	//
-	// // State 0
-	// assertTrue(firstHighlightedPositions.get(0).size() == 0);
-	// assertTrue(secondHighlightedPositions.get(0).size() == 1);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(0).toArray(new Integer[0]),
-	// new Integer[] { 0 }));
-	//
-	// // State 1
-	// assertTrue(firstHighlightedPositions.get(1).size() == 1);
-	// assertTrue(Arrays.equals(
-	// firstHighlightedPositions.get(1).toArray(new Integer[0]),
-	// new Integer[] { 1 }));
-	// assertTrue(secondHighlightedPositions.get(1).size() == 1);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(1).toArray(new Integer[0]),
-	// new Integer[] { 0 }));
-	//
-	// // State 2
-	// assertTrue(firstHighlightedPositions.get(2).size() == 2);
-	// assertTrue(Arrays.equals(
-	// firstHighlightedPositions.get(2).toArray(new Integer[0]),
-	// new Integer[] { 2, 1 }));
-	// assertTrue(secondHighlightedPositions.get(2).size() == 1);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(2).toArray(new Integer[0]),
-	// new Integer[] { 0 }));
-	//
-	// // State 3
-	// assertTrue(firstHighlightedPositions.get(3).size() == 3);
-	// assertTrue(Arrays.equals(
-	// firstHighlightedPositions.get(3).toArray(new Integer[0]),
-	// new Integer[] { 3, 2, 1, }));
-	// assertTrue(secondHighlightedPositions.get(3).size() == 1);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(3).toArray(new Integer[0]),
-	// new Integer[] { 0 }));
-	// }
-	//
-	// /*
-	// * f-FTFT, g-TFFT, f T g-TFFT
-	// */
-	// @Test
-	// public void testTriggerOnInfinitePath() {
-	// // create first argument values
-	// final List<CounterExampleValueType> firstArgumentValues = Arrays
-	// .asList(new CounterExampleValueType[] {
-	// CounterExampleValueType.FALSE,
-	// CounterExampleValueType.TRUE,
-	// CounterExampleValueType.FALSE,
-	// CounterExampleValueType.TRUE });
-	//
-	// // create second argument values
-	// final List<CounterExampleValueType> secondArgumentValues = Arrays
-	// .asList(new CounterExampleValueType[] {
-	// CounterExampleValueType.TRUE,
-	// CounterExampleValueType.FALSE,
-	// CounterExampleValueType.FALSE,
-	// CounterExampleValueType.TRUE });
-	//
-	// // Loop entry = 0
-	// // create first argument
-	// CounterExampleProposition firstArgument = new CounterExamplePredicate(
-	// PathType.INFINITE, 0, firstArgumentValues);
-	//
-	// // create second argument
-	// CounterExampleProposition secondArgument = new CounterExamplePredicate(
-	// PathType.INFINITE, 0, secondArgumentValues);
-	//
-	// // create an operator
-	// CounterExampleBinaryOperator triggerOperator = new CounterExampleTrigger(
-	// PathType.INFINITE, 0, firstArgument, secondArgument);
-	//
-	// // check result values
-	// List<CounterExampleValueType> values = triggerOperator.getValues();
-	// assertTrue(values.size() == firstArgumentValues.size());
-	// assertTrue(values.size() == secondArgumentValues.size());
-	// assertTrue(values.get(0) == CounterExampleValueType.TRUE);
-	// assertTrue(values.get(1) == CounterExampleValueType.FALSE);
-	// assertTrue(values.get(2) == CounterExampleValueType.FALSE);
-	// assertTrue(values.get(3) == CounterExampleValueType.TRUE);
-	//
-	// // check highlighted positions
-	// List<List<Integer>> firstHighlightedPositions = triggerOperator
-	// .getFirstHighlightedPositions();
-	// List<List<Integer>> secondHighlightedPositions = triggerOperator
-	// .getSecondHighlightedPositions();
-	// assertTrue(firstHighlightedPositions.size() == firstArgumentValues
-	// .size());
-	// assertTrue(secondHighlightedPositions.size() == secondArgumentValues
-	// .size());
-	//
-	// // State 0
-	// assertTrue(firstHighlightedPositions.get(0).size() == 0);
-	// assertTrue(secondHighlightedPositions.get(0).size() == 1);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(0).toArray(new Integer[0]),
-	// new Integer[] { 0 }));
-	//
-	// // State 1
-	// assertTrue(firstHighlightedPositions.get(1).size() == 0);
-	// assertTrue(secondHighlightedPositions.get(1).size() == 1);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(1).toArray(new Integer[0]),
-	// new Integer[] { 1 }));
-	//
-	// // State 2
-	// assertTrue(firstHighlightedPositions.get(2).size() == 0);
-	// assertTrue(secondHighlightedPositions.get(2).size() == 1);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(2).toArray(new Integer[0]),
-	// new Integer[] { 2 }));
-	//
-	// // State 3
-	// assertTrue(firstHighlightedPositions.get(3).size() == 1);
-	// assertTrue(Arrays.equals(
-	// firstHighlightedPositions.get(3).toArray(new Integer[0]),
-	// new Integer[] { 3 }));
-	// assertTrue(secondHighlightedPositions.get(3).size() == 1);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(3).toArray(new Integer[0]),
-	// new Integer[] { 3 }));
-	//
-	// // Loop entry = 1
-	// // create first argument
-	// firstArgument = new CounterExamplePredicate(PathType.INFINITE, 1,
-	// firstArgumentValues);
-	//
-	// // create second argument
-	// secondArgument = new CounterExamplePredicate(PathType.INFINITE, 1,
-	// secondArgumentValues);
-	//
-	// // create an operator
-	// triggerOperator = new CounterExampleTrigger(PathType.INFINITE, 1,
-	// firstArgument, secondArgument);
-	//
-	// // check result values
-	// values = triggerOperator.getValues();
-	// assertTrue(values.size() == firstArgumentValues.size());
-	// assertTrue(values.size() == secondArgumentValues.size());
-	// assertTrue(values.get(0) == CounterExampleValueType.TRUE);
-	// assertTrue(values.get(1) == CounterExampleValueType.FALSE);
-	// assertTrue(values.get(2) == CounterExampleValueType.FALSE);
-	// assertTrue(values.get(3) == CounterExampleValueType.TRUE);
-	//
-	// // check highlighted positions
-	// firstHighlightedPositions = triggerOperator
-	// .getFirstHighlightedPositions();
-	// secondHighlightedPositions = triggerOperator
-	// .getSecondHighlightedPositions();
-	// assertTrue(firstHighlightedPositions.size() == firstArgumentValues
-	// .size());
-	// assertTrue(secondHighlightedPositions.size() == secondArgumentValues
-	// .size());
-	//
-	// // State 0
-	// assertTrue(firstHighlightedPositions.get(0).size() == 0);
-	// assertTrue(secondHighlightedPositions.get(0).size() == 1);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(0).toArray(new Integer[0]),
-	// new Integer[] { 0 }));
-	//
-	// // State 1
-	// assertTrue(firstHighlightedPositions.get(1).size() == 0);
-	// assertTrue(secondHighlightedPositions.get(1).size() == 1);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(1).toArray(new Integer[0]),
-	// new Integer[] { 1 }));
-	//
-	// // State 2
-	// assertTrue(firstHighlightedPositions.get(2).size() == 0);
-	// assertTrue(secondHighlightedPositions.get(2).size() == 1);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(2).toArray(new Integer[0]),
-	// new Integer[] { 2 }));
-	//
-	// // State 3
-	// assertTrue(firstHighlightedPositions.get(3).size() == 1);
-	// assertTrue(Arrays.equals(
-	// firstHighlightedPositions.get(3).toArray(new Integer[0]),
-	// new Integer[] { 3 }));
-	// assertTrue(secondHighlightedPositions.get(3).size() == 1);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(3).toArray(new Integer[0]),
-	// new Integer[] { 3 }));
 	//
 	// // Loop entry = 2
 	// // create first argument
@@ -1881,22 +633,22 @@ public final class CounterExampleTriggerUnitTest {
 	// secondArgumentValues);
 	//
 	// // create an operator
-	// triggerOperator = new CounterExampleTrigger(PathType.INFINITE, 2,
+	// sinceOperator = new CounterExampleSince(PathType.INFINITE, 2,
 	// firstArgument, secondArgument);
 	//
 	// // check result values
-	// values = triggerOperator.getValues();
+	// values = sinceOperator.getValues();
 	// assertTrue(values.size() == firstArgumentValues.size());
 	// assertTrue(values.size() == secondArgumentValues.size());
 	// assertTrue(values.get(0) == CounterExampleValueType.TRUE);
-	// assertTrue(values.get(1) == CounterExampleValueType.FALSE);
-	// assertTrue(values.get(2) == CounterExampleValueType.FALSE);
+	// assertTrue(values.get(1) == CounterExampleValueType.TRUE);
+	// assertTrue(values.get(2) == CounterExampleValueType.TRUE);
 	// assertTrue(values.get(3) == CounterExampleValueType.TRUE);
 	//
 	// // check highlighted positions
-	// firstHighlightedPositions = triggerOperator
+	// firstHighlightedPositions = sinceOperator
 	// .getFirstHighlightedPositions();
-	// secondHighlightedPositions = triggerOperator
+	// secondHighlightedPositions = sinceOperator
 	// .getSecondHighlightedPositions();
 	// assertTrue(firstHighlightedPositions.size() == firstArgumentValues
 	// .size());
@@ -1911,28 +663,34 @@ public final class CounterExampleTriggerUnitTest {
 	// new Integer[] { 0 }));
 	//
 	// // State 1
-	// assertTrue(firstHighlightedPositions.get(1).size() == 0);
+	// assertTrue(firstHighlightedPositions.get(1).size() == 1);
+	// assertTrue(Arrays.equals(
+	// firstHighlightedPositions.get(1).toArray(new Integer[0]),
+	// new Integer[] { 1 }));
 	// assertTrue(secondHighlightedPositions.get(1).size() == 1);
 	// assertTrue(Arrays.equals(
 	// secondHighlightedPositions.get(1).toArray(new Integer[0]),
-	// new Integer[] { 1 }));
+	// new Integer[] { 0 }));
 	//
 	// // State 2
-	// assertTrue(firstHighlightedPositions.get(2).size() == 0);
+	// assertTrue(firstHighlightedPositions.get(2).size() == 2);
+	// assertTrue(Arrays.equals(
+	// firstHighlightedPositions.get(2).toArray(new Integer[0]),
+	// new Integer[] { 2, 1 }));
 	// assertTrue(secondHighlightedPositions.get(2).size() == 1);
 	// assertTrue(Arrays.equals(
 	// secondHighlightedPositions.get(2).toArray(new Integer[0]),
-	// new Integer[] { 2 }));
+	// new Integer[] { 0 }));
 	//
 	// // State 3
-	// assertTrue(firstHighlightedPositions.get(3).size() == 1);
+	// assertTrue(firstHighlightedPositions.get(3).size() == 3);
 	// assertTrue(Arrays.equals(
 	// firstHighlightedPositions.get(3).toArray(new Integer[0]),
-	// new Integer[] { 3 }));
+	// new Integer[] { 3, 2, 1 }));
 	// assertTrue(secondHighlightedPositions.get(3).size() == 1);
 	// assertTrue(Arrays.equals(
 	// secondHighlightedPositions.get(3).toArray(new Integer[0]),
-	// new Integer[] { 3 }));
+	// new Integer[] { 0 }));
 	//
 	// // Loop entry = 3
 	// // create first argument
@@ -1944,22 +702,22 @@ public final class CounterExampleTriggerUnitTest {
 	// secondArgumentValues);
 	//
 	// // create an operator
-	// triggerOperator = new CounterExampleTrigger(PathType.INFINITE, 3,
+	// sinceOperator = new CounterExampleSince(PathType.INFINITE, 3,
 	// firstArgument, secondArgument);
 	//
 	// // check result values
-	// values = triggerOperator.getValues();
+	// values = sinceOperator.getValues();
 	// assertTrue(values.size() == firstArgumentValues.size());
 	// assertTrue(values.size() == secondArgumentValues.size());
 	// assertTrue(values.get(0) == CounterExampleValueType.TRUE);
-	// assertTrue(values.get(1) == CounterExampleValueType.FALSE);
-	// assertTrue(values.get(2) == CounterExampleValueType.FALSE);
+	// assertTrue(values.get(1) == CounterExampleValueType.TRUE);
+	// assertTrue(values.get(2) == CounterExampleValueType.TRUE);
 	// assertTrue(values.get(3) == CounterExampleValueType.TRUE);
 	//
 	// // check highlighted positions
-	// firstHighlightedPositions = triggerOperator
+	// firstHighlightedPositions = sinceOperator
 	// .getFirstHighlightedPositions();
-	// secondHighlightedPositions = triggerOperator
+	// secondHighlightedPositions = sinceOperator
 	// .getSecondHighlightedPositions();
 	// assertTrue(firstHighlightedPositions.size() == firstArgumentValues
 	// .size());
@@ -1974,80 +732,597 @@ public final class CounterExampleTriggerUnitTest {
 	// new Integer[] { 0 }));
 	//
 	// // State 1
-	// assertTrue(firstHighlightedPositions.get(1).size() == 0);
+	// assertTrue(firstHighlightedPositions.get(1).size() == 1);
+	// assertTrue(Arrays.equals(
+	// firstHighlightedPositions.get(1).toArray(new Integer[0]),
+	// new Integer[] { 1 }));
 	// assertTrue(secondHighlightedPositions.get(1).size() == 1);
 	// assertTrue(Arrays.equals(
 	// secondHighlightedPositions.get(1).toArray(new Integer[0]),
-	// new Integer[] { 1 }));
+	// new Integer[] { 0 }));
 	//
 	// // State 2
-	// assertTrue(firstHighlightedPositions.get(2).size() == 0);
+	// assertTrue(firstHighlightedPositions.get(2).size() == 2);
+	// assertTrue(Arrays.equals(
+	// firstHighlightedPositions.get(2).toArray(new Integer[0]),
+	// new Integer[] { 2, 1 }));
 	// assertTrue(secondHighlightedPositions.get(2).size() == 1);
 	// assertTrue(Arrays.equals(
 	// secondHighlightedPositions.get(2).toArray(new Integer[0]),
-	// new Integer[] { 2 }));
+	// new Integer[] { 0 }));
 	//
 	// // State 3
-	// assertTrue(firstHighlightedPositions.get(3).size() == 1);
+	// assertTrue(firstHighlightedPositions.get(3).size() == 3);
 	// assertTrue(Arrays.equals(
 	// firstHighlightedPositions.get(3).toArray(new Integer[0]),
-	// new Integer[] { 3 }));
+	// new Integer[] { 3, 2, 1 }));
 	// assertTrue(secondHighlightedPositions.get(3).size() == 1);
 	// assertTrue(Arrays.equals(
 	// secondHighlightedPositions.get(3).toArray(new Integer[0]),
-	// new Integer[] { 3 }));
+	// new Integer[] { 0 }));
 	// }
 	//
 	// /*
-	// * f-TFFF, g-TTTT, f T g-TTTT
+	// * f-FFTT, g-TFFF, f S g-TFFF
 	// */
 	// @Test
-	// public void testTriggerTrueDefinitionOnReducedPath1() {
+	// public void testSinceFalseDefinitionOnInfinitePath1() {
 	// // create first argument values
 	// final List<CounterExampleValueType> firstArgumentValues = Arrays
+	// .asList(new CounterExampleValueType[] {
+	// CounterExampleValueType.FALSE,
+	// CounterExampleValueType.FALSE,
+	// CounterExampleValueType.TRUE,
+	// CounterExampleValueType.TRUE });
+	//
+	// // create second argument values
+	// final List<CounterExampleValueType> secondArgumentValues = Arrays
 	// .asList(new CounterExampleValueType[] {
 	// CounterExampleValueType.TRUE,
 	// CounterExampleValueType.FALSE,
 	// CounterExampleValueType.FALSE,
 	// CounterExampleValueType.FALSE });
 	//
-	// // create second argument values
-	// final List<CounterExampleValueType> secondArgumentValues = Arrays
+	// // Loop entry = 0
+	// // create first argument
+	// CounterExampleProposition firstArgument = new CounterExamplePredicate(
+	// "", PathType.INFINITE, 0, firstArgumentValues);
+	//
+	// // create second argument
+	// CounterExampleProposition secondArgument = new CounterExamplePredicate(
+	// "", PathType.INFINITE, 0, secondArgumentValues);
+	//
+	// // create an operator
+	// CounterExampleBinaryOperator sinceOperator = new CounterExampleSince(
+	// PathType.INFINITE, 0, firstArgument, secondArgument);
+	//
+	// // check result values
+	// List<CounterExampleValueType> values = sinceOperator.getValues();
+	// assertTrue(values.size() == firstArgumentValues.size());
+	// assertTrue(values.size() == secondArgumentValues.size());
+	// assertTrue(values.get(0) == CounterExampleValueType.TRUE);
+	// assertTrue(values.get(1) == CounterExampleValueType.FALSE);
+	// assertTrue(values.get(2) == CounterExampleValueType.FALSE);
+	// assertTrue(values.get(3) == CounterExampleValueType.FALSE);
+	//
+	// // check highlighted positions
+	// List<List<Integer>> firstHighlightedPositions = sinceOperator
+	// .getFirstHighlightedPositions();
+	// List<List<Integer>> secondHighlightedPositions = sinceOperator
+	// .getSecondHighlightedPositions();
+	// assertTrue(firstHighlightedPositions.size() == firstArgumentValues
+	// .size());
+	// assertTrue(secondHighlightedPositions.size() == secondArgumentValues
+	// .size());
+	//
+	// // State 0
+	// assertTrue(firstHighlightedPositions.get(0).size() == 0);
+	// assertTrue(secondHighlightedPositions.get(0).size() == 1);
+	// assertTrue(Arrays.equals(
+	// secondHighlightedPositions.get(0).toArray(new Integer[0]),
+	// new Integer[] { 0 }));
+	//
+	// // State 1
+	// assertTrue(firstHighlightedPositions.get(1).size() == 1);
+	// assertTrue(Arrays.equals(
+	// firstHighlightedPositions.get(1).toArray(new Integer[0]),
+	// new Integer[] { 1 }));
+	// assertTrue(secondHighlightedPositions.get(1).size() == 1);
+	// assertTrue(Arrays.equals(
+	// secondHighlightedPositions.get(1).toArray(new Integer[0]),
+	// new Integer[] { 1 }));
+	//
+	// // State 2
+	// assertTrue(firstHighlightedPositions.get(2).size() == 1);
+	// assertTrue(Arrays.equals(
+	// firstHighlightedPositions.get(2).toArray(new Integer[0]),
+	// new Integer[] { 1 }));
+	// assertTrue(secondHighlightedPositions.get(2).size() == 2);
+	// assertTrue(Arrays.equals(
+	// secondHighlightedPositions.get(2).toArray(new Integer[0]),
+	// new Integer[] { 2, 1 }));
+	//
+	// // State 3
+	// assertTrue(firstHighlightedPositions.get(3).size() == 1);
+	// assertTrue(Arrays.equals(
+	// firstHighlightedPositions.get(3).toArray(new Integer[0]),
+	// new Integer[] { 1 }));
+	// assertTrue(secondHighlightedPositions.get(3).size() == 3);
+	// assertTrue(Arrays.equals(
+	// secondHighlightedPositions.get(3).toArray(new Integer[0]),
+	// new Integer[] { 3, 2, 1 }));
+	//
+	// // Loop entry = 1
+	// // create first argument
+	// firstArgument = new CounterExamplePredicate("", PathType.INFINITE, 1,
+	// firstArgumentValues);
+	//
+	// // create second argument
+	// secondArgument = new CounterExamplePredicate("", PathType.INFINITE, 1,
+	// secondArgumentValues);
+	//
+	// // create an operator
+	// sinceOperator = new CounterExampleSince(PathType.INFINITE, 1,
+	// firstArgument, secondArgument);
+	//
+	// // check result values
+	// values = sinceOperator.getValues();
+	// assertTrue(values.size() == firstArgumentValues.size());
+	// assertTrue(values.size() == secondArgumentValues.size());
+	// assertTrue(values.get(0) == CounterExampleValueType.TRUE);
+	// assertTrue(values.get(1) == CounterExampleValueType.FALSE);
+	// assertTrue(values.get(2) == CounterExampleValueType.FALSE);
+	// assertTrue(values.get(3) == CounterExampleValueType.FALSE);
+	//
+	// // check highlighted positions
+	// firstHighlightedPositions = sinceOperator
+	// .getFirstHighlightedPositions();
+	// secondHighlightedPositions = sinceOperator
+	// .getSecondHighlightedPositions();
+	// assertTrue(firstHighlightedPositions.size() == firstArgumentValues
+	// .size());
+	// assertTrue(secondHighlightedPositions.size() == secondArgumentValues
+	// .size());
+	//
+	// // State 0
+	// assertTrue(firstHighlightedPositions.get(0).size() == 0);
+	// assertTrue(secondHighlightedPositions.get(0).size() == 1);
+	// assertTrue(Arrays.equals(
+	// secondHighlightedPositions.get(0).toArray(new Integer[0]),
+	// new Integer[] { 0 }));
+	//
+	// // State 1
+	// assertTrue(firstHighlightedPositions.get(1).size() == 1);
+	// assertTrue(Arrays.equals(
+	// firstHighlightedPositions.get(1).toArray(new Integer[0]),
+	// new Integer[] { 1 }));
+	// assertTrue(secondHighlightedPositions.get(1).size() == 1);
+	// assertTrue(Arrays.equals(
+	// secondHighlightedPositions.get(1).toArray(new Integer[0]),
+	// new Integer[] { 1 }));
+	//
+	// // State 2
+	// assertTrue(firstHighlightedPositions.get(2).size() == 1);
+	// assertTrue(Arrays.equals(
+	// firstHighlightedPositions.get(2).toArray(new Integer[0]),
+	// new Integer[] { 1 }));
+	// assertTrue(secondHighlightedPositions.get(2).size() == 2);
+	// assertTrue(Arrays.equals(
+	// secondHighlightedPositions.get(2).toArray(new Integer[0]),
+	// new Integer[] { 2, 1 }));
+	//
+	// // State 3
+	// assertTrue(firstHighlightedPositions.get(3).size() == 1);
+	// assertTrue(Arrays.equals(
+	// firstHighlightedPositions.get(3).toArray(new Integer[0]),
+	// new Integer[] { 1 }));
+	// assertTrue(secondHighlightedPositions.get(3).size() == 3);
+	// assertTrue(Arrays.equals(
+	// secondHighlightedPositions.get(3).toArray(new Integer[0]),
+	// new Integer[] { 3, 2, 1 }));
+	//
+	// // Loop entry = 2
+	// // create first argument
+	// firstArgument = new CounterExamplePredicate("", PathType.INFINITE, 2,
+	// firstArgumentValues);
+	//
+	// // create second argument
+	// secondArgument = new CounterExamplePredicate("", PathType.INFINITE, 2,
+	// secondArgumentValues);
+	//
+	// // create an operator
+	// sinceOperator = new CounterExampleSince(PathType.INFINITE, 2,
+	// firstArgument, secondArgument);
+	//
+	// // check result values
+	// values = sinceOperator.getValues();
+	// assertTrue(values.size() == firstArgumentValues.size());
+	// assertTrue(values.size() == secondArgumentValues.size());
+	// assertTrue(values.get(0) == CounterExampleValueType.TRUE);
+	// assertTrue(values.get(1) == CounterExampleValueType.FALSE);
+	// assertTrue(values.get(2) == CounterExampleValueType.FALSE);
+	// assertTrue(values.get(3) == CounterExampleValueType.FALSE);
+	//
+	// // check highlighted positions
+	// firstHighlightedPositions = sinceOperator
+	// .getFirstHighlightedPositions();
+	// secondHighlightedPositions = sinceOperator
+	// .getSecondHighlightedPositions();
+	// assertTrue(firstHighlightedPositions.size() == firstArgumentValues
+	// .size());
+	// assertTrue(secondHighlightedPositions.size() == secondArgumentValues
+	// .size());
+	//
+	// // State 0
+	// assertTrue(firstHighlightedPositions.get(0).size() == 0);
+	// assertTrue(secondHighlightedPositions.get(0).size() == 1);
+	// assertTrue(Arrays.equals(
+	// secondHighlightedPositions.get(0).toArray(new Integer[0]),
+	// new Integer[] { 0 }));
+	//
+	// // State 1
+	// assertTrue(firstHighlightedPositions.get(1).size() == 1);
+	// assertTrue(Arrays.equals(
+	// firstHighlightedPositions.get(1).toArray(new Integer[0]),
+	// new Integer[] { 1 }));
+	// assertTrue(secondHighlightedPositions.get(1).size() == 1);
+	// assertTrue(Arrays.equals(
+	// secondHighlightedPositions.get(1).toArray(new Integer[0]),
+	// new Integer[] { 1 }));
+	//
+	// // State 2
+	// assertTrue(firstHighlightedPositions.get(2).size() == 1);
+	// assertTrue(Arrays.equals(
+	// firstHighlightedPositions.get(2).toArray(new Integer[0]),
+	// new Integer[] { 1 }));
+	// assertTrue(secondHighlightedPositions.get(2).size() == 2);
+	// assertTrue(Arrays.equals(
+	// secondHighlightedPositions.get(2).toArray(new Integer[0]),
+	// new Integer[] { 2, 1 }));
+	//
+	// // State 3
+	// assertTrue(firstHighlightedPositions.get(3).size() == 1);
+	// assertTrue(Arrays.equals(
+	// firstHighlightedPositions.get(3).toArray(new Integer[0]),
+	// new Integer[] { 1 }));
+	// assertTrue(secondHighlightedPositions.get(3).size() == 3);
+	// assertTrue(Arrays.equals(
+	// secondHighlightedPositions.get(3).toArray(new Integer[0]),
+	// new Integer[] { 3, 2, 1 }));
+	//
+	// // Loop entry = 3
+	// // create first argument
+	// firstArgument = new CounterExamplePredicate("", PathType.INFINITE, 3,
+	// firstArgumentValues);
+	//
+	// // create second argument
+	// secondArgument = new CounterExamplePredicate("", PathType.INFINITE, 3,
+	// secondArgumentValues);
+	//
+	// // create an operator
+	// sinceOperator = new CounterExampleSince(PathType.INFINITE, 3,
+	// firstArgument, secondArgument);
+	//
+	// // check result values
+	// values = sinceOperator.getValues();
+	// assertTrue(values.size() == firstArgumentValues.size());
+	// assertTrue(values.size() == secondArgumentValues.size());
+	// assertTrue(values.get(0) == CounterExampleValueType.TRUE);
+	// assertTrue(values.get(1) == CounterExampleValueType.FALSE);
+	// assertTrue(values.get(2) == CounterExampleValueType.FALSE);
+	// assertTrue(values.get(3) == CounterExampleValueType.FALSE);
+	//
+	// // check highlighted positions
+	// firstHighlightedPositions = sinceOperator
+	// .getFirstHighlightedPositions();
+	// secondHighlightedPositions = sinceOperator
+	// .getSecondHighlightedPositions();
+	// assertTrue(firstHighlightedPositions.size() == firstArgumentValues
+	// .size());
+	// assertTrue(secondHighlightedPositions.size() == secondArgumentValues
+	// .size());
+	//
+	// // State 0
+	// assertTrue(firstHighlightedPositions.get(0).size() == 0);
+	// assertTrue(secondHighlightedPositions.get(0).size() == 1);
+	// assertTrue(Arrays.equals(
+	// secondHighlightedPositions.get(0).toArray(new Integer[0]),
+	// new Integer[] { 0 }));
+	//
+	// // State 1
+	// assertTrue(firstHighlightedPositions.get(1).size() == 1);
+	// assertTrue(Arrays.equals(
+	// firstHighlightedPositions.get(1).toArray(new Integer[0]),
+	// new Integer[] { 1 }));
+	// assertTrue(secondHighlightedPositions.get(1).size() == 1);
+	// assertTrue(Arrays.equals(
+	// secondHighlightedPositions.get(1).toArray(new Integer[0]),
+	// new Integer[] { 1 }));
+	//
+	// // State 2
+	// assertTrue(firstHighlightedPositions.get(2).size() == 1);
+	// assertTrue(Arrays.equals(
+	// firstHighlightedPositions.get(2).toArray(new Integer[0]),
+	// new Integer[] { 1 }));
+	// assertTrue(secondHighlightedPositions.get(2).size() == 2);
+	// assertTrue(Arrays.equals(
+	// secondHighlightedPositions.get(2).toArray(new Integer[0]),
+	// new Integer[] { 2, 1 }));
+	//
+	// // State 3
+	// assertTrue(firstHighlightedPositions.get(3).size() == 1);
+	// assertTrue(Arrays.equals(
+	// firstHighlightedPositions.get(3).toArray(new Integer[0]),
+	// new Integer[] { 1 }));
+	// assertTrue(secondHighlightedPositions.get(3).size() == 3);
+	// assertTrue(Arrays.equals(
+	// secondHighlightedPositions.get(3).toArray(new Integer[0]),
+	// new Integer[] { 3, 2, 1 }));
+	// }
+	//
+	// /*
+	// * f-FTTT, g-FFFF, f S g-FFFF
+	// */
+	// @Test
+	// public void testSinceFalseDefinitionOnInfinitePath2() {
+	// // create first argument values
+	// final List<CounterExampleValueType> firstArgumentValues = Arrays
 	// .asList(new CounterExampleValueType[] {
-	// CounterExampleValueType.TRUE,
+	// CounterExampleValueType.FALSE,
 	// CounterExampleValueType.TRUE,
 	// CounterExampleValueType.TRUE,
 	// CounterExampleValueType.TRUE });
 	//
+	// // create second argument values
+	// final List<CounterExampleValueType> secondArgumentValues = Arrays
+	// .asList(new CounterExampleValueType[] {
+	// CounterExampleValueType.FALSE,
+	// CounterExampleValueType.FALSE,
+	// CounterExampleValueType.FALSE,
+	// CounterExampleValueType.FALSE });
+	//
+	// // Loop entry = 0
 	// // create first argument
-	// final CounterExampleProposition firstArgument = new
-	// CounterExamplePredicate(
-	// PathType.REDUCED, firstArgumentValues);
+	// CounterExampleProposition firstArgument = new CounterExamplePredicate(
+	// "", PathType.INFINITE, 0, firstArgumentValues);
 	//
 	// // create second argument
-	// final CounterExampleProposition secondArgument = new
-	// CounterExamplePredicate(
-	// PathType.REDUCED, secondArgumentValues);
+	// CounterExampleProposition secondArgument = new CounterExamplePredicate(
+	// "", PathType.INFINITE, 0, secondArgumentValues);
 	//
 	// // create an operator
-	// final CounterExampleBinaryOperator triggerOperator = new
-	// CounterExampleTrigger(
-	// PathType.REDUCED, firstArgument, secondArgument);
+	// CounterExampleBinaryOperator sinceOperator = new CounterExampleSince(
+	// PathType.INFINITE, 0, firstArgument, secondArgument);
 	//
 	// // check result values
-	// final List<CounterExampleValueType> values = triggerOperator
-	// .getValues();
+	// List<CounterExampleValueType> values = sinceOperator.getValues();
 	// assertTrue(values.size() == firstArgumentValues.size());
 	// assertTrue(values.size() == secondArgumentValues.size());
-	// assertTrue(values.get(0) == CounterExampleValueType.TRUE);
-	// assertTrue(values.get(1) == CounterExampleValueType.TRUE);
-	// assertTrue(values.get(2) == CounterExampleValueType.TRUE);
-	// assertTrue(values.get(3) == CounterExampleValueType.TRUE);
+	// assertTrue(values.get(0) == CounterExampleValueType.FALSE);
+	// assertTrue(values.get(1) == CounterExampleValueType.FALSE);
+	// assertTrue(values.get(2) == CounterExampleValueType.FALSE);
+	// assertTrue(values.get(3) == CounterExampleValueType.FALSE);
 	//
 	// // check highlighted positions
-	// final List<List<Integer>> firstHighlightedPositions = triggerOperator
+	// List<List<Integer>> firstHighlightedPositions = sinceOperator
 	// .getFirstHighlightedPositions();
-	// final List<List<Integer>> secondHighlightedPositions = triggerOperator
+	// List<List<Integer>> secondHighlightedPositions = sinceOperator
+	// .getSecondHighlightedPositions();
+	// assertTrue(firstHighlightedPositions.size() == firstArgumentValues
+	// .size());
+	// assertTrue(secondHighlightedPositions.size() == secondArgumentValues
+	// .size());
+	//
+	// // State 0
+	// assertTrue(firstHighlightedPositions.get(0).size() == 1);
+	// assertTrue(Arrays.equals(
+	// firstHighlightedPositions.get(0).toArray(new Integer[0]),
+	// new Integer[] { 0 }));
+	// assertTrue(secondHighlightedPositions.get(0).size() == 1);
+	// assertTrue(Arrays.equals(
+	// secondHighlightedPositions.get(0).toArray(new Integer[0]),
+	// new Integer[] { 0 }));
+	//
+	// // State 1
+	// assertTrue(firstHighlightedPositions.get(1).size() == 1);
+	// assertTrue(Arrays.equals(
+	// firstHighlightedPositions.get(1).toArray(new Integer[0]),
+	// new Integer[] { 0 }));
+	// assertTrue(secondHighlightedPositions.get(1).size() == 2);
+	// assertTrue(Arrays.equals(
+	// secondHighlightedPositions.get(1).toArray(new Integer[0]),
+	// new Integer[] { 1, 0 }));
+	//
+	// // State 2
+	// assertTrue(firstHighlightedPositions.get(2).size() == 1);
+	// assertTrue(Arrays.equals(
+	// firstHighlightedPositions.get(2).toArray(new Integer[0]),
+	// new Integer[] { 0 }));
+	// assertTrue(secondHighlightedPositions.get(2).size() == 3);
+	// assertTrue(Arrays.equals(
+	// secondHighlightedPositions.get(2).toArray(new Integer[0]),
+	// new Integer[] { 2, 1, 0 }));
+	//
+	// // State 3
+	// assertTrue(firstHighlightedPositions.get(3).size() == 1);
+	// assertTrue(Arrays.equals(
+	// firstHighlightedPositions.get(3).toArray(new Integer[0]),
+	// new Integer[] { 0 }));
+	// assertTrue(secondHighlightedPositions.get(3).size() == 4);
+	// assertTrue(Arrays.equals(
+	// secondHighlightedPositions.get(3).toArray(new Integer[0]),
+	// new Integer[] { 3, 2, 1, 0 }));
+	//
+	// // Loop entry = 1
+	// // create first argument
+	// firstArgument = new CounterExamplePredicate("", PathType.INFINITE, 1,
+	// firstArgumentValues);
+	//
+	// // create second argument
+	// secondArgument = new CounterExamplePredicate("", PathType.INFINITE, 1,
+	// secondArgumentValues);
+	//
+	// // create an operator
+	// sinceOperator = new CounterExampleSince(PathType.INFINITE, 1,
+	// firstArgument, secondArgument);
+	//
+	// // check result values
+	// values = sinceOperator.getValues();
+	// assertTrue(values.size() == firstArgumentValues.size());
+	// assertTrue(values.size() == secondArgumentValues.size());
+	// assertTrue(values.get(0) == CounterExampleValueType.FALSE);
+	// assertTrue(values.get(1) == CounterExampleValueType.FALSE);
+	// assertTrue(values.get(2) == CounterExampleValueType.FALSE);
+	// assertTrue(values.get(3) == CounterExampleValueType.FALSE);
+	//
+	// // check highlighted positions
+	// firstHighlightedPositions = sinceOperator
+	// .getFirstHighlightedPositions();
+	// secondHighlightedPositions = sinceOperator
+	// .getSecondHighlightedPositions();
+	// assertTrue(firstHighlightedPositions.size() == firstArgumentValues
+	// .size());
+	// assertTrue(secondHighlightedPositions.size() == secondArgumentValues
+	// .size());
+	//
+	// // State 0
+	// assertTrue(firstHighlightedPositions.get(0).size() == 1);
+	// assertTrue(Arrays.equals(
+	// firstHighlightedPositions.get(0).toArray(new Integer[0]),
+	// new Integer[] { 0 }));
+	// assertTrue(secondHighlightedPositions.get(0).size() == 1);
+	// assertTrue(Arrays.equals(
+	// secondHighlightedPositions.get(0).toArray(new Integer[0]),
+	// new Integer[] { 0 }));
+	//
+	// // State 1
+	// assertTrue(firstHighlightedPositions.get(1).size() == 1);
+	// assertTrue(Arrays.equals(
+	// firstHighlightedPositions.get(1).toArray(new Integer[0]),
+	// new Integer[] { 0 }));
+	// assertTrue(secondHighlightedPositions.get(1).size() == 2);
+	// assertTrue(Arrays.equals(
+	// secondHighlightedPositions.get(1).toArray(new Integer[0]),
+	// new Integer[] { 1, 0 }));
+	//
+	// // State 2
+	// assertTrue(firstHighlightedPositions.get(2).size() == 1);
+	// assertTrue(Arrays.equals(
+	// firstHighlightedPositions.get(2).toArray(new Integer[0]),
+	// new Integer[] { 0 }));
+	// assertTrue(secondHighlightedPositions.get(2).size() == 3);
+	// assertTrue(Arrays.equals(
+	// secondHighlightedPositions.get(2).toArray(new Integer[0]),
+	// new Integer[] { 2, 1, 0 }));
+	//
+	// // State 3
+	// assertTrue(firstHighlightedPositions.get(3).size() == 1);
+	// assertTrue(Arrays.equals(
+	// firstHighlightedPositions.get(3).toArray(new Integer[0]),
+	// new Integer[] { 0 }));
+	// assertTrue(secondHighlightedPositions.get(3).size() == 4);
+	// assertTrue(Arrays.equals(
+	// secondHighlightedPositions.get(3).toArray(new Integer[0]),
+	// new Integer[] { 3, 2, 1, 0 }));
+	//
+	// // Loop entry = 2
+	// // create first argument
+	// firstArgument = new CounterExamplePredicate("", PathType.INFINITE, 2,
+	// firstArgumentValues);
+	//
+	// // create second argument
+	// secondArgument = new CounterExamplePredicate("", PathType.INFINITE, 2,
+	// secondArgumentValues);
+	//
+	// // create an operator
+	// sinceOperator = new CounterExampleSince(PathType.INFINITE, 2,
+	// firstArgument, secondArgument);
+	//
+	// // check result values
+	// values = sinceOperator.getValues();
+	// assertTrue(values.size() == firstArgumentValues.size());
+	// assertTrue(values.size() == secondArgumentValues.size());
+	// assertTrue(values.get(0) == CounterExampleValueType.FALSE);
+	// assertTrue(values.get(1) == CounterExampleValueType.FALSE);
+	// assertTrue(values.get(2) == CounterExampleValueType.FALSE);
+	// assertTrue(values.get(3) == CounterExampleValueType.FALSE);
+	//
+	// // check highlighted positions
+	// firstHighlightedPositions = sinceOperator
+	// .getFirstHighlightedPositions();
+	// secondHighlightedPositions = sinceOperator
+	// .getSecondHighlightedPositions();
+	// assertTrue(firstHighlightedPositions.size() == firstArgumentValues
+	// .size());
+	// assertTrue(secondHighlightedPositions.size() == secondArgumentValues
+	// .size());
+	//
+	// // State 0
+	// assertTrue(firstHighlightedPositions.get(0).size() == 1);
+	// assertTrue(Arrays.equals(
+	// firstHighlightedPositions.get(0).toArray(new Integer[0]),
+	// new Integer[] { 0 }));
+	// assertTrue(secondHighlightedPositions.get(0).size() == 1);
+	// assertTrue(Arrays.equals(
+	// secondHighlightedPositions.get(0).toArray(new Integer[0]),
+	// new Integer[] { 0 }));
+	//
+	// // State 1
+	// assertTrue(firstHighlightedPositions.get(1).size() == 1);
+	// assertTrue(Arrays.equals(
+	// firstHighlightedPositions.get(1).toArray(new Integer[0]),
+	// new Integer[] { 0 }));
+	// assertTrue(secondHighlightedPositions.get(1).size() == 2);
+	// assertTrue(Arrays.equals(
+	// secondHighlightedPositions.get(1).toArray(new Integer[0]),
+	// new Integer[] { 1, 0 }));
+	//
+	// // State 2
+	// assertTrue(firstHighlightedPositions.get(2).size() == 1);
+	// assertTrue(Arrays.equals(
+	// firstHighlightedPositions.get(2).toArray(new Integer[0]),
+	// new Integer[] { 0 }));
+	// assertTrue(secondHighlightedPositions.get(2).size() == 3);
+	// assertTrue(Arrays.equals(
+	// secondHighlightedPositions.get(2).toArray(new Integer[0]),
+	// new Integer[] { 2, 1, 0 }));
+	//
+	// // State 3
+	// assertTrue(firstHighlightedPositions.get(3).size() == 1);
+	// assertTrue(Arrays.equals(
+	// firstHighlightedPositions.get(3).toArray(new Integer[0]),
+	// new Integer[] { 0 }));
+	// assertTrue(secondHighlightedPositions.get(3).size() == 4);
+	// assertTrue(Arrays.equals(
+	// secondHighlightedPositions.get(3).toArray(new Integer[0]),
+	// new Integer[] { 3, 2, 1, 0 }));
+	//
+	// // Loop entry = 3
+	// // create first argument
+	// firstArgument = new CounterExamplePredicate("", PathType.INFINITE, 3,
+	// firstArgumentValues);
+	//
+	// // create second argument
+	// secondArgument = new CounterExamplePredicate("", PathType.INFINITE, 3,
+	// secondArgumentValues);
+	//
+	// // create an operator
+	// sinceOperator = new CounterExampleSince(PathType.INFINITE, 3,
+	// firstArgument, secondArgument);
+	//
+	// // check result values
+	// values = sinceOperator.getValues();
+	// assertTrue(values.size() == firstArgumentValues.size());
+	// assertTrue(values.size() == secondArgumentValues.size());
+	// assertTrue(values.get(0) == CounterExampleValueType.FALSE);
+	// assertTrue(values.get(1) == CounterExampleValueType.FALSE);
+	// assertTrue(values.get(2) == CounterExampleValueType.FALSE);
+	// assertTrue(values.get(3) == CounterExampleValueType.FALSE);
+	//
+	// // check highlighted positions
+	// firstHighlightedPositions = sinceOperator
+	// .getFirstHighlightedPositions();
+	// secondHighlightedPositions = sinceOperator
 	// .getSecondHighlightedPositions();
 	// assertTrue(firstHighlightedPositions.size() == firstArgumentValues
 	// .size());
@@ -2096,55 +1371,232 @@ public final class CounterExampleTriggerUnitTest {
 	// }
 	//
 	// /*
-	// * f-FFFF, g-TTTT, f T g-TTTT
+	// * f-TTTT, g-FFFF, f S g-FFFF
 	// */
 	// @Test
-	// public void testTriggerTrueDefinitionOnReducedPath2() {
+	// public void testSinceFalseDefinitionOnInfinitePath3() {
 	// // create first argument values
 	// final List<CounterExampleValueType> firstArgumentValues = Arrays
-	// .asList(new CounterExampleValueType[] {
-	// CounterExampleValueType.FALSE,
-	// CounterExampleValueType.FALSE,
-	// CounterExampleValueType.FALSE,
-	// CounterExampleValueType.FALSE });
-	//
-	// // create second argument values
-	// final List<CounterExampleValueType> secondArgumentValues = Arrays
 	// .asList(new CounterExampleValueType[] {
 	// CounterExampleValueType.TRUE,
 	// CounterExampleValueType.TRUE,
 	// CounterExampleValueType.TRUE,
 	// CounterExampleValueType.TRUE });
 	//
+	// // create second argument values
+	// final List<CounterExampleValueType> secondArgumentValues = Arrays
+	// .asList(new CounterExampleValueType[] {
+	// CounterExampleValueType.FALSE,
+	// CounterExampleValueType.FALSE,
+	// CounterExampleValueType.FALSE,
+	// CounterExampleValueType.FALSE });
+	//
+	// // Loop entry = 0
 	// // create first argument
-	// final CounterExampleProposition firstArgument = new
-	// CounterExamplePredicate(
-	// PathType.REDUCED, firstArgumentValues);
+	// CounterExampleProposition firstArgument = new CounterExamplePredicate(
+	// "", PathType.INFINITE, 0, firstArgumentValues);
 	//
 	// // create second argument
-	// final CounterExampleProposition secondArgument = new
-	// CounterExamplePredicate(
-	// PathType.REDUCED, secondArgumentValues);
+	// CounterExampleProposition secondArgument = new CounterExamplePredicate(
+	// "", PathType.INFINITE, 0, secondArgumentValues);
 	//
 	// // create an operator
-	// final CounterExampleBinaryOperator triggerOperator = new
-	// CounterExampleTrigger(
-	// PathType.REDUCED, firstArgument, secondArgument);
+	// CounterExampleBinaryOperator sinceOperator = new CounterExampleSince(
+	// PathType.INFINITE, 0, firstArgument, secondArgument);
 	//
 	// // check result values
-	// final List<CounterExampleValueType> values = triggerOperator
-	// .getValues();
+	// List<CounterExampleValueType> values = sinceOperator.getValues();
 	// assertTrue(values.size() == firstArgumentValues.size());
 	// assertTrue(values.size() == secondArgumentValues.size());
-	// assertTrue(values.get(0) == CounterExampleValueType.TRUE);
-	// assertTrue(values.get(1) == CounterExampleValueType.TRUE);
-	// assertTrue(values.get(2) == CounterExampleValueType.TRUE);
-	// assertTrue(values.get(3) == CounterExampleValueType.TRUE);
+	// assertTrue(values.get(0) == CounterExampleValueType.FALSE);
+	// assertTrue(values.get(1) == CounterExampleValueType.FALSE);
+	// assertTrue(values.get(2) == CounterExampleValueType.FALSE);
+	// assertTrue(values.get(3) == CounterExampleValueType.FALSE);
 	//
 	// // check highlighted positions
-	// final List<List<Integer>> firstHighlightedPositions = triggerOperator
+	// List<List<Integer>> firstHighlightedPositions = sinceOperator
 	// .getFirstHighlightedPositions();
-	// final List<List<Integer>> secondHighlightedPositions = triggerOperator
+	// List<List<Integer>> secondHighlightedPositions = sinceOperator
+	// .getSecondHighlightedPositions();
+	// assertTrue(firstHighlightedPositions.size() == firstArgumentValues
+	// .size());
+	// assertTrue(secondHighlightedPositions.size() == secondArgumentValues
+	// .size());
+	//
+	// // State 0
+	// assertTrue(firstHighlightedPositions.get(0).size() == 0);
+	// assertTrue(secondHighlightedPositions.get(0).size() == 1);
+	// assertTrue(Arrays.equals(
+	// secondHighlightedPositions.get(0).toArray(new Integer[0]),
+	// new Integer[] { 0 }));
+	//
+	// // State 1
+	// assertTrue(firstHighlightedPositions.get(1).size() == 0);
+	// assertTrue(secondHighlightedPositions.get(1).size() == 2);
+	// assertTrue(Arrays.equals(
+	// secondHighlightedPositions.get(1).toArray(new Integer[0]),
+	// new Integer[] { 1, 0 }));
+	//
+	// // State 2
+	// assertTrue(firstHighlightedPositions.get(2).size() == 0);
+	// assertTrue(secondHighlightedPositions.get(2).size() == 3);
+	// assertTrue(Arrays.equals(
+	// secondHighlightedPositions.get(2).toArray(new Integer[0]),
+	// new Integer[] { 2, 1, 0 }));
+	//
+	// // State 3
+	// assertTrue(firstHighlightedPositions.get(3).size() == 0);
+	// assertTrue(secondHighlightedPositions.get(3).size() == 4);
+	// assertTrue(Arrays.equals(
+	// secondHighlightedPositions.get(3).toArray(new Integer[0]),
+	// new Integer[] { 3, 2, 1, 0 }));
+	//
+	// // Loop entry = 1
+	// // create first argument
+	// firstArgument = new CounterExamplePredicate("", PathType.INFINITE, 1,
+	// firstArgumentValues);
+	//
+	// // create second argument
+	// secondArgument = new CounterExamplePredicate("", PathType.INFINITE, 1,
+	// secondArgumentValues);
+	//
+	// // create an operator
+	// sinceOperator = new CounterExampleSince(PathType.INFINITE, 1,
+	// firstArgument, secondArgument);
+	//
+	// // check result values
+	// values = sinceOperator.getValues();
+	// assertTrue(values.size() == firstArgumentValues.size());
+	// assertTrue(values.size() == secondArgumentValues.size());
+	// assertTrue(values.get(0) == CounterExampleValueType.FALSE);
+	// assertTrue(values.get(1) == CounterExampleValueType.FALSE);
+	// assertTrue(values.get(2) == CounterExampleValueType.FALSE);
+	// assertTrue(values.get(3) == CounterExampleValueType.FALSE);
+	//
+	// // check highlighted positions
+	// firstHighlightedPositions = sinceOperator
+	// .getFirstHighlightedPositions();
+	// secondHighlightedPositions = sinceOperator
+	// .getSecondHighlightedPositions();
+	// assertTrue(firstHighlightedPositions.size() == firstArgumentValues
+	// .size());
+	// assertTrue(secondHighlightedPositions.size() == secondArgumentValues
+	// .size());
+	//
+	// // State 0
+	// assertTrue(firstHighlightedPositions.get(0).size() == 0);
+	// assertTrue(secondHighlightedPositions.get(0).size() == 1);
+	// assertTrue(Arrays.equals(
+	// secondHighlightedPositions.get(0).toArray(new Integer[0]),
+	// new Integer[] { 0 }));
+	//
+	// // State 1
+	// assertTrue(firstHighlightedPositions.get(1).size() == 0);
+	// assertTrue(secondHighlightedPositions.get(1).size() == 2);
+	// assertTrue(Arrays.equals(
+	// secondHighlightedPositions.get(1).toArray(new Integer[0]),
+	// new Integer[] { 1, 0 }));
+	//
+	// // State 2
+	// assertTrue(firstHighlightedPositions.get(2).size() == 0);
+	// assertTrue(secondHighlightedPositions.get(2).size() == 3);
+	// assertTrue(Arrays.equals(
+	// secondHighlightedPositions.get(2).toArray(new Integer[0]),
+	// new Integer[] { 2, 1, 0 }));
+	//
+	// // State 3
+	// assertTrue(firstHighlightedPositions.get(3).size() == 0);
+	// assertTrue(secondHighlightedPositions.get(3).size() == 4);
+	// assertTrue(Arrays.equals(
+	// secondHighlightedPositions.get(3).toArray(new Integer[0]),
+	// new Integer[] { 3, 2, 1, 0 }));
+	//
+	// // Loop entry = 2
+	// // create first argument
+	// firstArgument = new CounterExamplePredicate("", PathType.INFINITE, 2,
+	// firstArgumentValues);
+	//
+	// // create second argument
+	// secondArgument = new CounterExamplePredicate("", PathType.INFINITE, 2,
+	// secondArgumentValues);
+	//
+	// // create an operator
+	// sinceOperator = new CounterExampleSince(PathType.INFINITE, 2,
+	// firstArgument, secondArgument);
+	//
+	// // check result values
+	// values = sinceOperator.getValues();
+	// assertTrue(values.size() == firstArgumentValues.size());
+	// assertTrue(values.size() == secondArgumentValues.size());
+	// assertTrue(values.get(0) == CounterExampleValueType.FALSE);
+	// assertTrue(values.get(1) == CounterExampleValueType.FALSE);
+	// assertTrue(values.get(2) == CounterExampleValueType.FALSE);
+	// assertTrue(values.get(3) == CounterExampleValueType.FALSE);
+	//
+	// // check highlighted positions
+	// firstHighlightedPositions = sinceOperator
+	// .getFirstHighlightedPositions();
+	// secondHighlightedPositions = sinceOperator
+	// .getSecondHighlightedPositions();
+	// assertTrue(firstHighlightedPositions.size() == firstArgumentValues
+	// .size());
+	// assertTrue(secondHighlightedPositions.size() == secondArgumentValues
+	// .size());
+	//
+	// // State 0
+	// assertTrue(firstHighlightedPositions.get(0).size() == 0);
+	// assertTrue(secondHighlightedPositions.get(0).size() == 1);
+	// assertTrue(Arrays.equals(
+	// secondHighlightedPositions.get(0).toArray(new Integer[0]),
+	// new Integer[] { 0 }));
+	//
+	// // State 1
+	// assertTrue(firstHighlightedPositions.get(1).size() == 0);
+	// assertTrue(secondHighlightedPositions.get(1).size() == 2);
+	// assertTrue(Arrays.equals(
+	// secondHighlightedPositions.get(1).toArray(new Integer[0]),
+	// new Integer[] { 1, 0 }));
+	//
+	// // State 2
+	// assertTrue(firstHighlightedPositions.get(2).size() == 0);
+	// assertTrue(secondHighlightedPositions.get(2).size() == 3);
+	// assertTrue(Arrays.equals(
+	// secondHighlightedPositions.get(2).toArray(new Integer[0]),
+	// new Integer[] { 2, 1, 0 }));
+	//
+	// // State 3
+	// assertTrue(firstHighlightedPositions.get(3).size() == 0);
+	// assertTrue(secondHighlightedPositions.get(3).size() == 4);
+	// assertTrue(Arrays.equals(
+	// secondHighlightedPositions.get(3).toArray(new Integer[0]),
+	// new Integer[] { 3, 2, 1, 0 }));
+	//
+	// // Loop entry = 3
+	// // create first argument
+	// firstArgument = new CounterExamplePredicate("", PathType.INFINITE, 3,
+	// firstArgumentValues);
+	//
+	// // create second argument
+	// secondArgument = new CounterExamplePredicate("", PathType.INFINITE, 3,
+	// secondArgumentValues);
+	//
+	// // create an operator
+	// sinceOperator = new CounterExampleSince(PathType.INFINITE, 3,
+	// firstArgument, secondArgument);
+	//
+	// // check result values
+	// values = sinceOperator.getValues();
+	// assertTrue(values.size() == firstArgumentValues.size());
+	// assertTrue(values.size() == secondArgumentValues.size());
+	// assertTrue(values.get(0) == CounterExampleValueType.FALSE);
+	// assertTrue(values.get(1) == CounterExampleValueType.FALSE);
+	// assertTrue(values.get(2) == CounterExampleValueType.FALSE);
+	// assertTrue(values.get(3) == CounterExampleValueType.FALSE);
+	//
+	// // check highlighted positions
+	// firstHighlightedPositions = sinceOperator
+	// .getFirstHighlightedPositions();
+	// secondHighlightedPositions = sinceOperator
 	// .getSecondHighlightedPositions();
 	// assertTrue(firstHighlightedPositions.size() == firstArgumentValues
 	// .size());
@@ -2181,55 +1633,54 @@ public final class CounterExampleTriggerUnitTest {
 	// }
 	//
 	// /*
-	// * f-TFFF, g-FTTT, f T g-FFFF
+	// * f-FTTT, g-TFFF, f S g-TTTT
 	// */
 	// @Test
-	// public void testTriggerFalseDefinitionOnReducedPath1() {
+	// public void testSinceTrueDefinitionOnReducedPath() {
 	// // create first argument values
 	// final List<CounterExampleValueType> firstArgumentValues = Arrays
-	// .asList(new CounterExampleValueType[] {
-	// CounterExampleValueType.TRUE,
-	// CounterExampleValueType.FALSE,
-	// CounterExampleValueType.FALSE,
-	// CounterExampleValueType.FALSE });
-	//
-	// // create second argument values
-	// final List<CounterExampleValueType> secondArgumentValues = Arrays
 	// .asList(new CounterExampleValueType[] {
 	// CounterExampleValueType.FALSE,
 	// CounterExampleValueType.TRUE,
 	// CounterExampleValueType.TRUE,
 	// CounterExampleValueType.TRUE });
 	//
+	// // create second argument values
+	// final List<CounterExampleValueType> secondArgumentValues = Arrays
+	// .asList(new CounterExampleValueType[] {
+	// CounterExampleValueType.TRUE,
+	// CounterExampleValueType.FALSE,
+	// CounterExampleValueType.FALSE,
+	// CounterExampleValueType.FALSE });
+	//
 	// // create first argument
 	// final CounterExampleProposition firstArgument = new
 	// CounterExamplePredicate(
-	// PathType.REDUCED, firstArgumentValues);
+	// "", PathType.REDUCED, firstArgumentValues);
 	//
 	// // create second argument
 	// final CounterExampleProposition secondArgument = new
 	// CounterExamplePredicate(
-	// PathType.REDUCED, secondArgumentValues);
+	// "", PathType.REDUCED, secondArgumentValues);
 	//
 	// // create an operator
-	// final CounterExampleBinaryOperator triggerOperator = new
-	// CounterExampleTrigger(
+	// final CounterExampleBinaryOperator sinceOperator = new
+	// CounterExampleSince(
 	// PathType.REDUCED, firstArgument, secondArgument);
 	//
 	// // check result values
-	// final List<CounterExampleValueType> values = triggerOperator
-	// .getValues();
+	// final List<CounterExampleValueType> values = sinceOperator.getValues();
 	// assertTrue(values.size() == firstArgumentValues.size());
 	// assertTrue(values.size() == secondArgumentValues.size());
-	// assertTrue(values.get(0) == CounterExampleValueType.FALSE);
-	// assertTrue(values.get(1) == CounterExampleValueType.FALSE);
-	// assertTrue(values.get(2) == CounterExampleValueType.FALSE);
-	// assertTrue(values.get(3) == CounterExampleValueType.FALSE);
+	// assertTrue(values.get(0) == CounterExampleValueType.TRUE);
+	// assertTrue(values.get(1) == CounterExampleValueType.TRUE);
+	// assertTrue(values.get(2) == CounterExampleValueType.TRUE);
+	// assertTrue(values.get(3) == CounterExampleValueType.TRUE);
 	//
 	// // check highlighted positions
-	// final List<List<Integer>> firstHighlightedPositions = triggerOperator
+	// final List<List<Integer>> firstHighlightedPositions = sinceOperator
 	// .getFirstHighlightedPositions();
-	// final List<List<Integer>> secondHighlightedPositions = triggerOperator
+	// final List<List<Integer>> secondHighlightedPositions = sinceOperator
 	// .getSecondHighlightedPositions();
 	// assertTrue(firstHighlightedPositions.size() == firstArgumentValues
 	// .size());
@@ -2275,55 +1726,54 @@ public final class CounterExampleTriggerUnitTest {
 	// }
 	//
 	// /*
-	// * f-FFFF, g-FTTT, f T g-FFFF
+	// * f-FFTT, g-TFFF, f S g-TFFF
 	// */
 	// @Test
-	// public void testTriggerFalseDefinitionOnReducedPath2() {
+	// public void testSinceFalseDefinitionOnReducedPath1() {
 	// // create first argument values
 	// final List<CounterExampleValueType> firstArgumentValues = Arrays
 	// .asList(new CounterExampleValueType[] {
 	// CounterExampleValueType.FALSE,
 	// CounterExampleValueType.FALSE,
-	// CounterExampleValueType.FALSE,
-	// CounterExampleValueType.FALSE });
+	// CounterExampleValueType.TRUE,
+	// CounterExampleValueType.TRUE });
 	//
 	// // create second argument values
 	// final List<CounterExampleValueType> secondArgumentValues = Arrays
 	// .asList(new CounterExampleValueType[] {
+	// CounterExampleValueType.TRUE,
 	// CounterExampleValueType.FALSE,
-	// CounterExampleValueType.TRUE,
-	// CounterExampleValueType.TRUE,
-	// CounterExampleValueType.TRUE });
+	// CounterExampleValueType.FALSE,
+	// CounterExampleValueType.FALSE });
 	//
 	// // create first argument
 	// final CounterExampleProposition firstArgument = new
 	// CounterExamplePredicate(
-	// PathType.REDUCED, firstArgumentValues);
+	// "", PathType.REDUCED, firstArgumentValues);
 	//
 	// // create second argument
 	// final CounterExampleProposition secondArgument = new
 	// CounterExamplePredicate(
-	// PathType.REDUCED, secondArgumentValues);
+	// "", PathType.REDUCED, secondArgumentValues);
 	//
 	// // create an operator
-	// final CounterExampleBinaryOperator triggerOperator = new
-	// CounterExampleTrigger(
+	// final CounterExampleBinaryOperator sinceOperator = new
+	// CounterExampleSince(
 	// PathType.REDUCED, firstArgument, secondArgument);
 	//
 	// // check result values
-	// final List<CounterExampleValueType> values = triggerOperator
-	// .getValues();
+	// final List<CounterExampleValueType> values = sinceOperator.getValues();
 	// assertTrue(values.size() == firstArgumentValues.size());
 	// assertTrue(values.size() == secondArgumentValues.size());
-	// assertTrue(values.get(0) == CounterExampleValueType.FALSE);
+	// assertTrue(values.get(0) == CounterExampleValueType.TRUE);
 	// assertTrue(values.get(1) == CounterExampleValueType.FALSE);
 	// assertTrue(values.get(2) == CounterExampleValueType.FALSE);
 	// assertTrue(values.get(3) == CounterExampleValueType.FALSE);
 	//
 	// // check highlighted positions
-	// final List<List<Integer>> firstHighlightedPositions = triggerOperator
+	// final List<List<Integer>> firstHighlightedPositions = sinceOperator
 	// .getFirstHighlightedPositions();
-	// final List<List<Integer>> secondHighlightedPositions = triggerOperator
+	// final List<List<Integer>> secondHighlightedPositions = sinceOperator
 	// .getSecondHighlightedPositions();
 	// assertTrue(firstHighlightedPositions.size() == firstArgumentValues
 	// .size());
@@ -2345,120 +1795,23 @@ public final class CounterExampleTriggerUnitTest {
 	// assertTrue(secondHighlightedPositions.get(1).size() == 1);
 	// assertTrue(Arrays.equals(
 	// secondHighlightedPositions.get(1).toArray(new Integer[0]),
-	// new Integer[] { 0 }));
-	//
-	// // State 2
-	// assertTrue(firstHighlightedPositions.get(2).size() == 2);
-	// assertTrue(Arrays.equals(
-	// firstHighlightedPositions.get(2).toArray(new Integer[0]),
-	// new Integer[] { 2, 1 }));
-	// assertTrue(secondHighlightedPositions.get(2).size() == 1);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(2).toArray(new Integer[0]),
-	// new Integer[] { 0 }));
-	//
-	// // State 3
-	// assertTrue(firstHighlightedPositions.get(3).size() == 3);
-	// assertTrue(Arrays.equals(
-	// firstHighlightedPositions.get(3).toArray(new Integer[0]),
-	// new Integer[] { 3, 2, 1 }));
-	// assertTrue(secondHighlightedPositions.get(3).size() == 1);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(3).toArray(new Integer[0]),
-	// new Integer[] { 0 }));
-	// }
-	//
-	// /*
-	// * f-UTUF, g-UUTU, f T g-UTTU
-	// */
-	// @Test
-	// public void testTriggerUnknownDefinitionOnReducedPath1() {
-	// // create first argument values
-	// final List<CounterExampleValueType> firstArgumentValues = Arrays
-	// .asList(new CounterExampleValueType[] {
-	// CounterExampleValueType.UNKNOWN,
-	// CounterExampleValueType.TRUE,
-	// CounterExampleValueType.UNKNOWN,
-	// CounterExampleValueType.FALSE });
-	//
-	// // create second argument values
-	// final List<CounterExampleValueType> secondArgumentValues = Arrays
-	// .asList(new CounterExampleValueType[] {
-	// CounterExampleValueType.UNKNOWN,
-	// CounterExampleValueType.UNKNOWN,
-	// CounterExampleValueType.TRUE,
-	// CounterExampleValueType.UNKNOWN });
-	//
-	// // create first argument
-	// final CounterExampleProposition firstArgument = new
-	// CounterExamplePredicate(
-	// PathType.REDUCED, firstArgumentValues);
-	//
-	// // create second argument
-	// final CounterExampleProposition secondArgument = new
-	// CounterExamplePredicate(
-	// PathType.REDUCED, secondArgumentValues);
-	//
-	// // create an operator
-	// final CounterExampleBinaryOperator triggerOperator = new
-	// CounterExampleTrigger(
-	// PathType.REDUCED, firstArgument, secondArgument);
-	//
-	// // check result values
-	// final List<CounterExampleValueType> values = triggerOperator
-	// .getValues();
-	// assertTrue(values.size() == firstArgumentValues.size());
-	// assertTrue(values.size() == secondArgumentValues.size());
-	// assertTrue(values.get(0) == CounterExampleValueType.UNKNOWN);
-	// assertTrue(values.get(1) == CounterExampleValueType.UNKNOWN);
-	// assertTrue(values.get(2) == CounterExampleValueType.UNKNOWN);
-	// assertTrue(values.get(3) == CounterExampleValueType.UNKNOWN);
-	//
-	// // check highlighted positions
-	// final List<List<Integer>> firstHighlightedPositions = triggerOperator
-	// .getFirstHighlightedPositions();
-	// final List<List<Integer>> secondHighlightedPositions = triggerOperator
-	// .getSecondHighlightedPositions();
-	// assertTrue(firstHighlightedPositions.size() == firstArgumentValues
-	// .size());
-	// assertTrue(secondHighlightedPositions.size() == secondArgumentValues
-	// .size());
-	//
-	// // State 0
-	// assertTrue(firstHighlightedPositions.get(0).size() == 1);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(0).toArray(new Integer[0]),
-	// new Integer[] { 0 }));
-	// assertTrue(secondHighlightedPositions.get(0).size() == 1);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(0).toArray(new Integer[0]),
-	// new Integer[] { 0 }));
-	//
-	// // State 1
-	// assertTrue(firstHighlightedPositions.get(1).size() == 1);
-	// assertTrue(Arrays.equals(
-	// firstHighlightedPositions.get(1).toArray(new Integer[0]),
-	// new Integer[] { 1 }));
-	// assertTrue(secondHighlightedPositions.get(1).size() == 1);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(1).toArray(new Integer[0]),
 	// new Integer[] { 1 }));
 	//
 	// // State 2
-	// assertTrue(firstHighlightedPositions.get(2).size() == 2);
+	// assertTrue(firstHighlightedPositions.get(2).size() == 1);
 	// assertTrue(Arrays.equals(
 	// firstHighlightedPositions.get(2).toArray(new Integer[0]),
-	// new Integer[] { 2, 1 }));
+	// new Integer[] { 1 }));
 	// assertTrue(secondHighlightedPositions.get(2).size() == 2);
 	// assertTrue(Arrays.equals(
 	// secondHighlightedPositions.get(2).toArray(new Integer[0]),
 	// new Integer[] { 2, 1 }));
 	//
 	// // State 3
-	// assertTrue(firstHighlightedPositions.get(3).size() == 3);
+	// assertTrue(firstHighlightedPositions.get(3).size() == 1);
 	// assertTrue(Arrays.equals(
 	// firstHighlightedPositions.get(3).toArray(new Integer[0]),
-	// new Integer[] { 3, 2, 1 }));
+	// new Integer[] { 1 }));
 	// assertTrue(secondHighlightedPositions.get(3).size() == 3);
 	// assertTrue(Arrays.equals(
 	// secondHighlightedPositions.get(3).toArray(new Integer[0]),
@@ -2466,25 +1819,205 @@ public final class CounterExampleTriggerUnitTest {
 	// }
 	//
 	// /*
-	// * f-UUUF, g-UFTU, f T g-UFFU
+	// * f-FTTT, g-FFFF, f S g-FFFF
 	// */
 	// @Test
-	// public void testTriggerUnknownDefinitionOnReducedPath2() {
+	// public void testSinceFalseDefinitionOnReducedPath2() {
+	// // create first argument values
+	// final List<CounterExampleValueType> firstArgumentValues = Arrays
+	// .asList(new CounterExampleValueType[] {
+	// CounterExampleValueType.FALSE,
+	// CounterExampleValueType.TRUE,
+	// CounterExampleValueType.TRUE,
+	// CounterExampleValueType.TRUE });
+	//
+	// // create second argument values
+	// final List<CounterExampleValueType> secondArgumentValues = Arrays
+	// .asList(new CounterExampleValueType[] {
+	// CounterExampleValueType.FALSE,
+	// CounterExampleValueType.FALSE,
+	// CounterExampleValueType.FALSE,
+	// CounterExampleValueType.FALSE });
+	//
+	// // create first argument
+	// final CounterExampleProposition firstArgument = new
+	// CounterExamplePredicate(
+	// "", PathType.REDUCED, firstArgumentValues);
+	//
+	// // create second argument
+	// final CounterExampleProposition secondArgument = new
+	// CounterExamplePredicate(
+	// "", PathType.REDUCED, secondArgumentValues);
+	//
+	// // create an operator
+	// final CounterExampleBinaryOperator sinceOperator = new
+	// CounterExampleSince(
+	// PathType.REDUCED, firstArgument, secondArgument);
+	//
+	// // check result values
+	// final List<CounterExampleValueType> values = sinceOperator.getValues();
+	// assertTrue(values.size() == firstArgumentValues.size());
+	// assertTrue(values.size() == secondArgumentValues.size());
+	// assertTrue(values.get(0) == CounterExampleValueType.FALSE);
+	// assertTrue(values.get(1) == CounterExampleValueType.FALSE);
+	// assertTrue(values.get(2) == CounterExampleValueType.FALSE);
+	// assertTrue(values.get(3) == CounterExampleValueType.FALSE);
+	//
+	// // check highlighted positions
+	// final List<List<Integer>> firstHighlightedPositions = sinceOperator
+	// .getFirstHighlightedPositions();
+	// final List<List<Integer>> secondHighlightedPositions = sinceOperator
+	// .getSecondHighlightedPositions();
+	// assertTrue(firstHighlightedPositions.size() == firstArgumentValues
+	// .size());
+	// assertTrue(secondHighlightedPositions.size() == secondArgumentValues
+	// .size());
+	//
+	// // State 0
+	// assertTrue(firstHighlightedPositions.get(0).size() == 1);
+	// assertTrue(Arrays.equals(
+	// firstHighlightedPositions.get(0).toArray(new Integer[0]),
+	// new Integer[] { 0 }));
+	// assertTrue(secondHighlightedPositions.get(0).size() == 1);
+	// assertTrue(Arrays.equals(
+	// secondHighlightedPositions.get(0).toArray(new Integer[0]),
+	// new Integer[] { 0 }));
+	//
+	// // State 1
+	// assertTrue(firstHighlightedPositions.get(1).size() == 1);
+	// assertTrue(Arrays.equals(
+	// firstHighlightedPositions.get(1).toArray(new Integer[0]),
+	// new Integer[] { 0 }));
+	// assertTrue(secondHighlightedPositions.get(1).size() == 2);
+	// assertTrue(Arrays.equals(
+	// secondHighlightedPositions.get(1).toArray(new Integer[0]),
+	// new Integer[] { 1, 0 }));
+	//
+	// // State 2
+	// assertTrue(firstHighlightedPositions.get(2).size() == 1);
+	// assertTrue(Arrays.equals(
+	// firstHighlightedPositions.get(2).toArray(new Integer[0]),
+	// new Integer[] { 0 }));
+	// assertTrue(secondHighlightedPositions.get(2).size() == 3);
+	// assertTrue(Arrays.equals(
+	// secondHighlightedPositions.get(2).toArray(new Integer[0]),
+	// new Integer[] { 2, 1, 0 }));
+	//
+	// // State 3
+	// assertTrue(firstHighlightedPositions.get(3).size() == 1);
+	// assertTrue(Arrays.equals(
+	// firstHighlightedPositions.get(3).toArray(new Integer[0]),
+	// new Integer[] { 0 }));
+	// assertTrue(secondHighlightedPositions.get(3).size() == 4);
+	// assertTrue(Arrays.equals(
+	// secondHighlightedPositions.get(3).toArray(new Integer[0]),
+	// new Integer[] { 3, 2, 1, 0 }));
+	// }
+	//
+	// /*
+	// * f-TTTT, g-FFFF, f S g-FFFF
+	// */
+	// @Test
+	// public void testSinceFalseDefinitionOnReducedPath3() {
+	// // create first argument values
+	// final List<CounterExampleValueType> firstArgumentValues = Arrays
+	// .asList(new CounterExampleValueType[] {
+	// CounterExampleValueType.TRUE,
+	// CounterExampleValueType.TRUE,
+	// CounterExampleValueType.TRUE,
+	// CounterExampleValueType.TRUE });
+	//
+	// // create second argument values
+	// final List<CounterExampleValueType> secondArgumentValues = Arrays
+	// .asList(new CounterExampleValueType[] {
+	// CounterExampleValueType.FALSE,
+	// CounterExampleValueType.FALSE,
+	// CounterExampleValueType.FALSE,
+	// CounterExampleValueType.FALSE });
+	//
+	// // create first argument
+	// final CounterExampleProposition firstArgument = new
+	// CounterExamplePredicate(
+	// "", PathType.REDUCED, firstArgumentValues);
+	//
+	// // create second argument
+	// final CounterExampleProposition secondArgument = new
+	// CounterExamplePredicate(
+	// "", PathType.REDUCED, secondArgumentValues);
+	//
+	// // create an operator
+	// final CounterExampleBinaryOperator sinceOperator = new
+	// CounterExampleSince(
+	// PathType.REDUCED, firstArgument, secondArgument);
+	//
+	// // check result values
+	// final List<CounterExampleValueType> values = sinceOperator.getValues();
+	// assertTrue(values.size() == firstArgumentValues.size());
+	// assertTrue(values.size() == secondArgumentValues.size());
+	// assertTrue(values.get(0) == CounterExampleValueType.FALSE);
+	// assertTrue(values.get(1) == CounterExampleValueType.FALSE);
+	// assertTrue(values.get(2) == CounterExampleValueType.FALSE);
+	// assertTrue(values.get(3) == CounterExampleValueType.FALSE);
+	//
+	// // check highlighted positions
+	// final List<List<Integer>> firstHighlightedPositions = sinceOperator
+	// .getFirstHighlightedPositions();
+	// final List<List<Integer>> secondHighlightedPositions = sinceOperator
+	// .getSecondHighlightedPositions();
+	// assertTrue(firstHighlightedPositions.size() == firstArgumentValues
+	// .size());
+	// assertTrue(secondHighlightedPositions.size() == secondArgumentValues
+	// .size());
+	//
+	// // State 0
+	// assertTrue(firstHighlightedPositions.get(0).size() == 0);
+	// assertTrue(secondHighlightedPositions.get(0).size() == 1);
+	// assertTrue(Arrays.equals(
+	// secondHighlightedPositions.get(0).toArray(new Integer[0]),
+	// new Integer[] { 0 }));
+	//
+	// // State 1
+	// assertTrue(firstHighlightedPositions.get(1).size() == 0);
+	// assertTrue(secondHighlightedPositions.get(1).size() == 2);
+	// assertTrue(Arrays.equals(
+	// secondHighlightedPositions.get(1).toArray(new Integer[0]),
+	// new Integer[] { 1, 0 }));
+	//
+	// // State 2
+	// assertTrue(firstHighlightedPositions.get(2).size() == 0);
+	// assertTrue(secondHighlightedPositions.get(2).size() == 3);
+	// assertTrue(Arrays.equals(
+	// secondHighlightedPositions.get(2).toArray(new Integer[0]),
+	// new Integer[] { 2, 1, 0 }));
+	//
+	// // State 3
+	// assertTrue(firstHighlightedPositions.get(3).size() == 0);
+	// assertTrue(secondHighlightedPositions.get(3).size() == 4);
+	// assertTrue(Arrays.equals(
+	// secondHighlightedPositions.get(3).toArray(new Integer[0]),
+	// new Integer[] { 3, 2, 1, 0 }));
+	// }
+	//
+	// /*
+	// * f-UUTU, g-UTUF, f S g-UTTU
+	// */
+	// @Test
+	// public void testSinceUnknownDefinitionOnReducedPath1() {
 	// // create first argument values
 	// final List<CounterExampleValueType> firstArgumentValues = Arrays
 	// .asList(new CounterExampleValueType[] {
 	// CounterExampleValueType.UNKNOWN,
 	// CounterExampleValueType.UNKNOWN,
-	// CounterExampleValueType.UNKNOWN,
-	// CounterExampleValueType.FALSE });
+	// CounterExampleValueType.TRUE,
+	// CounterExampleValueType.UNKNOWN });
 	//
 	// // create second argument values
 	// final List<CounterExampleValueType> secondArgumentValues = Arrays
 	// .asList(new CounterExampleValueType[] {
 	// CounterExampleValueType.UNKNOWN,
-	// CounterExampleValueType.FALSE,
 	// CounterExampleValueType.TRUE,
-	// CounterExampleValueType.UNKNOWN });
+	// CounterExampleValueType.UNKNOWN,
+	// CounterExampleValueType.FALSE });
 	//
 	// // create first argument
 	// final CounterExampleProposition firstArgument = new
@@ -2497,24 +2030,23 @@ public final class CounterExampleTriggerUnitTest {
 	// PathType.REDUCED, secondArgumentValues);
 	//
 	// // create an operator
-	// final CounterExampleBinaryOperator triggerOperator = new
-	// CounterExampleTrigger(
+	// final CounterExampleBinaryOperator sinceOperator = new
+	// CounterExampleSince(
 	// PathType.REDUCED, firstArgument, secondArgument);
 	//
 	// // check result values
-	// final List<CounterExampleValueType> values = triggerOperator
-	// .getValues();
+	// final List<CounterExampleValueType> values = sinceOperator.getValues();
 	// assertTrue(values.size() == firstArgumentValues.size());
 	// assertTrue(values.size() == secondArgumentValues.size());
 	// assertTrue(values.get(0) == CounterExampleValueType.UNKNOWN);
-	// assertTrue(values.get(1) == CounterExampleValueType.FALSE);
-	// assertTrue(values.get(2) == CounterExampleValueType.UNKNOWN);
+	// assertTrue(values.get(1) == CounterExampleValueType.TRUE);
+	// assertTrue(values.get(2) == CounterExampleValueType.TRUE);
 	// assertTrue(values.get(3) == CounterExampleValueType.UNKNOWN);
 	//
 	// // check highlighted positions
-	// final List<List<Integer>> firstHighlightedPositions = triggerOperator
+	// final List<List<Integer>> firstHighlightedPositions = sinceOperator
 	// .getFirstHighlightedPositions();
-	// final List<List<Integer>> secondHighlightedPositions = triggerOperator
+	// final List<List<Integer>> secondHighlightedPositions = sinceOperator
 	// .getSecondHighlightedPositions();
 	// assertTrue(firstHighlightedPositions.size() == firstArgumentValues
 	// .size());
@@ -2524,7 +2056,7 @@ public final class CounterExampleTriggerUnitTest {
 	// // State 0
 	// assertTrue(firstHighlightedPositions.get(0).size() == 1);
 	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(0).toArray(new Integer[0]),
+	// firstHighlightedPositions.get(0).toArray(new Integer[0]),
 	// new Integer[] { 0 }));
 	// assertTrue(secondHighlightedPositions.get(0).size() == 1);
 	// assertTrue(Arrays.equals(
@@ -2543,10 +2075,10 @@ public final class CounterExampleTriggerUnitTest {
 	// assertTrue(Arrays.equals(
 	// firstHighlightedPositions.get(2).toArray(new Integer[0]),
 	// new Integer[] { 2 }));
-	// assertTrue(secondHighlightedPositions.get(2).size() == 2);
+	// assertTrue(secondHighlightedPositions.get(2).size() == 1);
 	// assertTrue(Arrays.equals(
 	// secondHighlightedPositions.get(2).toArray(new Integer[0]),
-	// new Integer[] { 2, 1 }));
+	// new Integer[] { 1 }));
 	//
 	// // State 3
 	// assertTrue(firstHighlightedPositions.get(3).size() == 2);
@@ -2560,25 +2092,25 @@ public final class CounterExampleTriggerUnitTest {
 	// }
 	//
 	// /*
-	// * f-UUUF, g-UUTU, f T g-UUUU
+	// * f-UFUU, g-UUFF, f S g-UUUU
 	// */
 	// @Test
-	// public void testTriggerUnknownDefinitionOnReducedPath3() {
+	// public void testSinceUnknownDefinitionOnReducedPath2() {
 	// // create first argument values
 	// final List<CounterExampleValueType> firstArgumentValues = Arrays
 	// .asList(new CounterExampleValueType[] {
 	// CounterExampleValueType.UNKNOWN,
+	// CounterExampleValueType.FALSE,
 	// CounterExampleValueType.UNKNOWN,
-	// CounterExampleValueType.UNKNOWN,
-	// CounterExampleValueType.FALSE });
+	// CounterExampleValueType.UNKNOWN });
 	//
 	// // create second argument values
 	// final List<CounterExampleValueType> secondArgumentValues = Arrays
 	// .asList(new CounterExampleValueType[] {
 	// CounterExampleValueType.UNKNOWN,
 	// CounterExampleValueType.UNKNOWN,
-	// CounterExampleValueType.TRUE,
-	// CounterExampleValueType.UNKNOWN });
+	// CounterExampleValueType.FALSE,
+	// CounterExampleValueType.FALSE });
 	//
 	// // create first argument
 	// final CounterExampleProposition firstArgument = new
@@ -2591,13 +2123,12 @@ public final class CounterExampleTriggerUnitTest {
 	// PathType.REDUCED, secondArgumentValues);
 	//
 	// // create an operator
-	// final CounterExampleBinaryOperator triggerOperator = new
-	// CounterExampleTrigger(
+	// final CounterExampleBinaryOperator sinceOperator = new
+	// CounterExampleSince(
 	// PathType.REDUCED, firstArgument, secondArgument);
 	//
 	// // check result values
-	// final List<CounterExampleValueType> values = triggerOperator
-	// .getValues();
+	// final List<CounterExampleValueType> values = sinceOperator.getValues();
 	// assertTrue(values.size() == firstArgumentValues.size());
 	// assertTrue(values.size() == secondArgumentValues.size());
 	// assertTrue(values.get(0) == CounterExampleValueType.UNKNOWN);
@@ -2606,9 +2137,9 @@ public final class CounterExampleTriggerUnitTest {
 	// assertTrue(values.get(3) == CounterExampleValueType.UNKNOWN);
 	//
 	// // check highlighted positions
-	// final List<List<Integer>> firstHighlightedPositions = triggerOperator
+	// final List<List<Integer>> firstHighlightedPositions = sinceOperator
 	// .getFirstHighlightedPositions();
-	// final List<List<Integer>> secondHighlightedPositions = triggerOperator
+	// final List<List<Integer>> secondHighlightedPositions = sinceOperator
 	// .getSecondHighlightedPositions();
 	// assertTrue(firstHighlightedPositions.size() == firstArgumentValues
 	// .size());
@@ -2618,7 +2149,7 @@ public final class CounterExampleTriggerUnitTest {
 	// // State 0
 	// assertTrue(firstHighlightedPositions.get(0).size() == 1);
 	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(0).toArray(new Integer[0]),
+	// firstHighlightedPositions.get(0).toArray(new Integer[0]),
 	// new Integer[] { 0 }));
 	// assertTrue(secondHighlightedPositions.get(0).size() == 1);
 	// assertTrue(Arrays.equals(
@@ -2657,25 +2188,25 @@ public final class CounterExampleTriggerUnitTest {
 	// }
 	//
 	// /*
-	// * f-FFFF, g-TTTT, f T g-TTTT
+	// * f-UUTU, g-UUUF, f S g-UUUU
 	// */
 	// @Test
-	// public void testTriggerUnknownDefinitionOnReducedPath4() {
+	// public void testSinceUnknownDefinitionOnReducedPath3() {
 	// // create first argument values
 	// final List<CounterExampleValueType> firstArgumentValues = Arrays
 	// .asList(new CounterExampleValueType[] {
-	// CounterExampleValueType.FALSE,
-	// CounterExampleValueType.FALSE,
-	// CounterExampleValueType.FALSE,
-	// CounterExampleValueType.FALSE });
+	// CounterExampleValueType.UNKNOWN,
+	// CounterExampleValueType.UNKNOWN,
+	// CounterExampleValueType.TRUE,
+	// CounterExampleValueType.UNKNOWN });
 	//
 	// // create second argument values
 	// final List<CounterExampleValueType> secondArgumentValues = Arrays
 	// .asList(new CounterExampleValueType[] {
-	// CounterExampleValueType.TRUE,
-	// CounterExampleValueType.TRUE,
-	// CounterExampleValueType.TRUE,
-	// CounterExampleValueType.TRUE });
+	// CounterExampleValueType.UNKNOWN,
+	// CounterExampleValueType.UNKNOWN,
+	// CounterExampleValueType.UNKNOWN,
+	// CounterExampleValueType.FALSE });
 	//
 	// // create first argument
 	// final CounterExampleProposition firstArgument = new
@@ -2688,24 +2219,119 @@ public final class CounterExampleTriggerUnitTest {
 	// PathType.REDUCED, secondArgumentValues);
 	//
 	// // create an operator
-	// final CounterExampleBinaryOperator triggerOperator = new
-	// CounterExampleTrigger(
+	// final CounterExampleBinaryOperator sinceOperator = new
+	// CounterExampleSince(
 	// PathType.REDUCED, firstArgument, secondArgument);
 	//
 	// // check result values
-	// final List<CounterExampleValueType> values = triggerOperator
-	// .getValues();
+	// final List<CounterExampleValueType> values = sinceOperator.getValues();
 	// assertTrue(values.size() == firstArgumentValues.size());
 	// assertTrue(values.size() == secondArgumentValues.size());
-	// assertTrue(values.get(0) == CounterExampleValueType.TRUE);
-	// assertTrue(values.get(1) == CounterExampleValueType.TRUE);
-	// assertTrue(values.get(2) == CounterExampleValueType.TRUE);
-	// assertTrue(values.get(3) == CounterExampleValueType.TRUE);
+	// assertTrue(values.get(0) == CounterExampleValueType.UNKNOWN);
+	// assertTrue(values.get(1) == CounterExampleValueType.UNKNOWN);
+	// assertTrue(values.get(2) == CounterExampleValueType.UNKNOWN);
+	// assertTrue(values.get(3) == CounterExampleValueType.UNKNOWN);
 	//
 	// // check highlighted positions
-	// final List<List<Integer>> firstHighlightedPositions = triggerOperator
+	// final List<List<Integer>> firstHighlightedPositions = sinceOperator
 	// .getFirstHighlightedPositions();
-	// final List<List<Integer>> secondHighlightedPositions = triggerOperator
+	// final List<List<Integer>> secondHighlightedPositions = sinceOperator
+	// .getSecondHighlightedPositions();
+	// assertTrue(firstHighlightedPositions.size() == firstArgumentValues
+	// .size());
+	// assertTrue(secondHighlightedPositions.size() == secondArgumentValues
+	// .size());
+	//
+	// // State 0
+	// assertTrue(firstHighlightedPositions.get(0).size() == 1);
+	// assertTrue(Arrays.equals(
+	// firstHighlightedPositions.get(0).toArray(new Integer[0]),
+	// new Integer[] { 0 }));
+	// assertTrue(secondHighlightedPositions.get(0).size() == 1);
+	// assertTrue(Arrays.equals(
+	// secondHighlightedPositions.get(0).toArray(new Integer[0]),
+	// new Integer[] { 0 }));
+	//
+	// // State 1
+	// assertTrue(firstHighlightedPositions.get(1).size() == 1);
+	// assertTrue(Arrays.equals(
+	// firstHighlightedPositions.get(1).toArray(new Integer[0]),
+	// new Integer[] { 1 }));
+	// assertTrue(secondHighlightedPositions.get(1).size() == 1);
+	// assertTrue(Arrays.equals(
+	// secondHighlightedPositions.get(1).toArray(new Integer[0]),
+	// new Integer[] { 1 }));
+	//
+	// // State 2
+	// assertTrue(firstHighlightedPositions.get(2).size() == 2);
+	// assertTrue(Arrays.equals(
+	// firstHighlightedPositions.get(2).toArray(new Integer[0]),
+	// new Integer[] { 2, 1 }));
+	// assertTrue(secondHighlightedPositions.get(2).size() == 2);
+	// assertTrue(Arrays.equals(
+	// secondHighlightedPositions.get(2).toArray(new Integer[0]),
+	// new Integer[] { 2, 1 }));
+	//
+	// // State 3
+	// assertTrue(firstHighlightedPositions.get(3).size() == 3);
+	// assertTrue(Arrays.equals(
+	// firstHighlightedPositions.get(3).toArray(new Integer[0]),
+	// new Integer[] { 3, 2, 1 }));
+	// assertTrue(secondHighlightedPositions.get(3).size() == 3);
+	// assertTrue(Arrays.equals(
+	// secondHighlightedPositions.get(3).toArray(new Integer[0]),
+	// new Integer[] { 3, 2, 1 }));
+	// }
+	//
+	// /*
+	// * f-TTTT, g-FFFF, f S g-FFFF
+	// */
+	// @Test
+	// public void testSinceUnknownDefinitionOnReducedPath4() {
+	// // create first argument values
+	// final List<CounterExampleValueType> firstArgumentValues = Arrays
+	// .asList(new CounterExampleValueType[] {
+	// CounterExampleValueType.TRUE,
+	// CounterExampleValueType.TRUE,
+	// CounterExampleValueType.TRUE,
+	// CounterExampleValueType.TRUE });
+	//
+	// // create second argument values
+	// final List<CounterExampleValueType> secondArgumentValues = Arrays
+	// .asList(new CounterExampleValueType[] {
+	// CounterExampleValueType.FALSE,
+	// CounterExampleValueType.FALSE,
+	// CounterExampleValueType.FALSE,
+	// CounterExampleValueType.FALSE });
+	//
+	// // create first argument
+	// final CounterExampleProposition firstArgument = new
+	// CounterExamplePredicate(
+	// PathType.REDUCED, firstArgumentValues);
+	//
+	// // create second argument
+	// final CounterExampleProposition secondArgument = new
+	// CounterExamplePredicate(
+	// PathType.REDUCED, secondArgumentValues);
+	//
+	// // create an operator
+	// final CounterExampleBinaryOperator sinceOperator = new
+	// CounterExampleSince(
+	// PathType.REDUCED, firstArgument, secondArgument);
+	//
+	// // check result values
+	// final List<CounterExampleValueType> values = sinceOperator.getValues();
+	// assertTrue(values.size() == firstArgumentValues.size());
+	// assertTrue(values.size() == secondArgumentValues.size());
+	// assertTrue(values.get(0) == CounterExampleValueType.FALSE);
+	// assertTrue(values.get(1) == CounterExampleValueType.FALSE);
+	// assertTrue(values.get(2) == CounterExampleValueType.FALSE);
+	// assertTrue(values.get(3) == CounterExampleValueType.FALSE);
+	//
+	// // check highlighted positions
+	// final List<List<Integer>> firstHighlightedPositions = sinceOperator
+	// .getFirstHighlightedPositions();
+	// final List<List<Integer>> secondHighlightedPositions = sinceOperator
 	// .getSecondHighlightedPositions();
 	// assertTrue(firstHighlightedPositions.size() == firstArgumentValues
 	// .size());
@@ -2742,17 +2368,17 @@ public final class CounterExampleTriggerUnitTest {
 	// }
 	//
 	// /*
-	// * f-FFFF, g-UUUU, f T g-UUUU
+	// * f-TTTT, g-UUUU, f S g-UUUU
 	// */
 	// @Test
-	// public void testTriggerUnknownDefinitionOnReducedPath5() {
+	// public void testSinceUnknownDefinitionOnReducedPath5() {
 	// // create first argument values
 	// final List<CounterExampleValueType> firstArgumentValues = Arrays
 	// .asList(new CounterExampleValueType[] {
-	// CounterExampleValueType.FALSE,
-	// CounterExampleValueType.FALSE,
-	// CounterExampleValueType.FALSE,
-	// CounterExampleValueType.FALSE });
+	// CounterExampleValueType.TRUE,
+	// CounterExampleValueType.TRUE,
+	// CounterExampleValueType.TRUE,
+	// CounterExampleValueType.TRUE });
 	//
 	// // create second argument values
 	// final List<CounterExampleValueType> secondArgumentValues = Arrays
@@ -2773,13 +2399,12 @@ public final class CounterExampleTriggerUnitTest {
 	// PathType.REDUCED, secondArgumentValues);
 	//
 	// // create an operator
-	// final CounterExampleBinaryOperator triggerOperator = new
-	// CounterExampleTrigger(
+	// final CounterExampleBinaryOperator sinceOperator = new
+	// CounterExampleSince(
 	// PathType.REDUCED, firstArgument, secondArgument);
 	//
 	// // check result values
-	// final List<CounterExampleValueType> values = triggerOperator
-	// .getValues();
+	// final List<CounterExampleValueType> values = sinceOperator.getValues();
 	// assertTrue(values.size() == firstArgumentValues.size());
 	// assertTrue(values.size() == secondArgumentValues.size());
 	// assertTrue(values.get(0) == CounterExampleValueType.UNKNOWN);
@@ -2788,9 +2413,9 @@ public final class CounterExampleTriggerUnitTest {
 	// assertTrue(values.get(3) == CounterExampleValueType.UNKNOWN);
 	//
 	// // check highlighted positions
-	// final List<List<Integer>> firstHighlightedPositions = triggerOperator
+	// final List<List<Integer>> firstHighlightedPositions = sinceOperator
 	// .getFirstHighlightedPositions();
-	// final List<List<Integer>> secondHighlightedPositions = triggerOperator
+	// final List<List<Integer>> secondHighlightedPositions = sinceOperator
 	// .getSecondHighlightedPositions();
 	// assertTrue(firstHighlightedPositions.size() == firstArgumentValues
 	// .size());
@@ -2800,7 +2425,7 @@ public final class CounterExampleTriggerUnitTest {
 	// // State 0
 	// assertTrue(firstHighlightedPositions.get(0).size() == 1);
 	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(0).toArray(new Integer[0]),
+	// firstHighlightedPositions.get(0).toArray(new Integer[0]),
 	// new Integer[] { 0 }));
 	// assertTrue(secondHighlightedPositions.get(0).size() == 1);
 	// assertTrue(Arrays.equals(
@@ -2838,16 +2463,566 @@ public final class CounterExampleTriggerUnitTest {
 	// new Integer[] { 3, 2, 1, 0 }));
 	// }
 	//
-	// /*
-	// * f-UUUU, g-UUUU, f T g-UUUU
-	// */
+	// // f-TUTU, g-UFUF, f S g-UUUU
 	// @Test
-	// public void testTriggerUnknownDefinitionOnReducedPath6() {
+	// public void testSinceUnknownDefinitionOnReducedPath6() {
+	// // create first argument values
+	// final List<CounterExampleValueType> firstArgumentValues = Arrays
+	// .asList(new CounterExampleValueType[] {
+	// CounterExampleValueType.TRUE,
+	// CounterExampleValueType.UNKNOWN,
+	// CounterExampleValueType.TRUE,
+	// CounterExampleValueType.UNKNOWN });
+	//
+	// // create second argument values
+	// final List<CounterExampleValueType> secondArgumentValues = Arrays
+	// .asList(new CounterExampleValueType[] {
+	// CounterExampleValueType.UNKNOWN,
+	// CounterExampleValueType.FALSE,
+	// CounterExampleValueType.UNKNOWN,
+	// CounterExampleValueType.FALSE });
+	//
+	// // create first argument
+	// final CounterExampleProposition firstArgument = new
+	// CounterExamplePredicate(
+	// PathType.REDUCED, firstArgumentValues);
+	//
+	// // create second argument
+	// final CounterExampleProposition secondArgument = new
+	// CounterExamplePredicate(
+	// PathType.REDUCED, secondArgumentValues);
+	//
+	// // create an operator
+	// final CounterExampleBinaryOperator sinceOperator = new
+	// CounterExampleSince(
+	// PathType.REDUCED, firstArgument, secondArgument);
+	//
+	// // check result values
+	// final List<CounterExampleValueType> values = sinceOperator.getValues();
+	// assertTrue(values.size() == firstArgumentValues.size());
+	// assertTrue(values.size() == secondArgumentValues.size());
+	// assertTrue(values.get(0) == CounterExampleValueType.UNKNOWN);
+	// assertTrue(values.get(1) == CounterExampleValueType.UNKNOWN);
+	// assertTrue(values.get(2) == CounterExampleValueType.UNKNOWN);
+	// assertTrue(values.get(3) == CounterExampleValueType.UNKNOWN);
+	//
+	// // check highlighted positions
+	// final List<List<Integer>> firstHighlightedPositions = sinceOperator
+	// .getFirstHighlightedPositions();
+	// final List<List<Integer>> secondHighlightedPositions = sinceOperator
+	// .getSecondHighlightedPositions();
+	// assertTrue(firstHighlightedPositions.size() == firstArgumentValues
+	// .size());
+	// assertTrue(secondHighlightedPositions.size() == secondArgumentValues
+	// .size());
+	//
+	// // State 0
+	// assertTrue(firstHighlightedPositions.get(0).size() == 1);
+	// assertTrue(Arrays.equals(
+	// firstHighlightedPositions.get(0).toArray(new Integer[0]),
+	// new Integer[] { 0 }));
+	// assertTrue(secondHighlightedPositions.get(0).size() == 1);
+	// assertTrue(Arrays.equals(
+	// secondHighlightedPositions.get(0).toArray(new Integer[0]),
+	// new Integer[] { 0 }));
+	//
+	// // State 1
+	// assertTrue(firstHighlightedPositions.get(1).size() == 2);
+	// assertTrue(Arrays.equals(
+	// firstHighlightedPositions.get(1).toArray(new Integer[0]),
+	// new Integer[] { 1, 0 }));
+	// assertTrue(secondHighlightedPositions.get(1).size() == 2);
+	// assertTrue(Arrays.equals(
+	// secondHighlightedPositions.get(1).toArray(new Integer[0]),
+	// new Integer[] { 1, 0 }));
+	//
+	// // State 2
+	// assertTrue(firstHighlightedPositions.get(2).size() == 3);
+	// assertTrue(Arrays.equals(
+	// firstHighlightedPositions.get(2).toArray(new Integer[0]),
+	// new Integer[] { 2, 1, 0 }));
+	// assertTrue(secondHighlightedPositions.get(2).size() == 3);
+	// assertTrue(Arrays.equals(
+	// secondHighlightedPositions.get(2).toArray(new Integer[0]),
+	// new Integer[] { 2, 1, 0 }));
+	//
+	// // State 3
+	// assertTrue(firstHighlightedPositions.get(3).size() == 4);
+	// assertTrue(Arrays.equals(
+	// firstHighlightedPositions.get(3).toArray(new Integer[0]),
+	// new Integer[] { 3, 2, 1, 0 }));
+	// assertTrue(secondHighlightedPositions.get(3).size() == 4);
+	// assertTrue(Arrays.equals(
+	// secondHighlightedPositions.get(3).toArray(new Integer[0]),
+	// new Integer[] { 3, 2, 1, 0 }));
+	// }
+	//
+	// // f-UFTU, g-FFTF, f S g-UFTU
+	// @Test
+	// public void testSinceUnknownDefinitionOnReducedPath7() {
+	// // create first argument values
+	// final List<CounterExampleValueType> firstArgumentValues = Arrays
+	// .asList(new CounterExampleValueType[] {
+	// CounterExampleValueType.UNKNOWN,
+	// CounterExampleValueType.FALSE,
+	// CounterExampleValueType.TRUE,
+	// CounterExampleValueType.UNKNOWN });
+	//
+	// // create second argument values
+	// final List<CounterExampleValueType> secondArgumentValues = Arrays
+	// .asList(new CounterExampleValueType[] {
+	// CounterExampleValueType.FALSE,
+	// CounterExampleValueType.FALSE,
+	// CounterExampleValueType.TRUE,
+	// CounterExampleValueType.FALSE });
+	//
+	// // create first argument
+	// final CounterExampleProposition firstArgument = new
+	// CounterExamplePredicate(
+	// PathType.REDUCED, firstArgumentValues);
+	//
+	// // create second argument
+	// final CounterExampleProposition secondArgument = new
+	// CounterExamplePredicate(
+	// PathType.REDUCED, secondArgumentValues);
+	//
+	// // create an operator
+	// final CounterExampleBinaryOperator sinceOperator = new
+	// CounterExampleSince(
+	// PathType.REDUCED, firstArgument, secondArgument);
+	//
+	// // check result values
+	// final List<CounterExampleValueType> values = sinceOperator.getValues();
+	// assertTrue(values.size() == firstArgumentValues.size());
+	// assertTrue(values.size() == secondArgumentValues.size());
+	// assertTrue(values.get(0) == CounterExampleValueType.UNKNOWN);
+	// assertTrue(values.get(1) == CounterExampleValueType.FALSE);
+	// assertTrue(values.get(2) == CounterExampleValueType.TRUE);
+	// assertTrue(values.get(3) == CounterExampleValueType.UNKNOWN);
+	//
+	// // check highlighted positions
+	// final List<List<Integer>> firstHighlightedPositions = sinceOperator
+	// .getFirstHighlightedPositions();
+	// final List<List<Integer>> secondHighlightedPositions = sinceOperator
+	// .getSecondHighlightedPositions();
+	// assertTrue(firstHighlightedPositions.size() == firstArgumentValues
+	// .size());
+	// assertTrue(secondHighlightedPositions.size() == secondArgumentValues
+	// .size());
+	//
+	// // State 0
+	// assertTrue(firstHighlightedPositions.get(0).size() == 1);
+	// assertTrue(Arrays.equals(
+	// firstHighlightedPositions.get(0).toArray(new Integer[0]),
+	// new Integer[] { 0 }));
+	// assertTrue(secondHighlightedPositions.get(0).size() == 1);
+	// assertTrue(Arrays.equals(
+	// secondHighlightedPositions.get(0).toArray(new Integer[0]),
+	// new Integer[] { 0 }));
+	//
+	// // State 1
+	// assertTrue(firstHighlightedPositions.get(1).size() == 1);
+	// assertTrue(Arrays.equals(
+	// firstHighlightedPositions.get(1).toArray(new Integer[0]),
+	// new Integer[] { 1 }));
+	// assertTrue(secondHighlightedPositions.get(1).size() == 1);
+	// assertTrue(Arrays.equals(
+	// secondHighlightedPositions.get(1).toArray(new Integer[0]),
+	// new Integer[] { 1 }));
+	//
+	// // State 2
+	// assertTrue(firstHighlightedPositions.get(2).size() == 0);
+	// assertTrue(secondHighlightedPositions.get(2).size() == 1);
+	// assertTrue(Arrays.equals(
+	// secondHighlightedPositions.get(2).toArray(new Integer[0]),
+	// new Integer[] { 2 }));
+	//
+	// // State 3
+	// assertTrue(firstHighlightedPositions.get(3).size() == 1);
+	// assertTrue(Arrays.equals(
+	// firstHighlightedPositions.get(3).toArray(new Integer[0]),
+	// new Integer[] { 3 }));
+	// assertTrue(secondHighlightedPositions.get(3).size() == 2);
+	// assertTrue(Arrays.equals(
+	// secondHighlightedPositions.get(3).toArray(new Integer[0]),
+	// new Integer[] { 3, 2 }));
+	// }
+	//
+	// // f-UUUU, g-TUUU, f S g-TUUU
+	// @Test
+	// public void testSinceUnknownDefinitionOnReducedPath8() {
 	// // create first argument values
 	// final List<CounterExampleValueType> firstArgumentValues = Arrays
 	// .asList(new CounterExampleValueType[] {
 	// CounterExampleValueType.UNKNOWN,
 	// CounterExampleValueType.UNKNOWN,
+	// CounterExampleValueType.UNKNOWN,
+	// CounterExampleValueType.UNKNOWN });
+	//
+	// // create second argument values
+	// final List<CounterExampleValueType> secondArgumentValues = Arrays
+	// .asList(new CounterExampleValueType[] {
+	// CounterExampleValueType.TRUE,
+	// CounterExampleValueType.UNKNOWN,
+	// CounterExampleValueType.UNKNOWN,
+	// CounterExampleValueType.UNKNOWN });
+	//
+	// // create first argument
+	// final CounterExampleProposition firstArgument = new
+	// CounterExamplePredicate(
+	// PathType.REDUCED, firstArgumentValues);
+	//
+	// // create second argument
+	// final CounterExampleProposition secondArgument = new
+	// CounterExamplePredicate(
+	// PathType.REDUCED, secondArgumentValues);
+	//
+	// // create an operator
+	// final CounterExampleBinaryOperator sinceOperator = new
+	// CounterExampleSince(
+	// PathType.REDUCED, firstArgument, secondArgument);
+	//
+	// // check result values
+	// final List<CounterExampleValueType> values = sinceOperator.getValues();
+	// assertTrue(values.size() == firstArgumentValues.size());
+	// assertTrue(values.size() == secondArgumentValues.size());
+	// assertTrue(values.get(0) == CounterExampleValueType.TRUE);
+	// assertTrue(values.get(1) == CounterExampleValueType.UNKNOWN);
+	// assertTrue(values.get(2) == CounterExampleValueType.UNKNOWN);
+	// assertTrue(values.get(3) == CounterExampleValueType.UNKNOWN);
+	//
+	// // check highlighted positions
+	// final List<List<Integer>> firstHighlightedPositions = sinceOperator
+	// .getFirstHighlightedPositions();
+	// final List<List<Integer>> secondHighlightedPositions = sinceOperator
+	// .getSecondHighlightedPositions();
+	// assertTrue(firstHighlightedPositions.size() == firstArgumentValues
+	// .size());
+	// assertTrue(secondHighlightedPositions.size() == secondArgumentValues
+	// .size());
+	//
+	// // State 0
+	// assertTrue(firstHighlightedPositions.get(0).size() == 0);
+	// assertTrue(secondHighlightedPositions.get(0).size() == 1);
+	// assertTrue(Arrays.equals(
+	// secondHighlightedPositions.get(0).toArray(new Integer[0]),
+	// new Integer[] { 0 }));
+	//
+	// // State 1
+	// assertTrue(firstHighlightedPositions.get(1).size() == 1);
+	// assertTrue(Arrays.equals(
+	// firstHighlightedPositions.get(1).toArray(new Integer[0]),
+	// new Integer[] { 1 }));
+	// assertTrue(secondHighlightedPositions.get(1).size() == 1);
+	// assertTrue(Arrays.equals(
+	// secondHighlightedPositions.get(1).toArray(new Integer[0]),
+	// new Integer[] { 1 }));
+	//
+	// // State 2
+	// assertTrue(firstHighlightedPositions.get(2).size() == 1);
+	// assertTrue(Arrays.equals(
+	// firstHighlightedPositions.get(2).toArray(new Integer[0]),
+	// new Integer[] { 2 }));
+	// assertTrue(secondHighlightedPositions.get(2).size() == 1);
+	// assertTrue(Arrays.equals(
+	// secondHighlightedPositions.get(2).toArray(new Integer[0]),
+	// new Integer[] { 2 }));
+	//
+	// // State 3
+	// assertTrue(firstHighlightedPositions.get(3).size() == 1);
+	// assertTrue(Arrays.equals(
+	// firstHighlightedPositions.get(3).toArray(new Integer[0]),
+	// new Integer[] { 3 }));
+	// assertTrue(secondHighlightedPositions.get(3).size() == 1);
+	// assertTrue(Arrays.equals(
+	// secondHighlightedPositions.get(3).toArray(new Integer[0]),
+	// new Integer[] { 3 }));
+	// }
+	//
+	// // f-UUFU, g-TUFU, f S g- TUFU
+	// @Test
+	// public void testSinceUnknownDefinitionOnReducedPath9() {
+	// // create first argument values
+	// final List<CounterExampleValueType> firstArgumentValues = Arrays
+	// .asList(new CounterExampleValueType[] {
+	// CounterExampleValueType.UNKNOWN,
+	// CounterExampleValueType.UNKNOWN,
+	// CounterExampleValueType.FALSE,
+	// CounterExampleValueType.UNKNOWN });
+	//
+	// // create second argument values
+	// final List<CounterExampleValueType> secondArgumentValues = Arrays
+	// .asList(new CounterExampleValueType[] {
+	// CounterExampleValueType.TRUE,
+	// CounterExampleValueType.UNKNOWN,
+	// CounterExampleValueType.FALSE,
+	// CounterExampleValueType.UNKNOWN });
+	//
+	// // create first argument
+	// final CounterExampleProposition firstArgument = new
+	// CounterExamplePredicate(
+	// PathType.REDUCED, firstArgumentValues);
+	//
+	// // create second argument
+	// final CounterExampleProposition secondArgument = new
+	// CounterExamplePredicate(
+	// PathType.REDUCED, secondArgumentValues);
+	//
+	// // create an operator
+	// final CounterExampleBinaryOperator sinceOperator = new
+	// CounterExampleSince(
+	// PathType.REDUCED, firstArgument, secondArgument);
+	//
+	// // check result values
+	// final List<CounterExampleValueType> values = sinceOperator.getValues();
+	// assertTrue(values.size() == firstArgumentValues.size());
+	// assertTrue(values.size() == secondArgumentValues.size());
+	// assertTrue(values.get(0) == CounterExampleValueType.TRUE);
+	// assertTrue(values.get(1) == CounterExampleValueType.UNKNOWN);
+	// assertTrue(values.get(2) == CounterExampleValueType.FALSE);
+	// assertTrue(values.get(3) == CounterExampleValueType.UNKNOWN);
+	//
+	// // check highlighted positions
+	// final List<List<Integer>> firstHighlightedPositions = sinceOperator
+	// .getFirstHighlightedPositions();
+	// final List<List<Integer>> secondHighlightedPositions = sinceOperator
+	// .getSecondHighlightedPositions();
+	// assertTrue(firstHighlightedPositions.size() == firstArgumentValues
+	// .size());
+	// assertTrue(secondHighlightedPositions.size() == secondArgumentValues
+	// .size());
+	//
+	// // State 0
+	// assertTrue(firstHighlightedPositions.get(0).size() == 0);
+	// assertTrue(secondHighlightedPositions.get(0).size() == 1);
+	// assertTrue(Arrays.equals(
+	// secondHighlightedPositions.get(0).toArray(new Integer[0]),
+	// new Integer[] { 0 }));
+	//
+	// // State 1
+	// assertTrue(firstHighlightedPositions.get(1).size() == 1);
+	// assertTrue(Arrays.equals(
+	// firstHighlightedPositions.get(1).toArray(new Integer[0]),
+	// new Integer[] { 1 }));
+	// assertTrue(secondHighlightedPositions.get(1).size() == 1);
+	// assertTrue(Arrays.equals(
+	// secondHighlightedPositions.get(1).toArray(new Integer[0]),
+	// new Integer[] { 1 }));
+	//
+	// // State 2
+	// assertTrue(firstHighlightedPositions.get(2).size() == 1);
+	// assertTrue(Arrays.equals(
+	// firstHighlightedPositions.get(2).toArray(new Integer[0]),
+	// new Integer[] { 2 }));
+	// assertTrue(secondHighlightedPositions.get(2).size() == 1);
+	// assertTrue(Arrays.equals(
+	// secondHighlightedPositions.get(2).toArray(new Integer[0]),
+	// new Integer[] { 2 }));
+	//
+	// // State 3
+	// assertTrue(firstHighlightedPositions.get(3).size() == 1);
+	// assertTrue(Arrays.equals(
+	// firstHighlightedPositions.get(3).toArray(new Integer[0]),
+	// new Integer[] { 3 }));
+	// assertTrue(secondHighlightedPositions.get(3).size() == 1);
+	// assertTrue(Arrays.equals(
+	// secondHighlightedPositions.get(3).toArray(new Integer[0]),
+	// new Integer[] { 3 }));
+	// }
+	//
+	// // f-FFUU, g-FUUU, f S g-FUUU
+	// @Test
+	// public void testSinceUnknownDefinitionOnReducedPath10() {
+	// // create first argument values
+	// final List<CounterExampleValueType> firstArgumentValues = Arrays
+	// .asList(new CounterExampleValueType[] {
+	// CounterExampleValueType.FALSE,
+	// CounterExampleValueType.FALSE,
+	// CounterExampleValueType.UNKNOWN,
+	// CounterExampleValueType.UNKNOWN });
+	//
+	// // create second argument values
+	// final List<CounterExampleValueType> secondArgumentValues = Arrays
+	// .asList(new CounterExampleValueType[] {
+	// CounterExampleValueType.FALSE,
+	// CounterExampleValueType.UNKNOWN,
+	// CounterExampleValueType.UNKNOWN,
+	// CounterExampleValueType.UNKNOWN });
+	//
+	// // create first argument
+	// final CounterExampleProposition firstArgument = new
+	// CounterExamplePredicate(
+	// PathType.REDUCED, firstArgumentValues);
+	//
+	// // create second argument
+	// final CounterExampleProposition secondArgument = new
+	// CounterExamplePredicate(
+	// PathType.REDUCED, secondArgumentValues);
+	//
+	// // create an operator
+	// final CounterExampleBinaryOperator sinceOperator = new
+	// CounterExampleSince(
+	// PathType.REDUCED, firstArgument, secondArgument);
+	//
+	// // check result values
+	// final List<CounterExampleValueType> values = sinceOperator.getValues();
+	// assertTrue(values.size() == firstArgumentValues.size());
+	// assertTrue(values.size() == secondArgumentValues.size());
+	// assertTrue(values.get(0) == CounterExampleValueType.FALSE);
+	// assertTrue(values.get(1) == CounterExampleValueType.UNKNOWN);
+	// assertTrue(values.get(2) == CounterExampleValueType.UNKNOWN);
+	// assertTrue(values.get(3) == CounterExampleValueType.UNKNOWN);
+	//
+	// // check highlighted positions
+	// final List<List<Integer>> firstHighlightedPositions = sinceOperator
+	// .getFirstHighlightedPositions();
+	// final List<List<Integer>> secondHighlightedPositions = sinceOperator
+	// .getSecondHighlightedPositions();
+	// assertTrue(firstHighlightedPositions.size() == firstArgumentValues
+	// .size());
+	// assertTrue(secondHighlightedPositions.size() == secondArgumentValues
+	// .size());
+	//
+	// // State 0
+	// assertTrue(firstHighlightedPositions.get(0).size() == 1);
+	// assertTrue(Arrays.equals(
+	// firstHighlightedPositions.get(0).toArray(new Integer[0]),
+	// new Integer[] { 0 }));
+	// assertTrue(secondHighlightedPositions.get(0).size() == 1);
+	// assertTrue(Arrays.equals(
+	// secondHighlightedPositions.get(0).toArray(new Integer[0]),
+	// new Integer[] { 0 }));
+	//
+	// // State 1
+	// assertTrue(firstHighlightedPositions.get(1).size() == 1);
+	// assertTrue(Arrays.equals(
+	// firstHighlightedPositions.get(1).toArray(new Integer[0]),
+	// new Integer[] { 1 }));
+	// assertTrue(secondHighlightedPositions.get(1).size() == 1);
+	// assertTrue(Arrays.equals(
+	// secondHighlightedPositions.get(1).toArray(new Integer[0]),
+	// new Integer[] { 1 }));
+	//
+	// // State 2
+	// assertTrue(firstHighlightedPositions.get(2).size() == 1);
+	// assertTrue(Arrays.equals(
+	// firstHighlightedPositions.get(2).toArray(new Integer[0]),
+	// new Integer[] { 2 }));
+	// assertTrue(secondHighlightedPositions.get(2).size() == 1);
+	// assertTrue(Arrays.equals(
+	// secondHighlightedPositions.get(2).toArray(new Integer[0]),
+	// new Integer[] { 2 }));
+	//
+	// // State 3
+	// assertTrue(firstHighlightedPositions.get(3).size() == 1);
+	// assertTrue(Arrays.equals(
+	// firstHighlightedPositions.get(3).toArray(new Integer[0]),
+	// new Integer[] { 3 }));
+	// assertTrue(secondHighlightedPositions.get(3).size() == 1);
+	// assertTrue(Arrays.equals(
+	// secondHighlightedPositions.get(3).toArray(new Integer[0]),
+	// new Integer[] { 3 }));
+	// }
+	//
+	// // f-UUUU, g-UTUU, f S g-UTUU
+	// @Test
+	// public void testSinceUnknownDefinitionOnReducedPath11() {
+	// // create first argument values
+	// final List<CounterExampleValueType> firstArgumentValues = Arrays
+	// .asList(new CounterExampleValueType[] {
+	// CounterExampleValueType.UNKNOWN,
+	// CounterExampleValueType.UNKNOWN,
+	// CounterExampleValueType.UNKNOWN,
+	// CounterExampleValueType.UNKNOWN });
+	//
+	// // create second argument values
+	// final List<CounterExampleValueType> secondArgumentValues = Arrays
+	// .asList(new CounterExampleValueType[] {
+	// CounterExampleValueType.UNKNOWN,
+	// CounterExampleValueType.TRUE,
+	// CounterExampleValueType.UNKNOWN,
+	// CounterExampleValueType.UNKNOWN });
+	//
+	// // create first argument
+	// final CounterExampleProposition firstArgument = new
+	// CounterExamplePredicate(
+	// PathType.REDUCED, firstArgumentValues);
+	//
+	// // create second argument
+	// final CounterExampleProposition secondArgument = new
+	// CounterExamplePredicate(
+	// PathType.REDUCED, secondArgumentValues);
+	//
+	// // create an operator
+	// final CounterExampleBinaryOperator sinceOperator = new
+	// CounterExampleSince(
+	// PathType.REDUCED, firstArgument, secondArgument);
+	//
+	// // check result values
+	// final List<CounterExampleValueType> values = sinceOperator.getValues();
+	// assertTrue(values.size() == firstArgumentValues.size());
+	// assertTrue(values.size() == secondArgumentValues.size());
+	// assertTrue(values.get(0) == CounterExampleValueType.UNKNOWN);
+	// assertTrue(values.get(1) == CounterExampleValueType.TRUE);
+	// assertTrue(values.get(2) == CounterExampleValueType.UNKNOWN);
+	// assertTrue(values.get(3) == CounterExampleValueType.UNKNOWN);
+	//
+	// // check highlighted positions
+	// final List<List<Integer>> firstHighlightedPositions = sinceOperator
+	// .getFirstHighlightedPositions();
+	// final List<List<Integer>> secondHighlightedPositions = sinceOperator
+	// .getSecondHighlightedPositions();
+	// assertTrue(firstHighlightedPositions.size() == firstArgumentValues
+	// .size());
+	// assertTrue(secondHighlightedPositions.size() == secondArgumentValues
+	// .size());
+	//
+	// // State 0
+	// assertTrue(firstHighlightedPositions.get(0).size() == 1);
+	// assertTrue(Arrays.equals(
+	// firstHighlightedPositions.get(0).toArray(new Integer[0]),
+	// new Integer[] { 0 }));
+	// assertTrue(secondHighlightedPositions.get(0).size() == 1);
+	// assertTrue(Arrays.equals(
+	// secondHighlightedPositions.get(0).toArray(new Integer[0]),
+	// new Integer[] { 0 }));
+	//
+	// // State 1
+	// assertTrue(firstHighlightedPositions.get(1).size() == 0);
+	// assertTrue(secondHighlightedPositions.get(1).size() == 1);
+	// assertTrue(Arrays.equals(
+	// secondHighlightedPositions.get(1).toArray(new Integer[0]),
+	// new Integer[] { 1 }));
+	//
+	// // State 2
+	// assertTrue(firstHighlightedPositions.get(2).size() == 1);
+	// assertTrue(Arrays.equals(
+	// firstHighlightedPositions.get(2).toArray(new Integer[0]),
+	// new Integer[] { 2 }));
+	// assertTrue(secondHighlightedPositions.get(2).size() == 1);
+	// assertTrue(Arrays.equals(
+	// secondHighlightedPositions.get(2).toArray(new Integer[0]),
+	// new Integer[] { 2 }));
+	//
+	// // State 3
+	// assertTrue(firstHighlightedPositions.get(3).size() == 1);
+	// assertTrue(Arrays.equals(
+	// firstHighlightedPositions.get(3).toArray(new Integer[0]),
+	// new Integer[] { 3 }));
+	// assertTrue(secondHighlightedPositions.get(3).size() == 1);
+	// assertTrue(Arrays.equals(
+	// secondHighlightedPositions.get(3).toArray(new Integer[0]),
+	// new Integer[] { 3 }));
+	// }
+	//
+	// // f-UFUU, g-UUUU, f S g-UUUU
+	// @Test
+	// public void testSinceUnknownDefinitionOnReducedPath12() {
+	// // create first argument values
+	// final List<CounterExampleValueType> firstArgumentValues = Arrays
+	// .asList(new CounterExampleValueType[] {
+	// CounterExampleValueType.UNKNOWN,
+	// CounterExampleValueType.FALSE,
 	// CounterExampleValueType.UNKNOWN,
 	// CounterExampleValueType.UNKNOWN });
 	//
@@ -2870,13 +3045,12 @@ public final class CounterExampleTriggerUnitTest {
 	// PathType.REDUCED, secondArgumentValues);
 	//
 	// // create an operator
-	// final CounterExampleBinaryOperator triggerOperator = new
-	// CounterExampleTrigger(
+	// final CounterExampleBinaryOperator sinceOperator = new
+	// CounterExampleSince(
 	// PathType.REDUCED, firstArgument, secondArgument);
 	//
 	// // check result values
-	// final List<CounterExampleValueType> values = triggerOperator
-	// .getValues();
+	// final List<CounterExampleValueType> values = sinceOperator.getValues();
 	// assertTrue(values.size() == firstArgumentValues.size());
 	// assertTrue(values.size() == secondArgumentValues.size());
 	// assertTrue(values.get(0) == CounterExampleValueType.UNKNOWN);
@@ -2885,9 +3059,9 @@ public final class CounterExampleTriggerUnitTest {
 	// assertTrue(values.get(3) == CounterExampleValueType.UNKNOWN);
 	//
 	// // check highlighted positions
-	// final List<List<Integer>> firstHighlightedPositions = triggerOperator
+	// final List<List<Integer>> firstHighlightedPositions = sinceOperator
 	// .getFirstHighlightedPositions();
-	// final List<List<Integer>> secondHighlightedPositions = triggerOperator
+	// final List<List<Integer>> secondHighlightedPositions = sinceOperator
 	// .getSecondHighlightedPositions();
 	// assertTrue(firstHighlightedPositions.size() == firstArgumentValues
 	// .size());
@@ -2897,7 +3071,7 @@ public final class CounterExampleTriggerUnitTest {
 	// // State 0
 	// assertTrue(firstHighlightedPositions.get(0).size() == 1);
 	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(0).toArray(new Integer[0]),
+	// firstHighlightedPositions.get(0).toArray(new Integer[0]),
 	// new Integer[] { 0 }));
 	// assertTrue(secondHighlightedPositions.get(0).size() == 1);
 	// assertTrue(Arrays.equals(
@@ -2936,23 +3110,23 @@ public final class CounterExampleTriggerUnitTest {
 	// }
 	//
 	// /*
-	// * f-FTUU, g-TTTF, f T g-TTTF
+	// * f-UFTU, g-FFTF, f S g-UFTU
 	// */
 	// @Test
-	// public void testTriggerUnknownDefinitionOnReducedPath7() {
+	// public void testSinceUnknownDefinitionOnReducedPath13() {
 	// // create first argument values
 	// final List<CounterExampleValueType> firstArgumentValues = Arrays
 	// .asList(new CounterExampleValueType[] {
+	// CounterExampleValueType.UNKNOWN,
 	// CounterExampleValueType.FALSE,
 	// CounterExampleValueType.TRUE,
-	// CounterExampleValueType.UNKNOWN,
 	// CounterExampleValueType.UNKNOWN });
 	//
 	// // create second argument values
 	// final List<CounterExampleValueType> secondArgumentValues = Arrays
 	// .asList(new CounterExampleValueType[] {
-	// CounterExampleValueType.TRUE,
-	// CounterExampleValueType.TRUE,
+	// CounterExampleValueType.FALSE,
+	// CounterExampleValueType.FALSE,
 	// CounterExampleValueType.TRUE,
 	// CounterExampleValueType.FALSE });
 	//
@@ -2967,24 +3141,23 @@ public final class CounterExampleTriggerUnitTest {
 	// PathType.REDUCED, secondArgumentValues);
 	//
 	// // create an operator
-	// final CounterExampleBinaryOperator triggerOperator = new
-	// CounterExampleTrigger(
+	// final CounterExampleBinaryOperator sinceOperator = new
+	// CounterExampleSince(
 	// PathType.REDUCED, firstArgument, secondArgument);
 	//
 	// // check result values
-	// final List<CounterExampleValueType> values = triggerOperator
-	// .getValues();
+	// final List<CounterExampleValueType> values = sinceOperator.getValues();
 	// assertTrue(values.size() == firstArgumentValues.size());
 	// assertTrue(values.size() == secondArgumentValues.size());
-	// assertTrue(values.get(0) == CounterExampleValueType.TRUE);
-	// assertTrue(values.get(1) == CounterExampleValueType.TRUE);
+	// assertTrue(values.get(0) == CounterExampleValueType.UNKNOWN);
+	// assertTrue(values.get(1) == CounterExampleValueType.FALSE);
 	// assertTrue(values.get(2) == CounterExampleValueType.TRUE);
-	// assertTrue(values.get(3) == CounterExampleValueType.FALSE);
+	// assertTrue(values.get(3) == CounterExampleValueType.UNKNOWN);
 	//
 	// // check highlighted positions
-	// final List<List<Integer>> firstHighlightedPositions = triggerOperator
+	// final List<List<Integer>> firstHighlightedPositions = sinceOperator
 	// .getFirstHighlightedPositions();
-	// final List<List<Integer>> secondHighlightedPositions = triggerOperator
+	// final List<List<Integer>> secondHighlightedPositions = sinceOperator
 	// .getSecondHighlightedPositions();
 	// assertTrue(firstHighlightedPositions.size() == firstArgumentValues
 	// .size());
@@ -2992,7 +3165,10 @@ public final class CounterExampleTriggerUnitTest {
 	// .size());
 	//
 	// // State 0
-	// assertTrue(firstHighlightedPositions.get(0).size() == 0);
+	// assertTrue(firstHighlightedPositions.get(0).size() == 1);
+	// assertTrue(Arrays.equals(
+	// firstHighlightedPositions.get(0).toArray(new Integer[0]),
+	// new Integer[] { 0 }));
 	// assertTrue(secondHighlightedPositions.get(0).size() == 1);
 	// assertTrue(Arrays.equals(
 	// secondHighlightedPositions.get(0).toArray(new Integer[0]),
@@ -3009,114 +3185,17 @@ public final class CounterExampleTriggerUnitTest {
 	// new Integer[] { 1 }));
 	//
 	// // State 2
-	// assertTrue(firstHighlightedPositions.get(2).size() == 1);
-	// assertTrue(Arrays.equals(
-	// firstHighlightedPositions.get(2).toArray(new Integer[0]),
-	// new Integer[] { 1 }));
-	// assertTrue(secondHighlightedPositions.get(2).size() == 2);
+	// assertTrue(firstHighlightedPositions.get(2).size() == 0);
+	// assertTrue(secondHighlightedPositions.get(2).size() == 1);
 	// assertTrue(Arrays.equals(
 	// secondHighlightedPositions.get(2).toArray(new Integer[0]),
-	// new Integer[] { 2, 1 }));
+	// new Integer[] { 2 }));
 	//
 	// // State 3
-	// assertTrue(firstHighlightedPositions.get(3).size() == 0);
-	// assertTrue(secondHighlightedPositions.get(3).size() == 1);
+	// assertTrue(firstHighlightedPositions.get(3).size() == 1);
 	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(3).toArray(new Integer[0]),
+	// firstHighlightedPositions.get(3).toArray(new Integer[0]),
 	// new Integer[] { 3 }));
-	// }
-	//
-	// /*
-	// * f-UTUF, g-UTUT, f T g-UTUU
-	// */
-	// @Test
-	// public void testTriggerUnknownDefinitionOnReducedPath8() {
-	// // create first argument values
-	// final List<CounterExampleValueType> firstArgumentValues = Arrays
-	// .asList(new CounterExampleValueType[] {
-	// CounterExampleValueType.UNKNOWN,
-	// CounterExampleValueType.TRUE,
-	// CounterExampleValueType.UNKNOWN,
-	// CounterExampleValueType.FALSE });
-	//
-	// // create second argument values
-	// final List<CounterExampleValueType> secondArgumentValues = Arrays
-	// .asList(new CounterExampleValueType[] {
-	// CounterExampleValueType.UNKNOWN,
-	// CounterExampleValueType.TRUE,
-	// CounterExampleValueType.UNKNOWN,
-	// CounterExampleValueType.TRUE });
-	//
-	// // create first argument
-	// final CounterExampleProposition firstArgument = new
-	// CounterExamplePredicate(
-	// PathType.REDUCED, firstArgumentValues);
-	//
-	// // create second argument
-	// final CounterExampleProposition secondArgument = new
-	// CounterExamplePredicate(
-	// PathType.REDUCED, secondArgumentValues);
-	//
-	// // create an operator
-	// final CounterExampleBinaryOperator triggerOperator = new
-	// CounterExampleTrigger(
-	// PathType.REDUCED, firstArgument, secondArgument);
-	//
-	// // check result values
-	// final List<CounterExampleValueType> values = triggerOperator
-	// .getValues();
-	// assertTrue(values.size() == firstArgumentValues.size());
-	// assertTrue(values.size() == secondArgumentValues.size());
-	// assertTrue(values.get(0) == CounterExampleValueType.UNKNOWN);
-	// assertTrue(values.get(1) == CounterExampleValueType.TRUE);
-	// assertTrue(values.get(2) == CounterExampleValueType.UNKNOWN);
-	// assertTrue(values.get(3) == CounterExampleValueType.UNKNOWN);
-	//
-	// // check highlighted positions
-	// final List<List<Integer>> firstHighlightedPositions = triggerOperator
-	// .getFirstHighlightedPositions();
-	// final List<List<Integer>> secondHighlightedPositions = triggerOperator
-	// .getSecondHighlightedPositions();
-	// assertTrue(firstHighlightedPositions.size() == firstArgumentValues
-	// .size());
-	// assertTrue(secondHighlightedPositions.size() == secondArgumentValues
-	// .size());
-	//
-	// // State 0
-	// assertTrue(firstHighlightedPositions.get(0).size() == 1);
-	// assertTrue(Arrays.equals(
-	// firstHighlightedPositions.get(0).toArray(new Integer[0]),
-	// new Integer[] { 0 }));
-	// assertTrue(secondHighlightedPositions.get(0).size() == 1);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(0).toArray(new Integer[0]),
-	// new Integer[] { 0 }));
-	//
-	// // State 1
-	// assertTrue(firstHighlightedPositions.get(1).size() == 1);
-	// assertTrue(Arrays.equals(
-	// firstHighlightedPositions.get(1).toArray(new Integer[0]),
-	// new Integer[] { 1 }));
-	// assertTrue(secondHighlightedPositions.get(1).size() == 1);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(1).toArray(new Integer[0]),
-	// new Integer[] { 1 }));
-	//
-	// // State 2
-	// assertTrue(firstHighlightedPositions.get(2).size() == 1);
-	// assertTrue(Arrays.equals(
-	// firstHighlightedPositions.get(2).toArray(new Integer[0]),
-	// new Integer[] { 2 }));
-	// assertTrue(secondHighlightedPositions.get(2).size() == 1);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(2).toArray(new Integer[0]),
-	// new Integer[] { 2 }));
-	//
-	// // State 3
-	// assertTrue(firstHighlightedPositions.get(3).size() == 2);
-	// assertTrue(Arrays.equals(
-	// firstHighlightedPositions.get(3).toArray(new Integer[0]),
-	// new Integer[] { 3, 2 }));
 	// assertTrue(secondHighlightedPositions.get(3).size() == 2);
 	// assertTrue(Arrays.equals(
 	// secondHighlightedPositions.get(3).toArray(new Integer[0]),
@@ -3124,214 +3203,23 @@ public final class CounterExampleTriggerUnitTest {
 	// }
 	//
 	// /*
-	// * f-UTFF, g-UTUT, f T g-UTUU
+	// * f-UUUU, g-UUUU, f S g-UUUU
 	// */
 	// @Test
-	// public void testTriggerUnknownDefinitionOnReducedPath9() {
-	// // create first argument values
-	// final List<CounterExampleValueType> firstArgumentValues = Arrays
-	// .asList(new CounterExampleValueType[] {
-	// CounterExampleValueType.UNKNOWN,
-	// CounterExampleValueType.TRUE,
-	// CounterExampleValueType.FALSE,
-	// CounterExampleValueType.FALSE });
-	//
-	// // create second argument values
-	// final List<CounterExampleValueType> secondArgumentValues = Arrays
-	// .asList(new CounterExampleValueType[] {
-	// CounterExampleValueType.UNKNOWN,
-	// CounterExampleValueType.TRUE,
-	// CounterExampleValueType.UNKNOWN,
-	// CounterExampleValueType.TRUE });
-	//
-	// // create first argument
-	// final CounterExampleProposition firstArgument = new
-	// CounterExamplePredicate(
-	// PathType.REDUCED, firstArgumentValues);
-	//
-	// // create second argument
-	// final CounterExampleProposition secondArgument = new
-	// CounterExamplePredicate(
-	// PathType.REDUCED, secondArgumentValues);
-	//
-	// // create an operator
-	// final CounterExampleBinaryOperator triggerOperator = new
-	// CounterExampleTrigger(
-	// PathType.REDUCED, firstArgument, secondArgument);
-	//
-	// // check result values
-	// final List<CounterExampleValueType> values = triggerOperator
-	// .getValues();
-	// assertTrue(values.size() == firstArgumentValues.size());
-	// assertTrue(values.size() == secondArgumentValues.size());
-	// assertTrue(values.get(0) == CounterExampleValueType.UNKNOWN);
-	// assertTrue(values.get(1) == CounterExampleValueType.TRUE);
-	// assertTrue(values.get(2) == CounterExampleValueType.UNKNOWN);
-	// assertTrue(values.get(3) == CounterExampleValueType.UNKNOWN);
-	//
-	// // check highlighted positions
-	// final List<List<Integer>> firstHighlightedPositions = triggerOperator
-	// .getFirstHighlightedPositions();
-	// final List<List<Integer>> secondHighlightedPositions = triggerOperator
-	// .getSecondHighlightedPositions();
-	// assertTrue(firstHighlightedPositions.size() == firstArgumentValues
-	// .size());
-	// assertTrue(secondHighlightedPositions.size() == secondArgumentValues
-	// .size());
-	//
-	// // State 0
-	// assertTrue(firstHighlightedPositions.get(0).size() == 1);
-	// assertTrue(Arrays.equals(
-	// firstHighlightedPositions.get(0).toArray(new Integer[0]),
-	// new Integer[] { 0 }));
-	// assertTrue(secondHighlightedPositions.get(0).size() == 1);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(0).toArray(new Integer[0]),
-	// new Integer[] { 0 }));
-	//
-	// // State 1
-	// assertTrue(firstHighlightedPositions.get(1).size() == 1);
-	// assertTrue(Arrays.equals(
-	// firstHighlightedPositions.get(1).toArray(new Integer[0]),
-	// new Integer[] { 1 }));
-	// assertTrue(secondHighlightedPositions.get(1).size() == 1);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(1).toArray(new Integer[0]),
-	// new Integer[] { 1 }));
-	//
-	// // State 2
-	// assertTrue(firstHighlightedPositions.get(2).size() == 2);
-	// assertTrue(Arrays.equals(
-	// firstHighlightedPositions.get(2).toArray(new Integer[0]),
-	// new Integer[] { 2, 1 }));
-	// assertTrue(secondHighlightedPositions.get(2).size() == 2);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(2).toArray(new Integer[0]),
-	// new Integer[] { 2, 1 }));
-	//
-	// // State 3
-	// assertTrue(firstHighlightedPositions.get(3).size() == 3);
-	// assertTrue(Arrays.equals(
-	// firstHighlightedPositions.get(3).toArray(new Integer[0]),
-	// new Integer[] { 3, 2, 1 }));
-	// assertTrue(secondHighlightedPositions.get(3).size() == 3);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(3).toArray(new Integer[0]),
-	// new Integer[] { 3, 2, 1 }));
-	// }
-	//
-	// /*
-	// * f-UUUF, g-UFTU, f T g-UFUU
-	// */
-	// @Test
-	// public void testTriggerUnknownDefinitionOnReducedPath10() {
+	// public void testSinceUnknownDefinitionOnReducedPath14() {
 	// // create first argument values
 	// final List<CounterExampleValueType> firstArgumentValues = Arrays
 	// .asList(new CounterExampleValueType[] {
 	// CounterExampleValueType.UNKNOWN,
 	// CounterExampleValueType.UNKNOWN,
 	// CounterExampleValueType.UNKNOWN,
-	// CounterExampleValueType.FALSE });
-	//
-	// // create second argument values
-	// final List<CounterExampleValueType> secondArgumentValues = Arrays
-	// .asList(new CounterExampleValueType[] {
-	// CounterExampleValueType.UNKNOWN,
-	// CounterExampleValueType.FALSE,
-	// CounterExampleValueType.TRUE,
 	// CounterExampleValueType.UNKNOWN });
 	//
-	// // create first argument
-	// final CounterExampleProposition firstArgument = new
-	// CounterExamplePredicate(
-	// PathType.REDUCED, firstArgumentValues);
-	//
-	// // create second argument
-	// final CounterExampleProposition secondArgument = new
-	// CounterExamplePredicate(
-	// PathType.REDUCED, secondArgumentValues);
-	//
-	// // create an operator
-	// final CounterExampleBinaryOperator triggerOperator = new
-	// CounterExampleTrigger(
-	// PathType.REDUCED, firstArgument, secondArgument);
-	//
-	// // check result values
-	// final List<CounterExampleValueType> values = triggerOperator
-	// .getValues();
-	// assertTrue(values.size() == firstArgumentValues.size());
-	// assertTrue(values.size() == secondArgumentValues.size());
-	// assertTrue(values.get(0) == CounterExampleValueType.UNKNOWN);
-	// assertTrue(values.get(1) == CounterExampleValueType.FALSE);
-	// assertTrue(values.get(2) == CounterExampleValueType.UNKNOWN);
-	// assertTrue(values.get(3) == CounterExampleValueType.UNKNOWN);
-	//
-	// // check highlighted positions
-	// final List<List<Integer>> firstHighlightedPositions = triggerOperator
-	// .getFirstHighlightedPositions();
-	// final List<List<Integer>> secondHighlightedPositions = triggerOperator
-	// .getSecondHighlightedPositions();
-	// assertTrue(firstHighlightedPositions.size() == firstArgumentValues
-	// .size());
-	// assertTrue(secondHighlightedPositions.size() == secondArgumentValues
-	// .size());
-	//
-	// // State 0
-	// assertTrue(firstHighlightedPositions.get(0).size() == 1);
-	// assertTrue(Arrays.equals(
-	// firstHighlightedPositions.get(0).toArray(new Integer[0]),
-	// new Integer[] { 0 }));
-	// assertTrue(secondHighlightedPositions.get(0).size() == 1);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(0).toArray(new Integer[0]),
-	// new Integer[] { 0 }));
-	//
-	// // State 1
-	// assertTrue(firstHighlightedPositions.get(1).size() == 0);
-	// assertTrue(secondHighlightedPositions.get(1).size() == 1);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(1).toArray(new Integer[0]),
-	// new Integer[] { 1 }));
-	//
-	// // State 2
-	// assertTrue(firstHighlightedPositions.get(2).size() == 1);
-	// assertTrue(Arrays.equals(
-	// firstHighlightedPositions.get(2).toArray(new Integer[0]),
-	// new Integer[] { 2 }));
-	// assertTrue(secondHighlightedPositions.get(2).size() == 2);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(2).toArray(new Integer[0]),
-	// new Integer[] { 2, 1 }));
-	//
-	// // State 3
-	// assertTrue(firstHighlightedPositions.get(3).size() == 2);
-	// assertTrue(Arrays.equals(
-	// firstHighlightedPositions.get(3).toArray(new Integer[0]),
-	// new Integer[] { 3, 2 }));
-	// assertTrue(secondHighlightedPositions.get(3).size() == 3);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(3).toArray(new Integer[0]),
-	// new Integer[] { 3, 2, 1 }));
-	// }
-	//
-	// /*
-	// * f-UUUF, g-UFUU, f T g-UFUU
-	// */
-	// @Test
-	// public void testTriggerUnknownDefinitionOnReducedPath11() {
-	// // create first argument values
-	// final List<CounterExampleValueType> firstArgumentValues = Arrays
-	// .asList(new CounterExampleValueType[] {
-	// CounterExampleValueType.UNKNOWN,
-	// CounterExampleValueType.UNKNOWN,
-	// CounterExampleValueType.UNKNOWN,
-	// CounterExampleValueType.FALSE });
-	//
 	// // create second argument values
 	// final List<CounterExampleValueType> secondArgumentValues = Arrays
 	// .asList(new CounterExampleValueType[] {
 	// CounterExampleValueType.UNKNOWN,
-	// CounterExampleValueType.FALSE,
+	// CounterExampleValueType.UNKNOWN,
 	// CounterExampleValueType.UNKNOWN,
 	// CounterExampleValueType.UNKNOWN });
 	//
@@ -3346,117 +3234,23 @@ public final class CounterExampleTriggerUnitTest {
 	// PathType.REDUCED, secondArgumentValues);
 	//
 	// // create an operator
-	// final CounterExampleBinaryOperator triggerOperator = new
-	// CounterExampleTrigger(
+	// final CounterExampleBinaryOperator sinceOperator = new
+	// CounterExampleSince(
 	// PathType.REDUCED, firstArgument, secondArgument);
 	//
 	// // check result values
-	// final List<CounterExampleValueType> values = triggerOperator
-	// .getValues();
-	// assertTrue(values.size() == firstArgumentValues.size());
-	// assertTrue(values.size() == secondArgumentValues.size());
-	// assertTrue(values.get(0) == CounterExampleValueType.UNKNOWN);
-	// assertTrue(values.get(1) == CounterExampleValueType.FALSE);
-	// assertTrue(values.get(2) == CounterExampleValueType.UNKNOWN);
-	// assertTrue(values.get(3) == CounterExampleValueType.UNKNOWN);
-	//
-	// // check highlighted positions
-	// final List<List<Integer>> firstHighlightedPositions = triggerOperator
-	// .getFirstHighlightedPositions();
-	// final List<List<Integer>> secondHighlightedPositions = triggerOperator
-	// .getSecondHighlightedPositions();
-	// assertTrue(firstHighlightedPositions.size() == firstArgumentValues
-	// .size());
-	// assertTrue(secondHighlightedPositions.size() == secondArgumentValues
-	// .size());
-	//
-	// // State 0
-	// assertTrue(firstHighlightedPositions.get(0).size() == 1);
-	// assertTrue(Arrays.equals(
-	// firstHighlightedPositions.get(0).toArray(new Integer[0]),
-	// new Integer[] { 0 }));
-	// assertTrue(secondHighlightedPositions.get(0).size() == 1);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(0).toArray(new Integer[0]),
-	// new Integer[] { 0 }));
-	//
-	// // State 1
-	// assertTrue(firstHighlightedPositions.get(1).size() == 0);
-	// assertTrue(secondHighlightedPositions.get(1).size() == 1);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(1).toArray(new Integer[0]),
-	// new Integer[] { 1 }));
-	//
-	// // State 2
-	// assertTrue(firstHighlightedPositions.get(2).size() == 1);
-	// assertTrue(Arrays.equals(
-	// firstHighlightedPositions.get(2).toArray(new Integer[0]),
-	// new Integer[] { 2 }));
-	// assertTrue(secondHighlightedPositions.get(2).size() == 1);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(2).toArray(new Integer[0]),
-	// new Integer[] { 2 }));
-	//
-	// // State 3
-	// assertTrue(firstHighlightedPositions.get(3).size() == 2);
-	// assertTrue(Arrays.equals(
-	// firstHighlightedPositions.get(3).toArray(new Integer[0]),
-	// new Integer[] { 3, 2 }));
-	// assertTrue(secondHighlightedPositions.get(3).size() == 2);
-	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(3).toArray(new Integer[0]),
-	// new Integer[] { 3, 2 }));
-	// }
-	//
-	// /*
-	// * f-FUTF, g-UUTF, f T g-UUTF
-	// */
-	// @Test
-	// public void testTriggerUnknownDefinitionOnReducedPath12() {
-	// // create first argument values
-	// final List<CounterExampleValueType> firstArgumentValues = Arrays
-	// .asList(new CounterExampleValueType[] {
-	// CounterExampleValueType.FALSE,
-	// CounterExampleValueType.UNKNOWN,
-	// CounterExampleValueType.TRUE,
-	// CounterExampleValueType.FALSE });
-	//
-	// // create second argument values
-	// final List<CounterExampleValueType> secondArgumentValues = Arrays
-	// .asList(new CounterExampleValueType[] {
-	// CounterExampleValueType.UNKNOWN,
-	// CounterExampleValueType.UNKNOWN,
-	// CounterExampleValueType.TRUE,
-	// CounterExampleValueType.FALSE });
-	//
-	// // create first argument
-	// final CounterExampleProposition firstArgument = new
-	// CounterExamplePredicate(
-	// PathType.REDUCED, firstArgumentValues);
-	//
-	// // create second argument
-	// final CounterExampleProposition secondArgument = new
-	// CounterExamplePredicate(
-	// PathType.REDUCED, secondArgumentValues);
-	//
-	// // create an operator
-	// CounterExampleBinaryOperator triggerOperator = new CounterExampleTrigger(
-	// PathType.REDUCED, firstArgument, secondArgument);
-	//
-	// // check result values
-	// final List<CounterExampleValueType> values = triggerOperator
-	// .getValues();
+	// final List<CounterExampleValueType> values = sinceOperator.getValues();
 	// assertTrue(values.size() == firstArgumentValues.size());
 	// assertTrue(values.size() == secondArgumentValues.size());
 	// assertTrue(values.get(0) == CounterExampleValueType.UNKNOWN);
 	// assertTrue(values.get(1) == CounterExampleValueType.UNKNOWN);
-	// assertTrue(values.get(2) == CounterExampleValueType.TRUE);
-	// assertTrue(values.get(3) == CounterExampleValueType.FALSE);
+	// assertTrue(values.get(2) == CounterExampleValueType.UNKNOWN);
+	// assertTrue(values.get(3) == CounterExampleValueType.UNKNOWN);
 	//
 	// // check highlighted positions
-	// final List<List<Integer>> firstHighlightedPositions = triggerOperator
+	// final List<List<Integer>> firstHighlightedPositions = sinceOperator
 	// .getFirstHighlightedPositions();
-	// final List<List<Integer>> secondHighlightedPositions = triggerOperator
+	// final List<List<Integer>> secondHighlightedPositions = sinceOperator
 	// .getSecondHighlightedPositions();
 	// assertTrue(firstHighlightedPositions.size() == firstArgumentValues
 	// .size());
@@ -3466,7 +3260,7 @@ public final class CounterExampleTriggerUnitTest {
 	// // State 0
 	// assertTrue(firstHighlightedPositions.get(0).size() == 1);
 	// assertTrue(Arrays.equals(
-	// secondHighlightedPositions.get(0).toArray(new Integer[0]),
+	// firstHighlightedPositions.get(0).toArray(new Integer[0]),
 	// new Integer[] { 0 }));
 	// assertTrue(secondHighlightedPositions.get(0).size() == 1);
 	// assertTrue(Arrays.equals(
@@ -3494,7 +3288,10 @@ public final class CounterExampleTriggerUnitTest {
 	// new Integer[] { 2 }));
 	//
 	// // State 3
-	// assertTrue(firstHighlightedPositions.get(3).size() == 0);
+	// assertTrue(firstHighlightedPositions.get(3).size() == 1);
+	// assertTrue(Arrays.equals(
+	// firstHighlightedPositions.get(3).toArray(new Integer[0]),
+	// new Integer[] { 3 }));
 	// assertTrue(secondHighlightedPositions.get(3).size() == 1);
 	// assertTrue(Arrays.equals(
 	// secondHighlightedPositions.get(3).toArray(new Integer[0]),

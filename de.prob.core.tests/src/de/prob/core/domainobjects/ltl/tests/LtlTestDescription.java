@@ -1,4 +1,4 @@
-package de.prob.core.domainobjects.ltl.unittests;
+package de.prob.core.domainobjects.ltl.tests;
 
 import java.util.ArrayList;
 import java.util.Collection;
