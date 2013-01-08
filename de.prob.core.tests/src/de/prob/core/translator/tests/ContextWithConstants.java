@@ -34,7 +34,7 @@ public class ContextWithConstants extends AbstractEventBTests {
 		createConstant(context, "cst1");
 		createAxiom(context, "axm1", "cst1=5", false);
 
-		// save file and build workspace - this triggiers static check, and
+		// save file and build workspace - this triggers static check, and
 		// generates missing files
 		context.getRodinFile().save(monitor, false);
 		workspace.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
