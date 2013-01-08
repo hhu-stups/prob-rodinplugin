@@ -32,11 +32,14 @@ public class EmptyTranslationsTests extends AbstractEventBTests {
 		IEventBProject project = createEventBProject("TestProject");
 		IMachineRoot machine = createMachine(project, "TestMachine");
 
+		machine.getRodinFile().save(monitor, false);
 		workspace.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
 
-		// TranslatorFactory.translate(machine, writer);
+		TranslatorFactory.translate(machine, writer);
 
-		// assertEquals("", stringWriter.getBuffer().toString());
+		assertEquals(
+				"package(load_event_b_project([event_b_model(none,'TestMachine',[sees(none,[]),variables(none,[]),invariant(none,[]),theorems(none,[]),events(none,[])])],[],[exporter_version(2)],_Error)).\n",
+				stringWriter.getBuffer().toString());
 	}
 
 	@Test
@@ -45,6 +48,7 @@ public class EmptyTranslationsTests extends AbstractEventBTests {
 		IEventBProject project = createEventBProject("TestProject");
 		IContextRoot context = createContext(project, "TestContext");
 
+		context.getRodinFile().save(monitor, false);
 		workspace.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
 
 		TranslatorFactory.translate(context, writer);
