@@ -182,20 +182,25 @@ public class ModelTranslator extends AbstractComponentTranslator {
 
 	private void collectPragmas() throws RodinDBException {
 		// unit pragma, attached to constants
-		final IAttributeType.String UNITATTRIBUTE = RodinCore
-				.getStringAttrType("de.prob.units.unitPragmaAttribute");
+		try {
+			final IAttributeType.String UNITATTRIBUTE = RodinCore
+					.getStringAttrType("de.prob.units.unitPragmaAttribute");
 
-		final IVariable[] variables = origin.getVariables();
+			final IVariable[] variables = origin.getVariables();
 
-		for (final IVariable variable : variables) {
-			if (variable.hasAttribute(UNITATTRIBUTE)) {
-				String content = variable.getAttributeValue(UNITATTRIBUTE);
+			for (final IVariable variable : variables) {
+				if (variable.hasAttribute(UNITATTRIBUTE)) {
+					String content = variable.getAttributeValue(UNITATTRIBUTE);
 
-				if (!content.isEmpty()) {
-					pragmas.add(new UnitPragma(getResource(), variable
-							.getIdentifierString(), content));
+					if (!content.isEmpty()) {
+						pragmas.add(new UnitPragma(getResource(), variable
+								.getIdentifierString(), content));
+					}
 				}
 			}
+		} catch (IllegalArgumentException ex) {
+			// Happens if the attribute does not exist, i.e. the unit plugin is
+			// not installed
 		}
 	}
 
