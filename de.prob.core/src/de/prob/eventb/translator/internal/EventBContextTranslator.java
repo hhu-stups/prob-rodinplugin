@@ -51,13 +51,15 @@ public final class EventBContextTranslator extends EventBTranslator {
 
 	private void constructTranslation(final IPrologTermOutput pto)
 			throws TranslationFailedException {
-		List<ContextTranslator> translators = new ArrayList<ContextTranslator>();
-//		translators.add(ContextTranslator.create(context));
+		List<ContextTranslator> contextTranslators = new ArrayList<ContextTranslator>();
+
+		// translators.add(ContextTranslator.create(context));
 		if (context instanceof ISCContextRoot) {
 			ISCContextRoot root = (ISCContextRoot) context;
-			collectContexts(translators, new ArrayList<String>(), root);
+			collectContexts(contextTranslators, new ArrayList<String>(), root);
 		}
-		printProlog(new ArrayList<ModelTranslator>(), translators, pto);
+
+		printProlog(new ArrayList<ModelTranslator>(), contextTranslators, pto);
 	}
 
 	private void collectContexts(final List<ContextTranslator> translatorMap,
