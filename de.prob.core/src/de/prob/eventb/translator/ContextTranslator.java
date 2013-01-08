@@ -374,18 +374,17 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 		final List<PPredicate> list = new ArrayList<PPredicate>(
 				predicates.length);
 		for (final ISCAxiom element : predicates) {
-			if (element.isTheorem() != theorems) {
-				continue;
+			if (element.isTheorem() == theorems) {
+				final PredicateVisitor visitor = new PredicateVisitor(
+						new LinkedList<String>());
+				element.getPredicate(ff, te).accept(visitor);
+				final PPredicate predicate = visitor.getPredicate();
+				list.add(predicate);
+				labelMapping.put(predicate, element);
+				proofspragmas.add(new ClassifiedPragma("discharged", predicate,
+						Arrays.asList(new String[0]), Arrays
+								.asList(new String[0]), NO_POS, NO_POS));
 			}
-			final PredicateVisitor visitor = new PredicateVisitor(
-					new LinkedList<String>());
-			element.getPredicate(ff, te).accept(visitor);
-			final PPredicate predicate = visitor.getPredicate();
-			list.add(predicate);
-			labelMapping.put(predicate, element);
-			proofspragmas.add(new ClassifiedPragma("discharged", predicate,
-					Arrays.asList(new String[0]), Arrays.asList(new String[0]),
-					NO_POS, NO_POS));
 		}
 		return list;
 	}
