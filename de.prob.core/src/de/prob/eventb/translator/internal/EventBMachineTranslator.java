@@ -11,6 +11,8 @@ import java.util.List;
 
 import org.eventb.core.ISCInternalContext;
 import org.eventb.core.ISCMachineRoot;
+import org.eventb.core.ast.FormulaFactory;
+import org.eventb.core.ast.ITypeEnvironment;
 import org.rodinp.core.IRodinFile;
 import org.rodinp.core.RodinDBException;
 
@@ -103,12 +105,13 @@ public final class EventBMachineTranslator extends EventBTranslator {
 		final List<ContextTranslator> translators = new ArrayList<ContextTranslator>();
 		final List<String> processed = new ArrayList<String>();
 
-		for (ISCMachineRoot m : models) {
-			ISCInternalContext[] seenContexts;
+		for (final ISCMachineRoot m : models) {
 			try {
-				seenContexts = m.getSCSeenContexts();
-				for (ISCInternalContext seenContext : seenContexts) {
-					collectContexts(translators, processed, seenContext);
+				final FormulaFactory ff = m.getFormulaFactory();
+				final ITypeEnvironment te = m.getTypeEnvironment(ff);
+				final ISCInternalContext[] seenContexts = m.getSCSeenContexts();
+				for (final ISCInternalContext seenContext : seenContexts) {
+					collectContexts(translators, processed, seenContext, ff, te);
 				}
 			} catch (RodinDBException e) {
 				throw new TranslationFailedException(e);
@@ -118,12 +121,13 @@ public final class EventBMachineTranslator extends EventBTranslator {
 	}
 
 	private void collectContexts(final List<ContextTranslator> translatorMap,
-			final List<String> processed, final ISCInternalContext context)
+			final List<String> processed, final ISCInternalContext context,
+			final FormulaFactory ff, final ITypeEnvironment te)
 			throws TranslationFailedException {
 		String name = context.getElementName();
 		if (!processed.contains(name)) {
 			processed.add(name);
-			translatorMap.add(ContextTranslator.create(context));
+			translatorMap.add(ContextTranslator.create(context, ff, te));
 		}
 	}
 

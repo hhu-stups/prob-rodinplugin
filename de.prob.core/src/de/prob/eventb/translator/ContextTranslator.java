@@ -15,6 +15,7 @@ import java.util.Map;
 
 import org.eclipse.core.runtime.Assert;
 import org.eventb.core.IContextRoot;
+import org.eventb.core.IEventBRoot;
 import org.eventb.core.IExtendsContext;
 import org.eventb.core.ILabeledElement;
 import org.eventb.core.IPOSequent;
@@ -28,11 +29,11 @@ import org.eventb.core.ISCContext;
 import org.eventb.core.ISCContextRoot;
 import org.eventb.core.ISCExtendsContext;
 import org.eventb.core.ISCInternalContext;
-import org.eventb.core.ISCMachineRoot;
 import org.eventb.core.ast.FormulaFactory;
 import org.eventb.core.ast.ITypeEnvironment;
 import org.eventb.core.seqprover.IConfidence;
 import org.rodinp.core.IAttributeType;
+import org.rodinp.core.IInternalElement;
 import org.rodinp.core.IRodinElement;
 import org.rodinp.core.IRodinFile;
 import org.rodinp.core.IRodinProject;
@@ -71,17 +72,70 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 	private final List<ClassifiedPragma> proofspragmas = new ArrayList<ClassifiedPragma>();
 	private final List<IPragma> pragmas = new ArrayList<IPragma>();
 
-	public static ContextTranslator create(final ISCContext context)
+	private final IEventBRoot root;
+	private final FormulaFactory ff;
+	private final ITypeEnvironment te;
+
+	public static ContextTranslator create(final ISCContextRoot context)
 			throws TranslationFailedException {
-		ContextTranslator contextTranslator = new ContextTranslator(context);
 		try {
-			contextTranslator.translate();
+			assertConsistentModel(context);
+			final FormulaFactory ff = context.getFormulaFactory();
+			final ITypeEnvironment te = context.getTypeEnvironment(ff);
+			final ContextTranslator translator = new ContextTranslator(context,
+					ff, te, context);
+			translator.translate();
+			return translator;
 		} catch (RodinDBException e) {
-			final String message = "A Rodin exception occured during translation process. Possible cause: building aborted or still in progress. Please wait until building has finished before starting ProB. If this does not help, perform a clean and start ProB after building has finished. Original Exception: ";
-			throw new TranslationFailedException(context.getComponentName(),
-					message + e.getLocalizedMessage());
+			throw createTranslationFailedException(context, e);
 		}
-		return contextTranslator;
+	}
+
+	public static ContextTranslator create(final ISCInternalContext context,
+			final FormulaFactory ff, final ITypeEnvironment te)
+			throws TranslationFailedException {
+		final IEventBRoot root = getRootContext(context);
+		final ContextTranslator translator = new ContextTranslator(context, ff,
+				te, root);
+		try {
+			assertConsistentModel(context.getRoot());
+			translator.translate();
+		} catch (RodinDBException e) {
+			throw createTranslationFailedException(context, e);
+		}
+		return translator;
+	}
+
+	private static IEventBRoot getRootContext(ISCInternalContext context) {
+		try {
+			String elementName = context.getElementName();
+			IRodinProject rodinProject = context.getRodinProject();
+			IRodinFile rodinFile = rodinProject.getRodinFile(elementName
+					+ ".bcc");
+			if (rodinFile.exists()) {
+				final IInternalElement element = rodinFile.getRoot();
+				if (element instanceof IEventBRoot) {
+					return (IEventBRoot) element;
+				}
+			}
+		} catch (Exception e) {
+			// We do not guarantee to include proof infos. If something goes
+			// wrong, we ignore the Proof info.
+		}
+		return null;
+	}
+
+	private static TranslationFailedException createTranslationFailedException(
+			final ISCContext context, RodinDBException e)
+			throws TranslationFailedException {
+		final String message = "A Rodin exception occured during translation process. Possible cause: building aborted or still in progress. Please wait until building has finished before starting ProB. If this does not help, perform a clean and start ProB after building has finished. Original Exception: ";
+		return new TranslationFailedException(context.getComponentName(),
+				message + e.getLocalizedMessage());
+	}
+
+	private static boolean assertConsistentModel(IInternalElement machine_root)
+			throws RodinDBException {
+		return Assert.isTrue(machine_root.getRodinFile().isConsistent());
 	}
 
 	/**
@@ -91,41 +145,27 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 	 * contains errors)
 	 * 
 	 * @param context
+	 *            The context to translate
+	 * @param ff
+	 *            The FormulaFactory needed to extract the predicates
+	 * @param te
+	 *            The TypeEnvironment needed to extract the predicates
+	 * @param root
+	 *            the root to access the proofs
 	 * @throws TranslationFailedException
-	 * @throws RodinDBException
 	 */
-	private ContextTranslator(final ISCContext context)
-			throws TranslationFailedException {
+	private ContextTranslator(final ISCContext context,
+			final FormulaFactory ff, final ITypeEnvironment te,
+			final IEventBRoot root) throws TranslationFailedException {
 		this.context = context;
+		this.ff = ff;
+		this.te = te;
+		this.root = root;
 	}
 
 	private void translate() throws RodinDBException {
-		if (context instanceof ISCContextRoot) {
-			ISCContextRoot context_root = (ISCContextRoot) context;
-			Assert.isTrue(context_root.getRodinFile().isConsistent());
-		} else if (context instanceof ISCInternalContext) {
-			ISCInternalContext context_internal = (ISCInternalContext) context;
-
-			try {
-
-				String elementName = context_internal.getElementName();
-				IRodinProject rodinProject = context_internal.getRodinProject();
-				IRodinFile rodinFile = rodinProject.getRodinFile(elementName
-						+ ".bcc");
-				if (rodinFile.exists()) {
-					ISCContextRoot root = (ISCContextRoot) rodinFile.getRoot();
-					collectProofInfo(root);
-				}
-			} catch (Exception e) {
-				// We do not guarantee to include proof infos. If something goes
-				// wrong, we ignore the Proof info.
-			}
-
-			ISCMachineRoot machine_root = (ISCMachineRoot) context_internal
-					.getRoot();
-			Assert.isTrue(machine_root.getRodinFile().isConsistent());
-		}
 		translateContext();
+		collectProofInfo();
 		collectPragmas();
 	}
 
@@ -148,8 +188,13 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 		}
 	}
 
-	private void collectProofInfo(ISCContextRoot origin)
-			throws RodinDBException {
+	private void collectProofInfo() throws RodinDBException {
+		if (root != null) {
+			collectProofInfo(root);
+		}
+	}
+
+	private void collectProofInfo(IEventBRoot origin) throws RodinDBException {
 
 		IPSRoot proofStatus = origin.getPSRoot();
 		IPSStatus[] statuses = proofStatus.getStatuses();
@@ -334,8 +379,6 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 			}
 			final PredicateVisitor visitor = new PredicateVisitor(
 					new LinkedList<String>());
-			final FormulaFactory ff = FormulaFactory.getDefault();
-			final ITypeEnvironment te = ff.makeTypeEnvironment();
 			element.getPredicate(ff, te).accept(visitor);
 			final PPredicate predicate = visitor.getPredicate();
 			list.add(predicate);
@@ -352,7 +395,6 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 	}
 
 	public List<IPragma> getPragmas() {
-		// TODO Auto-generated method stub
 		return pragmas;
 	}
 
