@@ -14,7 +14,7 @@ import org.junit.Test;
 import de.prob.core.translator.TranslationFailedException;
 import de.prob.eventb.translator.TranslatorFactory;
 
-public class EmptyTranslationsTests extends AbstractEventBTests {
+public class EmptyTranslationsTest extends AbstractEventBTests {
 	private StringWriter stringWriter;
 	private PrintWriter writer;
 

@@ -13,7 +13,7 @@ import org.junit.Test;
 import de.prob.core.translator.TranslationFailedException;
 import de.prob.eventb.translator.TranslatorFactory;
 
-public class ContextWithConstants extends AbstractEventBTests {
+public class ContextWithConstantsTest extends AbstractEventBTests {
 	private StringWriter stringWriter;
 	private PrintWriter writer;
 
