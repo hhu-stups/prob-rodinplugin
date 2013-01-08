@@ -224,7 +224,7 @@ litigation.
    </license>
 
    <requires>
-      <import feature="de.prob2.feature" version="2.3.5.qualifier"/>
+      <import feature="de.prob2.feature" version="2.3.5" match="greaterOrEqual"/>
    </requires>
 
    <plugin
