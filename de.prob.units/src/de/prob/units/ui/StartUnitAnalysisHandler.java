@@ -38,6 +38,7 @@ import org.eventb.core.IVariable;
 import org.rodinp.core.IRodinFile;
 import org.rodinp.core.RodinCore;
 import org.rodinp.core.RodinDBException;
+import org.rodinp.core.RodinMarkerUtil;
 
 import de.prob.core.Animator;
 import de.prob.core.LimitedLogger;
@@ -57,6 +58,7 @@ import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 import de.prob.units.pragmas.InferredUnitPragmaAttribute;
+import de.prob.units.problems.MultipleUnitsInferredMarker;
 
 public class StartUnitAnalysisHandler extends AbstractHandler implements
 		IHandler {
@@ -94,6 +96,8 @@ public class StartUnitAnalysisHandler extends AbstractHandler implements
 		// Get the Selection
 		final IEventBRoot rootElement = getRootElement();
 		final IFile resource = extractResource(rootElement);
+
+		removeUnitErrorMarkers(resource);
 
 		ArrayList<String> errors = new ArrayList<String>();
 		boolean realError = checkErrorMarkers(resource, errors);
@@ -152,6 +156,23 @@ public class StartUnitAnalysisHandler extends AbstractHandler implements
 		return null;
 	}
 
+	private void removeUnitErrorMarkers(final IFile resource) {
+		IProject project = resource.getProject();
+		try {
+			IMarker[] markers = project.findMarkers(
+					"org.eclipse.core.resources.problemmarker", true,
+					IResource.DEPTH_INFINITE);
+			for (IMarker iMarker : markers) {
+				if (iMarker.getAttribute(RodinMarkerUtil.ERROR_CODE, "")
+						.equals(MultipleUnitsInferredMarker.ERROR_CODE)) {
+					iMarker.delete();
+				}
+			}
+
+		} catch (CoreException e1) {
+		}
+	}
+
 	private boolean checkErrorMarkers(final IFile resource, List<String> errors) {
 		boolean result = false;
 		IProject project = resource.getProject();
@@ -201,7 +222,6 @@ public class StartUnitAnalysisHandler extends AbstractHandler implements
 			// find and update variables
 			IVariable[] allVariables = rootElement.getMachineRoot()
 					.getVariables();
-
 			for (IVariable var : allVariables) {
 				String variableName = var.getIdentifierString();
 				if (variables.containsKey(variableName)) {
@@ -209,6 +229,23 @@ public class StartUnitAnalysisHandler extends AbstractHandler implements
 							InferredUnitPragmaAttribute.ATTRIBUTE,
 							variables.get(variableName),
 							new NullProgressMonitor());
+
+					if (variables.get(variableName).equals("error")) {
+						var.createProblemMarker(
+								InferredUnitPragmaAttribute.ATTRIBUTE,
+								new MultipleUnitsInferredMarker(
+										IMarker.SEVERITY_ERROR,
+										"Multiple Units inferred for Variable "
+												+ variableName));
+					}
+					if (variables.get(variableName).equals("unknown")) {
+						var.createProblemMarker(
+								InferredUnitPragmaAttribute.ATTRIBUTE,
+								new MultipleUnitsInferredMarker(
+										IMarker.SEVERITY_WARNING,
+										"No Units inferred for Variable "
+												+ variableName));
+					}
 				}
 			}
 
@@ -224,6 +261,23 @@ public class StartUnitAnalysisHandler extends AbstractHandler implements
 							InferredUnitPragmaAttribute.ATTRIBUTE,
 							variables.get(constantName),
 							new NullProgressMonitor());
+
+					if (variables.get(constantName).equals("error")) {
+						var.createProblemMarker(
+								InferredUnitPragmaAttribute.ATTRIBUTE,
+								new MultipleUnitsInferredMarker(
+										IMarker.SEVERITY_ERROR,
+										"Multiple Units inferred for Constant "
+												+ constantName));
+					}
+					if (variables.get(constantName).equals("unknown")) {
+						var.createProblemMarker(
+								InferredUnitPragmaAttribute.ATTRIBUTE,
+								new MultipleUnitsInferredMarker(
+										IMarker.SEVERITY_WARNING,
+										"No Units inferred for Constant "
+												+ constantName));
+					}
 				}
 			}
 		} else {
