@@ -5,7 +5,7 @@
          point="org.eventb.ui.editorItems">
       <textAttribute
             class="de.prob.units.pragmas.UnitPragmaAttribute"
-            expandsHorizontally="true"
+            expandsHorizontally="false"
             id="de.prob.units.unitPragmaAttribute"
             isMath="true"
             prefix="Physical Unit:"
@@ -32,7 +32,7 @@
       </attributeRelation>
       <textAttribute
             class="de.prob.units.pragmas.InferredUnitPragmaAttribute"
-            expandsHorizontally="true"
+            expandsHorizontally="false"
             id="de.prob.units.inferredUnitPragmaAttribute"
             isMath="true"
             prefix="Inferred Physical Unit:"
