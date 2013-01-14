@@ -181,7 +181,7 @@ public class ModelTranslator extends AbstractComponentTranslator {
 	}
 
 	private void collectPragmas() throws RodinDBException {
-		// unit pragma, attached to constants
+		// unit pragma, attached to variables
 		try {
 			final IAttributeType.String UNITATTRIBUTE = RodinCore
 					.getStringAttrType("de.prob.units.unitPragmaAttribute");
