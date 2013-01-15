@@ -230,7 +230,7 @@ public class StartUnitAnalysisHandler extends AbstractHandler implements
 							variables.get(variableName),
 							new NullProgressMonitor());
 
-					if (variables.get(variableName).equals("error")) {
+					if (variables.get(variableName).startsWith("multiple")) {
 						var.createProblemMarker(
 								InferredUnitPragmaAttribute.ATTRIBUTE,
 								new MultipleUnitsInferredMarker(
