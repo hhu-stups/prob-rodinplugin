@@ -106,6 +106,9 @@
          <scModule
                id="de.prob.units.machineAttributeProcessor">
          </scModule>
+         <scModule
+               id="de.prob.units.contextAttributeProcessor">
+         </scModule>
       </configuration>
    </extension>
    <extension
@@ -118,6 +121,15 @@
             parent="org.eventb.core.machineModule">
          <prereq
                id="org.eventb.core.machineVariableModule">
+         </prereq>
+      </processorType>
+      <processorType
+            class="de.prob.units.sc.ContextAttributeProcessor"
+            id="contextAttributeProcessor"
+            name="contextAttributeProcessor"
+            parent="org.eventb.core.contextModule">
+         <prereq
+               id="org.eventb.core.contextConstantModule">
          </prereq>
       </processorType>
    </extension>
