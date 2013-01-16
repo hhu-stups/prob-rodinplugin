@@ -87,7 +87,7 @@ public class PragmaTranslatorTest extends AbstractEventBTests {
 		TranslatorFactory.translate(context, writer);
 
 		assertEquals(
-				"package(load_event_b_project([],[event_b_context(none,'TestContext',[extends(none,[]),constants(none,[identifier(none,cst1)]),axioms(none,[equal(rodinpos('TestContext',axm1,'('),identifier(none,cst1),integer(none,5))]),theorems(none,[]),sets(none,[])])],[exporter_version(2)],_Error)).\n",
+				"package(load_event_b_project([],[event_b_context(none,'TestContext',[extends(none,[]),constants(none,[identifier(none,cst1)]),axioms(none,[equal(rodinpos('TestContext',axm1,'('),identifier(none,cst1),integer(none,5))]),theorems(none,[]),sets(none,[])])],[exporter_version(2),pragma(unit,'TestContext',cst1,[test])],_Error)).\n",
 				stringWriter.getBuffer().toString());
 	}
 }
