@@ -10,9 +10,11 @@ import org.eventb.core.sc.SCCore;
 import org.eventb.core.sc.SCProcessorModule;
 import org.eventb.core.sc.state.ISCStateRepository;
 import org.eventb.core.tool.IModuleType;
+import org.rodinp.core.IAttributeType;
 import org.rodinp.core.IInternalElement;
 import org.rodinp.core.IRodinElement;
 import org.rodinp.core.IRodinFile;
+import org.rodinp.core.RodinCore;
 
 import de.prob.units.Activator;
 import de.prob.units.pragmas.UnitPragmaAttribute;
@@ -37,11 +39,15 @@ public class ContextAttributeProcessor extends SCProcessorModule {
 		IConstant[] constants = contextRoot.getConstants();
 		ISCConstant[] scconstants = scContextRoot.getSCConstants();
 
-		if (constants.length == 0)
+		if (constants.length == 0 || scconstants.length == 0)
 			return;
 
 		for (IConstant constant : constants) {
-			String identifier = constant.getElementName();
+			final IAttributeType.String IDENTIFIER_ATTRIBUTE = RodinCore
+					.getStringAttrType("org.eventb.core.identifier");
+
+			String identifier = constant
+					.getAttributeValue(IDENTIFIER_ATTRIBUTE);
 			ISCConstant scConstant = scContextRoot.getSCConstant(identifier);
 
 			// might have been filtered out by previous modules
