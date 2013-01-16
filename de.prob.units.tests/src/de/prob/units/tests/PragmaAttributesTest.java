@@ -62,7 +62,6 @@ public class PragmaAttributesTest extends AbstractEventBTests {
 		// save file and build workspace - this triggers static check, and
 		// generates missing files
 		context.getRodinFile().save(monitor, false);
-		project.getRodinProject().save(monitor, false);
 		workspace.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
 
 		// there should be one constant and one SC constant
