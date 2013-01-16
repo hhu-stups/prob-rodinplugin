@@ -1,5 +1,6 @@
-package de.prob.units.sc;
+package de.prob.units;
 
+import org.eventb.core.IContextRoot;
 import org.eventb.core.IMachineRoot;
 import org.rodinp.core.ElementChangedEvent;
 import org.rodinp.core.IElementChangedListener;
@@ -11,8 +12,6 @@ import org.rodinp.core.IRodinElementDelta;
 import org.rodinp.core.IRodinFile;
 import org.rodinp.core.IRodinProject;
 import org.rodinp.core.RodinDBException;
-
-import de.prob.units.Activator;
 
 /**
  * Class that updates the configuration of files, to add the static checker
@@ -51,6 +50,14 @@ public class ConfSettor implements IElementChangedListener {
 				final String conf = mch.getConfiguration();
 				if (!conf.contains(CONFIG)) {
 					mch.setConfiguration(conf + ";" + CONFIG, null);
+				}
+			}
+
+			if (root.getElementType().equals(IContextRoot.ELEMENT_TYPE)) {
+				final IContextRoot ctx = (IContextRoot) root;
+				final String conf = ctx.getConfiguration();
+				if (!conf.contains(CONFIG)) {
+					ctx.setConfiguration(conf + ";" + CONFIG, null);
 				}
 			}
 		}

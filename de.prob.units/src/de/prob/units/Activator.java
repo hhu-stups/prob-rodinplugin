@@ -4,7 +4,6 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 import org.rodinp.core.RodinCore;
 
-import de.prob.units.sc.ConfSettor;
 
 /**
  * The activator class controls the plug-in life cycle
