@@ -2,6 +2,7 @@ package de.prob.units.sc;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eventb.core.EventBAttributes;
 import org.eventb.core.IConstant;
 import org.eventb.core.IContextRoot;
 import org.eventb.core.ISCConstant;
@@ -43,11 +44,8 @@ public class ContextAttributeProcessor extends SCProcessorModule {
 			return;
 
 		for (IConstant constant : constants) {
-			final IAttributeType.String IDENTIFIER_ATTRIBUTE = RodinCore
-					.getStringAttrType("org.eventb.core.identifier");
-
 			String identifier = constant
-					.getAttributeValue(IDENTIFIER_ATTRIBUTE);
+					.getAttributeValue(EventBAttributes.IDENTIFIER_ATTRIBUTE);
 			ISCConstant scConstant = scContextRoot.getSCConstant(identifier);
 
 			// might have been filtered out by previous modules
