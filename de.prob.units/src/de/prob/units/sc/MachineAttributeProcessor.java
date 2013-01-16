@@ -40,8 +40,8 @@ public class MachineAttributeProcessor extends SCProcessorModule {
 			return;
 
 		for (IVariable var : variables) {
-			ISCVariable scVar = scMachineRoot.getSCVariable(var
-					.getIdentifierString());
+			String identifier = var.getIdentifierString();
+			ISCVariable scVar = scMachineRoot.getSCVariable(identifier);
 
 			// might have been filtered out by previous modules
 			if (scVar.exists()) {
