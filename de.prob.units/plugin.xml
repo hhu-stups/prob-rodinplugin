@@ -98,4 +98,27 @@
             name="Content of a unit Pragma received from ProB">
       </attributeType>
    </extension>
+   <extension
+         point="org.eventb.core.configurations">
+      <configuration
+            id="mchBase"
+            name="mchBase">
+         <scModule
+               id="de.prob.units.machineAttributeProcessor">
+         </scModule>
+      </configuration>
+   </extension>
+   <extension
+         id="scMachineModuleTypes"
+         point="org.eventb.core.scModuleTypes">
+      <processorType
+            class="de.prob.units.sc.MachineAttributeProcessor"
+            id="machineAttributeProcessor"
+            name="machineAttributeProcessor"
+            parent="org.eventb.core.machineModule">
+         <prereq
+               id="org.eventb.core.machineVariableModule">
+         </prereq>
+      </processorType>
+   </extension>
 </plugin>
