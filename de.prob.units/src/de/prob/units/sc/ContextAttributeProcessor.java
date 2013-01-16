@@ -44,7 +44,7 @@ public class ContextAttributeProcessor extends SCProcessorModule {
 					.getIdentifierString());
 
 			// might have been filtered out by previous modules
-			if (scConstant != null) {
+			if (scConstant.exists()) {
 				// original might not contain the attribute
 				if (constant.hasAttribute(UnitPragmaAttribute.ATTRIBUTE)) {
 					String attribute = constant

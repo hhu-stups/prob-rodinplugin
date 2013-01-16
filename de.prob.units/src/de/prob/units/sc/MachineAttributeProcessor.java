@@ -44,7 +44,7 @@ public class MachineAttributeProcessor extends SCProcessorModule {
 					.getIdentifierString());
 
 			// might have been filtered out by previous modules
-			if (scVar != null) {
+			if (scVar.exists()) {
 				// original might not contain the attribute
 				if (var.hasAttribute(UnitPragmaAttribute.ATTRIBUTE)) {
 					String attribute = var
