@@ -29,19 +29,20 @@ public class ContextAttributeProcessor extends SCProcessorModule {
 		assert (target instanceof ISCContextRoot);
 
 		// get all variables and copy over the attributes
-		IRodinFile machineFile = (IRodinFile) element;
-		IContextRoot constantRoot = (IContextRoot) machineFile.getRoot();
+		IRodinFile contextFile = (IRodinFile) element;
+		IContextRoot contextRoot = (IContextRoot) contextFile.getRoot();
 
 		ISCContextRoot scContextRoot = (ISCContextRoot) target;
 
-		IConstant[] constants = constantRoot.getConstants();
+		IConstant[] constants = contextRoot.getConstants();
+		ISCConstant[] scconstants = scContextRoot.getSCConstants();
 
 		if (constants.length == 0)
 			return;
 
 		for (IConstant constant : constants) {
-			ISCConstant scConstant = scContextRoot.getSCConstant(constant
-					.getIdentifierString());
+			String identifier = constant.getElementName();
+			ISCConstant scConstant = scContextRoot.getSCConstant(identifier);
 
 			// might have been filtered out by previous modules
 			if (scConstant.exists()) {
