@@ -594,6 +594,20 @@ task tycho(dependsOn: [createPoms] , type:Exec) {
 		<artifactId>${artifactId}</artifactId>
 		<version>${versionNumber}</version>
 		<packaging>eclipse-test-plugin</packaging>
+		<build>
+			<plugins>
+				<plugin>
+					<groupId>org.eclipse.tycho</groupId>
+					<artifactId>tycho-surefire-plugin</artifactId>
+        				<configuration>
+						<useUIHarness>true</useUIHarness>
+						<useUIThread>true</useUIThread>
+						<argLine>-XstartOnFirstThread</argLine>
+						<product>org.rodinp.platform.product</product>
+        				</configuration>
+      				</plugin>
+    			</plugins>
+ 		</build>
 	""" }
 	
 			
