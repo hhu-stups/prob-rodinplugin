@@ -3,9 +3,9 @@ package de.prob.units.sc;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eventb.core.IMachineRoot;
+import org.eventb.core.ISCMachineRoot;
 import org.eventb.core.ISCVariable;
 import org.eventb.core.IVariable;
-import org.eventb.core.basis.SCMachineRoot;
 import org.eventb.core.sc.SCCore;
 import org.eventb.core.sc.SCProcessorModule;
 import org.eventb.core.sc.state.ISCStateRepository;
@@ -26,13 +26,13 @@ public class MachineAttributeProcessor extends SCProcessorModule {
 			ISCStateRepository repository, IProgressMonitor monitor)
 			throws CoreException {
 		assert (element instanceof IRodinFile);
-		assert (target instanceof SCMachineRoot);
+		assert (target instanceof ISCMachineRoot);
 
 		// get all variables and copy over the attributes
 		IRodinFile machineFile = (IRodinFile) element;
 		IMachineRoot machineRoot = (IMachineRoot) machineFile.getRoot();
 
-		SCMachineRoot scMachineRoot = (SCMachineRoot) target;
+		ISCMachineRoot scMachineRoot = (ISCMachineRoot) target;
 
 		IVariable[] variables = machineRoot.getVariables();
 
