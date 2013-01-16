@@ -35,7 +35,6 @@ import org.eventb.core.ISCVariable;
 import org.eventb.core.ISCVariant;
 import org.eventb.core.ISCWitness;
 import org.eventb.core.ITraceableElement;
-import org.eventb.core.IVariable;
 import org.eventb.core.ast.FormulaFactory;
 import org.eventb.core.ast.ITypeEnvironment;
 import org.eventb.core.ast.Predicate;
@@ -186,9 +185,9 @@ public class ModelTranslator extends AbstractComponentTranslator {
 			final IAttributeType.String UNITATTRIBUTE = RodinCore
 					.getStringAttrType("de.prob.units.unitPragmaAttribute");
 
-			final IVariable[] variables = origin.getVariables();
+			final ISCVariable[] variables = machine.getSCVariables();
 
-			for (final IVariable variable : variables) {
+			for (final ISCVariable variable : variables) {
 				if (variable.hasAttribute(UNITATTRIBUTE)) {
 					String content = variable.getAttributeValue(UNITATTRIBUTE);
 
