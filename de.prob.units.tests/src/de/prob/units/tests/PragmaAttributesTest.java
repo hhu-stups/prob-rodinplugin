@@ -1,8 +1,5 @@
 package de.prob.units.tests;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -11,28 +8,15 @@ import org.eventb.core.IContextRoot;
 import org.eventb.core.IEventBProject;
 import org.eventb.core.IMachineRoot;
 import org.eventb.core.IVariable;
-import org.junit.Before;
 import org.junit.Test;
 import org.rodinp.core.IAttributeType;
 import org.rodinp.core.RodinCore;
 
 import de.prob.core.translator.TranslationFailedException;
-import de.prob.eventb.translator.TranslatorFactory;
 
-public class PragmaTranslatorTest extends AbstractEventBTests {
+public class PragmaAttributesTest extends AbstractEventBTests {
 	final IAttributeType.String UNITATTRIBUTE = RodinCore
 			.getStringAttrType("de.prob.units.unitPragmaAttribute");
-
-	private StringWriter stringWriter;
-	private PrintWriter writer;
-
-	@Before
-	@Override
-	protected void setUp() throws Exception {
-		super.setUp();
-		stringWriter = new StringWriter();
-		writer = new PrintWriter(stringWriter);
-	}
 
 	@Test
 	public void testMachineWithUnitPragmaOnVariable() throws CoreException,
@@ -55,11 +39,12 @@ public class PragmaTranslatorTest extends AbstractEventBTests {
 		assertEquals(1, machine.getVariables().length);
 		assertEquals(1, machine.getSCMachineRoot().getSCVariables().length);
 
-		TranslatorFactory.translate(machine, writer);
-
-		assertEquals(
-				"package(load_event_b_project([event_b_model(none,'TestMachine',[sees(none,[]),variables(none,[identifier(none,v1)]),invariant(none,[equal(rodinpos('TestMachine',inv1,'('),identifier(none,v1),integer(none,5))]),theorems(none,[]),events(none,[])])],[],[exporter_version(2),pragma(unit,'TestMachine',v1,[test])],_Error)).\n",
-				stringWriter.getBuffer().toString());
+		// and both should hold our attribute
+		assertEquals("test",
+				machine.getVariables()[0].getAttributeValue(UNITATTRIBUTE));
+		assertEquals("test",
+				machine.getSCMachineRoot().getSCVariables()[0]
+						.getAttributeValue(UNITATTRIBUTE));
 	}
 
 	@Test
@@ -81,13 +66,16 @@ public class PragmaTranslatorTest extends AbstractEventBTests {
 		workspace.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
 
 		// there should be one constant and one SC constant
+		// both holding the attribute
 		assertEquals(1, context.getConstants().length);
 		assertEquals(1, context.getSCContextRoot().getSCConstants().length);
 
-		TranslatorFactory.translate(context, writer);
+		// and both should hold our attribute
+		assertEquals("test",
+				context.getConstants()[0].getAttributeValue(UNITATTRIBUTE));
+		assertEquals("test",
+				context.getSCContextRoot().getSCConstants()[0]
+						.getAttributeValue(UNITATTRIBUTE));
 
-		assertEquals(
-				"package(load_event_b_project([],[event_b_context(none,'TestContext',[extends(none,[]),constants(none,[identifier(none,cst1)]),axioms(none,[equal(rodinpos('TestContext',axm1,'('),identifier(none,cst1),integer(none,5))]),theorems(none,[]),sets(none,[])])],[exporter_version(2)],_Error)).\n",
-				stringWriter.getBuffer().toString());
 	}
 }
