@@ -2,14 +2,20 @@ package de.prob.units.sc;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eventb.core.IMachineRoot;
+import org.eventb.core.ISCVariable;
+import org.eventb.core.IVariable;
+import org.eventb.core.basis.SCMachineRoot;
 import org.eventb.core.sc.SCCore;
 import org.eventb.core.sc.SCProcessorModule;
 import org.eventb.core.sc.state.ISCStateRepository;
 import org.eventb.core.tool.IModuleType;
 import org.rodinp.core.IInternalElement;
 import org.rodinp.core.IRodinElement;
+import org.rodinp.core.IRodinFile;
 
 import de.prob.units.Activator;
+import de.prob.units.pragmas.UnitPragmaAttribute;
 
 public class MachineAttributeProcessor extends SCProcessorModule {
 	public static final IModuleType<MachineAttributeProcessor> MODULE_TYPE = SCCore
@@ -19,7 +25,36 @@ public class MachineAttributeProcessor extends SCProcessorModule {
 	public void process(IRodinElement element, IInternalElement target,
 			ISCStateRepository repository, IProgressMonitor monitor)
 			throws CoreException {
-		System.out.println("blah");
+		assert (element instanceof IRodinFile);
+		assert (target instanceof SCMachineRoot);
+
+		// get all variables and copy over the attributes
+		IRodinFile machineFile = (IRodinFile) element;
+		IMachineRoot machineRoot = (IMachineRoot) machineFile.getRoot();
+
+		SCMachineRoot scMachineRoot = (SCMachineRoot) target;
+
+		IVariable[] variables = machineRoot.getVariables();
+
+		if (variables.length == 0)
+			return;
+
+		for (IVariable var : variables) {
+			ISCVariable scVar = scMachineRoot.getSCVariable(var
+					.getIdentifierString());
+
+			// might have been filtered out by previous modules
+			if (scVar != null) {
+				// original might not contain the attribute
+				if (var.hasAttribute(UnitPragmaAttribute.ATTRIBUTE)) {
+					String attribute = var
+							.getAttributeValue(UnitPragmaAttribute.ATTRIBUTE);
+
+					scVar.setAttributeValue(UnitPragmaAttribute.ATTRIBUTE,
+							attribute, monitor);
+				}
+			}
+		}
 
 	}
 
