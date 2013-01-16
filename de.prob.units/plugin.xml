@@ -119,9 +119,6 @@
             id="machineAttributeProcessor"
             name="machineAttributeProcessor"
             parent="org.eventb.core.machineModule">
-         <prereq
-               id="org.eventb.core.machineVariableModule">
-         </prereq>
       </processorType>
       <processorType
             class="de.prob.units.sc.ContextAttributeProcessor"
