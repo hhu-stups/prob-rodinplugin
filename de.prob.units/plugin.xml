@@ -128,9 +128,6 @@
             id="contextAttributeProcessor"
             name="contextAttributeProcessor"
             parent="org.eventb.core.contextModule">
-         <prereq
-               id="org.eventb.core.contextConstantModule">
-         </prereq>
       </processorType>
    </extension>
 </plugin>
