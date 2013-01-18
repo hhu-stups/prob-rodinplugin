@@ -10,27 +10,29 @@ import de.prob.parser.BindingGenerator;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.parser.ResultParserException;
 import de.prob.prolog.output.IPrologTermOutput;
-import de.prob.prolog.term.ListPrologTerm;
+import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 
 public final class GetPluginResultCommand implements IComposableCommand {
 
 	private final String resultID;
-	private ListPrologTerm result;
+	private CompoundPrologTerm result;
 
 	public GetPluginResultCommand(final String resultID) {
 		this.resultID = resultID;
 	}
 
-	public ListPrologTerm getResult() {
+	public CompoundPrologTerm getResult() {
 		return result;
 	}
 
+	@Override
 	public void processResult(
 			final ISimplifiedROMap<String, PrologTerm> bindings)
 			throws CommandException {
 		try {
-			result = BindingGenerator.getList(bindings, "Bindings");
+			result = BindingGenerator.getCompoundTerm(bindings.get("Bindings"),
+					1);
 		} catch (ResultParserException e) {
 			CommandException commandException = new CommandException(
 					e.getLocalizedMessage(), e);
@@ -39,6 +41,7 @@ public final class GetPluginResultCommand implements IComposableCommand {
 		}
 	}
 
+	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
 		pto.openTerm("get_plugin_output").printAtomOrNumber(resultID)
 				.printVariable("Bindings").closeTerm();

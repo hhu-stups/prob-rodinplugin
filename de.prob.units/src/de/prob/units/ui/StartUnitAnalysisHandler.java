@@ -58,6 +58,7 @@ import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 import de.prob.units.pragmas.InferredUnitPragmaAttribute;
+import de.prob.units.pragmas.UnitPragmaAttribute;
 import de.prob.units.problems.MultipleUnitsInferredMarker;
 
 public class StartUnitAnalysisHandler extends AbstractHandler implements
@@ -75,6 +76,7 @@ public class StartUnitAnalysisHandler extends AbstractHandler implements
 			}
 		}
 
+		@Override
 		public void resourceChanged(final IResourceChangeEvent event) {
 			if (path != null) {
 				final IResourceDelta delta = event.getDelta();
@@ -89,6 +91,7 @@ public class StartUnitAnalysisHandler extends AbstractHandler implements
 	private ISelection fSelection;
 	private ModificationListener listener;
 
+	@Override
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
 
 		fSelection = HandlerUtil.getCurrentSelection(event);
@@ -134,16 +137,14 @@ public class StartUnitAnalysisHandler extends AbstractHandler implements
 				final StartAnimationCommand start = new StartAnimationCommand();
 				final ActivateUnitPluginCommand activatePlugin = new ActivateUnitPluginCommand();
 
-				final ComposedCommand composed = new ComposedCommand(clear,
-						setPrefs, load, start, activatePlugin);
-
-				animator.execute(composed);
-
 				GetPluginResultCommand pluginResultCommand = new GetPluginResultCommand(
 						"Grounded Result State");
 
-				animator.execute(pluginResultCommand);
+				final ComposedCommand composed = new ComposedCommand(clear,
+						setPrefs, load, start, activatePlugin,
+						pluginResultCommand);
 
+				animator.execute(composed);
 				processResults(pluginResultCommand.getResult());
 			} catch (ProBException e) {
 				e.notifyUserOnce();
@@ -194,23 +195,41 @@ public class StartUnitAnalysisHandler extends AbstractHandler implements
 		return result;
 	}
 
-	private void processResults(ListPrologTerm result) throws RodinDBException,
-			ExecutionException {
+	private void processResults(CompoundPrologTerm result)
+			throws RodinDBException, ExecutionException {
 		// preprocess the list into a map
 		Map<String, String> variables = new HashMap<String, String>();
-		for (PrologTerm term : result) {
-			CompoundPrologTerm compoundTerm;
-			try {
-				compoundTerm = BindingGenerator
-						.getCompoundTerm(term, "bind", 2);
+		List<String> offendingDefinitions = new ArrayList<String>();
 
-				variables.put(
-						PrologTerm.atomicString(compoundTerm.getArgument(1)),
-						PrologTerm.atomicString(compoundTerm.getArgument(2)));
-			} catch (ResultParserException e) {
-				CommandException commandException = new CommandException(
-						e.getLocalizedMessage(), e);
-				commandException.notifyUserOnce();
+		ListPrologTerm liste = BindingGenerator.getList(result.getArgument(1));
+
+		for (PrologTerm term : liste) {
+			if (term.isAtom()) {
+				// this is an error message. do something about it.
+				String offendingUnitDefinition = PrologTerm.atomicString(term)
+						.replace("Incorrect unit definition: ['", "");
+				offendingUnitDefinition = offendingUnitDefinition.replace("']",
+						"");
+
+				// add error to the list of incorrect definitions. error markers
+				// will be attached later
+				offendingDefinitions.add(offendingUnitDefinition);
+
+			} else {
+				// process inferred units and add to map
+				CompoundPrologTerm compoundTerm;
+				try {
+					compoundTerm = BindingGenerator.getCompoundTerm(term,
+							"bind", 2);
+
+					variables.put(PrologTerm.atomicString(compoundTerm
+							.getArgument(1)), PrologTerm
+							.atomicString(compoundTerm.getArgument(2)));
+				} catch (ResultParserException e) {
+					CommandException commandException = new CommandException(
+							e.getLocalizedMessage(), e);
+					commandException.notifyUserOnce();
+				}
 			}
 		}
 
@@ -247,6 +266,20 @@ public class StartUnitAnalysisHandler extends AbstractHandler implements
 												+ variableName));
 					}
 				}
+
+				// check if the attached unit pragma (given by user) was marked
+				// as offending
+				if (var.hasAttribute(UnitPragmaAttribute.ATTRIBUTE)) {
+					if (offendingDefinitions.contains(var
+							.getAttributeValue(UnitPragmaAttribute.ATTRIBUTE))) {
+						var.createProblemMarker(
+								InferredUnitPragmaAttribute.ATTRIBUTE,
+								new MultipleUnitsInferredMarker(
+										IMarker.SEVERITY_ERROR,
+										"Incorrect Unit Definition on Variable "
+												+ variableName));
+					}
+				}
 			}
 
 		} else if (rootElement instanceof IContextRoot) {
@@ -254,16 +287,16 @@ public class StartUnitAnalysisHandler extends AbstractHandler implements
 			IConstant[] allConstants = rootElement.getContextRoot()
 					.getConstants();
 
-			for (IConstant var : allConstants) {
-				String constantName = var.getIdentifierString();
+			for (IConstant cst : allConstants) {
+				String constantName = cst.getIdentifierString();
 				if (variables.containsKey(constantName)) {
-					var.setAttributeValue(
+					cst.setAttributeValue(
 							InferredUnitPragmaAttribute.ATTRIBUTE,
 							variables.get(constantName),
 							new NullProgressMonitor());
 
 					if (variables.get(constantName).equals("error")) {
-						var.createProblemMarker(
+						cst.createProblemMarker(
 								InferredUnitPragmaAttribute.ATTRIBUTE,
 								new MultipleUnitsInferredMarker(
 										IMarker.SEVERITY_ERROR,
@@ -271,11 +304,25 @@ public class StartUnitAnalysisHandler extends AbstractHandler implements
 												+ constantName));
 					}
 					if (variables.get(constantName).equals("unknown")) {
-						var.createProblemMarker(
+						cst.createProblemMarker(
 								InferredUnitPragmaAttribute.ATTRIBUTE,
 								new MultipleUnitsInferredMarker(
 										IMarker.SEVERITY_WARNING,
 										"No Units inferred for Constant "
+												+ constantName));
+					}
+				}
+
+				// check if the attached unit pragma (given by user) was marked
+				// as offending
+				if (cst.hasAttribute(UnitPragmaAttribute.ATTRIBUTE)) {
+					if (offendingDefinitions.contains(cst
+							.getAttributeValue(UnitPragmaAttribute.ATTRIBUTE))) {
+						cst.createProblemMarker(
+								InferredUnitPragmaAttribute.ATTRIBUTE,
+								new MultipleUnitsInferredMarker(
+										IMarker.SEVERITY_ERROR,
+										"Incorrect Unit Definition on Constant "
 												+ constantName));
 					}
 				}
