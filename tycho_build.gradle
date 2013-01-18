@@ -599,11 +599,6 @@ task tycho(dependsOn: [createPoms] , type:Exec) {
 				<plugin>
 					<groupId>org.eclipse.tycho</groupId>
 					<artifactId>tycho-surefire-plugin</artifactId>
-        				<configuration>
-						<useUIHarness>true</useUIHarness>
-						<useUIThread>true</useUIThread>
-						<product>org.rodinp.platform.product</product>
-        				</configuration>
       				</plugin>
     			</plugins>
  		</build>
