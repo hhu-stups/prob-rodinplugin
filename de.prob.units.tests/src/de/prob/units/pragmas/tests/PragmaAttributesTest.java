@@ -1,4 +1,4 @@
-package de.prob.units.tests;
+package de.prob.units.pragmas.tests;
 
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
@@ -13,6 +13,7 @@ import org.rodinp.core.IAttributeType;
 import org.rodinp.core.RodinCore;
 
 import de.prob.core.translator.TranslationFailedException;
+import de.prob.units.tests.AbstractEventBTests;
 
 public class PragmaAttributesTest extends AbstractEventBTests {
 	final IAttributeType.String UNITATTRIBUTE = RodinCore

@@ -1,4 +1,4 @@
-package de.prob.units.tests;
+package de.prob.units.translation.tests;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -18,6 +18,7 @@ import org.rodinp.core.RodinCore;
 
 import de.prob.core.translator.TranslationFailedException;
 import de.prob.eventb.translator.TranslatorFactory;
+import de.prob.units.tests.AbstractEventBTests;
 
 public class PragmaTranslatorTest extends AbstractEventBTests {
 	final IAttributeType.String UNITATTRIBUTE = RodinCore
