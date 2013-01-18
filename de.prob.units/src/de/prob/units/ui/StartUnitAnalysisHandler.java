@@ -242,6 +242,10 @@ public class StartUnitAnalysisHandler extends AbstractHandler implements
 			IVariable[] allVariables = rootElement.getMachineRoot()
 					.getVariables();
 			for (IVariable var : allVariables) {
+				// reset inferred unit
+				var.setAttributeValue(InferredUnitPragmaAttribute.ATTRIBUTE,
+						"", new NullProgressMonitor());
+
 				String variableName = var.getIdentifierString();
 				if (variables.containsKey(variableName)) {
 					var.setAttributeValue(
@@ -288,6 +292,10 @@ public class StartUnitAnalysisHandler extends AbstractHandler implements
 					.getConstants();
 
 			for (IConstant cst : allConstants) {
+				// reset inferred unit
+				cst.setAttributeValue(InferredUnitPragmaAttribute.ATTRIBUTE,
+						"", new NullProgressMonitor());
+
 				String constantName = cst.getIdentifierString();
 				if (variables.containsKey(constantName)) {
 					cst.setAttributeValue(
