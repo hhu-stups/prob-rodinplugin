@@ -602,7 +602,7 @@ task tycho(dependsOn: [createPoms] , type:Exec) {
         				<configuration>
 						<useUIHarness>true</useUIHarness>
 						<useUIThread>true</useUIThread>
-						<argLine>-XstartOnFirstThread</argLine>
+//						<argLine>-XstartOnFirstThread</argLine>
 						<product>org.rodinp.platform.product</product>
         				</configuration>
       				</plugin>
