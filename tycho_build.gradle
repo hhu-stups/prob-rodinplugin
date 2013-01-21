@@ -1,3 +1,4 @@
+import org.apache.tools.ant.taskdefs.condition.Os
 /*
 	Build Script can be executed via 'gradle install'
 	Build Script Dependencies can be downloaded via 'gradle collectDepenencies'
@@ -590,19 +591,33 @@ task tycho(dependsOn: [createPoms] , type:Exec) {
 	""" }
 	
     def testArtifact(artifactId,versionNumber) { """
-		<groupId>${groupId()}</groupId>
-		<artifactId>${artifactId}</artifactId>
-		<version>${versionNumber}</version>
-		<packaging>eclipse-test-plugin</packaging>
-		<build>
-			<plugins>
-				<plugin>
-					<groupId>org.eclipse.tycho</groupId>
-					<artifactId>tycho-surefire-plugin</artifactId>
-      				</plugin>
-    			</plugins>
- 		</build>
-	""" }
+			<groupId>${groupId()}</groupId>
+			<artifactId>${artifactId}</artifactId>
+			<version>${versionNumber}</version>
+			<packaging>eclipse-test-plugin</packaging>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.eclipse.tycho</groupId>
+						<artifactId>tycho-surefire-plugin</artifactId>
+	        				<configuration>
+							<!-- <useUIHarness>true</useUIHarness> -->
+							<!-- <useUIThread>true</useUIThread> -->
+							${macTestArguments()}
+							<!-- <product>org.rodinp.platform.product</product> -->
+	        				</configuration>
+	      				</plugin>
+	    			</plugins>
+	 		</build>
+		""" }
+		
+	String macTestArguments() {
+		if ( Os.isFamily(Os.FAMILY_MAC) ){
+			return "<argLine>-XstartOnFirstThread</argLine>\n"
+		}else{
+			return "\n"
+		}
+	}
 	
 			
 	def start() { """<?xml version="1.0" encoding="UTF-8"?>
