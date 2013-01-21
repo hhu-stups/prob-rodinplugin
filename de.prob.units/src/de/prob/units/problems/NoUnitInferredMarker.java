@@ -5,17 +5,15 @@ import org.rodinp.core.IRodinProblem;
 
 import de.prob.units.Activator;
 
-public class MultipleUnitsInferredMarker implements IRodinProblem {
+public class NoUnitInferredMarker implements IRodinProblem {
 
 	private final String message;
-	private final int severity = IMarker.SEVERITY_ERROR;
-
+	private final int severity = IMarker.SEVERITY_WARNING;
 	public static final String ERROR_CODE = Activator.PLUGIN_ID + "."
 			+ "multipleUnitsInferred";
 
-	public MultipleUnitsInferredMarker(String cstOrVar) {
-		this.message = "Multiple Units inferred for Constant/Variable "
-				+ cstOrVar;
+	public NoUnitInferredMarker(String cstOrVar) {
+		this.message = "No Units inferred for Constant/Variable " + cstOrVar;
 	}
 
 	@Override

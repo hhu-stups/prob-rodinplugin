@@ -59,7 +59,9 @@ import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 import de.prob.units.pragmas.InferredUnitPragmaAttribute;
 import de.prob.units.pragmas.UnitPragmaAttribute;
+import de.prob.units.problems.IncorrectUnitDefinitionMarker;
 import de.prob.units.problems.MultipleUnitsInferredMarker;
+import de.prob.units.problems.NoUnitInferredMarker;
 
 public class StartUnitAnalysisHandler extends AbstractHandler implements
 		IHandler {
@@ -168,6 +170,14 @@ public class StartUnitAnalysisHandler extends AbstractHandler implements
 						.equals(MultipleUnitsInferredMarker.ERROR_CODE)) {
 					iMarker.delete();
 				}
+				if (iMarker.getAttribute(RodinMarkerUtil.ERROR_CODE, "")
+						.equals(IncorrectUnitDefinitionMarker.ERROR_CODE)) {
+					iMarker.delete();
+				}
+				if (iMarker.getAttribute(RodinMarkerUtil.ERROR_CODE, "")
+						.equals(NoUnitInferredMarker.ERROR_CODE)) {
+					iMarker.delete();
+				}
 			}
 
 		} catch (CoreException e1) {
@@ -256,18 +266,12 @@ public class StartUnitAnalysisHandler extends AbstractHandler implements
 					if (variables.get(variableName).startsWith("multiple")) {
 						var.createProblemMarker(
 								InferredUnitPragmaAttribute.ATTRIBUTE,
-								new MultipleUnitsInferredMarker(
-										IMarker.SEVERITY_ERROR,
-										"Multiple Units inferred for Variable "
-												+ variableName));
+								new MultipleUnitsInferredMarker(variableName));
 					}
 					if (variables.get(variableName).equals("unknown")) {
 						var.createProblemMarker(
 								InferredUnitPragmaAttribute.ATTRIBUTE,
-								new MultipleUnitsInferredMarker(
-										IMarker.SEVERITY_WARNING,
-										"No Units inferred for Variable "
-												+ variableName));
+								new NoUnitInferredMarker(variableName));
 					}
 				}
 
@@ -278,10 +282,7 @@ public class StartUnitAnalysisHandler extends AbstractHandler implements
 							.getAttributeValue(UnitPragmaAttribute.ATTRIBUTE))) {
 						var.createProblemMarker(
 								InferredUnitPragmaAttribute.ATTRIBUTE,
-								new MultipleUnitsInferredMarker(
-										IMarker.SEVERITY_ERROR,
-										"Incorrect Unit Definition on Variable "
-												+ variableName));
+								new IncorrectUnitDefinitionMarker(variableName));
 					}
 				}
 			}
@@ -306,18 +307,12 @@ public class StartUnitAnalysisHandler extends AbstractHandler implements
 					if (variables.get(constantName).equals("error")) {
 						cst.createProblemMarker(
 								InferredUnitPragmaAttribute.ATTRIBUTE,
-								new MultipleUnitsInferredMarker(
-										IMarker.SEVERITY_ERROR,
-										"Multiple Units inferred for Constant "
-												+ constantName));
+								new MultipleUnitsInferredMarker(constantName));
 					}
 					if (variables.get(constantName).equals("unknown")) {
 						cst.createProblemMarker(
 								InferredUnitPragmaAttribute.ATTRIBUTE,
-								new MultipleUnitsInferredMarker(
-										IMarker.SEVERITY_WARNING,
-										"No Units inferred for Constant "
-												+ constantName));
+								new IncorrectUnitDefinitionMarker(constantName));
 					}
 				}
 
@@ -328,10 +323,7 @@ public class StartUnitAnalysisHandler extends AbstractHandler implements
 							.getAttributeValue(UnitPragmaAttribute.ATTRIBUTE))) {
 						cst.createProblemMarker(
 								InferredUnitPragmaAttribute.ATTRIBUTE,
-								new MultipleUnitsInferredMarker(
-										IMarker.SEVERITY_ERROR,
-										"Incorrect Unit Definition on Constant "
-												+ constantName));
+								new MultipleUnitsInferredMarker(constantName));
 					}
 				}
 			}
