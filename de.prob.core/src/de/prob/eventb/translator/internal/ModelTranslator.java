@@ -15,8 +15,7 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.eventb.core.IConvergenceElement.Convergence;
-import org.eventb.core.IEvent;
-import org.eventb.core.IInvariant;
+import org.eventb.core.ILabeledElement;
 import org.eventb.core.IMachineRoot;
 import org.eventb.core.IPOSequent;
 import org.eventb.core.IPOSource;
@@ -40,8 +39,11 @@ import org.eventb.core.ast.FormulaFactory;
 import org.eventb.core.ast.ITypeEnvironment;
 import org.eventb.core.ast.Predicate;
 import org.eventb.core.seqprover.IConfidence;
+import org.rodinp.core.IAttributeType;
+import org.rodinp.core.IElementType;
 import org.rodinp.core.IRodinElement;
 import org.rodinp.core.IRodinFile;
+import org.rodinp.core.RodinCore;
 import org.rodinp.core.RodinDBException;
 
 import de.be4.classicalb.core.parser.node.AAnticipatedEventstatus;
@@ -67,6 +69,8 @@ import de.be4.classicalb.core.parser.node.PSubstitution;
 import de.be4.classicalb.core.parser.node.PWitness;
 import de.be4.classicalb.core.parser.node.TIdentifierLiteral;
 import de.prob.core.translator.TranslationFailedException;
+import de.prob.core.translator.pragmas.IPragma;
+import de.prob.core.translator.pragmas.UnitPragma;
 import de.prob.eventb.translator.AbstractComponentTranslator;
 import de.prob.eventb.translator.AssignmentVisitor;
 import de.prob.eventb.translator.ExpressionVisitor;
@@ -80,7 +84,9 @@ public class ModelTranslator extends AbstractComponentTranslator {
 	private final FormulaFactory ff;
 	private final ITypeEnvironment te;
 	private final IMachineRoot origin;
-	private final List<DischargedProof> proofs = new ArrayList<DischargedProof>();
+	private final List<ProofObligation> proofs = new ArrayList<ProofObligation>();
+	private final List<IPragma> pragmas = new ArrayList<IPragma>();
+
 	// private final List<String> depContext = new ArrayList<String>();
 
 	// Confined in the thread calling the factory method
@@ -113,8 +119,12 @@ public class ModelTranslator extends AbstractComponentTranslator {
 		return modelTranslator;
 	}
 
-	public List<DischargedProof> getProofs() {
+	public List<ProofObligation> getProofs() {
 		return Collections.unmodifiableList(proofs);
+	}
+
+	public List<IPragma> getPragmas() {
+		return Collections.unmodifiableList(pragmas);
 	}
 
 	public AEventBModelParseUnit getModelAST() {
@@ -164,6 +174,33 @@ public class ModelTranslator extends AbstractComponentTranslator {
 
 		// Check for fully discharged Invariants and Events
 		collectProofInfo();
+
+		// Collect Pragmas, Units, etc.
+		collectPragmas();
+	}
+
+	private void collectPragmas() throws RodinDBException {
+		// unit pragma, attached to variables
+		try {
+			final IAttributeType.String UNITATTRIBUTE = RodinCore
+					.getStringAttrType("de.prob.units.unitPragmaAttribute");
+
+			final ISCVariable[] variables = machine.getSCVariables();
+
+			for (final ISCVariable variable : variables) {
+				if (variable.hasAttribute(UNITATTRIBUTE)) {
+					String content = variable.getAttributeValue(UNITATTRIBUTE);
+
+					if (!content.isEmpty()) {
+						pragmas.add(new UnitPragma(getResource(), variable
+								.getIdentifierString(), content));
+					}
+				}
+			}
+		} catch (IllegalArgumentException ex) {
+			// Happens if the attribute does not exist, i.e. the unit plugin is
+			// not installed
+		}
 	}
 
 	private void collectProofInfo() throws RodinDBException {
@@ -176,41 +213,38 @@ public class ModelTranslator extends AbstractComponentTranslator {
 		for (IPSStatus status : statuses) {
 			final int confidence = status.getConfidence();
 			boolean broken = status.isBroken();
-			if (!broken && confidence == IConfidence.DISCHARGED_MAX) {
-				IPOSequent sequent = status.getPOSequent();
-				IPOSource[] sources = sequent.getSources();
 
-				IEvent evt = null;
-				IInvariant inv = null;
+			EProofStatus pstatus = EProofStatus.UNPROVEN;
 
-				for (IPOSource source : sources) {
+			if (!broken
+					&& (confidence > IConfidence.PENDING && confidence <= IConfidence.REVIEWED_MAX))
+				pstatus = EProofStatus.REVIEWED;
+			if (!broken && confidence == IConfidence.DISCHARGED_MAX)
+				pstatus = EProofStatus.PROVEN;
 
-					IRodinElement srcElement = source.getSource();
-					if (!srcElement.exists()) {
-						bugs.add(status.getElementName());
-						break;
-					}
+			IPOSequent sequent = status.getPOSequent();
+			IPOSource[] sources = sequent.getSources();
 
-					if (srcElement instanceof IEvent) {
-						IEvent tmp = (IEvent) srcElement;
-						if (((IMachineRoot) tmp.getParent()).equals(origin)) {
-							evt = tmp;
-						}
-					}
-					if (srcElement instanceof IInvariant) {
-						IInvariant tmp = (IInvariant) srcElement;
-						if (((IMachineRoot) tmp.getParent()).equals(origin)) {
-							inv = tmp;
-						}
-					}
+			String name = sequent.getDescription();
+
+			ArrayList<SequentSource> s = new ArrayList<SequentSource>(
+					sources.length);
+			for (IPOSource source : sources) {
+
+				IRodinElement srcElement = source.getSource();
+				if (!srcElement.exists()
+						|| !(srcElement instanceof ILabeledElement)) {
+					bugs.add(status.getElementName());
+					break;
 				}
-				if (evt != null && inv != null) {
-					proofs.add(new DischargedProof(origin, inv, evt));
-				}
-				if (evt == null && inv != null && inv.isTheorem()) {
-					proofs.add(new DischargedProof(origin, inv, evt));
-				}
+
+				ILabeledElement le = (ILabeledElement) srcElement;
+				IElementType<? extends IRodinElement> type = srcElement
+						.getElementType();
+				s.add(new SequentSource(type, le.getLabel()));
+
 			}
+			proofs.add(new ProofObligation(origin, s, name, pstatus));
 		}
 
 		if (!bugs.isEmpty()) {

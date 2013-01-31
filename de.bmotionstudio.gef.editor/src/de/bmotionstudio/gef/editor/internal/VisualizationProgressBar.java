@@ -113,9 +113,6 @@ public class VisualizationProgressBar extends ProgressBarDialog {
 				openErrorDialog(e.getMessage());
 				setClose(true);
 			}
-			return "Starting Operation Scheduler";
-		case 6:
-			startOperationScheduler();
 			return "Starting Visualization";
 		}
 
@@ -123,9 +120,9 @@ public class VisualizationProgressBar extends ProgressBarDialog {
 
 	}
 
-	private void startOperationScheduler() {
-		visualization.startOperationScheduler();
-	}
+	// private void startOperationScheduler() {
+	// visualization.startOperationScheduler();
+	// }
 
 	private void createVisualizationRoot() throws CoreException, IOException,
 			ParserConfigurationException, SAXException {

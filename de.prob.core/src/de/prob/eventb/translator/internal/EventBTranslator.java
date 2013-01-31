@@ -11,13 +11,11 @@ import java.util.Collection;
 import java.util.Map;
 
 import org.eclipse.core.runtime.Assert;
-import org.eventb.core.IEvent;
 import org.eventb.core.IEventBProject;
 import org.eventb.core.IEventBRoot;
 import org.eventb.core.ISCInternalContext;
 import org.eventb.core.ISCMachineRoot;
 import org.rodinp.core.IInternalElement;
-import org.rodinp.core.RodinDBException;
 
 import de.be4.classicalb.core.parser.analysis.prolog.ASTProlog;
 import de.be4.classicalb.core.parser.node.AEventBContextParseUnit;
@@ -25,18 +23,16 @@ import de.be4.classicalb.core.parser.node.AEventBModelParseUnit;
 import de.be4.classicalb.core.parser.node.Node;
 import de.prob.core.translator.ITranslator;
 import de.prob.core.translator.TranslationFailedException;
+import de.prob.core.translator.pragmas.IPragma;
 import de.prob.eventb.translator.AbstractComponentTranslator;
 import de.prob.eventb.translator.ContextTranslator;
-import de.prob.eventb.translator.Theories;
 import de.prob.prolog.output.IPrologTermOutput;
 
 public abstract class EventBTranslator implements ITranslator {
 	protected final IEventBProject project;
-	private final String name;
 
 	protected EventBTranslator(final IEventBRoot root) {
 		this.project = root.getEventBProject();
-		this.name = root.getComponentName();
 	}
 
 	// another constructor to cater for ISCInternalContext (which is not a root
@@ -44,7 +40,6 @@ public abstract class EventBTranslator implements ITranslator {
 	protected EventBTranslator(final ISCInternalContext ctx) {
 		Assert.isTrue(ctx.getRoot() instanceof ISCMachineRoot);
 		this.project = ((ISCMachineRoot) ctx.getRoot()).getEventBProject();
-		this.name = ctx.getComponentName();
 	}
 
 	private LabelPositionPrinter createPrinter(
@@ -89,7 +84,7 @@ public abstract class EventBTranslator implements ITranslator {
 			Collection<ContextTranslator> contextTranslators,
 			final IPrologTermOutput pout) throws TranslationFailedException {
 
-		ArrayList<DischargedProof> list = new ArrayList<DischargedProof>();
+		ArrayList<ProofObligation> list = new ArrayList<ProofObligation>();
 
 		for (ContextTranslator contextTranslator : contextTranslators) {
 			list.addAll(contextTranslator.getProofs());
@@ -98,25 +93,42 @@ public abstract class EventBTranslator implements ITranslator {
 			list.addAll(modelTranslator.getProofs());
 		}
 
-		for (DischargedProof proof : list) {
-			pout.openTerm("discharged");
-			pout.printAtom(proof.machine.getRodinFile().getBareName());
-			try {
-				IEvent event = proof.event;
-				final String elementName = proof.predicate;
-				if (event != null)
-					pout.printAtom(event.getLabel());
-				pout.printAtom(elementName);
-			} catch (RodinDBException e) {
-				final String details = "Translation error while getting information about discharged proof obligations";
-				throw new TranslationFailedException(name, details);
+		for (ProofObligation proof : list) {
+			pout.openTerm("po");
+			pout.printAtom(proof.origin.getRodinFile().getBareName());
+			pout.printAtom(proof.kind);
+			pout.openList();
+			for (SequentSource source : proof.sources) {
+				pout.openTerm(source.type);
+				pout.printAtom(source.label);
+				pout.closeTerm();
 			}
+			pout.closeList();
 
+			pout.printAtom(proof.discharged.toString());
 			pout.closeTerm();
 		}
 
 		if (System.getProperty("flow") != null)
 			printFlowInformation(pout);
+	}
+
+	private void printPragmaContents(
+			Collection<ModelTranslator> refinementChainTranslators,
+			Collection<ContextTranslator> contextTranslators,
+			IPrologTermOutput pout) {
+		ArrayList<IPragma> pragmas = new ArrayList<IPragma>();
+
+		for (ContextTranslator contextTranslator : contextTranslators) {
+			pragmas.addAll(contextTranslator.getPragmas());
+		}
+		for (ModelTranslator modelTranslator : refinementChainTranslators) {
+			pragmas.addAll(modelTranslator.getPragmas());
+		}
+
+		for (IPragma pragma : pragmas) {
+			pragma.output(pout);
+		}
 	}
 
 	protected abstract void printFlowInformation(final IPrologTermOutput pout);
@@ -142,6 +154,10 @@ public abstract class EventBTranslator implements ITranslator {
 		printModels(refinementChainTranslators, pout, prolog);
 		printContexts(contextTranslators, pout, prolog);
 		pout.openList();
+		pout.openTerm("exporter_version");
+		pout.printNumber(2);
+		pout.closeTerm();
+
 		printProofInformation(refinementChainTranslators, contextTranslators,
 				pout);
 		try {
@@ -149,6 +165,10 @@ public abstract class EventBTranslator implements ITranslator {
 		} catch (RodinDBException e) {
 			e.printStackTrace();
 		}
+
+		printPragmaContents(refinementChainTranslators, contextTranslators,
+				pout);
+
 		pout.closeList();
 		pout.printVariable("_Error");
 		pout.closeTerm();

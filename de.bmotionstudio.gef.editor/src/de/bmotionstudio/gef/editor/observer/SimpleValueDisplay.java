@@ -6,6 +6,8 @@
 
 package de.bmotionstudio.gef.editor.observer;
 
+import org.eclipse.swt.widgets.Shell;
+
 import de.bmotionstudio.gef.editor.Animation;
 import de.bmotionstudio.gef.editor.AttributeConstants;
 import de.bmotionstudio.gef.editor.model.BControl;
@@ -56,8 +58,8 @@ public class SimpleValueDisplay extends Observer {
 
 	}
 
-	public ObserverWizard getWizard(final BControl bcontrol) {
-		return new WizardObserverSimpleValueDisplay(bcontrol, this);
+	public ObserverWizard getWizard(Shell shell, final BControl bcontrol) {
+		return new WizardObserverSimpleValueDisplay(shell, bcontrol, this);
 	}
 
 	public String getType() {

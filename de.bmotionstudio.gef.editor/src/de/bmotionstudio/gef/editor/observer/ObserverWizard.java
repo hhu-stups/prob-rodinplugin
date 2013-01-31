@@ -7,6 +7,8 @@
 package de.bmotionstudio.gef.editor.observer;
 
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.PlatformUI;
 
 import de.bmotionstudio.gef.editor.BMotionAbstractWizard;
 import de.bmotionstudio.gef.editor.model.BControl;
@@ -24,10 +26,8 @@ public abstract class ObserverWizard extends BMotionAbstractWizard {
 
 	private Observer observer;
 
-	protected Boolean observerDelete = false;
-
-	public ObserverWizard(BControl control, Observer observer) {
-		super(control);
+	public ObserverWizard(Shell shell, BControl control, Observer observer) {
+		super(shell, control);
 		this.observer = observer;
 	}
 
@@ -35,19 +35,18 @@ public abstract class ObserverWizard extends BMotionAbstractWizard {
 		return this.observer;
 	}
 
-	protected void setObserverDelete(Boolean b) {
-		this.observerDelete = b;
-	}
-
-	public Boolean isObserverDelete() {
-		return this.observerDelete;
-	}
-
 	public abstract Point getSize();
 	
 	@Override
 	public String getName() {
 		return observer.getName();
+	}
+
+	@Override
+	protected void configureShell(Shell newShell) {
+		super.configureShell(newShell);
+		PlatformUI.getWorkbench().getHelpSystem()
+				.setHelp(newShell, observer.getID());
 	}
 
 }

@@ -49,7 +49,17 @@
             class="de.bmotionstudio.gef.editor.library.LibraryView"
             icon="icons/icon_library.gif"
             id="de.bmotionstudio.gef.editor.LibraryView"
-            name="BMS Library">
+            name="Library"
+            restorable="true">
+      </view>
+      <view
+            allowMultiple="false"
+            category="de.bmotionstudio.views"
+            class="de.bmotionstudio.gef.editor.observer.view.ObserverView"
+            icon="icons/icon_observer.gif"
+            id="de.bmotionstudio.gef.editor.ObserverView"
+            name="Observer"
+            restorable="true">
       </view>
    </extension>
    <extension
@@ -110,7 +120,7 @@
    <extension
          point="org.eclipse.ui.commands">
       <command
-            defaultHandler="de.bmotionstudio.gef.editor.internal.OpenWebsiteHandler"
+            defaultHandler="de.bmotionstudio.gef.editor.handler.OpenWebsiteHandler"
             id="de.bmotionstudio.gef.editor.command.openBMotionStudioWebsite"
             name="Open website">
       </command>
@@ -119,7 +129,7 @@
             name="Start Visualization from Editor">
       </command>
       <command
-            defaultHandler="de.bmotionstudio.gef.editor.internal.StartVisualizationFileHandler"
+            defaultHandler="de.bmotionstudio.gef.editor.handler.StartVisualizationFileHandler"
             id="de.bmotionstudio.command.startVisualizationFromFile"
             name="Start Visualization from File">
       </command>
@@ -127,7 +137,7 @@
    <extension
          point="org.eclipse.ui.handlers">
       <handler
-            class="de.bmotionstudio.gef.editor.internal.StartVisualizationEditorHandler"
+            class="de.bmotionstudio.gef.editor.handler.StartVisualizationEditorHandler"
             commandId="de.bmotionstudio.command.startVisualizationFromEditor">
          <enabledWhen>
             <with
@@ -156,6 +166,9 @@
       <registerImages
             class="de.bmotionstudio.gef.editor.EditorImageRegistry">
       </registerImages>
+      <registerImages
+            class="de.bmotionstudio.gef.editor.ImageRegistry">
+      </registerImages>
    </extension>
    
  <extension
@@ -169,142 +182,142 @@
             icon="icons/eclipse16/image_obj.gif"
             id="de.bmotionstudio.gef.editor.image"
             name="Image"
-            service="de.bmotionstudio.gef.editor.service.BImageService">
+            service="de.bmotionstudio.gef.editor.model.service.BImageService">
       </control>
       <control
             groupid="de.bmotionstudio.gef.editor.group.main"
             icon="icons/icon_button.gif"
             id="de.bmotionstudio.gef.editor.button"
             name="Button"
-            service="de.bmotionstudio.gef.editor.service.BButtonService">
+            service="de.bmotionstudio.gef.editor.model.service.BButtonService">
       </control>
       <control
             groupid="de.bmotionstudio.gef.editor.group.main"
             icon="icons/icon_radiobutton_c.gif"
             id="de.bmotionstudio.gef.editor.radiobutton"
             name="Radiobutton"
-            service="de.bmotionstudio.gef.editor.service.BRadioButtonService">
+            service="de.bmotionstudio.gef.editor.model.service.BRadioButtonService">
       </control>
       <control
             groupid="de.bmotionstudio.gef.editor.group.main"
             icon="icons/icon_checked.gif"
             id="de.bmotionstudio.gef.editor.checkbox"
             name="Checkbox"
-            service="de.bmotionstudio.gef.editor.service.BCheckboxService">
+            service="de.bmotionstudio.gef.editor.model.service.BCheckboxService">
       </control>
       <control
             groupid="de.bmotionstudio.gef.editor.group.main"
             icon="icons/eclipse16/overview_obj.gif"
             id="de.bmotionstudio.gef.editor.composite"
             name="Composite"
-            service="de.bmotionstudio.gef.editor.service.BCompositeService">
+            service="de.bmotionstudio.gef.editor.model.service.BCompositeService">
       </control>
       <control
             groupid="de.bmotionstudio.gef.editor.group.main"
             icon="icons/icon_text.gif"
             id="de.bmotionstudio.gef.editor.text"
             name="Text"
-            service="de.bmotionstudio.gef.editor.service.BTextService">
+            service="de.bmotionstudio.gef.editor.model.service.BTextService">
       </control>
       <control
             groupid="de.bmotionstudio.gef.editor.group.main"
             icon="icons/icon_textfield.gif"
             id="de.bmotionstudio.gef.editor.textfield"
             name="Textfield"
-            service="de.bmotionstudio.gef.editor.service.BTextfieldService">
+            service="de.bmotionstudio.gef.editor.model.service.BTextfieldService">
       </control>
       <control
             groupid="de.bmotionstudio.gef.editor.group.main"
             icon="icons/icon_rectangle.gif"
             id="de.bmotionstudio.gef.editor.rectangle"
             name="Rectanlge"
-            service="de.bmotionstudio.gef.editor.service.BRectangleService">
+            service="de.bmotionstudio.gef.editor.model.service.BRectangleService">
       </control>
       <control
             groupid="de.bmotionstudio.gef.editor.group.main"
             icon="icons/icon_ellipse.gif"
             id="de.bmotionstudio.gef.editor.ellipse"
             name="Ellipse"
-            service="de.bmotionstudio.gef.editor.service.BEllipseService">
+            service="de.bmotionstudio.gef.editor.model.service.BEllipseService">
       </control>
       <control
             groupid="de.bmotionstudio.gef.editor.group.main"
             icon="icons/icon_connection16.gif"
             id="de.bmotionstudio.gef.editor.connection"
             name="Connection"
-            service="de.bmotionstudio.gef.editor.service.BConnectionService">
+            service="de.bmotionstudio.gef.editor.model.service.BConnectionService">
       </control>
       <control
             groupid="de.bmotionstudio.gef.editor.group.main"
             icon="icons/eclipse16/prop_ps.gif"
             id="de.bmotionstudio.gef.editor.table"
             name="Table"
-            service="de.bmotionstudio.gef.editor.service.BTableService">
+            service="de.bmotionstudio.gef.editor.model.service.BTableService">
       </control>
       <control
             groupid="de.bmotionstudio.gef.editor.group.main"
             icon="icons/eclipse16/prop_ps2.gif"
             id="de.bmotionstudio.gef.editor.tablecolumn"
             name="Column"
-            service="de.bmotionstudio.gef.editor.service.BTableColumnService">
+            service="de.bmotionstudio.gef.editor.model.service.BTableColumnService">
       </control>
       <control
             groupid="de.bmotionstudio.gef.editor.group.main"
             icon="icons/eclipse16/prop_ps3.gif"
             id="de.bmotionstudio.gef.editor.tablecell"
             name="Cell"
-            service="de.bmotionstudio.gef.editor.service.BTableCellService">
+            service="de.bmotionstudio.gef.editor.model.service.BTableCellService">
       </control>
       <control
             groupid="de.bmotionstudio.gef.editor.railway.group"
             icon="icons/icon_signal.gif"
             id="de.bmotionstudio.gef.editor.signal"
             name="Signal"
-            service="de.bmotionstudio.gef.editor.service.SignalService">
+            service="de.bmotionstudio.gef.editor.model.service.SignalService">
       </control>
       <control
             groupid="de.bmotionstudio.gef.editor.railway.group"
             icon="icons/eclipse16/smartmode_co.gif"
             id="de.bmotionstudio.gef.editor.light"
             name="Light"
-            service="de.bmotionstudio.gef.editor.service.LightService">
+            service="de.bmotionstudio.gef.editor.model.service.LightService">
       </control>
+      <group
+            id="de.bmotionstudio.gef.editor.industry.group"
+            name="Industry">
+      </group>
       <control
             groupid="de.bmotionstudio.gef.editor.industry.group"
             icon="icons/icon_tank.gif"
             id="de.bmotionstudio.gef.editor.tank"
             name="Tank"
-            service="de.bmotionstudio.gef.editor.service.TankService">
+            service="de.bmotionstudio.gef.editor.model.service.TankService">
       </control>
+      <group
+            id="de.bmotionstudio.gef.editor.railway.group"
+            name="Railway">
+      </group>
       <control
             groupid="de.bmotionstudio.gef.editor.railway.group"
             icon="icons/icon_tracknode.gif"
             id="de.bmotionstudio.gef.editor.tracknode"
             name="Node"
-            service="de.bmotionstudio.gef.editor.service.TrackNodeService">
+            service="de.bmotionstudio.gef.editor.model.service.TrackNodeService">
       </control>
       <control
             groupid="de.bmotionstudio.gef.editor.railway.group"
             icon="icons/icon_track.gif"
             id="de.bmotionstudio.gef.editor.track"
             name="Trac"
-            service="de.bmotionstudio.gef.editor.service.TrackService">
+            service="de.bmotionstudio.gef.editor.model.service.TrackService">
       </control>
       <control
             groupid="de.bmotionstudio.gef.editor.railway.group"
             icon="icons/icon_switch.gif"
             id="de.bmotionstudio.gef.editor.switch"
             name="Switch"
-            service="de.bmotionstudio.gef.editor.service.SwitchService">
+            service="de.bmotionstudio.gef.editor.model.service.SwitchService">
       </control>
-      <group
-            id="de.bmotionstudio.gef.editor.railway.group"
-            name="Railway">
-      </group>
-      <group
-            id="de.bmotionstudio.gef.editor.industry.group"
-            name="Industry">
-      </group>
    </extension>
    <extension
          point="de.bmotionstudio.gef.editor.observer">
@@ -335,10 +348,6 @@
             class="de.bmotionstudio.gef.editor.observer.SwitchCoordinates"
             description="Observer for switching the coordinates of the control"
             name="Switch Coordinates">
-      </observer>
-      <observer
-            class="de.bmotionstudio.gef.editor.observer.ExternalObserverScript"
-            name="External Observer Script">
       </observer>
       <observer
             class="de.bmotionstudio.gef.editor.observer.TableObserver"
@@ -383,12 +392,6 @@
       </menu>
    </extension>
    <extension
-         point="de.bmotionstudio.gef.editor.registerImages">
-      <registerImages
-            class="de.bmotionstudio.gef.editor.ImageRegistry">
-      </registerImages>
-   </extension>
-   <extension
          point="de.bmotionstudio.gef.editor.language">
       <language
 	        service="de.bmotionstudio.gef.editor.eventb.EventBLanguageService"
@@ -399,270 +402,255 @@
          point="de.bmotionstudio.gef.editor.includeObserver">
       <include
             language="EventB">
-         <observer
-               id="de.bmotionstudio.gef.editor.observer.ListenOperationByPredicate">
-            <control
-                  id="de.bmotionstudio.gef.editor.image">
-            </control>
-            <control
-                  id="de.bmotionstudio.gef.editor.button">
-            </control>
-            <control
-                  id="de.bmotionstudio.gef.editor.composite">
-            </control>
-            <control
-                  id="de.bmotionstudio.gef.editor.text">
-            </control>
-            <control
-                  id="de.bmotionstudio.gef.editor.ellipse">
-            </control>
-            <control
-                  id="de.bmotionstudio.gef.editor.rectangle">
-            </control>
-            <control
-                  id="de.bmotionstudio.gef.editor.radiobutton">
-            </control>
-            <control
-                  id="de.bmotionstudio.gef.editor.checkbox">
-            </control>
-            <control
-                  id="de.bmotionstudio.gef.editor.connection">
-            </control>
-            <control
-                  id="de.bmotionstudio.gef.editor.tablecell">
-            </control>
-            <control
-                  id="de.bmotionstudio.gef.editor.table">
-            </control>
-            <control
-                  id="de.bmotionstudio.gef.editor.tablecolumn">
-            </control>
-            <control
-                  id="de.bmotionstudio.gef.editor.signal">
-            </control>
-            <control
-                  id="de.bmotionstudio.gef.editor.tank">
-            </control>
-            <control
-                  id="de.bmotionstudio.gef.editor.switch">
-            </control>
-            <control
-                  id="de.bmotionstudio.gef.editor.track">
-            </control>
-            <control
-                  id="de.bmotionstudio.gef.editor.light">
-            </control>            
-         </observer>
-         <observer
-               id="de.bmotionstudio.gef.editor.observer.SwitchCoordinates">
-            <control
-                  id="de.bmotionstudio.gef.editor.image">
-            </control>
-            <control
-                  id="de.bmotionstudio.gef.editor.button">
-            </control>
-            <control
-                  id="de.bmotionstudio.gef.editor.composite">
-            </control>
-            <control
-                  id="de.bmotionstudio.gef.editor.text">
-            </control>
-            <control
-                  id="de.bmotionstudio.gef.editor.rectangle">
-            </control>
-            <control
-                  id="de.bmotionstudio.gef.editor.radiobutton">
-            </control>
-            <control
-                  id="de.bmotionstudio.gef.editor.textfield">
-            </control>
-            <control
-                  id="de.bmotionstudio.gef.editor.checkbox">
-            </control>
-            <control
-                  id="de.bmotionstudio.gef.editor.ellipse">
-            </control>
-            <control
-                  id="de.bmotionstudio.gef.editor.table">
-            </control>
-            <control
-                  id="de.bmotionstudio.gef.editor.signal">
-            </control>
-            <control
-                  id="de.bmotionstudio.gef.editor.tank">
-            </control>
-            <control
-                  id="de.bmotionstudio.gef.editor.switch">
-            </control>            
-         </observer>
-         <observer
-               id="de.bmotionstudio.gef.editor.observer.SimpleValueDisplay">
-            <control
-                  id="de.bmotionstudio.gef.editor.text">
-            </control>
-            <control
-                  id="de.bmotionstudio.gef.editor.radiobutton">
-            </control>
-            <control
-                  id="de.bmotionstudio.gef.editor.textfield">
-            </control>
-            <control
-                  id="de.bmotionstudio.gef.editor.button">
-            </control>
-            <control
-                  id="de.bmotionstudio.gef.editor.tablecell">
-            </control>
-         </observer>
-         <observer
-               id="de.bmotionstudio.gef.editor.observer.SetAttribute">
-            <control
-                  id="de.bmotionstudio.gef.editor.image">
-            </control>
-            <control
-                  id="de.bmotionstudio.gef.editor.button">
-            </control>
-            <control
-                  id="de.bmotionstudio.gef.editor.composite">
-            </control>
-            <control
-                  id="de.bmotionstudio.gef.editor.text">
-            </control>
-            <control
-                  id="de.bmotionstudio.gef.editor.rectangle">
-            </control>
-            <control
-                  id="de.bmotionstudio.gef.editor.radiobutton">
-            </control>
-            <control
-                  id="de.bmotionstudio.gef.editor.checkbox">
-            </control>
-            <control
-                  id="de.bmotionstudio.gef.editor.connection">
-            </control>
-            <control
-                  id="de.bmotionstudio.gef.editor.ellipse">
-            </control>
-            <control
-                  id="de.bmotionstudio.gef.editor.textfield">
-            </control>
-            <control
-                  id="de.bmotionstudio.gef.editor.tablecell">
-            </control>
-            <control
-                  id="de.bmotionstudio.gef.editor.table">
-            </control>
-            <control
-                  id="de.bmotionstudio.gef.editor.tablecolumn">
-            </control>
-          <control
-                  id="de.bmotionstudio.gef.editor.signal">
-            </control>
-            <control
-                  id="de.bmotionstudio.gef.editor.tank">
-            </control>
-            <control
-                  id="de.bmotionstudio.gef.editor.switch">
-            </control>
-            <control
-                  id="de.bmotionstudio.gef.editor.track">
-            </control>
-            <control
-                  id="de.bmotionstudio.gef.editor.light">
-            </control>                
-         </observer>
-         <observer
-               id="de.bmotionstudio.gef.editor.observer.SwitchChildCoordinates">
-            <control
-                  id="de.bmotionstudio.gef.editor.composite">
-            </control>
-            <control
-                  id="de.bmotionstudio.gef.editor.visualization">
-            </control>
-         </observer>
-         <observer
-               id="de.bmotionstudio.gef.editor.observer.ExternalObserverScript">
-            <control
-                  id="de.bmotionstudio.gef.editor.image">
-            </control>
-            <control
-                  id="de.bmotionstudio.gef.editor.button">
-            </control>
-            <control
-                  id="de.bmotionstudio.gef.editor.composite">
-            </control>
-            <control
-                  id="de.bmotionstudio.gef.editor.text">
-            </control>
-            <control
-                  id="de.bmotionstudio.gef.editor.rectangle">
-            </control>
-            <control
-                  id="de.bmotionstudio.gef.editor.radiobutton">
-            </control>
-            <control
-                  id="de.bmotionstudio.gef.editor.checkbox">
-            </control>
-            <control
-                  id="de.bmotionstudio.gef.editor.connection">
-            </control>
-            <control
-                  id="de.bmotionstudio.gef.editor.ellipse">
-            </control>
-            <control
-                  id="de.bmotionstudio.gef.editor.textfield">
-            </control>
-            <control
-                  id="de.bmotionstudio.gef.editor.tablecell">
-            </control>
-            <control
-                  id="de.bmotionstudio.gef.editor.table">
-            </control>
-            <control
-                  id="de.bmotionstudio.gef.editor.tablecolumn">
-            </control>
-            <control
-                  id="de.bmotionstudio.gef.editor.light">
-            </control>    
-            <control
-                  id="de.bmotionstudio.gef.editor.signal">
-            </control>
-            <control
-                  id="de.bmotionstudio.gef.editor.switch">
-            </control>
-            <control
-                  id="de.bmotionstudio.gef.editor.track">
-            </control>
-            <control
-                  id="de.bmotionstudio.gef.editor.tracknode">
-            </control>                            
-         </observer>
-         <observer
-               id="de.bmotionstudio.gef.editor.observer.SwitchImage">
-            <control
-                  id="de.bmotionstudio.gef.editor.image">
-            </control>
-            <control
-                  id="de.bmotionstudio.gef.editor.composite">
-            </control>
-            <control
-                  id="de.bmotionstudio.gef.editor.rectangle">
-            </control>
-            <control
-                  id="de.bmotionstudio.gef.editor.ellipse">
-            </control>
-         </observer>
-         <observer
-               id="de.bmotionstudio.gef.editor.observer.ColumnObserver">
-            <control
-                  id="de.bmotionstudio.gef.editor.tablecolumn">
-            </control>
-         </observer>
-         <observer
-               id="de.bmotionstudio.gef.editor.observer.TableObserver">
-            <control
-                  id="de.bmotionstudio.gef.editor.table">
-            </control>
-         </observer>
+         <control
+               id="de.bmotionstudio.gef.editor.image">
+            <observer
+                  id="de.bmotionstudio.gef.editor.observer.ListenOperationByPredicate">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.gef.editor.observer.SwitchImage">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.gef.editor.observer.SetAttribute">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.gef.editor.observer.SwitchCoordinates">
+            </observer>
+         </control>
+         <control
+               id="de.bmotionstudio.gef.editor.button">
+            <observer
+                  id="de.bmotionstudio.gef.editor.observer.SimpleValueDisplay">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.gef.editor.observer.ListenOperationByPredicate">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.gef.editor.observer.SetAttribute">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.gef.editor.observer.SwitchCoordinates">
+            </observer>
+         </control>
+         <control
+               id="de.bmotionstudio.gef.editor.checkbox">
+            <observer
+                  id="de.bmotionstudio.gef.editor.observer.SimpleValueDisplay">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.gef.editor.observer.ListenOperationByPredicate">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.gef.editor.observer.SetAttribute">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.gef.editor.observer.SwitchCoordinates">
+            </observer>
+         </control>
+         <control
+               id="de.bmotionstudio.gef.editor.radiobutton">
+            <observer
+                  id="de.bmotionstudio.gef.editor.observer.SimpleValueDisplay">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.gef.editor.observer.ListenOperationByPredicate">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.gef.editor.observer.SetAttribute">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.gef.editor.observer.SwitchCoordinates">
+            </observer>
+         </control>
+         <control
+               id="de.bmotionstudio.gef.editor.textfield">
+            <observer
+                  id="de.bmotionstudio.gef.editor.observer.SimpleValueDisplay">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.gef.editor.observer.ListenOperationByPredicate">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.gef.editor.observer.SetAttribute">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.gef.editor.observer.SwitchCoordinates">
+            </observer>
+         </control>
+         <control
+               id="de.bmotionstudio.gef.editor.composite">
+            <observer
+                  id="de.bmotionstudio.gef.editor.observer.SwitchImage">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.gef.editor.observer.ListenOperationByPredicate">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.gef.editor.observer.SetAttribute">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.gef.editor.observer.SwitchCoordinates">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.gef.editor.observer.SwitchChildCoordinates">
+            </observer>
+         </control>
+         <control
+               id="de.bmotionstudio.gef.editor.text">
+            <observer
+                  id="de.bmotionstudio.gef.editor.observer.SimpleValueDisplay">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.gef.editor.observer.ListenOperationByPredicate">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.gef.editor.observer.SetAttribute">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.gef.editor.observer.SwitchCoordinates">
+            </observer>
+         </control>
+         <control
+               id="de.bmotionstudio.gef.editor.rectangle">
+            <observer
+                  id="de.bmotionstudio.gef.editor.observer.ListenOperationByPredicate">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.gef.editor.observer.SwitchImage">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.gef.editor.observer.SetAttribute">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.gef.editor.observer.SwitchCoordinates">
+            </observer>
+         </control>
+         <control
+               id="de.bmotionstudio.gef.editor.connection">
+            <observer
+                  id="de.bmotionstudio.gef.editor.observer.ListenOperationByPredicate">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.gef.editor.observer.SetAttribute">
+            </observer>
+         </control>
+         <control
+               id="de.bmotionstudio.gef.editor.ellipse">
+            <observer
+                  id="de.bmotionstudio.gef.editor.observer.ListenOperationByPredicate">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.gef.editor.observer.SwitchImage">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.gef.editor.observer.SetAttribute">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.gef.editor.observer.SwitchCoordinates">
+            </observer>
+         </control>
+         <control
+               id="de.bmotionstudio.gef.editor.table">
+            <observer
+                  id="de.bmotionstudio.gef.editor.observer.TableObserver">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.gef.editor.observer.ListenOperationByPredicate">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.gef.editor.observer.SetAttribute">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.gef.editor.observer.SwitchCoordinates">
+            </observer>
+         </control>
+         <control
+               id="de.bmotionstudio.gef.editor.tablecolumn">
+            <observer
+                  id="de.bmotionstudio.gef.editor.observer.ColumnObserver">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.gef.editor.observer.ListenOperationByPredicate">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.gef.editor.observer.SetAttribute">
+            </observer>
+         </control>
+         <control
+               id="de.bmotionstudio.gef.editor.tablecell">
+            <observer
+                  id="de.bmotionstudio.gef.editor.observer.ListenOperationByPredicate">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.gef.editor.observer.SetAttribute">
+            </observer>
+         </control>
+         <control
+               id="de.bmotionstudio.gef.editor.signal">
+            <observer
+                  id="de.bmotionstudio.gef.editor.observer.ListenOperationByPredicate">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.gef.editor.observer.SetAttribute">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.gef.editor.observer.SwitchCoordinates">
+            </observer>
+         </control>
+         <control
+               id="de.bmotionstudio.gef.editor.light">
+            <observer
+                  id="de.bmotionstudio.gef.editor.observer.ListenOperationByPredicate">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.gef.editor.observer.SetAttribute">
+            </observer>
+         </control>
+         <control
+               id="de.bmotionstudio.gef.editor.tank">
+            <observer
+                  id="de.bmotionstudio.gef.editor.observer.ListenOperationByPredicate">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.gef.editor.observer.SetAttribute">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.gef.editor.observer.SwitchCoordinates">
+            </observer>
+         </control>
+         <control
+               id="de.bmotionstudio.gef.editor.tracknode">
+            <observer
+                  id="de.bmotionstudio.gef.editor.observer.ListenOperationByPredicate">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.gef.editor.observer.SetAttribute">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.gef.editor.observer.SwitchCoordinates">
+            </observer>
+         </control>
+         <control
+               id="de.bmotionstudio.gef.editor.track">
+            <observer
+                  id="de.bmotionstudio.gef.editor.observer.ListenOperationByPredicate">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.gef.editor.observer.SetAttribute">
+            </observer>
+         </control>
+         <control
+               id="de.bmotionstudio.gef.editor.switch">
+            <observer
+                  id="de.bmotionstudio.gef.editor.observer.ListenOperationByPredicate">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.gef.editor.observer.SetAttribute">
+            </observer>
+            <observer
+                  id="de.bmotionstudio.gef.editor.observer.SwitchCoordinates">
+            </observer>
+         </control>
       </include>   
    </extension>   
 </plugin>

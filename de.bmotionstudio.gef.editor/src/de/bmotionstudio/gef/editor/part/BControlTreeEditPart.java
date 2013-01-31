@@ -25,7 +25,7 @@ import de.bmotionstudio.gef.editor.EditorImageRegistry;
 import de.bmotionstudio.gef.editor.editpolicy.BMSDeletePolicy;
 import de.bmotionstudio.gef.editor.model.BConnection;
 import de.bmotionstudio.gef.editor.model.BControl;
-import de.bmotionstudio.gef.editor.model.ObserverRootVirtualTreeNode;
+import de.bmotionstudio.gef.editor.model.BControlPropertyConstants;
 import de.bmotionstudio.gef.editor.model.Visualization;
 import de.bmotionstudio.gef.editor.observer.IObserverListener;
 import de.bmotionstudio.gef.editor.observer.Observer;
@@ -34,8 +34,10 @@ public class BControlTreeEditPart extends BMSAbstractTreeEditPart implements
 		PropertyChangeListener, IObserverListener {
 
 	public void propertyChange(final PropertyChangeEvent evt) {
-		if (evt.getPropertyName().equals(BControl.PROPERTY_ADD)
-				|| evt.getPropertyName().equals(BControl.PROPERTY_REMOVE)) {
+		if (evt.getPropertyName().equals(
+				BControlPropertyConstants.PROPERTY_ADD_CHILD)
+				|| evt.getPropertyName().equals(
+						BControlPropertyConstants.PROPERTY_REMOVE_CHILD)) {
 			refreshChildren();
 		}
 		refreshVisuals();
@@ -74,8 +76,8 @@ public class BControlTreeEditPart extends BMSAbstractTreeEditPart implements
 				}
 			}
 
-			if (!(getModel() instanceof Visualization))
-				toShowElements.add(new ObserverRootVirtualTreeNode(c));
+			// if (!(getModel() instanceof Visualization))
+			// toShowElements.add(new ObserverRootVirtualTreeNode(c));
 
 		}
 
@@ -87,7 +89,7 @@ public class BControlTreeEditPart extends BMSAbstractTreeEditPart implements
 		if (!isActive()) {
 			super.activate();
 			((BControl) getModel()).addPropertyChangeListener(this);
-			((BControl) getModel()).addObserverListener(this);
+			// ((BControl) getModel()).addObserverListener(this);
 		}
 	}
 
@@ -95,7 +97,7 @@ public class BControlTreeEditPart extends BMSAbstractTreeEditPart implements
 		if (isActive()) {
 			super.deactivate();
 			((BControl) getModel()).removePropertyChangeListener(this);
-			((BControl) getModel()).removeObserverListener(this);
+			// ((BControl) getModel()).removeObserverListener(this);
 		}
 	}
 

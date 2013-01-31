@@ -2,6 +2,8 @@ package de.bmotionstudio.gef.editor.scheduler;
 
 import java.util.ArrayList;
 
+import org.eclipse.swt.widgets.Shell;
+
 import de.bmotionstudio.gef.editor.Animation;
 import de.bmotionstudio.gef.editor.BindingObject;
 import de.bmotionstudio.gef.editor.model.BControl;
@@ -27,7 +29,7 @@ public class ExecuteOperationByPredicateMulti extends SchedulerEvent {
 			String executePredicate = ((PredicateOperation) op)
 					.getExecutePredicate();
 
-			if (executePredicate.length() > 0) {
+			if (executePredicate != null && executePredicate.length() > 0) {
 				bolValue = BMSUtil.parsePredicate(executePredicate, control,
 						animation);
 			}
@@ -49,8 +51,8 @@ public class ExecuteOperationByPredicateMulti extends SchedulerEvent {
 	}
 
 	@Override
-	public SchedulerWizard getWizard(BControl bcontrol) {
-		return new WizardExecuteOperationByPredicateMulti(bcontrol, this);
+	public SchedulerWizard getWizard(Shell shell, BControl bcontrol) {
+		return new WizardExecuteOperationByPredicateMulti(shell, bcontrol, this);
 	}
 
 	public void setOperationList(ArrayList<BindingObject> operationList) {
