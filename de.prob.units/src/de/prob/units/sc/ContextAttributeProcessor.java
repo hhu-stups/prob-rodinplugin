@@ -11,11 +11,9 @@ import org.eventb.core.sc.SCCore;
 import org.eventb.core.sc.SCProcessorModule;
 import org.eventb.core.sc.state.ISCStateRepository;
 import org.eventb.core.tool.IModuleType;
-import org.rodinp.core.IAttributeType;
 import org.rodinp.core.IInternalElement;
 import org.rodinp.core.IRodinElement;
 import org.rodinp.core.IRodinFile;
-import org.rodinp.core.RodinCore;
 
 import de.prob.units.Activator;
 import de.prob.units.pragmas.UnitPragmaAttribute;
@@ -54,6 +52,9 @@ public class ContextAttributeProcessor extends SCProcessorModule {
 				if (constant.hasAttribute(UnitPragmaAttribute.ATTRIBUTE)) {
 					String attribute = constant
 							.getAttributeValue(UnitPragmaAttribute.ATTRIBUTE);
+
+					attribute = UnitAttributeProcessorStatics
+							.translateEventBPragmaToBPragma(attribute);
 
 					scConstant.setAttributeValue(UnitPragmaAttribute.ATTRIBUTE,
 							attribute, monitor);

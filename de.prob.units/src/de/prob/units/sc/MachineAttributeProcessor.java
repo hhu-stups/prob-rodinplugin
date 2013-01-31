@@ -50,6 +50,9 @@ public class MachineAttributeProcessor extends SCProcessorModule {
 					String attribute = var
 							.getAttributeValue(UnitPragmaAttribute.ATTRIBUTE);
 
+					attribute = UnitAttributeProcessorStatics
+							.translateEventBPragmaToBPragma(attribute);
+
 					scVar.setAttributeValue(UnitPragmaAttribute.ATTRIBUTE,
 							attribute, monitor);
 				}
