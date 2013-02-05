@@ -12,6 +12,7 @@ import org.eclipse.core.databinding.observable.list.WritableList;
 import org.eclipse.core.databinding.observable.map.IObservableMap;
 import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
 import org.eclipse.jface.databinding.viewers.ObservableMapLabelProvider;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITableColorProvider;
 import org.eclipse.jface.viewers.ITableFontProvider;
@@ -26,16 +27,15 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Shell;
 
+import de.be4.classicalb.core.parser.BParser;
+import de.bmotionstudio.gef.editor.BMotionAbstractWizard;
 import de.bmotionstudio.gef.editor.BMotionStudioImage;
 import de.bmotionstudio.gef.editor.EditorImageRegistry;
 import de.bmotionstudio.gef.editor.edit.PredicateEditingSupport;
@@ -49,96 +49,195 @@ import de.bmotionstudio.gef.editor.util.BMotionWizardUtil;
 
 public class WizardObserverSwitchCoordinates extends ObserverWizard {
 
-	private TableViewer tableViewer;
+	private class ObserverToggleCoordinatesPage extends
+			AbstractObserverWizardPage {
 
-	@Override
-	public Control createWizardContent(Composite parent) {
+		private TableViewer tableViewer;
 
-		parent.setLayout(new FillLayout());
+		protected ObserverToggleCoordinatesPage(final String pageName) {
+			super(pageName, getObserver());
+		}
 
-		DataBindingContext dbc = new DataBindingContext();
+		public void createControl(Composite parent) {
 
-		GridLayout gl = new GridLayout(1, true);
-		gl.horizontalSpacing = 0;
-		gl.verticalSpacing = 0;
-		gl.marginHeight = 0;
-		gl.marginWidth = 0;
+			super.createControl(parent);
 
-		Composite container = new Composite(parent, SWT.NONE);
-		container.setLayout(gl);
+			DataBindingContext dbc = new DataBindingContext();
 
-		tableViewer = BMotionWizardUtil.createBMotionWizardTableViewer(
-				container, ToggleObjectCoordinates.class, getName());
+			Composite container = new Composite(parent, SWT.NONE);
+			container.setLayout(new GridLayout(1, true));
 
-		TableViewerColumn column = new TableViewerColumn(tableViewer, SWT.NONE);
-		column.getColumn().setText("Predicate");
-		column.getColumn().setWidth(200);
-		column.setEditingSupport(new PredicateEditingSupport(tableViewer, dbc,
-				"eval", getBControl().getVisualization(), getShell()));
+			tableViewer = BMotionWizardUtil.createBMotionWizardTableViewer(
+					container, ToggleObjectCoordinates.class,
+					((BMotionAbstractWizard) getWizard()).getName());
 
-		column = new TableViewerColumn(tableViewer, SWT.NONE);
-		column.getColumn().setText("X");
-		column.getColumn().setWidth(150);
-		column.setEditingSupport(new TextEditingSupport(tableViewer, dbc, "x"));
+			// tableViewer
+			// .addSelectionChangedListener(new ISelectionChangedListener() {
+			//
+			// @Override
+			// public void selectionChanged(SelectionChangedEvent event) {
+			// IStructuredSelection selection = (IStructuredSelection) event
+			// .getSelection();
+			// Object firstElement = selection.getFirstElement();
+			// if (firstElement instanceof ObserverEvalObject) {
+			// ObserverEvalObject observerEvalObject = (ObserverEvalObject)
+			// firstElement;
+			// if (!observerEvalObject.isExpressionMode()) {
+			// BControl control = getBControl();
+			// ToggleObjectCoordinates toggleObjectCoordinates =
+			// (ToggleObjectCoordinates) observerEvalObject;
+			// String attributeX = AttributeConstants.ATTRIBUTE_X;
+			// String attributeY = AttributeConstants.ATTRIBUTE_Y;
+			// String x = toggleObjectCoordinates.getX();
+			// String y = toggleObjectCoordinates.getY();
+			// control.setAttributeValue(attributeX, x,
+			// true, false);
+			// control.setAttributeValue(attributeY, y,
+			// true, false);
+			// }
+			// }
+			// }
+			//
+			// });
 
-		column = new TableViewerColumn(tableViewer, SWT.NONE);
-		column.getColumn().setText("Y");
-		column.getColumn().setWidth(150);
-		column.setEditingSupport(new TextEditingSupport(tableViewer, dbc, "y"));
+			TableViewerColumn column = new TableViewerColumn(tableViewer,
+					SWT.NONE);
+			column.getColumn().setText("Predicate");
+			column.getColumn().setWidth(200);
+			column.setEditingSupport(new PredicateEditingSupport(tableViewer,
+					dbc, "eval", getBControl().getVisualization(), getShell()));
 
-		ObservableListContentProvider contentProvider = new ObservableListContentProvider();
-		tableViewer.setContentProvider(contentProvider);
-		tableViewer.setLabelProvider(new ObserverLabelProvider(BeansObservables
-				.observeMaps(contentProvider.getKnownElements(), new String[] {
-						"eval", "x", "y" })));
+			column = new TableViewerColumn(tableViewer, SWT.NONE);
+			column.getColumn().setText("X");
+			column.getColumn().setWidth(150);
+			column.setEditingSupport(new TextEditingSupport(tableViewer, dbc,
+					"x"));
 
-		final WritableList input = new WritableList(
-				((SwitchCoordinates) getObserver()).getToggleObjects(),
-				ToggleObjectCoordinates.class);
-		tableViewer.setInput(input);
+			column = new TableViewerColumn(tableViewer, SWT.NONE);
+			column.getColumn().setText("Y");
+			column.getColumn().setWidth(150);
+			column.setEditingSupport(new TextEditingSupport(tableViewer, dbc,
+					"y"));
 
-		Composite comp = new Composite(container, SWT.NONE);
-		comp.setLayout(new RowLayout());
-		comp.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));
+			// column = new TableViewerColumn(tableViewer, SWT.NONE);
+			// column.getColumn().setText("Animate?");
+			// column.getColumn().setWidth(75);
+			// column.setEditingSupport(new EditingSupport(tableViewer) {
+			//
+			// private CellEditor cellEditor = new CheckboxCellEditor(
+			// (Composite) tableViewer.getControl());
+			//
+			// @Override
+			// protected void setValue(Object element, Object value) {
+			// ((ToggleObjectCoordinates) element).setAnimate(Boolean
+			// .valueOf(String.valueOf(value)));
+			// }
+			//
+			// @Override
+			// protected Object getValue(Object element) {
+			// Boolean b = ((ToggleObjectCoordinates) element)
+			// .getAnimate();
+			// return b != null ? b : false;
+			// }
+			//
+			// @Override
+			// protected CellEditor getCellEditor(Object element) {
+			// return cellEditor;
+			// }
+			//
+			// @Override
+			// protected boolean canEdit(Object element) {
+			// return true;
+			// }
+			//
+			// });
 
-		Button btRemove = new Button(comp, SWT.PUSH);
-		btRemove.setText("Remove");
-		btRemove.setImage(BMotionStudioImage
-				.getImage(EditorImageRegistry.IMG_ICON_DELETE_EDIT));
-		btRemove.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				if (tableViewer.getSelection().isEmpty()) {
-					return;
+			ObservableListContentProvider contentProvider = new ObservableListContentProvider();
+			tableViewer.setContentProvider(contentProvider);
+			tableViewer.setLabelProvider(new ObserverLabelProvider(
+					BeansObservables.observeMaps(
+							contentProvider.getKnownElements(), new String[] {
+									"eval", "x", "y" })));
+
+			final WritableList input = new WritableList(
+					((SwitchCoordinates) getObserver()).getToggleObjects(),
+					ToggleObjectCoordinates.class);
+			tableViewer.setInput(input);
+
+			Composite comp = new Composite(container, SWT.NONE);
+			comp.setLayout(new RowLayout());
+			comp.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));
+
+			Button btRemove = new Button(comp, SWT.PUSH);
+			btRemove.setText("Remove");
+			btRemove.setImage(BMotionStudioImage
+					.getImage(EditorImageRegistry.IMG_ICON_DELETE_EDIT));
+			btRemove.addSelectionListener(new SelectionAdapter() {
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					if (tableViewer.getSelection().isEmpty()) {
+						return;
+					}
+					ToggleObjectCoordinates toggleObj = (ToggleObjectCoordinates) ((IStructuredSelection) tableViewer
+							.getSelection()).getFirstElement();
+					input.remove(toggleObj);
 				}
-				ToggleObjectCoordinates toggleObj = (ToggleObjectCoordinates) ((IStructuredSelection) tableViewer
-						.getSelection()).getFirstElement();
-				input.remove(toggleObj);
-			}
-		});
+			});
 
-		Button btAdd = new Button(comp, SWT.PUSH);
-		btAdd.setText("Add");
-		btAdd.setImage(BMotionStudioImage
-				.getImage(EditorImageRegistry.IMG_ICON_NEW_WIZ));
-		btAdd.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				ToggleObjectCoordinates toggleObj = new ToggleObjectCoordinates(
-						"", String.valueOf(getBControl().getLayout().x), String
-								.valueOf(getBControl().getLayout().y), "");
-				input.add(toggleObj);
-				tableViewer.setSelection(new StructuredSelection(toggleObj));
-			}
-		});
+			Button btAdd = new Button(comp, SWT.PUSH);
+			btAdd.setText("Add");
+			btAdd.setImage(BMotionStudioImage
+					.getImage(EditorImageRegistry.IMG_ICON_NEW_WIZ));
+			btAdd.addSelectionListener(new SelectionAdapter() {
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					ToggleObjectCoordinates toggleObj = new ToggleObjectCoordinates(
+							BParser.PREDICATE_PREFIX, "", String
+									.valueOf(getBControl().getLayout().x),
+							String.valueOf(getBControl().getLayout().y), "");
+					input.add(toggleObj);
+					tableViewer
+							.setSelection(new StructuredSelection(toggleObj));
+				}
+			});
 
-		return container;
+			setControl(container);
+
+		}
 	}
 
+	public WizardObserverSwitchCoordinates(final BControl bcontrol,
+			final Observer bobserver) {
+		super(bcontrol, bobserver);
+		addPage(new ObserverToggleCoordinatesPage(
+				"ObserverToggleCoordinatesPage"));
+	}
 
-	public WizardObserverSwitchCoordinates(Shell shell, BControl bcontrol,
-			Observer bobserver) {
-		super(shell, bcontrol, bobserver);
+	@Override
+	protected Boolean prepareToFinish() {
+		// getBControl().restoreDefaultValue(AttributeConstants.ATTRIBUTE_X);
+		// getBControl().restoreDefaultValue(AttributeConstants.ATTRIBUTE_Y);
+		if (((SwitchCoordinates) getObserver()).getToggleObjects().size() == 0) {
+			setObserverDelete(true);
+		} else {
+			for (ToggleObjectCoordinates obj : ((SwitchCoordinates) getObserver())
+					.getToggleObjects()) {
+				if (obj.getX().isEmpty() || obj.getY().isEmpty()) {
+					MessageDialog
+							.openError(getShell(), "Please check your entries",
+									"Please check your entries. The x and y fields must not be empty.");
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
+	@Override
+	public boolean performCancel() {
+		// getBControl().restoreDefaultValue(AttributeConstants.ATTRIBUTE_X);
+		// getBControl().restoreDefaultValue(AttributeConstants.ATTRIBUTE_Y);
+		return super.performCancel();
 	}
 
 	@Override
@@ -157,6 +256,9 @@ public class WizardObserverSwitchCoordinates extends ObserverWizard {
 		private final Color errorColor = Display.getDefault().getSystemColor(
 				SWT.COLOR_INFO_BACKGROUND);
 
+		// final Font bold = JFaceResources.getFontRegistry().getBold(
+		// JFaceResources.BANNER_FONT);
+
 		@Override
 		public String getColumnText(Object element, int columnIndex) {
 			if (columnIndex == 3) {
@@ -167,6 +269,11 @@ public class WizardObserverSwitchCoordinates extends ObserverWizard {
 
 		@Override
 		public Image getColumnImage(Object element, int columnIndex) {
+			// if (columnIndex == 3) {
+			// return CheckboxCellEditorHelper
+			// .getCellEditorImage(((ToggleObjectCoordinates) element)
+			// .getAnimate());
+			// }
 			return null;
 		}
 
@@ -182,6 +289,8 @@ public class WizardObserverSwitchCoordinates extends ObserverWizard {
 		}
 
 		public Font getFont(final Object element, final int column) {
+			// return JFaceResources.getFontRegistry().get(
+			// BMotionStudioConstants.RODIN_FONT_KEY);
 			return null;
 		}
 

@@ -128,9 +128,51 @@ public class BMSContextMenuProvider extends ContextMenuProvider {
 						"icons/icon_observer.gif"), "observerMenu");
 		menu.appendToGroup(GEFActionConstants.GROUP_ADD, handleObserverMenu);
 
-		IExtensionPoint extensionPoint = Platform.getExtensionRegistry()
-				.getExtensionPoint(
-						"de.bmotionstudio.gef.editor.includeObserver");
+		IExtensionPoint extensionPoint = registry
+				.getExtensionPoint("de.bmotionstudio.gef.editor.observer");
+		for (IExtension extension : extensionPoint.getExtensions()) {
+			for (IConfigurationElement configurationElement : extension
+					.getConfigurationElements()) {
+
+				if ("observer".equals(configurationElement.getName())) {
+
+					final String observerClassName = configurationElement
+							.getAttribute("class");
+					final String observerName = configurationElement
+							.getAttribute("name");
+
+					if (checkIncludeObserver(observerClassName, bcontrol)) {
+
+						IAction action = getActionRegistry().getAction(
+								"de.bmotionstudio.gef.editor.observerAction."
+										+ observerClassName);
+						action.setText(observerName);
+						action.setToolTipText(observerName);
+
+						if (bcontrol.hasObserver(observerClassName)) {
+							action.setImageDescriptor(BMotionStudioImage
+									.getImageDescriptor(
+											BMotionEditorPlugin.PLUGIN_ID,
+											"icons/icon_chop.gif"));
+						} else {
+							action.setImageDescriptor(null);
+						}
+						handleObserverMenu.add(action);
+
+					}
+
+				}
+
+			}
+
+		}
+
+	}
+
+	private boolean checkIncludeObserver(String observerID, BControl control) {
+
+		IExtensionPoint extensionPoint = registry
+				.getExtensionPoint("de.bmotionstudio.gef.editor.includeObserver");
 
 		for (IExtension extension : extensionPoint.getExtensions()) {
 			for (IConfigurationElement configurationElement : extension
@@ -142,35 +184,25 @@ public class BMSContextMenuProvider extends ContextMenuProvider {
 							.getAttribute("language");
 
 					if (langID != null
-							&& langID.equals(bcontrol.getVisualization().getLanguage())) {
+							&& langID.equals(control.getVisualization()
+									.getLanguage())) {
 
-						for (IConfigurationElement configC : configurationElement
-								.getChildren("control")) {
+						for (IConfigurationElement cObserver : configurationElement
+								.getChildren("observer")) {
 
-							String cID = configC.getAttribute("id");
+							String oID = cObserver.getAttribute("id");
 
-							if (bcontrol.getType().equals(cID)) {
+							if (observerID.equals(oID)) {
 
-								for (IConfigurationElement configO : configC
-										.getChildren("observer")) {
+								for (IConfigurationElement configBControl : cObserver
+										.getChildren("control")) {
 
-									String oID = configO.getAttribute("id");
-									IAction action = getActionRegistry()
-											.getAction(
-													"de.bmotionstudio.gef.editor.observerAction."
-															+ oID);
+									String bID = configBControl
+											.getAttribute("id");
 
-									String name = oID;
-
-									IConfigurationElement observerExtension = BMotionEditorPlugin
-											.getObserverExtension(oID);
-									if (observerExtension != null)
-										name = observerExtension
-												.getAttribute("name");
-
-									action.setText(name);
-
-									handleObserverMenu.add(action);
+									if (control.getType().equals(bID)) {
+										return true;
+									}
 
 								}
 
@@ -184,6 +216,8 @@ public class BMSContextMenuProvider extends ContextMenuProvider {
 
 			}
 		}
+
+		return false;
 
 	}
 
@@ -244,6 +278,14 @@ public class BMSContextMenuProvider extends ContextMenuProvider {
 								action.setEventID(eventIDs[0]);
 								action.setText(configSchedulerElement
 										.getAttribute("name"));
+
+								// if (bcontrol.hasEvent(eventIDs[0])) {
+								// action
+								// .setImageDescriptor(BMotionStudioImage
+								// .getImageDescriptor(
+								// BMotionEditorPlugin.PLUGIN_ID,
+								// "icons/icon_chop.gif"));
+								// } else {
 
 								action.setImageDescriptor(null);
 

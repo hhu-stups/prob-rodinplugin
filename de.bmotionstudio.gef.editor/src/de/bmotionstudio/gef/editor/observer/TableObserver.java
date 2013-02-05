@@ -3,8 +3,6 @@ package de.bmotionstudio.gef.editor.observer;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.eclipse.swt.widgets.Shell;
-
 import de.bmotionstudio.gef.editor.Animation;
 import de.bmotionstudio.gef.editor.AttributeConstants;
 import de.bmotionstudio.gef.editor.attribute.AbstractAttribute;
@@ -101,33 +99,34 @@ public class TableObserver extends Observer {
 
 				String content = rows.get(i - numberOfOldRows);
 
-				if (content != null && content.length() > 0) {
+				if (content != null && content.length() > 0)
 					content = UnicodeTranslator.toAscii(content);
-					content = content.replaceAll("^\\(", "");
-					content = content.replaceAll("\\)$", "");
-					List<String> columns = split2(content, '#');
-					int numberOfNewColumns = columns.size();
 
-					// Set only one time the number of columns!
-					if (!setColumns) {
-						int ncolumns = numberOfNewColumns;
-						if (numberOfOldColumns > numberOfNewColumns)
-							ncolumns = numberOfOldColumns;
-						control.setAttributeValue(
-								AttributeConstants.ATTRIBUTE_COLUMNS, ncolumns,
-								true, false);
-						setColumns = true;
-					}
+				content = content.replaceAll("^\\(", "");
+				content = content.replaceAll("\\)$", "");
 
-					for (int z = 0; z < numberOfNewColumns; z++) {
-						String val = columns.get(z);
-						BControl column = control.getChildrenArray().get(z);
-						BControl cell = column.getChildrenArray().get(i);
-						if (val != null && val.length() > 0)
-							val = UnicodeTranslator.toUnicode(val);
-						cell.setAttributeValue(
-								AttributeConstants.ATTRIBUTE_TEXT, val);
-					}
+				List<String> columns = split2(content, '#');
+				int numberOfNewColumns = columns.size();
+
+				// Set only one time the number of columns!
+				if (!setColumns) {
+					int ncolumns = numberOfNewColumns;
+					if (numberOfOldColumns > numberOfNewColumns)
+						ncolumns = numberOfOldColumns;
+					control.setAttributeValue(
+							AttributeConstants.ATTRIBUTE_COLUMNS, ncolumns,
+							true, false);
+					setColumns = true;
+				}
+
+				for (int z = 0; z < numberOfNewColumns; z++) {
+					String val = columns.get(z);
+					BControl column = control.getChildrenArray().get(z);
+					BControl cell = column.getChildrenArray().get(i);
+					if (val != null && val.length() > 0)
+						val = UnicodeTranslator.toUnicode(val);
+					cell.setAttributeValue(AttributeConstants.ATTRIBUTE_TEXT,
+							val);
 				}
 
 			}
@@ -153,8 +152,8 @@ public class TableObserver extends Observer {
 	}
 
 	@Override
-	public ObserverWizard getWizard(Shell shell, BControl control) {
-		return new WizardTableObserver(shell, control, this);
+	public ObserverWizard getWizard(BControl control) {
+		return new WizardTableObserver(control, this);
 	}
 
 	public boolean isOverrideCells() {

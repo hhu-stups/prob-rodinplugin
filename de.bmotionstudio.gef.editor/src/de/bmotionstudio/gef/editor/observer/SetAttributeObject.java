@@ -13,8 +13,8 @@ public class SetAttributeObject extends ObserverEvalObject implements Cloneable 
 		super();
 	}
 
-	public SetAttributeObject(String eval) {
-		super(eval);
+	public SetAttributeObject(String type, String eval) {
+		super(type, eval);
 	}
 
 	public SetAttributeObject clone() throws CloneNotSupportedException {

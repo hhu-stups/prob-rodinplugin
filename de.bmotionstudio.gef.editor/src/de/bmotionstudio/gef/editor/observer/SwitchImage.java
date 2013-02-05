@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.swt.widgets.Shell;
 
 import de.bmotionstudio.gef.editor.Animation;
 import de.bmotionstudio.gef.editor.AttributeConstants;
@@ -80,8 +79,8 @@ public class SwitchImage extends Observer {
 
 	}
 
-	public ObserverWizard getWizard(Shell shell, final BControl bcontrol) {
-		return new WizardObserverSwitchImage(shell, bcontrol, this);
+	public ObserverWizard getWizard(final BControl bcontrol) {
+		return new WizardObserverSwitchImage(bcontrol, this);
 	}
 
 	public List<ToggleObjectImage> getToggleObjects() {

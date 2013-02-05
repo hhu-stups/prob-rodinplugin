@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.draw2d.IFigure;
-import org.eclipse.swt.widgets.Shell;
 
 import de.bmotionstudio.gef.editor.Animation;
 import de.bmotionstudio.gef.editor.attribute.AbstractAttribute;
@@ -65,6 +64,14 @@ public class SetAttribute extends Observer {
 							attributeVal.toString(), control, animation);
 					String er = attributeObj.validateValue(strAtrVal, null);
 					if (er != null) {
+						// addError(
+						// control,
+						// animation,
+						// "You selected "
+						// + attributeObj.getName()
+						// +
+						// " as attribute. There is a problem with your value: "
+						// + strAtrVal + " - Reason: " + er);
 						obj.setHasError(true);
 					} else {
 						attributeVal = attributeObj.unmarshal(strAtrVal);
@@ -101,8 +108,8 @@ public class SetAttribute extends Observer {
 	}
 
 	@Override
-	public ObserverWizard getWizard(Shell shell, BControl control) {
-		return new WizardObserverSetAttribute(shell, control, this);
+	public ObserverWizard getWizard(BControl control) {
+		return new WizardObserverSetAttribute(control, this);
 	}
 
 	public void setSetAttributeObjects(
@@ -126,6 +133,23 @@ public class SetAttribute extends Observer {
 
 	@Override
 	public IFigure getToolTip(BControl control) {
+		// // TODO: This method need rework!!!
+		// StringBuilder builder = new StringBuilder();
+		// builder.append("Set Attribute Observer:\n\n");
+		// for (SetAttributeObject obj : getSetAttributeObjects()) {
+		// if (obj.getEval() != null) {
+		// builder.append("[Predicate: " + obj.getEval());
+		// }
+		// if (obj.getAttribute() != null) {
+		// builder.append(" | Attribute: "
+		// + control.getAttribute(obj.getAttribute()).getName());
+		// }
+		// if (obj.getValue() != null) {
+		// builder.append(" | Value: " + obj.getValue() + "]");
+		// }
+		// builder.append("\n");
+		// }
+		// Label lb = new Label(builder.toString());
 		return null;
 	}
 

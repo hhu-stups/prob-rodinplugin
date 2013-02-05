@@ -10,12 +10,14 @@ import org.eclipse.core.databinding.beans.BeansObservables;
 import org.eclipse.core.databinding.observable.list.WritableList;
 import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
 import org.eclipse.jface.databinding.viewers.ObservableMapLabelProvider;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnViewer;
 import org.eclipse.jface.viewers.EditingSupport;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
+import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -25,10 +27,10 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Shell;
 
+import de.bmotionstudio.gef.editor.BMotionAbstractWizard;
 import de.bmotionstudio.gef.editor.BMotionStudioImage;
+import de.bmotionstudio.gef.editor.BindingObject;
 import de.bmotionstudio.gef.editor.EditorImageRegistry;
 import de.bmotionstudio.gef.editor.edit.OperationValueEditingSupport;
 import de.bmotionstudio.gef.editor.edit.PredicateEditingSupport;
@@ -46,222 +48,134 @@ import de.bmotionstudio.gef.editor.util.BMotionWizardUtil;
  */
 public class WizardExecuteOperationByPredicateMulti extends SchedulerWizard {
 
-	private TableViewer tableViewer;
+	private class MultiPage extends WizardPage {
 
-	@Override
-	public Control createWizardContent(Composite parent) {
-		DataBindingContext dbc = new DataBindingContext();
+		private TableViewer tableViewer;
 
-		Composite container = new Composite(parent, SWT.NONE);
-		container.setLayout(new GridLayout(1, true));
+		protected MultiPage(String pageName) {
+			super(pageName);
+		}
 
-		tableViewer = BMotionWizardUtil.createBMotionWizardTableViewer(
-				container, PredicateOperation.class, getName());
+		public void createControl(final Composite parent) {
 
-		TableViewerColumn column = new TableViewerColumn(tableViewer, SWT.NONE);
-		column.getColumn().setText("Execute Rule");
-		column.getColumn().setWidth(190);
-		column.setEditingSupport(new PredicateEditingSupport(tableViewer, dbc,
-				"executePredicate", getBControl().getVisualization(),
-				getShell()));
+			DataBindingContext dbc = new DataBindingContext();
 
-		column = new TableViewerColumn(tableViewer, SWT.NONE);
-		column.getColumn().setText("Operation");
-		column.getColumn().setWidth(150);
-		column.setEditingSupport(new OperationValueEditingSupport(tableViewer,
-				getBControl()));
+			Composite container = new Composite(parent, SWT.NONE);
+			container.setLayout(new GridLayout(1, true));
 
-		column = new TableViewerColumn(tableViewer, SWT.NONE);
-		column.getColumn().setText("Parameter");
-		column.getColumn().setWidth(190);
-		column.setEditingSupport(new PredicateEditingSupport(tableViewer, dbc,
-				"predicate", getBControl().getVisualization(), getShell()));
+			setControl(container);
 
-		column = new TableViewerColumn(tableViewer, SWT.NONE);
-		column.getColumn().setText("Random Ops");
-		column.getColumn().setWidth(100);
-		column.setEditingSupport(new RandomModeEditingSupport(tableViewer));
+			tableViewer = BMotionWizardUtil.createBMotionWizardTableViewer(
+					container, PredicateOperation.class,
+					((BMotionAbstractWizard) getWizard()).getName());
+			
+			TableViewerColumn column = new TableViewerColumn(tableViewer,
+					SWT.NONE);
+			column.getColumn().setText("Execute Rule");
+			column.getColumn().setWidth(190);
+			column.setEditingSupport(new PredicateEditingSupport(tableViewer,
+					dbc, "executePredicate", getBControl().getVisualization(),
+					getShell()));
 
-		ObservableListContentProvider contentProvider = new ObservableListContentProvider();
-		tableViewer.setContentProvider(contentProvider);
+			column = new TableViewerColumn(tableViewer, SWT.NONE);
+			column.getColumn().setText("Operation");
+			column.getColumn().setWidth(150);
+			column.setEditingSupport(new OperationValueEditingSupport(
+					tableViewer, getBControl()));
 
-		tableViewer.setLabelProvider(new ObservableMapLabelProvider(
-				BeansObservables.observeMaps(
-						contentProvider.getKnownElements(), new String[] {
-								"executePredicate", "operationName",
-								"predicate", "maxrandom" })));
-		final WritableList input = new WritableList(
-				((ExecuteOperationByPredicateMulti) getScheduler())
-						.getOperationList(),
-				PredicateOperation.class);
-		tableViewer.setInput(input);
+			column = new TableViewerColumn(tableViewer, SWT.NONE);
+			column.getColumn().setText("Parameter");
+			column.getColumn().setWidth(190);
+			column.setEditingSupport(new PredicateEditingSupport(tableViewer,
+					dbc, "predicate", getBControl().getVisualization(),
+					getShell()));
 
-		Composite comp = new Composite(container, SWT.NONE);
-		comp.setLayout(new RowLayout());
-		comp.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));
+			column = new TableViewerColumn(tableViewer, SWT.NONE);
+			column.getColumn().setText("Random Ops");
+			column.getColumn().setWidth(100);
+			column.setEditingSupport(new RandomModeEditingSupport(tableViewer));
 
-		Button btRemove = new Button(comp, SWT.PUSH);
-		btRemove.setText("Remove");
-		btRemove.setImage(BMotionStudioImage
-				.getImage(EditorImageRegistry.IMG_ICON_DELETE));
-		btRemove.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				if (tableViewer.getSelection().isEmpty()) {
-					return;
+			ObservableListContentProvider contentProvider = new ObservableListContentProvider();
+			tableViewer.setContentProvider(contentProvider);
+
+			tableViewer.setLabelProvider(new ObservableMapLabelProvider(
+					BeansObservables.observeMaps(
+							contentProvider.getKnownElements(), new String[] {
+									"executePredicate", "operationName",
+									"predicate", "maxrandom" })));
+			final WritableList input = new WritableList(
+					((ExecuteOperationByPredicateMulti) getScheduler())
+							.getOperationList(),
+					PredicateOperation.class);
+			tableViewer.setInput(input);
+
+			Composite comp = new Composite(container, SWT.NONE);
+			comp.setLayout(new RowLayout());
+			comp.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));
+
+			Button btRemove = new Button(comp, SWT.PUSH);
+			btRemove.setText("Remove");
+			btRemove.setImage(BMotionStudioImage
+					.getImage(EditorImageRegistry.IMG_ICON_DELETE));
+			btRemove.addSelectionListener(new SelectionAdapter() {
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					if (tableViewer.getSelection().isEmpty()) {
+						return;
+					}
+					PredicateOperation obj = (PredicateOperation) ((IStructuredSelection) tableViewer
+							.getSelection()).getFirstElement();
+					input.remove(obj);
 				}
-				PredicateOperation obj = (PredicateOperation) ((IStructuredSelection) tableViewer
-						.getSelection()).getFirstElement();
-				input.remove(obj);
-			}
-		});
+			});
 
-		Button btAdd = new Button(comp, SWT.PUSH);
-		btAdd.setText("Add");
-		btAdd.setImage(BMotionStudioImage
-				.getImage(EditorImageRegistry.IMG_ICON_NEW_WIZ));
-		btAdd.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				PredicateOperation obj = new PredicateOperation();
-				input.add(obj);
-			}
-		});
+			Button btAdd = new Button(comp, SWT.PUSH);
+			btAdd.setText("Add");
+			btAdd.setImage(BMotionStudioImage
+					.getImage(EditorImageRegistry.IMG_ICON_ADD));
+			btAdd.addSelectionListener(new SelectionAdapter() {
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					PredicateOperation obj = new PredicateOperation();
+					input.add(obj);
+				}
+			});
 
-		return container;
-
+		}
 	}
 
-	// private class MultiPage extends WizardPage {
-	//
-	// private TableViewer tableViewer;
-	//
-	// protected MultiPage(String pageName) {
-	// super(pageName);
-	// }
-	//
-	// public void createControl(final Composite parent) {
-	//
-	// DataBindingContext dbc = new DataBindingContext();
-	//
-	// Composite container = new Composite(parent, SWT.NONE);
-	// container.setLayout(new GridLayout(1, true));
-	//
-	// setControl(container);
-	//
-	// tableViewer = BMotionWizardUtil.createBMotionWizardTableViewer(
-	// container, PredicateOperation.class,
-	// ((BMotionAbstractWizard) getWizard()).getName());
-	//
-	// TableViewerColumn column = new TableViewerColumn(tableViewer,
-	// SWT.NONE);
-	// column.getColumn().setText("Execute Rule");
-	// column.getColumn().setWidth(190);
-	// column.setEditingSupport(new PredicateEditingSupport(tableViewer,
-	// dbc, "executePredicate", getBControl().getVisualization(),
-	// getShell()));
-	//
-	// column = new TableViewerColumn(tableViewer, SWT.NONE);
-	// column.getColumn().setText("Operation");
-	// column.getColumn().setWidth(150);
-	// column.setEditingSupport(new OperationValueEditingSupport(
-	// tableViewer, getBControl()));
-	//
-	// column = new TableViewerColumn(tableViewer, SWT.NONE);
-	// column.getColumn().setText("Parameter");
-	// column.getColumn().setWidth(190);
-	// column.setEditingSupport(new PredicateEditingSupport(tableViewer,
-	// dbc, "predicate", getBControl().getVisualization(),
-	// getShell()));
-	//
-	// column = new TableViewerColumn(tableViewer, SWT.NONE);
-	// column.getColumn().setText("Random Ops");
-	// column.getColumn().setWidth(100);
-	// column.setEditingSupport(new RandomModeEditingSupport(tableViewer));
-	//
-	// ObservableListContentProvider contentProvider = new
-	// ObservableListContentProvider();
-	// tableViewer.setContentProvider(contentProvider);
-	//
-	// tableViewer.setLabelProvider(new ObservableMapLabelProvider(
-	// BeansObservables.observeMaps(
-	// contentProvider.getKnownElements(), new String[] {
-	// "executePredicate", "operationName",
-	// "predicate", "maxrandom" })));
-	// final WritableList input = new WritableList(
-	// ((ExecuteOperationByPredicateMulti) getScheduler())
-	// .getOperationList(),
-	// PredicateOperation.class);
-	// tableViewer.setInput(input);
-	//
-	// Composite comp = new Composite(container, SWT.NONE);
-	// comp.setLayout(new RowLayout());
-	// comp.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));
-	//
-	// Button btRemove = new Button(comp, SWT.PUSH);
-	// btRemove.setText("Remove");
-	// btRemove.setImage(BMotionStudioImage
-	// .getImage(EditorImageRegistry.IMG_ICON_DELETE));
-	// btRemove.addSelectionListener(new SelectionAdapter() {
-	// @Override
-	// public void widgetSelected(SelectionEvent e) {
-	// if (tableViewer.getSelection().isEmpty()) {
-	// return;
-	// }
-	// PredicateOperation obj = (PredicateOperation) ((IStructuredSelection)
-	// tableViewer
-	// .getSelection()).getFirstElement();
-	// input.remove(obj);
-	// }
-	// });
-	//
-	// Button btAdd = new Button(comp, SWT.PUSH);
-	// btAdd.setText("Add");
-	// btAdd.setImage(BMotionStudioImage
-	// .getImage(EditorImageRegistry.IMG_ICON_ADD));
-	// btAdd.addSelectionListener(new SelectionAdapter() {
-	// @Override
-	// public void widgetSelected(SelectionEvent e) {
-	// PredicateOperation obj = new PredicateOperation();
-	// input.add(obj);
-	// }
-	// });
-	//
-	// }
-	// }
-
-	public WizardExecuteOperationByPredicateMulti(Shell shell,
-			BControl bcontrol,
+	public WizardExecuteOperationByPredicateMulti(BControl bcontrol,
 			SchedulerEvent scheduler) {
-		super(shell, bcontrol, scheduler);
+		super(bcontrol, scheduler);
+		addPage(new MultiPage("MultiPage"));
 	}
 
 	/*
-	 * // * (non-Javadoc) // * // * @see // *
+	 * (non-Javadoc)
+	 * 
+	 * @see
 	 * de.bmotionstudio.gef.editor.scheduler.SchedulerWizard#prepareToFinish()
-	 * //
 	 */
-	// @Override
-	// protected Boolean prepareToFinish() {
-	// if (((ExecuteOperationByPredicateMulti) getScheduler())
-	// .getOperationList().size() == 0) {
-	// setEventDelete(true);
-	// } else {
-	// for (BindingObject obj : ((ExecuteOperationByPredicateMulti)
-	// getScheduler())
-	// .getOperationList()) {
-	// if (((PredicateOperation) obj).getOperationName() == null
-	// || ((PredicateOperation) obj).getOperationName()
-	// .isEmpty()) {
-	// MessageDialog
-	// .openError(getShell(), "Please check your entries",
-	// "Please check your entries. The operation field must not be empty.");
-	// return false;
-	// }
-	// }
-	// }
-	// return true;
-	// }
+	@Override
+	protected Boolean prepareToFinish() {
+		if (((ExecuteOperationByPredicateMulti) getScheduler())
+				.getOperationList().size() == 0) {
+			setEventDelete(true);
+		} else {
+			for (BindingObject obj : ((ExecuteOperationByPredicateMulti) getScheduler())
+					.getOperationList()) {
+				if (((PredicateOperation) obj).getOperationName() == null
+						|| ((PredicateOperation) obj).getOperationName()
+								.isEmpty()) {
+					MessageDialog
+							.openError(getShell(), "Please check your entries",
+									"Please check your entries. The operation field must not be empty.");
+					return false;
+				}
+			}
+		}
+		return true;
+	}
 
 	/*
 	 * (non-Javadoc)

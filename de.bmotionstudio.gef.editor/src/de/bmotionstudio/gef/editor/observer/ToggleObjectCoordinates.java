@@ -22,18 +22,18 @@ public class ToggleObjectCoordinates extends ObserverEvalObject implements
 		// this.animate = false;
 	}
 
-	public ToggleObjectCoordinates(String bcontrol, String x,
+	public ToggleObjectCoordinates(String type, String bcontrol, String x,
 			String y, String eval) {
-		super(eval);
+		super(type, eval);
 		this.bcontrol = bcontrol;
 		this.x = x;
 		this.y = y;
 		// this.animate = animate;
 	}
 
-	public ToggleObjectCoordinates(String x, String y,
+	public ToggleObjectCoordinates(String type, String x, String y,
  String eval) {
-		this(null, x, y, eval);
+		this(type, null, x, y, eval);
 	}
 
 	public String getBcontrol() {

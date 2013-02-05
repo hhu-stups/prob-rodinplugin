@@ -12,6 +12,7 @@ import org.eclipse.core.databinding.observable.list.WritableList;
 import org.eclipse.core.databinding.observable.map.IObservableMap;
 import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
 import org.eclipse.jface.databinding.viewers.ObservableMapLabelProvider;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITableColorProvider;
 import org.eclipse.jface.viewers.ITableFontProvider;
@@ -26,17 +27,16 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Shell;
 
+import de.be4.classicalb.core.parser.BParser;
 import de.bmotionstudio.gef.editor.AttributeConstants;
+import de.bmotionstudio.gef.editor.BMotionAbstractWizard;
 import de.bmotionstudio.gef.editor.BMotionStudioImage;
 import de.bmotionstudio.gef.editor.EditorImageRegistry;
 import de.bmotionstudio.gef.editor.edit.AttributeExpressionEdittingSupport;
@@ -52,119 +52,177 @@ import de.bmotionstudio.gef.editor.util.BMotionWizardUtil;
 
 public class WizardObserverSwitchImage extends ObserverWizard {
 
-	private TableViewer tableViewer;
+	private class ObserverSwitchImagePage extends AbstractObserverWizardPage {
 
-	@Override
-	public Control createWizardContent(Composite parent) {
+		private TableViewer tableViewer;
 
-		parent.setLayout(new FillLayout());
+		protected ObserverSwitchImagePage(final String pageName) {
+			super(pageName, getObserver());
+		}
 
-		DataBindingContext dbc = new DataBindingContext();
+		public void createControl(final Composite parent) {
 
-		GridLayout gl = new GridLayout(1, true);
-		gl.horizontalSpacing = 0;
-		gl.verticalSpacing = 0;
-		gl.marginHeight = 0;
-		gl.marginWidth = 0;
+			super.createControl(parent);
 
-		Composite container = new Composite(parent, SWT.NONE);
-		container.setLayout(gl);
+			DataBindingContext dbc = new DataBindingContext();
 
-		tableViewer = BMotionWizardUtil.createBMotionWizardTableViewer(
-				container, ToggleObjectImage.class, getName());
+			Composite container = new Composite(parent, SWT.NONE);
+			container.setLayout(new GridLayout(1, true));
 
-		TableViewerColumn column = new TableViewerColumn(tableViewer, SWT.NONE);
-		column.getColumn().setText("Predicate");
-		column.getColumn().setWidth(300);
-		column.setEditingSupport(new PredicateEditingSupport(tableViewer, dbc,
-				"eval", getBControl().getVisualization(), getShell()));
+			tableViewer = BMotionWizardUtil.createBMotionWizardTableViewer(
+					container, ToggleObjectImage.class,
+					((BMotionAbstractWizard) getWizard()).getName());
+			// tableViewer
+			// .addSelectionChangedListener(new ISelectionChangedListener() {
+			//
+			// @Override
+			// public void selectionChanged(SelectionChangedEvent event) {
+			// IStructuredSelection selection = (IStructuredSelection) event
+			// .getSelection();
+			// Object firstElement = selection.getFirstElement();
+			// if (firstElement instanceof ObserverEvalObject) {
+			// ObserverEvalObject observerEvalObject = (ObserverEvalObject)
+			// firstElement;
+			// if (!observerEvalObject.isExpressionMode()) {
+			// BControl control = getBControl();
+			// ToggleObjectImage toggleObjImage = (ToggleObjectImage)
+			// observerEvalObject;
+			// String attribute = AttributeConstants.ATTRIBUTE_IMAGE;
+			// String image = toggleObjImage.getImage();
+			// control.setAttributeValue(attribute, image,
+			// true, false);
+			// }
+			// }
+			// }
+			//
+			// });
 
-		column = new TableViewerColumn(tableViewer, SWT.NONE);
-		column.getColumn().setText("Image");
-		column.getColumn().setWidth(180);
-		column.setEditingSupport(new AttributeExpressionEdittingSupport(
-				tableViewer, getBControl(), AttributeConstants.ATTRIBUTE_IMAGE) {
+			TableViewerColumn column = new TableViewerColumn(tableViewer,
+					SWT.NONE);
+			column.getColumn().setText("Predicate");
+			column.getColumn().setWidth(300);
+			column.setEditingSupport(new PredicateEditingSupport(tableViewer,
+					dbc, "eval", getBControl().getVisualization(), getShell()));
 
-			@Override
-			protected Object getValue(final Object element) {
-				ToggleObjectImage evalObject = (ToggleObjectImage) element;
-				return evalObject.getImage();
-			}
+			column = new TableViewerColumn(tableViewer, SWT.NONE);
+			column.getColumn().setText("Image");
+			column.getColumn().setWidth(180);
+			column.setEditingSupport(new AttributeExpressionEdittingSupport(
+					tableViewer, getBControl(),
+					AttributeConstants.ATTRIBUTE_IMAGE) {
 
-			@Override
-			protected void setValue(final Object element, final Object value) {
-				if (value == null)
-					return;
-				((ToggleObjectImage) element).setImage(value.toString());
-			}
-
-		});
-
-		column = new TableViewerColumn(tableViewer, SWT.NONE);
-		column.getColumn().setText("Expression?");
-		column.getColumn().setWidth(100);
-		column.setEditingSupport(new IsExpressionModeEditingSupport(
-				tableViewer, getBControl()) {
-
-			@Override
-			protected void setValue(final Object element, final Object value) {
-				Boolean bol = Boolean.valueOf(String.valueOf(value));
-				ToggleObjectImage obj = (ToggleObjectImage) element;
-				obj.setIsExpressionMode(bol);
-			}
-
-		});
-
-		ObservableListContentProvider contentProvider = new ObservableListContentProvider();
-		tableViewer.setContentProvider(contentProvider);
-
-		tableViewer.setLabelProvider(new ObserverLabelProvider(BeansObservables
-				.observeMaps(contentProvider.getKnownElements(), new String[] {
-						"eval", "image", "isExpressionMode" })));
-		final WritableList input = new WritableList(
-				((SwitchImage) getObserver()).getToggleObjects(),
-				ToggleObjectImage.class);
-		tableViewer.setInput(input);
-
-		Composite comp = new Composite(container, SWT.NONE);
-		comp.setLayout(new RowLayout());
-		comp.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));
-
-		Button btRemove = new Button(comp, SWT.PUSH);
-		btRemove.setText("Remove");
-		btRemove.setImage(BMotionStudioImage
-				.getImage(EditorImageRegistry.IMG_ICON_DELETE_EDIT));
-		btRemove.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(final SelectionEvent e) {
-				if (tableViewer.getSelection().isEmpty()) {
-					return;
+				@Override
+				protected Object getValue(final Object element) {
+					ToggleObjectImage evalObject = (ToggleObjectImage) element;
+					return evalObject.getImage();
 				}
-				ToggleObjectImage toggleObj = (ToggleObjectImage) ((IStructuredSelection) tableViewer
-						.getSelection()).getFirstElement();
-				input.remove(toggleObj);
-			}
-		});
 
-		Button btAdd = new Button(comp, SWT.PUSH);
-		btAdd.setText("Add");
-		btAdd.setImage(BMotionStudioImage
-				.getImage(EditorImageRegistry.IMG_ICON_NEW_WIZ));
-		btAdd.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(final SelectionEvent e) {
-				ToggleObjectImage toggleObj = new ToggleObjectImage("", "");
-				input.add(toggleObj);
-				tableViewer.setSelection(new StructuredSelection(toggleObj));
-			}
-		});
+				@Override
+				protected void setValue(final Object element, final Object value) {
+					if (value == null)
+						return;
+					((ToggleObjectImage) element).setImage(value.toString());
+				}
 
-		return container;
+			});
+
+			column = new TableViewerColumn(tableViewer, SWT.NONE);
+			column.getColumn().setText("Expression?");
+			column.getColumn().setWidth(100);
+			column.setEditingSupport(new IsExpressionModeEditingSupport(
+					tableViewer, getBControl()) {
+
+				@Override
+				protected void setValue(final Object element, final Object value) {
+					Boolean bol = Boolean.valueOf(String.valueOf(value));
+					ToggleObjectImage obj = (ToggleObjectImage) element;
+					obj.setIsExpressionMode(bol);
+				}
+
+			});
+
+			ObservableListContentProvider contentProvider = new ObservableListContentProvider();
+			tableViewer.setContentProvider(contentProvider);
+
+			tableViewer.setLabelProvider(new ObserverLabelProvider(
+					BeansObservables.observeMaps(
+							contentProvider.getKnownElements(), new String[] {
+									"eval", "image", "isExpressionMode" })));
+			final WritableList input = new WritableList(
+					((SwitchImage) getObserver()).getToggleObjects(),
+					ToggleObjectImage.class);
+			tableViewer.setInput(input);
+
+			Composite comp = new Composite(container, SWT.NONE);
+			comp.setLayout(new RowLayout());
+			comp.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));
+
+			Button btRemove = new Button(comp, SWT.PUSH);
+			btRemove.setText("Remove");
+			btRemove.setImage(BMotionStudioImage
+					.getImage(EditorImageRegistry.IMG_ICON_DELETE_EDIT));
+			btRemove.addSelectionListener(new SelectionAdapter() {
+				@Override
+				public void widgetSelected(final SelectionEvent e) {
+					if (tableViewer.getSelection().isEmpty()) {
+						return;
+					}
+					ToggleObjectImage toggleObj = (ToggleObjectImage) ((IStructuredSelection) tableViewer
+							.getSelection()).getFirstElement();
+					input.remove(toggleObj);
+				}
+			});
+
+			Button btAdd = new Button(comp, SWT.PUSH);
+			btAdd.setText("Add");
+			btAdd.setImage(BMotionStudioImage
+					.getImage(EditorImageRegistry.IMG_ICON_NEW_WIZ));
+			btAdd.addSelectionListener(new SelectionAdapter() {
+				@Override
+				public void widgetSelected(final SelectionEvent e) {
+					ToggleObjectImage toggleObj = new ToggleObjectImage(
+							BParser.PREDICATE_PREFIX, "", "");
+					input.add(toggleObj);
+					tableViewer
+							.setSelection(new StructuredSelection(toggleObj));
+				}
+			});
+
+			setControl(container);
+
+		}
+
 	}
 
-	public WizardObserverSwitchImage(Shell shell, BControl bcontrol,
-			Observer bobserver) {
-		super(shell, bcontrol, bobserver);
+	public WizardObserverSwitchImage(final BControl bcontrol,
+			final Observer bobserver) {
+		super(bcontrol, bobserver);
+		addPage(new ObserverSwitchImagePage("ObserverToggleImagePage"));
+	}
+
+	@Override
+	protected Boolean prepareToFinish() {
+		// getBControl().restoreDefaultValue(AttributeConstants.ATTRIBUTE_IMAGE);
+		if (((SwitchImage) getObserver()).getToggleObjects().size() == 0) {
+			setObserverDelete(true);
+		} else {
+			for (ToggleObjectImage obj : ((SwitchImage) getObserver())
+					.getToggleObjects()) {
+				if (obj.getImage().isEmpty()) {
+					MessageDialog
+							.openError(getShell(), "Please check your entries",
+									"Please check your entries. The image field must not be empty.");
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
+	@Override
+	public boolean performCancel() {
+		// getBControl().restoreDefaultValue(AttributeConstants.ATTRIBUTE_IMAGE);
+		return super.performCancel();
 	}
 
 	@Override
@@ -218,6 +276,8 @@ public class WizardObserverSwitchImage extends ObserverWizard {
 		}
 
 		public Font getFont(final Object element, final int column) {
+			// return JFaceResources.getFontRegistry().get(
+			// BMotionStudioConstants.RODIN_FONT_KEY);
 			return null;
 		}
 

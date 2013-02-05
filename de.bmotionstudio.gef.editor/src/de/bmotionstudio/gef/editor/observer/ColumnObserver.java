@@ -3,8 +3,6 @@ package de.bmotionstudio.gef.editor.observer;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.eclipse.swt.widgets.Shell;
-
 import de.bmotionstudio.gef.editor.Animation;
 import de.bmotionstudio.gef.editor.AttributeConstants;
 import de.bmotionstudio.gef.editor.attribute.AbstractAttribute;
@@ -94,8 +92,8 @@ public class ColumnObserver extends Observer {
 	}
 
 	@Override
-	public ObserverWizard getWizard(Shell shell, BControl control) {
-		return new WizardColumnObserver(shell, control, this);
+	public ObserverWizard getWizard(BControl control) {
+		return new WizardColumnObserver(control, this);
 	}
 
 }

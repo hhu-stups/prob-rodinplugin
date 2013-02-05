@@ -10,12 +10,20 @@ import de.bmotionstudio.gef.editor.BindingObject;
 
 public class ObserverEvalObject extends BindingObject implements Cloneable {
 
-	private String eval;
+	private String type; // unused
 
-	private String attribute;
+	private String eval; // Predicate
 
 	private Object value;
 
+	private String attribute;
+
+	/**
+	 * If true, value attribute is an ExpressionValueElement otherwise value
+	 * attribute is an simple value object (e.g. background image)
+	 * 
+	 * @see ExpressionValueElement
+	 */
 	private Boolean isExpressionMode;
 
 	private transient Boolean hasError;
@@ -24,13 +32,24 @@ public class ObserverEvalObject extends BindingObject implements Cloneable {
 		this.isExpressionMode = false;
 	}
 
-	public ObserverEvalObject(String eval, Boolean isExpressionMode) {
+	public ObserverEvalObject(String type, String eval, Boolean isExpressionMode) {
+		this.type = type;
 		this.eval = eval;
 		this.isExpressionMode = isExpressionMode;
 	}
 
-	public ObserverEvalObject(String eval) {
-		this(eval, false);
+	public ObserverEvalObject(String type, String eval) {
+		this(type, eval, false);
+	}
+
+	public void setType(String type) {
+		Object oldValue = this.type;
+		this.type = type;
+		firePropertyChange("type", oldValue, this.type);
+	}
+
+	public String getType() {
+		return type;
 	}
 
 	public void setEval(String eval) {

@@ -165,8 +165,7 @@ public abstract class BControl implements IAdaptable, Cloneable {
 		initStandardAttributes();
 		// Init custom control attributes
 		initAttributes();
-		// Init observer
-		initObserver();
+
 	}
 
 	private List<String> getSupportedObserverList() {
@@ -217,37 +216,6 @@ public abstract class BControl implements IAdaptable, Cloneable {
 		}
 
 		return supportedObserver;
-
-	}
-
-	private void initObserver() {
-
-		List<String> supportedObserverList = getSupportedObserverList();
-		for (String oID : supportedObserverList) {
-
-			// Check if control has already the observer
-			if (!hasObserver(oID)) {
-
-				// If no, create a new instance and add the observer to the
-				// control
-				IConfigurationElement observerExtension = BMotionEditorPlugin
-						.getObserverExtension(oID);
-				
-				if (observerExtension != null) {
-					try {
-
-
-						Observer newObserver = (Observer) observerExtension
-								.createExecutableExtension("class");
-						addObserver(newObserver);
-					} catch (CoreException e) {
-						e.printStackTrace();
-					}
-				}
-
-			}
-
-		}
 
 	}
 

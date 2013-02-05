@@ -141,7 +141,7 @@ public class SchedulerObjectDialog extends Dialog {
 		Button btAdd = new Button(comp, SWT.PUSH);
 		btAdd.setText("Add");
 		btAdd.setImage(BMotionStudioImage
-				.getImage(EditorImageRegistry.IMG_ICON_NEW_WIZ));
+				.getImage(EditorImageRegistry.IMG_ICON_ADD));
 		btAdd.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(final SelectionEvent e) {
