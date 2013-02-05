@@ -11,7 +11,6 @@ import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IPerspectiveFactory;
 
 import de.bmotionstudio.gef.editor.library.LibraryView;
-import de.bmotionstudio.gef.editor.observer.view.ObserverView;
 
 public class PerspectiveEditFactory implements IPerspectiveFactory {
 
@@ -38,7 +37,6 @@ public class PerspectiveEditFactory implements IPerspectiveFactory {
 				IPageLayout.BOTTOM, 0.75f, editorArea);
 		// Properties view
 		bottom.addView(IPageLayout.ID_PROP_SHEET);
-		bottom.addView(ObserverView.ID);
 
 	}
 
