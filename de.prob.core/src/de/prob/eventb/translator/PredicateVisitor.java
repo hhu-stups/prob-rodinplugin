@@ -418,7 +418,6 @@ public class PredicateVisitor extends SimpleVisitorAdapter implements // NOPMD
 		AExtendedPredPredicate p = new AExtendedPredPredicate();
 		IPredicateExtension extension = predicate.getExtension();
 		String symbol = extension.getSyntaxSymbol();
-		Object origin = extension.getOrigin();
 
 		// FIXME THEORY-PLUGIN re-enable when the theory plugin was released
 
