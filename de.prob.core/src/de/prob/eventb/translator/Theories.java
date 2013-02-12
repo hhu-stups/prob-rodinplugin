@@ -11,7 +11,9 @@ import org.eventb.core.ast.ITypeEnvironment;
 import org.eventb.core.ast.Predicate;
 import org.eventb.core.ast.Type;
 import org.eventb.theory.core.IDeployedTheoryRoot;
-import org.eventb.theory.core.IFormulaExtensionsSource;
+import org.eventb.theory.core.ISCAxiomaticDefinitionAxiom;
+import org.eventb.theory.core.ISCAxiomaticDefinitionsBlock;
+import org.eventb.theory.core.ISCAxiomaticOperatorDefinition;
 import org.eventb.theory.core.ISCConstructorArgument;
 import org.eventb.theory.core.ISCDatatypeConstructor;
 import org.eventb.theory.core.ISCDatatypeDefinition;
@@ -21,7 +23,6 @@ import org.eventb.theory.core.ISCOperatorArgument;
 import org.eventb.theory.core.ISCRecursiveDefinitionCase;
 import org.eventb.theory.core.ISCRecursiveOperatorDefinition;
 import org.eventb.theory.core.ISCTypeArgument;
-import org.eventb.theory.core.ISCTypeParameter;
 import org.rodinp.core.IRodinProject;
 import org.rodinp.core.RodinDBException;
 
@@ -45,17 +46,18 @@ public class Theories {
 	private static void printTranslation(IDeployedTheoryRoot theory,
 			IPrologTermOutput pto) throws RodinDBException {
 		pto.openTerm("theory");
-		printTypeParameters(theory, pto);
+		printIdentifiers(theory.getSCTypeParameters(), pto);
 		printDataTypes(theory, pto);
 		printOperatorDefs(theory, pto);
+		printAxiomaticDefs(theory, pto);
 		pto.closeTerm();
 	}
 
-	private static void printTypeParameters(IFormulaExtensionsSource theory,
+	private static void printIdentifiers(ISCIdentifierElement[] identifiers,
 			IPrologTermOutput pto) throws RodinDBException {
 		pto.openList();
-		for (ISCTypeParameter parameter : theory.getSCTypeParameters()) {
-			pto.printAtom(parameter.getIdentifierString());
+		for (ISCIdentifierElement identifier : identifiers) {
+			pto.printAtom(identifier.getIdentifierString());
 		}
 		pto.closeList();
 	}
@@ -122,12 +124,7 @@ public class Theories {
 		final ITypeEnvironment te = theory.getTypeEnvironment(ff);
 
 		// Arguments
-		prologOutput.openList();
-		ISCOperatorArgument[] operatorArguments = opDef.getOperatorArguments();
-		for (ISCOperatorArgument argument : operatorArguments) {
-			printTypedIdentifier("argument", argument, ff, prologOutput);
-		}
-		prologOutput.closeList();
+		printOperatorArguments(opDef.getOperatorArguments(), prologOutput, ff);
 
 		// WD Condition
 		Predicate wdCondition = opDef.getWDCondition(ff, te);
@@ -154,6 +151,16 @@ public class Theories {
 		prologOutput.closeList();
 
 		prologOutput.closeTerm();
+	}
+
+	private static void printOperatorArguments(ISCOperatorArgument[] arguments,
+			IPrologTermOutput prologOutput, final FormulaFactory ff)
+			throws RodinDBException {
+		prologOutput.openList();
+		for (ISCOperatorArgument argument : arguments) {
+			printTypedIdentifier("argument", argument, ff, prologOutput);
+		}
+		prologOutput.closeList();
 	}
 
 	private static void processDefinitions(FormulaFactory ff,
@@ -209,4 +216,54 @@ public class Theories {
 		predicate.apply(pv);
 	}
 
+	private static void printAxiomaticDefs(IDeployedTheoryRoot theory,
+			IPrologTermOutput pto) throws RodinDBException {
+		FormulaFactory ff = theory.getFormulaFactory();
+		ITypeEnvironment te = theory.getTypeEnvironment(ff);
+		pto.openList();
+		for (final ISCAxiomaticDefinitionsBlock block : theory
+				.getSCAxiomaticDefinitionsBlocks()) {
+			printAxiomaticDefBlock(block, ff, te, pto);
+		}
+		pto.closeList();
+	}
+
+	private static void printAxiomaticDefBlock(
+			ISCAxiomaticDefinitionsBlock block, FormulaFactory ff,
+			ITypeEnvironment te, IPrologTermOutput pto) throws RodinDBException {
+		pto.openTerm("axiomatic_def_block");
+		pto.printAtom(block.getLabel());
+		printIdentifiers(block.getAxiomaticTypeDefinitions(), pto);
+		printAxiomaticOperators(block.getAxiomaticOperatorDefinitions(), ff,
+				pto);
+		printAxioms(block.getAxiomaticDefinitionAxioms(), ff, te, pto);
+		pto.closeTerm();
+	}
+
+	private static void printAxiomaticOperators(
+			ISCAxiomaticOperatorDefinition[] axdefs, FormulaFactory ff,
+			IPrologTermOutput pto) throws RodinDBException {
+		pto.openList();
+		for (final ISCAxiomaticOperatorDefinition opdef : axdefs) {
+			pto.openTerm("opdef");
+			pto.printAtom(opdef.getLabel()); // The label seems to be the
+												// operator name
+			printOperatorArguments(opdef.getOperatorArguments(), pto, ff);
+			pto.openList();
+			// WD condition missing
+			pto.closeList();
+			pto.closeTerm();
+		}
+		pto.closeList();
+	}
+
+	private static void printAxioms(ISCAxiomaticDefinitionAxiom[] axioms,
+			FormulaFactory ff, ITypeEnvironment te, IPrologTermOutput pto)
+			throws RodinDBException {
+		pto.openList();
+		for (ISCAxiomaticDefinitionAxiom axiom : axioms) {
+			printPredicate(pto, axiom.getPredicate(ff, te));
+		}
+		pto.closeList();
+	}
 }
