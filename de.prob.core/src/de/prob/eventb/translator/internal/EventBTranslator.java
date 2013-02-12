@@ -16,6 +16,7 @@ import org.eventb.core.IEventBRoot;
 import org.eventb.core.ISCInternalContext;
 import org.eventb.core.ISCMachineRoot;
 import org.rodinp.core.IInternalElement;
+import org.rodinp.core.RodinDBException;
 
 import de.be4.classicalb.core.parser.analysis.prolog.ASTProlog;
 import de.be4.classicalb.core.parser.node.AEventBContextParseUnit;
@@ -26,6 +27,7 @@ import de.prob.core.translator.TranslationFailedException;
 import de.prob.core.translator.pragmas.IPragma;
 import de.prob.eventb.translator.AbstractComponentTranslator;
 import de.prob.eventb.translator.ContextTranslator;
+import de.prob.eventb.translator.Theories;
 import de.prob.prolog.output.IPrologTermOutput;
 
 public abstract class EventBTranslator implements ITranslator {
