@@ -5,7 +5,8 @@ Bundle-SymbolicName: de.prob.core;singleton:=true
 Bundle-Version: 9.3.0.qualifier
 Require-Bundle: org.eclipse.core.runtime;bundle-version="[3.5.0,4.0.0)",
  org.rodinp.core;bundle-version="[1.3.1,1.7.0)",
- org.eventb.core;bundle-version="[2.1.0,2.6.0)"
+ org.eventb.core;bundle-version="[2.1.0,2.6.0)",
+ org.eventb.theory.core;bundle-version="2.0.0"
 REENABLE-FOR-THEORY-PLUGIN: org.eventb.theory.core;bundle-version="2.0.0"
 Bundle-ActivationPolicy: lazy
 Eclipse-BundleShape: dir
