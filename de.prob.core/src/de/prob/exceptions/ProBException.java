@@ -23,7 +23,7 @@ public abstract class ProBException extends Exception {
 	}
 
 	public ProBException(final Throwable e) {
-		this(e.getLocalizedMessage(), e, true);
+		this(e.getLocalizedMessage(), e, false);
 	}
 
 	public ProBException(final String message, final Throwable e,
