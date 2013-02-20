@@ -46,7 +46,7 @@ public class InvariantCheckDialog extends Dialog {
 		composite.setLayout(new GridLayout());
 		// final Button check = new Button(composite, SWT.CHECK);
 		final Label label1 = new Label(composite, SWT.NONE);
-		label1.setText("You can limit the analysis to some events.");
+		label1.setText("ProB will search for events which can violate the invariant. You can limit the analysis to some events.");
 		final Label label2 = new Label(composite, SWT.NONE);
 		label2.setText("If no event is chosen, all events will be checked.");
 		listviewer = new ListViewer(composite, SWT.MULTI | SWT.V_SCROLL
