@@ -18,7 +18,7 @@ public enum ConsistencyCheckingSearchOption {
 			find_deadlocks(1,"Find Deadlocks", true),
 			find_invariant_violations(2,"Find Invariant Violations", true),
 			find_assertion_violations(3,"Find Theorem Violations", false),
-			not_inspect_existing_nodes(4,"Search for New Errors", false);
+			inspect_existing_nodes(4,"Recheck existing states", false);
 
 	private final String text;
 	private final int pos;
