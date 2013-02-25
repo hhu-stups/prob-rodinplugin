@@ -2,6 +2,10 @@ package de.prob.eventb.translator;
 
 import java.util.LinkedList;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 import org.eventb.core.IEventBProject;
 import org.eventb.core.ISCIdentifierElement;
 import org.eventb.core.ast.Expression;
@@ -10,6 +14,8 @@ import org.eventb.core.ast.FormulaFactory;
 import org.eventb.core.ast.ITypeEnvironment;
 import org.eventb.core.ast.Predicate;
 import org.eventb.core.ast.Type;
+import org.eventb.theory.core.IAvailableTheory;
+import org.eventb.theory.core.IAvailableTheoryProject;
 import org.eventb.theory.core.IDeployedTheoryRoot;
 import org.eventb.theory.core.ISCAxiomaticDefinitionAxiom;
 import org.eventb.theory.core.ISCAxiomaticDefinitionsBlock;
@@ -23,6 +29,7 @@ import org.eventb.theory.core.ISCOperatorArgument;
 import org.eventb.theory.core.ISCRecursiveDefinitionCase;
 import org.eventb.theory.core.ISCRecursiveOperatorDefinition;
 import org.eventb.theory.core.ISCTypeArgument;
+import org.eventb.theory.core.ITheoryPathRoot;
 import org.rodinp.core.IRodinProject;
 import org.rodinp.core.RodinDBException;
 
@@ -32,6 +39,7 @@ import de.be4.classicalb.core.parser.node.PPredicate;
 import de.prob.prolog.output.IPrologTermOutput;
 
 public class Theories {
+	private static final String PROB_THEORY_MAPPING_SUFFIX = "ptm";
 
 	public static void translate(IEventBProject project, IPrologTermOutput pout)
 			throws RodinDBException {
@@ -41,16 +49,48 @@ public class Theories {
 		for (IDeployedTheoryRoot theory : theories) {
 			printTranslation(theory, pout);
 		}
+		final ITheoryPathRoot[] theoryPaths = rProject
+				.getRootElementsOfType(ITheoryPathRoot.ELEMENT_TYPE);
+		for (ITheoryPathRoot theoryPath : theoryPaths) {
+			for (IAvailableTheoryProject ap : theoryPath
+					.getAvailableTheoryProjects()) {
+				for (IAvailableTheory at : ap.getTheories()) {
+					printTranslation(at.getDeployedTheory(), pout);
+				}
+			}
+		}
 	}
 
 	private static void printTranslation(IDeployedTheoryRoot theory,
 			IPrologTermOutput pto) throws RodinDBException {
+
 		pto.openTerm("theory");
 		printIdentifiers(theory.getSCTypeParameters(), pto);
 		printDataTypes(theory, pto);
 		printOperatorDefs(theory, pto);
 		printAxiomaticDefs(theory, pto);
+		findProBMappingFile(theory, pto);
 		pto.closeTerm();
+	}
+
+	private static void findProBMappingFile(IDeployedTheoryRoot theory,
+			IPrologTermOutput pto) {
+		final String theoryName = theory.getComponentName();
+		final IPath path = new Path(theoryName + "."
+				+ PROB_THEORY_MAPPING_SUFFIX);
+		final IProject project = theory.getRodinProject().getProject();
+		if (project.exists(path)) {
+			final IFile file = project.getFile(path);
+			readAndPrintMapping(file, theory, pto);
+		} else {
+			pto.printAtom("none");
+		}
+	}
+
+	private static void readAndPrintMapping(IFile file,
+			IDeployedTheoryRoot theory, IPrologTermOutput pto) {
+		// TODO Auto-generated method stub
+
 	}
 
 	private static void printIdentifiers(ISCIdentifierElement[] identifiers,
