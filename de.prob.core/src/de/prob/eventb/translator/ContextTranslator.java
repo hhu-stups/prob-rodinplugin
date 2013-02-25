@@ -31,6 +31,7 @@ import org.eventb.core.ISCExtendsContext;
 import org.eventb.core.ISCInternalContext;
 import org.eventb.core.ast.FormulaFactory;
 import org.eventb.core.ast.ITypeEnvironment;
+import org.eventb.core.ast.Predicate;
 import org.eventb.core.seqprover.IConfidence;
 import org.rodinp.core.IAttributeType;
 import org.rodinp.core.IInternalElement;
@@ -61,6 +62,7 @@ import de.prob.core.translator.pragmas.UnitPragma;
 import de.prob.eventb.translator.internal.EProofStatus;
 import de.prob.eventb.translator.internal.ProofObligation;
 import de.prob.eventb.translator.internal.SequentSource;
+import de.prob.eventb.translator.internal.TranslationVisitor;
 
 public final class ContextTranslator extends AbstractComponentTranslator {
 
@@ -382,8 +384,10 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 			if (element.isTheorem() == theorems) {
 				final PredicateVisitor visitor = new PredicateVisitor(
 						new LinkedList<String>());
-				element.getPredicate(ff, te).accept(visitor);
+				final Predicate p = element.getPredicate(ff, te);
+				p.accept(visitor);
 				final PPredicate predicate = visitor.getPredicate();
+				TranslationVisitor.checkNewImplementation(p, predicate);
 				list.add(predicate);
 				labelMapping.put(predicate, element);
 				proofspragmas.add(new ClassifiedPragma("discharged", predicate,

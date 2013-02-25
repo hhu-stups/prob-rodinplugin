@@ -430,6 +430,8 @@ public class ModelTranslator extends AbstractComponentTranslator {
 			// + guardPredicate);
 			guardPredicate.accept(visitor);
 			final PPredicate predicate = visitor.getPredicate();
+			TranslationVisitor
+					.checkNewImplementation(guardPredicate, predicate);
 			if (guard.isTheorem()) {
 				theoremsList.add(predicate);
 			} else {
@@ -533,8 +535,10 @@ public class ModelTranslator extends AbstractComponentTranslator {
 			if (!isDefinedInAbstraction(evPredicate)) {
 				final PredicateVisitor visitor = new PredicateVisitor(
 						new LinkedList<String>());
-				evPredicate.getPredicate(ff, te).accept(visitor);
+				Predicate p = evPredicate.getPredicate(ff, te);
+				p.accept(visitor);
 				final PPredicate predicate = visitor.getPredicate();
+				TranslationVisitor.checkNewImplementation(p, predicate);
 				list.add(predicate);
 				labelMapping.put(predicate, evPredicate);
 			}

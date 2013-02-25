@@ -328,8 +328,8 @@ public class TranslationVisitor implements ISimpleVisitor {
 	}
 
 	public void visitBinaryPredicate(final BinaryPredicate predicate) {
-		final PPredicate right = getPredicate(predicate.getLeft());
-		final PPredicate left = getPredicate(predicate.getRight());
+		final PPredicate left = getPredicate(predicate.getLeft());
+		final PPredicate right = getPredicate(predicate.getRight());
 		final PPredicate result;
 		switch (predicate.getTag()) {
 		case Formula.LIMP:
@@ -674,6 +674,41 @@ public class TranslationVisitor implements ISimpleVisitor {
 			shrinkToSize(targetSize);
 			return result;
 
+		}
+	}
+
+	public PPredicate getPredicate() {
+		assertExactStacksize(predicates);
+		return predicates.pop();
+	}
+
+	public PExpression getExpression() {
+		assertExactStacksize(expressions);
+		return expressions.pop();
+	}
+
+	public PSubstitution getSubstitution() {
+		assertExactStacksize(substitutions);
+		return substitutions.pop();
+	}
+
+	private void assertExactStacksize(LookupStack<?> stack) {
+		if (stack.size() != 1) {
+			throw new AssertionError(
+					"Exactly one element on the stack expected, but were "
+							+ predicates.size());
+
+		}
+	}
+
+	public static void checkNewImplementation(Predicate p, PPredicate predicate) {
+		TranslationVisitor visitor = new TranslationVisitor();
+		p.accept(visitor);
+		final String expected = predicate.toString();
+		final String actual = visitor.getPredicate().toString();
+		if (!expected.equals(actual)) {
+			throw new AssertionError("Expected:\n" + expected + "\n but was:\n"
+					+ actual);
 		}
 	}
 }
