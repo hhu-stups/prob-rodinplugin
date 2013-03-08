@@ -3,8 +3,10 @@ import org.apache.tools.ant.taskdefs.condition.Os
 
 project.ext{
 	
-	targetRepositories = ["http://www.stups.uni-duesseldorf.de/prob_dev_target/","http://download.eclipse.org/releases/indigo/","http://rodin-b-sharp.sourceforge.net/updates",
-                          "http://stups.cs.uni-duesseldorf.de/ProB/buildlibs/theory" ]
+	targetRepositories = ["http://download.eclipse.org/releases/indigo/",
+                          "http://rodin-b-sharp.sourceforge.net/updates",
+                          "http://rodin-b-sharp.sourceforge.net/core-updates",
+                          "http://www.stups.uni-duesseldorf.de/ProB/buildlibs/theory/"]
 
 	groupID = "de.prob"
 }
