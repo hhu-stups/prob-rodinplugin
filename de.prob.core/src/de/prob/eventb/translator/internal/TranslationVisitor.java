@@ -49,6 +49,8 @@ public class TranslationVisitor implements ISimpleVisitor {
 	private LookupStack<PSubstitution> substitutions = new LookupStack<PSubstitution>();
 	private LookupStack<String> boundVariables = new LookupStack<String>();
 
+	private boolean usesTheories = false;
+
 	public void visitAssociativeExpression(
 			final AssociativeExpression expression) {
 		// BUNION, BINTER, BCOMP, FCOMP, OVR, PLUS, MUL
@@ -602,6 +604,7 @@ public class TranslationVisitor implements ISimpleVisitor {
 				.getChildPredicates());
 		expressions.push(new AExtendedExprExpression(new TIdentifierLiteral(
 				symbol), childExprs, childPreds));
+		usesTheories = true;
 	}
 
 	@Override
@@ -613,6 +616,7 @@ public class TranslationVisitor implements ISimpleVisitor {
 				.getChildPredicates());
 		predicates.push(new AExtendedPredPredicate(new TIdentifierLiteral(
 				symbol), childExprs, childPreds));
+		usesTheories = true;
 	}
 
 	private List<PExpression> getSubExpressions(final Formula<?>[] children) {
@@ -701,14 +705,20 @@ public class TranslationVisitor implements ISimpleVisitor {
 		}
 	}
 
-	public static void checkNewImplementation(Predicate p, PPredicate predicate) {
+	public static boolean checkNewImplementation(Formula<?> p,
+			Node oldImplementation) {
 		TranslationVisitor visitor = new TranslationVisitor();
 		p.accept(visitor);
-		final String expected = predicate.toString();
+		final String expected = oldImplementation.toString();
 		final String actual = visitor.getPredicate().toString();
 		if (!expected.equals(actual)) {
 			throw new AssertionError("Expected:\n" + expected + "\n but was:\n"
 					+ actual);
 		}
+		return visitor.usesTheories;
+	}
+
+	public boolean usesTheories() {
+		return usesTheories;
 	}
 }
