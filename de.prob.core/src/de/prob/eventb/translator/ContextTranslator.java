@@ -31,14 +31,11 @@ import org.eventb.core.ISCExtendsContext;
 import org.eventb.core.ISCInternalContext;
 import org.eventb.core.ast.FormulaFactory;
 import org.eventb.core.ast.ITypeEnvironment;
-import org.eventb.core.ast.Predicate;
 import org.eventb.core.seqprover.IConfidence;
-import org.rodinp.core.IAttributeType;
 import org.rodinp.core.IInternalElement;
 import org.rodinp.core.IRodinElement;
 import org.rodinp.core.IRodinFile;
 import org.rodinp.core.IRodinProject;
-import org.rodinp.core.RodinCore;
 import org.rodinp.core.RodinDBException;
 
 import de.be4.classicalb.core.parser.analysis.pragma.internal.ClassifiedPragma;
@@ -50,6 +47,7 @@ import de.be4.classicalb.core.parser.node.AExtendsContextClause;
 import de.be4.classicalb.core.parser.node.AIdentifierExpression;
 import de.be4.classicalb.core.parser.node.ASetsContextClause;
 import de.be4.classicalb.core.parser.node.ATheoremsContextClause;
+import de.be4.classicalb.core.parser.node.Node;
 import de.be4.classicalb.core.parser.node.PContextClause;
 import de.be4.classicalb.core.parser.node.PExpression;
 import de.be4.classicalb.core.parser.node.PPredicate;
@@ -57,12 +55,9 @@ import de.be4.classicalb.core.parser.node.PSet;
 import de.be4.classicalb.core.parser.node.TIdentifierLiteral;
 import de.hhu.stups.sablecc.patch.SourcePosition;
 import de.prob.core.translator.TranslationFailedException;
-import de.prob.core.translator.pragmas.IPragma;
-import de.prob.core.translator.pragmas.UnitPragma;
 import de.prob.eventb.translator.internal.EProofStatus;
 import de.prob.eventb.translator.internal.ProofObligation;
 import de.prob.eventb.translator.internal.SequentSource;
-import de.prob.eventb.translator.internal.TranslationVisitor;
 
 public final class ContextTranslator extends AbstractComponentTranslator {
 
@@ -70,9 +65,7 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 	private final ISCContext context;
 	private final AEventBContextParseUnit model = new AEventBContextParseUnit();
 	private final Map<String, ISCContext> depContext = new HashMap<String, ISCContext>();
-	private final List<ProofObligation> proofs = new ArrayList<ProofObligation>();
 	private final List<ClassifiedPragma> proofspragmas = new ArrayList<ClassifiedPragma>();
-	private final List<IPragma> pragmas = new ArrayList<IPragma>();
 
 	private final IEventBRoot root;
 	private final FormulaFactory ff;
@@ -159,6 +152,7 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 	private ContextTranslator(final ISCContext context,
 			final FormulaFactory ff, final ITypeEnvironment te,
 			final IEventBRoot root) throws TranslationFailedException {
+		super(context.getComponentName());
 		this.context = context;
 		this.ff = ff;
 		this.te = te;
@@ -173,26 +167,7 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 
 	private void collectPragmas() throws RodinDBException {
 		// unit pragma, attached to constants
-		try {
-			final IAttributeType.String UNITATTRIBUTE = RodinCore
-					.getStringAttrType("de.prob.units.unitPragmaAttribute");
-
-			final ISCConstant[] constants = context.getSCConstants();
-
-			for (final ISCConstant constant : constants) {
-				if (constant.hasAttribute(UNITATTRIBUTE)) {
-					String content = constant.getAttributeValue(UNITATTRIBUTE);
-
-					if (!content.isEmpty()) {
-						pragmas.add(new UnitPragma(getResource(), constant
-								.getIdentifierString(), content));
-					}
-				}
-			}
-		} catch (IllegalArgumentException ex) {
-			// Happens if the attribute does not exist, i.e. the unit plugin is
-			// not installed
-		}
+		addUnitPragmas(context.getSCConstants());
 	}
 
 	private void collectProofInfo() throws RodinDBException {
@@ -241,7 +216,7 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 						.getLabel()));
 
 			}
-			proofs.add(new ProofObligation(origin, s, name, pstatus));
+			addProof(new ProofObligation(origin, s, name, pstatus));
 		}
 
 	}
@@ -382,12 +357,7 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 				predicates.length);
 		for (final ISCAxiom element : predicates) {
 			if (element.isTheorem() == theorems) {
-				final PredicateVisitor visitor = new PredicateVisitor(
-						new LinkedList<String>());
-				final Predicate p = element.getPredicate(ff, te);
-				p.accept(visitor);
-				final PPredicate predicate = visitor.getPredicate();
-				TranslationVisitor.checkNewImplementation(p, predicate);
+				final PPredicate predicate = translatePredicate(ff, te, element);
 				list.add(predicate);
 				labelMapping.put(predicate, element);
 				proofspragmas.add(new ClassifiedPragma("discharged", predicate,
@@ -398,14 +368,6 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 		return list;
 	}
 
-	public List<ProofObligation> getProofs() {
-		return proofs;
-	}
-
-	public List<IPragma> getPragmas() {
-		return pragmas;
-	}
-
 	public List<ClassifiedPragma> getProofspragmas() {
 		return proofspragmas;
 	}
@@ -413,6 +375,11 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 	@Override
 	public String getResource() {
 		return context.getComponentName();
+	}
+
+	@Override
+	public Node getAST() {
+		return getContextAST();
 	}
 
 }
