@@ -450,10 +450,8 @@ public class TranslationVisitor implements ISimpleVisitor {
 	public void visitRelationalPredicate(final RelationalPredicate predicate) {
 		// EQUAL, NOTEQUAL, LT, LE, GT, GE, IN, NOTIN, SUBSET,
 		// NOTSUBSET, SUBSETEQ, NOTSUBSETEQ
-		predicate.getLeft().accept(this);
-		final PExpression left = expressions.pop();
-		predicate.getRight().accept(this);
-		final PExpression right = expressions.pop();
+		final PExpression left = getExpression(predicate.getLeft());
+		final PExpression right = getExpression(predicate.getRight());
 		final PPredicate result;
 		switch (predicate.getTag()) {
 		case Formula.EQUAL:
