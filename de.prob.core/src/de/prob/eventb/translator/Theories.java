@@ -37,6 +37,8 @@ import de.be4.classicalb.core.parser.analysis.prolog.ASTProlog;
 import de.be4.classicalb.core.parser.node.PExpression;
 import de.be4.classicalb.core.parser.node.PPredicate;
 import de.prob.prolog.output.IPrologTermOutput;
+import de.prob.prolog.output.StructuredPrologOutput;
+import de.prob.prolog.term.PrologTerm;
 
 public class Theories {
 	private static final String PROB_THEORY_MAPPING_SUFFIX = "ptm";
@@ -47,7 +49,7 @@ public class Theories {
 		final IDeployedTheoryRoot[] theories = rProject
 				.getRootElementsOfType(IDeployedTheoryRoot.ELEMENT_TYPE);
 		for (IDeployedTheoryRoot theory : theories) {
-			printTranslation(theory, pout);
+			savePrintTranslation(theory, pout);
 		}
 		final ITheoryPathRoot[] theoryPaths = rProject
 				.getRootElementsOfType(ITheoryPathRoot.ELEMENT_TYPE);
@@ -55,15 +57,30 @@ public class Theories {
 			for (IAvailableTheoryProject ap : theoryPath
 					.getAvailableTheoryProjects()) {
 				for (IAvailableTheory at : ap.getTheories()) {
-					printTranslation(at.getDeployedTheory(), pout);
+					savePrintTranslation(at.getDeployedTheory(), pout);
 				}
 			}
 		}
 	}
 
-	private static void printTranslation(IDeployedTheoryRoot theory,
-			IPrologTermOutput pto) throws RodinDBException {
+	/**
+	 * We currently write the translated theory into a PrologTerm object because
+	 * the translation is currently very unstable and erroneous. Writing in a
+	 * Prolog object makes sure that the output stream to the Prolog process
+	 * will not be corrupted.
+	 */
+	private static void savePrintTranslation(IDeployedTheoryRoot theory,
+			IPrologTermOutput opto) throws RodinDBException {
 
+		final StructuredPrologOutput pto = new StructuredPrologOutput();
+		printTranslation(theory, pto);
+		pto.fullstop();
+		final PrologTerm result = pto.getSentences().get(0);
+		opto.printTerm(result);
+	}
+
+	private static void printTranslation(IDeployedTheoryRoot theory,
+			StructuredPrologOutput pto) throws RodinDBException {
 		pto.openTerm("theory");
 		printIdentifiers(theory.getSCTypeParameters(), pto);
 		printDataTypes(theory, pto);
