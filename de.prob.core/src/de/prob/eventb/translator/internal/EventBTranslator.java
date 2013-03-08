@@ -18,18 +18,17 @@ import org.eventb.core.ISCMachineRoot;
 import org.rodinp.core.IInternalElement;
 
 import de.be4.classicalb.core.parser.analysis.prolog.ASTProlog;
-import de.be4.classicalb.core.parser.node.AEventBContextParseUnit;
-import de.be4.classicalb.core.parser.node.AEventBModelParseUnit;
 import de.be4.classicalb.core.parser.node.Node;
 import de.prob.core.translator.ITranslator;
 import de.prob.core.translator.TranslationFailedException;
 import de.prob.core.translator.pragmas.IPragma;
 import de.prob.eventb.translator.AbstractComponentTranslator;
-import de.prob.eventb.translator.ContextTranslator;
+import de.prob.eventb.translator.Theories;
 import de.prob.prolog.output.IPrologTermOutput;
 
 public abstract class EventBTranslator implements ITranslator {
 	protected final IEventBProject project;
+	private boolean theoryIsUsed;
 
 	protected EventBTranslator(final IEventBRoot root) {
 		this.project = root.getEventBProject();
@@ -42,7 +41,7 @@ public abstract class EventBTranslator implements ITranslator {
 		this.project = ((ISCMachineRoot) ctx.getRoot()).getEventBProject();
 	}
 
-	private LabelPositionPrinter createPrinter(
+	private LabelPositionPrinter createLabelPrositionPrinter(
 			final Collection<AbstractComponentTranslator> translators)
 			throws TranslationFailedException {
 		LabelPositionPrinter printer = new LabelPositionPrinter();
@@ -54,42 +53,36 @@ public abstract class EventBTranslator implements ITranslator {
 		return printer;
 	}
 
-	private void printContexts(
-			final Collection<ContextTranslator> contextTranslators,
-			final IPrologTermOutput pout, final ASTProlog prolog) {
-		pout.openList();
-		for (final ContextTranslator contextTranslator : contextTranslators) {
-			final AEventBContextParseUnit contextAST = contextTranslator
-					.getContextAST();
-			contextAST.apply(prolog);
+	private Collection<Node> translateModels(
+			final Collection<? extends AbstractComponentTranslator> refinementChainTranslators) {
+		Collection<Node> nodes = new ArrayList<Node>();
+		for (final AbstractComponentTranslator translator : refinementChainTranslators) {
+			nodes.add(translator.getAST());
+			theoryIsUsed |= translator.isTheoryUsed();
 		}
-		pout.closeList();
+		return nodes;
 	}
 
-	private void printModels(
-			final Collection<ModelTranslator> refinementChainTranslators,
+	private void printModels(final Collection<Node> nodes,
 			final IPrologTermOutput pout, final ASTProlog prolog) {
 		pout.openList();
-
-		for (final ModelTranslator modelTranslator : refinementChainTranslators) {
-			final AEventBModelParseUnit modelAST = modelTranslator
-					.getModelAST();
-			modelAST.apply(prolog);
+		for (final Node node : nodes) {
+			node.apply(prolog);
 		}
 		pout.closeList();
 	}
 
 	private void printProofInformation(
-			final Collection<ModelTranslator> refinementChainTranslators,
-			Collection<ContextTranslator> contextTranslators,
+			final Collection<? extends AbstractComponentTranslator> refinementChainTranslators,
+			Collection<? extends AbstractComponentTranslator> contextTranslators,
 			final IPrologTermOutput pout) throws TranslationFailedException {
 
 		ArrayList<ProofObligation> list = new ArrayList<ProofObligation>();
 
-		for (ContextTranslator contextTranslator : contextTranslators) {
+		for (AbstractComponentTranslator contextTranslator : contextTranslators) {
 			list.addAll(contextTranslator.getProofs());
 		}
-		for (ModelTranslator modelTranslator : refinementChainTranslators) {
+		for (AbstractComponentTranslator modelTranslator : refinementChainTranslators) {
 			list.addAll(modelTranslator.getProofs());
 		}
 
@@ -114,15 +107,15 @@ public abstract class EventBTranslator implements ITranslator {
 	}
 
 	private void printPragmaContents(
-			Collection<ModelTranslator> refinementChainTranslators,
-			Collection<ContextTranslator> contextTranslators,
+			Collection<? extends AbstractComponentTranslator> refinementChainTranslators,
+			Collection<? extends AbstractComponentTranslator> contextTranslators,
 			IPrologTermOutput pout) {
 		ArrayList<IPragma> pragmas = new ArrayList<IPragma>();
 
-		for (ContextTranslator contextTranslator : contextTranslators) {
+		for (AbstractComponentTranslator contextTranslator : contextTranslators) {
 			pragmas.addAll(contextTranslator.getPragmas());
 		}
-		for (ModelTranslator modelTranslator : refinementChainTranslators) {
+		for (AbstractComponentTranslator modelTranslator : refinementChainTranslators) {
 			pragmas.addAll(modelTranslator.getPragmas());
 		}
 
@@ -134,42 +127,66 @@ public abstract class EventBTranslator implements ITranslator {
 	protected abstract void printFlowInformation(final IPrologTermOutput pout);
 
 	private ASTProlog createAstVisitor(
-			final Collection<ModelTranslator> refinementChainTranslators,
-			final Collection<ContextTranslator> contextTranslators,
+			final Collection<? extends AbstractComponentTranslator> refinementChainTranslators,
+			final Collection<? extends AbstractComponentTranslator> contextTranslators,
 			final IPrologTermOutput pout) throws TranslationFailedException {
 		Collection<AbstractComponentTranslator> translators = new ArrayList<AbstractComponentTranslator>();
 		translators.addAll(refinementChainTranslators);
 		translators.addAll(contextTranslators);
-		return new ASTProlog(pout, createPrinter(translators));
+		return new ASTProlog(pout, createLabelPrositionPrinter(translators));
 	}
 
 	protected void printProlog(
-			final Collection<ModelTranslator> refinementChainTranslators,
-			final Collection<ContextTranslator> contextTranslators,
+			final Collection<? extends AbstractComponentTranslator> refinementChainTranslators,
+			final Collection<? extends AbstractComponentTranslator> contextTranslators,
 			final IPrologTermOutput pout) throws TranslationFailedException {
+		theoryIsUsed = false;
+		Collection<Node> machineNodes = translateModels(refinementChainTranslators);
+		Collection<Node> contextNodes = translateModels(contextTranslators);
+
+		if (theoryIsUsed) {
+			checkIfTheoriesAvailable();
+		}
+
 		final ASTProlog prolog = createAstVisitor(refinementChainTranslators,
 				contextTranslators, pout);
 
 		pout.openTerm("load_event_b_project");
-		printModels(refinementChainTranslators, pout, prolog);
-		printContexts(contextTranslators, pout, prolog);
+		printModels(machineNodes, pout, prolog);
+		printModels(contextNodes, pout, prolog);
 		pout.openList();
 		pout.openTerm("exporter_version");
 		pout.printNumber(2);
 		pout.closeTerm();
+
 		printProofInformation(refinementChainTranslators, contextTranslators,
 				pout);
-		// FIXME THEORY-PLUGIN re-enable when the theory plugin was released
 
-		// try {
-		// Theories.translate(pout);
-		// } catch (RodinDBException e) {
-		// e.printStackTrace();
-		// }
+		if (theoryIsUsed) {
+			translateTheories(project, pout);
+		}
+
 		printPragmaContents(refinementChainTranslators, contextTranslators,
 				pout);
+
 		pout.closeList();
 		pout.printVariable("_Error");
 		pout.closeTerm();
 	}
+
+	private void checkIfTheoriesAvailable() throws TranslationFailedException {
+		try {
+			Theories.touch();
+		} catch (NoClassDefFoundError e) {
+			throw new TranslationFailedException(
+					"Theory",
+					"The model to animate makes use of a theory but the theory plug-in is not installed");
+		}
+	}
+
+	private void translateTheories(IEventBProject project2,
+			IPrologTermOutput pout) throws TranslationFailedException {
+		Theories.translate(project, pout);
+	}
+
 }
