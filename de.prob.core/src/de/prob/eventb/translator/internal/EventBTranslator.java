@@ -16,7 +16,6 @@ import org.eventb.core.IEventBRoot;
 import org.eventb.core.ISCInternalContext;
 import org.eventb.core.ISCMachineRoot;
 import org.rodinp.core.IInternalElement;
-import org.rodinp.core.RodinDBException;
 
 import de.be4.classicalb.core.parser.analysis.prolog.ASTProlog;
 import de.be4.classicalb.core.parser.node.Node;
@@ -29,6 +28,7 @@ import de.prob.prolog.output.IPrologTermOutput;
 
 public abstract class EventBTranslator implements ITranslator {
 	protected final IEventBProject project;
+	private boolean theoryIsUsed;
 
 	protected EventBTranslator(final IEventBRoot root) {
 		this.project = root.getEventBProject();
@@ -41,7 +41,7 @@ public abstract class EventBTranslator implements ITranslator {
 		this.project = ((ISCMachineRoot) ctx.getRoot()).getEventBProject();
 	}
 
-	private LabelPositionPrinter createPrinter(
+	private LabelPositionPrinter createLabelPrositionPrinter(
 			final Collection<AbstractComponentTranslator> translators)
 			throws TranslationFailedException {
 		LabelPositionPrinter printer = new LabelPositionPrinter();
@@ -53,14 +53,21 @@ public abstract class EventBTranslator implements ITranslator {
 		return printer;
 	}
 
-	private void printModels(
-			final Collection<? extends AbstractComponentTranslator> refinementChainTranslators,
+	private Collection<Node> translateModels(
+			final Collection<? extends AbstractComponentTranslator> refinementChainTranslators) {
+		Collection<Node> nodes = new ArrayList<Node>();
+		for (final AbstractComponentTranslator translator : refinementChainTranslators) {
+			nodes.add(translator.getAST());
+			theoryIsUsed |= translator.isTheoryUsed();
+		}
+		return nodes;
+	}
+
+	private void printModels(final Collection<Node> nodes,
 			final IPrologTermOutput pout, final ASTProlog prolog) {
 		pout.openList();
-
-		for (final AbstractComponentTranslator translateor : refinementChainTranslators) {
-			final Node modelAST = translateor.getAST();
-			modelAST.apply(prolog);
+		for (final Node node : nodes) {
+			node.apply(prolog);
 		}
 		pout.closeList();
 	}
@@ -126,19 +133,27 @@ public abstract class EventBTranslator implements ITranslator {
 		Collection<AbstractComponentTranslator> translators = new ArrayList<AbstractComponentTranslator>();
 		translators.addAll(refinementChainTranslators);
 		translators.addAll(contextTranslators);
-		return new ASTProlog(pout, createPrinter(translators));
+		return new ASTProlog(pout, createLabelPrositionPrinter(translators));
 	}
 
 	protected void printProlog(
 			final Collection<? extends AbstractComponentTranslator> refinementChainTranslators,
 			final Collection<? extends AbstractComponentTranslator> contextTranslators,
 			final IPrologTermOutput pout) throws TranslationFailedException {
+		theoryIsUsed = false;
+		Collection<Node> machineNodes = translateModels(refinementChainTranslators);
+		Collection<Node> contextNodes = translateModels(contextTranslators);
+
+		if (theoryIsUsed) {
+			checkIfTheoriesAvailable();
+		}
+
 		final ASTProlog prolog = createAstVisitor(refinementChainTranslators,
 				contextTranslators, pout);
 
 		pout.openTerm("load_event_b_project");
-		printModels(refinementChainTranslators, pout, prolog);
-		printModels(contextTranslators, pout, prolog);
+		printModels(machineNodes, pout, prolog);
+		printModels(contextNodes, pout, prolog);
 		pout.openList();
 		pout.openTerm("exporter_version");
 		pout.printNumber(2);
@@ -146,12 +161,9 @@ public abstract class EventBTranslator implements ITranslator {
 
 		printProofInformation(refinementChainTranslators, contextTranslators,
 				pout);
-		try {
-			Theories.translate(project, pout);
-		} catch (NoClassDefFoundError e) {
 
-		} catch (RodinDBException e) {
-			e.printStackTrace();
+		if (theoryIsUsed) {
+			translateTheories(project, pout);
 		}
 
 		printPragmaContents(refinementChainTranslators, contextTranslators,
@@ -161,4 +173,20 @@ public abstract class EventBTranslator implements ITranslator {
 		pout.printVariable("_Error");
 		pout.closeTerm();
 	}
+
+	private void checkIfTheoriesAvailable() throws TranslationFailedException {
+		try {
+			Theories.touch();
+		} catch (NoClassDefFoundError e) {
+			throw new TranslationFailedException(
+					"Theory",
+					"The model to animate makes use of a theory but the theory plug-in is not installed");
+		}
+	}
+
+	private void translateTheories(IEventBProject project2,
+			IPrologTermOutput pout) throws TranslationFailedException {
+		Theories.translate(project, pout);
+	}
+
 }

@@ -14,6 +14,7 @@ import org.eventb.core.ast.FormulaFactory;
 import org.eventb.core.ast.ITypeEnvironment;
 import org.eventb.core.ast.Predicate;
 import org.eventb.core.ast.Type;
+import org.eventb.theory.core.DatabaseUtilities;
 import org.eventb.theory.core.IAvailableTheory;
 import org.eventb.theory.core.IAvailableTheoryProject;
 import org.eventb.theory.core.IDeployedTheoryRoot;
@@ -36,6 +37,7 @@ import org.rodinp.core.RodinDBException;
 import de.be4.classicalb.core.parser.analysis.prolog.ASTProlog;
 import de.be4.classicalb.core.parser.node.PExpression;
 import de.be4.classicalb.core.parser.node.PPredicate;
+import de.prob.core.translator.TranslationFailedException;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.output.StructuredPrologOutput;
 import de.prob.prolog.term.PrologTerm;
@@ -44,22 +46,26 @@ public class Theories {
 	private static final String PROB_THEORY_MAPPING_SUFFIX = "ptm";
 
 	public static void translate(IEventBProject project, IPrologTermOutput pout)
-			throws RodinDBException {
-		final IRodinProject rProject = project.getRodinProject();
-		final IDeployedTheoryRoot[] theories = rProject
-				.getRootElementsOfType(IDeployedTheoryRoot.ELEMENT_TYPE);
-		for (IDeployedTheoryRoot theory : theories) {
-			savePrintTranslation(theory, pout);
-		}
-		final ITheoryPathRoot[] theoryPaths = rProject
-				.getRootElementsOfType(ITheoryPathRoot.ELEMENT_TYPE);
-		for (ITheoryPathRoot theoryPath : theoryPaths) {
-			for (IAvailableTheoryProject ap : theoryPath
-					.getAvailableTheoryProjects()) {
-				for (IAvailableTheory at : ap.getTheories()) {
-					savePrintTranslation(at.getDeployedTheory(), pout);
+			throws TranslationFailedException {
+		try {
+			final IRodinProject rProject = project.getRodinProject();
+			final IDeployedTheoryRoot[] theories = rProject
+					.getRootElementsOfType(IDeployedTheoryRoot.ELEMENT_TYPE);
+			for (IDeployedTheoryRoot theory : theories) {
+				savePrintTranslation(theory, pout);
+			}
+			final ITheoryPathRoot[] theoryPaths = rProject
+					.getRootElementsOfType(ITheoryPathRoot.ELEMENT_TYPE);
+			for (ITheoryPathRoot theoryPath : theoryPaths) {
+				for (IAvailableTheoryProject ap : theoryPath
+						.getAvailableTheoryProjects()) {
+					for (IAvailableTheory at : ap.getTheories()) {
+						savePrintTranslation(at.getDeployedTheory(), pout);
+					}
 				}
 			}
+		} catch (RodinDBException e) {
+			throw new TranslationFailedException(e);
 		}
 	}
 
@@ -322,5 +328,11 @@ public class Theories {
 			printPredicate(pto, axiom.getPredicate(ff, te));
 		}
 		pto.closeList();
+	}
+
+	public static void touch() throws NoClassDefFoundError {
+		// Just some dummy code to check if the theory plugin is installed
+		@SuppressWarnings("unused")
+		String extension = DatabaseUtilities.DEPLOYED_THEORY_FILE_EXTENSION;
 	}
 }
