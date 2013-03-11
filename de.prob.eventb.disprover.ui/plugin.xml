@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+   <extension
+         point="org.eventb.ui.proofTactics">
+      <tactic
+            dropdown="de.prob.eventb.disprover.ui.DisproverDropdown"
+            icon="icons/disprover-relevant-context.png"
+            id="de.prob.eventb.disprover.ui.disproverRelevantContextTactic"
+            interrupt="true"
+            name="%tactic.disprover.name"
+            priority="9"
+            tacticProvider="de.prob.eventb.disprover.ui.DisproverRelevantHypothesesAndContextTacticProvider"
+            target="global"
+            tooltip="%tactic.disprover.tooltip-relevant-context" />
+      <tactic
+            dropdown="de.prob.eventb.disprover.ui.DisproverDropdown"
+            icon="icons/disprover-all.png"
+            id="de.prob.eventb.disprover.ui.disproverAllHypothesesTactic"
+            interrupt="true"
+            name="%tactic.disprover.name"
+            priority="9"
+            tacticProvider="de.prob.eventb.disprover.ui.DisproverAllHypothesesTacticProvider"
+            target="global"
+            tooltip="%tactic.disprover.tooltip-all" />
+      <tactic
+            dropdown="de.prob.eventb.disprover.ui.DisproverDropdown"
+            icon="icons/disprover-config.png"
+            id="de.prob.eventb.disprover.ui.disproverConfigTactic"
+            interrupt="true"
+            name="%tactic.disprover.name"
+            priority="9"
+            tacticProvider="de.prob.eventb.disprover.ui.DisproverConfigTacticProvider"
+            target="global"
+            tooltip="%tactic.disprover.tooltip-config" />
+      <tactic
+            dropdown="de.prob.eventb.disprover.ui.DisproverDropdown"
+            icon="icons/disprover-relevant.png"
+            id="de.prob.eventb.disprover.ui.disproverRelevantHypothesesTactic"
+            interrupt="true"
+            name="%tactic.disprover.name"
+            priority="9"
+            tacticProvider="de.prob.eventb.disprover.ui.DisproverRelevantHypothesesTacticProvider"
+            target="global"
+            tooltip="%tactic.disprover.tooltip-relevant" />
+      <dropdown
+            id="de.prob.eventb.disprover.ui.DisproverDropdown"
+            name="%dropdown.name"
+            priority="9"
+            toolbar="org.eventb.ui.sequentToolbar">
+      </dropdown>
+   </extension>
+
+</plugin>
