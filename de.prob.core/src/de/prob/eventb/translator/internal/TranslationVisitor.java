@@ -719,12 +719,25 @@ public class TranslationVisitor implements ISimpleVisitor {
 		}
 	}
 
-	public static boolean checkNewImplementation(Formula<?> p,
+	public static boolean checkNewImplementation(Predicate p,
 			Node oldImplementation) {
 		TranslationVisitor visitor = new TranslationVisitor();
 		p.accept(visitor);
 		final String expected = oldImplementation.toString();
 		final String actual = visitor.getPredicate().toString();
+		if (!expected.equals(actual)) {
+			throw new AssertionError("Expected:\n" + expected + "\n but was:\n"
+					+ actual);
+		}
+		return visitor.usesTheories;
+	}
+
+	public static boolean checkNewImplementation(Expression e,
+			Node oldImplementation) {
+		TranslationVisitor visitor = new TranslationVisitor();
+		e.accept(visitor);
+		final String expected = oldImplementation.toString();
+		final String actual = visitor.getExpression().toString();
 		if (!expected.equals(actual)) {
 			throw new AssertionError("Expected:\n" + expected + "\n but was:\n"
 					+ actual);
