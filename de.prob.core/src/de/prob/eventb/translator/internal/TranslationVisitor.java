@@ -641,6 +641,17 @@ public class TranslationVisitor implements ISimpleVisitor {
 		return expressions.pop();
 	}
 
+	/**
+	 * Lookup stack implements a stack with additional arbitrary read access.
+	 * 
+	 * Additionally, there is a method to remove elements until the resulting
+	 * stack has a certain size.
+	 * 
+	 * Also there is another method to remove n elements at the same time into a
+	 * list.
+	 * 
+	 * @param <T>
+	 */
 	private static class LookupStack<T> {
 		private List<T> elements = new ArrayList<T>();
 
@@ -661,9 +672,10 @@ public class TranslationVisitor implements ISimpleVisitor {
 		}
 
 		void shrinkToSize(int size) {
-			final int rSize = size - elements.size();
+			final int oSize = elements.size();
+			final int rSize = oSize - size;
 			for (int i = 0; i < rSize; i++) {
-				elements.remove(size - 1 - i);
+				elements.remove(oSize - 1 - i);
 			}
 		}
 
@@ -675,7 +687,11 @@ public class TranslationVisitor implements ISimpleVisitor {
 			}
 			shrinkToSize(targetSize);
 			return result;
+		}
 
+		@Override
+		public String toString() {
+			return elements.toString();
 		}
 	}
 
@@ -703,12 +719,25 @@ public class TranslationVisitor implements ISimpleVisitor {
 		}
 	}
 
-	public static boolean checkNewImplementation(Formula<?> p,
+	public static boolean checkNewImplementation(Predicate p,
 			Node oldImplementation) {
 		TranslationVisitor visitor = new TranslationVisitor();
 		p.accept(visitor);
 		final String expected = oldImplementation.toString();
 		final String actual = visitor.getPredicate().toString();
+		if (!expected.equals(actual)) {
+			throw new AssertionError("Expected:\n" + expected + "\n but was:\n"
+					+ actual);
+		}
+		return visitor.usesTheories;
+	}
+
+	public static boolean checkNewImplementation(Expression e,
+			Node oldImplementation) {
+		TranslationVisitor visitor = new TranslationVisitor();
+		e.accept(visitor);
+		final String expected = oldImplementation.toString();
+		final String actual = visitor.getExpression().toString();
 		if (!expected.equals(actual)) {
 			throw new AssertionError("Expected:\n" + expected + "\n but was:\n"
 					+ actual);
