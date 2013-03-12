@@ -23,6 +23,8 @@ public class InferredUnitPragmaAttribute implements IAttributeManipulation {
 			.getStringAttrType(Activator.PLUGIN_ID
 					+ ".inferredUnitPragmaAttribute");
 
+	private final String defaultValue = "";
+
 	public InferredUnitPragmaAttribute() {
 		// empty constructor
 	}
@@ -45,7 +47,13 @@ public class InferredUnitPragmaAttribute implements IAttributeManipulation {
 	@Override
 	public String getValue(IRodinElement element, IProgressMonitor monitor)
 			throws RodinDBException {
-		return asInternalElement(element).getAttributeValue(ATTRIBUTE);
+		try {
+			return asInternalElement(element).getAttributeValue(ATTRIBUTE);
+		} catch (RodinDBException ex) {
+			// happens if the attribute is not set on this element
+			// just return a default instead of throwing a RodinDBException
+		}
+		return defaultValue;
 	}
 
 	@Override
@@ -64,7 +72,8 @@ public class InferredUnitPragmaAttribute implements IAttributeManipulation {
 	@Override
 	public void setDefaultValue(IRodinElement element, IProgressMonitor monitor)
 			throws RodinDBException {
-		asInternalElement(element).setAttributeValue(ATTRIBUTE, "", monitor);
+		asInternalElement(element).setAttributeValue(ATTRIBUTE, defaultValue,
+				monitor);
 	}
 
 	@Override
