@@ -3,15 +3,9 @@
  */
 package de.prob.core.command;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-
 import de.prob.core.domainobjects.Operation;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
-import de.prob.prolog.term.CompoundPrologTerm;
-import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 
 public class ConstraintBasedRefinementCheckCommand implements
@@ -47,9 +41,10 @@ public class ConstraintBasedRefinementCheckCommand implements
 
 	private static final String COMMAND_NAME = "refinement_check";
 	private static final String RESULT_VARIABLE = "R";
+	private static final String RESULT_STRINGS_VARIABLE = "S";
 
 	private ResultType result;
-	private Collection<RefinementCheckCounterExample> counterexamples;
+	private String resultsString;
 
 	/**
 	 * @param events
@@ -64,13 +59,10 @@ public class ConstraintBasedRefinementCheckCommand implements
 		return result;
 	}
 
-	public Collection<RefinementCheckCounterExample> getCounterExamples() {
-		return counterexamples;
-	}
-
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
 		pto.openTerm(COMMAND_NAME);
+		pto.printVariable(RESULT_STRINGS_VARIABLE);
 		pto.printVariable(RESULT_VARIABLE);
 		pto.closeTerm();
 	}
@@ -81,38 +73,22 @@ public class ConstraintBasedRefinementCheckCommand implements
 			throws CommandException {
 		final PrologTerm resultTerm = bindings.get(RESULT_VARIABLE);
 		final ResultType result;
-		final Collection<RefinementCheckCounterExample> counterexamples;
-		if (resultTerm.hasFunctor("interrupted", 0)) {
+		resultsString = "";
+
+		if (resultTerm.hasFunctor("time_out", 0)) {
 			result = ResultType.INTERRUPTED;
-			counterexamples = null;
-		} else if (resultTerm.isList()) {
-			ListPrologTerm ceTerm = (ListPrologTerm) resultTerm;
-			result = ceTerm.isEmpty() ? ResultType.NO_VIOLATION_FOUND
-					: ResultType.VIOLATION_FOUND;
-			counterexamples = Collections
-					.unmodifiableCollection(extractExamples(ceTerm));
+		} else if (resultTerm.hasFunctor("true", 0)) { // Errors were found
+			result = ResultType.VIOLATION_FOUND;
+			// TODO extract message
+		} else if (resultTerm.hasFunctor("false", 0)) { // Errors were found
+			result = ResultType.NO_VIOLATION_FOUND;
 		} else
 			throw new CommandException(
-					"unexpected result from invariant check: " + resultTerm);
+					"unexpected result from refinement check: " + resultTerm);
 		this.result = result;
-		this.counterexamples = counterexamples;
 	}
 
-	private Collection<RefinementCheckCounterExample> extractExamples(
-			final ListPrologTerm ceTerm) {
-		Collection<RefinementCheckCounterExample> examples = new ArrayList<ConstraintBasedRefinementCheckCommand.RefinementCheckCounterExample>();
-		for (final PrologTerm t : ceTerm) {
-			final CompoundPrologTerm term = (CompoundPrologTerm) t;
-			final String eventName = PrologTerm.atomicString(term
-					.getArgument(1));
-			final Operation step1 = Operation.fromPrologTerm(term
-					.getArgument(2));
-			final Operation step2 = Operation.fromPrologTerm(term
-					.getArgument(3));
-			final RefinementCheckCounterExample ce = new RefinementCheckCounterExample(
-					eventName, step1, step2);
-			examples.add(ce);
-		}
-		return examples;
+	public String getResultsString() {
+		return resultsString;
 	}
 }

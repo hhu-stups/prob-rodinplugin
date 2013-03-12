@@ -10,12 +10,8 @@ import org.eclipse.swt.widgets.Shell;
 import de.prob.core.Animator;
 import de.prob.core.ProBJobFinishedListener;
 import de.prob.core.command.ConstraintBasedRefinementCheckCommand;
-import de.prob.core.command.ConstraintBasedRefinementCheckCommand.RefinementCheckCounterExample;
 import de.prob.core.command.ConstraintBasedRefinementCheckCommand.ResultType;
-import de.prob.core.command.ExecuteOperationCommand;
 import de.prob.core.command.IComposableCommand;
-import de.prob.core.domainobjects.Operation;
-import de.prob.exceptions.ProBException;
 import de.prob.logging.Logger;
 
 /**
@@ -34,6 +30,7 @@ public class RefinementCheckFinishedListener extends ProBJobFinishedListener {
 	protected void showResult(final IComposableCommand command,
 			final Animator animator) {
 		final ConstraintBasedRefinementCheckCommand refCmd = (ConstraintBasedRefinementCheckCommand) command;
+
 		final ResultType result = refCmd.getResult();
 		final int dialogType;
 		final String dialogTitle;
@@ -53,8 +50,7 @@ public class RefinementCheckFinishedListener extends ProBJobFinishedListener {
 		case VIOLATION_FOUND:
 			dialogType = MessageDialog.ERROR;
 			dialogTitle = "Refinement Violation found";
-			message = "A refinement violation has been found.\nThe first found example will be shown in the history.";
-			displayViolation(refCmd, animator);
+			message = refCmd.getResultsString();
 			break;
 		default:
 			Logger.notifyUser("Unexpected result: " + result);
@@ -71,24 +67,6 @@ public class RefinementCheckFinishedListener extends ProBJobFinishedListener {
 				}
 			};
 			shell.getDisplay().asyncExec(runnable);
-		}
-	}
-
-	private void displayViolation(
-			final ConstraintBasedRefinementCheckCommand cmd,
-			final Animator animator) {
-		final RefinementCheckCounterExample example = cmd.getCounterExamples()
-				.iterator().next();
-		final Operation step1 = example.getStep1();
-		final Operation step2 = example.getStep2();
-		try {
-			// we do not reset the history because we want to keep the root
-			// state, we just start a new path from root
-			animator.getHistory().gotoPos(0);
-			ExecuteOperationCommand.executeOperation(animator, step1);
-			ExecuteOperationCommand.executeOperation(animator, step2);
-		} catch (ProBException e) {
-			e.notifyUserOnce();
 		}
 	}
 
