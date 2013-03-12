@@ -16,10 +16,13 @@ import de.prob.eventb.disprover.core.ICounterExample;
 class CounterExample implements ICounterExample {
 
 	private final boolean counterExampleFound;
-	private SortedMap<String, String> state = new TreeMap<String, String>();
+	public final SortedMap<String, String> state = new TreeMap<String, String>();
+	private final boolean timeoutOccured;
 
-	CounterExample(final boolean counterExampleFound) {
+	CounterExample(final boolean counterExampleFound,
+			final boolean timeoutOccured) {
 		this.counterExampleFound = counterExampleFound;
+		this.timeoutOccured = timeoutOccured;
 	}
 
 	/*
@@ -43,5 +46,10 @@ class CounterExample implements ICounterExample {
 
 	void addVar(String name, String value) {
 		state.put(name, value);
+	}
+
+	@Override
+	public boolean timeoutOccured() {
+		return timeoutOccured;
 	}
 }

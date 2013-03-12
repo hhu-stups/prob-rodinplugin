@@ -3,7 +3,7 @@
 <plugin>
    <extension
          point="org.eventb.ui.proofTactics">
-      <tactic
+  <!--    <tactic
             dropdown="de.prob.eventb.disprover.ui.DisproverDropdown"
             icon="icons/disprover-relevant-context.png"
             id="de.prob.eventb.disprover.ui.disproverRelevantContextTactic"
@@ -13,6 +13,7 @@
             tacticProvider="de.prob.eventb.disprover.ui.DisproverRelevantHypothesesAndContextTacticProvider"
             target="global"
             tooltip="%tactic.disprover.tooltip-relevant-context" />
+     -->       
       <tactic
             dropdown="de.prob.eventb.disprover.ui.DisproverDropdown"
             icon="icons/disprover-all.png"
@@ -23,7 +24,7 @@
             tacticProvider="de.prob.eventb.disprover.ui.DisproverAllHypothesesTacticProvider"
             target="global"
             tooltip="%tactic.disprover.tooltip-all" />
-      <tactic
+   <!--      <tactic
             dropdown="de.prob.eventb.disprover.ui.DisproverDropdown"
             icon="icons/disprover-config.png"
             id="de.prob.eventb.disprover.ui.disproverConfigTactic"
@@ -42,7 +43,7 @@
             priority="9"
             tacticProvider="de.prob.eventb.disprover.ui.DisproverRelevantHypothesesTacticProvider"
             target="global"
-            tooltip="%tactic.disprover.tooltip-relevant" />
+            tooltip="%tactic.disprover.tooltip-relevant" /> -->
       <dropdown
             id="de.prob.eventb.disprover.ui.DisproverDropdown"
             name="%dropdown.name"
