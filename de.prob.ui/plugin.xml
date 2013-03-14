@@ -305,6 +305,11 @@
       </command>
       <command
             categoryId="de.prob.ui.commands.category"
+            id="de.prob.ui.refinement_check"
+            name="Validate Refinement">
+      </command>
+      <command
+            categoryId="de.prob.ui.commands.category"
             id="de.prob.ui.opview.checks"
             name="Checks">
       </command>
@@ -740,6 +745,20 @@
             </with>
          </enabledWhen>
       </handler>
+      <handler
+            commandId="de.prob.ui.refinement_check">
+         <enabledWhen>
+            <with
+                  variable="de.prob.core.model_loaded">
+               <equals
+                     value="enabled">
+               </equals>
+            </with>
+         </enabledWhen>
+         <class
+               class="de.prob.ui.refinementcheck.RefinementCheckHandler">
+         </class>
+      </handler>
 <!--      <handler
             commandId="de.prob.ui.startdmc">
          <class
@@ -1059,6 +1078,13 @@
                icon="icons/CBCInvariantCheck.png"
                label="Invariant Preservation Checking"
                mnemonic="I"
+               style="push">
+         </command>
+         <command
+               commandId="de.prob.ui.refinement_check"
+               icon="icons/CBCInvariantCheck.png"
+               label="Refinement Checking"
+               mnemonic="R"
                style="push">
          </command>
       </menuContribution>
