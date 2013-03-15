@@ -15,15 +15,15 @@
             tooltip="%tactic.disprover.tooltip-relevant-context" />
      -->       
       <tactic
-            dropdown="de.prob.eventb.disprover.ui.DisproverDropdown"
             icon="icons/disprover-all.png"
-            id="de.prob.eventb.disprover.ui.disproverAllHypothesesTactic"
+            id="de.prob.eventb.disprover.ui.disproverTactic"
             interrupt="true"
             name="%tactic.disprover.name"
-            priority="9"
-            tacticProvider="de.prob.eventb.disprover.ui.DisproverAllHypothesesTacticProvider"
+            priority="10"
+            tacticProvider="de.prob.eventb.disprover.ui.DisproverTacticProvider"
             target="global"
-            tooltip="%tactic.disprover.tooltip-all" />
+            toolbar="org.eventb.ui.sequentToolbar"
+            tooltip="%tactic.disprover.tooltip-all"/>
    <!--      <tactic
             dropdown="de.prob.eventb.disprover.ui.DisproverDropdown"
             icon="icons/disprover-config.png"
@@ -44,12 +44,6 @@
             tacticProvider="de.prob.eventb.disprover.ui.DisproverRelevantHypothesesTacticProvider"
             target="global"
             tooltip="%tactic.disprover.tooltip-relevant" /> -->
-      <dropdown
-            id="de.prob.eventb.disprover.ui.DisproverDropdown"
-            name="%dropdown.name"
-            priority="9"
-            toolbar="org.eventb.ui.sequentToolbar">
-      </dropdown>
    </extension>
 
 </plugin>
