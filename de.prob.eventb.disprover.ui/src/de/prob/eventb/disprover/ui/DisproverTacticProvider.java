@@ -15,16 +15,20 @@ import de.prob.eventb.disprover.core.Disprover;
 import de.prob.eventb.disprover.core.DisproverReasonerInput;
 import de.prob.eventb.disprover.core.DisproverReasonerInput.HypothesesSource;
 
-public abstract class AbstractDisproverTacticProvider extends
-		DefaultTacticProvider {
+public class DisproverTacticProvider extends DefaultTacticProvider {
 
-	protected abstract HypothesesSource getHypotheses();
-	protected abstract boolean useContexts();
+	protected HypothesesSource getHypotheses() {
+		return HypothesesSource.ALL;
+	}
+
+	protected boolean useContexts() {
+		return false;
+	}
 
 	protected static class MyPredicateApplication implements ITacticApplication {
 
-		private IProofTreeNode node;
-		private HypothesesSource hyps;
+		private final IProofTreeNode node;
+		private final HypothesesSource hyps;
 
 		public MyPredicateApplication(IProofTreeNode node, HypothesesSource hyps) {
 			this.node = node;
@@ -47,12 +51,12 @@ public abstract class AbstractDisproverTacticProvider extends
 
 		@Override
 		public String getTacticID() {
-			return "17";
+			return "de.prob.eventb.disprover.ui.disproverTactic";
 		}
 
 	}
 
-	public AbstractDisproverTacticProvider() {
+	public DisproverTacticProvider() {
 		super();
 	}
 
