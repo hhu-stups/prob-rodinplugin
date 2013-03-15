@@ -18,11 +18,20 @@ class CounterExample implements ICounterExample {
 	private final boolean counterExampleFound;
 	public final SortedMap<String, String> state = new TreeMap<String, String>();
 	private final boolean timeoutOccured;
+	private boolean proof = false;
 
 	CounterExample(final boolean counterExampleFound,
 			final boolean timeoutOccured) {
 		this.counterExampleFound = counterExampleFound;
 		this.timeoutOccured = timeoutOccured;
+	}
+
+	public boolean isProof() {
+		return proof;
+	}
+
+	public void setProof(boolean proof) {
+		this.proof = proof;
 	}
 
 	/*

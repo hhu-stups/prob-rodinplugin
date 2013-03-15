@@ -8,4 +8,6 @@ public interface ICounterExample {
 
 	public String getMessage();
 
+	public boolean isProof();
+
 }

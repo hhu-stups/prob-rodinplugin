@@ -1,10 +1,20 @@
 package de.prob.eventb.disprover.core.internal;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.eclipse.core.runtime.Status;
+import org.eventb.core.ast.Formula;
+import org.eventb.core.ast.FormulaFactory;
+import org.eventb.core.ast.IParseResult;
+import org.eventb.core.ast.LanguageVersion;
 import org.eventb.core.ast.Predicate;
+import org.eventb.core.ast.SourceLocation;
 import org.eventb.core.seqprover.IConfidence;
 import org.eventb.core.seqprover.IProofMonitor;
 import org.eventb.core.seqprover.IProofRule;
@@ -24,6 +34,7 @@ import de.prob.eventb.disprover.core.DisproverReasonerInput;
 import de.prob.eventb.disprover.core.ICounterExample;
 import de.prob.exceptions.ProBException;
 import de.prob.logging.Logger;
+import de.prob.unicode.UnicodeTranslator;
 
 public class DisproverReasoner implements IReasoner {
 
@@ -77,29 +88,60 @@ public class DisproverReasoner implements IReasoner {
 
 		if (counterExample.timeoutOccured()) {
 			return ProverFactory.makeProofRule(this, input, sequent.goal(),
-					null, IConfidence.REVIEWED_MAX,
-					"Timeout occured (Disprover)");
+					null, IConfidence.PENDING, "Timeout occured (Disprover)");
 
 		}
 
+		if (!counterExample.counterExampleFound() && counterExample.isProof())
+			return ProverFactory
+					.makeProofRule(this, input, sequent.goal(), null,
+							IConfidence.DISCHARGED_MAX,
+							"ProB (all cases checked)");
+
 		if (!counterExample.counterExampleFound())
 			return ProverFactory.makeProofRule(this, input, sequent.goal(),
-					null, IConfidence.REVIEWED_MAX,
+					null, IConfidence.PENDING,
 					"No Counter-Example found (Disprover)");
 
-		IAntecedent anticident = makeAnticident(
-				(CounterExample) counterExample, sequent);
+		Predicate goal = sequent.goal();// makeNewGoal((CounterExample)
+										// counterExample,sequent);
 
-		return ProverFactory.makeProofRule(this, input, null,
-				"Counter-Example: " + counterExample.toString(), anticident);
+		// Predicate ng = sequent.getFormulaFactory().makeAssociativePredicate(
+		// Formula.LAND,
+		// makeNewHyps((CounterExample) counterExample, sequent),
+		// new SourceLocation(0, 0));
+
+		IAntecedent ante = ProverFactory.makeAntecedent(goal);
+
+		return ProverFactory.makeProofRule(this, input, null, null,
+				IConfidence.PENDING,
+				"Counter-Example: " + counterExample.toString(), ante);
 
 	}
 
-	// TODO build proper Anticident
-	private IAntecedent makeAnticident(final CounterExample counterExample,
-			final IProverSequent sequent) {
-		return ProverFactory.makeAntecedent(sequent.goal());
-	}
+	// private Set<Predicate> makeNewHyps(final CounterExample counterExample,
+	// final IProverSequent sequent) {
+	// FormulaFactory ff = sequent.getFormulaFactory();
+	// SourceLocation noloc = new SourceLocation(0, 0);
+	// Set<Predicate> p = new HashSet<Predicate>();
+	// p.add(sequent.goal());
+	//
+	// Set<Entry<String, String>> entries = counterExample.state.entrySet();
+	// for (Entry<String, String> entry : entries) {
+	// String predstring = "( " + entry.getKey() + " = "
+	// + entry.getValue() + " )";
+	// String unicode = UnicodeTranslator.toUnicode(predstring);
+	// IParseResult parseResult = ff.parsePredicate(unicode,
+	// LanguageVersion.V1, null);
+	// if (!parseResult.getProblems().isEmpty()) {
+	// return Collections.emptySet();
+	// }
+	// p.add(parseResult.getParsedPredicate());
+	//
+	// }
+	//
+	// return p;
+	// }
 
 	public IReasonerInput deserializeInput(final IReasonerInputReader reader)
 			throws SerializeException {

@@ -109,7 +109,6 @@ public class DisproverConfigTacticProvider implements ITacticProvider {
 	public List<ITacticApplication> getPossibleApplications(
 			IProofTreeNode node, Predicate hyp, String globalInput) {
 
-		System.out.println(2);
 		if (node != null && node.isOpen()) {
 			ITacticApplication application = new MyPredicateApplication(node);
 			return Collections.singletonList(application);
