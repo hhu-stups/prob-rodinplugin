@@ -18,7 +18,7 @@ import org.rodinp.core.RodinDBException;
 
 public class SymbolicAttribute extends AbstractBooleanManipulation {
 	private static final String SYMBOLIC = "symbolic";
-	private static final String CONCRETE = "concrete";
+	private static final String CONCRETE = "not symbolic";
 	public static IAttributeType.Boolean ATTRIBUTE = RodinCore
 			.getBooleanAttrType(Activator.PLUGIN_ID + ".symbolicAttribute");
 
