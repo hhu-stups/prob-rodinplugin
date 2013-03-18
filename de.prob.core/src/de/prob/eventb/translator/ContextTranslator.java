@@ -168,6 +168,7 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 	private void collectPragmas() throws RodinDBException {
 		// unit pragma, attached to constants
 		addUnitPragmas(context.getSCConstants());
+		addSymbolicPragmas(context.getSCConstants());
 	}
 
 	private void collectProofInfo() throws RodinDBException {
