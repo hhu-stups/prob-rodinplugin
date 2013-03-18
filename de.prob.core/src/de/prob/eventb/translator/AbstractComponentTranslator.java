@@ -102,7 +102,7 @@ public abstract class AbstractComponentTranslator {
 
 					if (!content.isEmpty()) {
 						pragmas.add(new SymbolicPragma(getResource(), variable
-								.getIdentifierString(), content));
+								.getIdentifierString()));
 					}
 				}
 			}

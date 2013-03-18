@@ -11,12 +11,10 @@ import de.prob.prolog.output.IPrologTermOutput;
 public class SymbolicPragma implements IPragma {
 	private final String definedIn;
 	private final String attachedTo;
-	private final String content;
 
-	public SymbolicPragma(String definedIn, String attachedTo, String content) {
+	public SymbolicPragma(String definedIn, String attachedTo) {
 		this.definedIn = definedIn;
 		this.attachedTo = attachedTo;
-		this.content = content;
 	}
 
 	@Override
@@ -26,7 +24,6 @@ public class SymbolicPragma implements IPragma {
 		pout.printAtom(definedIn);
 		pout.printAtom(attachedTo);
 		pout.openList();
-		pout.printAtom(content);
 		pout.closeList();
 		pout.closeTerm();
 	}
