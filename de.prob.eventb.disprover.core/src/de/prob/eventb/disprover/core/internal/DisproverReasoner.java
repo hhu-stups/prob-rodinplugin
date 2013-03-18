@@ -4,7 +4,12 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.core.runtime.Status;
+import org.eventb.core.IContextRoot;
+import org.eventb.core.IEventBProject;
+import org.eventb.core.IEventBRoot;
+import org.eventb.core.IMachineRoot;
 import org.eventb.core.ast.Predicate;
+import org.eventb.core.basis.POSequent;
 import org.eventb.core.seqprover.IConfidence;
 import org.eventb.core.seqprover.IProofMonitor;
 import org.eventb.core.seqprover.IProofRule;
@@ -18,6 +23,7 @@ import org.eventb.core.seqprover.IReasonerOutput;
 import org.eventb.core.seqprover.ProverFactory;
 import org.eventb.core.seqprover.SerializeException;
 import org.rodinp.core.RodinDBException;
+import org.rodinp.core.basis.InternalElement;
 
 import de.prob.core.Animator;
 import de.prob.eventb.disprover.core.DisproverReasonerInput;
@@ -65,9 +71,35 @@ public class DisproverReasoner implements IReasoner {
 		}
 		Predicate goal = sequent.goal();
 
+		IEventBRoot root = getRoot(sequent);
 		ICounterExample counterExample = DisproverCommand.disprove(
-				Animator.getAnimator(), hypotheses, goal);
+				Animator.getAnimator(), hypotheses, goal, root);
 		return counterExample;
+	}
+
+	private IEventBRoot getRoot(IProverSequent sequent) {
+		POSequent origin = (POSequent) sequent.getOrigin();
+		InternalElement poRoot = origin.getRoot();
+
+		// IPORoot poRoot = origin.getComponent().getPORoot();
+		String name = poRoot.getElementName();
+		IEventBProject eventBProject = (IEventBProject) poRoot
+				.getRodinProject().getAdapter(IEventBProject.class);
+
+		// We don't know whether we have a machine or a context.
+		IMachineRoot machineRoot = eventBProject.getMachineRoot(name);
+		IContextRoot contextRoot = eventBProject.getContextRoot(name);
+
+		if (machineRoot.exists()) {
+			return machineRoot;
+
+		} else if (contextRoot.exists()) {
+			return contextRoot;
+		} else {
+			// Neither Machine nor Context
+			throw new RuntimeException(
+					"Cannot use ProB Disprover on non Machine/Context Files");
+		}
 	}
 
 	/**
