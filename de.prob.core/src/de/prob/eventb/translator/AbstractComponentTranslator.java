@@ -29,6 +29,7 @@ import de.be4.classicalb.core.parser.node.Node;
 import de.be4.classicalb.core.parser.node.PExpression;
 import de.be4.classicalb.core.parser.node.PPredicate;
 import de.prob.core.translator.pragmas.IPragma;
+import de.prob.core.translator.pragmas.SymbolicPragma;
 import de.prob.core.translator.pragmas.UnitPragma;
 import de.prob.eventb.translator.internal.ProofObligation;
 import de.prob.eventb.translator.internal.TranslationVisitor;
@@ -86,7 +87,29 @@ public abstract class AbstractComponentTranslator {
 			// Happens if the attribute does not exist, i.e. the unit plugin is
 			// not installed
 		}
+	}
 
+	protected void addSymbolicPragmas(ISCIdentifierElement[] elements)
+			throws RodinDBException {
+		try {
+			final IAttributeType.Boolean SYMBOLICATTRIBUTE = RodinCore
+					.getBooleanAttrType("de.prob.symbolic.symbolicAttribute");
+
+			for (final ISCIdentifierElement variable : elements) {
+				if (variable.hasAttribute(SYMBOLICATTRIBUTE)) {
+					boolean isSymbolic = variable
+							.getAttributeValue(SYMBOLICATTRIBUTE);
+
+					if (isSymbolic) {
+						pragmas.add(new SymbolicPragma(getResource(), variable
+								.getIdentifierString()));
+					}
+				}
+			}
+		} catch (IllegalArgumentException ex) {
+			// Happens if the attribute does not exist, i.e. the symbolic plugin
+			// is not installed
+		}
 	}
 
 	protected PPredicate translatePredicate(FormulaFactory ff,

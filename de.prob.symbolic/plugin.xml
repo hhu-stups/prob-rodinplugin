@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eventb.ui.editorItems">
+      <toggleAttribute
+            class="de.prob.symbolic.SymbolicAttribute"
+            id="de.prob.symbolic.symbolicAttribute"
+            typeId="de.prob.symbolic.symbolicAttribute">
+      </toggleAttribute>
+      <attributeRelation
+            elementTypeId="org.eventb.core.constant">
+         <attributeReference
+               descriptionId="de.prob.symbolic.symbolicAttribute">
+         </attributeReference>
+      </attributeRelation>
+   </extension>
+   <extension
+         point="org.rodinp.core.attributeTypes">
+      <attributeType
+            id="symbolicAttribute"
+            kind="boolean"
+            name="Symbolic Evaluation of a Constant">
+      </attributeType>
+   </extension>
+   <extension
+         point="org.eventb.core.configurations">
+      <configuration
+            id="ctxBase"
+            name="ctxBase">
+         <scModule
+               id="de.prob.symbolic.symbolicAttributeProcessor">
+         </scModule>
+      </configuration>
+   </extension>
+   <extension
+         point="org.eventb.core.scModuleTypes">
+      <processorType
+            class="de.prob.symbolic.SymbolicAttributeProcessor"
+            id="symbolicAttributeProcessor"
+            name="symbolicAttributeProcessor"
+            parent="org.eventb.core.contextModule">
+      </processorType>
+   </extension>
+
+</plugin>
