@@ -29,7 +29,7 @@
             id="ctxBase"
             name="ctxBase">
          <scModule
-               id="de.prob.symbolic.SymbolicAttributeProcessor">
+               id="de.prob.symbolic.symbolicAttributeProcessor">
          </scModule>
       </configuration>
    </extension>
@@ -37,8 +37,8 @@
          point="org.eventb.core.scModuleTypes">
       <processorType
             class="de.prob.symbolic.SymbolicAttributeProcessor"
-            id="SymbolicAttributeProcessor"
-            name="SymbolicAttributeProcessor"
+            id="symbolicAttributeProcessor"
+            name="symbolicAttributeProcessor"
             parent="org.eventb.core.contextModule">
       </processorType>
    </extension>

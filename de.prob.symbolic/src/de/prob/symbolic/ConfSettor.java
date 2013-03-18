@@ -7,7 +7,6 @@
 package de.prob.symbolic;
 
 import org.eventb.core.IContextRoot;
-import org.eventb.core.IMachineRoot;
 import org.rodinp.core.ElementChangedEvent;
 import org.rodinp.core.IElementChangedListener;
 import org.rodinp.core.IElementType;
@@ -51,14 +50,6 @@ public class ConfSettor implements IElementChangedListener {
 			}
 		} else if (elementType.equals(IRodinFile.ELEMENT_TYPE)) {
 			final IInternalElement root = ((IRodinFile) e).getRoot();
-
-			if (root.getElementType().equals(IMachineRoot.ELEMENT_TYPE)) {
-				final IMachineRoot mch = (IMachineRoot) root;
-				final String conf = mch.getConfiguration();
-				if (!conf.contains(CONFIG)) {
-					mch.setConfiguration(conf + ";" + CONFIG, null);
-				}
-			}
 
 			if (root.getElementType().equals(IContextRoot.ELEMENT_TYPE)) {
 				final IContextRoot ctx = (IContextRoot) root;
