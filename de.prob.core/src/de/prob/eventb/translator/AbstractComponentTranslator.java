@@ -92,15 +92,15 @@ public abstract class AbstractComponentTranslator {
 	protected void addSymbolicPragmas(ISCIdentifierElement[] elements)
 			throws RodinDBException {
 		try {
-			final IAttributeType.String SYMBOLICATTRIBUTE = RodinCore
-					.getStringAttrType("de.prob.symbolic.symbolicAttribute");
+			final IAttributeType.Boolean SYMBOLICATTRIBUTE = RodinCore
+					.getBooleanAttrType("de.prob.symbolic.symbolicAttribute");
 
 			for (final ISCIdentifierElement variable : elements) {
 				if (variable.hasAttribute(SYMBOLICATTRIBUTE)) {
-					String content = variable
+					boolean isSymbolic = variable
 							.getAttributeValue(SYMBOLICATTRIBUTE);
 
-					if (!content.isEmpty()) {
+					if (isSymbolic) {
 						pragmas.add(new SymbolicPragma(getResource(), variable
 								.getIdentifierString()));
 					}
