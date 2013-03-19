@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Symbolic
+Bundle-Name: ProB Symbolic Evaluation Support
 Bundle-SymbolicName: de.prob.symbolic;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: de.prob.symbolic.Activator
@@ -11,3 +11,4 @@ Require-Bundle: org.eclipse.ui,
  de.prob.ui;bundle-version="7.3.0"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Vendor: HHU Düsseldorf STUPS Group
