@@ -54,7 +54,7 @@ public class EmptyTranslationsTest extends AbstractEventBTests {
 		TranslatorFactory.translate(context, writer);
 
 		assertEquals(
-				"package(load_event_b_project([],[event_b_context(none,'TestContext',[extends(none,[]),constants(none,[]),axioms(none,[]),theorems(none,[]),sets(none,[])])],[exporter_version(2)],_Error)).\n",
+				"package(load_event_b_project([],[event_b_context(none,'TestContext',[extends(none,[]),constants(none,[]),abstract_constants(none,[]),axioms(none,[]),theorems(none,[]),sets(none,[])])],[exporter_version(2)],_Error)).\n",
 				stringWriter.getBuffer().toString());
 	}
 }

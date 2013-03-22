@@ -41,7 +41,7 @@ public class ContextChainTest extends AbstractEventBTests {
 		TranslatorFactory.translate(context2, writer);
 
 		assertEquals(
-				"package(load_event_b_project([],[event_b_context(none,'TestContext2',[extends(none,['TestContext1']),constants(none,[]),axioms(none,[]),theorems(none,[]),sets(none,[])]),event_b_context(none,'TestContext1',[extends(none,[]),constants(none,[]),axioms(none,[]),theorems(none,[]),sets(none,[])])],[exporter_version(2)],_Error)).\n",
+				"package(load_event_b_project([],[event_b_context(none,'TestContext2',[extends(none,['TestContext1']),constants(none,[]),abstract_constants(none,[]),axioms(none,[]),theorems(none,[]),sets(none,[])]),event_b_context(none,'TestContext1',[extends(none,[]),constants(none,[]),axioms(none,[]),theorems(none,[]),sets(none,[])])],[exporter_version(2)],_Error)).\n",
 				stringWriter.getBuffer().toString());
 	}
 }
