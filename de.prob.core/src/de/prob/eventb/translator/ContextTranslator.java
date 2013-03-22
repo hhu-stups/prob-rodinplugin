@@ -32,13 +32,16 @@ import org.eventb.core.ISCInternalContext;
 import org.eventb.core.ast.FormulaFactory;
 import org.eventb.core.ast.ITypeEnvironment;
 import org.eventb.core.seqprover.IConfidence;
+import org.rodinp.core.IAttributeType;
 import org.rodinp.core.IInternalElement;
 import org.rodinp.core.IRodinElement;
 import org.rodinp.core.IRodinFile;
 import org.rodinp.core.IRodinProject;
+import org.rodinp.core.RodinCore;
 import org.rodinp.core.RodinDBException;
 
 import de.be4.classicalb.core.parser.analysis.pragma.internal.ClassifiedPragma;
+import de.be4.classicalb.core.parser.node.AAbstractConstantsContextClause;
 import de.be4.classicalb.core.parser.node.AAxiomsContextClause;
 import de.be4.classicalb.core.parser.node.AConstantsContextClause;
 import de.be4.classicalb.core.parser.node.ADeferredSetSet;
@@ -168,7 +171,6 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 	private void collectPragmas() throws RodinDBException {
 		// unit pragma, attached to constants
 		addUnitPragmas(context.getSCConstants());
-		addSymbolicPragmas(context.getSCConstants());
 	}
 
 	private void collectProofInfo() throws RodinDBException {
@@ -235,7 +237,7 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 
 		final List<PContextClause> clauses = new ArrayList<PContextClause>();
 		clauses.add(processExtends());
-		clauses.add(processConstants());
+		clauses.addAll(processConstants());
 		clauses.add(processAxioms());
 		clauses.add(processTheorems());
 		clauses.add(processSets());
@@ -323,19 +325,40 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 		return new ASetsContextClause(setList);
 	}
 
-	private AConstantsContextClause processConstants() throws RodinDBException {
+	private List<PContextClause> processConstants() throws RodinDBException {
+		final IAttributeType.Boolean ATTRIBUTE = RodinCore
+				.getBooleanAttrType("de.prob.symbolic.symbolicAttribute");
+
 		final ISCConstant[] constants = context.getSCConstants();
-		final List<PExpression> list = new ArrayList<PExpression>(
+
+		final List<PExpression> concreteConstants = new ArrayList<PExpression>(
 				constants.length);
+		final List<PExpression> abstractConstants = new ArrayList<PExpression>(
+				constants.length);
+
 		for (final ISCConstant constant : constants) {
-			list.add(new AIdentifierExpression(Arrays
-					.asList(new TIdentifierLiteral[] { new TIdentifierLiteral(
-							constant.getIdentifierString()) })));
+			if (constant.hasAttribute(ATTRIBUTE)
+					&& constant.getAttributeValue(ATTRIBUTE)) {
+				abstractConstants
+						.add(new AIdentifierExpression(
+								Arrays.asList(new TIdentifierLiteral[] { new TIdentifierLiteral(
+										constant.getIdentifierString()) })));
+
+			} else {
+				concreteConstants
+						.add(new AIdentifierExpression(
+								Arrays.asList(new TIdentifierLiteral[] { new TIdentifierLiteral(
+										constant.getIdentifierString()) })));
+			}
 		}
 
 		final AConstantsContextClause constantsContextClause = new AConstantsContextClause();
-		constantsContextClause.setIdentifiers(list);
-		return constantsContextClause;
+		constantsContextClause.setIdentifiers(concreteConstants);
+
+		final AAbstractConstantsContextClause abstractConstantsClause = new AAbstractConstantsContextClause();
+		abstractConstantsClause.setIdentifiers(abstractConstants);
+
+		return Arrays.asList(constantsContextClause, abstractConstantsClause);
 	}
 
 	private ATheoremsContextClause processTheorems() throws RodinDBException {
