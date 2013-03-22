@@ -7,8 +7,6 @@ import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eventb.core.IContextRoot;
 import org.eventb.core.IEventBProject;
-import org.junit.Before;
-import org.junit.Test;
 
 import de.prob.core.translator.TranslationFailedException;
 import de.prob.eventb.translator.TranslatorFactory;
@@ -25,6 +23,7 @@ public class ContextChainTest extends AbstractEventBTests {
 		writer = new PrintWriter(stringWriter);
 	}
 
+	@Ignore
 	@Test
 	public void testEmptyContextChain() throws CoreException,
 			TranslationFailedException {
