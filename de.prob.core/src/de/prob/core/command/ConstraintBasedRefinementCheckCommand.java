@@ -6,6 +6,7 @@ package de.prob.core.command;
 import de.prob.core.domainobjects.Operation;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
+import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 
 public class ConstraintBasedRefinementCheckCommand implements
@@ -44,7 +45,7 @@ public class ConstraintBasedRefinementCheckCommand implements
 	private static final String RESULT_STRINGS_VARIABLE = "S";
 
 	private ResultType result;
-	private String resultsString;
+	private String resultsString = "";
 
 	/**
 	 * @param events
@@ -73,7 +74,15 @@ public class ConstraintBasedRefinementCheckCommand implements
 			throws CommandException {
 		final PrologTerm resultTerm = bindings.get(RESULT_VARIABLE);
 		final ResultType result;
-		resultsString = "";
+
+		final ListPrologTerm resultStringTerm = (ListPrologTerm) bindings
+				.get(RESULT_STRINGS_VARIABLE);
+
+		System.out.println(resultStringTerm.toString());
+
+		for (PrologTerm t : resultStringTerm) {
+			resultsString += PrologTerm.atomicString(t) + "\n";
+		}
 
 		if (resultTerm.hasFunctor("time_out", 0)) {
 			result = ResultType.INTERRUPTED;
