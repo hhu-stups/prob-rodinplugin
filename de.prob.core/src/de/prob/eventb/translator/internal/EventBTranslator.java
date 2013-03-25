@@ -156,7 +156,7 @@ public abstract class EventBTranslator implements ITranslator {
 		printModels(contextNodes, pout, prolog);
 		pout.openList();
 		pout.openTerm("exporter_version");
-		pout.printNumber(2);
+		pout.printNumber(3);
 		pout.closeTerm();
 
 		printProofInformation(refinementChainTranslators, contextTranslators,
