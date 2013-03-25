@@ -47,12 +47,6 @@ public class ConstraintBasedRefinementCheckCommand implements
 	private ResultType result;
 	private String resultsString = "";
 
-	/**
-	 * @param events
-	 *            is a collection of names of that events that should be
-	 *            checked. May be <code>null</code>. In that case, all events
-	 *            are checked.
-	 */
 	public ConstraintBasedRefinementCheckCommand() {
 	}
 
