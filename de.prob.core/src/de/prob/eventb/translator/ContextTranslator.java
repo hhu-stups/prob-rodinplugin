@@ -342,7 +342,9 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 			try {
 				final IAttributeType.Boolean ATTRIBUTE = RodinCore
 						.getBooleanAttrType("de.prob.symbolic.symbolicAttribute");
-				isAbstractConstant = constant.getAttributeValue(ATTRIBUTE);
+				if (constant.hasAttribute(ATTRIBUTE)) {
+					isAbstractConstant = constant.getAttributeValue(ATTRIBUTE);
+				}
 			} catch (IllegalArgumentException E) {
 				// the attribute did not exist
 			}
