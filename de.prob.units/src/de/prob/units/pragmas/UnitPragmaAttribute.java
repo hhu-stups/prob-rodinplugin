@@ -22,6 +22,8 @@ public class UnitPragmaAttribute implements IAttributeManipulation {
 	public static IAttributeType.String ATTRIBUTE = RodinCore
 			.getStringAttrType(Activator.PLUGIN_ID + ".unitPragmaAttribute");
 
+	private final String defaultValue = "";
+
 	public UnitPragmaAttribute() {
 		// empty constructor
 	}
@@ -44,7 +46,13 @@ public class UnitPragmaAttribute implements IAttributeManipulation {
 	@Override
 	public String getValue(IRodinElement element, IProgressMonitor monitor)
 			throws RodinDBException {
-		return asInternalElement(element).getAttributeValue(ATTRIBUTE);
+		try {
+			return asInternalElement(element).getAttributeValue(ATTRIBUTE);
+		} catch (RodinDBException ex) {
+			// happens if the attribute is not set on this element
+			// just return a default instead of throwing a RodinDBException
+		}
+		return defaultValue;
 	}
 
 	@Override
@@ -63,7 +71,8 @@ public class UnitPragmaAttribute implements IAttributeManipulation {
 	@Override
 	public void setDefaultValue(IRodinElement element, IProgressMonitor monitor)
 			throws RodinDBException {
-		asInternalElement(element).setAttributeValue(ATTRIBUTE, "", monitor);
+		asInternalElement(element).setAttributeValue(ATTRIBUTE, defaultValue,
+				monitor);
 	}
 
 	@Override

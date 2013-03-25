@@ -86,7 +86,6 @@ public abstract class AbstractComponentTranslator {
 			// Happens if the attribute does not exist, i.e. the unit plugin is
 			// not installed
 		}
-
 	}
 
 	protected PPredicate translatePredicate(FormulaFactory ff,

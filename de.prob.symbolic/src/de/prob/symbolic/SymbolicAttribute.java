@@ -4,29 +4,26 @@
  * (http://www.eclipse.org/org/documents/epl-v10.html)
  * */
 
-package de.prob.units.pragmas;
+package de.prob.symbolic;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eventb.core.IVariable;
 import org.eventb.core.basis.Constant;
-import org.eventb.internal.ui.eventbeditor.manipulation.IAttributeManipulation;
+import org.eventb.internal.ui.eventbeditor.manipulation.AbstractBooleanManipulation;
 import org.rodinp.core.IAttributeType;
 import org.rodinp.core.IInternalElement;
 import org.rodinp.core.IRodinElement;
 import org.rodinp.core.RodinCore;
 import org.rodinp.core.RodinDBException;
 
-import de.prob.units.Activator;
+public class SymbolicAttribute extends AbstractBooleanManipulation {
+	private static final String SYMBOLIC = "symbolic";
+	private static final String CONCRETE = "not symbolic";
+	public static IAttributeType.Boolean ATTRIBUTE = RodinCore
+			.getBooleanAttrType(Activator.PLUGIN_ID + ".symbolicAttribute");
 
-public class InferredUnitPragmaAttribute implements IAttributeManipulation {
-	public static IAttributeType.String ATTRIBUTE = RodinCore
-			.getStringAttrType(Activator.PLUGIN_ID
-					+ ".inferredUnitPragmaAttribute");
-
-	private final String defaultValue = "";
-
-	public InferredUnitPragmaAttribute() {
-		// empty constructor
+	public SymbolicAttribute() {
+		super(SYMBOLIC, CONCRETE);
 	}
 
 	private IInternalElement asInternalElement(IRodinElement element) {
@@ -39,21 +36,10 @@ public class InferredUnitPragmaAttribute implements IAttributeManipulation {
 	}
 
 	@Override
-	public String[] getPossibleValues(IRodinElement element,
-			IProgressMonitor monitor) {
-		return null;
-	}
-
-	@Override
 	public String getValue(IRodinElement element, IProgressMonitor monitor)
 			throws RodinDBException {
-		try {
-			return asInternalElement(element).getAttributeValue(ATTRIBUTE);
-		} catch (RodinDBException ex) {
-			// happens if the attribute is not set on this element
-			// just return a default instead of throwing a RodinDBException
-		}
-		return defaultValue;
+		return asInternalElement(element).getAttributeValue(ATTRIBUTE) ? SYMBOLIC
+				: CONCRETE;
 	}
 
 	@Override
@@ -66,19 +52,20 @@ public class InferredUnitPragmaAttribute implements IAttributeManipulation {
 	public void removeAttribute(IRodinElement element, IProgressMonitor monitor)
 			throws RodinDBException {
 		asInternalElement(element).removeAttribute(ATTRIBUTE, monitor);
-
 	}
 
 	@Override
 	public void setDefaultValue(IRodinElement element, IProgressMonitor monitor)
 			throws RodinDBException {
-		asInternalElement(element).setAttributeValue(ATTRIBUTE, defaultValue,
-				monitor);
+		asInternalElement(element).setAttributeValue(ATTRIBUTE, false, monitor);
+
 	}
 
 	@Override
 	public void setValue(IRodinElement element, String value,
 			IProgressMonitor monitor) throws RodinDBException {
-		asInternalElement(element).setAttributeValue(ATTRIBUTE, value, monitor);
+		final boolean isSymbolic = value.equals(SYMBOLIC);
+		asInternalElement(element).setAttributeValue(ATTRIBUTE, isSymbolic,
+				monitor);
 	}
 }

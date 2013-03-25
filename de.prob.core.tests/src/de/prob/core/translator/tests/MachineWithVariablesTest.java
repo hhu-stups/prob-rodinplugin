@@ -46,7 +46,7 @@ public class MachineWithVariablesTest extends AbstractEventBTests {
 		TranslatorFactory.translate(machine, writer);
 
 		assertEquals(
-				"package(load_event_b_project([event_b_model(none,'TestMachine',[sees(none,[]),variables(none,[identifier(none,v1)]),invariant(none,[equal(rodinpos('TestMachine',inv1,'('),identifier(none,v1),integer(none,5))]),theorems(none,[]),events(none,[])])],[],[exporter_version(2)],_Error)).\n",
+				"package(load_event_b_project([event_b_model(none,'TestMachine',[sees(none,[]),variables(none,[identifier(none,v1)]),invariant(none,[equal(rodinpos('TestMachine',inv1,'('),identifier(none,v1),integer(none,5))]),theorems(none,[]),events(none,[])])],[],[exporter_version(3)],_Error)).\n",
 				stringWriter.getBuffer().toString());
 	}
 }
