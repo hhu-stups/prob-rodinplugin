@@ -326,9 +326,6 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 	}
 
 	private List<PContextClause> processConstants() throws RodinDBException {
-		final IAttributeType.Boolean ATTRIBUTE = RodinCore
-				.getBooleanAttrType("de.prob.symbolic.symbolicAttribute");
-
 		final ISCConstant[] constants = context.getSCConstants();
 
 		final List<PExpression> concreteConstants = new ArrayList<PExpression>(
@@ -337,13 +334,24 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 				constants.length);
 
 		for (final ISCConstant constant : constants) {
-			if (constant.hasAttribute(ATTRIBUTE)
-					&& constant.getAttributeValue(ATTRIBUTE)) {
+			boolean isAbstractConstant = false;
+
+			// try if the attribute exists and is set
+			// if the symbolic evaluation plugin is not installed
+			// Rodin throws an IllegalArgumentException
+			try {
+				final IAttributeType.Boolean ATTRIBUTE = RodinCore
+						.getBooleanAttrType("de.prob.symbolic.symbolicAttribute");
+				isAbstractConstant = constant.getAttributeValue(ATTRIBUTE);
+			} catch (IllegalArgumentException E) {
+				// the attribute did not exist
+			}
+
+			if (isAbstractConstant) {
 				abstractConstants
 						.add(new AIdentifierExpression(
 								Arrays.asList(new TIdentifierLiteral[] { new TIdentifierLiteral(
 										constant.getIdentifierString()) })));
-
 			} else {
 				concreteConstants
 						.add(new AIdentifierExpression(
