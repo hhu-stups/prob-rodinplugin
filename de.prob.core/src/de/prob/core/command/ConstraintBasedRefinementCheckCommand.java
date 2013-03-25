@@ -72,8 +72,6 @@ public class ConstraintBasedRefinementCheckCommand implements
 		final ListPrologTerm resultStringTerm = (ListPrologTerm) bindings
 				.get(RESULT_STRINGS_VARIABLE);
 
-		System.out.println(resultStringTerm.toString());
-
 		for (PrologTerm t : resultStringTerm) {
 			resultsString += PrologTerm.atomicString(t) + "\n";
 		}
