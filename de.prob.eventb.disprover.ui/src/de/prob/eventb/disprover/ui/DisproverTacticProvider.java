@@ -69,7 +69,6 @@ public class DisproverTacticProvider extends DefaultTacticProvider {
 					getHypotheses());
 			return Collections.singletonList(application);
 		}
-		return null;
+		return Collections.emptyList();
 	}
-
 }
