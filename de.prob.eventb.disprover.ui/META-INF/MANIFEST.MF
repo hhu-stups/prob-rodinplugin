@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: ProB Disprover UI for EventB
 Bundle-SymbolicName: de.prob.eventb.disprover.ui;singleton:=true
-Bundle-Version: 2.0.3
+Bundle-Version: 2.0.3.qualifier
 Bundle-Vendor: Heinrich-Heine University Dusseldorf
 Require-Bundle: org.eventb.core.seqprover;bundle-version="[2.6.0,3.0.0)",
  org.eventb.ui;bundle-version="[2.5.0,3.0.0)",
