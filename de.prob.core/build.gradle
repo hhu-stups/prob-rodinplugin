@@ -1,7 +1,6 @@
 apply plugin: 'java'
 
-
-def parser_version = '2.4.16-SNAPSHOT'
+def parser_version = '2.4.18-SNAPSHOT'
 
 dependencies {
  compile group: "de.prob", name: "answerparser", version: parser_version , changing: true
@@ -11,6 +10,7 @@ dependencies {
  compile group: "de.prob", name: "parserbase", version: parser_version , changing: true
  compile group: "de.prob", name: "prologlib", version: parser_version , changing: true
  compile group: "de.prob", name: "unicode", version: parser_version , changing: true
+ compile group: "de.prob", name: "theorymapping", version: parser_version , changing: true
  compile 'jgrapht:jgrapht:0.8.3'
  compile 'commons-lang:commons-lang:2.6'
  compile 'commons-codec:commons-codec:1.6'

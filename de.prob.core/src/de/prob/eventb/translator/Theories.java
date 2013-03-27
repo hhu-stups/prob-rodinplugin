@@ -1,9 +1,16 @@
 package de.prob.eventb.translator;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eventb.core.IEventBProject;
@@ -41,6 +48,9 @@ import de.prob.core.translator.TranslationFailedException;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.output.StructuredPrologOutput;
 import de.prob.prolog.term.PrologTerm;
+import de.prob.tmparser.OperatorMapping;
+import de.prob.tmparser.TheoryMappingException;
+import de.prob.tmparser.TheoryMappingParser;
 
 public class Theories {
 	private static final String PROB_THEORY_MAPPING_SUFFIX = "ptm";
@@ -74,9 +84,12 @@ public class Theories {
 	 * the translation is currently very unstable and erroneous. Writing in a
 	 * Prolog object makes sure that the output stream to the Prolog process
 	 * will not be corrupted.
+	 * 
+	 * @throws TranslationFailedException
 	 */
 	private static void savePrintTranslation(IDeployedTheoryRoot theory,
-			IPrologTermOutput opto) throws RodinDBException {
+			IPrologTermOutput opto) throws RodinDBException,
+			TranslationFailedException {
 
 		final StructuredPrologOutput pto = new StructuredPrologOutput();
 		printTranslation(theory, pto);
@@ -86,7 +99,8 @@ public class Theories {
 	}
 
 	private static void printTranslation(IDeployedTheoryRoot theory,
-			StructuredPrologOutput pto) throws RodinDBException {
+			StructuredPrologOutput pto) throws RodinDBException,
+			TranslationFailedException {
 		pto.openTerm("theory");
 		printIdentifiers(theory.getSCTypeParameters(), pto);
 		printDataTypes(theory, pto);
@@ -97,23 +111,51 @@ public class Theories {
 	}
 
 	private static void findProBMappingFile(IDeployedTheoryRoot theory,
-			IPrologTermOutput pto) {
+			IPrologTermOutput pto) throws TranslationFailedException {
 		final String theoryName = theory.getComponentName();
 		final IPath path = new Path(theoryName + "."
 				+ PROB_THEORY_MAPPING_SUFFIX);
 		final IProject project = theory.getRodinProject().getProject();
+		final Collection<OperatorMapping> mappings;
 		if (project.exists(path)) {
 			final IFile file = project.getFile(path);
-			readAndPrintMapping(file, theory, pto);
+			mappings = readMappingFile(file, theory);
 		} else {
-			pto.printAtom("none");
+			mappings = Collections.emptyList();
+		}
+		printMappings(mappings, pto);
+	}
+
+	private static Collection<OperatorMapping> readMappingFile(IFile file,
+			IDeployedTheoryRoot theory) throws TranslationFailedException {
+		try {
+			final InputStream input = file.getContents();
+			final String name = theory.getComponentName();
+			final Reader reader = new InputStreamReader(input);
+			return TheoryMappingParser.parseTheoryMapping(name, reader);
+		} catch (CoreException e) {
+			throw new TranslationFailedException(e);
+		} catch (TheoryMappingException e) {
+			throw new TranslationFailedException(e);
+		} catch (IOException e) {
+			throw new TranslationFailedException(e);
 		}
 	}
 
-	private static void readAndPrintMapping(IFile file,
-			IDeployedTheoryRoot theory, IPrologTermOutput pto) {
-		// TODO Auto-generated method stub
-
+	private static void printMappings(Collection<OperatorMapping> mappings,
+			IPrologTermOutput pto) {
+		pto.openList();
+		// Currently, we support only one kind of operator mapping, just tagging
+		// an operator to indicate that an optimized ProB implementation should
+		// be used. We do not invest any effort in preparing future kinds of
+		// other operator mappings.
+		for (OperatorMapping mapping : mappings) {
+			pto.openTerm("tag");
+			pto.printAtom(mapping.getOperatorName());
+			pto.printAtom(mapping.getSpec());
+			pto.closeTerm();
+		}
+		pto.closeList();
 	}
 
 	private static void printIdentifiers(ISCIdentifierElement[] identifiers,
@@ -250,7 +292,8 @@ public class Theories {
 			final IPrologTermOutput pto) throws RodinDBException {
 		pto.openTerm(functor);
 		pto.printAtom(id.getIdentifierString());
-		printType(id.getType(ff), ff, pto);
+		Type type = id.getType(ff);
+		printType(type, ff, pto);
 		pto.closeTerm();
 	}
 
