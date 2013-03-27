@@ -1,2 +1,1 @@
-
-include 'de.prob.core', 'de.bmotionstudio.gef.editor' ,'de.bmotionstudio.rodin', 'de.bmotionstudio.help' , 'de.prob.plugin', 'de.prob.ui', 'de.prob2.feature', 'de.prob.symbolic', 'de.prob2.symbolic.feature', 'de.prob.units', 'de.prob2.units.feature'
+include 'de.prob.core', 'de.bmotionstudio.gef.editor' ,'de.bmotionstudio.rodin', 'de.bmotionstudio.help' , 'de.prob.plugin', 'de.prob.ui', 'de.prob2.feature', 'de.prob.symbolic', 'de.prob2.symbolic.feature', 'de.prob.units', 'de.prob2.units.feature', 'de.prob.eventb.disprover.core', 'de.prob.eventb.disprover.ui', 'de.prob2.disprover.feature'
