@@ -229,6 +229,10 @@ Each party waives its rights to a jury trial in any resulting
 litigation.
    </license>
 
+   <requires>
+      <import feature="de.prob2.feature" version="2.3.5.qualifier"/>
+   </requires>
+
    <plugin
          id="de.prob.eventb.disprover.core"
          download-size="0"
