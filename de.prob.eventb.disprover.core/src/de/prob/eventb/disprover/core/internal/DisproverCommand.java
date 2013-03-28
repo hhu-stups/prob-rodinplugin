@@ -7,7 +7,6 @@ import org.eventb.core.ast.Predicate;
 
 import de.be4.classicalb.core.parser.analysis.prolog.ASTProlog;
 import de.prob.core.Animator;
-import de.prob.core.LanguageDependendAnimationPart;
 import de.prob.core.command.ClearMachineCommand;
 import de.prob.core.command.CommandException;
 import de.prob.core.command.ComposedCommand;
@@ -16,7 +15,6 @@ import de.prob.core.command.LoadEventBModelCommand;
 import de.prob.core.command.SetPreferencesCommand;
 import de.prob.core.command.StartAnimationCommand;
 import de.prob.core.command.internal.InternalLoadCommand;
-import de.prob.core.langdep.EventBAnimatorPart;
 import de.prob.eventb.disprover.core.ICounterExample;
 import de.prob.eventb.translator.PredicateVisitor;
 import de.prob.exceptions.ProBException;
@@ -48,9 +46,9 @@ public class DisproverCommand implements IComposableCommand {
 	// private final List<AEventBContextParseUnit> contextAsts;
 	// private final List<DisproverIdentifier> vars;
 	private CounterExample counterExample;
-	private Set<Predicate> hypotheses;
-	private Predicate goal;
-	private IEventBRoot root;
+	private final Set<Predicate> hypotheses;
+	private final Predicate goal;
+	private final IEventBRoot root;
 
 	public DisproverCommand(Set<Predicate> hypotheses, Predicate goal,
 			IEventBRoot root) {
@@ -115,7 +113,7 @@ public class DisproverCommand implements IComposableCommand {
 
 		counterExample = null;
 
-		if ("timeout".equals(term.getFunctor())) {
+		if ("time_out".equals(term.getFunctor())) {
 			counterExample = new CounterExample(true, true);
 		}
 		if ("no_counter_example".equals(term.getFunctor())) {
