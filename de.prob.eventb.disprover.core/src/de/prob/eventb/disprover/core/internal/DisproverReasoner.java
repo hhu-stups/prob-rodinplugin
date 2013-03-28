@@ -37,7 +37,6 @@ public class DisproverReasoner implements IReasoner {
 
 	private static final String DISPROVER_REASONER_NAME = "de.prob.eventb.disprover.core.disproverReasoner";
 
-	@Override
 	public String getReasonerID() {
 		return DISPROVER_REASONER_NAME;
 	}
@@ -45,7 +44,6 @@ public class DisproverReasoner implements IReasoner {
 	/**
 	 * Applies the Disprover by building a machine from Goal and Hypotheses.
 	 */
-	@Override
 	public IReasonerOutput apply(final IProverSequent sequent,
 			final IReasonerInput input, final IProofMonitor pm) {
 		try {
@@ -165,13 +163,11 @@ public class DisproverReasoner implements IReasoner {
 	// return p;
 	// }
 
-	@Override
 	public IReasonerInput deserializeInput(final IReasonerInputReader reader)
 			throws SerializeException {
 		return null;
 	}
 
-	@Override
 	public void serializeInput(final IReasonerInput input,
 			final IReasonerInputWriter writer) throws SerializeException {
 	}

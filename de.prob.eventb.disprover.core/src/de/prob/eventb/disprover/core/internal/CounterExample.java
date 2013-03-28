@@ -57,7 +57,6 @@ class CounterExample implements ICounterExample {
 		state.put(name, value);
 	}
 
-	@Override
 	public boolean timeoutOccured() {
 		return timeoutOccured;
 	}
