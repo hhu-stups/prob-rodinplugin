@@ -21,7 +21,7 @@ public final class CheckInitialisationStatusCommand extends
 	}
 
 	public CheckInitialisationStatusCommand(final String stateId) {
-		super("initialised", stateId);
+		super(IS_INITIALISED_STATE, stateId);
 	}
 
 }
