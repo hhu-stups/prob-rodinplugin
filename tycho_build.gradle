@@ -588,6 +588,18 @@ task tycho(dependsOn: [createPoms] , type:Exec) {
 		<artifactId>${artifactId}</artifactId>
 		<version>${versionNumber}</version>
 		<packaging>eclipse-plugin</packaging>
+		<build>
+			<plugins>
+				<plugin>
+					<groupId>org.eclipse.tycho</groupId>
+					<artifactId>tycho-compiler-plugin</artifactId>
+					<configuration>
+						<source>1.6</source>
+						<target>1.6</target>
+					</configuration>
+	      			</plugin>
+	    		</plugins>
+	 	</build>
 	""" }
 	
     def testArtifact(artifactId,versionNumber) { """
