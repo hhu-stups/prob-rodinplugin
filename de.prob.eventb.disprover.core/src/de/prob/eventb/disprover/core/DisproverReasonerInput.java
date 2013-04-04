@@ -33,10 +33,10 @@ public class DisproverReasonerInput implements IReasonerInput {
 		RELEVANT, SELECTED, ALL
 	}
 
-	private HypothesesSource hypothesesSource;
-	private IProofTreeNode node;
-	private boolean useDisproverPrefs;
-	private boolean useContexts;
+	private final HypothesesSource hypothesesSource;
+	private final IProofTreeNode node;
+	private final boolean useDisproverPrefs;
+	private final boolean useContexts;
 
 	private List<ISCContextRoot> contexts;
 	private Set<String> constants;
@@ -66,15 +66,18 @@ public class DisproverReasonerInput implements IReasonerInput {
 		this.timeout = timeout;
 	}
 
+	@Override
 	public void applyHints(ReplayHints renaming) {
 		// TODO Auto-generated method stub
 	}
 
+	@Override
 	public String getError() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
+	@Override
 	public boolean hasError() {
 		// TODO Auto-generated method stub
 		return false;

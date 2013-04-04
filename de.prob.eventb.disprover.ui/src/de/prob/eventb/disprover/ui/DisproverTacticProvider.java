@@ -35,6 +35,7 @@ public class DisproverTacticProvider extends DefaultTacticProvider {
 			this.hyps = hyps;
 		}
 
+		@Override
 		public ITactic getTactic(String[] inputs, String globalInput) {
 			return getTactic(node, globalInput, inputs);
 		}
@@ -48,6 +49,7 @@ public class DisproverTacticProvider extends DefaultTacticProvider {
 					Disprover.createDisproverReasoner(), reasonerInput);
 		}
 
+		@Override
 		public String getTacticID() {
 			return "de.prob.eventb.disprover.ui.disproverTactic";
 		}

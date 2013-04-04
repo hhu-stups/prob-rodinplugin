@@ -93,6 +93,7 @@ public class AstPrettyPrinter extends DepthFirstAdapter {
 		super.caseABoolSetExpression(node);
 	}
 
+	@Override
 	public String toString() {
 		return sb.toString();
 	}
@@ -118,6 +119,7 @@ public class AstPrettyPrinter extends DepthFirstAdapter {
 		writeSpace();
 	}
 
+	@Override
 	public void caseAEvent(AEvent node) {
 		inAEvent(node);
 		write("EVENT");
@@ -188,6 +190,7 @@ public class AstPrettyPrinter extends DepthFirstAdapter {
 		}
 	}
 
+	@Override
 	public void caseASkipSubstitution(ASkipSubstitution node) {
 		write("SKIP");
 		writeSpace();
@@ -208,6 +211,7 @@ public class AstPrettyPrinter extends DepthFirstAdapter {
 		outAConjunctPredicate(node);
 	}
 
+	@Override
 	public void caseAVariablesModelClause(AVariablesModelClause node) {
 		inAVariablesModelClause(node);
 		{
@@ -224,6 +228,7 @@ public class AstPrettyPrinter extends DepthFirstAdapter {
 		outAVariablesModelClause(node);
 	}
 
+	@Override
 	public void caseAInvariantModelClause(AInvariantModelClause node) {
 		inAInvariantModelClause(node);
 		{
