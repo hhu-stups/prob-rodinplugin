@@ -116,16 +116,16 @@ public class DisproverCommand implements IComposableCommand {
 		if ("time_out".equals(term.getFunctor())) {
 			counterExample = new CounterExample(true, true);
 		}
-		if ("no_counter_example".equals(term.getFunctor())) {
+		if ("no_solution_found".equals(term.getFunctor())) {
 			counterExample = new CounterExample(false, false);
 		}
 
-		if ("proven".equals(term.getFunctor())) {
+		if ("contradiction_found".equals(term.getFunctor())) {
 			counterExample = new CounterExample(false, false);
 			counterExample.setProof(true);
 		}
 
-		if ("counter_example".equals(term.getFunctor())) {
+		if ("solution".equals(term.getFunctor())) {
 			counterExample = new CounterExample(true, false);
 			ListPrologTerm vars = (ListPrologTerm) term.getArgument(1);
 
