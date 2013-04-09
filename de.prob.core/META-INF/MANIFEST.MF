@@ -10,7 +10,7 @@ Require-Bundle: org.eclipse.core.runtime;bundle-version="[3.5.0,4.0.0)",
 REENABLE-FOR-THEORY-PLUGIN: org.eventb.theory.core;bundle-version="2.0.0"
 Bundle-ActivationPolicy: lazy
 Eclipse-BundleShape: dir
-Bundle-Vendor: HHU DŸsseldorf STUPS Group
+Bundle-Vendor: HHU Dï¿½sseldorf STUPS Group
 Export-Package: com.thoughtworks.xstream,
  com.thoughtworks.xstream.annotations,
  com.thoughtworks.xstream.converters,
@@ -85,8 +85,6 @@ Export-Package: com.thoughtworks.xstream,
  de.prob.eventb.translator.internal,
  de.prob.exceptions,
  de.prob.logging,
- de.prob.model.eventb,
- de.prob.model.representation,
  de.prob.parser,
  de.prob.parserbase,
  de.prob.prolog.match,
@@ -115,6 +113,13 @@ Bundle-Activator: de.prob.core.internal.Activator
 Eclipse-BuddyPolicy: registered
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ClassPath: .,
+ lib/dependencies/answerparser-2.4.12-SNAPSHOT.jar,
+ lib/dependencies/prologlib-2.4.12-SNAPSHOT.jar,
+ lib/dependencies/unicode-2.4.12-SNAPSHOT.jar,
+ lib/dependencies/parserbase-2.4.12-SNAPSHOT.jar,
+ lib/dependencies/ltlparser-2.4.12-SNAPSHOT.jar,
+ lib/dependencies/cliparser-2.4.12-SNAPSHOT.jar,
+ lib/dependencies/bparser-2.4.12-SNAPSHOT.jar,
  lib/dependencies/theorymapping-2.4.18-SNAPSHOT.jar,
  lib/dependencies/unicode-2.4.18-SNAPSHOT.jar,
  lib/dependencies/prologlib-2.4.18-SNAPSHOT.jar,
