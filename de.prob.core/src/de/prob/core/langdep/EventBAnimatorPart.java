@@ -262,7 +262,7 @@ public class EventBAnimatorPart implements LanguageDependendAnimationPart {
 
 	private ProBParseException rodin2parseException(final RodinDBException e) {
 		return new ProBParseException(
-				"Error in the underlying Rodin Database: "
+				"Error in the underlying Rodin Database.\nTry cleaning your workspace.\n Details: "
 						+ e.getLocalizedMessage());
 	}
 

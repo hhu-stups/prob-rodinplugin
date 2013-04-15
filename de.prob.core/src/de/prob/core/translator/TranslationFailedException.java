@@ -23,7 +23,7 @@ public class TranslationFailedException extends ProBException {
 
 	public TranslationFailedException(final String component,
 			final String details, Throwable e) {
-		super("Translation of " + component + " failed\n" + details, e, false);
+		super("Translation of " + component + " failed.\nTry cleaning your workspace.\nDetails: \n" + details, e, false);
 		notifyUserOnce();
 	}
 }
