@@ -2,15 +2,15 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: ProB Ui Plug-in
 Bundle-SymbolicName: de.prob.ui;singleton:=true
-Bundle-Version: 7.3.0.qualifier
+Bundle-Version: 7.4.0.qualifier
 Require-Bundle: org.eclipse.ui;bundle-version="[3.5.0,4.0.0)",
  org.eclipse.core.runtime;bundle-version="[3.5.0,4.0.0)",
  org.eclipse.core.resources;bundle-version="[3.5.0,4.0.0)",
  org.eclipse.ui.ide;bundle-version="[3.5.0,4.0.0)",
- de.prob.core;bundle-version="[9.3.0,9.4.0)",
- org.eventb.core;bundle-version="[2.1.0,2.6.0)",
+ de.prob.core;bundle-version="[9.4.0,9.5.0)",
+ org.eventb.core;bundle-version="[2.5.0,2.6.0)",
  org.eclipse.core.expressions;bundle-version="[3.4.101,4.0.0)",
- org.eclipse.gef;bundle-version="[3.5.0,4.0.0)"
+ org.eclipse.gef;bundle-version="[3.7.0,4.0.0)"
 Bundle-ActivationPolicy: lazy
 Bundle-Vendor: HHU Düsseldorf STUPS Group
 Bundle-Activator: de.prob.ui.ProbUiPlugin

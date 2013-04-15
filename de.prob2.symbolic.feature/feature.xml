@@ -2,7 +2,7 @@
 <feature
       id="de.prob2.symbolic.feature"
       label="ProB for Rodin2 - Symbolic Constants Support"
-      version="2.3.5.qualifier"
+      version="2.4.0.qualifier"
       provider-name="HHU Düsseldorf STUPS Group">
 
    <description url="http://www.stups.uni-duesseldorf.de/ProB">
@@ -230,7 +230,10 @@ litigation.
    </license>
 
    <requires>
-      <import feature="de.prob2.feature" version="2.3.5.qualifier"/>
+      <import plugin="org.eclipse.core.runtime"/>
+      <import plugin="de.prob.core" version="9.4.0" match="equivalent"/>
+      <import plugin="org.eventb.ui" version="2.5.0" match="greaterOrEqual"/>
+      <import plugin="de.prob.ui" version="7.4.0" match="equivalent"/>
    </requires>
 
    <plugin
