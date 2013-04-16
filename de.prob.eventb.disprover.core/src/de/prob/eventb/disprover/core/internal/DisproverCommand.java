@@ -83,6 +83,7 @@ public class DisproverCommand implements IComposableCommand {
 		return counterExample;
 	}
 
+	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
 
 		pto.openTerm("cbc_disprove");
@@ -105,6 +106,7 @@ public class DisproverCommand implements IComposableCommand {
 		v.getPredicate().apply(p);
 	}
 
+	@Override
 	public void processResult(
 			final ISimplifiedROMap<String, PrologTerm> bindings)
 			throws CommandException {
