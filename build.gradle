@@ -6,7 +6,7 @@ project.ext{
 	targetRepositories = ["http://download.eclipse.org/releases/indigo/",
                           "http://rodin-b-sharp.sourceforge.net/updates",
                           "http://rodin-b-sharp.sourceforge.net/core-updates"
-                    //      , "http://www.stups.uni-duesseldorf.de/ProB/buildlibs/theory/"
+                          , "http://www.stups.uni-duesseldorf.de/ProB/buildlibs/theory/"
                           ]
 
 	groupID = "de.prob"
