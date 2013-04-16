@@ -115,8 +115,10 @@ public class DisproverReasoner implements IReasoner {
 		IAntecedent ante = ProverFactory.makeAntecedent(goal);
 
 		if (counterExample.timeoutOccured()) {
-			return ProverFactory.makeProofRule(this, input, null, null,
-					IConfidence.PENDING, "Timeout occurred (ProB)", ante);
+			return ProverFactory
+					.makeProofRule(this, input, null, null,
+							IConfidence.DISCHARGED_MAX,
+							"Timeout occurred (ProB)", ante);
 
 		}
 
@@ -127,8 +129,8 @@ public class DisproverReasoner implements IReasoner {
 
 		if (!counterExample.counterExampleFound())
 			return ProverFactory.makeProofRule(this, input, null, null,
-					IConfidence.PENDING, "No Counter-Example found (ProB)",
-					ante);
+					IConfidence.DISCHARGED_MAX,
+					"No Counter-Example found (ProB)", ante);
 
 		// Predicate ng = sequent.getFormulaFactory().makeAssociativePredicate(
 		// Formula.LAND,
