@@ -47,7 +47,6 @@ project(':de.prob.core') {
 	 compile group: "de.prob", name: "prologlib", version: parser_version , changing: true
 	 compile group: "de.prob", name: "unicode", version: parser_version , changing: true
 	 compile group: "de.prob", name: "theorymapping", version: parser_version , changing: true
-	 compile 'jgrapht:jgrapht:0.8.3'
 	 compile 'commons-lang:commons-lang:2.6'
 	}
 	
