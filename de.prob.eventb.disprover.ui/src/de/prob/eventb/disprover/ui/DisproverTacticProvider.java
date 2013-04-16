@@ -18,7 +18,7 @@ import de.prob.eventb.disprover.core.DisproverReasonerInput.HypothesesSource;
 public class DisproverTacticProvider extends DefaultTacticProvider {
 
 	protected HypothesesSource getHypotheses() {
-		return HypothesesSource.ALL;
+		return HypothesesSource.RELEVANT;
 	}
 
 	protected boolean useContexts() {
