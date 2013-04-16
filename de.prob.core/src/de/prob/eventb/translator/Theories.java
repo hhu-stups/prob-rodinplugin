@@ -1,9 +1,57 @@
 package de.prob.eventb.translator;
 
-import org.eventb.core.IEventBProject;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
+import org.eventb.core.IEventBProject;
+import org.eventb.core.ISCIdentifierElement;
+import org.eventb.core.ast.Expression;
+import org.eventb.core.ast.Formula;
+import org.eventb.core.ast.FormulaFactory;
+import org.eventb.core.ast.ITypeEnvironment;
+import org.eventb.core.ast.Predicate;
+import org.eventb.core.ast.Type;
+import org.eventb.theory.core.DatabaseUtilities;
+import org.eventb.theory.core.IAvailableTheory;
+import org.eventb.theory.core.IAvailableTheoryProject;
+import org.eventb.theory.core.IDeployedTheoryRoot;
+import org.eventb.theory.core.ISCAxiomaticDefinitionAxiom;
+import org.eventb.theory.core.ISCAxiomaticDefinitionsBlock;
+import org.eventb.theory.core.ISCAxiomaticOperatorDefinition;
+import org.eventb.theory.core.ISCConstructorArgument;
+import org.eventb.theory.core.ISCDatatypeConstructor;
+import org.eventb.theory.core.ISCDatatypeDefinition;
+import org.eventb.theory.core.ISCDirectOperatorDefinition;
+import org.eventb.theory.core.ISCNewOperatorDefinition;
+import org.eventb.theory.core.ISCOperatorArgument;
+import org.eventb.theory.core.ISCRecursiveDefinitionCase;
+import org.eventb.theory.core.ISCRecursiveOperatorDefinition;
+import org.eventb.theory.core.ISCTypeArgument;
+import org.eventb.theory.core.ITheoryPathRoot;
+import org.rodinp.core.IRodinProject;
+import org.rodinp.core.RodinDBException;
+
+import de.be4.classicalb.core.parser.analysis.prolog.ASTProlog;
+import de.be4.classicalb.core.parser.node.PExpression;
+import de.be4.classicalb.core.parser.node.PPredicate;
 import de.prob.core.translator.TranslationFailedException;
 import de.prob.prolog.output.IPrologTermOutput;
+import de.prob.prolog.output.StructuredPrologOutput;
+import de.prob.prolog.term.PrologTerm;
+import de.prob.tmparser.OperatorMapping;
+import de.prob.tmparser.TheoryMappingException;
+import de.prob.tmparser.TheoryMappingParser;
+
 
 public class Theories {
 	private static final String PROB_THEORY_MAPPING_SUFFIX = "ptm";
