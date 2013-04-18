@@ -117,10 +117,9 @@ public class DisproverReasoner implements IReasoner {
 
 		IAntecedent ante = ProverFactory.makeAntecedent(goal);
 
-		if (counterExample.timeoutOccured()) {
+		if (counterExample.timeoutOccured())
 			return ProverFactory.reasonerFailure(this, input,
 					"Timeout occurred (ProB)");
-		}
 
 		if (!counterExample.counterExampleFound() && counterExample.isProof())
 			return ProverFactory.makeProofRule(this, input, sequent.goal(),
@@ -128,14 +127,13 @@ public class DisproverReasoner implements IReasoner {
 					"ProB (all cases checked)");
 
 		if (!counterExample.counterExampleFound())
-			return ProverFactory.makeProofRule(this, input, null, null,
-					IConfidence.DISCHARGED_MAX,
-					"No Counter-Example found (ProB)", ante);
+			return ProverFactory
+					.reasonerFailure(this, input,
+							"No Counter-Example found (ProB), but there might exist one");
 
 		return ProverFactory.makeProofRule(this, input, null, null,
 				IConfidence.PENDING,
 				"Counter-Example: " + counterExample.toString(), ante);
-
 	}
 
 	@Override
