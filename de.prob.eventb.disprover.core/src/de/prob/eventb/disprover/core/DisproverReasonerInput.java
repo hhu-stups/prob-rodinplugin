@@ -54,8 +54,7 @@ public class DisproverReasonerInput implements IReasonerInput {
 	 * @return the required Hypothesis, depending on {@link #mode}.
 	 * @throws DisproverException
 	 */
-	public Iterable<Predicate> getHypotheses(IProverSequent sequent)
-			throws DisproverException {
+	public Iterable<Predicate> getHypotheses(IProverSequent sequent) {
 		return sequent.visibleHypIterable();
 	}
 
