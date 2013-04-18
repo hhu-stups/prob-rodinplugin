@@ -11,7 +11,6 @@ import de.prob.core.command.ClearMachineCommand;
 import de.prob.core.command.CommandException;
 import de.prob.core.command.ComposedCommand;
 import de.prob.core.command.IComposableCommand;
-import de.prob.core.command.LoadEventBModelCommand;
 import de.prob.core.command.SetPreferencesCommand;
 import de.prob.core.command.StartAnimationCommand;
 import de.prob.core.command.internal.InternalLoadCommand;
@@ -42,14 +41,10 @@ public class DisproverCommand implements IComposableCommand {
 	private CounterExample counterExample;
 	private final Set<Predicate> hypotheses;
 	private final Predicate goal;
-	private final IEventBRoot root;
 
-	public DisproverCommand(Set<Predicate> hypotheses, Predicate goal,
-			IEventBRoot root) {
+	public DisproverCommand(Set<Predicate> hypotheses, Predicate goal) {
 		this.hypotheses = hypotheses;
 		this.goal = goal;
-		this.root = root;
-
 	}
 
 	public static ICounterExample disprove(Animator animator,
@@ -63,7 +58,7 @@ public class DisproverCommand implements IComposableCommand {
 
 		final StartAnimationCommand start = new StartAnimationCommand();
 
-		DisproverCommand disprove = new DisproverCommand(hypotheses, goal, root);
+		DisproverCommand disprove = new DisproverCommand(hypotheses, goal);
 
 		final ComposedCommand composed = new ComposedCommand(clear, setPrefs,
 				load, start, disprove);
