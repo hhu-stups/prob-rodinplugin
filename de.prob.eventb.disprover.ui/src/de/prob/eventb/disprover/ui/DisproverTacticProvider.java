@@ -13,13 +13,8 @@ import org.eventb.ui.prover.ITacticApplication;
 
 import de.prob.eventb.disprover.core.Disprover;
 import de.prob.eventb.disprover.core.DisproverReasonerInput;
-import de.prob.eventb.disprover.core.DisproverReasonerInput.HypothesesSource;
 
 public class DisproverTacticProvider extends DefaultTacticProvider {
-
-	protected HypothesesSource getHypotheses() {
-		return HypothesesSource.SELECTED;
-	}
 
 	protected boolean useContexts() {
 		return false;
@@ -28,11 +23,9 @@ public class DisproverTacticProvider extends DefaultTacticProvider {
 	protected static class MyPredicateApplication implements ITacticApplication {
 
 		private final IProofTreeNode node;
-		private final HypothesesSource hyps;
 
-		public MyPredicateApplication(IProofTreeNode node, HypothesesSource hyps) {
+		public MyPredicateApplication(IProofTreeNode node) {
 			this.node = node;
-			this.hyps = hyps;
 		}
 
 		@Override
@@ -44,7 +37,7 @@ public class DisproverTacticProvider extends DefaultTacticProvider {
 				String[] inputs) {
 
 			IReasonerInput reasonerInput = new DisproverReasonerInput(node,
-					false, hyps);
+					false);
 			return BasicTactics.reasonerTac(
 					Disprover.createDisproverReasoner(), reasonerInput);
 		}
@@ -65,8 +58,7 @@ public class DisproverTacticProvider extends DefaultTacticProvider {
 			IProofTreeNode node, Predicate hyp, String globalInput) {
 
 		if (node != null && node.isOpen()) {
-			ITacticApplication application = new MyPredicateApplication(node,
-					getHypotheses());
+			ITacticApplication application = new MyPredicateApplication(node);
 			return Collections.singletonList(application);
 		}
 		return Collections.<ITacticApplication> emptyList();

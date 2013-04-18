@@ -29,11 +29,6 @@ import org.rodinp.core.RodinDBException;
  */
 public class DisproverReasonerInput implements IReasonerInput {
 
-	public static enum HypothesesSource {
-		RELEVANT, SELECTED, ALL
-	}
-
-	private final HypothesesSource hypothesesSource;
 	private final IProofTreeNode node;
 	private final boolean useDisproverPrefs;
 	private final boolean useContexts;
@@ -45,20 +40,16 @@ public class DisproverReasonerInput implements IReasonerInput {
 	private int setSize;
 	private int timeout;
 
-	public DisproverReasonerInput(IProofTreeNode node, boolean useContext,
-			HypothesesSource hypothesesSource) {
+	public DisproverReasonerInput(IProofTreeNode node, boolean useContext) {
 		this.node = node;
 		this.useContexts = useContext;
-		this.hypothesesSource = hypothesesSource;
 		this.useDisproverPrefs = false;
 	}
 
 	public DisproverReasonerInput(IProofTreeNode node, boolean useContext,
-			HypothesesSource hypothesesSource, int maxInt, int minInt,
-			int setSize, int timeout) {
+			int maxInt, int minInt, int setSize, int timeout) {
 		this.node = node;
 		this.useContexts = useContext;
-		this.hypothesesSource = hypothesesSource;
 		this.useDisproverPrefs = true;
 		this.maxInt = maxInt;
 		this.minInt = minInt;
@@ -157,23 +148,14 @@ public class DisproverReasonerInput implements IReasonerInput {
 	}
 
 	/**
-	 * @param input
+	 * @param sequent
+	 *            , the sequent to prove
 	 * @return the required Hypothesis, depending on {@link #mode}.
 	 * @throws DisproverException
 	 */
 	public Iterable<Predicate> getHypotheses(IProverSequent sequent)
 			throws DisproverException {
-		Iterable<Predicate> iterator;
-		if (hypothesesSource.equals(HypothesesSource.ALL)) {
-			iterator = sequent.hypIterable();
-		} else if (hypothesesSource.equals(HypothesesSource.RELEVANT)) {
-			iterator = sequent.selectedHypIterable();
-		} else if (hypothesesSource.equals(HypothesesSource.SELECTED)) {
-			iterator = sequent.visibleHypIterable();
-		} else {
-			throw new DisproverException("Unknown state: " + hypothesesSource);
-		}
-		return iterator;
+		return sequent.visibleHypIterable();
 	}
 
 	public int getMaxInt() {
