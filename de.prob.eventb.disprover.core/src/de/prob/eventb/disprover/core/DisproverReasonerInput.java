@@ -17,7 +17,6 @@ import org.eventb.core.seqprover.proofBuilder.ReplayHints;
 public class DisproverReasonerInput implements IReasonerInput {
 
 	private final IProofTreeNode node;
-	private final boolean useDisproverPrefs;
 
 	private int maxInt;
 	private int minInt;
@@ -26,17 +25,6 @@ public class DisproverReasonerInput implements IReasonerInput {
 
 	public DisproverReasonerInput(IProofTreeNode node) {
 		this.node = node;
-		this.useDisproverPrefs = false;
-	}
-
-	public DisproverReasonerInput(IProofTreeNode node, int maxInt, int minInt,
-			int setSize, int timeout) {
-		this.node = node;
-		this.useDisproverPrefs = true;
-		this.maxInt = maxInt;
-		this.minInt = minInt;
-		this.setSize = setSize;
-		this.timeout = timeout;
 	}
 
 	@Override
@@ -85,10 +73,6 @@ public class DisproverReasonerInput implements IReasonerInput {
 
 	public int getTimeout() {
 		return timeout;
-	}
-
-	public boolean useDisproverPrefs() {
-		return useDisproverPrefs;
 	}
 
 }
