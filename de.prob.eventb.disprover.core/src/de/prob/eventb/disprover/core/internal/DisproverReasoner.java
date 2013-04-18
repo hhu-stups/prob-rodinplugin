@@ -115,11 +115,8 @@ public class DisproverReasoner implements IReasoner {
 		IAntecedent ante = ProverFactory.makeAntecedent(goal);
 
 		if (counterExample.timeoutOccured()) {
-			return ProverFactory
-					.makeProofRule(this, input, null, null,
-							IConfidence.DISCHARGED_MAX,
-							"Timeout occurred (ProB)", ante);
-
+			return ProverFactory.reasonerFailure(this, input,
+					"Timeout occurred (ProB)");
 		}
 
 		if (!counterExample.counterExampleFound() && counterExample.isProof())
