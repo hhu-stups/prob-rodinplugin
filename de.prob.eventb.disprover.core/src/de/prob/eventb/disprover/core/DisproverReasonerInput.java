@@ -48,16 +48,6 @@ public class DisproverReasonerInput implements IReasonerInput {
 		return node;
 	}
 
-	/**
-	 * @param sequent
-	 *            , the sequent to prove
-	 * @return the required Hypothesis, depending on {@link #mode}.
-	 * @throws DisproverException
-	 */
-	public Iterable<Predicate> getHypotheses(IProverSequent sequent) {
-		return sequent.visibleHypIterable();
-	}
-
 	public int getMaxInt() {
 		return maxInt;
 	}

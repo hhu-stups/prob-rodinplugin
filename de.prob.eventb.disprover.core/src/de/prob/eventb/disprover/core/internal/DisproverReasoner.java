@@ -66,7 +66,7 @@ public class DisproverReasoner implements IReasoner {
 			RodinDBException {
 
 		Set<Predicate> hypotheses = new HashSet<Predicate>();
-		for (Predicate predicate : disproverInput.getHypotheses(sequent)) {
+		for (Predicate predicate : sequent.visibleHypIterable()) {
 			hypotheses.add(predicate);
 		}
 		Predicate goal = sequent.goal();
