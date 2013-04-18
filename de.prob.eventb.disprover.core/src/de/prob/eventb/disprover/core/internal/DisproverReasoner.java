@@ -109,8 +109,7 @@ public class DisproverReasoner implements IReasoner {
 			final ICounterExample counterExample, final IProverSequent sequent,
 			final IReasonerInput input) {
 
-		Predicate goal = sequent.goal();// makeNewGoal((CounterExample)
-		// counterExample,sequent);
+		Predicate goal = sequent.goal();
 
 		IAntecedent ante = ProverFactory.makeAntecedent(goal);
 
@@ -129,40 +128,11 @@ public class DisproverReasoner implements IReasoner {
 					IConfidence.DISCHARGED_MAX,
 					"No Counter-Example found (ProB)", ante);
 
-		// Predicate ng = sequent.getFormulaFactory().makeAssociativePredicate(
-		// Formula.LAND,
-		// makeNewHyps((CounterExample) counterExample, sequent),
-		// new SourceLocation(0, 0));
-
 		return ProverFactory.makeProofRule(this, input, null, null,
 				IConfidence.PENDING,
 				"Counter-Example: " + counterExample.toString(), ante);
 
 	}
-
-	// private Set<Predicate> makeNewHyps(final CounterExample counterExample,
-	// final IProverSequent sequent) {
-	// FormulaFactory ff = sequent.getFormulaFactory();
-	// SourceLocation noloc = new SourceLocation(0, 0);
-	// Set<Predicate> p = new HashSet<Predicate>();
-	// p.add(sequent.goal());
-	//
-	// Set<Entry<String, String>> entries = counterExample.state.entrySet();
-	// for (Entry<String, String> entry : entries) {
-	// String predstring = "( " + entry.getKey() + " = "
-	// + entry.getValue() + " )";
-	// String unicode = UnicodeTranslator.toUnicode(predstring);
-	// IParseResult parseResult = ff.parsePredicate(unicode,
-	// LanguageVersion.V1, null);
-	// if (!parseResult.getProblems().isEmpty()) {
-	// return Collections.emptySet();
-	// }
-	// p.add(parseResult.getParsedPredicate());
-	//
-	// }
-	//
-	// return p;
-	// }
 
 	@Override
 	public IReasonerInput deserializeInput(final IReasonerInputReader reader)
