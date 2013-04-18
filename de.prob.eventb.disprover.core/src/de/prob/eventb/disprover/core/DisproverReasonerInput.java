@@ -1,8 +1,6 @@
 package de.prob.eventb.disprover.core;
 
-import org.eventb.core.ast.Predicate;
 import org.eventb.core.seqprover.IProofTreeNode;
-import org.eventb.core.seqprover.IProverSequent;
 import org.eventb.core.seqprover.IReasonerInput;
 import org.eventb.core.seqprover.proofBuilder.ReplayHints;
 
@@ -17,11 +15,6 @@ import org.eventb.core.seqprover.proofBuilder.ReplayHints;
 public class DisproverReasonerInput implements IReasonerInput {
 
 	private final IProofTreeNode node;
-
-	private int maxInt;
-	private int minInt;
-	private int setSize;
-	private int timeout;
 
 	public DisproverReasonerInput(IProofTreeNode node) {
 		this.node = node;
@@ -47,21 +40,4 @@ public class DisproverReasonerInput implements IReasonerInput {
 	public IProofTreeNode getProofTreeNode() {
 		return node;
 	}
-
-	public int getMaxInt() {
-		return maxInt;
-	}
-
-	public int getMinInt() {
-		return minInt;
-	}
-
-	public int getSetSize() {
-		return setSize;
-	}
-
-	public int getTimeout() {
-		return timeout;
-	}
-
 }
