@@ -38,13 +38,7 @@ import de.prob.prolog.term.PrologTerm;
 public class DisproverCommand implements IComposableCommand {
 
 	private static final String RESULT = "Result";
-	/**
-	 * Lifted from {@link LoadEventBModelCommand}
-	 */
 
-	// private final AEventBModelParseUnit machineAst;
-	// private final List<AEventBContextParseUnit> contextAsts;
-	// private final List<DisproverIdentifier> vars;
 	private CounterExample counterExample;
 	private final Set<Predicate> hypotheses;
 	private final Predicate goal;
