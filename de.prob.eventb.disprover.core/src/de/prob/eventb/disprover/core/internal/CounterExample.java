@@ -26,6 +26,7 @@ class CounterExample implements ICounterExample {
 		this.timeoutOccured = timeoutOccured;
 	}
 
+	@Override
 	public boolean isProof() {
 		return proof;
 	}
@@ -34,29 +35,29 @@ class CounterExample implements ICounterExample {
 		this.proof = proof;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see de.prob.eventb.disprover.core.internal.ICounterExample#getMessage()
-	 */
-	public String getMessage() {
-		return counterExampleFound ? state.toString()
-				: "Counter-Example does not exists.";
-	}
-
+	@Override
 	public boolean counterExampleFound() {
 		return counterExampleFound;
 	}
 
 	@Override
 	public String toString() {
-		return getMessage();
+		if (counterExampleFound) {
+			return state.toString();
+		} else {
+			if (isProof()) {
+				return "No Counter-Example exists.";
+			} else {
+				return "No Counter-Example found.";
+			}
+		}
 	}
 
 	void addVar(String name, String value) {
 		state.put(name, value);
 	}
 
+	@Override
 	public boolean timeoutOccured() {
 		return timeoutOccured;
 	}

@@ -6,8 +6,6 @@ public interface ICounterExample {
 
 	public boolean timeoutOccured();
 
-	public String getMessage();
-
 	public boolean isProof();
 
 }
