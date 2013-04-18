@@ -26,6 +26,7 @@ import org.rodinp.core.RodinDBException;
 import org.rodinp.core.basis.InternalElement;
 
 import de.prob.core.Animator;
+import de.prob.core.PrologException;
 import de.prob.eventb.disprover.core.DisproverReasonerInput;
 import de.prob.eventb.disprover.core.ICounterExample;
 import de.prob.exceptions.ProBException;
@@ -52,6 +53,9 @@ public class DisproverReasoner implements IReasoner {
 			DisproverReasonerInput disproverInput = (DisproverReasonerInput) input;
 			ICounterExample ce = evaluateSequent(sequent, disproverInput);
 			return createDisproverResult(ce, sequent, input);
+		} catch (PrologException e) {
+			Logger.log(Logger.WARNING, Status.WARNING, e.getMessage(), e);
+			return ProverFactory.reasonerFailure(this, input, e.getMessage());
 		} catch (ProBException e) {
 			Logger.log(Logger.WARNING, Status.WARNING, e.getMessage(), e);
 			return ProverFactory.reasonerFailure(this, input, e.getMessage());
