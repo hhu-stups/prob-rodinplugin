@@ -36,6 +36,8 @@ import org.eventb.core.ISCWitness;
 import org.eventb.core.ITraceableElement;
 import org.eventb.core.ast.FormulaFactory;
 import org.eventb.core.ast.ITypeEnvironment;
+import org.eventb.core.basis.Event;
+import org.eventb.core.basis.Guard;
 import org.eventb.core.seqprover.IConfidence;
 import org.rodinp.core.IElementType;
 import org.rodinp.core.IRodinElement;
@@ -135,9 +137,9 @@ public class ModelTranslator extends AbstractComponentTranslator {
 		super(machine.getComponentName());
 		this.machine = machine;
 		origin = machine.getMachineRoot();
-		ff = ((ISCMachineRoot) machine).getFormulaFactory();
+		ff = machine.getFormulaFactory();
 		try {
-			te = ((ISCMachineRoot) machine).getTypeEnvironment(ff);
+			te = machine.getTypeEnvironment(ff);
 		} catch (RodinDBException e) {
 			final String message = "A Rodin exception occured during translation process. Original Exception: ";
 			throw new TranslationFailedException(machine.getComponentName(),
@@ -207,6 +209,13 @@ public class ModelTranslator extends AbstractComponentTranslator {
 				IElementType<? extends IRodinElement> type = srcElement
 						.getElementType();
 				s.add(new SequentSource(type, le.getLabel()));
+
+				if (srcElement instanceof Guard) {
+					Event srcEvent = (Event) srcElement.getParent();
+					String srvEventName = srcEvent.getLabel();
+					s.add(new SequentSource(srcEvent.getElementType(),
+							srvEventName));
+				}
 
 			}
 			addProof(new ProofObligation(origin, s, name, pstatus));
