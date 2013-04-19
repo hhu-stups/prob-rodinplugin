@@ -119,17 +119,17 @@ public class DisproverReasoner implements IReasoner {
 
 		if (counterExample.timeoutOccured())
 			return ProverFactory.reasonerFailure(this, input,
-					"Timeout occurred (ProB)");
+					"ProB: Timeout occurred.");
 
 		if (!counterExample.counterExampleFound() && counterExample.isProof())
 			return ProverFactory.makeProofRule(this, input, sequent.goal(),
 					null, IConfidence.DISCHARGED_MAX,
-					"ProB (all cases checked)");
+					"ProB (no enumeration / all cases checked)");
 
 		if (!counterExample.counterExampleFound())
 			return ProverFactory
 					.reasonerFailure(this, input,
-							"No Counter-Example found (ProB), but there might exist one");
+							"ProB: No Counter-Example found, but there might exist one.");
 
 		return ProverFactory.makeProofRule(this, input, null, null,
 				IConfidence.PENDING,
