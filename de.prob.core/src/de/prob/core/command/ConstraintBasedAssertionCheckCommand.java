@@ -3,9 +3,10 @@
  */
 package de.prob.core.command;
 
+import de.prob.core.domainobjects.Operation;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
-import de.prob.prolog.term.ListPrologTerm;
+import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 
 /**
@@ -34,8 +35,12 @@ public class ConstraintBasedAssertionCheckCommand implements IComposableCommand 
 		return result;
 	}
 
-	public ListPrologTerm getCounterExampleState() {
-		return counterExampleState;
+	public Operation getCounterExampleOperation() {
+		return counterExampleOperation;
+	}
+
+	public String getCounterExampleStateID() {
+		return counterExampleStateID;
 	}
 
 	@Override
@@ -55,9 +60,13 @@ public class ConstraintBasedAssertionCheckCommand implements IComposableCommand 
 			result = ResultType.INTERRUPTED;
 		} else if (resultTerm.hasFunctor("no_counterexample_found", 0)) {
 			result = ResultType.NO_COUNTER_EXAMPLE;
-		} else if (resultTerm.hasFunctor("counterexample_found", 1)) {
-			counterExampleState = (ListPrologTerm) resultTerm.getArgument(1);
+		} else if (resultTerm.hasFunctor("counterexample_found", 2)) {
 			result = ResultType.COUNTER_EXAMPLE;
+			CompoundPrologTerm counterExampleTerm = (CompoundPrologTerm) resultTerm;
+			counterExampleOperation = Operation
+					.fromPrologTerm(counterExampleTerm.getArgument(1));
+			counterExampleStateID = counterExampleTerm.getArgument(2)
+					.toString();
 		} else
 			throw new CommandException(
 					"unexpected result from deadlock check: " + resultTerm);

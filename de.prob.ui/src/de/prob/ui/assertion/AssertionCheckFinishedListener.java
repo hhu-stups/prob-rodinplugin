@@ -11,9 +11,11 @@ import de.prob.core.Animator;
 import de.prob.core.ProBJobFinishedListener;
 import de.prob.core.command.ConstraintBasedAssertionCheckCommand;
 import de.prob.core.command.ConstraintBasedAssertionCheckCommand.ResultType;
+import de.prob.core.command.ExecuteOperationCommand;
 import de.prob.core.command.IComposableCommand;
+import de.prob.core.domainobjects.Operation;
+import de.prob.exceptions.ProBException;
 import de.prob.logging.Logger;
-import de.prob.prolog.term.ListPrologTerm;
 
 /**
  * This JobChangeAdapter presents the user the results of a deadlock freedom
@@ -84,13 +86,14 @@ public class AssertionCheckFinishedListener extends ProBJobFinishedListener {
 	private void displayCounterExample(
 			final ConstraintBasedAssertionCheckCommand command,
 			final Animator animator) {
-		final ListPrologTerm errorState = command.getCounterExampleState();
-		// try {
-		// animator.getHistory().reset();
-
-		// ExecuteOperationCommand.executeOperation(animator, operation);
-		// } catch (ProBException e) {
-		// e.notifyUserOnce();
-		// }
+		final Operation operation = command.getCounterExampleOperation();
+		try {
+			// we do not reset the history because we want to keep the root
+			// state, we just start a new path from root
+			animator.getHistory().gotoPos(0);
+			ExecuteOperationCommand.executeOperation(animator, operation);
+		} catch (ProBException e) {
+			e.notifyUserOnce();
+		}
 	}
 }
