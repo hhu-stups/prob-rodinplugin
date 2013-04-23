@@ -56,7 +56,7 @@ public class AssertionCheckFinishedListener extends ProBJobFinishedListener {
 				message = "The model contains a Counter-Example state, it will be shown in the state view.";
 				displayCounterExample(command, animator);
 				break;
-			case TIMEOUT:
+			case INTERRUPTED:
 				dialogType = MessageDialog.WARNING;
 				dialogTitle = " Interrupt";
 				message = "The deadlock check has been interrupted by the user or a time-out.";

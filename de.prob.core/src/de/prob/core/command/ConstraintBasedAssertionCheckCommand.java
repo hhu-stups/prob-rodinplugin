@@ -17,14 +17,15 @@ import de.prob.prolog.term.PrologTerm;
 public class ConstraintBasedAssertionCheckCommand implements IComposableCommand {
 
 	public static enum ResultType {
-		TIMEOUT, COUNTER_EXAMPLE, NO_COUNTER_EXAMPLE
+		INTERRUPTED, COUNTER_EXAMPLE, NO_COUNTER_EXAMPLE
 	};
 
 	private static final String COMMAND_NAME = "cbc_static_assertion_violation_checking";
 	private static final String RESULT_VARIABLE = "R";
 
 	private ResultType result;
-	private ListPrologTerm counterExampleState;
+	private Operation counterExampleOperation;
+	private String counterExampleStateID;
 
 	public ConstraintBasedAssertionCheckCommand() {
 	}
@@ -50,8 +51,8 @@ public class ConstraintBasedAssertionCheckCommand implements IComposableCommand 
 			throws CommandException {
 		final PrologTerm resultTerm = bindings.get(RESULT_VARIABLE);
 		final ResultType result;
-		if (resultTerm.hasFunctor("time_out", 0)) {
-			result = ResultType.TIMEOUT;
+		if (resultTerm.hasFunctor("interrupted", 0)) {
+			result = ResultType.INTERRUPTED;
 		} else if (resultTerm.hasFunctor("no_counterexample_found", 0)) {
 			result = ResultType.NO_COUNTER_EXAMPLE;
 		} else if (resultTerm.hasFunctor("counterexample_found", 1)) {
