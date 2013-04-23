@@ -1071,21 +1071,21 @@
             <command
                   commandId="de.prob.ui.deadlock_check"
                   icon="icons/DeadlockCheck.png"
-                  label="Deadlock Freedom Checking"
+                  label="Deadlock Freedom"
                   mnemonic="D"
                   style="push">
             </command>
             <command
                   commandId="de.prob.ui.invariant_check"
                   icon="icons/CBCInvariantCheck.png"
-                  label="Invariant Preservation Checking"
+                  label="Invariant Preservation"
                   mnemonic="I"
                   style="push">
             </command>
             <command
                   commandId="de.prob.ui.refinement_check"
                   icon="icons/CBCInvariantCheck.png"
-                  label="Refinement Checking"
+                  label="Refinement Proof Obligations"
                   mnemonic="R"
                   style="push">
             </command>
