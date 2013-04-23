@@ -1066,27 +1066,30 @@
                mnemonic="L"
                style="push">
          </command>
-         <command
-               commandId="de.prob.ui.deadlock_check"
-               icon="icons/DeadlockCheck.png"
-               label="Deadlock Freedom Checking"
-               mnemonic="D"
-               style="push">
-         </command>
-         <command
-               commandId="de.prob.ui.invariant_check"
-               icon="icons/CBCInvariantCheck.png"
-               label="Invariant Preservation Checking"
-               mnemonic="I"
-               style="push">
-         </command>
-         <command
-               commandId="de.prob.ui.refinement_check"
-               icon="icons/CBCInvariantCheck.png"
-               label="Refinement Checking"
-               mnemonic="R"
-               style="push">
-         </command>
+         <menu
+               label="Constraint Based Checking">
+            <command
+                  commandId="de.prob.ui.deadlock_check"
+                  icon="icons/DeadlockCheck.png"
+                  label="Deadlock Freedom Checking"
+                  mnemonic="D"
+                  style="push">
+            </command>
+            <command
+                  commandId="de.prob.ui.invariant_check"
+                  icon="icons/CBCInvariantCheck.png"
+                  label="Invariant Preservation Checking"
+                  mnemonic="I"
+                  style="push">
+            </command>
+            <command
+                  commandId="de.prob.ui.refinement_check"
+                  icon="icons/CBCInvariantCheck.png"
+                  label="Refinement Checking"
+                  mnemonic="R"
+                  style="push">
+            </command>
+         </menu>
       </menuContribution>
       <!--
       <menuContribution
