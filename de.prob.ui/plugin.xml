@@ -355,6 +355,11 @@
             id="de.prob.ui.newcore.export"
             name="Export for new Core">
       </command>
+      <command
+            categoryId="de.prob.ui.commands.category"
+            id="de.prob.ui.assertion_check"
+            name="Check Context Theorems">
+      </command>
    </extension>
    <extension
          point="org.eclipse.ui.handlers">
@@ -759,6 +764,20 @@
                class="de.prob.ui.refinementcheck.RefinementCheckHandler">
          </class>
       </handler>
+      <handler
+            commandId="de.prob.ui.assertion_check">
+         <class
+               class="de.prob.ui.deadlock.AssertionCheckHandler">
+         </class>
+         <enabledWhen>
+            <with
+                  variable="de.prob.core.model_loaded">
+               <equals
+                     value="enabled">
+               </equals>
+            </with>
+         </enabledWhen>
+      </handler>
 <!--      <handler
             commandId="de.prob.ui.startdmc">
          <class
@@ -1087,6 +1106,13 @@
                   icon="icons/CBCInvariantCheck.png"
                   label="Refinement Proof Obligations"
                   mnemonic="R"
+                  style="push">
+            </command>
+            <command
+                  commandId="de.prob.ui.assertions_check"
+                  icon="icons/CBCInvariantCheck.png"
+                  label="Context Theorems"
+                  mnemonic="C"
                   style="push">
             </command>
          </menu>
