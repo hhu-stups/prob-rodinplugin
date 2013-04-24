@@ -310,6 +310,11 @@
       </command>
       <command
             categoryId="de.prob.ui.commands.category"
+            id="de.prob.ui.assertion_check"
+            name="Check Assertions">
+      </command>
+      <command
+            categoryId="de.prob.ui.commands.category"
             id="de.prob.ui.opview.checks"
             name="Checks">
       </command>
@@ -766,9 +771,6 @@
       </handler>
       <handler
             commandId="de.prob.ui.assertion_check">
-         <class
-               class="de.prob.ui.deadlock.AssertionCheckHandler">
-         </class>
          <enabledWhen>
             <with
                   variable="de.prob.core.model_loaded">
@@ -777,6 +779,9 @@
                </equals>
             </with>
          </enabledWhen>
+         <class
+               class="de.prob.ui.assertion.AssertionCheckHandler">
+         </class>
       </handler>
 <!--      <handler
             commandId="de.prob.ui.startdmc">
@@ -1109,7 +1114,7 @@
                   style="push">
             </command>
             <command
-                  commandId="de.prob.ui.assertions_check"
+                  commandId="de.prob.ui.assertion_check"
                   icon="icons/CBCInvariantCheck.png"
                   label="Context Theorems"
                   mnemonic="C"
