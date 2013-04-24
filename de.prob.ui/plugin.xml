@@ -757,27 +757,43 @@
       </handler>
       <handler
             commandId="de.prob.ui.refinement_check">
-         <enabledWhen>
-            <with
-                  variable="de.prob.core.model_loaded">
-               <equals
-                     value="enabled">
-               </equals>
-            </with>
-         </enabledWhen>
          <class
                class="de.prob.ui.refinementcheck.RefinementCheckHandler">
          </class>
+         <enabledWhen>
+            <and>
+               <with
+                     variable="de.prob.core.model_loaded">
+                  <equals
+                        value="enabled">
+                  </equals>
+               </with>
+               <with
+                     variable="de.prob.core.context_loaded">
+                  <equals
+                        value="disabled">
+                  </equals>
+               </with>
+            </and>
+         </enabledWhen>
       </handler>
       <handler
             commandId="de.prob.ui.assertion_check">
          <enabledWhen>
-            <with
-                  variable="de.prob.core.model_loaded">
-               <equals
-                     value="enabled">
-               </equals>
-            </with>
+            <and>
+               <with
+                     variable="de.prob.core.model_loaded">
+                  <equals
+                        value="enabled">
+                  </equals>
+               </with>
+               <with
+                     variable="de.prob.core.context_loaded">
+                  <equals
+                        value="disabled">
+                  </equals>
+               </with>
+            </and>
          </enabledWhen>
          <class
                class="de.prob.ui.assertion.AssertionCheckHandler">
@@ -1220,6 +1236,13 @@
             provider="de.prob.ui.ltl.CounterExampleLoadedProvider">
          <variable
                name="de.prob.ui.ltl.counterexample_loaded"
+               priorityLevel="workbench">
+         </variable>
+      </sourceProvider>
+      <sourceProvider
+            provider="de.prob.ui.services.ContextLoadedProvider">
+         <variable
+               name="de.prob.core.context_loaded"
                priorityLevel="workbench">
          </variable>
       </sourceProvider>
