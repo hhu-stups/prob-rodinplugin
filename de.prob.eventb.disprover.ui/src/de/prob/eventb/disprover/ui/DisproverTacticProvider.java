@@ -36,7 +36,7 @@ public class DisproverTacticProvider extends DefaultTacticProvider {
 		public ITactic getTactic(IProofTreeNode node, String globalInput,
 				String[] inputs) {
 
-			IReasonerInput reasonerInput = new DisproverReasonerInput(node);
+			IReasonerInput reasonerInput = new DisproverReasonerInput();
 			return BasicTactics.reasonerTac(
 					Disprover.createDisproverReasoner(), reasonerInput);
 		}

@@ -1,6 +1,5 @@
 package de.prob.eventb.disprover.core;
 
-import org.eventb.core.seqprover.IProofTreeNode;
 import org.eventb.core.seqprover.IReasonerInput;
 import org.eventb.core.seqprover.proofBuilder.ReplayHints;
 
@@ -13,13 +12,6 @@ import org.eventb.core.seqprover.proofBuilder.ReplayHints;
  * @author jastram
  */
 public class DisproverReasonerInput implements IReasonerInput {
-
-	private final IProofTreeNode node;
-
-	public DisproverReasonerInput(IProofTreeNode node) {
-		this.node = node;
-	}
-
 	@Override
 	public void applyHints(ReplayHints renaming) {
 		// TODO Auto-generated method stub
@@ -37,7 +29,4 @@ public class DisproverReasonerInput implements IReasonerInput {
 		return false;
 	}
 
-	public IProofTreeNode getProofTreeNode() {
-		return node;
-	}
 }

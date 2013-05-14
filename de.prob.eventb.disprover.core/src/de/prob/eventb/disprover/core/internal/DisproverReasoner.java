@@ -70,7 +70,7 @@ public class DisproverReasoner implements IReasoner {
 			RodinDBException {
 
 		Set<Predicate> hypotheses = new HashSet<Predicate>();
-		for (Predicate predicate : sequent.visibleHypIterable()) {
+		for (Predicate predicate : sequent.hypIterable()) {
 			hypotheses.add(predicate);
 		}
 		Predicate goal = sequent.goal();
@@ -139,7 +139,7 @@ public class DisproverReasoner implements IReasoner {
 	@Override
 	public IReasonerInput deserializeInput(final IReasonerInputReader reader)
 			throws SerializeException {
-		return null;
+		return new DisproverReasonerInput();
 	}
 
 	@Override
