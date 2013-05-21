@@ -2,11 +2,14 @@ package de.prob.eventb.disprover.core.internal;
 
 import java.util.Set;
 
+import org.eclipse.core.runtime.jobs.Job;
 import org.eventb.core.IEventBRoot;
 import org.eventb.core.ast.Predicate;
+import org.eventb.core.seqprover.IProofMonitor;
 
 import de.be4.classicalb.core.parser.analysis.prolog.ASTProlog;
 import de.prob.core.Animator;
+import de.prob.core.ProBCommandJob;
 import de.prob.core.command.ClearMachineCommand;
 import de.prob.core.command.CommandException;
 import de.prob.core.command.ComposedCommand;
@@ -48,8 +51,8 @@ public class DisproverCommand implements IComposableCommand {
 	}
 
 	public static ICounterExample disprove(Animator animator,
-			Set<Predicate> hypotheses, Predicate goal, IEventBRoot root)
-			throws ProBException {
+			Set<Predicate> hypotheses, Predicate goal, IEventBRoot root,
+			IProofMonitor pm) throws ProBException, InterruptedException {
 
 		final ClearMachineCommand clear = new ClearMachineCommand();
 		final SetPreferencesCommand setPrefs = SetPreferencesCommand
@@ -63,9 +66,20 @@ public class DisproverCommand implements IComposableCommand {
 		final ComposedCommand composed = new ComposedCommand(clear, setPrefs,
 				load, start, disprove);
 
-		animator.execute(composed);
+		final Job job = new ProBCommandJob("Disproving", animator, composed);
+		job.setUser(true);
+		job.schedule();
 
+		while (job.getResult() == null && !pm.isCanceled()) {
+			Thread.sleep(200);
+		}
+
+		if (pm.isCanceled()) {
+			job.cancel();
+			throw new InterruptedException();
+		}
 		return disprove.getResult();
+
 	}
 
 	private ICounterExample getResult() {
@@ -106,6 +120,9 @@ public class DisproverCommand implements IComposableCommand {
 
 		if ("time_out".equals(term.getFunctor())) {
 			counterExample = new CounterExample(true, true);
+		}
+		if ("interrupted".equals(term.getFunctor())) {
+			throw new CommandException("Interrupted");
 		}
 		if ("no_solution_found".equals(term.getFunctor())) {
 			counterExample = new CounterExample(false, false);

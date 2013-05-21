@@ -51,7 +51,7 @@ public class DisproverReasoner implements IReasoner {
 			final IReasonerInput input, final IProofMonitor pm) {
 		try {
 			DisproverReasonerInput disproverInput = (DisproverReasonerInput) input;
-			ICounterExample ce = evaluateSequent(sequent, disproverInput);
+			ICounterExample ce = evaluateSequent(sequent, disproverInput, pm);
 			return createDisproverResult(ce, sequent, input);
 		} catch (PrologException e) {
 			Logger.log(Logger.WARNING, Status.WARNING, e.getMessage(), e);
@@ -62,12 +62,15 @@ public class DisproverReasoner implements IReasoner {
 		} catch (RodinDBException e) {
 			Logger.log(Logger.WARNING, Status.WARNING, e.getMessage(), e);
 			return ProverFactory.reasonerFailure(this, input, e.getMessage());
+		} catch (InterruptedException e) {
+			return ProverFactory.reasonerFailure(this, input, e.getMessage());
+
 		}
 	}
 
 	private ICounterExample evaluateSequent(final IProverSequent sequent,
-			final DisproverReasonerInput disproverInput) throws ProBException,
-			RodinDBException {
+			final DisproverReasonerInput disproverInput, IProofMonitor pm)
+			throws ProBException, RodinDBException, InterruptedException {
 
 		Set<Predicate> hypotheses = new HashSet<Predicate>();
 		for (Predicate predicate : sequent.hypIterable()) {
@@ -77,7 +80,7 @@ public class DisproverReasoner implements IReasoner {
 
 		IEventBRoot root = getRoot(sequent);
 		ICounterExample counterExample = DisproverCommand.disprove(
-				Animator.getAnimator(), hypotheses, goal, root);
+				Animator.getAnimator(), hypotheses, goal, root, pm);
 		return counterExample;
 	}
 
