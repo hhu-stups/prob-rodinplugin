@@ -1,4 +1,4 @@
-package de.prob.eventb.disprover.core;
+package de.prob.eventb.disprover.core.internal;
 
 public interface ICounterExample {
 
