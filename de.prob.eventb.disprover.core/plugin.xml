@@ -6,7 +6,7 @@
       <reasoner
             class="de.prob.eventb.disprover.core.internal.DisproverReasoner"
             id="disproverReasoner"
-            name="Disprover Reasoner">
+            name="%reasoner.name">
       </reasoner>
    </extension>
 
