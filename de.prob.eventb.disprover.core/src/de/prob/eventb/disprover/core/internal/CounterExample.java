@@ -3,7 +3,6 @@ package de.prob.eventb.disprover.core.internal;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import de.prob.eventb.disprover.core.ICounterExample;
 
 /**
  * This class wraps the results from a Disprover run. It either indicates that

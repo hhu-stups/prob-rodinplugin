@@ -28,7 +28,6 @@ import org.rodinp.core.basis.InternalElement;
 import de.prob.core.Animator;
 import de.prob.core.PrologException;
 import de.prob.eventb.disprover.core.DisproverReasonerInput;
-import de.prob.eventb.disprover.core.ICounterExample;
 import de.prob.exceptions.ProBException;
 import de.prob.logging.Logger;
 

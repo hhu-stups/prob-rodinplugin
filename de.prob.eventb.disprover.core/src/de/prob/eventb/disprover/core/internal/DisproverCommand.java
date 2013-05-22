@@ -17,7 +17,6 @@ import de.prob.core.command.IComposableCommand;
 import de.prob.core.command.SetPreferencesCommand;
 import de.prob.core.command.StartAnimationCommand;
 import de.prob.core.command.internal.InternalLoadCommand;
-import de.prob.eventb.disprover.core.ICounterExample;
 import de.prob.eventb.translator.PredicateVisitor;
 import de.prob.exceptions.ProBException;
 import de.prob.parser.ISimplifiedROMap;
