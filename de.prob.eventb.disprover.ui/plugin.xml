@@ -23,7 +23,7 @@
             tacticProvider="de.prob.eventb.disprover.ui.DisproverTacticProvider"
             target="global"
             toolbar="org.eventb.ui.sequentToolbar"
-            tooltip="%tactic.disprover.tooltip-all"/>
+            tooltip="%tactic.disprover.tooltip"/>
    <!--      <tactic
             dropdown="de.prob.eventb.disprover.ui.DisproverDropdown"
             icon="icons/disprover-config.png"
