@@ -9,5 +9,14 @@
             name="%reasoner.name">
       </reasoner>
    </extension>
+   <extension
+         point="org.eventb.core.seqprover.autoTactics">
+      <autoTactic
+            class="de.prob.eventb.disprover.core.internal.DisproverAutoTactic"
+            description="%autotactic.desc"
+            id="disproverTactic"
+            name="%autotactic.name">
+      </autoTactic>
+   </extension>
 
 </plugin>
