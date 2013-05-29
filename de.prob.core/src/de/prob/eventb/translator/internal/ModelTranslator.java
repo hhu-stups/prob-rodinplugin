@@ -114,7 +114,7 @@ public class ModelTranslator extends AbstractComponentTranslator {
 
 	public AEventBModelParseUnit getModelAST() {
 		if (broken) {
-			final String message = "The machine contains Rodin Problems. Please fix it before animating";
+			final String message = "The machine contains Rodin Problems. ProB will continue, but you may observe unexpected behaviour";
 			Logger.notifyUserWithoutBugreport(message);
 			return model;
 		}
