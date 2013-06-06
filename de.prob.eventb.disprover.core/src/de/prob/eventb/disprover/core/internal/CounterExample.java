@@ -3,7 +3,6 @@ package de.prob.eventb.disprover.core.internal;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-
 /**
  * This class wraps the results from a Disprover run. It either indicates that
  * there is no counter-example, or it provides a way to show the counter
@@ -42,12 +41,16 @@ class CounterExample implements ICounterExample {
 	@Override
 	public String toString() {
 		if (counterExampleFound) {
-			return state.toString();
+			return "Counter-Example found: " + state.toString();
 		} else {
 			if (isProof()) {
-				return "No Counter-Example exists.";
+				return "No Counter-Example exists: Proof.";
 			} else {
-				return "No Counter-Example found.";
+				if (timeoutOccured()) {
+					return "No Counter-Example found due to Time-Out.";
+				} else {
+					return "No Counter-Example found.";
+				}
 			}
 		}
 	}
