@@ -70,16 +70,23 @@ public class DisproverReasoner implements IReasoner {
 	private ICounterExample evaluateSequent(final IProverSequent sequent,
 			final DisproverReasonerInput disproverInput, IProofMonitor pm)
 			throws ProBException, RodinDBException, InterruptedException {
+		Logger.info("Calling Disprover on Sequent");
 
 		Set<Predicate> hypotheses = new HashSet<Predicate>();
 		for (Predicate predicate : sequent.hypIterable()) {
 			hypotheses.add(predicate);
+			Logger.info("Disprover: Sending Hypothesis: "
+					+ predicate.toString());
 		}
 		Predicate goal = sequent.goal();
+		Logger.info("Disprover: Sending Goal: " + goal.toString());
 
 		IEventBRoot root = getRoot(sequent);
+
 		ICounterExample counterExample = DisproverCommand.disprove(
 				Animator.getAnimator(), hypotheses, goal, root, pm);
+		Logger.info("Disprover: Result: " + counterExample.toString());
+
 		return counterExample;
 	}
 
