@@ -118,7 +118,7 @@ public class DisproverCommand implements IComposableCommand {
 		counterExample = null;
 
 		if ("time_out".equals(term.getFunctor())) {
-			counterExample = new CounterExample(true, true);
+			counterExample = new CounterExample(false, true);
 		}
 		if ("interrupted".equals(term.getFunctor())) {
 			throw new CommandException("Interrupted");
