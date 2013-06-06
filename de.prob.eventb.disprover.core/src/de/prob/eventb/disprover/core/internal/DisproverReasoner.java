@@ -30,6 +30,7 @@ import de.prob.core.PrologException;
 import de.prob.eventb.disprover.core.DisproverReasonerInput;
 import de.prob.exceptions.ProBException;
 import de.prob.logging.Logger;
+import de.prob.unicode.UnicodeTranslator;
 
 public class DisproverReasoner implements IReasoner {
 
@@ -73,13 +74,20 @@ public class DisproverReasoner implements IReasoner {
 		Logger.info("Calling Disprover on Sequent");
 
 		Set<Predicate> hypotheses = new HashSet<Predicate>();
+		StringBuilder hypothesesString = new StringBuilder();
 		for (Predicate predicate : sequent.hypIterable()) {
 			hypotheses.add(predicate);
-			Logger.info("Disprover: Sending Hypothesis: "
-					+ predicate.toString());
+			hypothesesString.append(predicate.toString());
+			hypothesesString.append(" & ");
 		}
+		hypothesesString.delete(hypothesesString.length() - 2,
+				hypothesesString.length());
+		Logger.info("Disprover: Sending Hypotheses: "
+				+ UnicodeTranslator.toAscii(hypothesesString.toString()));
+
 		Predicate goal = sequent.goal();
-		Logger.info("Disprover: Sending Goal: " + goal.toString());
+		Logger.info("Disprover: Sending Goal: "
+				+ UnicodeTranslator.toAscii(goal.toString()));
 
 		IEventBRoot root = getRoot(sequent);
 
