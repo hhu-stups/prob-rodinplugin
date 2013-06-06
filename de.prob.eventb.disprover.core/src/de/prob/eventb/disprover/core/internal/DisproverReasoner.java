@@ -74,7 +74,7 @@ public class DisproverReasoner implements IReasoner {
 		StringBuilder hypothesesString = new StringBuilder();
 		for (Predicate predicate : sequent.hypIterable()) {
 			hypotheses.add(predicate);
-			hypothesesString.append(predicate.toString());
+			hypothesesString.append(predicate.toStringFullyParenthesized());
 			hypothesesString.append(" & ");
 		}
 		hypothesesString.delete(hypothesesString.length() - 2,
@@ -84,7 +84,7 @@ public class DisproverReasoner implements IReasoner {
 
 		Predicate goal = sequent.goal();
 		Logger.info("Disprover: Sending Goal: "
-				+ UnicodeTranslator.toAscii(goal.toString()));
+				+ UnicodeTranslator.toAscii(goal.toStringFullyParenthesized()));
 
 		IEventBRoot root = getRoot(sequent);
 
