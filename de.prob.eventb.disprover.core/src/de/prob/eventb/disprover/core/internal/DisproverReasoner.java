@@ -43,9 +43,6 @@ public class DisproverReasoner implements IReasoner {
 		return DISPROVER_REASONER_NAME;
 	}
 
-	/**
-	 * Applies the Disprover by building a machine from Goal and Hypotheses.
-	 */
 	@Override
 	public IReasonerOutput apply(final IProverSequent sequent,
 			final IReasonerInput input, final IProofMonitor pm) {
