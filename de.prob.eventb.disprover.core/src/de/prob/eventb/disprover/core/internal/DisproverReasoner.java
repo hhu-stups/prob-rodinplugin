@@ -77,11 +77,15 @@ public class DisproverReasoner implements IReasoner {
 			hypothesesString.append(predicate.toStringFullyParenthesized());
 			hypothesesString.append(" & ");
 		}
-		hypothesesString.delete(hypothesesString.length() - 2,
-				hypothesesString.length());
-		Logger.info("Disprover: Sending Hypotheses: "
-				+ UnicodeTranslator.toAscii(hypothesesString.toString()));
 
+		if (hypothesesString.length() == 0) {
+			Logger.info("Disprover: No Hypotheses");
+		} else {
+			hypothesesString.delete(hypothesesString.length() - 2,
+					hypothesesString.length());
+			Logger.info("Disprover: Sending Hypotheses: "
+					+ UnicodeTranslator.toAscii(hypothesesString.toString()));
+		}
 		Predicate goal = sequent.goal();
 		Logger.info("Disprover: Sending Goal: "
 				+ UnicodeTranslator.toAscii(goal.toStringFullyParenthesized()));
