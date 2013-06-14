@@ -25,11 +25,14 @@ import org.eventb.core.seqprover.SerializeException;
 import org.rodinp.core.RodinDBException;
 import org.rodinp.core.basis.InternalElement;
 
+import de.be4.classicalb.core.parser.analysis.prolog.ASTProlog;
 import de.prob.core.Animator;
 import de.prob.core.PrologException;
 import de.prob.eventb.disprover.core.DisproverReasonerInput;
+import de.prob.eventb.translator.PredicateVisitor;
 import de.prob.exceptions.ProBException;
 import de.prob.logging.Logger;
+import de.prob.prolog.output.PrologTermStringOutput;
 import de.prob.unicode.UnicodeTranslator;
 
 public class DisproverReasoner implements IReasoner {
@@ -74,7 +77,7 @@ public class DisproverReasoner implements IReasoner {
 		StringBuilder hypothesesString = new StringBuilder();
 		for (Predicate predicate : sequent.hypIterable()) {
 			hypotheses.add(predicate);
-			hypothesesString.append(predicate.toStringFullyParenthesized());
+			hypothesesString.append(predicateToProlog(predicate));
 			hypothesesString.append(" & ");
 		}
 
@@ -88,7 +91,7 @@ public class DisproverReasoner implements IReasoner {
 		}
 		Predicate goal = sequent.goal();
 		Logger.info("Disprover: Sending Goal: "
-				+ UnicodeTranslator.toAscii(goal.toStringFullyParenthesized()));
+				+ UnicodeTranslator.toAscii(predicateToProlog(goal)));
 
 		IEventBRoot root = getRoot(sequent);
 
@@ -97,6 +100,15 @@ public class DisproverReasoner implements IReasoner {
 		Logger.info("Disprover: Result: " + counterExample.toString());
 
 		return counterExample;
+	}
+
+	private String predicateToProlog(Predicate pred) {
+		PrologTermStringOutput pto = new PrologTermStringOutput();
+		PredicateVisitor v = new PredicateVisitor();
+		pred.accept(v);
+		ASTProlog p = new ASTProlog(pto, null);
+		v.getPredicate().apply(p);
+		return pto.toString();
 	}
 
 	private IEventBRoot getRoot(IProverSequent sequent) {
