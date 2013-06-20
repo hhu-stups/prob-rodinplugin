@@ -38,8 +38,14 @@ public class SymbolicAttribute extends AbstractBooleanManipulation {
 	@Override
 	public String getValue(IRodinElement element, IProgressMonitor monitor)
 			throws RodinDBException {
-		return asInternalElement(element).getAttributeValue(ATTRIBUTE) ? SYMBOLIC
-				: CONCRETE;
+		try {
+			return asInternalElement(element).getAttributeValue(ATTRIBUTE) ? SYMBOLIC
+					: CONCRETE;
+		} catch (RodinDBException ex) {
+			// happens if the attribute is not set on this element
+			// just return a default instead of throwing a RodinDBException
+		}
+		return CONCRETE;
 	}
 
 	@Override
