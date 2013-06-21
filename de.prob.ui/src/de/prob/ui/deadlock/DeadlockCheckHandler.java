@@ -48,7 +48,7 @@ public class DeadlockCheckHandler extends AbstractHandler {
 		final InputDialog dialog = new InputDialog(
 				shell,
 				"Deadlock Freedom Check",
-				"Please specify an (optional) predicate to constrain the search space",
+				"ProB will search for a deadlocking state satisfying the invariant. You can (optionally) specify a predicate to constrain the search:",
 				"", validator);
 		final int status = dialog.open();
 		if (status == InputDialog.OK) {

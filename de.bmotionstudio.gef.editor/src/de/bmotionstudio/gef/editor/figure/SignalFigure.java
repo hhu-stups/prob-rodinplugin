@@ -84,7 +84,6 @@ public class SignalFigure extends AbstractBMotionFigure {
 
 				p1.y = p1.y + 4;
 				p2.y = p2.y + 8;
-				p3.y = p3.y;
 
 				arrow.addPoint(p1);
 				arrow.addPoint(p2);

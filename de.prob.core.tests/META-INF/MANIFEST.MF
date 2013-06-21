@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Tests
+Bundle-SymbolicName: de.prob.core.tests
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: de.prob.core.tests.Activator
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.eventb.core;bundle-version="[2.1.0,2.6.0)",
+ de.prob.core;bundle-version="9.3.0"
+Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6

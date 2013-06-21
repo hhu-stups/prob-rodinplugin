@@ -58,8 +58,8 @@ public class DeadlockCheckFinishedListener extends ProBJobFinishedListener {
 				break;
 			case DEADLOCK_FOUND:
 				dialogType = MessageDialog.WARNING;
-				dialogTitle = "Deadlock Found";
-				message = "The model contains a deadlock, it will be shown in the state view.";
+				dialogTitle = "DEADLOCK FOUND!";
+				message = "The model contains a deadlocking state satisfying the invariant, it will be shown in the state view.";
 				displayDeadlock(command, animator);
 				break;
 			case INTERRUPTED:

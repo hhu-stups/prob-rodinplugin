@@ -1,3 +1,4 @@
+import org.apache.tools.ant.taskdefs.condition.Os
 /*
 	Build Script can be executed via 'gradle install'
 	Build Script Dependencies can be downloaded via 'gradle collectDepenencies'
@@ -13,20 +14,32 @@
 apply plugin: 'base'
 
 import groovy.io.FileType
-tychoVersion = "0.14.1"
+project.ext.tychoVersion = "0.15.0"
+
+try{
+	excludeFromTychoBuild = excludeFromTychoBuild
+}catch(MissingPropertyException e){
+	project.ext.excludeFromTychoBuild = []
+}
+
+try{
+	excludeFromClassPath = excludeFromClassPath
+}catch(MissingPropertyException e){
+	project.ext.excludeFromClassPath = []
+}
 
 
 try{
 	workspacePath = workspacePath
 }catch(MissingPropertyException e){
-	workspacePath = ""
+	project.ext.workspacePath = ""
 }
 
 
 try{
 	dependencyFolder = dependencyFolder
 }catch(MissingPropertyException e){
-	dependencyFolder = "lib/dependencies/"			// Folder in each subproject where 
+	project.ext.dependencyFolder = "lib/dependencies/"			// Folder in each subproject where 
 }
 
 try{
@@ -47,8 +60,8 @@ try{
 	}
 
 	
-	groupID = "group"
-	for( i = 0; i < folderNames.size(); i++ ){
+	project.ext.groupID = "group"
+	for( int  i = 0; i < folderNames.size(); i++ ){
 		
 		if( folderNames[i] ==~ /.*\.[rR]eleng/ ){
 			groupID = folderNames[i]
@@ -64,8 +77,8 @@ try{
 	features = features
 }catch(MissingPropertyException e){
 	
-	features = []
-	for( i = 0; i < subprojects.name.size(); i++ ){
+	project.ext.features = []
+	for( int i = 0; i < subprojects.name.size(); i++ ){
 		if( subprojects.name[i] ==~ /.*\.[fF]eature/ ){
 			features.add( subprojects.name[i] )
 		}
@@ -77,13 +90,13 @@ try{
 try{
 	repositoryName = repositoryName
 }catch(MissingPropertyException e){
-	repositoryName = groupID+".repository"
+	project.ext.repositoryName = groupID+".repository"
 }
 
 try{
 	parentID = parentID
 }catch(MissingPropertyException e){
-	parentID = groupID+".parent"
+	project.ext.parentID = groupID+".parent"
 }
 
 Boolean noDescriptions = false					// in case of using own CategoryDescription Map
@@ -91,21 +104,21 @@ Boolean noDescriptions = false					// in case of using own CategoryDescription M
 try{
 	categoryDescriptions = categoryDescriptions
 }catch(MissingPropertyException e){
-	categoryDescriptions = [ [:],[:] ]		// label and descriptions of the features
+	project.ext.categoryDescriptions = [ [:],[:] ]		// label and descriptions of the features
 	noDescriptions = true
 }							// 	categoryDescriptions	=	[["feature": "labelName","feature2": "label"],["feature": "featureDescription","feature2": "feature2Description"]]		// label and descriptions of the features
 
 try{
 	targetRepositories = targetRepositories
 }catch(MissingPropertyException e){
-	targetRepositories = ["http://download.eclipse.org/releases/indigo/"]
+	project.ext.targetRepositories = ["http://download.eclipse.org/releases/indigo/"]
 }
 
 try{
 	buildProduct = buildProduct
 	
 }catch(MissingPropertyException e){
-	buildProduct = false
+	project.ext.buildProduct = false
 }
 
 
@@ -307,6 +320,7 @@ subprojects {
 	task collectDependencies(type: Copy) {
 
 		   	from configurations.compile
+			from configurations.runtime
 	   	
 			into "${dependencyFolder}" 	
 			
@@ -315,32 +329,32 @@ subprojects {
 	task setClassPath(dependsOn: 'collectDependencies')<<{
 		
 		description = "\tAdds all your Dependencies from your local lib folder in each project to it's classpath"
-		//if(project.name ==~ /birkhoff.bundle.*/){
-		def dependencyList = []
-		try{
-			def dir = new File(workspacePath+project.name+"/"+dependencyFolder).eachFile() { file->  		
-			    if( !(file.getName() ==~/.*\.txt/) ){
-					dependencyList << file.getName()  
-				}
-			}
-	
-			if(features.every{ it != project.name }){	
-				boolean BundleClassPathPresent = checkForRunTimeLibs(project.name)
-				for(int icp = 0; icp < dependencyList.size; icp++){
-					addLibToCP(project.name, dependencyList[icp])	//Adds Lib to .classPath file
-					
-					if(!BundleClassPathPresent){					// Adds Lib to Manifest File
-						createRunTimeLib(dependencyList[icp], project.name)
-						BundleClassPathPresent = true
-					}else{
-						if(!checkRunTimeLib(dependencyList[icp], project.name)){		// if library not present add it to RunTimeLibrary
-							addRunTimeLib( dependencyList[icp], project.name)
-						}
+		if( excludeFromClassPath.every{ it != project.name }){
+			def dependencyList = []
+			try{
+				def dir = new File(workspacePath+project.name+"/"+dependencyFolder).eachFile() { file->  		
+			    	if( !(file.getName() ==~/.*\.txt/) ){
+						dependencyList << file.getName()  
 					}
 				}
-				/*dependencyList.each{ dep->
+	
+				if(features.every{ it != project.name }){	
+					boolean BundleClassPathPresent = checkForRunTimeLibs(project.name)
+					for(int icp = 0; icp < dependencyList.size; icp++){
+						addLibToCP(project.name, dependencyList[icp])	//Adds Lib to .classPath file
+					
+						if(!BundleClassPathPresent){					// Adds Lib to Manifest File
+							createRunTimeLib(dependencyList[icp], project.name)
+							BundleClassPathPresent = true
+						}else{
+							if(!checkRunTimeLib(dependencyList[icp], project.name)){		// if library not present add it to RunTimeLibrary
+								addRunTimeLib( dependencyList[icp], project.name)
+							}
+						}
+					}
+					/*dependencyList.each{ dep->
 					println project.name+": "+ dep	// could still be usefull for debugging, that's why it's not deleted
-				}*/	
+					}*/	
 			}
 			def warningReadMe = new File(workspacePath+project.name+"/"+dependencyFolder+"_README.txt")
 			warningReadMe.delete()
@@ -349,10 +363,10 @@ subprojects {
 			warningReadMe << "If any error concerning missing dependencies should occur please run 'gradle deleteFromClassPath setClassPath' in your workspace folder from your shell."
 			
 			
-		}catch(Exception e){
-			println project.name+" has no dependencies in '${dependencyFolder}' defined: Classpath will not be changed"
-		}
-	//}// if projectAbfrage
+			}catch(Exception e){
+				println project.name+" has no dependencies in '${dependencyFolder}' defined: Classpath will not be changed"
+			}
+		}// if exclude projectAbfrage
 		
 	}// setClassPath
 	
@@ -399,9 +413,9 @@ subprojects {
 		
 		
 		if(features.every{ it != project.name }){		// Generating Poms for sub projects except features
-			content = new File(workspacePath+"${project.name}/META-INF/MANIFEST.MF").getText("UTF-8") 
+			def content = new File(workspacePath+"${project.name}/META-INF/MANIFEST.MF").getText("UTF-8") 
 
-	 		printFileLine = { 
+	 		def printFileLine = { 
 				if(  it ==~ /Bundle-Version.+qualifier/ ){
 					 versionNumber = it.substring(16) // possibile error: cuts off first 16 chars 
 			
@@ -490,7 +504,11 @@ task createParent() << {
 	f << endRepos()
 	f << moduleStart()
 	for(int i = 0; i < numberOfProjects(); i++){
-		f << module(projects(i))
+		
+		if( excludeFromTychoBuild.every{ it != projects(i) } ){
+		
+			f << module(projects(i))
+		}
 	}
 	f << module(repositoryName)
 	f << endParent()
@@ -556,6 +574,11 @@ task completeInstall(dependsOn: [subprojects.collectDependencies, createPoms], t
 	commandLine 'mvn', 'install', '-f', workspacePath+parentID+'/pom.xml'
 }
 
+task tycho(dependsOn: [createPoms] , type:Exec) {
+	description = "\tExecutes a 'mvn install' of the parent pom.xml and auto-generates Tycho Poms"	
+	commandLine 'mvn', 'install', '-f', workspacePath+parentID+'/pom.xml'
+}
+
 
 //---     Defining Tycho POM parts			--//
 
@@ -565,14 +588,48 @@ task completeInstall(dependsOn: [subprojects.collectDependencies, createPoms], t
 		<artifactId>${artifactId}</artifactId>
 		<version>${versionNumber}</version>
 		<packaging>eclipse-plugin</packaging>
+		<build>
+			<plugins>
+				<plugin>
+					<groupId>org.eclipse.tycho</groupId>
+					<artifactId>tycho-compiler-plugin</artifactId>
+					<configuration>
+						<source>1.6</source>
+						<target>1.6</target>
+					</configuration>
+	      			</plugin>
+	    		</plugins>
+	 	</build>
 	""" }
 	
     def testArtifact(artifactId,versionNumber) { """
-		<groupId>${groupId()}</groupId>
-		<artifactId>${artifactId}</artifactId>
-		<version>${versionNumber}</version>
-		<packaging>eclipse-test-plugin</packaging>
-	""" }
+			<groupId>${groupId()}</groupId>
+			<artifactId>${artifactId}</artifactId>
+			<version>${versionNumber}</version>
+			<packaging>eclipse-test-plugin</packaging>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.eclipse.tycho</groupId>
+						<artifactId>tycho-surefire-plugin</artifactId>
+	        				<configuration>
+							<!-- <useUIHarness>true</useUIHarness> -->
+							<!-- <useUIThread>true</useUIThread> -->
+							${macTestArguments()}
+							<!-- <product>org.rodinp.platform.product</product> -->
+	        				</configuration>
+	      				</plugin>
+	    			</plugins>
+	 		</build>
+		""" }
+		
+	String macTestArguments() {
+		if ( Os.isFamily(Os.FAMILY_MAC) ){
+			return "<argLine>-XstartOnFirstThread</argLine>\n"
+		}else{
+			return "\n"
+		}
+	}
 	
 			
 	def start() { """<?xml version="1.0" encoding="UTF-8"?>

@@ -33,19 +33,25 @@ public class TranslatorFactory {
 	 */
 	public static void translate(final IEventBRoot root,
 			final IPrologTermOutput pto) throws TranslationFailedException {
-		if (root instanceof IMachineRoot) {
-			final ISCMachineRoot scRoot = ((IMachineRoot) root)
-					.getSCMachineRoot();
-			EventBMachineTranslator.create(scRoot, pto);
+		final String componentName = root.getComponentName();
+		try {
+			if (root instanceof IMachineRoot) {
+				final ISCMachineRoot scRoot = ((IMachineRoot) root)
+						.getSCMachineRoot();
+				EventBMachineTranslator.create(scRoot, pto);
 
-		} else if (root instanceof IContextRoot) {
-			final ISCContextRoot scRoot = ((IContextRoot) root)
-					.getSCContextRoot();
-			EventBContextTranslator.create(scRoot, pto);
-		} else {
-			throw new TranslationFailedException(root.getComponentName(),
-					"Cannot translate anything else than IMachineRoot or IContextRoot. Type was: "
-							+ root.getClass());
+			} else if (root instanceof IContextRoot) {
+				final ISCContextRoot scRoot = ((IContextRoot) root)
+						.getSCContextRoot();
+				EventBContextTranslator.create(scRoot, pto);
+			} else {
+				throw new TranslationFailedException(componentName,
+						"Cannot translate anything else than IMachineRoot or IContextRoot. Type was: "
+								+ root.getClass());
+			}
+		} catch (RuntimeException e) {
+			throw new TranslationFailedException(componentName,
+					"A runtime exception occurred: " + e.getMessage(), e);
 		}
 	}
 

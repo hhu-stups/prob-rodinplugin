@@ -20,6 +20,7 @@ import org.eventb.core.ast.BoolExpression;
 import org.eventb.core.ast.BoundIdentDecl;
 import org.eventb.core.ast.BoundIdentifier;
 import org.eventb.core.ast.Expression;
+import org.eventb.core.ast.ExtendedExpression;
 import org.eventb.core.ast.Formula;
 import org.eventb.core.ast.FreeIdentifier;
 import org.eventb.core.ast.ISimpleVisitor;
@@ -28,6 +29,7 @@ import org.eventb.core.ast.Predicate;
 import org.eventb.core.ast.QuantifiedExpression;
 import org.eventb.core.ast.SetExtension;
 import org.eventb.core.ast.UnaryExpression;
+import org.eventb.core.ast.extension.IExpressionExtension;
 
 import de.be4.classicalb.core.parser.node.AAddExpression;
 import de.be4.classicalb.core.parser.node.ABoolSetExpression;
@@ -50,6 +52,7 @@ import de.be4.classicalb.core.parser.node.AEventBFirstProjectionV2Expression;
 import de.be4.classicalb.core.parser.node.AEventBIdentityExpression;
 import de.be4.classicalb.core.parser.node.AEventBSecondProjectionExpression;
 import de.be4.classicalb.core.parser.node.AEventBSecondProjectionV2Expression;
+import de.be4.classicalb.core.parser.node.AExtendedExprExpression;
 import de.be4.classicalb.core.parser.node.AFunctionExpression;
 import de.be4.classicalb.core.parser.node.AGeneralIntersectionExpression;
 import de.be4.classicalb.core.parser.node.AGeneralUnionExpression;
@@ -112,13 +115,6 @@ public class ExpressionVisitor extends SimpleVisitorAdapter implements // NOPMD
 	// we need some abilities of the linked list, using List is not an option
 	private boolean expressionSet = false;
 
-	@SuppressWarnings("unused")
-	private ExpressionVisitor() { // we want to prevent clients from calling
-		// the default constructor
-		super();
-		throw new AssertionError("Do not call this constructor");
-	}
-
 	public ExpressionVisitor(final LinkedList<String> bounds) { // NOPMD
 		super();
 		this.bounds = bounds;
@@ -157,7 +153,7 @@ public class ExpressionVisitor extends SimpleVisitorAdapter implements // NOPMD
 			list.add(visitor.getExpression());
 		}
 
-		// Process internal Expression and Predcate
+		// Process internal Expression and Predicate
 		final Predicate predicate = expression.getPredicate();
 		final PredicateVisitor predicateVisitor = new PredicateVisitor(bounds);
 		predicate.accept(predicateVisitor);
@@ -617,6 +613,36 @@ public class ExpressionVisitor extends SimpleVisitorAdapter implements // NOPMD
 		}
 		setExtensionExpression.setExpressions(list);
 		setExpression(setExtensionExpression);
+	}
+
+	@Override
+	public void visitExtendedExpression(ExtendedExpression expression) {
+		AExtendedExprExpression p = new AExtendedExprExpression();
+
+		IExpressionExtension extension = expression.getExtension();
+		String symbol = extension.getSyntaxSymbol();
+
+		p.setIdentifier(new TIdentifierLiteral(symbol));
+		Expression[] expressions = expression.getChildExpressions();
+		List<PExpression> childExprs = new ArrayList<PExpression>();
+		for (Expression e : expressions) {
+			ExpressionVisitor v = new ExpressionVisitor(bounds);
+			e.accept(v);
+			childExprs.add(v.getExpression());
+		}
+		p.setExpressions(childExprs);
+
+		Predicate[] childPredicates = expression.getChildPredicates();
+		List<PPredicate> childPreds = new ArrayList<PPredicate>();
+		for (Predicate pd : childPredicates) {
+			PredicateVisitor v = new PredicateVisitor(bounds);
+			pd.accept(v);
+			childPreds.add(v.getPredicate());
+		}
+		p.setPredicates(childPreds);
+
+		setExpression(p);
+
 	}
 
 	@SuppressWarnings("deprecation")

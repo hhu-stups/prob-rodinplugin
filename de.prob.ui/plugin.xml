@@ -183,7 +183,6 @@
             name="Consistencychecking">
       </command>
       
-      
       <command
       defaultHandler="de.prob.ui.operationview.DoubleClickBehaviorHandler"
       id="de.prob.ui.doubleclickbehaviour"
@@ -306,6 +305,16 @@
       </command>
       <command
             categoryId="de.prob.ui.commands.category"
+            id="de.prob.ui.refinement_check"
+            name="Validate Refinement">
+      </command>
+      <command
+            categoryId="de.prob.ui.commands.category"
+            id="de.prob.ui.assertion_check"
+            name="Check Assertions">
+      </command>
+      <command
+            categoryId="de.prob.ui.commands.category"
             id="de.prob.ui.opview.checks"
             name="Checks">
       </command>
@@ -350,6 +359,11 @@
       <command
             id="de.prob.ui.newcore.export"
             name="Export for new Core">
+      </command>
+      <command
+            categoryId="de.prob.ui.commands.category"
+            id="de.prob.ui.assertion_check"
+            name="Check Context Theorems">
       </command>
    </extension>
    <extension
@@ -741,6 +755,50 @@
             </with>
          </enabledWhen>
       </handler>
+      <handler
+            commandId="de.prob.ui.refinement_check">
+         <class
+               class="de.prob.ui.refinementcheck.RefinementCheckHandler">
+         </class>
+         <enabledWhen>
+            <and>
+               <with
+                     variable="de.prob.core.model_loaded">
+                  <equals
+                        value="enabled">
+                  </equals>
+               </with>
+               <with
+                     variable="de.prob.core.context_loaded">
+                  <equals
+                        value="disabled">
+                  </equals>
+               </with>
+            </and>
+         </enabledWhen>
+      </handler>
+      <handler
+            commandId="de.prob.ui.assertion_check">
+         <enabledWhen>
+            <and>
+               <with
+                     variable="de.prob.core.model_loaded">
+                  <equals
+                        value="enabled">
+                  </equals>
+               </with>
+               <with
+                     variable="de.prob.core.context_loaded">
+                  <equals
+                        value="disabled">
+                  </equals>
+               </with>
+            </and>
+         </enabledWhen>
+         <class
+               class="de.prob.ui.assertion.AssertionCheckHandler">
+         </class>
+      </handler>
 <!--      <handler
             commandId="de.prob.ui.startdmc">
          <class
@@ -1048,20 +1106,37 @@
                mnemonic="L"
                style="push">
          </command>
-         <command
-               commandId="de.prob.ui.deadlock_check"
-               icon="icons/DeadlockCheck.png"
-               label="Deadlock Freedom Checking"
-               mnemonic="D"
-               style="push">
-         </command>
-         <command
-               commandId="de.prob.ui.invariant_check"
-               icon="icons/CBCInvariantCheck.png"
-               label="Invariant Preservation Checking"
-               mnemonic="I"
-               style="push">
-         </command>
+         <menu
+               label="Constraint Based Checking">
+            <command
+                  commandId="de.prob.ui.deadlock_check"
+                  icon="icons/DeadlockCheck.png"
+                  label="Deadlock Freedom"
+                  mnemonic="D"
+                  style="push">
+            </command>
+            <command
+                  commandId="de.prob.ui.invariant_check"
+                  icon="icons/CBCInvariantCheck.png"
+                  label="Invariant Preservation"
+                  mnemonic="I"
+                  style="push">
+            </command>
+            <command
+                  commandId="de.prob.ui.refinement_check"
+                  icon="icons/CBCInvariantCheck.png"
+                  label="Refinement Proof Obligations"
+                  mnemonic="R"
+                  style="push">
+            </command>
+            <command
+                  commandId="de.prob.ui.assertion_check"
+                  icon="icons/CBCInvariantCheck.png"
+                  label="Context Theorems"
+                  mnemonic="C"
+                  style="push">
+            </command>
+         </menu>
       </menuContribution>
       <!--
       <menuContribution
@@ -1134,6 +1209,7 @@
               style="push">
           </command>
       </menuContribution>
+  
       
    </extension>
    <extension
@@ -1160,6 +1236,13 @@
             provider="de.prob.ui.ltl.CounterExampleLoadedProvider">
          <variable
                name="de.prob.ui.ltl.counterexample_loaded"
+               priorityLevel="workbench">
+         </variable>
+      </sourceProvider>
+      <sourceProvider
+            provider="de.prob.ui.services.ContextLoadedProvider">
+         <variable
+               name="de.prob.core.context_loaded"
                priorityLevel="workbench">
          </variable>
       </sourceProvider>

@@ -13,12 +13,10 @@ import org.eclipse.core.databinding.observable.map.IObservableMap;
 import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
 import org.eclipse.jface.databinding.viewers.ObservableMapLabelProvider;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITableColorProvider;
 import org.eclipse.jface.viewers.ITableFontProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
@@ -36,7 +34,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 
 import de.be4.classicalb.core.parser.BParser;
-import de.bmotionstudio.gef.editor.AttributeConstants;
 import de.bmotionstudio.gef.editor.BMotionAbstractWizard;
 import de.bmotionstudio.gef.editor.BMotionStudioImage;
 import de.bmotionstudio.gef.editor.EditorImageRegistry;
@@ -44,7 +41,6 @@ import de.bmotionstudio.gef.editor.edit.PredicateEditingSupport;
 import de.bmotionstudio.gef.editor.edit.TextEditingSupport;
 import de.bmotionstudio.gef.editor.model.BControl;
 import de.bmotionstudio.gef.editor.observer.Observer;
-import de.bmotionstudio.gef.editor.observer.ObserverEvalObject;
 import de.bmotionstudio.gef.editor.observer.ObserverWizard;
 import de.bmotionstudio.gef.editor.observer.SwitchChildCoordinates;
 import de.bmotionstudio.gef.editor.observer.ToggleObjectCoordinates;
@@ -52,7 +48,7 @@ import de.bmotionstudio.gef.editor.util.BMotionWizardUtil;
 
 public class WizardObserverCSwitchCoordinates extends ObserverWizard {
 
-	private String lastChangedControlID;
+	// private String lastChangedControlID;
 
 	private class ObserverCSwitchCoordinatesPage extends
 			AbstractObserverWizardPage {
@@ -75,40 +71,42 @@ public class WizardObserverCSwitchCoordinates extends ObserverWizard {
 			tableViewer = BMotionWizardUtil.createBMotionWizardTableViewer(
 					container, ToggleObjectCoordinates.class,
 					((BMotionAbstractWizard) getWizard()).getName());
-			tableViewer
-					.addSelectionChangedListener(new ISelectionChangedListener() {
-
-						@Override
-						public void selectionChanged(SelectionChangedEvent event) {
-							IStructuredSelection selection = (IStructuredSelection) event
-									.getSelection();
-							Object firstElement = selection.getFirstElement();
-							if (firstElement instanceof ObserverEvalObject) {
-								restorePreview();
-								ObserverEvalObject observerEvalObject = (ObserverEvalObject) firstElement;
-								if (!observerEvalObject.isExpressionMode()) {
-									BControl control = getBControl();
-									ToggleObjectCoordinates toggleObjectCoordinates = (ToggleObjectCoordinates) observerEvalObject;
-									String attributeX = AttributeConstants.ATTRIBUTE_X;
-									String attributeY = AttributeConstants.ATTRIBUTE_Y;
-									String x = toggleObjectCoordinates.getX();
-									String y = toggleObjectCoordinates.getY();
-									String controlID = toggleObjectCoordinates
-											.getBcontrol();
-									BControl bControl = control
-											.getChild(controlID);
-									if (bControl != null) {
-										bControl.setAttributeValue(attributeX,
-												x, true, false);
-										bControl.setAttributeValue(attributeY,
-												y, true, false);
-									}
-									lastChangedControlID = controlID;
-								}
-							}
-						}
-
-					});
+			// tableViewer
+			// .addSelectionChangedListener(new ISelectionChangedListener() {
+			//
+			// @Override
+			// public void selectionChanged(SelectionChangedEvent event) {
+			// IStructuredSelection selection = (IStructuredSelection) event
+			// .getSelection();
+			// Object firstElement = selection.getFirstElement();
+			// if (firstElement instanceof ObserverEvalObject) {
+			// restorePreview();
+			// ObserverEvalObject observerEvalObject = (ObserverEvalObject)
+			// firstElement;
+			// if (!observerEvalObject.isExpressionMode()) {
+			// BControl control = getBControl();
+			// ToggleObjectCoordinates toggleObjectCoordinates =
+			// (ToggleObjectCoordinates) observerEvalObject;
+			// String attributeX = AttributeConstants.ATTRIBUTE_X;
+			// String attributeY = AttributeConstants.ATTRIBUTE_Y;
+			// String x = toggleObjectCoordinates.getX();
+			// String y = toggleObjectCoordinates.getY();
+			// String controlID = toggleObjectCoordinates
+			// .getBcontrol();
+			// BControl bControl = control
+			// .getChild(controlID);
+			// if (bControl != null) {
+			// bControl.setAttributeValue(attributeX,
+			// x, true, false);
+			// bControl.setAttributeValue(attributeY,
+			// y, true, false);
+			// }
+			// lastChangedControlID = controlID;
+			// }
+			// }
+			// }
+			//
+			// });
 
 			TableViewerColumn column = new TableViewerColumn(tableViewer,
 					SWT.NONE);
@@ -229,7 +227,7 @@ public class WizardObserverCSwitchCoordinates extends ObserverWizard {
 
 	@Override
 	protected Boolean prepareToFinish() {
-		restorePreview();
+		// restorePreview();
 		if (((SwitchChildCoordinates) getObserver()).getToggleObjects().size() == 0) {
 			setObserverDelete(true);
 		} else {
@@ -247,19 +245,19 @@ public class WizardObserverCSwitchCoordinates extends ObserverWizard {
 		return true;
 	}
 
-	private void restorePreview() {
-		if (lastChangedControlID != null) {
-			BControl bControl = getBControl().getChild(lastChangedControlID);
-			if (bControl != null) {
-				bControl.restoreDefaultValue(AttributeConstants.ATTRIBUTE_X);
-				bControl.restoreDefaultValue(AttributeConstants.ATTRIBUTE_Y);
-			}
-		}
-	}
+	// private void restorePreview() {
+	// if (lastChangedControlID != null) {
+	// BControl bControl = getBControl().getChild(lastChangedControlID);
+	// if (bControl != null) {
+	// bControl.restoreDefaultValue(AttributeConstants.ATTRIBUTE_X);
+	// bControl.restoreDefaultValue(AttributeConstants.ATTRIBUTE_Y);
+	// }
+	// }
+	// }
 
 	@Override
 	public boolean performCancel() {
-		restorePreview();
+		// restorePreview();
 		return super.performCancel();
 	}
 

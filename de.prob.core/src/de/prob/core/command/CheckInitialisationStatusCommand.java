@@ -12,7 +12,7 @@ import de.prob.exceptions.ProBException;
 public final class CheckInitialisationStatusCommand extends
 		CheckBooleanPropertyCommand {
 
-	private static final String IS_INITIALISED_STATE = "isInitialisedState";
+	private static final String IS_INITIALISED_STATE = "initialised";
 
 	public static boolean isInitialized(final Animator a, final String stateId)
 			throws ProBException {
@@ -21,7 +21,7 @@ public final class CheckInitialisationStatusCommand extends
 	}
 
 	public CheckInitialisationStatusCommand(final String stateId) {
-		super("initialised", stateId);
+		super(IS_INITIALISED_STATE, stateId);
 	}
 
 }

@@ -39,7 +39,7 @@ public class ConsistencyCheckingJob extends Job {
 		for (ConsistencyCheckingSearchOption modelCheckingOption : options) {
 			optlist.add(modelCheckingOption.name());
 		}
-		this.options = Collections.unmodifiableList(optlist);
+		this.options = optlist;
 		this.symmetryOption = symmetryOption;
 	}
 
@@ -57,6 +57,7 @@ public class ConsistencyCheckingJob extends Job {
 		while (!abort) {
 			try {
 				modelCheckingResult = doSomeModelchecking();
+				options.remove("inspect_existing_nodes");
 				monitor.worked(500);
 			} catch (ProBException e) {
 				return Status.CANCEL_STATUS; // Failed

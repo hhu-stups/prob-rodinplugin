@@ -19,7 +19,6 @@ import de.bmotionstudio.gef.editor.BMotionStudioImage;
 import de.bmotionstudio.gef.editor.command.RemoveObserverCommand;
 import de.bmotionstudio.gef.editor.command.SetObserverCommand;
 import de.bmotionstudio.gef.editor.model.BControl;
-import de.bmotionstudio.gef.editor.model.ObserverRootVirtualTreeNode;
 import de.bmotionstudio.gef.editor.observer.Observer;
 import de.bmotionstudio.gef.editor.observer.ObserverWizard;
 import de.prob.logging.Logger;
@@ -172,10 +171,7 @@ public class OpenObserverAction extends SelectionAction {
 		if ((objects.get(0) instanceof EditPart)) {
 			EditPart part = (EditPart) objects.get(0);
 			BControl control = null;
-			if (part.getModel() instanceof ObserverRootVirtualTreeNode)
-				control = ((ObserverRootVirtualTreeNode) part.getModel())
-						.getControl();
-			else if (part.getModel() instanceof BControl)
+			if (part.getModel() instanceof BControl)
 				control = (BControl) part.getModel();
 			return control;
 		}

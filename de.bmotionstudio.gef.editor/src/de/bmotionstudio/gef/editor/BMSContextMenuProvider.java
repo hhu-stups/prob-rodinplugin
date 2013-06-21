@@ -25,7 +25,6 @@ import org.eclipse.ui.actions.ActionFactory;
 
 import de.bmotionstudio.gef.editor.action.OpenSchedulerEventAction;
 import de.bmotionstudio.gef.editor.model.BControl;
-import de.bmotionstudio.gef.editor.model.ObserverRootVirtualTreeNode;
 import de.bmotionstudio.gef.editor.model.Visualization;
 import de.bmotionstudio.gef.editor.scheduler.SchedulerEvent;
 
@@ -120,8 +119,6 @@ public class BMSContextMenuProvider extends ContextMenuProvider {
 
 		if (model instanceof BControl)
 			bcontrol = (BControl) model;
-		else if (model instanceof ObserverRootVirtualTreeNode)
-			bcontrol = ((ObserverRootVirtualTreeNode) model).getControl();
 		else
 			return;
 

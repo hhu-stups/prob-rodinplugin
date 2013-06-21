@@ -14,9 +14,7 @@ import org.eclipse.gef.EditPartFactory;
 import de.bmotionstudio.gef.editor.BMotionEditorPlugin;
 import de.bmotionstudio.gef.editor.IBControlService;
 import de.bmotionstudio.gef.editor.model.BControl;
-import de.bmotionstudio.gef.editor.model.ObserverRootVirtualTreeNode;
 import de.bmotionstudio.gef.editor.model.Visualization;
-import de.bmotionstudio.gef.editor.observer.Observer;
 
 public class BMSTreeEditPartFactory implements EditPartFactory {
 
@@ -43,11 +41,12 @@ public class BMSTreeEditPartFactory implements EditPartFactory {
 				e.printStackTrace();
 			}
 
-		} else if (model instanceof Observer) {
-			part = new ObserverTreeEditPart();
-		} else if (model instanceof ObserverRootVirtualTreeNode) {
-			part = new ObserverRootTreeEditpart();
 		}
+		// else if (model instanceof Observer) {
+		// part = new ObserverTreeEditPart();
+		// } else if (model instanceof ObserverRootVirtualTreeNode) {
+		// part = new ObserverRootTreeEditpart();
+		// }
 
 		if (part != null)
 			part.setModel(model);

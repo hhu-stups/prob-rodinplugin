@@ -2,13 +2,14 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: ProB Animator Core
 Bundle-SymbolicName: de.prob.core;singleton:=true
-Bundle-Version: 9.3.0.qualifier
+Bundle-Version: 9.4.0.qualifier
 Require-Bundle: org.eclipse.core.runtime;bundle-version="[3.5.0,4.0.0)",
  org.rodinp.core;bundle-version="[1.3.1,1.7.0)",
- org.eventb.core;bundle-version="[2.1.0,2.6.0)"
+ org.eventb.core;bundle-version="[2.5.0,2.6.0)",
+ org.eventb.theory.core;bundle-version="[2.0.0,3.0.0)";resolution:=optional
 Bundle-ActivationPolicy: lazy
 Eclipse-BundleShape: dir
-Bundle-Vendor: HHU Düsseldorf STUPS Group
+Bundle-Vendor: HHU Dusseldorf STUPS Group
 Export-Package: com.thoughtworks.xstream,
  com.thoughtworks.xstream.annotations,
  com.thoughtworks.xstream.converters,
@@ -69,7 +70,6 @@ Export-Package: com.thoughtworks.xstream,
  de.prob.core.domainobjects,
  de.prob.core.domainobjects.eval,
  de.prob.core.domainobjects.ltl,
- de.prob.core.domainobjects.ltl.unittests,
  de.prob.core.internal,
  de.prob.core.langdep,
  de.prob.core.prolog,
@@ -86,6 +86,7 @@ Export-Package: com.thoughtworks.xstream,
  de.prob.logging,
  de.prob.model.eventb,
  de.prob.model.representation,
+ de.prob.model.serialize,
  de.prob.parser,
  de.prob.parserbase,
  de.prob.prolog.match,
@@ -114,17 +115,18 @@ Bundle-Activator: de.prob.core.internal.Activator
 Eclipse-BuddyPolicy: registered
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ClassPath: .,
- lib/dependencies/answerparser-2.4.8-SNAPSHOT.jar,
- lib/dependencies/bparser-2.4.8-SNAPSHOT.jar,
- lib/dependencies/cliparser-2.4.8-SNAPSHOT.jar,
- lib/dependencies/commons-lang-2.6.jar,
+ lib/dependencies/unicode-2.4.19-SNAPSHOT.jar,
+ lib/dependencies/theorymapping-2.4.19-SNAPSHOT.jar,
+ lib/dependencies/prologlib-2.4.19-SNAPSHOT.jar,
+ lib/dependencies/parserbase-2.4.19-SNAPSHOT.jar,
+ lib/dependencies/ltlparser-2.4.19-SNAPSHOT.jar,
+ lib/dependencies/cliparser-2.4.19-SNAPSHOT.jar,
+ lib/dependencies/bparser-2.4.19-SNAPSHOT.jar,
+ lib/dependencies/answerparser-2.4.19-SNAPSHOT.jar,
  lib/dependencies/jgrapht-0.8.3.jar,
- lib/dependencies/jsr305-1.3.9.jar,
- lib/dependencies/ltlparser-2.4.8-SNAPSHOT.jar,
- lib/dependencies/parserbase-2.4.8-SNAPSHOT.jar,
- lib/dependencies/prologlib-2.4.8-SNAPSHOT.jar,
- lib/dependencies/unicode-2.4.8-SNAPSHOT.jar,
  lib/dependencies/commons-codec-1.6.jar,
+ lib/dependencies/commons-lang-2.6.jar,
+ lib/dependencies/jsr305-1.3.9.jar,
  lib/dependencies/xmlpull-1.1.3.1.jar,
  lib/dependencies/xpp3_min-1.1.4c.jar,
  lib/dependencies/xstream-1.4.3.jar
