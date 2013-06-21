@@ -33,7 +33,6 @@ import de.prob.eventb.translator.PredicateVisitor;
 import de.prob.exceptions.ProBException;
 import de.prob.logging.Logger;
 import de.prob.prolog.output.PrologTermStringOutput;
-import de.prob.unicode.UnicodeTranslator;
 
 public class DisproverReasoner implements IReasoner {
 
@@ -71,7 +70,7 @@ public class DisproverReasoner implements IReasoner {
 	private ICounterExample evaluateSequent(final IProverSequent sequent,
 			final DisproverReasonerInput disproverInput, IProofMonitor pm)
 			throws ProBException, RodinDBException, InterruptedException {
-		Logger.info("Calling Disprover on Sequent");
+		// Logger.info("Calling Disprover on Sequent");
 
 		Set<Predicate> hypotheses = new HashSet<Predicate>();
 		StringBuilder hypothesesString = new StringBuilder();
@@ -81,23 +80,23 @@ public class DisproverReasoner implements IReasoner {
 			hypothesesString.append(" & ");
 		}
 
-		if (hypothesesString.length() == 0) {
-			Logger.info("Disprover: No Hypotheses");
-		} else {
-			hypothesesString.delete(hypothesesString.length() - 2,
-					hypothesesString.length());
-			Logger.info("Disprover: Sending Hypotheses: "
-					+ UnicodeTranslator.toAscii(hypothesesString.toString()));
-		}
+		/*
+		 * if (hypothesesString.length() == 0) {
+		 * Logger.info("Disprover: No Hypotheses"); } else {
+		 * hypothesesString.delete(hypothesesString.length() - 2,
+		 * hypothesesString.length());
+		 * Logger.info("Disprover: Sending Hypotheses: " +
+		 * UnicodeTranslator.toAscii(hypothesesString.toString())); }
+		 */
 		Predicate goal = sequent.goal();
-		Logger.info("Disprover: Sending Goal: "
-				+ UnicodeTranslator.toAscii(predicateToProlog(goal)));
+		// Logger.info("Disprover: Sending Goal: "+
+		// UnicodeTranslator.toAscii(predicateToProlog(goal)));
 
 		IEventBRoot root = getRoot(sequent);
 
 		ICounterExample counterExample = DisproverCommand.disprove(
 				Animator.getAnimator(), hypotheses, goal, root, pm);
-		Logger.info("Disprover: Result: " + counterExample.toString());
+		// Logger.info("Disprover: Result: " + counterExample.toString());
 
 		return counterExample;
 	}
