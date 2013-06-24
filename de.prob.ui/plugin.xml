@@ -82,7 +82,7 @@
             category="de.hhu.stups.prob"
             class="de.prob.ui.ltl.CounterExampleViewPart"
             id="de.prob.ui.ltl.CounterExampleView"
-            name="Ltl Counter-Example"
+            name="LTL Counter-Example"
             restorable="true">
       </view>
    </extension>
