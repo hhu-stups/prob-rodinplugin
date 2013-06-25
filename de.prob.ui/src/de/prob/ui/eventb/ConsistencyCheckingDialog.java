@@ -39,6 +39,7 @@ public class ConsistencyCheckingDialog extends Dialog {
 			this.symmetry = symmetry;
 		}
 
+		@Override
 		public void widgetSelected(final SelectionEvent e) {
 			String symmetryOption = selectSymmetryOption(symmetry);
 			Set<ConsistencyCheckingSearchOption> selectSettings = selectSettings(checks);
@@ -71,13 +72,15 @@ public class ConsistencyCheckingDialog extends Dialog {
 		private void scheduleJob(
 				final Set<ConsistencyCheckingSearchOption> selectSettings,
 				final String symmetryOption) {
-			job = new ConsistencyCheckingJob("Consistency Checking",
-					selectSettings, symmetryOption);
+			job = new ConsistencyCheckingJob("Model Checking", selectSettings,
+					symmetryOption);
 			job.setUser(true);
-			job.addJobChangeListener(new ConsistencyCheckingFinishedListener(shell));
+			job.addJobChangeListener(new ConsistencyCheckingFinishedListener(
+					shell));
 			job.schedule();
 		}
 
+		@Override
 		public void widgetDefaultSelected(final SelectionEvent e) {
 			// Do nothing
 		}
@@ -109,7 +112,7 @@ public class ConsistencyCheckingDialog extends Dialog {
 
 		GridData data = new GridData(GridData.HORIZONTAL_ALIGN_CENTER);
 		startButton = new Button(comp, SWT.PUSH);
-		startButton.setText("Start Consistency Checking");
+		startButton.setText("Start Model Checking");
 		startButton.setLayoutData(data);
 		startButton.addSelectionListener(new StartButtonSelectionListener(
 				checks, symmetry));
@@ -153,7 +156,7 @@ public class ConsistencyCheckingDialog extends Dialog {
 	@Override
 	protected void configureShell(final Shell shell) {
 		super.configureShell(shell);
-		shell.setText("Consistency Checking");
+		shell.setText("Model Checking");
 	}
 
 }
