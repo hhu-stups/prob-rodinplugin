@@ -7,7 +7,6 @@
 package de.prob.ui.eventb;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -17,13 +16,13 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 
 import de.prob.core.Animator;
-import de.prob.core.command.ConsistencyCheckingCommand;
-import de.prob.core.command.ConsistencyCheckingSearchOption;
+import de.prob.core.command.ModelCheckingCommand;
+import de.prob.core.command.ModelCheckingCommand.Result;
+import de.prob.core.command.ModelCheckingSearchOption;
 import de.prob.core.command.SetPreferenceCommand;
-import de.prob.core.command.ConsistencyCheckingCommand.Result;
 import de.prob.exceptions.ProBException;
 
-public class ConsistencyCheckingJob extends Job {
+public class ModelCheckingJob extends Job {
 
 	private final Animator animator = Animator.getAnimator();
 	private boolean abort = false;
@@ -31,12 +30,12 @@ public class ConsistencyCheckingJob extends Job {
 	private final String symmetryOption;
 	private Result modelCheckingResult = null;
 
-	public ConsistencyCheckingJob(final String name,
-			final Set<ConsistencyCheckingSearchOption> options,
+	public ModelCheckingJob(final String name,
+			final Set<ModelCheckingSearchOption> options,
 			final String symmetryOption) {
 		super(name);
 		List<String> optlist = new ArrayList<String>();
-		for (ConsistencyCheckingSearchOption modelCheckingOption : options) {
+		for (ModelCheckingSearchOption modelCheckingOption : options) {
 			optlist.add(modelCheckingOption.name());
 		}
 		this.options = optlist;
@@ -78,7 +77,7 @@ public class ConsistencyCheckingJob extends Job {
 	}
 
 	private Result doSomeModelchecking() throws ProBException {
-		return ConsistencyCheckingCommand.modelcheck(animator, 500, options)
+		return ModelCheckingCommand.modelcheck(animator, 500, options)
 				.getResult();
 	}
 

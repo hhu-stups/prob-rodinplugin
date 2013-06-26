@@ -21,21 +21,21 @@ import de.prob.core.Animator;
 import de.prob.core.ProblemHandler;
 import de.prob.core.command.ComputeCoverageCommand;
 import de.prob.core.command.ComputeCoverageCommand.ComputeCoverageResult;
-import de.prob.core.command.ConsistencyCheckingCommand.Result;
 import de.prob.core.command.GetTraceCommand;
+import de.prob.core.command.ModelCheckingCommand.Result;
 import de.prob.core.command.ReplayTraceCommand;
 import de.prob.exceptions.ProBException;
 import de.prob.logging.Logger;
 import de.prob.ui.ProbUiPlugin;
 
-public class ConsistencyCheckingFinishedListener extends JobChangeAdapter {
+public class ModelCheckingFinishedListener extends JobChangeAdapter {
 
 	private static final String SEPARATOR_LINE = "===================================================";
 	private static final String PLUGIN_ID = ProbUiPlugin.PLUGIN_ID;
 	private final Shell shell;
 	private final Animator animator = Animator.getAnimator();
 
-	public ConsistencyCheckingFinishedListener(final Shell shell) {
+	public ModelCheckingFinishedListener(final Shell shell) {
 		this.shell = shell;
 	}
 
@@ -43,11 +43,11 @@ public class ConsistencyCheckingFinishedListener extends JobChangeAdapter {
 	public void done(final IJobChangeEvent event) {
 		super.done(event);
 		Job job = event.getJob();
-		if (job instanceof ConsistencyCheckingJob) {
-			ConsistencyCheckingJob ccJob = (ConsistencyCheckingJob) job;
+		if (job instanceof ModelCheckingJob) {
+			ModelCheckingJob ccJob = (ModelCheckingJob) job;
 			showResult(ccJob.getModelCheckingResult());
 		} else {
-			final String message = "The job has a wrong type. Expected ConsistencyCheckingJob but got "
+			final String message = "The job has a wrong type. Expected ModelCheckingJob but got "
 					+ job.getClass();
 			Logger.notifyUserWithoutBugreport(message);
 		}
@@ -205,6 +205,7 @@ public class ConsistencyCheckingFinishedListener extends JobChangeAdapter {
 
 	private void displayResult(final MultiStatus info) {
 		shell.getDisplay().asyncExec(new Runnable() {
+			@Override
 			public void run() {
 				ErrorDialog.openError(shell, "Model Checking finished", null,
 						info);

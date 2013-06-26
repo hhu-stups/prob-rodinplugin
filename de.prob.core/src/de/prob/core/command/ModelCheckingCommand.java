@@ -15,7 +15,7 @@ import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 
-public final class ConsistencyCheckingCommand implements IComposableCommand {
+public final class ModelCheckingCommand implements IComposableCommand {
 	private final int time;
 	private final List<String> options;
 	private ModelCheckingResult<Result> result;
@@ -36,14 +36,14 @@ public final class ConsistencyCheckingCommand implements IComposableCommand {
 		}
 	}
 
-	ConsistencyCheckingCommand(final int time, final List<String> options) {
+	ModelCheckingCommand(final int time, final List<String> options) {
 		this.time = time;
 		this.options = options;
 	}
 
 	public static ModelCheckingResult<Result> modelcheck(final Animator a,
 			final int time, final List<String> options) throws ProBException {
-		ConsistencyCheckingCommand command = new ConsistencyCheckingCommand(
+		ModelCheckingCommand command = new ModelCheckingCommand(
 				time, options);
 		a.execute(command);
 		return command.getResult();

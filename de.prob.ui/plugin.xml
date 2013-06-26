@@ -179,8 +179,8 @@
       </command>
       <command
             categoryId="de.prob.ui.commands.category"
-            id="de.prob.ui.consistency_checking"
-            name="Consistencychecking">
+            id="de.prob.ui.model_checking"
+            name="Modelchecking">
       </command>
       
       <command
@@ -406,7 +406,7 @@
          </class>
       </handler>
       <handler
-            commandId="de.prob.ui.consistency_checking">
+            commandId="de.prob.ui.model_checking">
          <enabledWhen>
            <with variable="de.prob.core.model_loaded">
                   <equals
@@ -415,7 +415,7 @@
                </with>
          </enabledWhen>
          <class
-               class="de.prob.ui.eventb.ConsistencyCheckCommand">
+               class="de.prob.ui.eventb.ModelCheckCommand">
          </class>
       </handler>
       <handler
@@ -672,7 +672,7 @@
       </handler>
       <handler
             commandId="de.prob.ui.opview.checks">
-            <class class="de.prob.ui.eventb.ConsistencyCheckCommand" />
+            <class class="de.prob.ui.eventb.ModelCheckCommand" />
                      <enabledWhen>
            <with variable="de.prob.core.model_loaded">
                   <equals
@@ -1093,7 +1093,7 @@
       <menuContribution
             locationURI="menu:de.prob.ui.opview.checks">
          <command
-               commandId="de.prob.ui.consistency_checking"
+               commandId="de.prob.ui.model_checking"
                icon="icons/Consistency.png"
                label="Model Checking"
                mnemonic="C"
