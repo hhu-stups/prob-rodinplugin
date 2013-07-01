@@ -33,6 +33,7 @@ public final class ExploreStateCommand implements IComposableCommand {
 	private final CheckBooleanPropertyCommand checkMaxOpCmd;
 	private final CheckBooleanPropertyCommand checkTimeoutCmd;
 	private final GetStateBasedErrorsCommand getStateErrCmd;
+	private final QuickDescribeUnsatPropertiesCommand unsatPropsCommand;
 	private final ComposedCommand allCommands;
 
 	private State state;
@@ -48,9 +49,11 @@ public final class ExploreStateCommand implements IComposableCommand {
 		checkTimeoutCmd = new CheckTimeoutStatusCommand(stateId);
 		checkTimeoutOpsCmd = new GetTimeoutedOperationsCommand(stateId);
 		getStateErrCmd = new GetStateBasedErrorsCommand(stateId);
+		unsatPropsCommand = new QuickDescribeUnsatPropertiesCommand();
 		this.allCommands = new ComposedCommand(getOpsCmd, getValuesCmd,
 				checkInitialisedCmd, checkInvCmd, checkMaxOpCmd,
-				checkTimeoutCmd, checkTimeoutOpsCmd, getStateErrCmd);
+				checkTimeoutCmd, checkTimeoutOpsCmd, getStateErrCmd,
+				unsatPropsCommand);
 	}
 
 	public static State exploreState(final Animator a, final String stateID)
@@ -64,6 +67,7 @@ public final class ExploreStateCommand implements IComposableCommand {
 		return stateId;
 	}
 
+	@Override
 	public void processResult(
 			final ISimplifiedROMap<String, PrologTerm> bindings)
 			throws CommandException {
@@ -73,12 +77,19 @@ public final class ExploreStateCommand implements IComposableCommand {
 		final boolean invariantOk = checkInvCmd.getResult();
 		final boolean timeoutOccured = checkTimeoutCmd.getResult();
 		final boolean maxOperationsReached = checkMaxOpCmd.getResult();
+		final boolean unsatPropertiesExist = unsatPropsCommand
+				.unsatPropertiesExist();
 		final List<Operation> enabledOperations = getOpsCmd
 				.getEnabledOperations();
 		final List<Variable> variables = getValuesCmd.getResult();
 		final Collection<StateError> stateErrors = getStateErrCmd.getResult();
 
-		if (!initialised && enabledOperations.isEmpty() && !timeoutOccured) {
+		if (unsatPropertiesExist) {
+			Logger.notifyUserWithoutBugreport("ProB could not find valid constants wich satisfy the properties:\n\n"
+					+ unsatPropsCommand.getUnsatPropertiesDescription());
+
+		} else if (!initialised && enabledOperations.isEmpty()
+				&& !timeoutOccured) {
 			Logger.notifyUserWithoutBugreport("ProB could not find valid constants/variables. This might be caused by the animation settings (e.g., Integer range or deferred set size) or by an inconsistency in the axioms");
 		}
 
@@ -92,6 +103,7 @@ public final class ExploreStateCommand implements IComposableCommand {
 		Activator.computedState(state);
 	}
 
+	@Override
 	public void writeCommand(final IPrologTermOutput pto)
 			throws CommandException {
 		allCommands.writeCommand(pto);
