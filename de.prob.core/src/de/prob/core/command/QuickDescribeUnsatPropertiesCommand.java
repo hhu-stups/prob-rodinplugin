@@ -7,8 +7,7 @@ package de.prob.core.command;
 
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
-import de.prob.prolog.term.ListPrologTerm;
-import de.prob.prolog.term.PrologTerm;
+import de.prob.prolog.term.*;
 
 public class QuickDescribeUnsatPropertiesCommand implements IComposableCommand {
 	public static final String OUTPUT_VARIABLE = "Output";
@@ -31,7 +30,11 @@ public class QuickDescribeUnsatPropertiesCommand implements IComposableCommand {
 			StringBuilder sb = new StringBuilder();
 
 			for (PrologTerm p : outputStrings) {
-				sb.append(PrologTerm.atomicString(p));
+				if (p.isAtom()) {
+					sb.append(PrologTerm.atomicString(p));
+				} else {
+					sb.append(p.toString());
+				}
 			}
 
 			// replace newline dummys. maybe we should restructure the Prolog
