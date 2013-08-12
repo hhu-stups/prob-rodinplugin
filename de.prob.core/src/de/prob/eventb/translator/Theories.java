@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedList;
 
 import org.eclipse.core.resources.IFile;
@@ -32,6 +33,8 @@ import org.eventb.theory.core.ISCConstructorArgument;
 import org.eventb.theory.core.ISCDatatypeConstructor;
 import org.eventb.theory.core.ISCDatatypeDefinition;
 import org.eventb.theory.core.ISCDirectOperatorDefinition;
+import org.eventb.theory.core.ISCImportTheory;
+import org.eventb.theory.core.ISCImportTheoryProject;
 import org.eventb.theory.core.ISCNewOperatorDefinition;
 import org.eventb.theory.core.ISCOperatorArgument;
 import org.eventb.theory.core.ISCRecursiveDefinitionCase;
@@ -52,26 +55,28 @@ import de.prob.tmparser.OperatorMapping;
 import de.prob.tmparser.TheoryMappingException;
 import de.prob.tmparser.TheoryMappingParser;
 
-
 public class Theories {
 	private static final String PROB_THEORY_MAPPING_SUFFIX = "ptm";
 
 	public static void translate(IEventBProject project, IPrologTermOutput pout)
 			throws TranslationFailedException {
 		try {
+			// Start with an empty set of visited theories. This set is used to
+			// prevent printing of a theory twice.
+			final Collection<String> visitedTheories = new HashSet<String>();
+
 			final IRodinProject rProject = project.getRodinProject();
-			final IDeployedTheoryRoot[] theories = rProject
-					.getRootElementsOfType(IDeployedTheoryRoot.ELEMENT_TYPE);
-			for (IDeployedTheoryRoot theory : theories) {
-				savePrintTranslation(theory, pout);
-			}
+			// It seems that we need only the theories that are referenced by
+			// the theory path objects. If this is not the case, we need to
+			// add the deployed theories.
 			final ITheoryPathRoot[] theoryPaths = rProject
 					.getRootElementsOfType(ITheoryPathRoot.ELEMENT_TYPE);
 			for (ITheoryPathRoot theoryPath : theoryPaths) {
 				for (IAvailableTheoryProject ap : theoryPath
 						.getAvailableTheoryProjects()) {
 					for (IAvailableTheory at : ap.getTheories()) {
-						savePrintTranslation(at.getDeployedTheory(), pout);
+						savePrintTranslation(at.getDeployedTheory(),
+								visitedTheories, pout);
 					}
 				}
 			}
@@ -89,26 +94,47 @@ public class Theories {
 	 * @throws TranslationFailedException
 	 */
 	private static void savePrintTranslation(IDeployedTheoryRoot theory,
-			IPrologTermOutput opto) throws RodinDBException,
-			TranslationFailedException {
-
+			Collection<String> visitedTheories, IPrologTermOutput opto)
+			throws RodinDBException, TranslationFailedException {
 		final StructuredPrologOutput pto = new StructuredPrologOutput();
-		printTranslation(theory, pto);
+		printTranslation(theory, visitedTheories, pto);
 		pto.fullstop();
 		final PrologTerm result = pto.getSentences().get(0);
 		opto.printTerm(result);
 	}
 
 	private static void printTranslation(IDeployedTheoryRoot theory,
-			StructuredPrologOutput pto) throws RodinDBException,
-			TranslationFailedException {
-		pto.openTerm("theory");
-		printIdentifiers(theory.getSCTypeParameters(), pto);
-		printDataTypes(theory, pto);
-		printOperatorDefs(theory, pto);
-		printAxiomaticDefs(theory, pto);
-		findProBMappingFile(theory, pto);
-		pto.closeTerm();
+			Collection<String> visitedTheories, StructuredPrologOutput pto)
+			throws RodinDBException, TranslationFailedException {
+		final String name = theory.getElementName();
+		// Check if the theory has already been printed, if yes, skip it
+		if (!visitedTheories.contains(name)) {
+			visitedTheories.add(name);
+			// First print the imported theories, this guarantees that needed
+			// dependencies are printed first. (I'm not sure that ProB needs
+			// that, anyway)
+			printImportedTheories(theory, visitedTheories, pto);
+			pto.openTerm("theory");
+			printIdentifiers(theory.getSCTypeParameters(), pto);
+			printDataTypes(theory, pto);
+			printOperatorDefs(theory, pto);
+			printAxiomaticDefs(theory, pto);
+			findProBMappingFile(theory, pto);
+			pto.closeTerm();
+		}
+	}
+
+	private static void printImportedTheories(IDeployedTheoryRoot theory,
+			Collection<String> visitedTheories, StructuredPrologOutput pto)
+			throws RodinDBException, TranslationFailedException {
+		for (ISCImportTheoryProject project : theory
+				.getSCImportTheoryProjects()) {
+			for (ISCImportTheory imported : project.getSCImportTheories()) {
+				printTranslation(imported.getImportTheory(), visitedTheories,
+						pto);
+			}
+
+		}
 	}
 
 	private static void findProBMappingFile(IDeployedTheoryRoot theory,
