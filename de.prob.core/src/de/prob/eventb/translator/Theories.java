@@ -114,13 +114,7 @@ public class Theories {
 			// dependencies are printed first. (I'm not sure that ProB needs
 			// that, anyway)
 			printImportedTheories(theory, visitedTheories, pto);
-			pto.openTerm("theory");
-			printIdentifiers(theory.getSCTypeParameters(), pto);
-			printDataTypes(theory, pto);
-			printOperatorDefs(theory, pto);
-			printAxiomaticDefs(theory, pto);
-			findProBMappingFile(theory, pto);
-			pto.closeTerm();
+			printTheory(theory, pto);
 		}
 	}
 
@@ -133,8 +127,33 @@ public class Theories {
 				printTranslation(imported.getImportTheory(), visitedTheories,
 						pto);
 			}
-
 		}
+	}
+
+	private static void printTheory(IDeployedTheoryRoot theory,
+			StructuredPrologOutput pto) throws RodinDBException,
+			TranslationFailedException {
+		pto.openTerm("theory");
+		pto.printAtom(theory.getElementName());
+		printListOfImportedTheories(theory.getSCImportTheoryProjects(), pto);
+		printIdentifiers(theory.getSCTypeParameters(), pto);
+		printDataTypes(theory, pto);
+		printOperatorDefs(theory, pto);
+		printAxiomaticDefs(theory, pto);
+		findProBMappingFile(theory, pto);
+		pto.closeTerm();
+	}
+
+	private static void printListOfImportedTheories(
+			ISCImportTheoryProject[] projects, StructuredPrologOutput pto)
+			throws RodinDBException {
+		pto.openList();
+		for (ISCImportTheoryProject project : projects) {
+			for (ISCImportTheory imported : project.getSCImportTheories()) {
+				pto.printAtom(imported.getElementName());
+			}
+		}
+		pto.closeList();
 	}
 
 	private static void findProBMappingFile(IDeployedTheoryRoot theory,
