@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -22,7 +21,7 @@ import de.be4.classicalb.core.parser.analysis.prolog.ASTProlog;
 import de.be4.classicalb.core.parser.analysis.prolog.ClassicalPositionPrinter;
 import de.be4.classicalb.core.parser.analysis.prolog.NodeIdAssignment;
 import de.be4.classicalb.core.parser.node.PPredicate;
-import de.prob.eventb.translator.PredicateVisitor;
+import de.prob.eventb.translator.internal.TranslationVisitor;
 import de.prob.prolog.output.IPrologTermOutput;
 
 public class FlowAnalysis {
@@ -55,9 +54,8 @@ public class FlowAnalysis {
 			pout.printAtom(evt.toString());
 			pout.openList();
 			final Predicate predicate = evt.getGuardsAfterAssignment();
-			PredicateVisitor pv = new PredicateVisitor(new LinkedList<String>());
-			predicate.accept(pv);
-			PPredicate p = pv.getPredicate();
+			final PPredicate p = TranslationVisitor
+					.translatePredicate(predicate);
 			p.apply(prolog);
 			pout.closeList();
 			pout.closeTerm();

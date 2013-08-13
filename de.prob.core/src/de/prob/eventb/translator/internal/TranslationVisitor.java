@@ -8,8 +8,10 @@ package de.prob.eventb.translator.internal;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
+import org.eventb.core.ast.Assignment;
 import org.eventb.core.ast.AssociativeExpression;
 import org.eventb.core.ast.AssociativePredicate;
 import org.eventb.core.ast.AtomicExpression;
@@ -40,6 +42,9 @@ import org.eventb.core.ast.UnaryExpression;
 import org.eventb.core.ast.UnaryPredicate;
 
 import de.be4.classicalb.core.parser.node.*;
+import de.prob.eventb.translator.AssignmentVisitor;
+import de.prob.eventb.translator.ExpressionVisitor;
+import de.prob.eventb.translator.PredicateVisitor;
 
 public class TranslationVisitor implements ISimpleVisitor {
 	private static final String UNCOVERED_PREDICATE = "Uncovered Predicate";
@@ -715,28 +720,80 @@ public class TranslationVisitor implements ISimpleVisitor {
 		}
 	}
 
-	public static void checkNewImplementation(Predicate p,
-			Node oldImplementation) {
-		TranslationVisitor visitor = new TranslationVisitor();
+	public static PPredicate translatePredicate(Predicate p) {
+		// Create a visitor and use it to translate the predicate
+		final TranslationVisitor visitor = new TranslationVisitor();
 		p.accept(visitor);
-		final String expected = oldImplementation.toString();
-		final String actual = visitor.getPredicate().toString();
+		final PPredicate newImp = visitor.getPredicate();
+
+		// Use the old visitor to check if the implementation of the new visitor
+		// is correct.
+		final PredicateVisitor oldVisitor = new PredicateVisitor();
+		p.accept(oldVisitor);
+		final PPredicate oldImp = oldVisitor.getPredicate();
+
+		// Compare both results. If there are differences, throw an exception
+		final String expected = oldImp.toString();
+		final String actual = newImp.toString();
 		if (!expected.equals(actual)) {
 			throw new AssertionError("Expected:\n" + expected + "\n but was:\n"
 					+ actual);
 		}
+
+		// TODO[DP, 13.8.2013]: Remove call to old implementation after a test
+		// phase
+		return newImp;
 	}
 
-	public static void checkNewImplementation(Expression e,
-			Node oldImplementation) {
-		TranslationVisitor visitor = new TranslationVisitor();
+	public static PExpression translateExpression(Expression e) {
+		// Create a visitor and use it to translate the predicate
+		final TranslationVisitor visitor = new TranslationVisitor();
 		e.accept(visitor);
-		final String expected = oldImplementation.toString();
-		final String actual = visitor.getExpression().toString();
+		final PExpression newImp = visitor.getExpression();
+
+		// Use the old visitor to check if the implementation of the new visitor
+		// is correct.
+		final ExpressionVisitor oldVisitor = new ExpressionVisitor(
+				new LinkedList<String>());
+		e.accept(oldVisitor);
+		final PExpression oldImp = oldVisitor.getExpression();
+
+		// Compare both results. If there are differences, throw an exception
+		final String expected = oldImp.toString();
+		final String actual = newImp.toString();
 		if (!expected.equals(actual)) {
 			throw new AssertionError("Expected:\n" + expected + "\n but was:\n"
 					+ actual);
 		}
+
+		// TODO[DP, 13.8.2013]: Remove call to old implementation after a test
+		// phase
+		return newImp;
+	}
+
+	public static PSubstitution translateAssignment(Assignment a) {
+		// Create a visitor and use it to translate the predicate
+		final TranslationVisitor visitor = new TranslationVisitor();
+		a.accept(visitor);
+		final PSubstitution newImp = visitor.getSubstitution();
+
+		// Use the old visitor to check if the implementation of the new visitor
+		// is correct.
+		final AssignmentVisitor oldVisitor = new AssignmentVisitor();
+		a.accept(oldVisitor);
+		final PSubstitution oldImp = oldVisitor.getSubstitution();
+
+		// Compare both results. If there are differences, throw an exception
+		final String expected = oldImp.toString();
+		final String actual = newImp.toString();
+		if (!expected.equals(actual)) {
+			throw new AssertionError("Expected:\n" + expected + "\n but was:\n"
+					+ actual);
+		}
+
+		// TODO[DP, 13.8.2013]: Remove call to old implementation after a test
+		// phase
+		return newImp;
 	}
 
 }

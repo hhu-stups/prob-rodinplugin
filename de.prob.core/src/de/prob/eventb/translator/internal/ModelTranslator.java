@@ -34,6 +34,7 @@ import org.eventb.core.ISCVariable;
 import org.eventb.core.ISCVariant;
 import org.eventb.core.ISCWitness;
 import org.eventb.core.ITraceableElement;
+import org.eventb.core.ast.Assignment;
 import org.eventb.core.ast.FormulaFactory;
 import org.eventb.core.ast.ITypeEnvironment;
 import org.eventb.core.basis.Event;
@@ -69,7 +70,6 @@ import de.be4.classicalb.core.parser.node.PWitness;
 import de.be4.classicalb.core.parser.node.TIdentifierLiteral;
 import de.prob.core.translator.TranslationFailedException;
 import de.prob.eventb.translator.AbstractComponentTranslator;
-import de.prob.eventb.translator.AssignmentVisitor;
 import de.prob.logging.Logger;
 
 public class ModelTranslator extends AbstractComponentTranslator {
@@ -446,9 +446,9 @@ public class ModelTranslator extends AbstractComponentTranslator {
 		final ISCAction[] actions = revent.getSCActions();
 		final List<PSubstitution> actionList = new ArrayList<PSubstitution>();
 		for (final ISCAction action : actions) {
-			final AssignmentVisitor visitor = new AssignmentVisitor();
-			action.getAssignment(ff, localEnv).accept(visitor);
-			final PSubstitution substitution = visitor.getSubstitution();
+			final Assignment assignment = action.getAssignment(ff, localEnv);
+			final PSubstitution substitution = TranslationVisitor
+					.translateAssignment(assignment);
 			actionList.add(substitution);
 			labelMapping.put(substitution, action);
 		}

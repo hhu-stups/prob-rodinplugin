@@ -5,7 +5,6 @@ package de.prob.core.langdep;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -34,12 +33,13 @@ import org.rodinp.core.RodinDBException;
 
 import de.be4.classicalb.core.parser.analysis.prolog.ASTProlog;
 import de.be4.classicalb.core.parser.node.Node;
+import de.be4.classicalb.core.parser.node.PExpression;
+import de.be4.classicalb.core.parser.node.PPredicate;
 import de.prob.core.Animator;
 import de.prob.core.LanguageDependendAnimationPart;
 import de.prob.core.command.LoadEventBModelCommand;
-import de.prob.eventb.translator.ExpressionVisitor;
 import de.prob.eventb.translator.FormulaTranslator;
-import de.prob.eventb.translator.PredicateVisitor;
+import de.prob.eventb.translator.internal.TranslationVisitor;
 import de.prob.exceptions.ProBException;
 import de.prob.parserbase.ProBParseException;
 import de.prob.prolog.output.IPrologTermOutput;
@@ -69,10 +69,8 @@ public class EventBAnimatorPart implements LanguageDependendAnimationPart {
 		checkParseResult(parseResult);
 		final Expression ee = parseResult.getParsedExpression();
 		typeCheck(ff, ee);
-		final ExpressionVisitor visitor = new ExpressionVisitor(
-				new LinkedList<String>());
-		ee.accept(visitor);
-		toPrologTerm(pto, visitor.getExpression(), wrap, EXPR_WRAPPER);
+		final PExpression expr = TranslationVisitor.translateExpression(ee);
+		toPrologTerm(pto, expr, wrap, EXPR_WRAPPER);
 	}
 
 	public void parsePredicate(final IPrologTermOutput pto,
@@ -85,10 +83,8 @@ public class EventBAnimatorPart implements LanguageDependendAnimationPart {
 		checkParseResult(parseResult);
 		final Predicate pp = parseResult.getParsedPredicate();
 		typeCheck(ff, pp);
-		final PredicateVisitor visitor = new PredicateVisitor(
-				new LinkedList<String>());
-		pp.accept(visitor);
-		toPrologTerm(pto, visitor.getPredicate(), wrap, PRED_WRAPPER);
+		final PPredicate apred = TranslationVisitor.translatePredicate(pp);
+		toPrologTerm(pto, apred, wrap, PRED_WRAPPER);
 	}
 
 	private void toPrologTerm(final IPrologTermOutput pto,
@@ -275,11 +271,10 @@ public class EventBAnimatorPart implements LanguageDependendAnimationPart {
 		pto.openTerm("event");
 		pto.printAtom(eventName);
 		if (predicate != null) {
-			final PredicateVisitor visitor = new PredicateVisitor(
-					new LinkedList<String>());
-			predicate.accept(visitor);
+			final PPredicate apred = TranslationVisitor
+					.translatePredicate(predicate);
 			final ASTProlog prolog = new ASTProlog(pto, null);
-			visitor.getPredicate().apply(prolog);
+			apred.apply(prolog);
 		}
 		pto.closeTerm();
 		if (wrap) {

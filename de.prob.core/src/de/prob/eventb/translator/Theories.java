@@ -7,7 +7,6 @@ import java.io.Reader;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.LinkedList;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -48,6 +47,7 @@ import de.be4.classicalb.core.parser.analysis.prolog.ASTProlog;
 import de.be4.classicalb.core.parser.node.PExpression;
 import de.be4.classicalb.core.parser.node.PPredicate;
 import de.prob.core.translator.TranslationFailedException;
+import de.prob.eventb.translator.internal.TranslationVisitor;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.output.StructuredPrologOutput;
 import de.prob.prolog.term.PrologTerm;
@@ -349,22 +349,16 @@ public class Theories {
 	}
 
 	private static void printExpression(IPrologTermOutput prologOutput,
-			Expression pp) {
-		ExpressionVisitor visitor = new ExpressionVisitor(
-				new LinkedList<String>());
-		pp.accept(visitor);
-		PExpression ex = visitor.getExpression();
-		ASTProlog pv = new ASTProlog(prologOutput, null);
-		ex.apply(pv);
+			Expression ee) {
+		final PExpression expr = TranslationVisitor.translateExpression(ee);
+		final ASTProlog pv = new ASTProlog(prologOutput, null);
+		expr.apply(pv);
 	}
 
 	private static void printPredicate(IPrologTermOutput prologOutput,
 			Predicate pp) {
-		PredicateVisitor visitor = new PredicateVisitor(
-				new LinkedList<String>());
-		pp.accept(visitor);
-		PPredicate predicate = visitor.getPredicate();
-		ASTProlog pv = new ASTProlog(prologOutput, null);
+		final PPredicate predicate = TranslationVisitor.translatePredicate(pp);
+		final ASTProlog pv = new ASTProlog(prologOutput, null);
 		predicate.apply(pv);
 	}
 

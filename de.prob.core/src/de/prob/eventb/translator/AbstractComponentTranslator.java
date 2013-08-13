@@ -8,7 +8,6 @@ package de.prob.eventb.translator;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -90,25 +89,15 @@ public abstract class AbstractComponentTranslator {
 	protected PPredicate translatePredicate(FormulaFactory ff,
 			final ITypeEnvironment env, final ISCPredicateElement predicate)
 			throws RodinDBException {
-		final PredicateVisitor visitor = new PredicateVisitor(
-				new LinkedList<String>());
 		final Predicate pred = predicate.getPredicate(ff, env);
-		pred.accept(visitor);
-		final PPredicate result = visitor.getPredicate();
-		TranslationVisitor.checkNewImplementation(pred, result);
-		return result;
+		return TranslationVisitor.translatePredicate(pred);
 	}
 
 	protected PExpression translateExpression(FormulaFactory ff,
 			final ITypeEnvironment env, final ISCExpressionElement expression)
 			throws RodinDBException {
-		final ExpressionVisitor visitor = new ExpressionVisitor(
-				new LinkedList<String>());
 		final Expression expr = expression.getExpression(ff, env);
-		expr.accept(visitor);
-		final PExpression result = visitor.getExpression();
-		TranslationVisitor.checkNewImplementation(expr, result);
-		return result;
+		return TranslationVisitor.translateExpression(expr);
 	}
 
 	abstract public Node getAST();
