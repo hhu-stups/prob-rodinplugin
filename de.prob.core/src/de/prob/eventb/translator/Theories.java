@@ -25,7 +25,6 @@ import org.eventb.core.ast.Type;
 import org.eventb.theory.core.DatabaseUtilities;
 import org.eventb.theory.core.IAvailableTheory;
 import org.eventb.theory.core.IAvailableTheoryProject;
-import org.eventb.theory.core.IDeployedTheoryRoot;
 import org.eventb.theory.core.ISCAxiomaticDefinitionAxiom;
 import org.eventb.theory.core.ISCAxiomaticDefinitionsBlock;
 import org.eventb.theory.core.ISCAxiomaticOperatorDefinition;
@@ -39,6 +38,7 @@ import org.eventb.theory.core.ISCNewOperatorDefinition;
 import org.eventb.theory.core.ISCOperatorArgument;
 import org.eventb.theory.core.ISCRecursiveDefinitionCase;
 import org.eventb.theory.core.ISCRecursiveOperatorDefinition;
+import org.eventb.theory.core.ISCTheoryRoot;
 import org.eventb.theory.core.ISCTypeArgument;
 import org.eventb.theory.core.ITheoryPathRoot;
 import org.rodinp.core.IRodinProject;
@@ -93,7 +93,7 @@ public class Theories {
 	 * 
 	 * @throws TranslationFailedException
 	 */
-	private static void savePrintTranslation(IDeployedTheoryRoot theory,
+	private static void savePrintTranslation(ISCTheoryRoot theory,
 			Collection<String> visitedTheories, IPrologTermOutput opto)
 			throws RodinDBException, TranslationFailedException {
 		final StructuredPrologOutput pto = new StructuredPrologOutput();
@@ -103,7 +103,7 @@ public class Theories {
 		opto.printTerm(result);
 	}
 
-	private static void printTranslation(IDeployedTheoryRoot theory,
+	private static void printTranslation(ISCTheoryRoot theory,
 			Collection<String> visitedTheories, StructuredPrologOutput pto)
 			throws RodinDBException, TranslationFailedException {
 		final String name = theory.getElementName();
@@ -118,7 +118,7 @@ public class Theories {
 		}
 	}
 
-	private static void printImportedTheories(IDeployedTheoryRoot theory,
+	private static void printImportedTheories(ISCTheoryRoot theory,
 			Collection<String> visitedTheories, StructuredPrologOutput pto)
 			throws RodinDBException, TranslationFailedException {
 		for (ISCImportTheoryProject project : theory
@@ -130,7 +130,7 @@ public class Theories {
 		}
 	}
 
-	private static void printTheory(IDeployedTheoryRoot theory,
+	private static void printTheory(ISCTheoryRoot theory,
 			StructuredPrologOutput pto) throws RodinDBException,
 			TranslationFailedException {
 		pto.openTerm("theory");
@@ -156,7 +156,7 @@ public class Theories {
 		pto.closeList();
 	}
 
-	private static void findProBMappingFile(IDeployedTheoryRoot theory,
+	private static void findProBMappingFile(ISCTheoryRoot theory,
 			IPrologTermOutput pto) throws TranslationFailedException {
 		final String theoryName = theory.getComponentName();
 		final IPath path = new Path(theoryName + "."
@@ -173,7 +173,7 @@ public class Theories {
 	}
 
 	private static Collection<OperatorMapping> readMappingFile(IFile file,
-			IDeployedTheoryRoot theory) throws TranslationFailedException {
+			ISCTheoryRoot theory) throws TranslationFailedException {
 		try {
 			final InputStream input = file.getContents();
 			final String name = theory.getComponentName();
@@ -213,7 +213,7 @@ public class Theories {
 		pto.closeList();
 	}
 
-	private static void printDataTypes(IDeployedTheoryRoot theory,
+	private static void printDataTypes(ISCTheoryRoot theory,
 			IPrologTermOutput pto) throws RodinDBException {
 		final FormulaFactory ff = theory.getFormulaFactory();
 		pto.openList();
@@ -254,7 +254,7 @@ public class Theories {
 
 	}
 
-	private static void printOperatorDefs(IDeployedTheoryRoot theory,
+	private static void printOperatorDefs(ISCTheoryRoot theory,
 			IPrologTermOutput pto) throws RodinDBException {
 		pto.openList();
 		for (ISCNewOperatorDefinition opdef : theory
@@ -265,7 +265,7 @@ public class Theories {
 	}
 
 	private static void printOperator(ISCNewOperatorDefinition opDef,
-			IDeployedTheoryRoot theory, IPrologTermOutput prologOutput)
+			ISCTheoryRoot theory, IPrologTermOutput prologOutput)
 			throws RodinDBException {
 
 		prologOutput.openTerm("operator");
@@ -368,7 +368,7 @@ public class Theories {
 		predicate.apply(pv);
 	}
 
-	private static void printAxiomaticDefs(IDeployedTheoryRoot theory,
+	private static void printAxiomaticDefs(ISCTheoryRoot theory,
 			IPrologTermOutput pto) throws RodinDBException {
 		FormulaFactory ff = theory.getFormulaFactory();
 		ITypeEnvironment te = theory.getTypeEnvironment(ff);
