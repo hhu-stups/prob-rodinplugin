@@ -104,8 +104,13 @@ import de.be4.classicalb.core.parser.node.PPredicate;
 import de.be4.classicalb.core.parser.node.TIdentifierLiteral;
 import de.be4.classicalb.core.parser.node.TIntegerLiteral;
 import de.prob.eventb.translator.internal.SimpleVisitorAdapter;
+import de.prob.eventb.translator.internal.TranslationVisitor;
 
 // Complexity is actually quite low for a visitor ;-)
+/**
+ * @deprecated Use {@link TranslationVisitor} instead
+ */
+@Deprecated
 public class ExpressionVisitor extends SimpleVisitorAdapter implements // NOPMD
 		// by bendisposto
 		ISimpleVisitor {
@@ -645,7 +650,6 @@ public class ExpressionVisitor extends SimpleVisitorAdapter implements // NOPMD
 
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
 	public void visitUnaryExpression(final UnaryExpression expression) { // NOPMD
 		// by

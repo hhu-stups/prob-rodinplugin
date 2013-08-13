@@ -55,7 +55,12 @@ import de.be4.classicalb.core.parser.node.PExpression;
 import de.be4.classicalb.core.parser.node.PPredicate;
 import de.be4.classicalb.core.parser.node.TIdentifierLiteral;
 import de.prob.eventb.translator.internal.SimpleVisitorAdapter;
+import de.prob.eventb.translator.internal.TranslationVisitor;
 
+/**
+ * @deprecated Use {@link TranslationVisitor} instead
+ */
+@Deprecated
 public class PredicateVisitor extends SimpleVisitorAdapter implements // NOPMD
 		ISimpleVisitor {
 

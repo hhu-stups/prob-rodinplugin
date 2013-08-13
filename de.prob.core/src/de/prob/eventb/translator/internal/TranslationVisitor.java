@@ -46,6 +46,16 @@ import de.prob.eventb.translator.AssignmentVisitor;
 import de.prob.eventb.translator.ExpressionVisitor;
 import de.prob.eventb.translator.PredicateVisitor;
 
+/**
+ * The global SuppressWarnings annotation is used because the deprecated code is
+ * used to check if this new implementation computes the same results as the old
+ * code.
+ * 
+ * That should be removed after a while.
+ * 
+ * @author plagge
+ */
+@SuppressWarnings("deprecation")
 public class TranslationVisitor implements ISimpleVisitor {
 	private static final String UNCOVERED_PREDICATE = "Uncovered Predicate";
 
@@ -516,7 +526,6 @@ public class TranslationVisitor implements ISimpleVisitor {
 		predicates.push(result);
 	}
 
-	@SuppressWarnings("deprecation")
 	public void visitUnaryExpression(final UnaryExpression expression) {
 		final PExpression exp = getExpression(expression.getChild());
 		final PExpression result;
