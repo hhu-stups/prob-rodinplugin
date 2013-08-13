@@ -41,7 +41,6 @@ public abstract class AbstractComponentTranslator {
 		return Collections.unmodifiableMap(labelMapping);
 	}
 
-	private boolean theoryIsUsed = false;
 	private final List<IPragma> pragmas = new ArrayList<IPragma>();
 	private final List<ProofObligation> proofs = new ArrayList<ProofObligation>();
 	private final String resourceName;
@@ -96,7 +95,7 @@ public abstract class AbstractComponentTranslator {
 		final Predicate pred = predicate.getPredicate(ff, env);
 		pred.accept(visitor);
 		final PPredicate result = visitor.getPredicate();
-		theoryIsUsed |= TranslationVisitor.checkNewImplementation(pred, result);
+		TranslationVisitor.checkNewImplementation(pred, result);
 		return result;
 	}
 
@@ -108,12 +107,8 @@ public abstract class AbstractComponentTranslator {
 		final Expression expr = expression.getExpression(ff, env);
 		expr.accept(visitor);
 		final PExpression result = visitor.getExpression();
-		theoryIsUsed |= TranslationVisitor.checkNewImplementation(expr, result);
+		TranslationVisitor.checkNewImplementation(expr, result);
 		return result;
-	}
-
-	public boolean isTheoryUsed() {
-		return theoryIsUsed;
 	}
 
 	abstract public Node getAST();
