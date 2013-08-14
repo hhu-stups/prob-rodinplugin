@@ -162,7 +162,7 @@ public class Theories {
 			Iterable<IDeployedTheoryRoot> imported, StructuredPrologOutput pto)
 			throws RodinDBException, TranslationFailedException {
 		pto.openTerm("theory");
-		pto.printAtom(theory.getElementName());
+		printTheoryName(theory, pto);
 		printListOfImportedTheories(imported, pto);
 		printIdentifiers(theory.getSCTypeParameters(), pto);
 		printDataTypes(theory, pto);
@@ -177,9 +177,17 @@ public class Theories {
 			throws RodinDBException {
 		pto.openList();
 		for (IDeployedTheoryRoot theory : imported) {
-			pto.printAtom(theory.getElementName());
+			printTheoryName(theory, pto);
 		}
 		pto.closeList();
+	}
+
+	private static void printTheoryName(IDeployedTheoryRoot theory,
+			IPrologTermOutput pto) {
+		pto.openTerm("theory_name");
+		pto.printAtom(theory.getRodinProject().getElementName());
+		pto.printAtom(theory.getElementName());
+		pto.closeTerm();
 	}
 
 	/**
