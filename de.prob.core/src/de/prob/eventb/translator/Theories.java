@@ -75,8 +75,9 @@ public class Theories {
 				for (IAvailableTheoryProject ap : theoryPath
 						.getAvailableTheoryProjects()) {
 					for (IAvailableTheory at : ap.getTheories()) {
-						savePrintTranslation(at.getDeployedTheory(),
-								visitedTheories, pout);
+						final String projectName = ap.getElementName();
+						savePrintTranslation(projectName,
+								at.getDeployedTheory(), visitedTheories, pout);
 					}
 				}
 			}
@@ -93,19 +94,21 @@ public class Theories {
 	 * 
 	 * @throws TranslationFailedException
 	 */
-	private static void savePrintTranslation(ISCTheoryRoot theory,
-			Collection<String> visitedTheories, IPrologTermOutput opto)
-			throws RodinDBException, TranslationFailedException {
+	private static void savePrintTranslation(String projectName,
+			ISCTheoryRoot theory, Collection<String> visitedTheories,
+			IPrologTermOutput opto) throws RodinDBException,
+			TranslationFailedException {
 		final StructuredPrologOutput pto = new StructuredPrologOutput();
-		printTranslation(theory, visitedTheories, pto);
+		printTranslation(projectName, theory, visitedTheories, pto);
 		pto.fullstop();
 		final PrologTerm result = pto.getSentences().get(0);
 		opto.printTerm(result);
 	}
 
-	private static void printTranslation(ISCTheoryRoot theory,
-			Collection<String> visitedTheories, StructuredPrologOutput pto)
-			throws RodinDBException, TranslationFailedException {
+	private static void printTranslation(String projectName,
+			ISCTheoryRoot theory, Collection<String> visitedTheories,
+			StructuredPrologOutput pto) throws RodinDBException,
+			TranslationFailedException {
 		final String name = theory.getElementName();
 		// Check if the theory has already been printed, if yes, skip it
 		if (!visitedTheories.contains(name)) {
@@ -114,7 +117,7 @@ public class Theories {
 			// dependencies are printed first. (I'm not sure that ProB needs
 			// that, anyway)
 			printImportedTheories(theory, visitedTheories, pto);
-			printTheory(theory, pto);
+			printTheory(projectName, theory, pto);
 		}
 	}
 
@@ -123,18 +126,22 @@ public class Theories {
 			throws RodinDBException, TranslationFailedException {
 		for (ISCImportTheoryProject project : theory
 				.getSCImportTheoryProjects()) {
+			final String projectName = project.getElementName();
 			for (ISCImportTheory imported : project.getSCImportTheories()) {
-				printTranslation(imported.getImportTheory(), visitedTheories,
-						pto);
+				printTranslation(projectName, imported.getImportTheory(),
+						visitedTheories, pto);
 			}
 		}
 	}
 
-	private static void printTheory(ISCTheoryRoot theory,
+	private static void printTheory(String projectName, ISCTheoryRoot theory,
 			StructuredPrologOutput pto) throws RodinDBException,
 			TranslationFailedException {
 		pto.openTerm("theory");
+		pto.openTerm("thfile");
+		pto.printAtom(projectName);
 		pto.printAtom(theory.getElementName());
+		pto.closeTerm();
 		printListOfImportedTheories(theory.getSCImportTheoryProjects(), pto);
 		printIdentifiers(theory.getSCTypeParameters(), pto);
 		printDataTypes(theory, pto);
@@ -149,9 +156,14 @@ public class Theories {
 			throws RodinDBException {
 		pto.openList();
 		for (ISCImportTheoryProject project : projects) {
+			pto.openTerm("project");
+			pto.printAtom(project.getElementName());
+			pto.openList();
 			for (ISCImportTheory imported : project.getSCImportTheories()) {
 				pto.printAtom(imported.getElementName());
 			}
+			pto.closeList();
+			pto.closeTerm();
 		}
 		pto.closeList();
 	}
