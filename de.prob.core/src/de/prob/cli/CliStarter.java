@@ -85,9 +85,8 @@ public final class CliStarter {
 		final File applicationPath = getCliPath();
 
 		final String fullcp = createFullClasspath(os, applicationPath);
-		
-		final OsSpecificInfo osInfo = getOsInfo(os,arch);
-		
+
+		final OsSpecificInfo osInfo = getOsInfo(os, arch);
 
 		final String osPath = applicationPath + File.separator + osInfo.subdir;
 		final String executable = osPath + File.separator + osInfo.cliName;
@@ -148,28 +147,29 @@ public final class CliStarter {
 
 	}
 
-	private OsSpecificInfo getOsInfo(final String os, String architecture) throws CliException {
+	private OsSpecificInfo getOsInfo(final String os, String architecture)
+			throws CliException {
 		if (os.equals(Platform.OS_MACOSX)) {
-			return new OsSpecificInfo("macos", "probcli.sh",
-					"sh", "send_user_interrupt");
+			return new OsSpecificInfo("macos", "probcli.sh", "sh",
+					"send_user_interrupt");
 		}
 		if (os.equals(Platform.OS_WIN32)) {
-			return new OsSpecificInfo("windows",
-					"probcli.exe", null, "send_user_interrupt.exe");
+			return new OsSpecificInfo("windows", "probcli.exe", null,
+					"send_user_interrupt.exe");
 		}
-		
+
 		if (os.equals(Platform.OS_LINUX)) {
 			String linux = "linux";
 			if (architecture.equals(Platform.ARCH_X86_64)) {
 				linux = "linux64";
 			}
-			return new OsSpecificInfo(linux, "probcli.sh",
-					"sh", "send_user_interrupt");
+			return new OsSpecificInfo(linux, "probcli.sh", "sh",
+					"send_user_interrupt");
 		}
-			final CliException cliException = new CliException(
-					"ProB does not support the plattform: " + os);
-			cliException.notifyUserOnce();
-			throw cliException;
+		final CliException cliException = new CliException(
+				"ProB does not support the plattform: " + os);
+		cliException.notifyUserOnce();
+		throw cliException;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -258,8 +258,9 @@ public final class CliStarter {
 		final Path path = new Path("prob");
 		final URL fileURL = FileLocator.find(
 				Activator.getDefault().getBundle(), path, null);
-		if (fileURL==null) {
-			throw new CliException("Unable to find directory with prob executables.");
+		if (fileURL == null) {
+			throw new CliException(
+					"Unable to find directory with prob executables.");
 		}
 		URL resolved;
 		try {
