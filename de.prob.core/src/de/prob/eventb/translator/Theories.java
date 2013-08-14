@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -24,6 +25,7 @@ import org.eventb.core.ast.Type;
 import org.eventb.theory.core.DatabaseUtilities;
 import org.eventb.theory.core.IAvailableTheory;
 import org.eventb.theory.core.IAvailableTheoryProject;
+import org.eventb.theory.core.IDeployedTheoryRoot;
 import org.eventb.theory.core.ISCAxiomaticDefinitionAxiom;
 import org.eventb.theory.core.ISCAxiomaticDefinitionsBlock;
 import org.eventb.theory.core.ISCAxiomaticOperatorDefinition;
@@ -31,8 +33,6 @@ import org.eventb.theory.core.ISCConstructorArgument;
 import org.eventb.theory.core.ISCDatatypeConstructor;
 import org.eventb.theory.core.ISCDatatypeDefinition;
 import org.eventb.theory.core.ISCDirectOperatorDefinition;
-import org.eventb.theory.core.ISCImportTheory;
-import org.eventb.theory.core.ISCImportTheoryProject;
 import org.eventb.theory.core.ISCNewOperatorDefinition;
 import org.eventb.theory.core.ISCOperatorArgument;
 import org.eventb.theory.core.ISCRecursiveDefinitionCase;
@@ -40,6 +40,7 @@ import org.eventb.theory.core.ISCRecursiveOperatorDefinition;
 import org.eventb.theory.core.ISCTheoryRoot;
 import org.eventb.theory.core.ISCTypeArgument;
 import org.eventb.theory.core.ITheoryPathRoot;
+import org.eventb.theory.core.IUseTheory;
 import org.rodinp.core.IRodinProject;
 import org.rodinp.core.RodinDBException;
 
@@ -75,9 +76,10 @@ public class Theories {
 				for (IAvailableTheoryProject ap : theoryPath
 						.getAvailableTheoryProjects()) {
 					for (IAvailableTheory at : ap.getTheories()) {
-						final String projectName = ap.getElementName();
-						savePrintTranslation(projectName,
-								at.getDeployedTheory(), visitedTheories, pout);
+						final IDeployedTheoryRoot deployedTheory = at
+								.getDeployedTheory();
+						savePrintTranslation(deployedTheory, visitedTheories,
+								pout);
 					}
 				}
 			}
@@ -86,29 +88,41 @@ public class Theories {
 		}
 	}
 
+	private static Iterable<IDeployedTheoryRoot> getUsedTheories(
+			final IDeployedTheoryRoot deployedTheory) throws RodinDBException,
+			TranslationFailedException {
+		Collection<IDeployedTheoryRoot> theories = new ArrayList<IDeployedTheoryRoot>();
+		for (IUseTheory use : deployedTheory.getUsedTheories()) {
+			if (use.hasUseTheory()) {
+				theories.add(use.getUsedTheory());
+			}
+		}
+		return theories;
+	}
+
 	/**
 	 * We currently write the translated theory into a PrologTerm object because
 	 * the translation is currently very unstable and erroneous. Writing in a
 	 * Prolog object makes sure that the output stream to the Prolog process
 	 * will not be corrupted.
 	 * 
+	 * @param importedTheories
+	 * 
 	 * @throws TranslationFailedException
 	 */
-	private static void savePrintTranslation(String projectName,
-			ISCTheoryRoot theory, Collection<String> visitedTheories,
-			IPrologTermOutput opto) throws RodinDBException,
-			TranslationFailedException {
+	private static void savePrintTranslation(IDeployedTheoryRoot theory,
+			Collection<String> visitedTheories, IPrologTermOutput opto)
+			throws RodinDBException, TranslationFailedException {
 		final StructuredPrologOutput pto = new StructuredPrologOutput();
-		printTranslation(projectName, theory, visitedTheories, pto);
-		pto.fullstop();
-		final PrologTerm result = pto.getSentences().get(0);
-		opto.printTerm(result);
+		printTranslation(theory, visitedTheories, pto);
+		for (PrologTerm result : pto.getSentences()) {
+			opto.printTerm(result);
+		}
 	}
 
-	private static void printTranslation(String projectName,
-			ISCTheoryRoot theory, Collection<String> visitedTheories,
-			StructuredPrologOutput pto) throws RodinDBException,
-			TranslationFailedException {
+	private static void printTranslation(IDeployedTheoryRoot theory,
+			Collection<String> visitedTheories, StructuredPrologOutput pto)
+			throws RodinDBException, TranslationFailedException {
 		final String name = theory.getElementName();
 		// Check if the theory has already been printed, if yes, skip it
 		if (!visitedTheories.contains(name)) {
@@ -116,33 +130,28 @@ public class Theories {
 			// First print the imported theories, this guarantees that needed
 			// dependencies are printed first. (I'm not sure that ProB needs
 			// that, anyway)
-			printImportedTheories(theory, visitedTheories, pto);
-			printTheory(projectName, theory, pto);
+			Iterable<IDeployedTheoryRoot> imported = getUsedTheories(theory);
+			printImportedTheories(imported, visitedTheories, pto);
+			printTheory(theory, imported, pto);
+			pto.fullstop();
 		}
 	}
 
-	private static void printImportedTheories(ISCTheoryRoot theory,
+	private static void printImportedTheories(
+			Iterable<IDeployedTheoryRoot> theories,
 			Collection<String> visitedTheories, StructuredPrologOutput pto)
 			throws RodinDBException, TranslationFailedException {
-		for (ISCImportTheoryProject project : theory
-				.getSCImportTheoryProjects()) {
-			final String projectName = project.getElementName();
-			for (ISCImportTheory imported : project.getSCImportTheories()) {
-				printTranslation(projectName, imported.getImportTheory(),
-						visitedTheories, pto);
-			}
+		for (IDeployedTheoryRoot theory : theories) {
+			printTranslation(theory, visitedTheories, pto);
 		}
 	}
 
-	private static void printTheory(String projectName, ISCTheoryRoot theory,
-			StructuredPrologOutput pto) throws RodinDBException,
-			TranslationFailedException {
+	private static void printTheory(ISCTheoryRoot theory,
+			Iterable<IDeployedTheoryRoot> imported, StructuredPrologOutput pto)
+			throws RodinDBException, TranslationFailedException {
 		pto.openTerm("theory");
-		pto.openTerm("thfile");
-		pto.printAtom(projectName);
 		pto.printAtom(theory.getElementName());
-		pto.closeTerm();
-		printListOfImportedTheories(theory.getSCImportTheoryProjects(), pto);
+		printListOfImportedTheories(imported, pto);
 		printIdentifiers(theory.getSCTypeParameters(), pto);
 		printDataTypes(theory, pto);
 		printOperatorDefs(theory, pto);
@@ -152,18 +161,11 @@ public class Theories {
 	}
 
 	private static void printListOfImportedTheories(
-			ISCImportTheoryProject[] projects, StructuredPrologOutput pto)
+			Iterable<IDeployedTheoryRoot> imported, StructuredPrologOutput pto)
 			throws RodinDBException {
 		pto.openList();
-		for (ISCImportTheoryProject project : projects) {
-			pto.openTerm("project");
-			pto.printAtom(project.getElementName());
-			pto.openList();
-			for (ISCImportTheory imported : project.getSCImportTheories()) {
-				pto.printAtom(imported.getElementName());
-			}
-			pto.closeList();
-			pto.closeTerm();
+		for (IDeployedTheoryRoot theory : imported) {
+			pto.printAtom(theory.getElementName());
 		}
 		pto.closeList();
 	}
