@@ -88,9 +88,21 @@ public class Theories {
 		}
 	}
 
+	/**
+	 * Returns the used theories of a deployed theory. These are (at least I
+	 * think so) the (deployed versions of) theories imported by the original
+	 * theory.
+	 * 
+	 * Please note that {@link IDeployedTheoryRoot#getSCImportTheoryProjects()}
+	 * does not work as it always returns an empty list.
+	 * 
+	 * @param deployedTheory
+	 * @return An {@link Iterable} with the deployed theories that are used by
+	 *         the given theory.
+	 * @throws RodinDBException
+	 */
 	private static Iterable<IDeployedTheoryRoot> getUsedTheories(
-			final IDeployedTheoryRoot deployedTheory) throws RodinDBException,
-			TranslationFailedException {
+			final IDeployedTheoryRoot deployedTheory) throws RodinDBException {
 		Collection<IDeployedTheoryRoot> theories = new ArrayList<IDeployedTheoryRoot>();
 		for (IUseTheory use : deployedTheory.getUsedTheories()) {
 			if (use.hasUseTheory()) {
@@ -105,8 +117,6 @@ public class Theories {
 	 * the translation is currently very unstable and erroneous. Writing in a
 	 * Prolog object makes sure that the output stream to the Prolog process
 	 * will not be corrupted.
-	 * 
-	 * @param importedTheories
 	 * 
 	 * @throws TranslationFailedException
 	 */
@@ -133,6 +143,8 @@ public class Theories {
 			Iterable<IDeployedTheoryRoot> imported = getUsedTheories(theory);
 			printImportedTheories(imported, visitedTheories, pto);
 			printTheory(theory, imported, pto);
+			// We add a full stop, because we want to build a list of terms that
+			// will be printed after everything went well.
 			pto.fullstop();
 		}
 	}
@@ -146,7 +158,7 @@ public class Theories {
 		}
 	}
 
-	private static void printTheory(ISCTheoryRoot theory,
+	private static void printTheory(IDeployedTheoryRoot theory,
 			Iterable<IDeployedTheoryRoot> imported, StructuredPrologOutput pto)
 			throws RodinDBException, TranslationFailedException {
 		pto.openTerm("theory");
@@ -170,6 +182,21 @@ public class Theories {
 		pto.closeList();
 	}
 
+	/**
+	 * Each theory might have a ProB Mapping File which describes how ProB
+	 * should handle operators of the theory. We look if there is a special
+	 * named file in the same directory as the original theory file.
+	 * 
+	 * E.g. if the theory is "example" in the project "P" we look for a file
+	 * named "example.ptm" in "P".
+	 * 
+	 * If a mapping file is found, it contents is processed and printed to the
+	 * Prolog output.
+	 * 
+	 * @param theory
+	 * @param pto
+	 * @throws TranslationFailedException
+	 */
 	private static void findProBMappingFile(ISCTheoryRoot theory,
 			IPrologTermOutput pto) throws TranslationFailedException {
 		final String theoryName = theory.getComponentName();
