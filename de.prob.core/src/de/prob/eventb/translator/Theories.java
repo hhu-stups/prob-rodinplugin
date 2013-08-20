@@ -19,7 +19,10 @@ import org.eventb.core.ISCIdentifierElement;
 import org.eventb.core.ast.Expression;
 import org.eventb.core.ast.Formula;
 import org.eventb.core.ast.FormulaFactory;
+import org.eventb.core.ast.FreeIdentifier;
+import org.eventb.core.ast.IParseResult;
 import org.eventb.core.ast.ITypeEnvironment;
+import org.eventb.core.ast.LanguageVersion;
 import org.eventb.core.ast.Predicate;
 import org.eventb.core.ast.Type;
 import org.eventb.theory.core.DatabaseUtilities;
@@ -41,6 +44,8 @@ import org.eventb.theory.core.ISCTheoryRoot;
 import org.eventb.theory.core.ISCTypeArgument;
 import org.eventb.theory.core.ITheoryPathRoot;
 import org.eventb.theory.core.IUseTheory;
+import org.eventb.theory.core.TheoryAttributes;
+import org.eventb.theory.core.TheoryElement;
 import org.rodinp.core.IRodinProject;
 import org.rodinp.core.RodinDBException;
 
@@ -292,15 +297,17 @@ public class Theories {
 
 	private static void printConstructor(ISCDatatypeConstructor cons,
 			FormulaFactory ff, IPrologTermOutput pto) throws RodinDBException {
+		final String name = cons.getIdentifierString();
+		final ISCConstructorArgument[] args = cons.getConstructorArguments();
+
 		pto.openTerm("constructor");
-		pto.printAtom(cons.getIdentifierString());
+		pto.printAtom(name);
 		pto.openList();
-		for (ISCConstructorArgument arg : cons.getConstructorArguments()) {
+		for (ISCConstructorArgument arg : args) {
 			printTypedIdentifier("destructor", arg, ff, pto);
 		}
 		pto.closeList();
 		pto.closeTerm();
-
 	}
 
 	private static void printOperatorDefs(ISCTheoryRoot theory,
@@ -325,6 +332,9 @@ public class Theories {
 
 		// Arguments
 		printOperatorArguments(opDef.getOperatorArguments(), prologOutput, ff);
+		for (ISCOperatorArgument arg : opDef.getOperatorArguments()) {
+			te.add(arg.getIdentifier(ff));
+		}
 
 		// WD Condition
 		Predicate wdCondition = opDef.getWDCondition(ff, te);
@@ -341,15 +351,47 @@ public class Theories {
 		ISCRecursiveOperatorDefinition[] definitions = opDef
 				.getRecursiveOperatorDefinitions();
 		for (ISCRecursiveOperatorDefinition definition : definitions) {
+			final String indArg = definition.getInductiveArgument();
 			ISCRecursiveDefinitionCase[] recursiveDefinitionCases = definition
 					.getRecursiveDefinitionCases();
 			for (ISCRecursiveDefinitionCase c : recursiveDefinitionCases) {
-				Expression ex = c.getExpression(ff, te);
-				printExpression(prologOutput, ex);
+				printRecDefCase(indArg, prologOutput, ff, c);
 			}
 		}
 		prologOutput.closeList();
+		prologOutput.closeTerm();
+	}
 
+	private static void printRecDefCase(String indArg,
+			IPrologTermOutput prologOutput, final FormulaFactory ff,
+			ISCRecursiveDefinitionCase c) throws RodinDBException {
+		final String es = c.getExpressionString();
+		final IParseResult pr = ff.parseExpression(es, LanguageVersion.LATEST,
+				null);
+		final Expression ex = pr.getParsedExpression();
+
+		final String formulaAsString = c
+				.getAttributeValue(TheoryAttributes.FORMULA_ATTRIBUTE);
+		Formula<?> formula = TheoryElement.parseFormula(formulaAsString, ff,
+				false);
+
+		prologOutput.openTerm("case");
+		prologOutput.printAtom(indArg);
+		prologOutput.openList();
+		for (FreeIdentifier fi : ex.getFreeIdentifiers()) {
+			prologOutput.printAtom(fi.getName());
+		}
+		prologOutput.closeList();
+		printExpression(prologOutput, ex);
+		if (formula instanceof Predicate) {
+			printPredicate(prologOutput, (Predicate) formula);
+		} else if (formula instanceof Expression) {
+			printExpression(prologOutput, (Expression) formula);
+		} else {
+			throw new IllegalStateException("unexpected formula of type "
+					+ formula.getClass().getName()
+					+ " for recursive definition case in theory");
+		}
 		prologOutput.closeTerm();
 	}
 
