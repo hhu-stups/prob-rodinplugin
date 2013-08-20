@@ -297,13 +297,10 @@ public class Theories {
 
 	private static void printConstructor(ISCDatatypeConstructor cons,
 			FormulaFactory ff, IPrologTermOutput pto) throws RodinDBException {
-		final String name = cons.getIdentifierString();
-		final ISCConstructorArgument[] args = cons.getConstructorArguments();
-
 		pto.openTerm("constructor");
-		pto.printAtom(name);
+		pto.printAtom(cons.getIdentifierString());
 		pto.openList();
-		for (ISCConstructorArgument arg : args) {
+		for (ISCConstructorArgument arg : cons.getConstructorArguments()) {
 			printTypedIdentifier("destructor", arg, ff, pto);
 		}
 		pto.closeList();
