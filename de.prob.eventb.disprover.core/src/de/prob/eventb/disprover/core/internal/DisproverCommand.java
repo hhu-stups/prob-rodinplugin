@@ -8,21 +8,14 @@ import org.eventb.core.ast.Predicate;
 import org.eventb.core.seqprover.IProofMonitor;
 
 import de.be4.classicalb.core.parser.analysis.prolog.ASTProlog;
-import de.prob.core.Animator;
-import de.prob.core.ProBCommandJob;
-import de.prob.core.command.ClearMachineCommand;
-import de.prob.core.command.CommandException;
-import de.prob.core.command.ComposedCommand;
-import de.prob.core.command.IComposableCommand;
-import de.prob.core.command.SetPreferencesCommand;
-import de.prob.core.command.StartAnimationCommand;
+import de.prob.core.*;
+import de.prob.core.command.*;
 import de.prob.core.command.internal.InternalLoadCommand;
 import de.prob.eventb.translator.PredicateVisitor;
 import de.prob.exceptions.ProBException;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
-import de.prob.prolog.term.ListPrologTerm;
-import de.prob.prolog.term.PrologTerm;
+import de.prob.prolog.term.*;
 
 /**
  * The DisproverCommand takes two sets of ASTs (one for the machine and a list

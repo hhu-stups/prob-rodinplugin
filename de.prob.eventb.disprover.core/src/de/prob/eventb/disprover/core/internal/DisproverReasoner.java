@@ -1,33 +1,18 @@
 package de.prob.eventb.disprover.core.internal;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 import org.eclipse.core.runtime.Status;
-import org.eventb.core.IContextRoot;
-import org.eventb.core.IEventBProject;
-import org.eventb.core.IEventBRoot;
-import org.eventb.core.IMachineRoot;
+import org.eventb.core.*;
 import org.eventb.core.ast.Predicate;
 import org.eventb.core.basis.POSequent;
-import org.eventb.core.seqprover.IConfidence;
-import org.eventb.core.seqprover.IProofMonitor;
-import org.eventb.core.seqprover.IProofRule;
+import org.eventb.core.seqprover.*;
 import org.eventb.core.seqprover.IProofRule.IAntecedent;
-import org.eventb.core.seqprover.IProverSequent;
-import org.eventb.core.seqprover.IReasoner;
-import org.eventb.core.seqprover.IReasonerInput;
-import org.eventb.core.seqprover.IReasonerInputReader;
-import org.eventb.core.seqprover.IReasonerInputWriter;
-import org.eventb.core.seqprover.IReasonerOutput;
-import org.eventb.core.seqprover.ProverFactory;
-import org.eventb.core.seqprover.SerializeException;
 import org.rodinp.core.RodinDBException;
 import org.rodinp.core.basis.InternalElement;
 
 import de.be4.classicalb.core.parser.analysis.prolog.ASTProlog;
-import de.prob.core.Animator;
-import de.prob.core.PrologException;
+import de.prob.core.*;
 import de.prob.eventb.disprover.core.DisproverReasonerInput;
 import de.prob.eventb.translator.PredicateVisitor;
 import de.prob.exceptions.ProBException;
@@ -161,8 +146,7 @@ public class DisproverReasoner implements IReasoner {
 							"ProB: No Counter-Example found, but there might exist one.");
 
 		return ProverFactory.makeProofRule(this, input, null, null,
-				IConfidence.PENDING,
-				"Counter-Example: " + counterExample.toString(), ante);
+				IConfidence.PENDING, counterExample.toString(), ante);
 	}
 
 	@Override
