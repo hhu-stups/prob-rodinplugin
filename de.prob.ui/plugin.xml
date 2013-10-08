@@ -780,7 +780,7 @@
       <handler
             commandId="de.prob.ui.assertion_check">
          <enabledWhen>
-            <and>
+            <or>
                <with
                      variable="de.prob.core.model_loaded">
                   <equals
@@ -790,10 +790,10 @@
                <with
                      variable="de.prob.core.context_loaded">
                   <equals
-                        value="disabled">
+                        value="enabled">
                   </equals>
                </with>
-            </and>
+            </or>
          </enabledWhen>
          <class
                class="de.prob.ui.assertion.AssertionCheckHandler">
