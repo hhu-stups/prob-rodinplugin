@@ -3,15 +3,14 @@ package de.prob.eventb.disprover.core.internal;
 import java.util.Set;
 
 import org.eclipse.core.runtime.jobs.Job;
-import org.eventb.core.IEventBRoot;
 import org.eventb.core.ast.Predicate;
 import org.eventb.core.seqprover.IProofMonitor;
 
 import de.be4.classicalb.core.parser.analysis.prolog.ASTProlog;
+import de.be4.classicalb.core.parser.node.*;
 import de.prob.core.*;
 import de.prob.core.command.*;
-import de.prob.core.command.internal.InternalLoadCommand;
-import de.prob.eventb.translator.PredicateVisitor;
+import de.prob.eventb.translator.internal.TranslationVisitor;
 import de.prob.exceptions.ProBException;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
@@ -37,26 +36,29 @@ public class DisproverCommand implements IComposableCommand {
 	private final Set<Predicate> hypotheses;
 	private final Predicate goal;
 
+	private static ComposedCommand composed;
+
 	public DisproverCommand(Set<Predicate> hypotheses, Predicate goal) {
 		this.hypotheses = hypotheses;
 		this.goal = goal;
 	}
 
 	public static ICounterExample disprove(Animator animator,
-			Set<Predicate> hypotheses, Predicate goal, IEventBRoot root,
+			Set<Predicate> hypotheses, Predicate goal,
+			AEventBModelParseUnit machine, AEventBContextParseUnit context,
 			IProofMonitor pm) throws ProBException, InterruptedException {
 
 		final ClearMachineCommand clear = new ClearMachineCommand();
 		final SetPreferencesCommand setPrefs = SetPreferencesCommand
 				.createSetPreferencesCommand(animator);
-		final InternalLoadCommand load = new InternalLoadCommand(root);
 
-		final StartAnimationCommand start = new StartAnimationCommand();
+		DisproverLoadCommand load = new DisproverLoadCommand(machine, context);
+
+		StartAnimationCommand start = new StartAnimationCommand();
 
 		DisproverCommand disprove = new DisproverCommand(hypotheses, goal);
 
-		final ComposedCommand composed = new ComposedCommand(clear, setPrefs,
-				load, start, disprove);
+		composed = new ComposedCommand(clear, setPrefs, load, start, disprove);
 
 		final Job job = new ProBCommandJob("Disproving", animator, composed);
 		job.setUser(true);
@@ -70,6 +72,7 @@ public class DisproverCommand implements IComposableCommand {
 			job.cancel();
 			throw new InterruptedException();
 		}
+
 		return disprove.getResult();
 
 	}
@@ -80,7 +83,6 @@ public class DisproverCommand implements IComposableCommand {
 
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
-
 		pto.openTerm("cbc_disprove");
 
 		Predicate pred = goal;

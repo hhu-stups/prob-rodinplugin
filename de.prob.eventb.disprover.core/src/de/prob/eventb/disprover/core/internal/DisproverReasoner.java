@@ -3,15 +3,14 @@ package de.prob.eventb.disprover.core.internal;
 import java.util.*;
 
 import org.eclipse.core.runtime.Status;
-import org.eventb.core.*;
-import org.eventb.core.ast.Predicate;
-import org.eventb.core.basis.POSequent;
+import org.eventb.core.ast.*;
+import org.eventb.core.ast.ITypeEnvironment.IIterator;
 import org.eventb.core.seqprover.*;
 import org.eventb.core.seqprover.IProofRule.IAntecedent;
 import org.rodinp.core.RodinDBException;
-import org.rodinp.core.basis.InternalElement;
 
 import de.be4.classicalb.core.parser.analysis.prolog.ASTProlog;
+import de.be4.classicalb.core.parser.node.*;
 import de.prob.core.*;
 import de.prob.eventb.disprover.core.DisproverReasonerInput;
 import de.prob.eventb.translator.PredicateVisitor;
@@ -24,6 +23,10 @@ public class DisproverReasoner implements IReasoner {
 	static final String DISPROVER_CONTEXT = "disprover_context";
 
 	private static final String DISPROVER_REASONER_NAME = "de.prob.eventb.disprover.core.disproverReasoner";
+
+	private AEventBModelParseUnit machine;
+
+	private AEventBContextParseUnit context;
 
 	@Override
 	public String getReasonerID() {
@@ -77,10 +80,10 @@ public class DisproverReasoner implements IReasoner {
 		// Logger.info("Disprover: Sending Goal: "+
 		// UnicodeTranslator.toAscii(predicateToProlog(goal)));
 
-		IEventBRoot root = getRoot(sequent);
+		createMachine(sequent);
 
 		ICounterExample counterExample = DisproverCommand.disprove(
-				Animator.getAnimator(), hypotheses, goal, root, pm);
+				Animator.getAnimator(), hypotheses, goal, machine, context, pm);
 		// Logger.info("Disprover: Result: " + counterExample.toString());
 
 		return counterExample;
@@ -95,29 +98,86 @@ public class DisproverReasoner implements IReasoner {
 		return pto.toString();
 	}
 
-	private IEventBRoot getRoot(IProverSequent sequent) {
-		POSequent origin = (POSequent) sequent.getOrigin();
-		InternalElement poRoot = origin.getRoot();
+	/**
+	 * Creates an artificial root that contains only typing information
+	 * 
+	 * @param sequent
+	 * @return Machine root of artificial machine
+	 */
+	private void createMachine(IProverSequent sequent) {
+		machine = new AEventBModelParseUnit();
+		context = new AEventBContextParseUnit();
 
-		// IPORoot poRoot = origin.getComponent().getPORoot();
-		String name = poRoot.getElementName();
-		IEventBProject eventBProject = (IEventBProject) poRoot
-				.getRodinProject().getAdapter(IEventBProject.class);
+		machine.setName(new TIdentifierLiteral("DisproverMachine"));
+		context.setName(new TIdentifierLiteral("DisproverContext"));
 
-		// We don't know whether we have a machine or a context.
-		IMachineRoot machineRoot = eventBProject.getMachineRoot(name);
-		IContextRoot contextRoot = eventBProject.getContextRoot(name);
+		final List<PModelClause> modelClauses = new ArrayList<PModelClause>();
+		final List<PContextClause> contextClauses = new ArrayList<PContextClause>();
 
-		if (machineRoot.exists()) {
-			return machineRoot;
+		// we need to add an empty initialisation to make ProB happy
+		modelClauses.add(getEmptyInitialisation());
 
-		} else if (contextRoot.exists()) {
-			return contextRoot;
-		} else {
-			// Neither Machine nor Context
-			throw new RuntimeException(
-					"Cannot use ProB Disprover on non Machine/Context Files");
+		// collecting variables, sets and (type-)invariants
+		final AVariablesModelClause variablesModelClause = new AVariablesModelClause();
+		final List<PExpression> variableIdentifiers = new ArrayList<PExpression>();
+
+		final ASetsContextClause setsContextClause = new ASetsContextClause();
+		final List<PSet> sets = new ArrayList<PSet>();
+
+		final AInvariantModelClause invariantModelClause = new AInvariantModelClause();
+		final List<PPredicate> typeInvariants = new ArrayList<PPredicate>();
+
+		// add the context to the model
+		TIdentifierLiteral[] seenContexts = { new TIdentifierLiteral(
+				"DisproverContext") };
+		modelClauses.add(new ASeesModelClause(Arrays.asList(seenContexts)));
+
+		// Iterate over the type environment to construct a typing machine /
+		// context
+		ITypeEnvironment typeEnvironment = sequent.typeEnvironment();
+		IIterator typeIterator = typeEnvironment.getIterator();
+
+		while (typeIterator.hasNext()) {
+			typeIterator.advance();
+
+			DisproverIdentifier id = new DisproverIdentifier(
+					typeIterator.getName(), typeIterator.getType(),
+					sequent.getFormulaFactory());
+
+			// sets are added to the context, vars to the model
+			if (id.isSet()) {
+				sets.add(new ADeferredSetSet(id.getId()));
+			} else {
+				variableIdentifiers.add(new AIdentifierExpression(id.getId()));
+				typeInvariants.add(new AMemberPredicate(id.getIdExpression(),
+						id.getType()));
+			}
 		}
+
+		variablesModelClause.setIdentifiers(variableIdentifiers);
+		modelClauses.add(variablesModelClause);
+
+		setsContextClause.setSet(sets);
+		contextClauses.add(setsContextClause);
+
+		invariantModelClause.setPredicates(typeInvariants);
+		modelClauses.add(invariantModelClause);
+
+		machine.setModelClauses(modelClauses);
+		context.setContextClauses(contextClauses);
+	}
+
+	private PModelClause getEmptyInitialisation() {
+		List<PEvent> events = new ArrayList<PEvent>();
+		AEvent init = new AEvent();
+		init.setEventName(new TIdentifierLiteral("INITIALISATION"));
+		init.setAssignments(Arrays
+				.asList(new PSubstitution[] { new ASkipSubstitution() }));
+		init.setStatus(new AOrdinaryEventstatus());
+		events.add(init);
+		AEventsModelClause eventClause = new AEventsModelClause();
+		eventClause.setEvent(events);
+		return eventClause;
 	}
 
 	/**
