@@ -13,7 +13,7 @@ import de.be4.classicalb.core.parser.analysis.prolog.ASTProlog;
 import de.be4.classicalb.core.parser.node.*;
 import de.prob.core.*;
 import de.prob.eventb.disprover.core.DisproverReasonerInput;
-import de.prob.eventb.translator.PredicateVisitor;
+import de.prob.eventb.translator.internal.TranslationVisitor;
 import de.prob.exceptions.ProBException;
 import de.prob.logging.Logger;
 import de.prob.prolog.output.PrologTermStringOutput;
@@ -91,7 +91,7 @@ public class DisproverReasoner implements IReasoner {
 
 	private String predicateToProlog(Predicate pred) {
 		PrologTermStringOutput pto = new PrologTermStringOutput();
-		PredicateVisitor v = new PredicateVisitor();
+		TranslationVisitor v = new TranslationVisitor();
 		pred.accept(v);
 		ASTProlog p = new ASTProlog(pto, null);
 		v.getPredicate().apply(p);
