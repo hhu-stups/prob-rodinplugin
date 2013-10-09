@@ -95,7 +95,7 @@ public class DisproverCommand implements IComposableCommand {
 	}
 
 	private void translatePredicate(final IPrologTermOutput pto, Predicate pred) {
-		PredicateVisitor v = new PredicateVisitor();
+		TranslationVisitor v = new TranslationVisitor();
 		pred.accept(v);
 		ASTProlog p = new ASTProlog(pto, null);
 		v.getPredicate().apply(p);
