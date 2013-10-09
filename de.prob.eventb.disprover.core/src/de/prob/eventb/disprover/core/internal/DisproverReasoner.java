@@ -148,9 +148,12 @@ public class DisproverReasoner implements IReasoner {
 			if (id.isGivenSet()) {
 				sets.add(new ADeferredSetSet(id.getId()));
 			} else {
-				variableIdentifiers.add(new AIdentifierExpression(id.getId()));
-				typeInvariants.add(new AMemberPredicate(id.getIdExpression(),
-						id.getType()));
+				if (!id.isPrimedVariable()) {
+					variableIdentifiers.add(new AIdentifierExpression(id
+							.getId()));
+					typeInvariants.add(new AMemberPredicate(id
+							.getIdExpression(), id.getType()));
+				}
 			}
 		}
 
