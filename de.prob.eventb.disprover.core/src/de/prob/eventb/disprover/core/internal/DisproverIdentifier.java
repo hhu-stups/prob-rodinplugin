@@ -22,22 +22,24 @@ import de.prob.eventb.translator.internal.TranslationVisitor;
 public class DisproverIdentifier {
 
 	private final String name;
-	private Type type;
+	private final Type type;
 	private final FormulaFactory ff;
+	private final boolean givenSet;
 
-	public DisproverIdentifier(String name, Type type, FormulaFactory ff) {
+	public DisproverIdentifier(String name, Type type, boolean givenSet,
+			FormulaFactory ff) {
+		this.givenSet = givenSet;
 		this.ff = ff;
 		this.name = name;
-		if (type != null)
-			this.type = type;
+		this.type = type;
 	}
 
-	public boolean isSet() {
-		Type baseType = type.getBaseType();
-		if (baseType == null) {
-			return false;
-		}
-		return baseType.toString().equals(name);
+	public boolean isGivenSet() {
+		return givenSet;
+	}
+
+	public boolean isPrimedVariable() {
+		return name.endsWith("'");
 	}
 
 	private PExpression typeToPExpression(Type type) {

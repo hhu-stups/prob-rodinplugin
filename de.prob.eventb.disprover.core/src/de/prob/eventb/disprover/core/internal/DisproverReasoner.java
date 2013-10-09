@@ -142,10 +142,10 @@ public class DisproverReasoner implements IReasoner {
 
 			DisproverIdentifier id = new DisproverIdentifier(
 					typeIterator.getName(), typeIterator.getType(),
-					sequent.getFormulaFactory());
+					typeIterator.isGivenSet(), sequent.getFormulaFactory());
 
 			// sets are added to the context, vars to the model
-			if (id.isSet()) {
+			if (id.isGivenSet()) {
 				sets.add(new ADeferredSetSet(id.getId()));
 			} else {
 				variableIdentifiers.add(new AIdentifierExpression(id.getId()));
