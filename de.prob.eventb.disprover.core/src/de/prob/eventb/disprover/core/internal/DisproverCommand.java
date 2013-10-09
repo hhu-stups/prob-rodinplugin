@@ -7,7 +7,7 @@ import org.eventb.core.ast.Predicate;
 import org.eventb.core.seqprover.IProofMonitor;
 
 import de.be4.classicalb.core.parser.analysis.prolog.ASTProlog;
-import de.be4.classicalb.core.parser.node.*;
+import de.be4.classicalb.core.parser.node.AEventBContextParseUnit;
 import de.prob.core.*;
 import de.prob.core.command.*;
 import de.prob.eventb.translator.internal.TranslationVisitor;
@@ -45,14 +45,14 @@ public class DisproverCommand implements IComposableCommand {
 
 	public static ICounterExample disprove(Animator animator,
 			Set<Predicate> hypotheses, Predicate goal,
-			AEventBModelParseUnit machine, AEventBContextParseUnit context,
-			IProofMonitor pm) throws ProBException, InterruptedException {
+			AEventBContextParseUnit context, IProofMonitor pm)
+			throws ProBException, InterruptedException {
 
 		final ClearMachineCommand clear = new ClearMachineCommand();
 		final SetPreferencesCommand setPrefs = SetPreferencesCommand
 				.createSetPreferencesCommand(animator);
 
-		DisproverLoadCommand load = new DisproverLoadCommand(machine, context);
+		DisproverLoadCommand load = new DisproverLoadCommand(context);
 
 		StartAnimationCommand start = new StartAnimationCommand();
 

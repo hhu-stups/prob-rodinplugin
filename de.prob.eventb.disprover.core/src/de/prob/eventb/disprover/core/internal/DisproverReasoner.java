@@ -24,10 +24,6 @@ public class DisproverReasoner implements IReasoner {
 
 	private static final String DISPROVER_REASONER_NAME = "de.prob.eventb.disprover.core.disproverReasoner";
 
-	private AEventBModelParseUnit machine;
-
-	private AEventBContextParseUnit context;
-
 	@Override
 	public String getReasonerID() {
 		return DISPROVER_REASONER_NAME;
@@ -80,10 +76,10 @@ public class DisproverReasoner implements IReasoner {
 		// Logger.info("Disprover: Sending Goal: "+
 		// UnicodeTranslator.toAscii(predicateToProlog(goal)));
 
-		createMachine(sequent);
+		AEventBContextParseUnit context = createContext(sequent);
 
 		ICounterExample counterExample = DisproverCommand.disprove(
-				Animator.getAnimator(), hypotheses, goal, machine, context, pm);
+				Animator.getAnimator(), hypotheses, goal, context, pm);
 		// Logger.info("Disprover: Result: " + counterExample.toString());
 
 		return counterExample;
@@ -104,36 +100,24 @@ public class DisproverReasoner implements IReasoner {
 	 * @param sequent
 	 * @return Machine root of artificial machine
 	 */
-	private void createMachine(IProverSequent sequent) {
-		machine = new AEventBModelParseUnit();
-		context = new AEventBContextParseUnit();
+	private AEventBContextParseUnit createContext(IProverSequent sequent) {
+		AEventBContextParseUnit context = new AEventBContextParseUnit();
 
-		machine.setName(new TIdentifierLiteral("DisproverMachine"));
 		context.setName(new TIdentifierLiteral("DisproverContext"));
 
-		final List<PModelClause> modelClauses = new ArrayList<PModelClause>();
 		final List<PContextClause> contextClauses = new ArrayList<PContextClause>();
 
-		// we need to add an empty initialisation to make ProB happy
-		modelClauses.add(getEmptyInitialisation());
-
 		// collecting variables, sets and (type-)invariants
-		final AVariablesModelClause variablesModelClause = new AVariablesModelClause();
-		final List<PExpression> variableIdentifiers = new ArrayList<PExpression>();
+		final AConstantsContextClause constantsClause = new AConstantsContextClause();
+		final List<PExpression> constantsIdentifiers = new ArrayList<PExpression>();
 
 		final ASetsContextClause setsContextClause = new ASetsContextClause();
 		final List<PSet> sets = new ArrayList<PSet>();
 
-		final AInvariantModelClause invariantModelClause = new AInvariantModelClause();
-		final List<PPredicate> typeInvariants = new ArrayList<PPredicate>();
+		final AAxiomsContextClause axiomsContextClause = new AAxiomsContextClause();
+		final List<PPredicate> axioms = new ArrayList<PPredicate>();
 
-		// add the context to the model
-		TIdentifierLiteral[] seenContexts = { new TIdentifierLiteral(
-				"DisproverContext") };
-		modelClauses.add(new ASeesModelClause(Arrays.asList(seenContexts)));
-
-		// Iterate over the type environment to construct a typing machine /
-		// context
+		// Iterate over the type environment to construct a typing context
 		ITypeEnvironment typeEnvironment = sequent.typeEnvironment();
 		IIterator typeIterator = typeEnvironment.getIterator();
 
@@ -148,39 +132,34 @@ public class DisproverReasoner implements IReasoner {
 			if (id.isGivenSet()) {
 				sets.add(new ADeferredSetSet(id.getId()));
 			} else {
-				if (!id.isPrimedVariable()) {
-					variableIdentifiers.add(new AIdentifierExpression(id
-							.getId()));
-					typeInvariants.add(new AMemberPredicate(id
-							.getIdExpression(), id.getType()));
-				}
+				// might not be necessary for constants
+				// if (!id.isPrimedVariable()) {
+				constantsIdentifiers.add(new AIdentifierExpression(id.getId()));
+				axioms.add(new AMemberPredicate(id.getIdExpression(), id
+						.getType()));
+				// }
 			}
 		}
 
-		variablesModelClause.setIdentifiers(variableIdentifiers);
-		modelClauses.add(variablesModelClause);
+		// store hypothesis as axioms
+		TranslationVisitor translator = new TranslationVisitor();
+		for (Predicate predicate : sequent.hypIterable()) {
+			predicate.accept(translator);
+			axioms.add(translator.getPredicate());
+		}
+
+		axiomsContextClause.setPredicates(axioms);
+		contextClauses.add(axiomsContextClause);
+
+		constantsClause.setIdentifiers(constantsIdentifiers);
+		contextClauses.add(constantsClause);
 
 		setsContextClause.setSet(sets);
 		contextClauses.add(setsContextClause);
 
-		invariantModelClause.setPredicates(typeInvariants);
-		modelClauses.add(invariantModelClause);
-
-		machine.setModelClauses(modelClauses);
 		context.setContextClauses(contextClauses);
-	}
 
-	private PModelClause getEmptyInitialisation() {
-		List<PEvent> events = new ArrayList<PEvent>();
-		AEvent init = new AEvent();
-		init.setEventName(new TIdentifierLiteral("INITIALISATION"));
-		init.setAssignments(Arrays
-				.asList(new PSubstitution[] { new ASkipSubstitution() }));
-		init.setStatus(new AOrdinaryEventstatus());
-		events.add(init);
-		AEventsModelClause eventClause = new AEventsModelClause();
-		eventClause.setEvent(events);
-		return eventClause;
+		return context;
 	}
 
 	/**

@@ -1,19 +1,16 @@
 package de.prob.eventb.disprover.core.internal;
 
 import de.be4.classicalb.core.parser.analysis.prolog.ASTProlog;
-import de.be4.classicalb.core.parser.node.*;
+import de.be4.classicalb.core.parser.node.AEventBContextParseUnit;
 import de.prob.core.command.*;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.PrologTerm;
 
 public final class DisproverLoadCommand implements IComposableCommand {
-	private final AEventBModelParseUnit machine;
 	private final AEventBContextParseUnit context;
 
-	public DisproverLoadCommand(AEventBModelParseUnit machine,
-			AEventBContextParseUnit context) {
-		this.machine = machine;
+	public DisproverLoadCommand(AEventBContextParseUnit context) {
 		this.context = context;
 	}
 
@@ -23,7 +20,6 @@ public final class DisproverLoadCommand implements IComposableCommand {
 
 		pto.openTerm("load_event_b_project");
 		pto.openList();
-		machine.apply(modelAst);
 		pto.closeList();
 
 		// load context
