@@ -10,6 +10,8 @@ import de.be4.classicalb.core.parser.analysis.prolog.ASTProlog;
 import de.be4.classicalb.core.parser.node.AEventBContextParseUnit;
 import de.prob.core.*;
 import de.prob.core.command.*;
+import de.prob.eventb.disprover.core.command.DisproverLoadCommand;
+import de.prob.eventb.disprover.core.internal.*;
 import de.prob.eventb.translator.internal.TranslationVisitor;
 import de.prob.exceptions.ProBException;
 import de.prob.parser.ISimplifiedROMap;

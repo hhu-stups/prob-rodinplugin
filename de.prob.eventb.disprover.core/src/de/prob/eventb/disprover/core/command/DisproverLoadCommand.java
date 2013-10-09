@@ -1,4 +1,4 @@
-package de.prob.eventb.disprover.core.internal;
+package de.prob.eventb.disprover.core.command;
 
 import de.be4.classicalb.core.parser.analysis.prolog.ASTProlog;
 import de.be4.classicalb.core.parser.node.AEventBContextParseUnit;
