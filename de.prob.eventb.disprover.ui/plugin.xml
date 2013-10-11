@@ -75,7 +75,7 @@
       <handler
             commandId="de.prob.eventb.disprover.exportastest">
          <class
-               class="de.prob.eventb.disprover.ui.ExportAsTestHandler">
+               class="de.prob.eventb.disprover.ui.export.ExportAsTestHandler">
          </class>
       </handler>
    </extension>
@@ -93,7 +93,7 @@
                   <iterate
                         operator="or">
                      <instanceof
-                           value="org.eventb.core.IEventBRoot">
+                           value="org.eventb.core.IPSStatus">
                      </instanceof>
                   </iterate>
                </with>

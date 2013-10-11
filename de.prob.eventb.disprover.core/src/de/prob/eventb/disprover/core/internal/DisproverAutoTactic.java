@@ -4,7 +4,7 @@ import org.eventb.core.seqprover.ITactic;
 import org.eventb.core.seqprover.eventbExtensions.AutoTactics.AbsractLazilyConstrTactic;
 import org.eventb.core.seqprover.tactics.BasicTactics;
 
-import de.prob.eventb.disprover.core.DisproverReasonerInput;
+import de.prob.eventb.disprover.core.*;
 
 public class DisproverAutoTactic extends AbsractLazilyConstrTactic {
 	@Override
