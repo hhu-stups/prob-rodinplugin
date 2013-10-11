@@ -11,7 +11,6 @@ import de.be4.classicalb.core.parser.node.AEventBContextParseUnit;
 import de.prob.core.*;
 import de.prob.core.command.*;
 import de.prob.eventb.disprover.core.command.DisproverLoadCommand;
-import de.prob.eventb.disprover.core.internal.*;
 import de.prob.eventb.translator.internal.TranslationVisitor;
 import de.prob.exceptions.ProBException;
 import de.prob.parser.ISimplifiedROMap;
@@ -37,16 +36,19 @@ public class DisproverCommand implements IComposableCommand {
 	private CounterExample counterExample;
 	private final Set<Predicate> hypotheses;
 	private final Predicate goal;
+	private final int timeoutFactor;
 
 	private static ComposedCommand composed;
 
-	public DisproverCommand(Set<Predicate> hypotheses, Predicate goal) {
+	public DisproverCommand(Set<Predicate> hypotheses, Predicate goal,
+			int timeoutFactor) {
 		this.hypotheses = hypotheses;
 		this.goal = goal;
+		this.timeoutFactor = timeoutFactor;
 	}
 
 	public static ICounterExample disprove(Animator animator,
-			Set<Predicate> hypotheses, Predicate goal,
+			Set<Predicate> hypotheses, Predicate goal, int timeoutFactor,
 			AEventBContextParseUnit context, IProofMonitor pm)
 			throws ProBException, InterruptedException {
 
@@ -58,7 +60,8 @@ public class DisproverCommand implements IComposableCommand {
 
 		StartAnimationCommand start = new StartAnimationCommand();
 
-		DisproverCommand disprove = new DisproverCommand(hypotheses, goal);
+		DisproverCommand disprove = new DisproverCommand(hypotheses, goal,
+				timeoutFactor);
 
 		composed = new ComposedCommand(clear, setPrefs, load, start, disprove);
 
@@ -94,6 +97,7 @@ public class DisproverCommand implements IComposableCommand {
 			translatePredicate(pto, p);
 		}
 		pto.closeList();
+		pto.printNumber(timeoutFactor);
 		pto.printVariable(RESULT);
 		pto.closeTerm();
 	}

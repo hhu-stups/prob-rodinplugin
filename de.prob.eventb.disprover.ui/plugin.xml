@@ -14,7 +14,14 @@
             target="global"
             tooltip="%tactic.disprover.tooltip-relevant-context" />
      -->       
+      <dropdown
+            id="de.prob.eventb.disprover.ui.dropdown"
+            name="ProB (Dis-)Prover"
+            priority="10"
+            toolbar="org.eventb.ui.sequentToolbar">
+      </dropdown>
       <tactic
+            dropdown="de.prob.eventb.disprover.ui.dropdown"
             icon="icons/disprover-all.png"
             id="de.prob.eventb.disprover.ui.disproverTactic"
             interrupt="true"
@@ -22,8 +29,19 @@
             priority="10"
             tacticProvider="de.prob.eventb.disprover.ui.DisproverTacticProvider"
             target="global"
-            toolbar="org.eventb.ui.sequentToolbar"
-            tooltip="%tactic.disprover.tooltip"/>
+            tooltip="%tactic.disprover.tooltip">
+      </tactic>
+      <tactic
+            dropdown="de.prob.eventb.disprover.ui.dropdown"
+            icon="icons/disprover-all.png"
+            id="de.prob.eventb.disprover.ui.disproverExtendedTimeoutTactic"
+            interrupt="true"
+            name="%tactic.disprover.extended_timeout.name"
+            priority="10"
+            tacticProvider="de.prob.eventb.disprover.ui.DisproverExtendedTimeoutTacticProvider"
+            target="global"
+            tooltip="%tactic.disprover.extended_timeout.tooltip">
+      </tactic>
    <!--      <tactic
             dropdown="de.prob.eventb.disprover.ui.DisproverDropdown"
             icon="icons/disprover-config.png"

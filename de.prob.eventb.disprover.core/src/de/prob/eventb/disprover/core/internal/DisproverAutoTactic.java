@@ -6,11 +6,10 @@ import org.eventb.core.seqprover.tactics.BasicTactics;
 
 import de.prob.eventb.disprover.core.DisproverReasonerInput;
 
-
 public class DisproverAutoTactic extends AbsractLazilyConstrTactic {
 	@Override
 	protected ITactic getSingInstance() {
-		return BasicTactics.reasonerTac(new DisproverReasoner(),
+		return BasicTactics.reasonerTac(new DisproverReasoner(1),
 				new DisproverReasonerInput());
 	}
 }

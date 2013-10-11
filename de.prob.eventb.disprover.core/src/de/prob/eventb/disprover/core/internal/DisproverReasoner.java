@@ -24,6 +24,12 @@ public class DisproverReasoner implements IReasoner {
 
 	private static final String DISPROVER_REASONER_NAME = "de.prob.eventb.disprover.core.disproverReasoner";
 
+	private final int timeoutFactor;
+
+	public DisproverReasoner(int timeoutFactor) {
+		this.timeoutFactor = timeoutFactor;
+	}
+
 	@Override
 	public String getReasonerID() {
 		return DISPROVER_REASONER_NAME;
@@ -34,7 +40,8 @@ public class DisproverReasoner implements IReasoner {
 			final IReasonerInput input, final IProofMonitor pm) {
 		try {
 			DisproverReasonerInput disproverInput = (DisproverReasonerInput) input;
-			ICounterExample ce = evaluateSequent(sequent, disproverInput, pm);
+			ICounterExample ce = evaluateSequent(sequent, disproverInput,
+					timeoutFactor, pm);
 			return createDisproverResult(ce, sequent, input);
 		} catch (PrologException e) {
 			Logger.log(Logger.WARNING, Status.WARNING, e.getMessage(), e);
@@ -52,8 +59,9 @@ public class DisproverReasoner implements IReasoner {
 	}
 
 	private ICounterExample evaluateSequent(final IProverSequent sequent,
-			final DisproverReasonerInput disproverInput, IProofMonitor pm)
-			throws ProBException, RodinDBException, InterruptedException {
+			final DisproverReasonerInput disproverInput, int timeoutFactor,
+			IProofMonitor pm) throws ProBException, RodinDBException,
+			InterruptedException {
 		// Logger.info("Calling Disprover on Sequent");
 
 		Set<Predicate> hypotheses = new HashSet<Predicate>();
@@ -79,7 +87,8 @@ public class DisproverReasoner implements IReasoner {
 		AEventBContextParseUnit context = createContext(sequent);
 
 		ICounterExample counterExample = DisproverCommand.disprove(
-				Animator.getAnimator(), hypotheses, goal, context, pm);
+				Animator.getAnimator(), hypotheses, goal, timeoutFactor,
+				context, pm);
 		// Logger.info("Disprover: Result: " + counterExample.toString());
 
 		return counterExample;
