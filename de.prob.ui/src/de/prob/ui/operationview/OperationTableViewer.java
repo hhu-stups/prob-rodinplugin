@@ -1,34 +1,21 @@
 package de.prob.ui.operationview;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
+import java.util.*;
 import java.util.List;
-import java.util.Random;
 
-import org.eclipse.core.commands.Command;
+import org.eclipse.core.commands.*;
 import org.eclipse.core.commands.State;
-import org.eclipse.jface.viewers.DoubleClickEvent;
-import org.eclipse.jface.viewers.IDoubleClickListener;
-import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.jface.viewers.TableViewerColumn;
-import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.jface.viewers.ViewerFilter;
+import org.eclipse.jface.viewers.*;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.events.*;
+import org.eclipse.swt.widgets.*;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.commands.ICommandService;
 import org.eclipse.ui.handlers.IHandlerService;
 
-import de.prob.core.Animator;
-import de.prob.core.LimitedLogger;
-import de.prob.core.command.ExecuteOperationCommand;
-import de.prob.core.command.GetOperationNamesCommand;
-import de.prob.core.domainobjects.Operation;
-import de.prob.core.domainobjects.OperationInfo;
+import de.prob.core.*;
+import de.prob.core.command.*;
+import de.prob.core.domainobjects.*;
 import de.prob.exceptions.ProBException;
 import de.prob.logging.Logger;
 
@@ -54,6 +41,7 @@ public class OperationTableViewer {
 	};
 
 	private OperationTableViewer(final Composite parent, final int style) {
+		parent.addDisposeListener(new TableDisposedListener());
 		viewer = new TableViewer(parent, style);
 		createColumns();
 		viewer.setContentProvider(new OperationsContentProvider(operationNames));
@@ -128,6 +116,7 @@ public class OperationTableViewer {
 	 */
 	private class OTVDoubleClickListener implements IDoubleClickListener {
 
+		@Override
 		public void doubleClick(final DoubleClickEvent event) {
 			if (!getSelectedOperations().isEmpty()) {
 				LimitedLogger.getLogger().log("user chooses event", null, null);
@@ -152,6 +141,16 @@ public class OperationTableViewer {
 			}
 		}
 
+	}
+
+	/**
+	 * Listener that destroys the instance, if the parent object is disposed
+	 */
+	private class TableDisposedListener implements DisposeListener {
+		@Override
+		public void widgetDisposed(DisposeEvent e) {
+			destroy();
+		}
 	}
 
 	/**
