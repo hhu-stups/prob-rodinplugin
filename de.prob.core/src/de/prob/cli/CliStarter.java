@@ -254,10 +254,10 @@ public final class CliStarter {
 
 			// We need to use the 3-arg constructor of URI in order to properly
 			// escape file system chars.
-			// URI resolvedUri = new URI(resolvedUrl.getProtocol(),
-			// resolvedUrl.getPath(), null);
+			URI resolvedUri = new URI("file", FileLocator
+					.toFileURL(resolvedUrl).getPath(), null);
 
-			return new File(FileLocator.toFileURL(resolvedUrl).toURI());
+			return new File(resolvedUri);
 		} catch (URISyntaxException e) {
 			throw new CliException("Unable to construct file '"
 					+ entry.getPath() + "'");
