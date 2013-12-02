@@ -250,18 +250,18 @@ public final class CliStarter {
 		}
 
 		try {
-			URL resolvedUrl = FileLocator.resolve(entry);
+			URL resolvedUrl = FileLocator.find(bundle, new Path(fileURL), null);
 
 			// We need to use the 3-arg constructor of URI in order to properly
 			// escape file system chars.
-			URI resolvedUri = new URI(resolvedUrl.getProtocol(),
-					resolvedUrl.getPath(), null);
+			// URI resolvedUri = new URI(resolvedUrl.getProtocol(),
+			// resolvedUrl.getPath(), null);
 
-			return new File(resolvedUri);
+			return new File(FileLocator.toFileURL(resolvedUrl).toURI());
 		} catch (URISyntaxException e) {
 			throw new CliException("Unable to construct file '"
 					+ entry.getPath() + "'");
-		} catch (IOException e) {
+		} catch (IOException e2) {
 			throw new CliException("Input/output error when trying t find '"
 					+ fileURL + "'");
 		}
