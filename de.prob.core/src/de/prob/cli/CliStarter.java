@@ -12,6 +12,7 @@ import java.security.*;
 import java.util.*;
 
 import org.eclipse.core.runtime.*;
+import org.osgi.framework.Bundle;
 
 import de.prob.cli.clipatterns.*;
 import de.prob.core.internal.Activator;
@@ -239,29 +240,55 @@ public final class CliStarter {
 	}
 
 	private File getCliPath() throws CliException {
-		final Path path = new Path("prob");
-		final URL fileURL = FileLocator.find(
-				Activator.getDefault().getBundle(), path, null);
-		if (fileURL == null) {
+		final Bundle bundle = Activator.getDefault().getBundle();
+		final String fileURL = "prob";
+		final URL entry = bundle.getEntry(fileURL);
+
+		if (entry == null) {
 			throw new CliException(
 					"Unable to find directory with prob executables.");
 		}
-		URL resolved;
+
 		try {
-			resolved = FileLocator.resolve(fileURL);
-		} catch (IOException e2) {
+			URL resolvedUrl = FileLocator.resolve(entry);
+
+			// We need to use the 3-arg constructor of URI in order to properly
+			// escape file system chars.
+			URI resolvedUri = new URI(resolvedUrl.getProtocol(),
+					resolvedUrl.getPath(), null);
+
+			return new File(resolvedUri);
+		} catch (URISyntaxException e) {
+			throw new CliException("Unable to construct file '"
+					+ entry.getPath() + "'");
+		} catch (IOException e) {
 			throw new CliException("Input/output error when trying t find '"
 					+ fileURL + "'");
 		}
-		URI uri;
-		try {
-			uri = new URI(resolved.getProtocol(), resolved.getPath(), null);
-		} catch (URISyntaxException e1) {
-			throw new CliException("Unable to construct file '"
-					+ resolved.getPath() + "'");
-		}
 
-		return new File(uri);
+		// final Path path = new Path("prob");
+		// final URL fileURL = FileLocator.find(
+		// Activator.getDefault().getBundle(), path, null);
+		// if (fileURL == null) {
+		// throw new CliException(
+		// "Unable to find directory with prob executables.");
+		// }
+		// URL resolved;
+		// try {
+		// resolved = FileLocator.resolve(fileURL);
+		// } catch (IOException e2) {
+		// throw new CliException("Input/output error when trying t find '"
+		// + fileURL + "'");
+		// }
+		// URI uri;
+		// try {
+		// uri = new URI(resolved.getProtocol(), resolved.getPath(), null);
+		// } catch (URISyntaxException e1) {
+		// throw new CliException("Unable to construct file '"
+		// + resolved.getPath() + "'");
+		// }
+		//
+		// return new File(uri);
 	}
 
 	private static class OutputLoggerThread extends Thread {
