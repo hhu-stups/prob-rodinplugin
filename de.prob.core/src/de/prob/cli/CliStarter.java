@@ -6,31 +6,14 @@
 
 package de.prob.cli;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Random;
+import java.io.*;
+import java.net.*;
+import java.security.*;
+import java.util.*;
 
-import org.eclipse.core.runtime.Assert;
-import org.eclipse.core.runtime.FileLocator;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.*;
 
-import de.prob.cli.clipatterns.CliPattern;
-import de.prob.cli.clipatterns.InterruptRefPattern;
-import de.prob.cli.clipatterns.PortPattern;
+import de.prob.cli.clipatterns.*;
 import de.prob.core.internal.Activator;
 import de.prob.logging.Logger;
 
@@ -140,6 +123,7 @@ public final class CliStarter {
 		final Process p = prologProcess;
 
 		Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+			@Override
 			public void run() {
 				p.destroy();
 			}
@@ -271,15 +255,12 @@ public final class CliStarter {
 		}
 		URI uri;
 		try {
-			uri = resolved.toURI();
-		} catch (URISyntaxException e) {
-			try {
-				uri = new URI("file", null, resolved.getPath(), null);
-			} catch (URISyntaxException e1) {
-				throw new CliException("Unable to construct file '"
-						+ resolved.getPath() + "'");
-			}
+			uri = new URI(resolved.getProtocol(), resolved.getPath(), null);
+		} catch (URISyntaxException e1) {
+			throw new CliException("Unable to construct file '"
+					+ resolved.getPath() + "'");
 		}
+
 		return new File(uri);
 	}
 
