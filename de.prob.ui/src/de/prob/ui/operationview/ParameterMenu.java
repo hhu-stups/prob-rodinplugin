@@ -1,13 +1,9 @@
 package de.prob.ui.operationview;
 
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.ui.menus.CommandContributionItem;
-import org.eclipse.ui.menus.CommandContributionItemParameter;
-import org.eclipse.ui.menus.ExtensionContributionFactory;
-import org.eclipse.ui.menus.IContributionRoot;
+import org.eclipse.ui.menus.*;
 import org.eclipse.ui.services.IServiceLocator;
 
 import de.prob.core.domainobjects.Operation;
@@ -41,10 +37,18 @@ public class ParameterMenu extends ExtensionContributionFactory {
 		CommandContributionItemParameter contributionParameters = new CommandContributionItemParameter(
 				serviceLocator, "", "de.prob.ui.show_parameter_dialog",
 				SWT.PUSH);
-		contributionParameters.label = "Show Dialog ...";
+		contributionParameters.label = "Show Parameter Dialog ...";
 		CommandContributionItem dialogItem = new CommandContributionItem(
 				contributionParameters);
 		additions.addContributionItem(dialogItem, null);
+
+		CommandContributionItemParameter contributionCustomGuard = new CommandContributionItemParameter(
+				serviceLocator, "",
+				"de.prob.ui.show_custom_precondition_dialog", SWT.PUSH);
+		contributionCustomGuard.label = "Execute with Custom Guard ...";
+		CommandContributionItem customGuardDialogItem = new CommandContributionItem(
+				contributionCustomGuard);
+		additions.addContributionItem(customGuardDialogItem, null);
 
 	}
 

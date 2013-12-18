@@ -294,6 +294,10 @@
             name="Show Parameter Dialog">
       </command>
       <command
+            id="de.prob.ui.show_custom_precondition_dialog"
+            name="Execute with Custom Guard">
+      </command>
+      <command
             categoryId="de.prob.ui.commands.category"
             id="de.prob.ui.deadlock_check"
             name="Check for Deadlock Freedom">
@@ -646,6 +650,12 @@
             commandId="de.prob.ui.show_parameter_dialog">
          <class
                class="de.prob.ui.operationview.ShowParameterDialogHandler">
+         </class>
+      </handler>
+            <handler
+            commandId="de.prob.ui.show_custom_precondition_dialog">
+         <class
+               class="de.prob.ui.operationview.CustomPreconditionDialogHandler">
          </class>
       </handler>
       <handler
