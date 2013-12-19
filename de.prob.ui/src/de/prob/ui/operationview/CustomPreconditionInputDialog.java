@@ -21,14 +21,31 @@ public class CustomPreconditionInputDialog extends InputDialog {
 	private final Operation op;
 
 	public CustomPreconditionInputDialog(final Shell parentShell, Operation op) {
-		super(parentShell, "Execute with Custom Guard",
-				"Enter Guard to be added to the Event before execution:", "",
+		super(parentShell, "Execute with Custom Guard", getMenuText(op), "",
 				new EventBInputValidator());
 		this.op = op;
 		animator = Animator.getAnimator();
 	}
 
-	public Operation getCustomOperation() {
+	private static String getMenuText(Operation op) {
+		StringBuffer sb = new StringBuffer();
+		sb.append("Enter Guard to be added to the Event \"");
+		sb.append(op.getName());
+		sb.append("\" before execution.");
+
+		// sb.append("\nYou may use the parameters: ");
+
+		// List<String> arguments = op.getArguments();
+		// for (int i = 0; i < arguments.size() - 1; i++) {
+		// sb.append(arguments.get(i));
+		// sb.append("' ");
+		// }
+		// sb.append(arguments.get(arguments.size() - 1));
+
+		return sb.toString();
+	}
+
+	private Operation getCustomOperation() {
 		try {
 			Operation customOp = GetOperationByPredicateCommand.getOperation(
 					animator, op.getSource(),
