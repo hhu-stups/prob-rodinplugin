@@ -24,7 +24,7 @@ public abstract class HistoryLabelProvider extends CellLabelProvider {
 	final Font bold = JFaceResources.getFontRegistry().getBold(
 			JFaceResources.BANNER_FONT);
 
-	protected boolean showParameters;
+	protected boolean showParameters = true;
 
 	@Override
 	public void update(final ViewerCell cell) {
