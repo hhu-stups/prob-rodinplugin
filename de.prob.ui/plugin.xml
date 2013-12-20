@@ -295,7 +295,7 @@
       </command>
       <command
             id="de.prob.ui.show_custom_precondition_dialog"
-            name="Execute with Custom Guard">
+            name="Execute with additional Guard">
       </command>
       <command
             categoryId="de.prob.ui.commands.category"

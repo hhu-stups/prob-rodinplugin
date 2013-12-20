@@ -14,6 +14,7 @@ import de.prob.core.Animator;
 import de.prob.core.command.*;
 import de.prob.core.domainobjects.Operation;
 import de.prob.exceptions.ProBException;
+import de.prob.unicode.UnicodeTranslator;
 
 public class CustomPreconditionInputDialog extends InputDialog {
 
@@ -21,8 +22,8 @@ public class CustomPreconditionInputDialog extends InputDialog {
 	private final Operation op;
 
 	public CustomPreconditionInputDialog(final Shell parentShell, Operation op) {
-		super(parentShell, "Execute with Custom Guard", getMenuText(op), "",
-				new EventBInputValidator());
+		super(parentShell, "Execute with additional Guard", getMenuText(op),
+				"", new EventBInputValidator());
 		this.op = op;
 		animator = Animator.getAnimator();
 	}
@@ -47,9 +48,11 @@ public class CustomPreconditionInputDialog extends InputDialog {
 
 	private Operation getCustomOperation() {
 		try {
-			Operation customOp = GetOperationByPredicateCommand.getOperation(
+			Operation customOp = GetOperationByPredicateCommand2.getOperation(
 					animator, op.getSource(),
-					Operation.getInternalName(op.getName()), getValue());
+					Operation.getInternalName(op.getName()),
+					UnicodeTranslator.toUnicode(getValue()));
+
 			ExecuteOperationCommand.executeOperation(animator, customOp);
 		} catch (ProBException e) {
 			// TODO Auto-generated catch block
