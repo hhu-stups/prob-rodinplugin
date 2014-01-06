@@ -6,27 +6,20 @@
 
 package de.prob.ui.operationview;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
-import org.eventb.core.ast.FormulaFactory;
-import org.eventb.core.ast.IParseResult;
-import org.eventb.core.ast.Predicate;
+import org.eventb.core.ast.*;
 
 import de.be4.classicalb.core.parser.analysis.prolog.ASTProlog;
 import de.be4.classicalb.core.parser.exceptions.BException;
-import de.prob.core.Animator;
-import de.prob.core.ProblemHandler;
-import de.prob.core.command.CommandException;
-import de.prob.core.command.IComposableCommand;
+import de.prob.core.*;
+import de.prob.core.command.*;
 import de.prob.core.domainobjects.Operation;
 import de.prob.core.domainobjects.eval.PredicateEvalElement;
 import de.prob.exceptions.ProBException;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
-import de.prob.prolog.term.CompoundPrologTerm;
-import de.prob.prolog.term.ListPrologTerm;
-import de.prob.prolog.term.PrologTerm;
+import de.prob.prolog.term.*;
 
 /**
  * Command to execute an event that has not been enumerated by ProB, for further
@@ -60,7 +53,7 @@ public final class GetOperationByPredicateCommand2 implements
 		PredicateEvalElement parsedEvalElement = null;
 
 		IParseResult result = FormulaFactory.getDefault().parsePredicate(
-				predicate);
+				predicate, LanguageVersion.LATEST, null);
 		Predicate parsedPredicate = result.getParsedPredicate();
 
 		try {
@@ -129,6 +122,7 @@ public final class GetOperationByPredicateCommand2 implements
 	 * 
 	 * @see de.prob.core.command.IComposableCommand#writeCommand(de.prob.prolog.output.IPrologTermOutput)
 	 */
+	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
 		pto.openTerm("execute_custom_operations").printAtomOrNumber(stateId)
 				.printAtom(name);
@@ -146,6 +140,7 @@ public final class GetOperationByPredicateCommand2 implements
 	 * 
 	 * @see de.prob.core.command.IComposableCommand#writeCommand(de.prob.prolog.output.IPrologTermOutput)
 	 */
+	@Override
 	public void processResult(
 			final ISimplifiedROMap<String, PrologTerm> bindings)
 			throws CommandException {
@@ -158,8 +153,7 @@ public final class GetOperationByPredicateCommand2 implements
 		} else {
 			ArrayList<Operation> result = new ArrayList<Operation>();
 			for (PrologTerm prologTerm : list) {
-				Operation op = Operation
-						.fromPrologTerm((CompoundPrologTerm) prologTerm);
+				Operation op = Operation.fromPrologTerm(prologTerm);
 				result.add(op);
 			}
 			operation = result;

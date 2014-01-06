@@ -12,11 +12,10 @@ class EventBInputValidator implements IInputValidator {
 				.toUnicode(newText);
 
 		IParseResult result = FormulaFactory.getDefault().parsePredicate(
-				formula);
+				formula, LanguageVersion.LATEST, null);
 		if (result.hasProblem()) {
 			return "No Event-B Predicate";
 		}
-		// TODO Auto-generated method stub
 		return null;
 	}
 }
