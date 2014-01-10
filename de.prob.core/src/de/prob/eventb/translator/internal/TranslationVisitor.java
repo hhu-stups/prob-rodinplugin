@@ -240,7 +240,7 @@ public class TranslationVisitor implements ISimpleVisitor {
 		final List<PExpression> lhs = getSubExpressions(assignment
 				.getAssignedIdentifiers());
 		final int originalBoundSize = boundVariables.size();
-		for (final FreeIdentifier id : assignment.getFreeIdentifiers()) {
+		for (final FreeIdentifier id : assignment.getAssignedIdentifiers()) {
 			boundVariables.push(id.getName() + "'");
 		}
 		final PPredicate predicate = getPredicate(assignment.getCondition());
