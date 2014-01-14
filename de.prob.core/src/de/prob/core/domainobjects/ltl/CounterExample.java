@@ -68,6 +68,7 @@ public class CounterExample {
 		for (final PrologTerm term : modelCheckingResult.getAtomics()) {
 			res[i] = PrologTerm.atomicString(((CompoundPrologTerm) term)
 					.getArgument(1));
+			i++;
 		}
 		return res;
 	}
