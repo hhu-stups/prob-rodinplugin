@@ -125,9 +125,12 @@ public class DisproverReasoner implements IReasoner {
 					"ProB (no enumeration / all cases checked)");
 
 		if (!counterExample.counterExampleFound())
-			return ProverFactory
-					.reasonerFailure(this, input,
-							"ProB: No Counter-Example found, but there might exist one.");
+			return ProverFactory.reasonerFailure(
+					this,
+					input,
+					"ProB: No Counter-Example found due to "
+							+ counterExample.getReason()
+							+ ", but there might exist one.");
 
 		return ProverFactory.makeProofRule(this, input, null, null,
 				IConfidence.PENDING, counterExample.toString(), ante);

@@ -125,7 +125,17 @@ public class DisproverCommand implements IComposableCommand {
 			throw new CommandException("Interrupted");
 		}
 		if ("no_solution_found".equals(term.getFunctor())) {
-			counterExample = new CounterExample(false, false);
+			PrologTerm reason = term.getArgument(1);
+			if (reason.hasFunctor("clpfd_overflow", 0)) {
+				counterExample = new CounterExample(false, false,
+						"CLPFD Integer Overflow");
+			} else if (reason.hasFunctor("unfixed_deferred_sets", 0)) {
+				counterExample = new CounterExample(false, false,
+						"unfixed deferred sets in predicate");
+			} else {
+				counterExample = new CounterExample(false, false,
+						reason.toString());
+			}
 		}
 
 		if ("contradiction_found".equals(term.getFunctor())) {
