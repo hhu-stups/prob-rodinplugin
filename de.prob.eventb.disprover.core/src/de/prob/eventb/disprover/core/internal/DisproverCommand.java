@@ -34,23 +34,25 @@ public class DisproverCommand implements IComposableCommand {
 	private static final String RESULT = "Result";
 
 	private CounterExample counterExample;
-	private final Set<Predicate> hypotheses;
+	private final Set<Predicate> allHypotheses;
+	private final Set<Predicate> selectedHypotheses;
 	private final Predicate goal;
 	private final int timeoutFactor;
 
 	private static ComposedCommand composed;
 
-	public DisproverCommand(Set<Predicate> hypotheses, Predicate goal,
-			int timeoutFactor) {
-		this.hypotheses = hypotheses;
+	public DisproverCommand(Set<Predicate> allHypotheses,
+			Set<Predicate> selectedHypotheses, Predicate goal, int timeoutFactor) {
+		this.allHypotheses = allHypotheses;
+		this.selectedHypotheses = selectedHypotheses;
 		this.goal = goal;
 		this.timeoutFactor = timeoutFactor;
 	}
 
 	public static ICounterExample disprove(Animator animator,
-			Set<Predicate> hypotheses, Predicate goal, int timeoutFactor,
-			AEventBContextParseUnit context, IProofMonitor pm)
-			throws ProBException, InterruptedException {
+			Set<Predicate> allHypotheses, Set<Predicate> selectedHypotheses,
+			Predicate goal, int timeoutFactor, AEventBContextParseUnit context,
+			IProofMonitor pm) throws ProBException, InterruptedException {
 
 		final ClearMachineCommand clear = new ClearMachineCommand();
 		final SetPreferencesCommand setPrefs = SetPreferencesCommand
@@ -60,8 +62,8 @@ public class DisproverCommand implements IComposableCommand {
 
 		StartAnimationCommand start = new StartAnimationCommand();
 
-		DisproverCommand disprove = new DisproverCommand(hypotheses, goal,
-				timeoutFactor);
+		DisproverCommand disprove = new DisproverCommand(allHypotheses,
+				selectedHypotheses, goal, timeoutFactor);
 
 		composed = new ComposedCommand(clear, setPrefs, load, start, disprove);
 
@@ -93,7 +95,12 @@ public class DisproverCommand implements IComposableCommand {
 		Predicate pred = goal;
 		translatePredicate(pto, pred);
 		pto.openList();
-		for (Predicate p : this.hypotheses) {
+		for (Predicate p : this.allHypotheses) {
+			translatePredicate(pto, p);
+		}
+		pto.closeList();
+		pto.openList();
+		for (Predicate p : this.selectedHypotheses) {
 			translatePredicate(pto, p);
 		}
 		pto.closeList();

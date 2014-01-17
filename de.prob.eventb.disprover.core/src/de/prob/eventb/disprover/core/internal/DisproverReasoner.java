@@ -64,12 +64,20 @@ public class DisproverReasoner implements IReasoner {
 			InterruptedException {
 		// Logger.info("Calling Disprover on Sequent");
 
-		Set<Predicate> hypotheses = new HashSet<Predicate>();
-		StringBuilder hypothesesString = new StringBuilder();
+		Set<Predicate> allHypotheses = new HashSet<Predicate>();
+		// StringBuilder hypothesesString = new StringBuilder();
 		for (Predicate predicate : sequent.hypIterable()) {
-			hypotheses.add(predicate);
-			hypothesesString.append(predicateToProlog(predicate));
-			hypothesesString.append(" & ");
+			allHypotheses.add(predicate);
+			// hypothesesString.append(predicateToProlog(predicate));
+			// hypothesesString.append(" & ");
+		}
+
+		Set<Predicate> selectedHypotheses = new HashSet<Predicate>();
+		// StringBuilder hypothesesString = new StringBuilder();
+		for (Predicate predicate : sequent.selectedHypIterable()) {
+			selectedHypotheses.add(predicate);
+			// hypothesesString.append(predicateToProlog(predicate));
+			// hypothesesString.append(" & ");
 		}
 
 		/*
@@ -88,8 +96,8 @@ public class DisproverReasoner implements IReasoner {
 				.createDisproverContext(sequent);
 
 		ICounterExample counterExample = DisproverCommand.disprove(
-				Animator.getAnimator(), hypotheses, goal, timeoutFactor,
-				context, pm);
+				Animator.getAnimator(), allHypotheses, selectedHypotheses,
+				goal, timeoutFactor, context, pm);
 		// Logger.info("Disprover: Result: " + counterExample.toString());
 
 		return counterExample;
