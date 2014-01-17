@@ -126,7 +126,7 @@ public class DisproverCommand implements IComposableCommand {
 		counterExample = null;
 
 		if ("time_out".equals(term.getFunctor())) {
-			counterExample = new CounterExample(false, true);
+			counterExample = new CounterExample(false, true, false);
 		}
 		if ("interrupted".equals(term.getFunctor())) {
 			throw new CommandException("Interrupted");
@@ -146,12 +146,22 @@ public class DisproverCommand implements IComposableCommand {
 		}
 
 		if ("contradiction_found".equals(term.getFunctor())) {
-			counterExample = new CounterExample(false, false);
+			counterExample = new CounterExample(false, false, false);
 			counterExample.setProof(true);
 		}
 
 		if ("solution".equals(term.getFunctor())) {
-			counterExample = new CounterExample(true, false);
+			counterExample = new CounterExample(true, false, false);
+			ListPrologTerm vars = (ListPrologTerm) term.getArgument(1);
+
+			for (PrologTerm e : vars) {
+				counterExample.addVar(e.getArgument(1).getFunctor(), e
+						.getArgument(3).getFunctor());
+			}
+		}
+
+		if ("solution_on_selected_hypotheses".equals(term.getFunctor())) {
+			counterExample = new CounterExample(true, false, true);
 			ListPrologTerm vars = (ListPrologTerm) term.getArgument(1);
 
 			for (PrologTerm e : vars) {

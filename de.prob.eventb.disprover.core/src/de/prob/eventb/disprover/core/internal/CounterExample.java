@@ -16,17 +16,19 @@ class CounterExample implements ICounterExample {
 	public final SortedMap<String, String> state = new TreeMap<String, String>();
 	private final boolean timeoutOccured;
 	private boolean proof = false;
+	private boolean selectedHypotheses = false;
 	private String reason = "";
 
 	CounterExample(final boolean counterExampleFound,
-			final boolean timeoutOccured) {
+			final boolean timeoutOccured, final boolean selectedHypotheses) {
 		this.counterExampleFound = counterExampleFound;
 		this.timeoutOccured = timeoutOccured;
+		this.selectedHypotheses = selectedHypotheses;
 	}
 
 	CounterExample(final boolean counterExampleFound,
 			final boolean timeoutOccured, String reason) {
-		this(counterExampleFound, timeoutOccured);
+		this(counterExampleFound, timeoutOccured, false);
 		this.reason = reason;
 	}
 
@@ -73,5 +75,10 @@ class CounterExample implements ICounterExample {
 	@Override
 	public String getReason() {
 		return reason;
+	}
+
+	@Override
+	public boolean onlySelectedHypotheses() {
+		return selectedHypotheses;
 	}
 }

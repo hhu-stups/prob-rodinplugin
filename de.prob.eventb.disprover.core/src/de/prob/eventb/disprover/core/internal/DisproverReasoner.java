@@ -140,6 +140,14 @@ public class DisproverReasoner implements IReasoner {
 							+ counterExample.getReason()
 							+ ", but there might exist one.");
 
+		if (counterExample.counterExampleFound()
+				&& counterExample.onlySelectedHypotheses())
+			return ProverFactory
+					.reasonerFailure(
+							this,
+							input,
+							"ProB: Counter-Example for selected Hypotheses found, Goal not provable from selected Hypotheses (may be provable with all Hypotheses)");
+
 		return ProverFactory.makeProofRule(this, input, null, null,
 				IConfidence.PENDING, counterExample.toString(), ante);
 	}

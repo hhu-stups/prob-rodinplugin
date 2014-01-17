@@ -8,6 +8,8 @@ public interface ICounterExample {
 
 	public boolean isProof();
 
+	public boolean onlySelectedHypotheses();
+
 	public String getReason();
 
 }
