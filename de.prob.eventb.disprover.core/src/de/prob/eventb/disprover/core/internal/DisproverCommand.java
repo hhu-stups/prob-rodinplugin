@@ -3,6 +3,7 @@ package de.prob.eventb.disprover.core.internal;
 import java.util.Set;
 
 import org.eclipse.core.runtime.jobs.Job;
+import org.eventb.core.IEventBProject;
 import org.eventb.core.ast.Predicate;
 import org.eventb.core.seqprover.IProofMonitor;
 
@@ -50,15 +51,16 @@ public class DisproverCommand implements IComposableCommand {
 	}
 
 	public static ICounterExample disprove(Animator animator,
-			Set<Predicate> allHypotheses, Set<Predicate> selectedHypotheses,
-			Predicate goal, int timeoutFactor, AEventBContextParseUnit context,
-			IProofMonitor pm) throws ProBException, InterruptedException {
+			IEventBProject project, Set<Predicate> allHypotheses,
+			Set<Predicate> selectedHypotheses, Predicate goal,
+			int timeoutFactor, AEventBContextParseUnit context, IProofMonitor pm)
+			throws ProBException, InterruptedException {
 
 		final ClearMachineCommand clear = new ClearMachineCommand();
 		final SetPreferencesCommand setPrefs = SetPreferencesCommand
 				.createSetPreferencesCommand(animator);
 
-		DisproverLoadCommand load = new DisproverLoadCommand(context);
+		DisproverLoadCommand load = new DisproverLoadCommand(project, context);
 
 		StartAnimationCommand start = new StartAnimationCommand();
 

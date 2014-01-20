@@ -15,7 +15,7 @@ import org.eventb.core.ast.Predicate;
 import org.eventb.core.pm.*;
 import org.eventb.core.seqprover.*;
 import org.osgi.service.prefs.*;
-import org.rodinp.core.RodinDBException;
+import org.rodinp.core.*;
 
 import de.be4.classicalb.core.parser.analysis.prolog.ASTProlog;
 import de.be4.classicalb.core.parser.node.AEventBContextParseUnit;
@@ -182,9 +182,15 @@ public class ExportAsTestHandler extends AbstractHandler implements IHandler {
 		pto.closeList();
 
 		pto.openList();
+
 		pto.openTerm("exporter_version");
 		pto.printNumber(3);
 		pto.closeTerm();
+
+		// try to export theories if available
+		IPOSequent x = (IPOSequent) sequent.getOrigin();
+		IRodinProject project = x.getSources()[0].getRodinProject();
+
 		pto.closeList();
 
 		pto.printVariable("_Error");

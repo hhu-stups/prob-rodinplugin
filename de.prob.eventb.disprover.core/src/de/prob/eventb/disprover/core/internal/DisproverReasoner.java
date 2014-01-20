@@ -3,10 +3,11 @@ package de.prob.eventb.disprover.core.internal;
 import java.util.*;
 
 import org.eclipse.core.runtime.Status;
+import org.eventb.core.*;
 import org.eventb.core.ast.Predicate;
 import org.eventb.core.seqprover.*;
 import org.eventb.core.seqprover.IProofRule.IAntecedent;
-import org.rodinp.core.RodinDBException;
+import org.rodinp.core.*;
 
 import de.be4.classicalb.core.parser.analysis.prolog.ASTProlog;
 import de.be4.classicalb.core.parser.node.AEventBContextParseUnit;
@@ -95,9 +96,14 @@ public class DisproverReasoner implements IReasoner {
 		AEventBContextParseUnit context = DisproverContextCreator
 				.createDisproverContext(sequent);
 
+		// find the IEventBProject belonging to the sequent
+		IPOSequent origin = (IPOSequent) sequent.getOrigin();
+		IRodinProject project = origin.getRodinProject();
+		IEventBProject evbProject = (IEventBProject) project
+				.getAdapter(IEventBProject.class);
 		ICounterExample counterExample = DisproverCommand.disprove(
-				Animator.getAnimator(), allHypotheses, selectedHypotheses,
-				goal, timeoutFactor, context, pm);
+				Animator.getAnimator(), evbProject, allHypotheses,
+				selectedHypotheses, goal, timeoutFactor, context, pm);
 		// Logger.info("Disprover: Result: " + counterExample.toString());
 
 		return counterExample;
