@@ -32,6 +32,7 @@ public class HistoryElementLabelProvider extends HistoryLabelProvider {
 
 	@Override
 	protected Color getForeground(final HistViewItem item) {
-		return slProvider.getForeground(item.getDestination(), sse);
+		// set changed to false, as we do not have the state here
+		return slProvider.getForeground(item.getDestination(), false, sse);
 	}
 }
