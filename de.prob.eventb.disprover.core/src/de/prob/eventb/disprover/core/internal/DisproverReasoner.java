@@ -27,6 +27,10 @@ public class DisproverReasoner implements IReasoner {
 
 	private final int timeoutFactor;
 
+	public DisproverReasoner() {
+		this(1);
+	}
+
 	public DisproverReasoner(int timeoutFactor) {
 		this.timeoutFactor = timeoutFactor;
 	}
