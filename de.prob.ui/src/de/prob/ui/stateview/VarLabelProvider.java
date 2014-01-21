@@ -103,9 +103,11 @@ public class VarLabelProvider extends BaseLabelProvider implements
 	public Color getForeground(final Object element, final int column) {
 		final Color color;
 		if (isApplicable(element)) {
-			final State state = getState(column == 0 ? 1 : column);
-			color = state == null ? gray : slProvider.getForeground(state,
-					(StaticStateElement) element);
+			final State curState = getState(column == 0 ? 1 : column);
+			final boolean changed = hasChanged(element);
+
+			color = curState == null ? gray : slProvider.getForeground(
+					curState, changed, (StaticStateElement) element);
 		} else {
 			color = null;
 		}

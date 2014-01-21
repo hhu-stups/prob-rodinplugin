@@ -40,7 +40,7 @@ public class StateLabelProvider {
 		return null;
 	}
 
-	public Color getForeground(final State state,
+	public Color getForeground(final State state, final boolean hasChanged,
 			final StaticStateElement element) {
 		final EStateTreeElementProperty property = getPropertyValue(state,
 				element);
@@ -57,7 +57,11 @@ public class StateLabelProvider {
 				colorcst = SWT.COLOR_GRAY;
 				break;
 			case NONBOOLEAN:
-				colorcst = SWT.COLOR_BLACK;
+				if (hasChanged) {
+					colorcst = SWT.COLOR_BLUE;
+				} else {
+					colorcst = SWT.COLOR_BLACK;
+				}
 				break;
 			case ERROR:
 				colorcst = SWT.COLOR_MAGENTA;
