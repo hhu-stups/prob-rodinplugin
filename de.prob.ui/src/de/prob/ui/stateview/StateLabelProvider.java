@@ -54,6 +54,14 @@ public class StateLabelProvider {
 				colorcst = SWT.COLOR_GRAY;
 				break;
 			case NONBOOLEAN:
+				if ("TRUE".equals(element.getValue(state).getValue())) {
+					colorcst = SWT.COLOR_DARK_GREEN;
+					break;
+				}
+				if ("FALSE".equals(element.getValue(state).getValue())) {
+					colorcst = SWT.COLOR_RED;
+					break;
+				}
 				if (hasChanged) {
 					colorcst = SWT.COLOR_BLUE;
 				} else {
