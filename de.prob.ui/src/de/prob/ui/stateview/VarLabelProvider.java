@@ -11,16 +11,10 @@ package de.prob.ui.stateview;
 
 import static de.prob.ui.ProbUiPlugin.CHANGE_STAR;
 
-import org.eclipse.jface.resource.FontRegistry;
-import org.eclipse.jface.resource.JFaceResources;
-import org.eclipse.jface.viewers.BaseLabelProvider;
-import org.eclipse.jface.viewers.ITableColorProvider;
-import org.eclipse.jface.viewers.ITableFontProvider;
-import org.eclipse.jface.viewers.ITableLabelProvider;
+import org.eclipse.jface.resource.*;
+import org.eclipse.jface.viewers.*;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.Display;
 
 import de.prob.core.domainobjects.State;
@@ -55,6 +49,7 @@ public class VarLabelProvider extends BaseLabelProvider implements
 		this.lastState = lastState;
 	}
 
+	@Override
 	public Image getColumnImage(final Object element, final int columnIndex) {
 		final Image image;
 		if (isApplicable(element)) {
@@ -72,6 +67,7 @@ public class VarLabelProvider extends BaseLabelProvider implements
 		return image;
 	}
 
+	@Override
 	public String getColumnText(final Object element, final int columnIndex) {
 		final String result;
 		if (isApplicable(element)) {
@@ -88,6 +84,7 @@ public class VarLabelProvider extends BaseLabelProvider implements
 		return result;
 	}
 
+	@Override
 	public Color getBackground(final Object element, final int column) {
 		final Color color;
 		if (isApplicable(element)) {
@@ -100,6 +97,7 @@ public class VarLabelProvider extends BaseLabelProvider implements
 		return color;
 	}
 
+	@Override
 	public Color getForeground(final Object element, final int column) {
 		final Color color;
 		if (isApplicable(element)) {
@@ -114,6 +112,7 @@ public class VarLabelProvider extends BaseLabelProvider implements
 		return color;
 	}
 
+	@Override
 	public Font getFont(final Object element, final int column) {
 		final Font font;
 		final FontRegistry fontRegistry = JFaceResources.getFontRegistry();

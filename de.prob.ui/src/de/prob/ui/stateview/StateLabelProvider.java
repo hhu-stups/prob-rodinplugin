@@ -4,14 +4,11 @@
 package de.prob.ui.stateview;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.Display;
 
 import de.prob.core.domainobjects.State;
-import de.prob.ui.stateview.statetree.EStateTreeElementProperty;
-import de.prob.ui.stateview.statetree.StateDependendElement;
-import de.prob.ui.stateview.statetree.StaticStateElement;
+import de.prob.ui.stateview.statetree.*;
 
 /**
  * A StateLabelProvider defines some properties of an entry in a table (like
