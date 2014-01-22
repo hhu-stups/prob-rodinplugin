@@ -55,7 +55,7 @@ public class WizardObserverSimpleValueDisplay extends ObserverWizard {
 			container.setLayout(new GridLayout(2, false));
 
 			Label lb = new Label(container, SWT.NONE);
-			lb.setText("Predicate:");
+			lb.setText("Guard:");
 
 			txtPredicate = new Text(container, SWT.BORDER);
 			txtPredicate.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
@@ -73,7 +73,7 @@ public class WizardObserverSimpleValueDisplay extends ObserverWizard {
 			// BMotionStudioConstants.RODIN_FONT_KEY));
 
 			lb = new Label(container, SWT.NONE);
-			lb.setText("Replacement String:");
+			lb.setText("Replacement String*:");
 
 			txtReplacementString = new Text(container, SWT.BORDER);
 			txtReplacementString.setLayoutData(new GridData(
@@ -81,6 +81,10 @@ public class WizardObserverSimpleValueDisplay extends ObserverWizard {
 			txtReplacementString.setFont(new Font(Display.getDefault(),
 					new FontData("Arial", 10, SWT.NONE)));
 
+			lb = new Label(container, SWT.NONE);
+			lb.setLayoutData(new GridData(0,0,true,true,2,1));
+			lb.setText("*String that will be replaced with the result of the expression.");
+			
 			initBindings(dbc);
 
 			setControl(container);
