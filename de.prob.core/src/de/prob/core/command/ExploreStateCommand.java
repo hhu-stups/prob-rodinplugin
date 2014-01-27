@@ -88,7 +88,7 @@ public final class ExploreStateCommand implements IComposableCommand {
 
 		} else if (!initialised && enabledOperations.isEmpty()
 				&& !timeoutOccured) {
-			Logger.notifyUserWithoutBugreport("ProB could not find valid constants/variables. This might be caused by the animation settings (e.g., Integer range or deferred set size) or by an inconsistency in the axioms");
+			Logger.notifyUserWithoutBugreport("ProB could not find valid constants/variables. This might be caused by the animation settings (e.g., Integer range or deferred set size) or by an inconsistency in the axioms.");
 		}
 
 		Set<String> timeouts = new HashSet<String>(

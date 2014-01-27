@@ -6,24 +6,15 @@
 
 package de.prob.core.command;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
-import org.eventb.core.IContextRoot;
-import org.eventb.core.IEventBRoot;
-import org.eventb.core.IMachineRoot;
-import org.osgi.service.prefs.BackingStoreException;
-import org.osgi.service.prefs.Preferences;
+import org.eventb.core.*;
+import org.osgi.service.prefs.*;
 import org.rodinp.core.RodinDBException;
 
-import de.prob.core.Animator;
-import de.prob.core.LanguageDependendAnimationPart;
+import de.prob.core.*;
 import de.prob.core.command.internal.InternalLoadCommand;
-import de.prob.core.domainobjects.MachineDescription;
-import de.prob.core.domainobjects.Operation;
-import de.prob.core.domainobjects.ProBPreference;
-import de.prob.core.domainobjects.State;
+import de.prob.core.domainobjects.*;
 import de.prob.core.langdep.EventBAnimatorPart;
 import de.prob.exceptions.ProBException;
 import de.prob.logging.Logger;
@@ -97,7 +88,7 @@ public final class LoadEventBModelCommand {
 				Operation.NULL_OPERATION);
 
 		if (commandResult.isTimeoutOccured() && context) {
-			final String message = "A timeout occured when finding constants. Typically this means, that your axioms are too complicated for automatical solving. You might create an animation refinement using the context menu to help ProB finding a solution";
+			final String message = "A timeout occured when finding constants. Typically this means, that your axioms are too complicated for automatical solving. You might create an animation refinement using the context menu to help ProB finding a solution.";
 			Logger.notifyUserWithoutBugreport(message);
 		}
 
