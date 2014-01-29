@@ -311,13 +311,13 @@ public class ModelTranslator extends AbstractComponentTranslator {
 
 			broken = broken || !revent.isAccurate();
 
-			ITypeEnvironment localEnv = revent.getTypeEnvironment(te, ff);
+			ITypeEnvironment localEnv = revent.getTypeEnvironment(te);
 			localEnv.addAll(te);
 
 			ISCVariable[] variables = machine.getSCVariables();
 			for (ISCVariable variable : variables) {
 				if (variable.isAbstract() || variable.isConcrete()) {
-					localEnv.add(variable.getIdentifier(ff).withPrime(ff));
+					localEnv.add(variable.getIdentifier(ff).withPrime());
 				}
 			}
 
@@ -442,11 +442,11 @@ public class ModelTranslator extends AbstractComponentTranslator {
 	}
 
 	private List<PSubstitution> extractActions(final ISCEvent revent,
-			final ITypeEnvironment localEnv) throws RodinDBException {
+			final ITypeEnvironment localEnv) throws CoreException {
 		final ISCAction[] actions = revent.getSCActions();
 		final List<PSubstitution> actionList = new ArrayList<PSubstitution>();
 		for (final ISCAction action : actions) {
-			final Assignment assignment = action.getAssignment(ff, localEnv);
+			final Assignment assignment = action.getAssignment(localEnv);
 			final PSubstitution substitution = TranslationVisitor
 					.translateAssignment(assignment);
 			actionList.add(substitution);

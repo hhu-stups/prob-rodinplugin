@@ -15,7 +15,6 @@ import org.eventb.core.ISCMachineRoot;
 import org.eventb.core.ast.FormulaFactory;
 import org.eventb.core.ast.ITypeEnvironment;
 import org.rodinp.core.IRodinFile;
-import org.rodinp.core.RodinDBException;
 
 import de.prob.core.translator.TranslationFailedException;
 import de.prob.eventb.translator.ContextTranslator;
@@ -109,12 +108,12 @@ public final class EventBMachineTranslator extends EventBTranslator {
 		for (final ISCMachineRoot m : models) {
 			try {
 				final FormulaFactory ff = m.getFormulaFactory();
-				final ITypeEnvironment te = m.getTypeEnvironment(ff);
+				final ITypeEnvironment te = m.getTypeEnvironment();
 				final ISCInternalContext[] seenContexts = m.getSCSeenContexts();
 				for (final ISCInternalContext seenContext : seenContexts) {
 					collectContexts(translators, processed, seenContext, ff, te);
 				}
-			} catch (RodinDBException e) {
+			} catch (CoreException e) {
 				throw new TranslationFailedException(e);
 			}
 		}

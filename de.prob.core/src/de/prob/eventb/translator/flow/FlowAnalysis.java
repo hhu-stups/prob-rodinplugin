@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eventb.core.ISCEvent;
 import org.eventb.core.ISCMachineRoot;
 import org.eventb.core.ISCVariable;
@@ -90,7 +91,7 @@ public class FlowAnalysis {
 	}
 
 	private ArrayList<Event> createEvents(final ISCMachineRoot model)
-			throws RodinDBException {
+			throws CoreException {
 		ISCEvent[] revents = model.getSCEvents();
 		final ArrayList<Event> arrayList = new ArrayList<Event>(revents.length);
 
@@ -110,7 +111,7 @@ public class FlowAnalysis {
 	}
 
 	private Map<FreeIdentifier, Integer> enumerateVariables(
-			final ISCVariable[] variables) throws RodinDBException {
+			final ISCVariable[] variables) throws CoreException {
 		Map<FreeIdentifier, Integer> varNumber = new HashMap<FreeIdentifier, Integer>();
 		int count = 0;
 		for (ISCVariable variable : variables) {

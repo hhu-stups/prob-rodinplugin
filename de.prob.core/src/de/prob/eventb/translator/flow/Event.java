@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eventb.core.ISCAction;
 import org.eventb.core.ISCEvent;
 import org.eventb.core.ISCGuard;
@@ -46,7 +47,7 @@ public class Event {
 	}
 
 	private Event(final ISCEvent evt, final FlowAnalysis analysis)
-			throws RodinDBException {
+			throws CoreException {
 		this.analysis = analysis;
 		this.name = evt.getLabel();
 		this.localTypeEnv = generateLocalTypeEnvironment(evt, analysis);
@@ -168,7 +169,7 @@ public class Event {
 	}
 
 	public static Event create(final ISCEvent evt, final FlowAnalysis analysis)
-			throws RodinDBException {
+			throws CoreException {
 		Event event = new Event(evt, analysis);
 		return event;
 	}
@@ -183,7 +184,7 @@ public class Event {
 				// FIXME We need to deal with non deterministic assignments
 				// here
 			}
-			p = p.applyAssignments(deterministic, analysis.FF);
+			p = p.applyAssignments(deterministic);
 		}
 
 		return p;

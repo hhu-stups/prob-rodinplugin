@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.CoreException;
 import org.eventb.core.IContextRoot;
 import org.eventb.core.IEventBRoot;
 import org.eventb.core.IExtendsContext;
@@ -98,7 +99,7 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 		try {
 			assertConsistentModel(context.getRoot());
 			translator.translate();
-		} catch (RodinDBException e) {
+		} catch (CoreException e) {
 			throw createTranslationFailedException(context, e);
 		}
 		return translator;
@@ -162,7 +163,7 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 		this.root = root;
 	}
 
-	private void translate() throws RodinDBException {
+	private void translate() throws CoreException {
 		translateContext();
 		collectProofInfo();
 		collectPragmas();
@@ -232,7 +233,7 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 		return depContext;
 	}
 
-	private void translateContext() throws RodinDBException {
+	private void translateContext() throws CoreException {
 		model.setName(new TIdentifierLiteral(context.getComponentName()));
 
 		final List<PContextClause> clauses = new ArrayList<PContextClause>();
@@ -244,7 +245,7 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 		model.setContextClauses(clauses);
 	}
 
-	private AExtendsContextClause processExtends() throws RodinDBException {
+	private AExtendsContextClause processExtends() throws CoreException {
 
 		if (context instanceof ISCContextRoot)
 			return processExtendsForContextRoot();
@@ -293,7 +294,7 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 	}
 
 	private AExtendsContextClause processExtendsForContextRoot()
-			throws RodinDBException {
+			throws CoreException {
 		ISCExtendsContext[] extendsClauses = null;
 		ISCContextRoot rcontext = (ISCContextRoot) context;
 
@@ -371,14 +372,14 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 		return Arrays.asList(constantsContextClause, abstractConstantsClause);
 	}
 
-	private ATheoremsContextClause processTheorems() throws RodinDBException {
+	private ATheoremsContextClause processTheorems() throws CoreException {
 		final ISCAxiom[] axioms = context.getSCAxioms();
 		final ATheoremsContextClause theoremsContextClause = new ATheoremsContextClause();
 		theoremsContextClause.setPredicates(extractPredicates(axioms, true));
 		return theoremsContextClause;
 	}
 
-	private AAxiomsContextClause processAxioms() throws RodinDBException {
+	private AAxiomsContextClause processAxioms() throws CoreException {
 		final ISCAxiom[] axioms = context.getSCAxioms();
 		final AAxiomsContextClause axiomsContextClause = new AAxiomsContextClause();
 		axiomsContextClause.setPredicates(extractPredicates(axioms, false));
@@ -386,7 +387,7 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 	}
 
 	private List<PPredicate> extractPredicates(final ISCAxiom[] predicates,
-			final boolean theorems) throws RodinDBException {
+			final boolean theorems) throws CoreException {
 		final List<PPredicate> list = new ArrayList<PPredicate>(
 				predicates.length);
 		for (final ISCAxiom element : predicates) {

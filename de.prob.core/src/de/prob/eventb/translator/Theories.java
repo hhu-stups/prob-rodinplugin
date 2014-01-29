@@ -87,7 +87,7 @@ public class Theories {
 					}
 				}
 			}
-		} catch (RodinDBException e) {
+		} catch (CoreException e) {
 			throw new TranslationFailedException(e);
 		}
 	}
@@ -126,7 +126,7 @@ public class Theories {
 	 */
 	private static void savePrintTranslation(IDeployedTheoryRoot theory,
 			Collection<String> visitedTheories, IPrologTermOutput opto)
-			throws RodinDBException, TranslationFailedException {
+			throws CoreException, TranslationFailedException {
 		final StructuredPrologOutput pto = new StructuredPrologOutput();
 		printTranslation(theory, visitedTheories, pto);
 		for (PrologTerm result : pto.getSentences()) {
@@ -136,7 +136,7 @@ public class Theories {
 
 	private static void printTranslation(IDeployedTheoryRoot theory,
 			Collection<String> visitedTheories, StructuredPrologOutput pto)
-			throws RodinDBException, TranslationFailedException {
+			throws CoreException, TranslationFailedException {
 		final String name = theory.getElementName();
 		// Check if the theory has already been printed, if yes, skip it
 		if (!visitedTheories.contains(name)) {
@@ -156,7 +156,7 @@ public class Theories {
 	private static void printImportedTheories(
 			Iterable<IDeployedTheoryRoot> theories,
 			Collection<String> visitedTheories, StructuredPrologOutput pto)
-			throws RodinDBException, TranslationFailedException {
+			throws CoreException, TranslationFailedException {
 		for (IDeployedTheoryRoot theory : theories) {
 			printTranslation(theory, visitedTheories, pto);
 		}
@@ -295,7 +295,7 @@ public class Theories {
 	}
 
 	private static void printConstructor(ISCDatatypeConstructor cons,
-			FormulaFactory ff, IPrologTermOutput pto) throws RodinDBException {
+			FormulaFactory ff, IPrologTermOutput pto) throws CoreException {
 		pto.openTerm("constructor");
 		pto.printAtom(cons.getIdentifierString());
 		pto.openList();
@@ -392,7 +392,7 @@ public class Theories {
 
 	private static void printOperatorArguments(ISCOperatorArgument[] arguments,
 			IPrologTermOutput prologOutput, final FormulaFactory ff)
-			throws RodinDBException {
+			throws CoreException {
 		prologOutput.openList();
 		for (ISCOperatorArgument argument : arguments) {
 			printTypedIdentifier("argument", argument, ff, prologOutput);
@@ -473,7 +473,7 @@ public class Theories {
 
 	private static void printAxiomaticOperators(
 			ISCAxiomaticOperatorDefinition[] axdefs, FormulaFactory ff,
-			IPrologTermOutput pto) throws RodinDBException {
+			IPrologTermOutput pto) throws CoreException {
 		pto.openList();
 		for (final ISCAxiomaticOperatorDefinition opdef : axdefs) {
 			pto.openTerm("opdef");
