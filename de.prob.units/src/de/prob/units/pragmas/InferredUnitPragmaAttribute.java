@@ -9,7 +9,7 @@ package de.prob.units.pragmas;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eventb.core.IVariable;
 import org.eventb.core.basis.Constant;
-import org.eventb.internal.ui.eventbeditor.manipulation.IAttributeManipulation;
+import org.eventb.ui.manipulation.IAttributeManipulation;
 import org.rodinp.core.IAttributeType;
 import org.rodinp.core.IInternalElement;
 import org.rodinp.core.IRodinElement;
