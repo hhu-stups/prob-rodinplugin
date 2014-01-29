@@ -80,12 +80,12 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 		try {
 			assertConsistentModel(context);
 			final FormulaFactory ff = context.getFormulaFactory();
-			final ITypeEnvironment te = context.getTypeEnvironment(ff);
+			final ITypeEnvironment te = context.getTypeEnvironment();
 			final ContextTranslator translator = new ContextTranslator(context,
 					ff, te, context);
 			translator.translate();
 			return translator;
-		} catch (RodinDBException e) {
+		} catch (CoreException e) {
 			throw createTranslationFailedException(context, e);
 		}
 	}
@@ -125,7 +125,7 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 	}
 
 	private static TranslationFailedException createTranslationFailedException(
-			final ISCContext context, RodinDBException e)
+			final ISCContext context, CoreException e)
 			throws TranslationFailedException {
 		final String message = "A Rodin exception occured during translation process. Possible cause: building aborted or still in progress. Please wait until building has finished before starting ProB. If this does not help, perform a clean and start ProB after building has finished. Original Exception: ";
 		return new TranslationFailedException(context.getComponentName(),

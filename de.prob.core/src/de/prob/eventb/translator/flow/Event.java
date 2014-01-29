@@ -85,17 +85,17 @@ public class Event {
 
 		Predicate[] gPreds = new Predicate[guards.length];
 		for (int k = 0; k < guards.length; k++) {
-			gPreds[k] = guards[k].getPredicate(factory, typenv);
+			gPreds[k] = guards[k].getPredicate(typenv);
 		}
 
 		if (guards.length == 0)
 			return factory.makeLiteralPredicate(Predicate.BTRUE, null);
 		Predicate conjPred = guards.length == 1 ? gPreds[0] : factory
 				.makeAssociativePredicate(Predicate.LAND, gPreds, null);
-		Predicate predicate = parameters.length == 0 ? conjPred : factory
-				.makeQuantifiedPredicate(Predicate.EXISTS, boundIdentifiers,
-						conjPred.bindTheseIdents(
-								Arrays.asList(freeIdentifiers), factory), null);
+		Predicate predicate = parameters.length == 0 ? conjPred
+				: factory.makeQuantifiedPredicate(Predicate.EXISTS,
+						boundIdentifiers, conjPred.bindTheseIdents(Arrays
+								.asList(freeIdentifiers)), null);
 		return predicate;
 
 	}
@@ -105,10 +105,10 @@ public class Event {
 	}
 
 	private List<Assignment> getAssignments(final FlowAnalysis analysis,
-			final List<ISCAction> actions) throws RodinDBException {
+			final List<ISCAction> actions) throws CoreException {
 		List<Assignment> assignements = new ArrayList<Assignment>();
 		for (ISCAction action : actions) {
-			assignements.add(action.getAssignment(analysis.FF, localTypeEnv));
+			assignements.add(action.getAssignment(localTypeEnv));
 		}
 		return Collections.unmodifiableList(assignements);
 	}
@@ -162,8 +162,8 @@ public class Event {
 			final FlowAnalysis analysis) throws RodinDBException {
 		final ITypeEnvironment globalTypeEnvironment = analysis
 				.getTypeEnvironment();
-		final ITypeEnvironment typeEnvironment = evt.getTypeEnvironment(
-				globalTypeEnvironment, analysis.FF);
+		final ITypeEnvironment typeEnvironment = evt
+				.getTypeEnvironment(globalTypeEnvironment);
 		typeEnvironment.addAll(globalTypeEnvironment);
 		return typeEnvironment;
 	}

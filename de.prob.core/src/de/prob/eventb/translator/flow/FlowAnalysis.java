@@ -64,8 +64,8 @@ public class FlowAnalysis {
 
 	}
 
-	public FlowAnalysis(final ISCMachineRoot model) throws RodinDBException {
-		this.typeEnvironment = model.getTypeEnvironment(FF);
+	public FlowAnalysis(final ISCMachineRoot model) throws CoreException {
+		this.typeEnvironment = model.getTypeEnvironment();
 		this.identifiers = enumerateVariables(model.getSCVariables());
 		this.events = createEvents(model);
 		noEffect = new ArrayList<EventTuple>();

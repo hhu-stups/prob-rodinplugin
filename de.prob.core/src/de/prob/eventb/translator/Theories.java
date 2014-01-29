@@ -267,7 +267,7 @@ public class Theories {
 	}
 
 	private static void printDataTypes(ISCTheoryRoot theory,
-			IPrologTermOutput pto) throws RodinDBException {
+			IPrologTermOutput pto) throws CoreException {
 		final FormulaFactory ff = theory.getFormulaFactory();
 		pto.openList();
 		for (ISCDatatypeDefinition def : theory.getSCDatatypeDefinitions()) {
@@ -277,12 +277,12 @@ public class Theories {
 	}
 
 	private static void printDataType(ISCDatatypeDefinition def,
-			FormulaFactory ff, IPrologTermOutput pto) throws RodinDBException {
+			FormulaFactory ff, IPrologTermOutput pto) throws CoreException {
 		pto.openTerm("datatype");
 		pto.printAtom(def.getIdentifierString());
 		pto.openList();
 		for (ISCTypeArgument arg : def.getTypeArguments()) {
-			printType(arg.getSCGivenType(ff), ff, pto);
+			printType(arg.getSCGivenType(ff), pto);
 		}
 		pto.closeList();
 		pto.openList();
