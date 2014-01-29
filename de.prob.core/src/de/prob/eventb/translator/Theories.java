@@ -22,6 +22,7 @@ import org.eventb.core.ast.FormulaFactory;
 import org.eventb.core.ast.FreeIdentifier;
 import org.eventb.core.ast.IParseResult;
 import org.eventb.core.ast.ITypeEnvironment;
+import org.eventb.core.ast.ITypeEnvironmentBuilder;
 import org.eventb.core.ast.Predicate;
 import org.eventb.core.ast.Type;
 import org.eventb.theory.core.DatabaseUtilities;
@@ -307,7 +308,7 @@ public class Theories {
 	}
 
 	private static void printOperatorDefs(ISCTheoryRoot theory,
-			IPrologTermOutput pto) throws RodinDBException {
+			IPrologTermOutput pto) throws CoreException {
 		pto.openList();
 		for (ISCNewOperatorDefinition opdef : theory
 				.getSCNewOperatorDefinitions()) {
@@ -318,13 +319,16 @@ public class Theories {
 
 	private static void printOperator(ISCNewOperatorDefinition opDef,
 			ISCTheoryRoot theory, IPrologTermOutput prologOutput)
-			throws RodinDBException {
+			throws CoreException {
 
 		prologOutput.openTerm("operator");
 		prologOutput.printAtom(opDef.getLabel());
 
 		final FormulaFactory ff = theory.getFormulaFactory();
-		final ITypeEnvironment te = theory.getTypeEnvironment(ff);
+		final ITypeEnvironment teFromFF = theory.getTypeEnvironment(ff);
+
+		final ITypeEnvironmentBuilder te = ff.makeTypeEnvironment();
+		te.addAll(teFromFF);
 
 		// Arguments
 		printOperatorArguments(opDef.getOperatorArguments(), prologOutput, ff);

@@ -26,6 +26,7 @@ import org.eventb.core.ast.FormulaFactory;
 import org.eventb.core.ast.IParseResult;
 import org.eventb.core.ast.ITypeCheckResult;
 import org.eventb.core.ast.ITypeEnvironment;
+import org.eventb.core.ast.ITypeEnvironmentBuilder;
 import org.eventb.core.ast.Predicate;
 import org.eventb.core.ast.Type;
 import org.rodinp.core.IRodinFile;
@@ -198,7 +199,10 @@ public class EventBAnimatorPart implements LanguageDependendAnimationPart {
 		final IParseResult parseResult = ff.parsePredicate(utf8String, null);
 		checkParseResult(parseResult);
 		final Predicate predicate = parseResult.getParsedPredicate();
-		final ITypeEnvironment typeEnv = getTypeEnvironment(ff).clone();
+
+		final ITypeEnvironmentBuilder typeEnv = ff.makeTypeEnvironment();
+		typeEnv.addAll(getTypeEnvironment(ff));
+
 		addEventParameters(event, ff, typeEnv, new ArrayList<String>());
 		final ISCMachineRoot machine = ((IMachineRoot) root).getSCMachineRoot();
 		addPostStateVariables(machine, ff, typeEnv, new ArrayList<String>());
@@ -207,7 +211,7 @@ public class EventBAnimatorPart implements LanguageDependendAnimationPart {
 	}
 
 	private void addPostStateVariables(final ISCMachineRoot machine,
-			final FormulaFactory ff, final ITypeEnvironment typeEnv,
+			final FormulaFactory ff, final ITypeEnvironmentBuilder typeEnv,
 			final ArrayList<String> allVariables) throws ProBParseException {
 		try {
 			final ISCVariable[] variables = machine.getSCVariables();
@@ -223,7 +227,7 @@ public class EventBAnimatorPart implements LanguageDependendAnimationPart {
 	}
 
 	private void addEventParameters(final ISCEvent event,
-			final FormulaFactory ff, final ITypeEnvironment typeEnv,
+			final FormulaFactory ff, final ITypeEnvironmentBuilder typeEnv,
 			final Collection<String> allParameters) throws ProBParseException {
 		try {
 			ISCParameter[] params = event.getSCParameters();
@@ -233,16 +237,16 @@ public class EventBAnimatorPart implements LanguageDependendAnimationPart {
 			// for (final ISCEvent absEvent : event.getAbstractSCEvents()) {
 			// addEventParameters(absEvent, ff, typeEnv, allParameters);
 			// }
-		} catch (RodinDBException e) {
+		} catch (CoreException e) {
 			throw rodin2parseException(e);
 		}
 	}
 
 	private void addAllIdentifiers(final FormulaFactory ff,
-			final ITypeEnvironment typeEnv,
+			final ITypeEnvironmentBuilder typeEnv,
 			final Collection<String> allParameters,
 			final ISCIdentifierElement[] ids, final String postfix)
-			throws RodinDBException {
+			throws CoreException {
 		for (final ISCIdentifierElement identifier : ids) {
 			final String name = identifier.getIdentifierString() + postfix;
 			if (!allParameters.contains(name)) {

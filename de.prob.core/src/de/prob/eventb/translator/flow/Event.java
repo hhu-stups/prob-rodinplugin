@@ -19,6 +19,7 @@ import org.eventb.core.ast.BoundIdentDecl;
 import org.eventb.core.ast.FormulaFactory;
 import org.eventb.core.ast.FreeIdentifier;
 import org.eventb.core.ast.ITypeEnvironment;
+import org.eventb.core.ast.ITypeEnvironmentBuilder;
 import org.eventb.core.ast.Predicate;
 import org.eventb.core.ast.QuantifiedPredicate;
 import org.rodinp.core.RodinDBException;
@@ -73,13 +74,13 @@ public class Event {
 	}
 
 	private Predicate getGuard(final FlowAnalysis analysis, ISCEvent event)
-			throws RodinDBException {
+			throws CoreException {
 		ISCParameter[] parameters = event.getSCParameters();
 		ISCGuard[] guards = event.getSCGuards();
 
 		FormulaFactory factory = analysis.FF;
 
-		ITypeEnvironment typenv = factory.makeTypeEnvironment();
+		ITypeEnvironmentBuilder typenv = factory.makeTypeEnvironment();
 		typenv.addAll(analysis.getTypeEnvironment());
 		typenv.addAll(freeIdentifiers);
 
@@ -159,10 +160,10 @@ public class Event {
 	}
 
 	private ITypeEnvironment generateLocalTypeEnvironment(final ISCEvent evt,
-			final FlowAnalysis analysis) throws RodinDBException {
+			final FlowAnalysis analysis) throws CoreException {
 		final ITypeEnvironment globalTypeEnvironment = analysis
 				.getTypeEnvironment();
-		final ITypeEnvironment typeEnvironment = evt
+		final ITypeEnvironmentBuilder typeEnvironment = evt
 				.getTypeEnvironment(globalTypeEnvironment);
 		typeEnvironment.addAll(globalTypeEnvironment);
 		return typeEnvironment;

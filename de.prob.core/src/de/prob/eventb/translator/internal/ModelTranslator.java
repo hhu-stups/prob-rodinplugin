@@ -38,6 +38,7 @@ import org.eventb.core.ITraceableElement;
 import org.eventb.core.ast.Assignment;
 import org.eventb.core.ast.FormulaFactory;
 import org.eventb.core.ast.ITypeEnvironment;
+import org.eventb.core.ast.ITypeEnvironmentBuilder;
 import org.eventb.core.basis.Event;
 import org.eventb.core.basis.Guard;
 import org.eventb.core.seqprover.IConfidence;
@@ -303,7 +304,7 @@ public class ModelTranslator extends AbstractComponentTranslator {
 	}
 
 	private AEventsModelClause processEvents()
-			throws TranslationFailedException, RodinDBException {
+			throws TranslationFailedException, CoreException {
 		final AEventsModelClause clause = new AEventsModelClause();
 		final ISCEvent[] events = machine.getSCEvents();
 		final List<PEvent> eventsList = new ArrayList<PEvent>(events.length);
@@ -311,7 +312,7 @@ public class ModelTranslator extends AbstractComponentTranslator {
 
 			broken = broken || !revent.isAccurate();
 
-			ITypeEnvironment localEnv = revent.getTypeEnvironment(te);
+			ITypeEnvironmentBuilder localEnv = revent.getTypeEnvironment(te);
 			localEnv.addAll(te);
 
 			ISCVariable[] variables = machine.getSCVariables();
