@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang.ObjectUtils;
+import org.eclipse.core.runtime.CoreException;
 import org.eventb.core.IContextRoot;
 import org.eventb.core.IEventBRoot;
 import org.eventb.core.IMachineRoot;
@@ -25,7 +26,6 @@ import org.eventb.core.ast.FormulaFactory;
 import org.eventb.core.ast.IParseResult;
 import org.eventb.core.ast.ITypeCheckResult;
 import org.eventb.core.ast.ITypeEnvironment;
-import org.eventb.core.ast.LanguageVersion;
 import org.eventb.core.ast.Predicate;
 import org.eventb.core.ast.Type;
 import org.rodinp.core.IRodinFile;
@@ -64,8 +64,7 @@ public class EventBAnimatorPart implements LanguageDependendAnimationPart {
 			throws ProBParseException {
 		final String expression = FormulaTranslator.translate(expression1);
 		final FormulaFactory ff = FormulaFactory.getDefault();
-		final IParseResult parseResult = ff.parseExpression(expression,
-				LanguageVersion.LATEST, null);
+		final IParseResult parseResult = ff.parseExpression(expression, null);
 		checkParseResult(parseResult);
 		final Expression ee = parseResult.getParsedExpression();
 		typeCheck(ff, ee);
@@ -78,8 +77,7 @@ public class EventBAnimatorPart implements LanguageDependendAnimationPart {
 			throws ProBParseException {
 		final String predicate = FormulaTranslator.translate(predicate1);
 		final FormulaFactory ff = FormulaFactory.getDefault();
-		final IParseResult parseResult = ff.parsePredicate(predicate,
-				LanguageVersion.LATEST, null);
+		final IParseResult parseResult = ff.parsePredicate(predicate, null);
 		checkParseResult(parseResult);
 		final Predicate pp = parseResult.getParsedPredicate();
 		typeCheck(ff, pp);
@@ -127,15 +125,15 @@ public class EventBAnimatorPart implements LanguageDependendAnimationPart {
 
 		try {
 			if (root instanceof IMachineRoot)
-				typeEnv = root.getSCMachineRoot().getTypeEnvironment(ff);
+				typeEnv = root.getSCMachineRoot().getTypeEnvironment();
 			if (root instanceof ISCMachineRoot)
-				typeEnv = root.getSCMachineRoot().getTypeEnvironment(ff);
+				typeEnv = root.getSCMachineRoot().getTypeEnvironment();
 			if (root instanceof IContextRoot)
-				typeEnv = root.getSCContextRoot().getTypeEnvironment(ff);
+				typeEnv = root.getSCContextRoot().getTypeEnvironment();
 			if (root instanceof ISCContextRoot)
-				typeEnv = root.getSCContextRoot().getTypeEnvironment(ff);
+				typeEnv = root.getSCContextRoot().getTypeEnvironment();
 
-		} catch (RodinDBException e) {
+		} catch (CoreException e) {
 			throw rodin2parseException(e);
 		}
 		return typeEnv;
@@ -197,8 +195,7 @@ public class EventBAnimatorPart implements LanguageDependendAnimationPart {
 			final ISCEvent event) throws ProBParseException {
 		final String utf8String = FormulaTranslator.translate(predicateString);
 		final FormulaFactory ff = FormulaFactory.getDefault();
-		final IParseResult parseResult = ff.parsePredicate(utf8String,
-				LanguageVersion.LATEST, null);
+		final IParseResult parseResult = ff.parsePredicate(utf8String, null);
 		checkParseResult(parseResult);
 		final Predicate predicate = parseResult.getParsedPredicate();
 		final ITypeEnvironment typeEnv = getTypeEnvironment(ff).clone();
@@ -220,7 +217,7 @@ public class EventBAnimatorPart implements LanguageDependendAnimationPart {
 						.getRoot();
 				addPostStateVariables(absMachine, ff, typeEnv, allVariables);
 			}
-		} catch (RodinDBException e) {
+		} catch (CoreException e) {
 			throw rodin2parseException(e);
 		}
 	}
@@ -256,7 +253,7 @@ public class EventBAnimatorPart implements LanguageDependendAnimationPart {
 		}
 	}
 
-	private ProBParseException rodin2parseException(final RodinDBException e) {
+	private ProBParseException rodin2parseException(final CoreException e) {
 		return new ProBParseException(
 				"Error in the underlying Rodin Database.\nTry cleaning your workspace.\n Details: "
 						+ e.getLocalizedMessage());

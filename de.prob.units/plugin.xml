@@ -9,7 +9,7 @@
             id="de.prob.units.unitPragmaAttribute"
             isMath="true"
             prefix="Physical Unit:"
-            style="de.prob.units.unitPragmaAttribute"
+            style="single"
             typeId="de.prob.units.unitPragmaAttribute">
       </textAttribute>
       <attributeRelation
@@ -36,7 +36,7 @@
             id="de.prob.units.inferredUnitPragmaAttribute"
             isMath="true"
             prefix="Inferred Physical Unit:"
-            style="de.prob.units.inferredUnitPragmaAttribute"
+            style="single"
             typeId="de.prob.units.inferredUnitPragmaAttribute">
       </textAttribute>
    </extension>

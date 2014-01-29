@@ -22,7 +22,6 @@ import org.eventb.core.ast.FormulaFactory;
 import org.eventb.core.ast.FreeIdentifier;
 import org.eventb.core.ast.IParseResult;
 import org.eventb.core.ast.ITypeEnvironment;
-import org.eventb.core.ast.LanguageVersion;
 import org.eventb.core.ast.Predicate;
 import org.eventb.core.ast.Type;
 import org.eventb.theory.core.DatabaseUtilities;
@@ -165,7 +164,7 @@ public class Theories {
 
 	private static void printTheory(IDeployedTheoryRoot theory,
 			Iterable<IDeployedTheoryRoot> imported, StructuredPrologOutput pto)
-			throws RodinDBException, TranslationFailedException {
+			throws CoreException, TranslationFailedException {
 		pto.openTerm("theory");
 		printTheoryName(theory, pto);
 		printListOfImportedTheories(imported, pto);
@@ -363,8 +362,7 @@ public class Theories {
 			IPrologTermOutput prologOutput, final FormulaFactory ff,
 			ISCRecursiveDefinitionCase c) throws RodinDBException {
 		final String es = c.getExpressionString();
-		final IParseResult pr = ff.parseExpression(es, LanguageVersion.LATEST,
-				null);
+		final IParseResult pr = ff.parseExpression(es, null);
 		final Expression ex = pr.getParsedExpression();
 
 		final String formulaAsString = c
@@ -423,17 +421,16 @@ public class Theories {
 
 	private static void printTypedIdentifier(final String functor,
 			final ISCIdentifierElement id, final FormulaFactory ff,
-			final IPrologTermOutput pto) throws RodinDBException {
+			final IPrologTermOutput pto) throws CoreException {
 		pto.openTerm(functor);
 		pto.printAtom(id.getIdentifierString());
 		Type type = id.getType(ff);
-		printType(type, ff, pto);
+		printType(type, pto);
 		pto.closeTerm();
 	}
 
-	private static void printType(final Type type, final FormulaFactory ff,
-			final IPrologTermOutput pto) {
-		printExpression(pto, type.toExpression(ff));
+	private static void printType(final Type type, final IPrologTermOutput pto) {
+		printExpression(pto, type.toExpression());
 	}
 
 	private static void printExpression(IPrologTermOutput prologOutput,
@@ -451,7 +448,7 @@ public class Theories {
 	}
 
 	private static void printAxiomaticDefs(ISCTheoryRoot theory,
-			IPrologTermOutput pto) throws RodinDBException {
+			IPrologTermOutput pto) throws CoreException {
 		FormulaFactory ff = theory.getFormulaFactory();
 		ITypeEnvironment te = theory.getTypeEnvironment(ff);
 		pto.openList();
@@ -464,13 +461,13 @@ public class Theories {
 
 	private static void printAxiomaticDefBlock(
 			ISCAxiomaticDefinitionsBlock block, FormulaFactory ff,
-			ITypeEnvironment te, IPrologTermOutput pto) throws RodinDBException {
+			ITypeEnvironment te, IPrologTermOutput pto) throws CoreException {
 		pto.openTerm("axiomatic_def_block");
 		pto.printAtom(block.getLabel());
 		printIdentifiers(block.getAxiomaticTypeDefinitions(), pto);
 		printAxiomaticOperators(block.getAxiomaticOperatorDefinitions(), ff,
 				pto);
-		printAxioms(block.getAxiomaticDefinitionAxioms(), ff, te, pto);
+		printAxioms(block.getAxiomaticDefinitionAxioms(), te, pto);
 		pto.closeTerm();
 	}
 
@@ -492,11 +489,10 @@ public class Theories {
 	}
 
 	private static void printAxioms(ISCAxiomaticDefinitionAxiom[] axioms,
-			FormulaFactory ff, ITypeEnvironment te, IPrologTermOutput pto)
-			throws RodinDBException {
+			ITypeEnvironment te, IPrologTermOutput pto) throws CoreException {
 		pto.openList();
 		for (ISCAxiomaticDefinitionAxiom axiom : axioms) {
-			printPredicate(pto, axiom.getPredicate(ff, te));
+			printPredicate(pto, axiom.getPredicate(te));
 		}
 		pto.closeList();
 	}

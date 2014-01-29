@@ -6,20 +6,26 @@
 
 package de.prob.ui.operationview;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.eventb.core.ast.*;
+import org.eventb.core.ast.FormulaFactory;
+import org.eventb.core.ast.IParseResult;
+import org.eventb.core.ast.Predicate;
 
 import de.be4.classicalb.core.parser.analysis.prolog.ASTProlog;
 import de.be4.classicalb.core.parser.exceptions.BException;
-import de.prob.core.*;
-import de.prob.core.command.*;
+import de.prob.core.Animator;
+import de.prob.core.ProblemHandler;
+import de.prob.core.command.CommandException;
+import de.prob.core.command.IComposableCommand;
 import de.prob.core.domainobjects.Operation;
 import de.prob.core.domainobjects.eval.PredicateEvalElement;
 import de.prob.exceptions.ProBException;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
-import de.prob.prolog.term.*;
+import de.prob.prolog.term.ListPrologTerm;
+import de.prob.prolog.term.PrologTerm;
 
 /**
  * Command to execute an event that has not been enumerated by ProB, for further
@@ -53,7 +59,7 @@ public final class GetOperationByPredicateCommand2 implements
 		PredicateEvalElement parsedEvalElement = null;
 
 		IParseResult result = FormulaFactory.getDefault().parsePredicate(
-				predicate, LanguageVersion.LATEST, null);
+				predicate, null);
 		Predicate parsedPredicate = result.getParsedPredicate();
 
 		try {

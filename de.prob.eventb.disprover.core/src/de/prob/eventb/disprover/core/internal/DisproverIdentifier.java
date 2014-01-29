@@ -1,10 +1,15 @@
 package de.prob.eventb.disprover.core.internal;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.eventb.core.ast.*;
+import org.eventb.core.ast.Expression;
+import org.eventb.core.ast.FormulaFactory;
+import org.eventb.core.ast.Type;
 
-import de.be4.classicalb.core.parser.node.*;
+import de.be4.classicalb.core.parser.node.AIdentifierExpression;
+import de.be4.classicalb.core.parser.node.PExpression;
+import de.be4.classicalb.core.parser.node.TIdentifierLiteral;
 import de.prob.eventb.translator.internal.TranslationVisitor;
 
 /**
@@ -44,7 +49,7 @@ public class DisproverIdentifier {
 
 	private PExpression typeToPExpression(Type type) {
 		TranslationVisitor visitor = new TranslationVisitor();
-		Expression expression = type.toExpression(ff);
+		Expression expression = type.toExpression();
 		expression.accept(visitor);
 		PExpression typeExpr = visitor.getExpression();
 		return typeExpr;

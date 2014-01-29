@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eventb.core.ISCExpressionElement;
 import org.eventb.core.ISCIdentifierElement;
 import org.eventb.core.ISCPredicateElement;
@@ -88,15 +89,15 @@ public abstract class AbstractComponentTranslator {
 
 	protected PPredicate translatePredicate(FormulaFactory ff,
 			final ITypeEnvironment env, final ISCPredicateElement predicate)
-			throws RodinDBException {
-		final Predicate pred = predicate.getPredicate(ff, env);
+			throws CoreException {
+		final Predicate pred = predicate.getPredicate(env);
 		return TranslationVisitor.translatePredicate(pred);
 	}
 
 	protected PExpression translateExpression(FormulaFactory ff,
 			final ITypeEnvironment env, final ISCExpressionElement expression)
-			throws RodinDBException {
-		final Expression expr = expression.getExpression(ff, env);
+			throws CoreException {
+		final Expression expr = expression.getExpression(env);
 		return TranslationVisitor.translateExpression(expr);
 	}
 

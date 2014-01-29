@@ -9,15 +9,14 @@ package de.prob.sap.commands;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eventb.core.IMachineRoot;
 import org.eventb.core.ast.FormulaFactory;
 import org.eventb.core.ast.IParseResult;
 import org.eventb.core.ast.ITypeCheckResult;
 import org.eventb.core.ast.ITypeEnvironment;
-import org.eventb.core.ast.LanguageVersion;
 import org.eventb.core.ast.Predicate;
 import org.eventb.core.basis.MachineRoot;
-import org.rodinp.core.RodinDBException;
 
 import de.prob.core.Animator;
 import de.prob.core.command.CommandException;
@@ -72,7 +71,7 @@ public class GenerateTestcaseCommand implements IComposableCommand {
 			final IMachineRoot machineRoot,
 			final Collection<String> operationNames,
 			final String targetPredicate, final int maxDepth,
-			final int maxNodes, final String filename) throws RodinDBException,
+			final int maxNodes, final String filename) throws CoreException,
 			ProBException {
 		final Predicate predicate = parsePredicate(machineRoot, targetPredicate);
 		return generateTestcases(operationNames, predicate, maxDepth, maxNodes,
@@ -115,16 +114,16 @@ public class GenerateTestcaseCommand implements IComposableCommand {
 
 	private static Predicate parsePredicate(final IMachineRoot machineRoot,
 			final String targetPredicate) throws ParseProblemException,
-			RodinDBException {
+			CoreException {
 		final FormulaFactory formfact = FormulaFactory.getDefault();
 		final IParseResult parsedPredicate = formfact.parsePredicate(
-				targetPredicate, LanguageVersion.LATEST, null);
+				targetPredicate, null);
 		if (parsedPredicate.hasProblem())
 			throw new ParseProblemException(parsedPredicate.getProblems());
 		final Predicate predicate = parsedPredicate.getParsedPredicate();
 
 		final ITypeEnvironment typeEnv = machineRoot.getSCMachineRoot()
-				.getTypeEnvironment(formfact);
+				.getTypeEnvironment();
 		final ITypeCheckResult tcr = predicate.typeCheck(typeEnv);
 		if (tcr.hasProblem())
 			throw new ParseProblemException(tcr.getProblems());

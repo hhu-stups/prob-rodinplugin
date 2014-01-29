@@ -1,7 +1,8 @@
 package de.prob.ui.operationview;
 
 import org.eclipse.jface.dialogs.IInputValidator;
-import org.eventb.core.ast.*;
+import org.eventb.core.ast.FormulaFactory;
+import org.eventb.core.ast.IParseResult;
 
 import de.prob.unicode.UnicodeTranslator;
 
@@ -12,7 +13,7 @@ class EventBInputValidator implements IInputValidator {
 				.toUnicode(newText);
 
 		IParseResult result = FormulaFactory.getDefault().parsePredicate(
-				formula, LanguageVersion.LATEST, null);
+				formula, null);
 		if (result.hasProblem()) {
 			return "No Event-B Predicate";
 		}
