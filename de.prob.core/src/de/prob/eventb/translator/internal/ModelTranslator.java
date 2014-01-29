@@ -13,6 +13,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.core.runtime.CoreException;
 import org.eventb.core.IConvergenceElement.Convergence;
 import org.eventb.core.ILabeledElement;
 import org.eventb.core.IMachineRoot;
@@ -94,8 +95,8 @@ public class ModelTranslator extends AbstractComponentTranslator {
 		ModelTranslator modelTranslator = new ModelTranslator(model);
 		try {
 			modelTranslator.translate();
-		} catch (RodinDBException re) {
-			final String message = "Rodin Database Exception: \n"
+		} catch (CoreException re) {
+			final String message = "Rodin Database Exception / Core Exception: \n"
 					+ re.getLocalizedMessage();
 			throw new TranslationFailedException(modelTranslator.getClass()
 					.toString(), message);
@@ -139,16 +140,15 @@ public class ModelTranslator extends AbstractComponentTranslator {
 		origin = machine.getMachineRoot();
 		ff = machine.getFormulaFactory();
 		try {
-			te = machine.getTypeEnvironment(ff);
-		} catch (RodinDBException e) {
+			te = machine.getTypeEnvironment();
+		} catch (CoreException e) {
 			final String message = "A Rodin exception occured during translation process. Original Exception: ";
 			throw new TranslationFailedException(machine.getComponentName(),
 					message + e.getLocalizedMessage());
 		}
 	}
 
-	private void translate() throws RodinDBException,
-			TranslationFailedException {
+	private void translate() throws CoreException, TranslationFailedException {
 
 		final String message = "machine.getRodinFile().isConsistent() [Note: Maybe you can fix this Rodin problem by refreshing and rebuilding the project]";
 		Logger.assertProB(message, machine.getRodinFile().isConsistent());
@@ -229,7 +229,7 @@ public class ModelTranslator extends AbstractComponentTranslator {
 
 	}
 
-	private void translateMachine() throws RodinDBException,
+	private void translateMachine() throws CoreException,
 			TranslationFailedException {
 		model.setName(new TIdentifierLiteral(machine.getRodinFile()
 				.getBareName()));
@@ -253,7 +253,7 @@ public class ModelTranslator extends AbstractComponentTranslator {
 		model.setModelClauses(clauses);
 	}
 
-	private AVariantModelClause processVariant() throws RodinDBException,
+	private AVariantModelClause processVariant() throws CoreException,
 			TranslationFailedException {
 		final ISCVariant[] variant = machine.getSCVariants();
 		final AVariantModelClause var;
@@ -270,7 +270,7 @@ public class ModelTranslator extends AbstractComponentTranslator {
 		return var;
 	}
 
-	private ARefinesModelClause processRefines() throws RodinDBException,
+	private ARefinesModelClause processRefines() throws CoreException,
 			TranslationFailedException {
 		final ISCRefinesMachine[] refinesClauses = machine
 				.getSCRefinesClauses();
@@ -344,7 +344,7 @@ public class ModelTranslator extends AbstractComponentTranslator {
 	}
 
 	private PEventstatus extractEventStatus(final ISCEvent revent)
-			throws TranslationFailedException, RodinDBException {
+			throws TranslationFailedException, CoreException {
 		Convergence convergence = revent.getConvergence();
 		PEventstatus status;
 		switch (convergence) {
@@ -365,7 +365,7 @@ public class ModelTranslator extends AbstractComponentTranslator {
 	}
 
 	private List<TIdentifierLiteral> extractRefinedEvents(final ISCEvent revent)
-			throws RodinDBException {
+			throws CoreException {
 		final ISCRefinesEvent[] refinesClauses = revent.getSCRefinesClauses();
 		final List<TIdentifierLiteral> refines = new ArrayList<TIdentifierLiteral>(
 				refinesClauses.length);
@@ -393,7 +393,7 @@ public class ModelTranslator extends AbstractComponentTranslator {
 
 	private void extractGuards(final ISCEvent revent,
 			final ITypeEnvironment localEnv, final List<PPredicate> guardsList,
-			final List<PPredicate> theoremsList) throws RodinDBException {
+			final List<PPredicate> theoremsList) throws CoreException {
 		final ISCGuard[] guards = revent.getSCGuards();
 		for (final ISCGuard guard : guards) {
 			final PPredicate predicate = translatePredicate(ff, localEnv, guard);
@@ -426,7 +426,7 @@ public class ModelTranslator extends AbstractComponentTranslator {
 	}
 
 	private List<PWitness> extractWitnesses(final ISCEvent revent,
-			final ITypeEnvironment localEnv) throws RodinDBException {
+			final ITypeEnvironment localEnv) throws CoreException {
 		final ISCWitness[] witnesses = revent.getSCWitnesses();
 		final List<PWitness> witnessList = new ArrayList<PWitness>(
 				witnesses.length);
@@ -455,14 +455,14 @@ public class ModelTranslator extends AbstractComponentTranslator {
 		return actionList;
 	}
 
-	private AInvariantModelClause processInvariants() throws RodinDBException {
+	private AInvariantModelClause processInvariants() throws CoreException {
 		final AInvariantModelClause invariantModelClause = new AInvariantModelClause();
 		invariantModelClause.setPredicates(getPredicateList(
 				machine.getSCInvariants(), false));
 		return invariantModelClause;
 	}
 
-	private ATheoremsModelClause processTheorems() throws RodinDBException {
+	private ATheoremsModelClause processTheorems() throws CoreException {
 		final ATheoremsModelClause theoremsModelClause = new ATheoremsModelClause();
 		theoremsModelClause.setPredicates(getPredicateList(
 				machine.getSCInvariants(), true));
@@ -484,7 +484,7 @@ public class ModelTranslator extends AbstractComponentTranslator {
 	 * @throws RodinDBException
 	 */
 	private List<PPredicate> getPredicateList(final ISCInvariant[] predicates,
-			final boolean theorems) throws RodinDBException {
+			final boolean theorems) throws CoreException {
 		final List<PPredicate> list = new ArrayList<PPredicate>(
 				predicates.length);
 		for (final ISCInvariant evPredicate : predicates) {
@@ -505,7 +505,7 @@ public class ModelTranslator extends AbstractComponentTranslator {
 	}
 
 	private boolean isDefinedInAbstraction(final ITraceableElement element)
-			throws RodinDBException {
+			throws CoreException {
 		final IRodinElement parentsource = element.getSource().getParent();
 		final boolean result;
 

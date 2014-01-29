@@ -9,11 +9,11 @@ package de.prob.eventb.translator.internal;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eventb.core.ISCContext;
 import org.eventb.core.ISCContextRoot;
 import org.eventb.core.ISCExtendsContext;
 import org.eventb.core.ISCInternalContext;
-import org.rodinp.core.RodinDBException;
 
 import de.prob.core.translator.TranslationFailedException;
 import de.prob.eventb.translator.ContextTranslator;
@@ -77,7 +77,7 @@ public final class EventBContextTranslator extends EventBTranslator {
 							.getAbstractSCContext();
 					collectContexts(translatorMap, processed, element);
 				}
-			} catch (RodinDBException e) {
+			} catch (CoreException e) {
 				throw new TranslationFailedException(e);
 			}
 		}

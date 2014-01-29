@@ -9,6 +9,7 @@ package de.prob.eventb.translator.internal;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eventb.core.ISCInternalContext;
 import org.eventb.core.ISCMachineRoot;
 import org.eventb.core.ast.FormulaFactory;
@@ -75,14 +76,14 @@ public final class EventBMachineTranslator extends EventBTranslator {
 
 		try {
 			buildRefinementChain(machine, roots);
-		} catch (RodinDBException e) {
+		} catch (CoreException e) {
 			throw new TranslationFailedException(e);
 		}
 		return roots;
 	}
 
 	private void buildRefinementChain(final ISCMachineRoot element,
-			final List<ISCMachineRoot> list) throws RodinDBException {
+			final List<ISCMachineRoot> list) throws CoreException {
 		list.add(element);
 		IRodinFile[] abst = element.getAbstractSCMachines();
 		for (IRodinFile rodinFile : abst) {
