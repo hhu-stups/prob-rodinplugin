@@ -54,6 +54,22 @@
          <separator
                name="de.prob.units.separator2"
                visible="true">
+                           <visibleWhen>
+               <with
+                     variable="selection">
+                  <iterate
+                        operator="or">
+                     <or>
+                        <instanceof
+                              value="org.eventb.core.IMachineRoot">
+                        </instanceof>
+                        <instanceof
+                              value="org.eventb.core.IContextRoot">
+                        </instanceof>
+                     </or>
+                  </iterate>
+               </with>
+            </visibleWhen>
          </separator>
          <command
                commandId="de.prob.units.startunitanalysis"
@@ -65,9 +81,14 @@
                      variable="selection">
                   <iterate
                         operator="or">
-                     <instanceof
-                           value="org.eventb.core.IEventBRoot">
-                     </instanceof>
+                     <or>
+                        <instanceof
+                              value="org.eventb.core.IMachineRoot">
+                        </instanceof>
+                        <instanceof
+                              value="org.eventb.core.IContextRoot">
+                        </instanceof>
+                     </or>
                   </iterate>
                </with>
             </visibleWhen>
@@ -75,6 +96,22 @@
          <separator
                name="de.prob.units.separator1"
                visible="true">
+                           <visibleWhen>
+               <with
+                     variable="selection">
+                  <iterate
+                        operator="or">
+                     <or>
+                        <instanceof
+                              value="org.eventb.core.IMachineRoot">
+                        </instanceof>
+                        <instanceof
+                              value="org.eventb.core.IContextRoot">
+                        </instanceof>
+                     </or>
+                  </iterate>
+               </with>
+            </visibleWhen>
          </separator>
       </menuContribution>
    </extension>

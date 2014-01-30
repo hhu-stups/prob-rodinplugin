@@ -1022,6 +1022,22 @@
          <separator
                name="de.prob.ui.separator2"
                visible="true">
+                           <visibleWhen>
+               <with
+                     variable="selection">
+                  <iterate
+                        operator="or">
+                     <or>
+                        <instanceof
+                              value="org.eventb.core.IMachineRoot">
+                        </instanceof>
+                        <instanceof
+                              value="org.eventb.core.IContextRoot">
+                        </instanceof>
+                     </or>
+                  </iterate>
+               </with>
+            </visibleWhen>
          </separator>
          <command
                commandId="de.prob.ui.starteventbanimation"
@@ -1033,9 +1049,14 @@
             variable="selection">
          <iterate
                operator="or">
-            <instanceof
-                  value="org.eventb.core.IEventBRoot">
-            </instanceof>
+            <or>
+               <instanceof
+                     value="org.eventb.core.IMachineRoot">
+               </instanceof>
+               <instanceof
+                     value="org.eventb.core.IContextRoot">
+               </instanceof>
+            </or>
          </iterate>
       </with>
             </visibleWhen>
@@ -1063,17 +1084,6 @@
                icon="icons/new_prob_mini.png"
                id="more_commands"
                label="ProB Classic ...">
-            <visibleWhen>
-               <with
-                     variable="selection">
-                  <iterate
-                        operator="or">
-                     <instanceof
-                           value="org.eventb.core.IEventBRoot">
-                     </instanceof>
-                  </iterate>
-               </with>
-            </visibleWhen>
             <command
                   commandId="de.prob.ui.newcore.export"
                   icon="icons/prob_mini_logo.gif"
@@ -1086,10 +1096,42 @@
                   label="Open in ProB classic"
                   style="push">
             </command>
+            <visibleWhen>
+               <with
+                     variable="selection">
+                  <iterate
+                        operator="or">
+                     <or>
+                        <instanceof
+                              value="org.eventb.core.IMachineRoot">
+                        </instanceof>
+                        <instanceof
+                              value="org.eventb.core.IContextRoot">
+                        </instanceof>
+                     </or>
+                  </iterate>
+               </with>
+            </visibleWhen>
          </menu>
          <separator
                name="de.prob.ui.separator1"
                visible="true">
+                           <visibleWhen>
+               <with
+                     variable="selection">
+                  <iterate
+                        operator="or">
+                     <or>
+                        <instanceof
+                              value="org.eventb.core.IMachineRoot">
+                        </instanceof>
+                        <instanceof
+                              value="org.eventb.core.IContextRoot">
+                        </instanceof>
+                     </or>
+                  </iterate>
+               </with>
+            </visibleWhen>
          </separator>
       </menuContribution>
       <menuContribution
