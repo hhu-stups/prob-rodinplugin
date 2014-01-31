@@ -63,7 +63,7 @@ public class EventBAnimatorPart implements LanguageDependendAnimationPart {
 			final String expression1, final boolean wrap)
 			throws ProBParseException {
 		final String expression = FormulaTranslator.translate(expression1);
-		final FormulaFactory ff = FormulaFactory.getDefault();
+		final FormulaFactory ff = root.getFormulaFactory();
 		final IParseResult parseResult = ff.parseExpression(expression,
 				LanguageVersion.LATEST, null);
 		checkParseResult(parseResult);
@@ -77,7 +77,7 @@ public class EventBAnimatorPart implements LanguageDependendAnimationPart {
 			final String predicate1, final boolean wrap)
 			throws ProBParseException {
 		final String predicate = FormulaTranslator.translate(predicate1);
-		final FormulaFactory ff = FormulaFactory.getDefault();
+		final FormulaFactory ff = root.getFormulaFactory();
 		final IParseResult parseResult = ff.parsePredicate(predicate,
 				LanguageVersion.LATEST, null);
 		checkParseResult(parseResult);
@@ -196,7 +196,7 @@ public class EventBAnimatorPart implements LanguageDependendAnimationPart {
 	private Predicate parseTransPredicate(final String predicateString,
 			final ISCEvent event) throws ProBParseException {
 		final String utf8String = FormulaTranslator.translate(predicateString);
-		final FormulaFactory ff = FormulaFactory.getDefault();
+		final FormulaFactory ff = root.getFormulaFactory();
 		final IParseResult parseResult = ff.parsePredicate(utf8String,
 				LanguageVersion.LATEST, null);
 		checkParseResult(parseResult);
