@@ -1,4 +1,4 @@
-package de.prob.eventb.disprover.core.internal;
+package de.prob.eventb.disprover.core;
 
 import java.util.*;
 
@@ -12,7 +12,8 @@ import org.rodinp.core.*;
 import de.be4.classicalb.core.parser.analysis.prolog.ASTProlog;
 import de.be4.classicalb.core.parser.node.AEventBContextParseUnit;
 import de.prob.core.*;
-import de.prob.eventb.disprover.core.DisproverReasonerInput;
+import de.prob.eventb.disprover.core.internal.DisproverCommand;
+import de.prob.eventb.disprover.core.internal.ICounterExample;
 import de.prob.eventb.disprover.core.translation.DisproverContextCreator;
 import de.prob.eventb.translator.internal.TranslationVisitor;
 import de.prob.exceptions.ProBException;

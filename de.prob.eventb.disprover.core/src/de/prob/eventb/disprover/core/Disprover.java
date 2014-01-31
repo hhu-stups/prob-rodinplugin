@@ -2,8 +2,6 @@ package de.prob.eventb.disprover.core;
 
 import org.eventb.core.seqprover.IReasoner;
 
-import de.prob.eventb.disprover.core.internal.DisproverReasoner;
-
 public class Disprover {
 
 	private Disprover() {

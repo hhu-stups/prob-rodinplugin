@@ -4,7 +4,7 @@
    <extension
          point="org.eventb.core.seqprover.reasoners">
       <reasoner
-            class="de.prob.eventb.disprover.core.internal.DisproverReasoner"
+            class="de.prob.eventb.disprover.core.DisproverReasoner"
             id="disproverReasoner"
             name="%reasoner.name">
       </reasoner>
