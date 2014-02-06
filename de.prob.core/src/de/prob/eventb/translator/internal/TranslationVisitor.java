@@ -6,45 +6,12 @@
 
 package de.prob.eventb.translator.internal;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
-import org.eventb.core.ast.Assignment;
-import org.eventb.core.ast.AssociativeExpression;
-import org.eventb.core.ast.AssociativePredicate;
-import org.eventb.core.ast.AtomicExpression;
-import org.eventb.core.ast.BecomesEqualTo;
-import org.eventb.core.ast.BecomesMemberOf;
-import org.eventb.core.ast.BecomesSuchThat;
-import org.eventb.core.ast.BinaryExpression;
-import org.eventb.core.ast.BinaryPredicate;
-import org.eventb.core.ast.BoolExpression;
-import org.eventb.core.ast.BoundIdentDecl;
-import org.eventb.core.ast.BoundIdentifier;
-import org.eventb.core.ast.Expression;
-import org.eventb.core.ast.ExtendedExpression;
-import org.eventb.core.ast.ExtendedPredicate;
-import org.eventb.core.ast.Formula;
-import org.eventb.core.ast.FreeIdentifier;
-import org.eventb.core.ast.ISimpleVisitor;
-import org.eventb.core.ast.IntegerLiteral;
-import org.eventb.core.ast.LiteralPredicate;
-import org.eventb.core.ast.MultiplePredicate;
-import org.eventb.core.ast.Predicate;
-import org.eventb.core.ast.QuantifiedExpression;
-import org.eventb.core.ast.QuantifiedPredicate;
-import org.eventb.core.ast.RelationalPredicate;
-import org.eventb.core.ast.SetExtension;
-import org.eventb.core.ast.SimplePredicate;
-import org.eventb.core.ast.UnaryExpression;
-import org.eventb.core.ast.UnaryPredicate;
+import org.eventb.core.ast.*;
 
 import de.be4.classicalb.core.parser.node.*;
-import de.prob.eventb.translator.AssignmentVisitor;
-import de.prob.eventb.translator.ExpressionVisitor;
-import de.prob.eventb.translator.PredicateVisitor;
+import de.prob.eventb.translator.*;
 
 /**
  * The global SuppressWarnings annotation is used because the deprecated code is
@@ -59,11 +26,12 @@ import de.prob.eventb.translator.PredicateVisitor;
 public class TranslationVisitor implements ISimpleVisitor {
 	private static final String UNCOVERED_PREDICATE = "Uncovered Predicate";
 
-	private LookupStack<PPredicate> predicates = new LookupStack<PPredicate>();
-	private LookupStack<PExpression> expressions = new LookupStack<PExpression>();
-	private LookupStack<PSubstitution> substitutions = new LookupStack<PSubstitution>();
-	private LookupStack<String> boundVariables = new LookupStack<String>();
+	private final LookupStack<PPredicate> predicates = new LookupStack<PPredicate>();
+	private final LookupStack<PExpression> expressions = new LookupStack<PExpression>();
+	private final LookupStack<PSubstitution> substitutions = new LookupStack<PSubstitution>();
+	private final LookupStack<String> boundVariables = new LookupStack<String>();
 
+	@Override
 	public void visitAssociativeExpression(
 			final AssociativeExpression expression) {
 		// BUNION, BINTER, BCOMP, FCOMP, OVR, PLUS, MUL
@@ -139,6 +107,7 @@ public class TranslationVisitor implements ISimpleVisitor {
 		return new ARingExpression(list.get(0), right);
 	}
 
+	@Override
 	public void visitAssociativePredicate(final AssociativePredicate predicate) {
 		List<PPredicate> children = getSubPredicates(predicate.getChildren());
 		final PPredicate result;
@@ -176,6 +145,7 @@ public class TranslationVisitor implements ISimpleVisitor {
 		return new AEquivalencePredicate(list.get(0), right);
 	}
 
+	@Override
 	public void visitAtomicExpression(final AtomicExpression expression) {
 		final PExpression result;
 		switch (expression.getTag()) {
@@ -221,6 +191,7 @@ public class TranslationVisitor implements ISimpleVisitor {
 		expressions.push(result);
 	}
 
+	@Override
 	public void visitBecomesEqualTo(final BecomesEqualTo assignment) {
 		final List<PExpression> lhs = getSubExpressions(assignment
 				.getAssignedIdentifiers());
@@ -229,6 +200,7 @@ public class TranslationVisitor implements ISimpleVisitor {
 		substitutions.push(new AAssignSubstitution(lhs, rhs));
 	}
 
+	@Override
 	public void visitBecomesMemberOf(final BecomesMemberOf assignment) {
 		final List<PExpression> lhs = getSubExpressions(assignment
 				.getAssignedIdentifiers());
@@ -236,6 +208,7 @@ public class TranslationVisitor implements ISimpleVisitor {
 		substitutions.push(new ABecomesElementOfSubstitution(lhs, set));
 	}
 
+	@Override
 	public void visitBecomesSuchThat(final BecomesSuchThat assignment) {
 		final List<PExpression> lhs = getSubExpressions(assignment
 				.getAssignedIdentifiers());
@@ -248,6 +221,7 @@ public class TranslationVisitor implements ISimpleVisitor {
 		substitutions.push(new ABecomesSuchSubstitution(lhs, predicate));
 	}
 
+	@Override
 	public void visitBinaryExpression(final BinaryExpression expression) {
 		final PExpression exL = getExpression(expression.getLeft());
 		final PExpression exR = getExpression(expression.getRight());
@@ -342,6 +316,7 @@ public class TranslationVisitor implements ISimpleVisitor {
 		expressions.push(result);
 	}
 
+	@Override
 	public void visitBinaryPredicate(final BinaryPredicate predicate) {
 		final PPredicate left = getPredicate(predicate.getLeft());
 		final PPredicate right = getPredicate(predicate.getRight());
@@ -359,11 +334,13 @@ public class TranslationVisitor implements ISimpleVisitor {
 		predicates.push(result);
 	}
 
+	@Override
 	public void visitBoolExpression(final BoolExpression expression) {
 		final PPredicate pred = getPredicate(expression.getPredicate());
 		expressions.push(new AConvertBoolExpression(pred));
 	}
 
+	@Override
 	public void visitBoundIdentDecl(final BoundIdentDecl boundIdentDecl) {
 		final String name = boundIdentDecl.getName();
 		boundVariables.push(name);
@@ -376,22 +353,26 @@ public class TranslationVisitor implements ISimpleVisitor {
 						name) }));
 	}
 
+	@Override
 	public void visitBoundIdentifier(final BoundIdentifier identifierExpression) {
 		final String name = boundVariables.get(identifierExpression
 				.getBoundIndex());
 		expressions.push(createIdentifierExpression(name));
 	}
 
+	@Override
 	public void visitFreeIdentifier(final FreeIdentifier identifierExpression) {
 		expressions.push(createIdentifierExpression(identifierExpression
 				.getName()));
 	}
 
+	@Override
 	public void visitIntegerLiteral(final IntegerLiteral expression) {
 		final String value = expression.getValue().toString();
 		expressions.push(new AIntegerExpression(new TIntegerLiteral(value)));
 	}
 
+	@Override
 	public void visitLiteralPredicate(final LiteralPredicate predicate) {
 		final PPredicate result;
 		switch (predicate.getTag()) {
@@ -407,6 +388,7 @@ public class TranslationVisitor implements ISimpleVisitor {
 		predicates.push(result);
 	}
 
+	@Override
 	public void visitQuantifiedExpression(final QuantifiedExpression expression) {
 		// Add quantified identifiers to bound list and recursively create
 		// subtrees representing the identifiers
@@ -434,6 +416,7 @@ public class TranslationVisitor implements ISimpleVisitor {
 		expressions.push(result);
 	}
 
+	@Override
 	public void visitQuantifiedPredicate(final QuantifiedPredicate predicate) {
 		// Add quantified identifiers to bound list and recursively create
 		// subtrees representing the identifiers
@@ -460,6 +443,7 @@ public class TranslationVisitor implements ISimpleVisitor {
 		predicates.push(result);
 	}
 
+	@Override
 	public void visitRelationalPredicate(final RelationalPredicate predicate) {
 		// EQUAL, NOTEQUAL, LT, LE, GT, GE, IN, NOTIN, SUBSET,
 		// NOTSUBSET, SUBSETEQ, NOTSUBSETEQ
@@ -509,12 +493,14 @@ public class TranslationVisitor implements ISimpleVisitor {
 		predicates.push(result);
 	}
 
+	@Override
 	public void visitSetExtension(final SetExtension expression) {
 		final Expression[] members = expression.getMembers();
 		final List<PExpression> list = getSubExpressions(members);
 		expressions.push(new ASetExtensionExpression(list));
 	}
 
+	@Override
 	public void visitSimplePredicate(final SimplePredicate predicate) {
 		final PPredicate result;
 		if (predicate.getTag() == Formula.KFINITE) {
@@ -526,6 +512,7 @@ public class TranslationVisitor implements ISimpleVisitor {
 		predicates.push(result);
 	}
 
+	@Override
 	public void visitUnaryExpression(final UnaryExpression expression) {
 		final PExpression exp = getExpression(expression.getChild());
 		final PExpression result;
@@ -578,6 +565,7 @@ public class TranslationVisitor implements ISimpleVisitor {
 		expressions.push(result);
 	}
 
+	@Override
 	public void visitUnaryPredicate(final UnaryPredicate predicate) {
 		final PPredicate result;
 		if (predicate.getTag() == Formula.NOT) {
@@ -588,6 +576,7 @@ public class TranslationVisitor implements ISimpleVisitor {
 		predicates.push(result);
 	}
 
+	@Override
 	public void visitMultiplePredicate(final MultiplePredicate predicate) {
 		final PPredicate result;
 		if (predicate.getTag() == Formula.KPARTITION) {
@@ -663,7 +652,7 @@ public class TranslationVisitor implements ISimpleVisitor {
 	 * @param <T>
 	 */
 	private static class LookupStack<T> {
-		private List<T> elements = new ArrayList<T>();
+		private final List<T> elements = new ArrayList<T>();
 
 		public void push(T elem) {
 			elements.add(elem);
