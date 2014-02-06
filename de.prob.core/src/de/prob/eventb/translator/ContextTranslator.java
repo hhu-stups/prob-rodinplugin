@@ -13,6 +13,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eventb.core.IContextRoot;
@@ -62,6 +63,7 @@ import de.prob.core.translator.TranslationFailedException;
 import de.prob.eventb.translator.internal.EProofStatus;
 import de.prob.eventb.translator.internal.ProofObligation;
 import de.prob.eventb.translator.internal.SequentSource;
+import de.prob.logging.Logger;
 
 public final class ContextTranslator extends AbstractComponentTranslator {
 
@@ -181,47 +183,57 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 	}
 
 	private void collectProofInfo(IEventBRoot origin) throws RodinDBException {
-
-		IPSRoot proofStatus = origin.getPSRoot();
-		IPSStatus[] statuses = proofStatus.getStatuses();
-
 		List<String> bugs = new LinkedList<String>();
 
-		for (IPSStatus status : statuses) {
-			final int confidence = status.getConfidence();
-			boolean broken = status.isBroken();
+		try {
+			IPSRoot proofStatus = origin.getPSRoot();
+			IPSStatus[] statuses = proofStatus.getStatuses();
 
-			EProofStatus pstatus = EProofStatus.UNPROVEN;
+			for (IPSStatus status : statuses) {
+				final int confidence = status.getConfidence();
+				boolean broken = status.isBroken();
 
-			if (!broken && confidence == IConfidence.REVIEWED_MAX)
-				pstatus = EProofStatus.REVIEWED;
-			if (!broken && confidence == IConfidence.DISCHARGED_MAX)
-				pstatus = EProofStatus.PROVEN;
+				EProofStatus pstatus = EProofStatus.UNPROVEN;
 
-			IPOSequent sequent = status.getPOSequent();
-			IPOSource[] sources = sequent.getSources();
+				if (!broken && confidence == IConfidence.REVIEWED_MAX)
+					pstatus = EProofStatus.REVIEWED;
+				if (!broken && confidence == IConfidence.DISCHARGED_MAX)
+					pstatus = EProofStatus.PROVEN;
 
-			String name = sequent.getDescription();
+				IPOSequent sequent = status.getPOSequent();
+				IPOSource[] sources = sequent.getSources();
 
-			ArrayList<SequentSource> s = new ArrayList<SequentSource>(
-					sources.length);
-			for (IPOSource source : sources) {
+				String name = sequent.getDescription();
 
-				IRodinElement srcElement = source.getSource();
-				if (!srcElement.exists()
-						|| !(srcElement instanceof ILabeledElement)) {
-					bugs.add(status.getElementName());
-					break;
+				ArrayList<SequentSource> s = new ArrayList<SequentSource>(
+						sources.length);
+				for (IPOSource source : sources) {
+
+					IRodinElement srcElement = source.getSource();
+					if (!srcElement.exists()
+							|| !(srcElement instanceof ILabeledElement)) {
+						bugs.add(status.getElementName());
+						break;
+					}
+
+					ILabeledElement le = (ILabeledElement) srcElement;
+
+					s.add(new SequentSource(srcElement.getElementType(), le
+							.getLabel()));
+
 				}
-
-				ILabeledElement le = (ILabeledElement) srcElement;
-
-				s.add(new SequentSource(srcElement.getElementType(), le
-						.getLabel()));
-
+				addProof(new ProofObligation(origin, s, name, pstatus));
 			}
-			addProof(new ProofObligation(origin, s, name, pstatus));
+		} catch (RodinDBException e) {
+			bugs.add(e.getLocalizedMessage());
 		}
+		
+		if (!bugs.isEmpty()) {
+			String message = "Translation incomplete due to a Bug in Rodin. This does not affect correctness of the Animation/Model Checking but can decrease its performance. Skipped discharged information about: "
+					+ StringUtils.join(bugs, ",");
+			Logger.notifyUser(message);
+		}
+
 
 	}
 

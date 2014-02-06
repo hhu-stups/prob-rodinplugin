@@ -171,55 +171,57 @@ public class ModelTranslator extends AbstractComponentTranslator {
 		addUnitPragmas(machine.getSCVariables());
 	}
 
-	private void collectProofInfo() throws RodinDBException {
-
-		IPSRoot proofStatus = machine.getPSRoot();
-		IPSStatus[] statuses = proofStatus.getStatuses();
-
+	private void collectProofInfo() {
 		List<String> bugs = new LinkedList<String>();
+		try {
+			IPSRoot proofStatus = machine.getPSRoot();
+			IPSStatus[] statuses = proofStatus.getStatuses();
 
-		for (IPSStatus status : statuses) {
-			final int confidence = status.getConfidence();
-			boolean broken = status.isBroken();
+			for (IPSStatus status : statuses) {
+				final int confidence = status.getConfidence();
+				boolean broken = status.isBroken();
 
-			EProofStatus pstatus = EProofStatus.UNPROVEN;
+				EProofStatus pstatus = EProofStatus.UNPROVEN;
 
-			if (!broken
-					&& (confidence > IConfidence.PENDING && confidence <= IConfidence.REVIEWED_MAX))
-				pstatus = EProofStatus.REVIEWED;
-			if (!broken && confidence == IConfidence.DISCHARGED_MAX)
-				pstatus = EProofStatus.PROVEN;
+				if (!broken
+						&& (confidence > IConfidence.PENDING && confidence <= IConfidence.REVIEWED_MAX))
+					pstatus = EProofStatus.REVIEWED;
+				if (!broken && confidence == IConfidence.DISCHARGED_MAX)
+					pstatus = EProofStatus.PROVEN;
 
-			IPOSequent sequent = status.getPOSequent();
-			IPOSource[] sources = sequent.getSources();
+				IPOSequent sequent = status.getPOSequent();
+				IPOSource[] sources = sequent.getSources();
 
-			String name = sequent.getDescription();
+				String name = sequent.getDescription();
 
-			ArrayList<SequentSource> s = new ArrayList<SequentSource>(
-					sources.length);
-			for (IPOSource source : sources) {
+				ArrayList<SequentSource> s = new ArrayList<SequentSource>(
+						sources.length);
+				for (IPOSource source : sources) {
 
-				IRodinElement srcElement = source.getSource();
-				if (!srcElement.exists()
-						|| !(srcElement instanceof ILabeledElement)) {
-					bugs.add(status.getElementName());
-					break;
+					IRodinElement srcElement = source.getSource();
+					if (!srcElement.exists()
+							|| !(srcElement instanceof ILabeledElement)) {
+						bugs.add(status.getElementName());
+						break;
+					}
+
+					ILabeledElement le = (ILabeledElement) srcElement;
+					IElementType<? extends IRodinElement> type = srcElement
+							.getElementType();
+					s.add(new SequentSource(type, le.getLabel()));
+
+					if (srcElement instanceof Guard) {
+						Event srcEvent = (Event) srcElement.getParent();
+						String srvEventName = srcEvent.getLabel();
+						s.add(new SequentSource(srcEvent.getElementType(),
+								srvEventName));
+					}
+
 				}
-
-				ILabeledElement le = (ILabeledElement) srcElement;
-				IElementType<? extends IRodinElement> type = srcElement
-						.getElementType();
-				s.add(new SequentSource(type, le.getLabel()));
-
-				if (srcElement instanceof Guard) {
-					Event srcEvent = (Event) srcElement.getParent();
-					String srvEventName = srcEvent.getLabel();
-					s.add(new SequentSource(srcEvent.getElementType(),
-							srvEventName));
-				}
-
+				addProof(new ProofObligation(origin, s, name, pstatus));
 			}
-			addProof(new ProofObligation(origin, s, name, pstatus));
+		} catch (Exception e) {
+			bugs.add(e.getLocalizedMessage());
 		}
 
 		if (!bugs.isEmpty()) {
