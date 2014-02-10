@@ -42,7 +42,6 @@ import org.eventb.core.basis.Guard;
 import org.eventb.core.seqprover.IConfidence;
 import org.rodinp.core.IElementType;
 import org.rodinp.core.IRodinElement;
-import org.rodinp.core.IRodinFile;
 import org.rodinp.core.RodinDBException;
 
 import de.be4.classicalb.core.parser.node.AAnticipatedEventstatus;
@@ -457,14 +456,16 @@ public class ModelTranslator extends AbstractComponentTranslator {
 		return actionList;
 	}
 
-	private AInvariantModelClause processInvariants() throws RodinDBException {
+	private AInvariantModelClause processInvariants() throws RodinDBException,
+			TranslationFailedException {
 		final AInvariantModelClause invariantModelClause = new AInvariantModelClause();
 		invariantModelClause.setPredicates(getPredicateList(
 				machine.getSCInvariants(), false));
 		return invariantModelClause;
 	}
 
-	private ATheoremsModelClause processTheorems() throws RodinDBException {
+	private ATheoremsModelClause processTheorems() throws RodinDBException,
+			TranslationFailedException {
 		final ATheoremsModelClause theoremsModelClause = new ATheoremsModelClause();
 		theoremsModelClause.setPredicates(getPredicateList(
 				machine.getSCInvariants(), true));
@@ -484,9 +485,11 @@ public class ModelTranslator extends AbstractComponentTranslator {
 	 *            false, if all theorems shall be filtered out
 	 * @return
 	 * @throws RodinDBException
+	 * @throws TranslationFailedException
 	 */
 	private List<PPredicate> getPredicateList(final ISCInvariant[] predicates,
-			final boolean theorems) throws RodinDBException {
+			final boolean theorems) throws RodinDBException,
+			TranslationFailedException {
 		final List<PPredicate> list = new ArrayList<PPredicate>(
 				predicates.length);
 		for (final ISCInvariant evPredicate : predicates) {
@@ -496,7 +499,7 @@ public class ModelTranslator extends AbstractComponentTranslator {
 			}
 			// only use predicates that are defined in the current refinement
 			// level, not in an abstract machine
-			if (!isDefinedInAbstraction(evPredicate)) {
+			if (isDefinedHere(evPredicate)) {
 				final PPredicate predicate = translatePredicate(ff, te,
 						evPredicate);
 				list.add(predicate);
@@ -506,28 +509,19 @@ public class ModelTranslator extends AbstractComponentTranslator {
 		return list;
 	}
 
-	private boolean isDefinedInAbstraction(final ITraceableElement element)
-			throws RodinDBException {
+	private boolean isDefinedHere(final ITraceableElement element)
+			throws RodinDBException, TranslationFailedException {
 		final IRodinElement parentsource = element.getSource().getParent();
 		final boolean result;
+		final String currentName = machine.getComponentName();
 
 		if (parentsource instanceof IMachineRoot) {
-			IMachineRoot src = (IMachineRoot) parentsource;
-
-			// do a finer level check
-			String srcName = src.getRodinFile().getBareName();
-
-			// is the source one of the refined machines?
-			for (IRodinFile abstr : machine.getAbstractSCMachines())
-				if (abstr.getBareName().equals(srcName))
-					return true;
-
-			result = false;
-
-			// result = !machine.getRodinFile().getBareName()
-			// .equals(src.getRodinFile().getBareName());
+			final IMachineRoot src = (IMachineRoot) parentsource;
+			final String srcName = src.getRodinFile().getBareName();
+			result = currentName.equals(srcName);
 		} else {
-			result = false;
+			throw new TranslationFailedException("Machine " + currentName,
+					"Source of invariant is not a machine");
 		}
 		return result;
 	}
