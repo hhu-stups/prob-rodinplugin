@@ -280,7 +280,7 @@
       <command
             id="de.prob.ui.stateview.toggleShowDuplicates"
             name="Toggle Show Duplicates">
-         <state class="org.eclipse.jface.commands.ToggleState"
+         <state class="org.eclipse.ui.handlers.RegistryToggleState:true"
             id="de.prob.ui.stateview.duplicateFilterState" />
       </command>
       <command
