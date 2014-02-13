@@ -54,10 +54,11 @@ public class ModelCheckingJob extends Job {
 				options.remove("inspect_existing_nodes");
 
 				monitor.setTaskName("Model Checking - States: "
-						+ modelCheckingResult.getNumStates() + " Transitions: "
-						+ modelCheckingResult.getNumTransitions()
-						+ " Processed States: "
-						+ modelCheckingResult.getProcessedTotal());
+						+ modelCheckingResult.getNumStates()
+						+ " (processed "
+						+ modelCheckingResult.getProcessedTotal()
+						+ ") - Transitions: "
+						+ modelCheckingResult.getNumTransitions());
 
 				int difference = modelCheckingResult.getWorked() - workedSoFar;
 				if (difference > 0) {
