@@ -63,11 +63,11 @@ public final class ModelCheckingCommand implements IComposableCommand {
 				.getValue().intValue();
 		int numStates = ((IntegerPrologTerm) stats.getArgument(1)).getValue()
 				.intValue();
-		int workedSoFar = (int) (1000 * Math.pow((double) processedTotal
-				/ numStates, 5));
+		int numTransitions = ((IntegerPrologTerm) stats.getArgument(2))
+				.getValue().intValue();
 
 		result = new ModelCheckingResult<Result>(Result.class, term,
-				workedSoFar);
+				processedTotal, numStates, numTransitions);
 	}
 
 	@Override

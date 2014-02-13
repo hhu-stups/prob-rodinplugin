@@ -14,15 +14,18 @@ public class ModelCheckingResult<T extends Enum<T>> {
 
 	private final T result;
 	private final List<PrologTerm> arguments = new ArrayList<PrologTerm>();
-	private final int worked;
+	private final int processedTotal, numStates, numTransitions;
 
 	public ModelCheckingResult(final Class<T> enumeration,
-			final CompoundPrologTerm term, int workDone) {
+			final CompoundPrologTerm term, int total, int numStates,
+			int numTransitions) {
 		result = Enum.valueOf(enumeration, term.getFunctor());
 		for (int i = 1; i <= term.getArity(); i++) {
 			arguments.add(term.getArgument(i));
 		}
-		worked = workDone;
+		processedTotal = total;
+		this.numStates = numStates;
+		this.numTransitions = numTransitions;
 	}
 
 	public PrologTerm getArgument(final int i) {
@@ -33,7 +36,19 @@ public class ModelCheckingResult<T extends Enum<T>> {
 		return result;
 	}
 
+	public int getProcessedTotal() {
+		return processedTotal;
+	}
+
+	public int getNumStates() {
+		return numStates;
+	}
+
+	public int getNumTransitions() {
+		return numTransitions;
+	}
+
 	public int getWorked() {
-		return worked;
+		return (int) (1000 * Math.pow((double) processedTotal / numStates, 5));
 	}
 }
