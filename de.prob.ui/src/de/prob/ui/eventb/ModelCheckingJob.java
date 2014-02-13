@@ -47,11 +47,18 @@ public class ModelCheckingJob extends Job {
 			return Status.CANCEL_STATUS;
 		}
 
-		monitor.beginTask("Model checking", 1000);
+		monitor.beginTask("Model Checking", 1000);
 		while (!abort) {
 			try {
 				modelCheckingResult = doSomeModelchecking();
 				options.remove("inspect_existing_nodes");
+
+				monitor.setTaskName("Model Checking - States: "
+						+ modelCheckingResult.getNumStates()
+						+ " (processed "
+						+ modelCheckingResult.getProcessedTotal()
+						+ ") - Transitions: "
+						+ modelCheckingResult.getNumTransitions());
 
 				int difference = modelCheckingResult.getWorked() - workedSoFar;
 				if (difference > 0) {
