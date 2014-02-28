@@ -6,12 +6,50 @@
 
 package de.prob.eventb.translator.internal;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
-import org.eventb.core.ast.*;
+import org.eventb.core.ast.Assignment;
+import org.eventb.core.ast.AssociativeExpression;
+import org.eventb.core.ast.AssociativePredicate;
+import org.eventb.core.ast.AtomicExpression;
+import org.eventb.core.ast.BecomesEqualTo;
+import org.eventb.core.ast.BecomesMemberOf;
+import org.eventb.core.ast.BecomesSuchThat;
+import org.eventb.core.ast.BinaryExpression;
+import org.eventb.core.ast.BinaryPredicate;
+import org.eventb.core.ast.BoolExpression;
+import org.eventb.core.ast.BooleanType;
+import org.eventb.core.ast.BoundIdentDecl;
+import org.eventb.core.ast.BoundIdentifier;
+import org.eventb.core.ast.Expression;
+import org.eventb.core.ast.ExtendedExpression;
+import org.eventb.core.ast.ExtendedPredicate;
+import org.eventb.core.ast.Formula;
+import org.eventb.core.ast.FreeIdentifier;
+import org.eventb.core.ast.GivenType;
+import org.eventb.core.ast.ISimpleVisitor;
+import org.eventb.core.ast.IntegerLiteral;
+import org.eventb.core.ast.IntegerType;
+import org.eventb.core.ast.LiteralPredicate;
+import org.eventb.core.ast.MultiplePredicate;
+import org.eventb.core.ast.ParametricType;
+import org.eventb.core.ast.PowerSetType;
+import org.eventb.core.ast.Predicate;
+import org.eventb.core.ast.ProductType;
+import org.eventb.core.ast.QuantifiedExpression;
+import org.eventb.core.ast.QuantifiedPredicate;
+import org.eventb.core.ast.RelationalPredicate;
+import org.eventb.core.ast.SetExtension;
+import org.eventb.core.ast.SimplePredicate;
+import org.eventb.core.ast.Type;
+import org.eventb.core.ast.UnaryExpression;
+import org.eventb.core.ast.UnaryPredicate;
+import org.eventb.core.ast.extension.IExpressionExtension;
 
 import de.be4.classicalb.core.parser.node.*;
-import de.prob.eventb.translator.*;
 
 /**
  * The global SuppressWarnings annotation is used because the deprecated code is
@@ -25,6 +63,10 @@ import de.prob.eventb.translator.*;
 @SuppressWarnings("deprecation")
 public class TranslationVisitor implements ISimpleVisitor {
 	private static final String UNCOVERED_PREDICATE = "Uncovered Predicate";
+
+	private static final int[] EXTRA_TYPE_CONSTRUCTS = new int[] {
+			Formula.EMPTYSET, Formula.KPRJ1_GEN, Formula.KPRJ2_GEN,
+			Formula.KID_GEN };
 
 	private final LookupStack<PPredicate> predicates = new LookupStack<PPredicate>();
 	private final LookupStack<PExpression> expressions = new LookupStack<PExpression>();
@@ -62,7 +104,67 @@ public class TranslationVisitor implements ISimpleVisitor {
 		default:
 			throw new AssertionError(UNCOVERED_PREDICATE);
 		}
-		expressions.push(result);
+		pushExpression(expression, result);
+	}
+
+	private void pushExpression(Expression original, PExpression translated) {
+		final PExpression toPush;
+		if (original.getType() != null && shouldHaveExtraTypeInfo(original)) {
+			toPush = new ATypeofExpression(translated,
+					translateType(original.getType()));
+		} else {
+			toPush = translated;
+		}
+		expressions.push(toPush);
+	}
+
+	private boolean shouldHaveExtraTypeInfo(Expression original) {
+		if (original instanceof ExtendedExpression) {
+			return true;
+		} else {
+			int tag = original.getTag();
+			for (int i = 0; i < EXTRA_TYPE_CONSTRUCTS.length; i++) {
+				if (EXTRA_TYPE_CONSTRUCTS[i] == tag)
+					return true;
+			}
+			return false;
+		}
+	}
+
+	private PExpression translateType(Type type) {
+		final PExpression result;
+		if (type instanceof BooleanType) {
+			result = new ABoolSetExpression();
+		} else if (type instanceof GivenType) {
+			final String name = ((GivenType) type).getName();
+			result = createIdentifierExpression(name);
+		} else if (type instanceof IntegerType) {
+			result = new AIntegerSetExpression();
+		} else if (type instanceof PowerSetType) {
+			final Type a = ((PowerSetType) type).getBaseType();
+			result = new APowSubsetExpression(translateType(a));
+		} else if (type instanceof ProductType) {
+			final Type a = ((ProductType) type).getLeft();
+			final Type b = ((ProductType) type).getRight();
+			result = new ACartesianProductExpression(translateType(a),
+					translateType(b));
+		} else if (type instanceof ParametricType) {
+			final ParametricType pt = (ParametricType) type;
+			final IExpressionExtension ext = pt.getExprExtension();
+			final Type[] params = pt.getTypeParameters();
+			final List<PExpression> list = new ArrayList<PExpression>();
+			for (final Type param : params) {
+				list.add(translateType(param));
+			}
+			result = new AExtendedExprExpression(new TIdentifierLiteral(
+					ext.getSyntaxSymbol()), list,
+					Collections.<PPredicate> emptyList());
+		} else {
+			throw new UnsupportedOperationException(
+					"Don't know how to handle the Event-B type of class "
+							+ type.getClass().getCanonicalName());
+		}
+		return result;
 	}
 
 	private PExpression recurseFCOMP(final List<PExpression> list) {
@@ -188,7 +290,7 @@ public class TranslationVisitor implements ISimpleVisitor {
 		default:
 			throw new AssertionError("Uncovered Expression " + expression);
 		}
-		expressions.push(result);
+		pushExpression(expression, result);
 	}
 
 	@Override
@@ -313,7 +415,7 @@ public class TranslationVisitor implements ISimpleVisitor {
 		default:
 			throw new AssertionError("Uncovered Expression");
 		}
-		expressions.push(result);
+		pushExpression(expression, result);
 	}
 
 	@Override
@@ -337,7 +439,7 @@ public class TranslationVisitor implements ISimpleVisitor {
 	@Override
 	public void visitBoolExpression(final BoolExpression expression) {
 		final PPredicate pred = getPredicate(expression.getPredicate());
-		expressions.push(new AConvertBoolExpression(pred));
+		pushExpression(expression, new AConvertBoolExpression(pred));
 	}
 
 	@Override
@@ -357,19 +459,20 @@ public class TranslationVisitor implements ISimpleVisitor {
 	public void visitBoundIdentifier(final BoundIdentifier identifierExpression) {
 		final String name = boundVariables.get(identifierExpression
 				.getBoundIndex());
-		expressions.push(createIdentifierExpression(name));
+		pushExpression(identifierExpression, createIdentifierExpression(name));
 	}
 
 	@Override
 	public void visitFreeIdentifier(final FreeIdentifier identifierExpression) {
-		expressions.push(createIdentifierExpression(identifierExpression
-				.getName()));
+		pushExpression(identifierExpression,
+				createIdentifierExpression(identifierExpression.getName()));
 	}
 
 	@Override
 	public void visitIntegerLiteral(final IntegerLiteral expression) {
 		final String value = expression.getValue().toString();
-		expressions.push(new AIntegerExpression(new TIntegerLiteral(value)));
+		pushExpression(expression, new AIntegerExpression(new TIntegerLiteral(
+				value)));
 	}
 
 	@Override
@@ -413,7 +516,7 @@ public class TranslationVisitor implements ISimpleVisitor {
 		default:
 			throw new AssertionError(UNCOVERED_PREDICATE);
 		}
-		expressions.push(result);
+		pushExpression(expression, result);
 	}
 
 	@Override
@@ -497,7 +600,7 @@ public class TranslationVisitor implements ISimpleVisitor {
 	public void visitSetExtension(final SetExtension expression) {
 		final Expression[] members = expression.getMembers();
 		final List<PExpression> list = getSubExpressions(members);
-		expressions.push(new ASetExtensionExpression(list));
+		pushExpression(expression, new ASetExtensionExpression(list));
 	}
 
 	@Override
@@ -562,7 +665,7 @@ public class TranslationVisitor implements ISimpleVisitor {
 		default:
 			throw new AssertionError("Uncovered Expression");
 		}
-		expressions.push(result);
+		pushExpression(expression, result);
 	}
 
 	@Override
@@ -601,8 +704,8 @@ public class TranslationVisitor implements ISimpleVisitor {
 				.getChildExpressions());
 		List<PPredicate> childPreds = getSubPredicates(expression
 				.getChildPredicates());
-		expressions.push(new AExtendedExprExpression(new TIdentifierLiteral(
-				symbol), childExprs, childPreds));
+		pushExpression(expression, new AExtendedExprExpression(
+				new TIdentifierLiteral(symbol), childExprs, childPreds));
 	}
 
 	@Override
