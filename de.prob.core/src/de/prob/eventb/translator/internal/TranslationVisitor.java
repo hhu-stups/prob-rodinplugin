@@ -722,76 +722,21 @@ public class TranslationVisitor implements ISimpleVisitor {
 		// Create a visitor and use it to translate the predicate
 		final TranslationVisitor visitor = new TranslationVisitor();
 		p.accept(visitor);
-		final PPredicate newImp = visitor.getPredicate();
-
-		// Use the old visitor to check if the implementation of the new visitor
-		// is correct.
-		final PredicateVisitor oldVisitor = new PredicateVisitor();
-		p.accept(oldVisitor);
-		final PPredicate oldImp = oldVisitor.getPredicate();
-
-		// Compare both results. If there are differences, throw an exception
-		final String expected = oldImp.toString();
-		final String actual = newImp.toString();
-		if (!expected.equals(actual)) {
-			throw new AssertionError("Expected:\n" + expected + "\n but was:\n"
-					+ actual);
-		}
-
-		// TODO[DP, 13.8.2013]: Remove call to old implementation after a test
-		// phase
-		return newImp;
+		return visitor.getPredicate();
 	}
 
 	public static PExpression translateExpression(Expression e) {
 		// Create a visitor and use it to translate the predicate
 		final TranslationVisitor visitor = new TranslationVisitor();
 		e.accept(visitor);
-		final PExpression newImp = visitor.getExpression();
-
-		// Use the old visitor to check if the implementation of the new visitor
-		// is correct.
-		final ExpressionVisitor oldVisitor = new ExpressionVisitor(
-				new LinkedList<String>());
-		e.accept(oldVisitor);
-		final PExpression oldImp = oldVisitor.getExpression();
-
-		// Compare both results. If there are differences, throw an exception
-		final String expected = oldImp.toString();
-		final String actual = newImp.toString();
-		if (!expected.equals(actual)) {
-			throw new AssertionError("Expected:\n" + expected + "\n but was:\n"
-					+ actual);
-		}
-
-		// TODO[DP, 13.8.2013]: Remove call to old implementation after a test
-		// phase
-		return newImp;
+		return visitor.getExpression();
 	}
 
 	public static PSubstitution translateAssignment(Assignment a) {
 		// Create a visitor and use it to translate the predicate
 		final TranslationVisitor visitor = new TranslationVisitor();
 		a.accept(visitor);
-		final PSubstitution newImp = visitor.getSubstitution();
-
-		// Use the old visitor to check if the implementation of the new visitor
-		// is correct.
-		final AssignmentVisitor oldVisitor = new AssignmentVisitor();
-		a.accept(oldVisitor);
-		final PSubstitution oldImp = oldVisitor.getSubstitution();
-
-		// Compare both results. If there are differences, throw an exception
-		final String expected = oldImp.toString();
-		final String actual = newImp.toString();
-		if (!expected.equals(actual)) {
-			throw new AssertionError("Expected:\n" + expected + "\n but was:\n"
-					+ actual);
-		}
-
-		// TODO[DP, 13.8.2013]: Remove call to old implementation after a test
-		// phase
-		return newImp;
+		return visitor.getSubstitution();
 	}
 
 }
