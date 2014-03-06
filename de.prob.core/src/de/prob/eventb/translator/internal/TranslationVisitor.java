@@ -523,23 +523,25 @@ public class TranslationVisitor implements ISimpleVisitor {
 	public void visitQuantifiedExpression(final QuantifiedExpression expression) {
 		// Add quantified identifiers to bound list and recursively create
 		// subtrees representing the identifiers
-		int originalBoundSize = boundVariables.size();
-		final List<PExpression> list = getSubExpressions(expression
-				.getBoundIdentDecls());
+		final int originalBoundSize = boundVariables.size();
+		final BoundIdentDecl[] decls = expression.getBoundIdentDecls();
+		final List<PExpression> list = getSubExpressions(decls);
 		final PPredicate pr = getPredicate(expression.getPredicate());
 		final PExpression ex = getExpression(expression.getExpression());
 		boundVariables.shrinkToSize(originalBoundSize);
 
+		final PPredicate pred = addTypesToPredicate(pr, decls);
+
 		final PExpression result;
 		switch (expression.getTag()) {
 		case Formula.QUNION:
-			result = new AQuantifiedUnionExpression(list, pr, ex);
+			result = new AQuantifiedUnionExpression(list, pred, ex);
 			break;
 		case Formula.QINTER:
-			result = new AQuantifiedIntersectionExpression(list, pr, ex);
+			result = new AQuantifiedIntersectionExpression(list, pred, ex);
 			break;
 		case Formula.CSET:
-			result = new AEventBComprehensionSetExpression(list, ex, pr);
+			result = new AEventBComprehensionSetExpression(list, ex, pred);
 			break;
 		default:
 			throw new AssertionError(UNCOVERED_PREDICATE);
@@ -552,8 +554,8 @@ public class TranslationVisitor implements ISimpleVisitor {
 		// Add quantified identifiers to bound list and recursively create
 		// subtrees representing the identifiers
 		int originalBoundSize = boundVariables.size();
-		final List<PExpression> list = getSubExpressions(predicate
-				.getBoundIdentDecls());
+		final BoundIdentDecl[] decls = predicate.getBoundIdentDecls();
+		final List<PExpression> list = getSubExpressions(decls);
 		// Recursively analyze the predicate (important, bounds are already set)
 		final PPredicate pred = getPredicate(predicate.getPredicate());
 		boundVariables.shrinkToSize(originalBoundSize);
@@ -561,17 +563,73 @@ public class TranslationVisitor implements ISimpleVisitor {
 		final PPredicate result;
 		switch (predicate.getTag()) {
 		case Formula.EXISTS:
-			result = new AExistsPredicate(list, pred);
+			result = new AExistsPredicate(list,
+					addTypesToPredicate(pred, decls));
 			break;
 		case Formula.FORALL:
-			final PPredicate impl = pred instanceof AImplicationPredicate ? pred
-					: new AImplicationPredicate(new ATruthPredicate(), pred);
+			final PPredicate left;
+			final PPredicate right;
+			if (pred instanceof AImplicationPredicate) {
+				final AImplicationPredicate i = (AImplicationPredicate) pred;
+				left = addTypesToPredicate(i.getLeft(), decls);
+				right = i.getRight();
+			} else {
+				left = addTypesToPredicate(null, decls);
+				right = pred;
+			}
+			final PPredicate impl = new AImplicationPredicate(
+					left != null ? left : new ATruthPredicate(), right);
 			result = new AForallPredicate(list, impl);
 			break;
 		default:
 			throw new AssertionError(UNCOVERED_PREDICATE);
 		}
 		predicates.push(result);
+	}
+
+	/**
+	 * If we have declarations of x and y with types S resp. T, add the type
+	 * information to the original predicate P. The result would be
+	 * <code>x:S & (y:T & P)</code>.
+	 * 
+	 * If decls is empty, the original predicate is returned unmodified.
+	 * 
+	 * An alternative approach to this would be adding the type information
+	 * directly to the identifiers with an oftype expression. The AST allows
+	 * this because it expects expressions in the list of declarations. But the
+	 * type checker must be adapted. The approach here makes (arguably) stronger
+	 * modifications to the structure of the AST.
+	 * 
+	 * @param predicate
+	 *            the original predicate, <code>null</code> if no original
+	 *            predicate is used.
+	 * @param decls
+	 *            a list of declarations, never <code>null</code>
+	 * @return the original predicate plus type information, <code>null</code>
+	 *         if no original predicate is given and decls is empty
+	 */
+	private PPredicate addTypesToPredicate(PPredicate predicate,
+			BoundIdentDecl[] decls) {
+		for (int i = decls.length; i > 0; i--) {
+			final BoundIdentDecl decl = decls[i - 1];
+			final Type type = decl.getType();
+			// I've encountered null types. Maybe that was a bug but just to be
+			// sure (in most cases, missing type information won't hurt):
+			if (type != null) {
+				// put a translation of the identifier on the stack ...
+				decl.accept(this);
+				// ... and take it
+				final PExpression expr = expressions.pop();
+				// construct "expr:type"
+				final PPredicate member = new AMemberPredicate(expr,
+						translateType(type));
+				// and P := "expr:type & P", if no P is given (predicate is
+				// null), just "expr:type"
+				predicate = predicate == null ? member
+						: new AConjunctPredicate(member, predicate);
+			}
+		}
+		return predicate;
 	}
 
 	@Override
