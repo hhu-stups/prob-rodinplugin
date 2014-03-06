@@ -102,6 +102,14 @@ public class TranslationVisitor implements ISimpleVisitor {
 		pushExpression(expression, result);
 	}
 
+	/**
+	 * Push an expression on the stack. The original (not translated) expression
+	 * is needed to check whether the expression should wrapped by a typeof(...)
+	 * operator.
+	 * 
+	 * @param original
+	 * @param translated
+	 */
 	private void pushExpression(Expression original, PExpression translated) {
 		final PExpression toPush;
 		if (original.getType() != null && shouldHaveExtraTypeInfo(original)) {
@@ -113,10 +121,22 @@ public class TranslationVisitor implements ISimpleVisitor {
 		expressions.push(toPush);
 	}
 
+	/**
+	 * Check if this expression needs additional type information in the
+	 * translation. This can be the e.g. case for {} or id
+	 * 
+	 * @see #EXTRA_TYPE_CONSTRUCTS
+	 * @param original
+	 * @return <code>true</code> if the
+	 */
 	private boolean shouldHaveExtraTypeInfo(Expression original) {
 		if (original instanceof ExtendedExpression) {
+			// We always wrap extended expressions
 			return true;
 		} else {
+			// Look into the list of constructs that need type information.
+			// A linear search shouldn't be problematic (or is maybe the fastest
+			// solution) because there are only a few elements.
 			int tag = original.getTag();
 			for (int i = 0; i < EXTRA_TYPE_CONSTRUCTS.length; i++) {
 				if (EXTRA_TYPE_CONSTRUCTS[i] == tag)
@@ -126,6 +146,19 @@ public class TranslationVisitor implements ISimpleVisitor {
 		}
 	}
 
+	/**
+	 * Translate a Event-B type to a corresponding ProB AST.
+	 * 
+	 * This could theoretically directly be done by using
+	 * {@link Type#toExpression(org.eventb.core.ast.FormulaFactory)} and
+	 * translating that expression, but then we would need a formula factory.
+	 * 
+	 * @param type
+	 *            the type to translate, never <code>null</code>
+	 * @return the translated expression, never <code>null</code>
+	 * @throws AssertionError
+	 *             if a type is encountered that cannot be translated
+	 */
 	private PExpression translateType(Type type) {
 		final PExpression result;
 		if (type instanceof BooleanType) {
@@ -155,7 +188,7 @@ public class TranslationVisitor implements ISimpleVisitor {
 					ext.getSyntaxSymbol()), list,
 					Collections.<PPredicate> emptyList());
 		} else {
-			throw new UnsupportedOperationException(
+			throw new AssertionError(
 					"Don't know how to handle the Event-B type of class "
 							+ type.getClass().getCanonicalName());
 		}
