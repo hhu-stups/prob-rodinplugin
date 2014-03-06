@@ -52,15 +52,10 @@ import org.eventb.core.ast.extension.IExpressionExtension;
 import de.be4.classicalb.core.parser.node.*;
 
 /**
- * The global SuppressWarnings annotation is used because the deprecated code is
- * used to check if this new implementation computes the same results as the old
- * code.
- * 
- * That should be removed after a while.
+ * This visitor on an Event-B AST generates an AST in ProB's format.
  * 
  * @author plagge
  */
-@SuppressWarnings("deprecation")
 public class TranslationVisitor implements ISimpleVisitor {
 	private static final String UNCOVERED_PREDICATE = "Uncovered Predicate";
 
@@ -615,6 +610,7 @@ public class TranslationVisitor implements ISimpleVisitor {
 		predicates.push(result);
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public void visitUnaryExpression(final UnaryExpression expression) {
 		final PExpression exp = getExpression(expression.getChild());
