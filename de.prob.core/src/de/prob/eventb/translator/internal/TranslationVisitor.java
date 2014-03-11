@@ -616,10 +616,8 @@ public class TranslationVisitor implements ISimpleVisitor {
 			// I've encountered null types. Maybe that was a bug but just to be
 			// sure (in most cases, missing type information won't hurt):
 			if (type != null) {
-				// put a translation of the identifier on the stack ...
-				decl.accept(this);
-				// ... and take it
-				final PExpression expr = expressions.pop();
+				final PExpression expr = createIdentifierExpression(decl
+						.getName());
 				// construct "expr:type"
 				final PPredicate member = new AMemberPredicate(expr,
 						translateType(type));
