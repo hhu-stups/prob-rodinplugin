@@ -63,43 +63,5 @@
             target="global"
             tooltip="%tactic.disprover.tooltip-relevant" /> -->
    </extension>
-   <extension
-         point="org.eclipse.ui.commands">
-      <command
-            id="de.prob.eventb.disprover.exportastest"
-            name="Export as ProB Disprover Testcase">
-      </command>
-   </extension>
-   <extension
-         point="org.eclipse.ui.handlers">
-      <handler
-            commandId="de.prob.eventb.disprover.exportastest">
-         <class
-               class="de.prob.eventb.disprover.ui.export.ExportAsTestHandler">
-         </class>
-      </handler>
-   </extension>
-   <extension
-         point="org.eclipse.ui.menus">
-      <menuContribution
-            locationURI="popup:fr.systerel.explorer.navigator.view">
-         <command
-               commandId="de.prob.eventb.disprover.exportastest"
-               label="Export as ProB Disprover Testcase"
-               style="push">
-            <visibleWhen>
-               <with
-                     variable="selection">
-                  <iterate
-                        operator="or">
-                     <instanceof
-                           value="org.eventb.core.IPSStatus">
-                     </instanceof>
-                  </iterate>
-               </with>
-            </visibleWhen>
-         </command>
-      </menuContribution>
-   </extension>
 
 </plugin>
