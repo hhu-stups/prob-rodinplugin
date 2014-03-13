@@ -66,6 +66,7 @@ public class DisproverPreferences extends PreferencePage implements
 		timeoutTextField = new Text(pageComponent, SWT.NONE);
 		int timeout = prefNode.getInt("timeout", 1000);
 		timeoutTextField.setText(Integer.toString(timeout));
+		timeoutTextField.setSize(100, timeoutTextField.getSize().y);
 		timeoutTextField.addVerifyListener(new VerifyListener() {
 			@Override
 			public void verifyText(VerifyEvent e) {
