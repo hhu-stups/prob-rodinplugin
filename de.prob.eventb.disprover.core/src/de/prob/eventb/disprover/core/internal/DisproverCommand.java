@@ -2,10 +2,13 @@ package de.prob.eventb.disprover.core.internal;
 
 import java.util.Set;
 
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eventb.core.IEventBProject;
 import org.eventb.core.ast.Predicate;
 import org.eventb.core.seqprover.IProofMonitor;
+import org.osgi.service.prefs.Preferences;
 
 import de.be4.classicalb.core.parser.analysis.prolog.ASTProlog;
 import de.be4.classicalb.core.parser.node.AEventBContextParseUnit;
@@ -39,36 +42,47 @@ public class DisproverCommand implements IComposableCommand {
 	private final Set<Predicate> allHypotheses;
 	private final Set<Predicate> selectedHypotheses;
 	private final Predicate goal;
-	private final int timeoutFactor;
+	private final int timeout;
 
 	private static ComposedCommand composed;
 
 	public DisproverCommand(Set<Predicate> allHypotheses,
-			Set<Predicate> selectedHypotheses, Predicate goal, int timeoutFactor) {
+			Set<Predicate> selectedHypotheses, Predicate goal, int timeout) {
 		this.allHypotheses = allHypotheses;
 		this.selectedHypotheses = selectedHypotheses;
 		this.goal = goal;
-		this.timeoutFactor = timeoutFactor;
+		this.timeout = timeout;
 	}
 
 	public static ICounterExample disprove(Animator animator,
 			IEventBProject project, Set<Predicate> allHypotheses,
-			Set<Predicate> selectedHypotheses, Predicate goal,
-			int timeoutFactor, AEventBContextParseUnit context, IProofMonitor pm)
+			Set<Predicate> selectedHypotheses, Predicate goal, int timeout,
+			AEventBContextParseUnit context, IProofMonitor pm)
 			throws ProBException, InterruptedException {
+		Preferences prefNode = Platform.getPreferencesService().getRootNode()
+				.node(InstanceScope.SCOPE).node("prob_disprover_preferences");
 
 		final ClearMachineCommand clear = new ClearMachineCommand();
+
 		final SetPreferencesCommand setPrefs = SetPreferencesCommand
 				.createSetPreferencesCommand(animator);
+
+		// set clpfd and chr preference
+		final SetPreferenceCommand setCLPFD = new SetPreferenceCommand("CLPFD",
+				Boolean.toString(prefNode.getBoolean("clpfd", true)));
+		final SetPreferenceCommand setCHR = new SetPreferenceCommand("CHR",
+				Boolean.toString(prefNode.getBoolean("clpfd", true)));
 
 		DisproverLoadCommand load = new DisproverLoadCommand(project, context);
 
 		StartAnimationCommand start = new StartAnimationCommand();
 
 		DisproverCommand disprove = new DisproverCommand(allHypotheses,
-				selectedHypotheses, goal, timeoutFactor);
+				selectedHypotheses, goal, timeout
+						* prefNode.getInt("timeout", 1000));
 
-		composed = new ComposedCommand(clear, setPrefs, load, start, disprove);
+		composed = new ComposedCommand(clear, setPrefs, setCLPFD, setCHR, load,
+				start, disprove);
 
 		final Job job = new ProBCommandJob("Disproving", animator, composed);
 		job.setUser(true);
@@ -107,7 +121,7 @@ public class DisproverCommand implements IComposableCommand {
 			translatePredicate(pto, p);
 		}
 		pto.closeList();
-		pto.printNumber(timeoutFactor);
+		pto.printNumber(timeout);
 		pto.printVariable(RESULT);
 		pto.closeTerm();
 	}
