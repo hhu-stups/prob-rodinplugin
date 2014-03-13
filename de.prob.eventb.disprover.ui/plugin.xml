@@ -63,5 +63,14 @@
             target="global"
             tooltip="%tactic.disprover.tooltip-relevant" /> -->
    </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            category="probpreferences"
+            class="de.prob.eventb.disprover.ui.DisproverPreferences"
+            id="de.prob.ui.probclassic"
+            name="ProB (Dis-)Prover">
+      </page>
+   </extension>
 
 </plugin>
