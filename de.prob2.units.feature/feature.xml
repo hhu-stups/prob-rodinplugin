@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="de.prob2.units.feature"
-      label="ProB for Rodin2 - Physical Units Support"
+      label="ProB for Rodin3 - Physical Units Support"
       version="2.4.4.qualifier"
       provider-name="HHU Düsseldorf STUPS Group">
 
