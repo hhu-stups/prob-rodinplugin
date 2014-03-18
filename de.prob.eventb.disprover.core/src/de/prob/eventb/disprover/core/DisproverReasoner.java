@@ -134,31 +134,43 @@ public class DisproverReasoner implements IReasoner {
 
 		IAntecedent ante = ProverFactory.makeAntecedent(goal);
 
-		if (counterExample.timeoutOccured())
+		if (counterExample.timeoutOccured()) {
+			System.out.println(sequent.toString() + ": Timeout occured.");
 			return ProverFactory.reasonerFailure(this, input,
 					"ProB: Timeout occurred.");
+		}
 
-		if (!counterExample.counterExampleFound() && counterExample.isProof())
+		if (!counterExample.counterExampleFound() && counterExample.isProof()) {
+			System.out.println(sequent.toString() + ": Proof.");
 			return ProverFactory.makeProofRule(this, input, sequent.goal(),
 					null, IConfidence.DISCHARGED_MAX,
 					"ProB (no enumeration / all cases checked)");
+		}
 
-		if (!counterExample.counterExampleFound())
+		if (!counterExample.counterExampleFound()) {
+			System.out.println(sequent.toString() + ": Unsure.");
+
 			return ProverFactory.reasonerFailure(
 					this,
 					input,
 					"ProB: No Counter-Example found due to "
 							+ counterExample.getReason()
 							+ ", but there might exist one.");
+		}
 
 		if (counterExample.counterExampleFound()
-				&& counterExample.onlySelectedHypotheses())
+				&& counterExample.onlySelectedHypotheses()) {
+			System.out.println(sequent.toString()
+					+ ": Counter-Example for selected hypotheses found.");
+
 			return ProverFactory
 					.reasonerFailure(
 							this,
 							input,
 							"ProB: Counter-Example for selected Hypotheses found, Goal not provable from selected Hypotheses (may be provable with all Hypotheses)");
+		}
 
+		System.out.println(sequent.toString() + ": Counter-Example found.");
 		return ProverFactory.makeProofRule(this, input, null, null,
 				IConfidence.PENDING, counterExample.toString(), ante);
 	}
