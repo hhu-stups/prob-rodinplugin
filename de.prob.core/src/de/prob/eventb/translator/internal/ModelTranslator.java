@@ -7,66 +7,17 @@
 package de.prob.eventb.translator.internal; // NOPMD by bendisposto
 // High coupling to the ast is ok
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 import org.apache.commons.lang.StringUtils;
 import org.eventb.core.IConvergenceElement.Convergence;
-import org.eventb.core.ILabeledElement;
-import org.eventb.core.IMachineRoot;
-import org.eventb.core.IPOSequent;
-import org.eventb.core.IPOSource;
-import org.eventb.core.IPSRoot;
-import org.eventb.core.IPSStatus;
-import org.eventb.core.ISCAction;
-import org.eventb.core.ISCEvent;
-import org.eventb.core.ISCGuard;
-import org.eventb.core.ISCInternalContext;
-import org.eventb.core.ISCInvariant;
-import org.eventb.core.ISCMachineRoot;
-import org.eventb.core.ISCParameter;
-import org.eventb.core.ISCPredicateElement;
-import org.eventb.core.ISCRefinesEvent;
-import org.eventb.core.ISCRefinesMachine;
-import org.eventb.core.ISCVariable;
-import org.eventb.core.ISCVariant;
-import org.eventb.core.ISCWitness;
-import org.eventb.core.ITraceableElement;
-import org.eventb.core.ast.Assignment;
-import org.eventb.core.ast.FormulaFactory;
-import org.eventb.core.ast.ITypeEnvironment;
-import org.eventb.core.basis.Event;
-import org.eventb.core.basis.Guard;
+import org.eventb.core.*;
+import org.eventb.core.ast.*;
+import org.eventb.core.basis.*;
 import org.eventb.core.seqprover.IConfidence;
-import org.rodinp.core.IElementType;
-import org.rodinp.core.IRodinElement;
-import org.rodinp.core.RodinDBException;
+import org.rodinp.core.*;
 
-import de.be4.classicalb.core.parser.node.AAnticipatedEventstatus;
-import de.be4.classicalb.core.parser.node.AConvergentEventstatus;
-import de.be4.classicalb.core.parser.node.AEvent;
-import de.be4.classicalb.core.parser.node.AEventBModelParseUnit;
-import de.be4.classicalb.core.parser.node.AEventsModelClause;
-import de.be4.classicalb.core.parser.node.AIdentifierExpression;
-import de.be4.classicalb.core.parser.node.AInvariantModelClause;
-import de.be4.classicalb.core.parser.node.AOrdinaryEventstatus;
-import de.be4.classicalb.core.parser.node.ARefinesModelClause;
-import de.be4.classicalb.core.parser.node.ASeesModelClause;
-import de.be4.classicalb.core.parser.node.ATheoremsModelClause;
-import de.be4.classicalb.core.parser.node.AVariablesModelClause;
-import de.be4.classicalb.core.parser.node.AVariantModelClause;
-import de.be4.classicalb.core.parser.node.AWitness;
-import de.be4.classicalb.core.parser.node.Node;
-import de.be4.classicalb.core.parser.node.PEvent;
-import de.be4.classicalb.core.parser.node.PEventstatus;
-import de.be4.classicalb.core.parser.node.PExpression;
-import de.be4.classicalb.core.parser.node.PModelClause;
-import de.be4.classicalb.core.parser.node.PPredicate;
-import de.be4.classicalb.core.parser.node.PSubstitution;
-import de.be4.classicalb.core.parser.node.PWitness;
-import de.be4.classicalb.core.parser.node.TIdentifierLiteral;
+import de.be4.classicalb.core.parser.node.*;
 import de.prob.core.translator.TranslationFailedException;
 import de.prob.eventb.translator.AbstractComponentTranslator;
 import de.prob.logging.Logger;
@@ -198,15 +149,26 @@ public class ModelTranslator extends AbstractComponentTranslator {
 
 					IRodinElement srcElement = source.getSource();
 					if (!srcElement.exists()
-							|| !(srcElement instanceof ILabeledElement)) {
+							|| (!(srcElement instanceof ILabeledElement) && !(srcElement instanceof IVariant))) {
 						bugs.add(status.getElementName());
 						break;
 					}
 
-					ILabeledElement le = (ILabeledElement) srcElement;
-					IElementType<? extends IRodinElement> type = srcElement
-							.getElementType();
-					s.add(new SequentSource(type, le.getLabel()));
+					if (srcElement instanceof ILabeledElement) {
+						ILabeledElement le = (ILabeledElement) srcElement;
+						IElementType<? extends IRodinElement> type = srcElement
+								.getElementType();
+						s.add(new SequentSource(type, le.getLabel()));
+					} else if (srcElement instanceof IVariant) {
+						/*
+						 * Variants are not ILabeledElements, hence we need to
+						 * find another "label"
+						 */
+						IElementType<? extends IRodinElement> type = srcElement
+								.getElementType();
+						s.add(new SequentSource(type, machine
+								.getComponentName()));
+					}
 
 					if (srcElement instanceof Guard) {
 						Event srcEvent = (Event) srcElement.getParent();
