@@ -226,7 +226,7 @@ litigation.
    <requires>
       <import plugin="org.eclipse.core.runtime"/>
       <import plugin="de.prob.core" version="9.4.0" match="equivalent"/>
-      <import plugin="org.eventb.ui" version="2.5.0" match="greaterOrEqual"/>
+      <import plugin="org.eventb.ui" version="2.5.0" match="compatible"/>
       <import plugin="de.prob.ui" version="7.4.0" match="equivalent"/>
    </requires>
 
