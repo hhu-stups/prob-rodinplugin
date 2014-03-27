@@ -241,6 +241,7 @@ litigation.
       <import plugin="org.eclipse.core.expressions" version="3.4.101" match="compatible"/>
       <import plugin="org.eclipse.ui.navigator" version="3.5.0" match="greaterOrEqual"/>
       <import plugin="de.bmotionstudio.gef.editor" version="5.5.0" match="equivalent"/>
+      <import plugin="org.eventb.core.ast" version="2.7.0" match="compatible"/>
    </requires>
 
    <plugin
