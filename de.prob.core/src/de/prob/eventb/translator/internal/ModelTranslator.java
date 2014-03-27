@@ -35,6 +35,7 @@ import org.eventb.core.ISCVariable;
 import org.eventb.core.ISCVariant;
 import org.eventb.core.ISCWitness;
 import org.eventb.core.ITraceableElement;
+import org.eventb.core.IVariant;
 import org.eventb.core.ast.Assignment;
 import org.eventb.core.ast.FormulaFactory;
 import org.eventb.core.ast.ITypeEnvironment;
@@ -199,15 +200,26 @@ public class ModelTranslator extends AbstractComponentTranslator {
 
 					IRodinElement srcElement = source.getSource();
 					if (!srcElement.exists()
-							|| !(srcElement instanceof ILabeledElement)) {
+							|| (!(srcElement instanceof ILabeledElement) && !(srcElement instanceof IVariant))) {
 						bugs.add(status.getElementName());
 						break;
 					}
 
-					ILabeledElement le = (ILabeledElement) srcElement;
-					IElementType<? extends IRodinElement> type = srcElement
-							.getElementType();
-					s.add(new SequentSource(type, le.getLabel()));
+					if (srcElement instanceof ILabeledElement) {
+						ILabeledElement le = (ILabeledElement) srcElement;
+						IElementType<? extends IRodinElement> type = srcElement
+								.getElementType();
+						s.add(new SequentSource(type, le.getLabel()));
+					} else if (srcElement instanceof IVariant) {
+						/*
+						 * Variants are not ILabeledElements, hence we need to
+						 * find another "label"
+						 */
+						IElementType<? extends IRodinElement> type = srcElement
+								.getElementType();
+						s.add(new SequentSource(type, machine
+								.getComponentName()));
+					}
 
 					if (srcElement instanceof Guard) {
 						Event srcEvent = (Event) srcElement.getParent();
@@ -510,8 +522,8 @@ public class ModelTranslator extends AbstractComponentTranslator {
 		return list;
 	}
 
-private boolean isDefinedHere(final ITraceableElement element)
-    throws CoreException, TranslationFailedException {
+	private boolean isDefinedHere(final ITraceableElement element)
+			throws CoreException, TranslationFailedException {
 		final IRodinElement parentsource = element.getSource().getParent();
 		final boolean result;
 		final String currentName = machine.getComponentName();
