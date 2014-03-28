@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="de.prob2.disprover.feature"
-      label="ProB for Rodin3 - (Dis)Prover"
-      version="3.0.1.qualifier"
+      label="ProB for Rodin3 - EXPERIMENTAL (Dis)Prover"
+      version="3.0.2.qualifier"
       provider-name="HHU Düsseldorf STUPS Group">
 
    <description url="http://www.stups.uni-duesseldorf.de/ProB">
