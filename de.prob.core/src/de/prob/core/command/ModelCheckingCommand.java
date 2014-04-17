@@ -20,9 +20,9 @@ public final class ModelCheckingCommand implements IComposableCommand {
 	private ModelCheckingResult<Result> result;
 
 	public static enum Result {
-		ok(true), ok_not_all_nodes_considered(true), deadlock(true), invariant_violation(
-				true), assertion_violation(true), not_yet_finished(false), state_error(
-				true), well_definedness_error(true), general_error(true);
+		ok(true), ok_not_all_nodes_considered(true), deadlock(true), invariant_violation(true),
+    assertion_violation(true), not_yet_finished(false), state_error(true),
+    well_definedness_error(true), general_error(true), full_coverage(true);
 		// I assume true means we can stop the model checking
 		private final boolean abort;
 
