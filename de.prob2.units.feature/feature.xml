@@ -2,7 +2,7 @@
 <feature
       id="de.prob2.units.feature"
       label="ProB for Rodin2 - Physical Units Support"
-      version="2.4.4.qualifier"
+      version="2.4.5.qualifier"
       provider-name="HHU Düsseldorf STUPS Group">
 
    <description url="http://www.stups.uni-duesseldorf.de/ProB">
