@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="prob_target" sequenceNumber="21">
+<?pde version="3.8"?><target name="prob_target" sequenceNumber="22">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eventb.theory.feature.feature.group" version="2.0.0.201308160957"/>
@@ -10,13 +10,11 @@
 <repository location="http://download.eclipse.org/releases/indigo/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
-<unit id="fr.systerel.editor.feature.group" version="0.7.0.201401151708-RC1_bd181da"/>
-<unit id="org.rodinp.feature.group" version="1.7.0.201401151708-RC1_bd181da"/>
-<unit id="org.rodinp.platform.tests.feature.group" version="3.0.0.201401151708-RC1_bd181da"/>
-<unit id="org.rodinp.platform.sources.feature.group" version="3.0.0.201401151708-RC1_bd181da"/>
-<unit id="org.eventb.ide.feature.group" version="3.0.0.201401151708-RC1_bd181da"/>
-<unit id="org.rodinp.platform.feature.group" version="3.0.0.201401151708-RC1_bd181da"/>
-<repository location="file:/Users/krings/Downloads/org.rodinp.dev-3.0.0RC1_bd181da/"/>
+<repository location="http://rodin-b-sharp.sourceforge.net/updates/"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
+<unit id="org.rodinp.platform.product" version="3.0.0.201403141545-e3d282b"/>
+<repository location="http://rodin-b-sharp.sourceforge.net/core-updates/"/>
 </location>
 </locations>
 </target>
