@@ -9,22 +9,18 @@ package de.prob.symbolic;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eventb.core.IVariable;
 import org.eventb.core.basis.Constant;
-import org.eventb.internal.ui.eventbeditor.manipulation.AbstractBooleanManipulation;
+import org.eventb.ui.manipulation.IAttributeManipulation;
 import org.rodinp.core.IAttributeType;
 import org.rodinp.core.IInternalElement;
 import org.rodinp.core.IRodinElement;
 import org.rodinp.core.RodinCore;
 import org.rodinp.core.RodinDBException;
 
-public class SymbolicAttribute extends AbstractBooleanManipulation {
+public class SymbolicAttribute implements IAttributeManipulation {
 	private static final String SYMBOLIC = "symbolic";
 	private static final String CONCRETE = "not symbolic";
 	public static IAttributeType.Boolean ATTRIBUTE = RodinCore
 			.getBooleanAttrType(Activator.PLUGIN_ID + ".symbolicAttribute");
-
-	public SymbolicAttribute() {
-		super(SYMBOLIC, CONCRETE);
-	}
 
 	private IInternalElement asInternalElement(IRodinElement element) {
 		if (element instanceof IVariable) {
@@ -73,5 +69,11 @@ public class SymbolicAttribute extends AbstractBooleanManipulation {
 		final boolean isSymbolic = value.equals(SYMBOLIC);
 		asInternalElement(element).setAttributeValue(ATTRIBUTE, isSymbolic,
 				monitor);
+	}
+
+	@Override
+	public String[] getPossibleValues(IRodinElement element,
+			IProgressMonitor monitor) {
+		return new String[] { SYMBOLIC, CONCRETE };
 	}
 }
