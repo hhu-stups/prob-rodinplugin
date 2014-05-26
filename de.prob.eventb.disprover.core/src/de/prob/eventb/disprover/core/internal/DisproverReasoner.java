@@ -133,6 +133,11 @@ public class DisproverReasoner implements IReasoner {
 
 		IAntecedent ante = ProverFactory.makeAntecedent(goal);
 
+		if (counterExample == null) {
+			return ProverFactory.reasonerFailure(this, input,
+					"ProB: Error occurred.");
+		}
+
 		if (counterExample.timeoutOccured()) {
 			System.out.println(sequent.toString() + ": Timeout occured.");
 			return ProverFactory.reasonerFailure(this, input,
