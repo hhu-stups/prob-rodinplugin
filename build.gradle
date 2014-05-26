@@ -93,8 +93,8 @@ task downloadCli << {
 	}
 
 	def targetdir = dir+"windows/"
-	def targetzip = targetdir+"windowslib.zip"
-	download("http://nightly.cobra.cs.uni-duesseldorf.de/cli/windowslib.zip",targetzip)
+	def targetzip = targetdir+"windowslib32.zip"
+	download("http://nightly.cobra.cs.uni-duesseldorf.de/cli/windowslib32.zip",targetzip)
 	FileTree zip = zipTree(targetzip)
 	    copy {
 		   from zip
@@ -128,8 +128,8 @@ task downloadCli2 ( type: Exec ) {
 	}
 
 	def targetdir = dir+"windows/"
-	def targetzip = targetdir+"windowslib.zip"
-	download("http://nightly.cobra.cs.uni-duesseldorf.de/cli/windowslib.zip",targetzip)
+	def targetzip = targetdir+"windowslib32.zip"
+	download("http://nightly.cobra.cs.uni-duesseldorf.de/cli/windowslib32.zip",targetzip)
 	FileTree zip = zipTree(targetzip)
 	    copy {
 		   from zip
