@@ -47,7 +47,12 @@ public class AssertionCheckFinishedListener extends ProBJobFinishedListener {
 			message = "ProB did not return a result";
 		} else {
 			switch (result) {
-			case NO_COUNTER_EXAMPLE:
+			case NO_COUNTER_EXAMPLE_EXISTS:
+				dialogType = MessageDialog.INFORMATION;
+				dialogTitle = "No Counter-Example Exists";
+				message = "No Counter-Example to the Context Theorems exists.";
+				break;
+			case NO_COUNTER_EXAMPLE_FOUND:
 				dialogType = MessageDialog.INFORMATION;
 				dialogTitle = "No Counter-Example Found";
 				message = "No Counter-Example to the Context Theorems was found.";
