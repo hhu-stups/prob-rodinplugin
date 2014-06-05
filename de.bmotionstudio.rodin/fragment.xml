@@ -31,23 +31,7 @@
                   <iterate
                         operator="or">
                      <instanceof
-                           value="de.bmotionstudio.rodin.IBMotionSurfaceRoot">
-                     </instanceof>
-                  </iterate>
-               </with>
-            </visibleWhen>
-         </command>
-         <command
-               commandId="de.bmotionstudio.rodin.command.renameVisualization"
-               label="Rename"
-               style="push">
-            <visibleWhen>
-               <with
-                     variable="selection">
-                  <iterate
-                        operator="or">
-                     <instanceof
-                           value="de.bmotionstudio.rodin.IBMotionSurfaceRoot">
+                           value="de.bmotionstudio.rodin.BMotionStudioRodinFile">
                      </instanceof>
                   </iterate>
                </with>
@@ -62,11 +46,6 @@
             id="de.bmotionstudio.rodin.command.startVisualization"
             name="Start Visualization">
       </command>
-      <command
-            defaultHandler="de.bmotionstudio.rodin.RenameFileHandler"
-            id="de.bmotionstudio.rodin.command.renameVisualization"
-            name="Rename">
-      </command>
    </extension>
    <extension
          point="org.rodinp.core.fileAssociations">
@@ -74,20 +53,6 @@
             content-type-id="de.bmotionstudio.gef.editor.BMotionStudioFile"
             root-element-type="de.bmotionstudio.gef.editor.BMotionStudioFile">
       </fileAssociation>
-   </extension>
-   <extension
-         point="org.eclipse.core.contenttype.contentTypes">
-      <content-type
-            base-type="org.rodinp.core.rodin"
-            file-extensions="bmso"
-            id="BMotionStudioFile"
-            name="BMotion Studio Surface File"
-            priority="normal">
-      </content-type>
-      <file-association
-            content-type="de.bmotionstudio.gef.editor.BMotionStudioFile"
-            file-extensions="bmso">
-      </file-association>
    </extension>
    <extension
          point="org.eclipse.ui.navigator.navigatorContent">
@@ -104,7 +69,7 @@
          </triggerPoints>
          <possibleChildren>
             <instanceof
-                  value="de.bmotionstudio.rodin.IBMotionSurfaceRoot">
+                  value="de.bmotionstudio.rodin.BMotionStudioRodinFile">
             </instanceof>
          </possibleChildren>
          <actionProvider
@@ -112,8 +77,7 @@
                id="de.bmotionstudio.ui.navigatorAction"
                priority="normal">
             <enablement>
-               <instanceof
-                     value="de.bmotionstudio.rodin.IBMotionSurfaceRoot">
+               <instanceof value="de.bmotionstudio.rodin.BMotionStudioRodinFile">
                </instanceof>
             </enablement>
          </actionProvider>
@@ -137,14 +101,6 @@
             </actionExtension>
          </includes>
       </viewerActionBinding>
-   </extension>
-   <extension
-         point="org.rodinp.core.internalElementTypes">
-      <internalElementType
-            class="de.bmotionstudio.rodin.BMotionSurfaceRoot"
-            id="BMotionStudioFile"
-            name="BMotion Studio Surface File">
-      </internalElementType>
    </extension>
    
    
