@@ -39,6 +39,24 @@
             style="single"
             typeId="de.prob.units.inferredUnitPragmaAttribute">
       </textAttribute>
+      <attributeRelation
+            elementTypeId="org.eventb.core.scVariable">
+         <attributeReference
+               descriptionId="de.prob.units.unitPragmaAttribute">
+         </attributeReference>
+         <attributeReference
+               descriptionId="de.prob.units.inferredUnitPragmaAttribute">
+         </attributeReference>
+      </attributeRelation>
+      <attributeRelation
+            elementTypeId="org.eventb.core.scConstant">
+         <attributeReference
+               descriptionId="de.prob.units.unitPragmaAttribute">
+         </attributeReference>
+         <attributeReference
+               descriptionId="de.prob.units.inferredUnitPragmaAttribute">
+         </attributeReference>
+      </attributeRelation>
    </extension>
    <extension
          point="org.eclipse.ui.handlers">
