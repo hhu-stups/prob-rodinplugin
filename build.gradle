@@ -36,7 +36,7 @@ project(':de.prob.core') {
 	}
 
 
-        def parser_version = '2.4.22-SNAPSHOT'
+        def parser_version = '2.4.26-SNAPSHOT'
 
 	dependencies {
 	 compile group: "de.prob", name: "answerparser", version: parser_version , changing: true
