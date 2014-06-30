@@ -120,6 +120,14 @@ Bundle-Activator: de.prob.core.internal.Activator
 Eclipse-BuddyPolicy: registered
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ClassPath: .,
+ lib/dependencies/unicode-2.4.26-SNAPSHOT.jar,
+ lib/dependencies/theorymapping-2.4.26-SNAPSHOT.jar,
+ lib/dependencies/prologlib-2.4.26-SNAPSHOT.jar,
+ lib/dependencies/parserbase-2.4.26-SNAPSHOT.jar,
+ lib/dependencies/ltlparser-2.4.26-SNAPSHOT.jar,
+ lib/dependencies/cliparser-2.4.26-SNAPSHOT.jar,
+ lib/dependencies/bparser-2.4.26-SNAPSHOT.jar,
+ lib/dependencies/answerparser-2.4.26-SNAPSHOT.jar,
  lib/dependencies/unicode-2.4.22-SNAPSHOT.jar,
  lib/dependencies/theorymapping-2.4.22-SNAPSHOT.jar,
  lib/dependencies/prologlib-2.4.22-SNAPSHOT.jar,
