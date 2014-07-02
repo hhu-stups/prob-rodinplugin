@@ -7,8 +7,7 @@ import de.prob.core.LanguageDependendAnimationPart;
 import de.prob.core.domainobjects.Operation;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
-import de.prob.prolog.term.CompoundPrologTerm;
-import de.prob.prolog.term.PrologTerm;
+import de.prob.prolog.term.*;
 
 public class FindValidStateCommand implements IComposableCommand {
 
@@ -81,7 +80,8 @@ public class FindValidStateCommand implements IComposableCommand {
 			stateId = term.getArgument(2).toString();
 		} else
 			throw new CommandException(
-					"unexpected result from deadlock check: " + resultTerm);
+					"unexpected result when trying to find a valid state: "
+							+ resultTerm);
 
 		this.result = result;
 	}
