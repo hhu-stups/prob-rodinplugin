@@ -2,7 +2,7 @@
 <feature
       id="de.prob2.units.feature"
       label="ProB for Rodin3 - Physical Units Support"
-      version="3.0.3.qualifier"
+      version="3.0.4.qualifier"
       provider-name="HHU Düsseldorf STUPS Group">
 
    <description url="http://www.stups.uni-duesseldorf.de/ProB">
@@ -225,15 +225,15 @@ litigation.
 
    <requires>
       <import plugin="org.eclipse.core.runtime"/>
-      <import plugin="de.prob.core" version="9.4.0" match="equivalent"/>
-      <import plugin="de.prob.ui" version="7.4.0" match="equivalent"/>
       <import plugin="org.eclipse.core.commands"/>
       <import plugin="org.eclipse.core.resources"/>
       <import plugin="org.eclipse.jface"/>
       <import plugin="org.rodinp.core" version="1.7.0" match="equivalent"/>
+      <import plugin="de.prob.core" version="9.4.0" match="equivalent"/>
       <import plugin="org.eventb.ui" version="3.0.0" match="equivalent"/>
-      <import plugin="org.eventb.core" version="3.0.0" match="equivalent"/>
+      <import plugin="de.prob.ui" version="7.4.0" match="equivalent"/>
       <import plugin="org.eclipse.ui.workbench"/>
+      <import plugin="org.eventb.core" version="3.0.0"/>
    </requires>
 
    <plugin
