@@ -21,6 +21,7 @@ public class ConfSettor implements IElementChangedListener {
 
 	private static final String CONFIG = Activator.PLUGIN_ID + ".mchBase";
 
+	@Override
 	public void elementChanged(ElementChangedEvent event) {
 
 		final IRodinElementDelta d = event.getDelta();
