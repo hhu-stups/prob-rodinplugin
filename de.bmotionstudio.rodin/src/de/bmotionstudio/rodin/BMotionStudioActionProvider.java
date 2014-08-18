@@ -49,12 +49,12 @@ public class BMotionStudioActionProvider extends CommonActionProvider {
 	public void fillContextMenu(IMenuManager menu) {
 		super.fillContextMenu(menu);
 		menu.add(new GroupMarker(GROUP_FILEACTIONS));
-		menu.appendToGroup(ICommonMenuConstants.GROUP_OPEN, ActionCollection
-				.getOpenAction(site));
+		menu.appendToGroup(ICommonMenuConstants.GROUP_OPEN,
+				ActionCollection.getOpenAction(site));
 		menu.appendToGroup(ICommonMenuConstants.GROUP_OPEN_WITH,
 				buildOpenWithMenu());
-		menu.appendToGroup(GROUP_FILEACTIONS, ActionCollection
-				.getDeleteAction(site));
+		menu.appendToGroup(GROUP_FILEACTIONS,
+				ActionCollection.getDeleteAction(site));
 	}
 
 	MenuManager buildOpenWithMenu() {
@@ -63,7 +63,7 @@ public class BMotionStudioActionProvider extends CommonActionProvider {
 		ISelection selection = site.getStructuredViewer().getSelection();
 		Object obj = ((IStructuredSelection) selection).getFirstElement();
 		menu.add(new OpenWithMenu(BMotionEditorPlugin.getActivePage(),
-				((IBMotionSurfaceRoot) obj).getRodinFile().getResource()));
+				((BMotionStudioRodinFile) obj).getResource()));
 		return menu;
 	}
 

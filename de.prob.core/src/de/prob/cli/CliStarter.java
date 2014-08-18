@@ -6,31 +6,15 @@
 
 package de.prob.cli;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Random;
+import java.io.*;
+import java.net.*;
+import java.security.*;
+import java.util.*;
 
-import org.eclipse.core.runtime.Assert;
-import org.eclipse.core.runtime.FileLocator;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.*;
+import org.osgi.framework.Bundle;
 
-import de.prob.cli.clipatterns.CliPattern;
-import de.prob.cli.clipatterns.InterruptRefPattern;
-import de.prob.cli.clipatterns.PortPattern;
+import de.prob.cli.clipatterns.*;
 import de.prob.core.internal.Activator;
 import de.prob.logging.Logger;
 
@@ -85,9 +69,8 @@ public final class CliStarter {
 		final File applicationPath = getCliPath();
 
 		final String fullcp = createFullClasspath(os, applicationPath);
-		
-		final OsSpecificInfo osInfo = getOsInfo(os,arch);
-		
+
+		final OsSpecificInfo osInfo = getOsInfo(os, arch);
 
 		final String osPath = applicationPath + File.separator + osInfo.subdir;
 		final String executable = osPath + File.separator + osInfo.cliName;
@@ -141,6 +124,7 @@ public final class CliStarter {
 		final Process p = prologProcess;
 
 		Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+			@Override
 			public void run() {
 				p.destroy();
 			}
@@ -148,28 +132,29 @@ public final class CliStarter {
 
 	}
 
-	private OsSpecificInfo getOsInfo(final String os, String architecture) throws CliException {
+	private OsSpecificInfo getOsInfo(final String os, String architecture)
+			throws CliException {
 		if (os.equals(Platform.OS_MACOSX)) {
-			return new OsSpecificInfo("macos", "probcli.sh",
-					"sh", "send_user_interrupt");
+			return new OsSpecificInfo("macos", "probcli.sh", "sh",
+					"send_user_interrupt");
 		}
 		if (os.equals(Platform.OS_WIN32)) {
-			return new OsSpecificInfo("windows",
-					"probcli.exe", null, "send_user_interrupt.exe");
+			return new OsSpecificInfo("windows", "probcli.exe", null,
+					"send_user_interrupt.exe");
 		}
-		
+
 		if (os.equals(Platform.OS_LINUX)) {
 			String linux = "linux";
 			if (architecture.equals(Platform.ARCH_X86_64)) {
 				linux = "linux64";
 			}
-			return new OsSpecificInfo(linux, "probcli.sh",
-					"sh", "send_user_interrupt");
+			return new OsSpecificInfo(linux, "probcli.sh", "sh",
+					"send_user_interrupt");
 		}
-			final CliException cliException = new CliException(
-					"ProB does not support the plattform: " + os);
-			cliException.notifyUserOnce();
-			throw cliException;
+		final CliException cliException = new CliException(
+				"ProB does not support the plattform: " + os);
+		cliException.notifyUserOnce();
+		throw cliException;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -255,31 +240,55 @@ public final class CliStarter {
 	}
 
 	private File getCliPath() throws CliException {
-		final Path path = new Path("prob");
-		final URL fileURL = FileLocator.find(
-				Activator.getDefault().getBundle(), path, null);
-		if (fileURL==null) {
-			throw new CliException("Unable to find directory with prob executables.");
+		final Bundle bundle = Activator.getDefault().getBundle();
+		final String fileURL = "prob";
+		final URL entry = bundle.getEntry(fileURL);
+
+		if (entry == null) {
+			throw new CliException(
+					"Unable to find directory with prob executables.");
 		}
-		URL resolved;
+
 		try {
-			resolved = FileLocator.resolve(fileURL);
+			URL resolvedUrl = FileLocator.find(bundle, new Path(fileURL), null);
+
+			// We need to use the 3-arg constructor of URI in order to properly
+			// escape file system chars.
+			URI resolvedUri = new URI("file", FileLocator
+					.toFileURL(resolvedUrl).getPath(), null);
+
+			return new File(resolvedUri);
+		} catch (URISyntaxException e) {
+			throw new CliException("Unable to construct file '"
+					+ entry.getPath() + "'");
 		} catch (IOException e2) {
 			throw new CliException("Input/output error when trying t find '"
 					+ fileURL + "'");
 		}
-		URI uri;
-		try {
-			uri = resolved.toURI();
-		} catch (URISyntaxException e) {
-			try {
-				uri = new URI("file", null, resolved.getPath(), null);
-			} catch (URISyntaxException e1) {
-				throw new CliException("Unable to construct file '"
-						+ resolved.getPath() + "'");
-			}
-		}
-		return new File(uri);
+
+		// final Path path = new Path("prob");
+		// final URL fileURL = FileLocator.find(
+		// Activator.getDefault().getBundle(), path, null);
+		// if (fileURL == null) {
+		// throw new CliException(
+		// "Unable to find directory with prob executables.");
+		// }
+		// URL resolved;
+		// try {
+		// resolved = FileLocator.resolve(fileURL);
+		// } catch (IOException e2) {
+		// throw new CliException("Input/output error when trying t find '"
+		// + fileURL + "'");
+		// }
+		// URI uri;
+		// try {
+		// uri = new URI(resolved.getProtocol(), resolved.getPath(), null);
+		// } catch (URISyntaxException e1) {
+		// throw new CliException("Unable to construct file '"
+		// + resolved.getPath() + "'");
+		// }
+		//
+		// return new File(uri);
 	}
 
 	private static class OutputLoggerThread extends Thread {

@@ -9,12 +9,12 @@ package de.prob.eventb.translator.internal;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eventb.core.ISCInternalContext;
 import org.eventb.core.ISCMachineRoot;
 import org.eventb.core.ast.FormulaFactory;
 import org.eventb.core.ast.ITypeEnvironment;
 import org.rodinp.core.IRodinFile;
-import org.rodinp.core.RodinDBException;
 
 import de.prob.core.translator.TranslationFailedException;
 import de.prob.eventb.translator.ContextTranslator;
@@ -75,14 +75,14 @@ public final class EventBMachineTranslator extends EventBTranslator {
 
 		try {
 			buildRefinementChain(machine, roots);
-		} catch (RodinDBException e) {
+		} catch (CoreException e) {
 			throw new TranslationFailedException(e);
 		}
 		return roots;
 	}
 
 	private void buildRefinementChain(final ISCMachineRoot element,
-			final List<ISCMachineRoot> list) throws RodinDBException {
+			final List<ISCMachineRoot> list) throws CoreException {
 		list.add(element);
 		IRodinFile[] abst = element.getAbstractSCMachines();
 		for (IRodinFile rodinFile : abst) {
@@ -108,12 +108,12 @@ public final class EventBMachineTranslator extends EventBTranslator {
 		for (final ISCMachineRoot m : models) {
 			try {
 				final FormulaFactory ff = m.getFormulaFactory();
-				final ITypeEnvironment te = m.getTypeEnvironment(ff);
+				final ITypeEnvironment te = m.getTypeEnvironment();
 				final ISCInternalContext[] seenContexts = m.getSCSeenContexts();
 				for (final ISCInternalContext seenContext : seenContexts) {
 					collectContexts(translators, processed, seenContext, ff, te);
 				}
-			} catch (RodinDBException e) {
+			} catch (CoreException e) {
 				throw new TranslationFailedException(e);
 			}
 		}

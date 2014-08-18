@@ -11,6 +11,8 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
@@ -18,15 +20,16 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.ui.*;
+import org.eclipse.ui.IEditorDescriptor;
+import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IEditorReference;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.navigator.ICommonActionExtensionSite;
 import org.eclipse.ui.part.FileEditorInput;
-import org.rodinp.core.IRodinElement;
-import org.rodinp.core.IRodinFile;
-import org.rodinp.core.RodinDBException;
 
 import de.bmotionstudio.gef.editor.BMotionEditorPlugin;
-import de.bmotionstudio.gef.editor.BMotionStudioImage;
 
 public class ActionCollection {
 
@@ -42,42 +45,39 @@ public class ActionCollection {
 			@Override
 			public void run() {
 
-				IRodinFile component;
-
 				final ISelection selection = site.getStructuredViewer()
 						.getSelection();
 				final Object obj = ((IStructuredSelection) selection)
 						.getFirstElement();
 
-				if (obj instanceof IBMotionSurfaceRoot) {
+				if (obj instanceof BMotionStudioRodinFile) {
 
-					component = (IRodinFile) ((IRodinElement) obj)
-							.getOpenable();
-
-					if (component == null) {
-						return;
-					}
+					BMotionStudioRodinFile file = (BMotionStudioRodinFile) obj;
+					IResource resource = file.getResource();
+					final IFile ifile = resource.getProject().getFile(
+							resource.getName());
 
 					try {
 
 						final IEditorDescriptor desc = PlatformUI
 								.getWorkbench().getEditorRegistry()
-								.getDefaultEditor(
-										component.getCorrespondingResource()
-												.getName());
+								.getDefaultEditor(resource.getName());
 
-						BMotionEditorPlugin.getActivePage().openEditor(
-								new FileEditorInput(component.getResource()),
-								desc.getId());
-
-						// editor.getSite().getSelectionProvider().setSelection(
-						// new StructuredSelection(obj));
+						BMotionEditorPlugin
+								.getDefault()
+								.getWorkbench()
+								.getActiveWorkbenchWindow()
+								.getActivePage()
+								.openEditor(new FileEditorInput(ifile),
+										desc.getId());
 
 					} catch (final PartInitException e) {
 						final String errorMsg = "Error open Editor";
 						MessageDialog.openError(null, null, errorMsg);
-						BMotionEditorPlugin.getDefault().getLog().log(
-								new Status(IStatus.ERROR,
+						BMotionEditorPlugin
+								.getDefault()
+								.getLog()
+								.log(new Status(IStatus.ERROR,
 										BMotionEditorPlugin.PLUGIN_ID,
 										errorMsg, e));
 					}
@@ -101,59 +101,56 @@ public class ActionCollection {
 			public void run() {
 				if (!(site.getStructuredViewer().getSelection().isEmpty())) {
 
-					Collection<IRodinElement> set = new ArrayList<IRodinElement>();
+					Collection<BMotionStudioRodinFile> set = new ArrayList<BMotionStudioRodinFile>();
 
 					IStructuredSelection ssel = (IStructuredSelection) site
 							.getStructuredViewer().getSelection();
 
 					for (Iterator<?> it = ssel.iterator(); it.hasNext();) {
 						final Object obj = it.next();
-						if (!(obj instanceof IBMotionSurfaceRoot)) {
+						if (!(obj instanceof BMotionStudioRodinFile)) {
 							continue;
 						}
-						IRodinElement elem = (IRodinElement) obj;
-						if (elem.isRoot()) {
-							elem = elem.getParent();
-						}
+						BMotionStudioRodinFile elem = (BMotionStudioRodinFile) obj;
 						set.add(elem);
 					}
 
 					int answer = YesToAllMessageDialog.YES;
-					for (IRodinElement element : set) {
-						if (element instanceof IRodinFile) {
-							if (answer != YesToAllMessageDialog.YES_TO_ALL) {
-								answer = YesToAllMessageDialog
-										.openYesNoToAllQuestion(
-												site.getViewSite().getShell(),
-												"Confirm File Delete",
-												"Are you sure you want to delete file '"
-														+ ((IRodinFile) element)
-																.getElementName()
-														+ "' in project '"
-														+ element
-																.getParent()
-																.getElementName()
-														+ "' ?");
-							}
+					for (BMotionStudioRodinFile element : set) {
 
-							if (answer == YesToAllMessageDialog.NO_TO_ALL
-									|| answer == YesToAllMessageDialog.CANCEL)
-								break;
+						if (answer != YesToAllMessageDialog.YES_TO_ALL) {
+							answer = YesToAllMessageDialog
+									.openYesNoToAllQuestion(
+											site.getViewSite().getShell(),
+											"Confirm File Delete",
+											"Are you sure you want to delete file '"
+													+ ((BMotionStudioRodinFile) element)
+															.getResource()
+															.getName()
+													+ "' in project '"
+													+ element.getResource()
+															.getProject()
+															.getName() + "' ?");
+						}
 
-							if (answer != YesToAllMessageDialog.NO) {
-								try {
-									closeOpenedEditor((IRodinFile) element);
-									((IRodinFile) element).delete(true,
-											new NullProgressMonitor());
-								} catch (PartInitException e) {
-									MessageDialog.openError(null, "Error",
-											"Could not delete file");
-								} catch (RodinDBException e) {
-									MessageDialog.openError(null, "Error",
-											"Could not delete file");
-								}
+						if (answer == YesToAllMessageDialog.NO_TO_ALL
+								|| answer == YesToAllMessageDialog.CANCEL)
+							break;
+
+						if (answer != YesToAllMessageDialog.NO) {
+							try {
+								closeOpenedEditor((BMotionStudioRodinFile) element);
+								((BMotionStudioRodinFile) element)
+										.getResource().delete(true,
+												new NullProgressMonitor());
+							} catch (PartInitException e) {
+								MessageDialog.openError(null, "Error",
+										"Could not delete file");
+							} catch (CoreException e) {
+								e.printStackTrace();
 							}
 						}
+
 					}
 
 				}
@@ -161,13 +158,15 @@ public class ActionCollection {
 		};
 		deleteAction.setText("&Delete");
 		deleteAction.setToolTipText("Delete these elements");
-		deleteAction.setImageDescriptor(BMotionStudioImage.getImageDescriptor(
-				"org.eclipse.ui", "$nl$/icons/full/etool16/delete_edit.gif"));
+		deleteAction.setImageDescriptor(BMotionEditorPlugin
+				.imageDescriptorFromPlugin("org.eclipse.ui",
+						"$nl$/icons/full/etool16/delete_edit.gif"));
 
 		return deleteAction;
 	}
 
-	static void closeOpenedEditor(IRodinFile file) throws PartInitException {
+	static void closeOpenedEditor(BMotionStudioRodinFile file)
+			throws PartInitException {
 		IEditorReference[] editorReferences = BMotionEditorPlugin
 				.getActivePage().getEditorReferences();
 		for (int j = 0; j < editorReferences.length; j++) {

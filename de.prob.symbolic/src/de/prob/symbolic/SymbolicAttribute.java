@@ -16,12 +16,13 @@ import org.rodinp.core.IRodinElement;
 import org.rodinp.core.RodinCore;
 import org.rodinp.core.RodinDBException;
 
+@SuppressWarnings("restriction")
 public class SymbolicAttribute extends AbstractBooleanManipulation {
 	private static final String SYMBOLIC = "symbolic";
 	private static final String CONCRETE = "not symbolic";
 	public static IAttributeType.Boolean ATTRIBUTE = RodinCore
 			.getBooleanAttrType(Activator.PLUGIN_ID + ".symbolicAttribute");
-
+	
 	public SymbolicAttribute() {
 		super(SYMBOLIC, CONCRETE);
 	}

@@ -14,6 +14,12 @@
                descriptionId="de.prob.symbolic.symbolicAttribute">
          </attributeReference>
       </attributeRelation>
+      <attributeRelation
+            elementTypeId="org.eventb.core.scConstant">
+         <attributeReference
+               descriptionId="de.prob.symbolic.symbolicAttribute">
+         </attributeReference>
+      </attributeRelation>
    </extension>
    <extension
          point="org.rodinp.core.attributeTypes">

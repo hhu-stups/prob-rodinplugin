@@ -14,9 +14,9 @@ import de.prob.core.Animator;
 import de.prob.ui.PerspectiveFactory;
 import de.prob.ui.ProbUiPlugin;
 
-public class ConsistencyCheckCommand extends AbstractHandler implements
-		IHandler {
+public class ModelCheckCommand extends AbstractHandler implements IHandler {
 
+	@Override
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
 		PerspectiveFactory.openPerspective();
 
@@ -31,7 +31,7 @@ public class ConsistencyCheckCommand extends AbstractHandler implements
 			return null;
 		}
 
-		ConsistencyCheckingDialog md = new ConsistencyCheckingDialog(shell);
+		ModelCheckingDialog md = new ModelCheckingDialog(shell);
 
 		md.setBlockOnOpen(true);
 

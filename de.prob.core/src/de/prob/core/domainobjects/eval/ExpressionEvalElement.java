@@ -6,16 +6,15 @@
 
 package de.prob.core.domainobjects.eval;
 
-import java.util.LinkedList;
-
 import org.eventb.core.ast.Expression;
 
 import de.be4.classicalb.core.parser.BParser;
 import de.be4.classicalb.core.parser.exceptions.BException;
 import de.be4.classicalb.core.parser.node.AExpressionParseUnit;
 import de.be4.classicalb.core.parser.node.EOF;
+import de.be4.classicalb.core.parser.node.PExpression;
 import de.be4.classicalb.core.parser.node.Start;
-import de.prob.eventb.translator.ExpressionVisitor;
+import de.prob.eventb.translator.internal.TranslationVisitor;
 
 public final class ExpressionEvalElement extends AbstractEvalElement {
 
@@ -28,9 +27,9 @@ public final class ExpressionEvalElement extends AbstractEvalElement {
 			String message = "Expression input must not be null";
 			throw new BException("", new NullPointerException(message));
 		}
-		ExpressionVisitor ev = new ExpressionVisitor(new LinkedList<String>());
-		expression.accept(ev);
-		AExpressionParseUnit epu = new AExpressionParseUnit(ev.getExpression());
+		final PExpression expr = TranslationVisitor
+				.translateExpression(expression);
+		AExpressionParseUnit epu = new AExpressionParseUnit(expr);
 		Start start = new Start(epu, new EOF());
 		return new ExpressionEvalElement(expression, start);
 	}

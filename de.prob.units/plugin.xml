@@ -9,7 +9,7 @@
             id="de.prob.units.unitPragmaAttribute"
             isMath="true"
             prefix="Physical Unit:"
-            style="de.prob.units.unitPragmaAttribute"
+            style="single"
             typeId="de.prob.units.unitPragmaAttribute">
       </textAttribute>
       <attributeRelation
@@ -36,9 +36,27 @@
             id="de.prob.units.inferredUnitPragmaAttribute"
             isMath="true"
             prefix="Inferred Physical Unit:"
-            style="de.prob.units.inferredUnitPragmaAttribute"
+            style="single"
             typeId="de.prob.units.inferredUnitPragmaAttribute">
       </textAttribute>
+      <attributeRelation
+            elementTypeId="org.eventb.core.scVariable">
+         <attributeReference
+               descriptionId="de.prob.units.unitPragmaAttribute">
+         </attributeReference>
+         <attributeReference
+               descriptionId="de.prob.units.inferredUnitPragmaAttribute">
+         </attributeReference>
+      </attributeRelation>
+      <attributeRelation
+            elementTypeId="org.eventb.core.scConstant">
+         <attributeReference
+               descriptionId="de.prob.units.unitPragmaAttribute">
+         </attributeReference>
+         <attributeReference
+               descriptionId="de.prob.units.inferredUnitPragmaAttribute">
+         </attributeReference>
+      </attributeRelation>
    </extension>
    <extension
          point="org.eclipse.ui.handlers">
@@ -65,9 +83,14 @@
                      variable="selection">
                   <iterate
                         operator="or">
-                     <instanceof
-                           value="org.eventb.core.IEventBRoot">
-                     </instanceof>
+                     <or>
+                        <instanceof
+                              value="org.eventb.core.IMachineRoot">
+                        </instanceof>
+                        <instanceof
+                              value="org.eventb.core.IContextRoot">
+                        </instanceof>
+                     </or>
                   </iterate>
                </with>
             </visibleWhen>

@@ -2,8 +2,6 @@ package de.prob.eventb.disprover.core;
 
 import org.eventb.core.seqprover.IReasoner;
 
-import de.prob.eventb.disprover.core.internal.DisproverReasoner;
-
 public class Disprover {
 
 	private Disprover() {
@@ -18,7 +16,11 @@ public class Disprover {
 	 * @return a new {@link DisproverReasoner} instance.
 	 */
 	public static IReasoner createDisproverReasoner() {
-		return new DisproverReasoner();
+		return new DisproverReasoner(1);
+	}
+
+	public static IReasoner createExtendedTimeoutDisproverReasoner(int factor) {
+		return new DisproverReasoner(factor);
 	}
 
 }

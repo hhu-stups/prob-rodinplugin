@@ -16,6 +16,9 @@ import org.eventb.core.IEventBRoot;
 import org.eventb.core.ISCInternalContext;
 import org.eventb.core.ISCMachineRoot;
 import org.rodinp.core.IInternalElement;
+import org.rodinp.core.IRodinElement;
+import org.rodinp.core.IRodinFile;
+import org.rodinp.core.RodinDBException;
 
 import de.be4.classicalb.core.parser.analysis.prolog.ASTProlog;
 import de.be4.classicalb.core.parser.node.Node;
@@ -28,7 +31,6 @@ import de.prob.prolog.output.IPrologTermOutput;
 
 public abstract class EventBTranslator implements ITranslator {
 	protected final IEventBProject project;
-	private boolean theoryIsUsed;
 
 	protected EventBTranslator(final IEventBRoot root) {
 		this.project = root.getEventBProject();
@@ -58,7 +60,6 @@ public abstract class EventBTranslator implements ITranslator {
 		Collection<Node> nodes = new ArrayList<Node>();
 		for (final AbstractComponentTranslator translator : refinementChainTranslators) {
 			nodes.add(translator.getAST());
-			theoryIsUsed |= translator.isTheoryUsed();
 		}
 		return nodes;
 	}
@@ -140,10 +141,10 @@ public abstract class EventBTranslator implements ITranslator {
 			final Collection<? extends AbstractComponentTranslator> refinementChainTranslators,
 			final Collection<? extends AbstractComponentTranslator> contextTranslators,
 			final IPrologTermOutput pout) throws TranslationFailedException {
-		theoryIsUsed = false;
 		Collection<Node> machineNodes = translateModels(refinementChainTranslators);
 		Collection<Node> contextNodes = translateModels(contextTranslators);
 
+		final boolean theoryIsUsed = areTheoriesAreUsed();
 		if (theoryIsUsed) {
 			checkIfTheoriesAvailable();
 		}
@@ -172,6 +173,25 @@ public abstract class EventBTranslator implements ITranslator {
 		pout.closeList();
 		pout.printVariable("_Error");
 		pout.closeTerm();
+	}
+
+	private boolean areTheoriesAreUsed() throws TranslationFailedException {
+		try {
+			final IRodinElement[] elements;
+			elements = project.getRodinProject().getChildren();
+			for (IRodinElement element : elements) {
+				if (element instanceof IRodinFile) {
+					IRodinFile file = (IRodinFile) element;
+					final String id = file.getRootElementType().getId();
+					if (id.startsWith("org.eventb.theory.core")) {
+						return true;
+					}
+				}
+			}
+			return false;
+		} catch (RodinDBException e) {
+			throw new TranslationFailedException(e);
+		}
 	}
 
 	private void checkIfTheoriesAvailable() throws TranslationFailedException {

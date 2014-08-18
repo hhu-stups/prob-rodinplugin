@@ -8,6 +8,11 @@ package de.bmotionstudio.rodin;
 
 import org.eclipse.core.commands.IHandler;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.viewers.IStructuredSelection;
 
 import de.bmotionstudio.gef.editor.handler.StartVisualizationFileHandler;
@@ -21,8 +26,14 @@ public class StartEventBVisualizationHandler extends
 
 	@Override
 	protected IFile getBmsFileFromSelection(IStructuredSelection ssel) {
-		if (ssel.getFirstElement() instanceof IBMotionSurfaceRoot)
-			return ((IBMotionSurfaceRoot) ssel.getFirstElement()).getResource();
+		if (ssel.getFirstElement() instanceof BMotionStudioRodinFile) {
+			IResource resource = ((BMotionStudioRodinFile) ssel
+					.getFirstElement()).getResource();
+			IWorkspace workspace = ResourcesPlugin.getWorkspace();
+			IPath location = Path.fromOSString(resource.getFullPath()
+					.toOSString());
+			return workspace.getRoot().getFileForLocation(location);
+		}
 		return null;
 	}
 

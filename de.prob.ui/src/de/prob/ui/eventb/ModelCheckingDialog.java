@@ -22,11 +22,11 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Shell;
 
-import de.prob.core.command.ConsistencyCheckingSearchOption;
+import de.prob.core.command.ModelCheckingSearchOption;
 import de.prob.core.command.SymmetryReductionOption;
 import de.prob.ui.DialogHelpers;
 
-public class ConsistencyCheckingDialog extends Dialog {
+public class ModelCheckingDialog extends Dialog {
 
 	private final class StartButtonSelectionListener implements
 			SelectionListener {
@@ -39,19 +39,20 @@ public class ConsistencyCheckingDialog extends Dialog {
 			this.symmetry = symmetry;
 		}
 
+		@Override
 		public void widgetSelected(final SelectionEvent e) {
 			String symmetryOption = selectSymmetryOption(symmetry);
-			Set<ConsistencyCheckingSearchOption> selectSettings = selectSettings(checks);
+			Set<ModelCheckingSearchOption> selectSettings = selectSettings(checks);
 			scheduleJob(selectSettings, symmetryOption);
 			close();
 		}
 
-		private Set<ConsistencyCheckingSearchOption> selectSettings(
+		private Set<ModelCheckingSearchOption> selectSettings(
 				final Button[] checks) {
-			HashSet<ConsistencyCheckingSearchOption> result = new HashSet<ConsistencyCheckingSearchOption>();
+			HashSet<ModelCheckingSearchOption> result = new HashSet<ModelCheckingSearchOption>();
 			for (int i = 0; i < checks.length; i++) {
 				if (checks[i].getSelection()) {
-					result.add(ConsistencyCheckingSearchOption.get(i));
+					result.add(ModelCheckingSearchOption.get(i));
 				}
 			}
 			return result;
@@ -69,15 +70,17 @@ public class ConsistencyCheckingDialog extends Dialog {
 		}
 
 		private void scheduleJob(
-				final Set<ConsistencyCheckingSearchOption> selectSettings,
+				final Set<ModelCheckingSearchOption> selectSettings,
 				final String symmetryOption) {
-			job = new ConsistencyCheckingJob("Consistency Checking",
-					selectSettings, symmetryOption);
+			job = new ModelCheckingJob("Model Checking", selectSettings,
+					symmetryOption);
 			job.setUser(true);
-			job.addJobChangeListener(new ConsistencyCheckingFinishedListener(shell));
+			job.addJobChangeListener(new ModelCheckingFinishedListener(
+					shell));
 			job.schedule();
 		}
 
+		@Override
 		public void widgetDefaultSelected(final SelectionEvent e) {
 			// Do nothing
 		}
@@ -87,7 +90,7 @@ public class ConsistencyCheckingDialog extends Dialog {
 	private final Shell shell;
 	private Button startButton;
 
-	protected ConsistencyCheckingDialog(final Shell shell) {
+	protected ModelCheckingDialog(final Shell shell) {
 		super(shell);
 		this.shell = shell;
 	}
@@ -109,7 +112,7 @@ public class ConsistencyCheckingDialog extends Dialog {
 
 		GridData data = new GridData(GridData.HORIZONTAL_ALIGN_CENTER);
 		startButton = new Button(comp, SWT.PUSH);
-		startButton.setText("Start Consistency Checking");
+		startButton.setText("Start Model Checking");
 		startButton.setLayoutData(data);
 		startButton.addSelectionListener(new StartButtonSelectionListener(
 				checks, symmetry));
@@ -133,7 +136,7 @@ public class ConsistencyCheckingDialog extends Dialog {
 
 	private Button[] createSettingsGroup(final Composite c) {
 		Group group = DialogHelpers.createGroup(c, "Settings");
-		final ConsistencyCheckingSearchOption[] options = ConsistencyCheckingSearchOption
+		final ModelCheckingSearchOption[] options = ModelCheckingSearchOption
 				.values();
 		final Button[] checks = new Button[options.length];
 
@@ -153,7 +156,7 @@ public class ConsistencyCheckingDialog extends Dialog {
 	@Override
 	protected void configureShell(final Shell shell) {
 		super.configureShell(shell);
-		shell.setText("Consistency Checking");
+		shell.setText("Model Checking");
 	}
 
 }

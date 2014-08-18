@@ -20,8 +20,9 @@ import de.be4.classicalb.core.parser.node.AImplicationPredicate;
 import de.be4.classicalb.core.parser.node.ANegationPredicate;
 import de.be4.classicalb.core.parser.node.APredicateParseUnit;
 import de.be4.classicalb.core.parser.node.EOF;
+import de.be4.classicalb.core.parser.node.PPredicate;
 import de.be4.classicalb.core.parser.node.Start;
-import de.prob.eventb.translator.PredicateVisitor;
+import de.prob.eventb.translator.internal.TranslationVisitor;
 
 public class PredicateEvalElement extends AbstractEvalElement {
 
@@ -34,9 +35,9 @@ public class PredicateEvalElement extends AbstractEvalElement {
 			String message = "Predicate input must not be null";
 			throw new BException("", new NullPointerException(message));
 		}
-		PredicateVisitor pv = new PredicateVisitor();
-		predicate.accept(pv);
-		APredicateParseUnit ppu = new APredicateParseUnit(pv.getPredicate());
+		final PPredicate apred = TranslationVisitor
+				.translatePredicate(predicate);
+		final APredicateParseUnit ppu = new APredicateParseUnit(apred);
 		Start start = new Start(ppu, new EOF());
 		return new PredicateEvalElement(predicate, start);
 	}
@@ -106,7 +107,7 @@ public class PredicateEvalElement extends AbstractEvalElement {
 			hasChildren = true;
 		}
 
- 		@Override
+		@Override
 		public void inAExistsPredicate(AExistsPredicate arg0) {
 			hasChildren = true;
 		}

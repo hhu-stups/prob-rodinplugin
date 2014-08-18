@@ -1,14 +1,12 @@
 package de.prob.eventb.translator.flow;
 
-import java.util.LinkedList;
-
 import org.eventb.core.ast.Predicate;
 
 import de.be4.classicalb.core.parser.analysis.prolog.ASTProlog;
 import de.be4.classicalb.core.parser.analysis.prolog.ClassicalPositionPrinter;
 import de.be4.classicalb.core.parser.analysis.prolog.NodeIdAssignment;
 import de.be4.classicalb.core.parser.node.PPredicate;
-import de.prob.eventb.translator.PredicateVisitor;
+import de.prob.eventb.translator.internal.TranslationVisitor;
 import de.prob.prolog.output.IPrologTermOutput;
 
 public class WeakestPrecondition {
@@ -48,9 +46,7 @@ public class WeakestPrecondition {
 		pout.openList();
 		// pout.openTerm("entry");
 		// pout.printAtom(ReverseTranslate.reverseTranslate(p.toString()));
-		PredicateVisitor pv = new PredicateVisitor(new LinkedList<String>());
-		wps.accept(pv);
-		PPredicate predicate = pv.getPredicate();
+		final PPredicate predicate = TranslationVisitor.translatePredicate(wps);
 		predicate.apply(prolog);
 		// pout.closeTerm();
 		pout.closeList();

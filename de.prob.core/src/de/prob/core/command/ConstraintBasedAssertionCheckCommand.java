@@ -18,7 +18,7 @@ import de.prob.prolog.term.PrologTerm;
 public class ConstraintBasedAssertionCheckCommand implements IComposableCommand {
 
 	public static enum ResultType {
-		INTERRUPTED, COUNTER_EXAMPLE, NO_COUNTER_EXAMPLE
+		INTERRUPTED, COUNTER_EXAMPLE, NO_COUNTER_EXAMPLE_FOUND, NO_COUNTER_EXAMPLE_EXISTS
 	};
 
 	private static final String COMMAND_NAME = "cbc_static_assertion_violation_checking";
@@ -59,7 +59,9 @@ public class ConstraintBasedAssertionCheckCommand implements IComposableCommand 
 		if (resultTerm.hasFunctor("interrupted", 0)) {
 			result = ResultType.INTERRUPTED;
 		} else if (resultTerm.hasFunctor("no_counterexample_found", 0)) {
-			result = ResultType.NO_COUNTER_EXAMPLE;
+			result = ResultType.NO_COUNTER_EXAMPLE_FOUND;
+		}  else if (resultTerm.hasFunctor("no_counterexample_exists", 0)) {
+			result = ResultType.NO_COUNTER_EXAMPLE_EXISTS;
 		} else if (resultTerm.hasFunctor("counterexample_found", 2)) {
 			result = ResultType.COUNTER_EXAMPLE;
 			CompoundPrologTerm counterExampleTerm = (CompoundPrologTerm) resultTerm;

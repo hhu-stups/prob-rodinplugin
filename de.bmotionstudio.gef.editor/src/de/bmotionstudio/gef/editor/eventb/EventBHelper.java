@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.CoreException;
 import org.eventb.core.ISCAction;
 import org.eventb.core.ISCConstant;
 import org.eventb.core.ISCContextRoot;
@@ -34,7 +35,7 @@ import de.bmotionstudio.gef.editor.model.Visualization;
 import de.prob.logging.Logger;
 
 public final class EventBHelper {
-	
+
 	private static FormulaFactory formularFactory = FormulaFactory.getDefault();
 
 	public static EventBRoot getCorrespondingFile(IFile file,
@@ -88,7 +89,7 @@ public final class EventBHelper {
 
 					}
 
-				} catch (RodinDBException e) {
+				} catch (CoreException e) {
 					String message = "Rodin DB Exception while getting operations: "
 							+ e.getLocalizedMessage();
 					Logger.notifyUser(message, e);
@@ -127,7 +128,7 @@ public final class EventBHelper {
 					machinevar.setType(var.getType(formularFactory));
 					tmpSet.add(machinevar);
 				}
-			} catch (RodinDBException e) {
+			} catch (CoreException e) {
 				String message = "Rodin DB Exception while getting variables: "
 						+ e.getLocalizedMessage();
 				Logger.notifyUser(message, e);
@@ -196,12 +197,19 @@ public final class EventBHelper {
 					for (ISCInternalContext context : seenContexts) {
 
 						for (ISCConstant constant : context.getSCConstants()) {
-
-							MachineContentObject machineinv = new MachineContentObject(
-									constant.getIdentifierString());
-							machineinv.setType(constant
-									.getType(formularFactory));
-							tmpSet.add(machineinv);
+							try {
+								MachineContentObject machineinv = new MachineContentObject(
+										constant.getIdentifierString());
+								machineinv.setType(constant
+										.getType(formularFactory));
+								tmpSet.add(machineinv);
+							} catch (CoreException e) {
+								String message = "Rodin DB Exception while getting variables: "
+										+ e.getLocalizedMessage();
+								Logger.notifyUser(message, e);
+								return Collections
+										.unmodifiableList(new ArrayList<MachineContentObject>());
+							}
 
 						}
 
@@ -214,7 +222,16 @@ public final class EventBHelper {
 					for (ISCConstant constant : contextRoot.getSCConstants()) {
 						MachineContentObject machineinv = new MachineContentObject(
 								constant.getIdentifierString());
-						machineinv.setType(constant.getType(formularFactory));
+						try {
+							machineinv.setType(constant
+									.getType(formularFactory));
+						} catch (CoreException e) {
+							String message = "Rodin DB Exception while getting variables: "
+									+ e.getLocalizedMessage();
+							Logger.notifyUser(message, e);
+							return Collections
+									.unmodifiableList(new ArrayList<MachineContentObject>());
+						}
 						tmpSet.add(machineinv);
 					}
 
@@ -234,7 +251,9 @@ public final class EventBHelper {
 
 	}
 
-	public static String renderEvent(ISCEvent event) throws RodinDBException {
+	// Changed RodinDBException to CoreException for Rodin 3
+	// Might not be an intentional change in Rodin?
+	public static String renderEvent(ISCEvent event) throws CoreException {
 		StringBuffer sb = new StringBuffer();
 		sb.append("event ");
 		sb.append(event.getLabel());

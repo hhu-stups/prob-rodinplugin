@@ -6,22 +6,15 @@
 
 package de.prob.ui.operationview;
 
-import org.eclipse.jface.action.IMenuListener;
-import org.eclipse.jface.action.IMenuManager;
-import org.eclipse.jface.action.MenuManager;
-import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.action.*;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.*;
 import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.services.ISourceProviderService;
 
-import de.prob.core.domainobjects.Operation;
-import de.prob.core.domainobjects.State;
+import de.prob.core.domainobjects.*;
 import de.prob.ui.StateBasedViewPart;
 import de.prob.ui.services.ModelLoadedProvider;
 
@@ -62,11 +55,13 @@ public class OperationViewPart extends StateBasedViewPart implements
 		MenuManager menuMgr = new MenuManager("#PopupMenu");
 		menuMgr.setRemoveAllWhenShown(true);
 		menuMgr.addMenuListener(new IMenuListener() {
+			@Override
 			public void menuAboutToShow(final IMenuManager manager) {
 				x.fillContextMenu(manager);
 			}
 		});
-		Menu menu = menuMgr.createContextMenu(viewer.getControl());
+		Control c = viewer.getControl();
+		Menu menu = menuMgr.createContextMenu(c);
 		viewer.getControl().setMenu(menu);
 		getSite().registerContextMenu(menuMgr, viewer);
 	}
@@ -80,8 +75,10 @@ public class OperationViewPart extends StateBasedViewPart implements
 		OperationTableViewer.destroy();
 	}
 
+	@Override
 	public void filtersChanged() {
 		Display.getDefault().asyncExec(new Runnable() {
+			@Override
 			public void run() {
 				OperationTableViewer.getInstance().refresh();
 			}

@@ -1,35 +1,21 @@
-package de.prob.eventb.disprover.core.internal;
+package de.prob.eventb.disprover.core;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 import org.eclipse.core.runtime.Status;
-import org.eventb.core.IContextRoot;
-import org.eventb.core.IEventBProject;
-import org.eventb.core.IEventBRoot;
-import org.eventb.core.IMachineRoot;
+import org.eventb.core.*;
 import org.eventb.core.ast.Predicate;
-import org.eventb.core.basis.POSequent;
-import org.eventb.core.seqprover.IConfidence;
-import org.eventb.core.seqprover.IProofMonitor;
-import org.eventb.core.seqprover.IProofRule;
+import org.eventb.core.seqprover.*;
 import org.eventb.core.seqprover.IProofRule.IAntecedent;
-import org.eventb.core.seqprover.IProverSequent;
-import org.eventb.core.seqprover.IReasoner;
-import org.eventb.core.seqprover.IReasonerInput;
-import org.eventb.core.seqprover.IReasonerInputReader;
-import org.eventb.core.seqprover.IReasonerInputWriter;
-import org.eventb.core.seqprover.IReasonerOutput;
-import org.eventb.core.seqprover.ProverFactory;
-import org.eventb.core.seqprover.SerializeException;
-import org.rodinp.core.RodinDBException;
-import org.rodinp.core.basis.InternalElement;
+import org.rodinp.core.*;
 
 import de.be4.classicalb.core.parser.analysis.prolog.ASTProlog;
-import de.prob.core.Animator;
-import de.prob.core.PrologException;
-import de.prob.eventb.disprover.core.DisproverReasonerInput;
-import de.prob.eventb.translator.PredicateVisitor;
+import de.be4.classicalb.core.parser.node.AEventBContextParseUnit;
+import de.prob.core.*;
+import de.prob.eventb.disprover.core.internal.DisproverCommand;
+import de.prob.eventb.disprover.core.internal.ICounterExample;
+import de.prob.eventb.disprover.core.translation.DisproverContextCreator;
+import de.prob.eventb.translator.internal.TranslationVisitor;
 import de.prob.exceptions.ProBException;
 import de.prob.logging.Logger;
 import de.prob.prolog.output.PrologTermStringOutput;
@@ -39,6 +25,16 @@ public class DisproverReasoner implements IReasoner {
 	static final String DISPROVER_CONTEXT = "disprover_context";
 
 	private static final String DISPROVER_REASONER_NAME = "de.prob.eventb.disprover.core.disproverReasoner";
+
+	private final int timeoutFactor;
+
+	public DisproverReasoner() {
+		this(1);
+	}
+
+	public DisproverReasoner(int timeoutFactor) {
+		this.timeoutFactor = timeoutFactor;
+	}
 
 	@Override
 	public String getReasonerID() {
@@ -50,7 +46,8 @@ public class DisproverReasoner implements IReasoner {
 			final IReasonerInput input, final IProofMonitor pm) {
 		try {
 			DisproverReasonerInput disproverInput = (DisproverReasonerInput) input;
-			ICounterExample ce = evaluateSequent(sequent, disproverInput, pm);
+			ICounterExample ce = evaluateSequent(sequent, disproverInput,
+					timeoutFactor, pm);
 			return createDisproverResult(ce, sequent, input);
 		} catch (PrologException e) {
 			Logger.log(Logger.WARNING, Status.WARNING, e.getMessage(), e);
@@ -68,16 +65,25 @@ public class DisproverReasoner implements IReasoner {
 	}
 
 	private ICounterExample evaluateSequent(final IProverSequent sequent,
-			final DisproverReasonerInput disproverInput, IProofMonitor pm)
-			throws ProBException, RodinDBException, InterruptedException {
+			final DisproverReasonerInput disproverInput, int timeoutFactor,
+			IProofMonitor pm) throws ProBException, RodinDBException,
+			InterruptedException {
 		// Logger.info("Calling Disprover on Sequent");
 
-		Set<Predicate> hypotheses = new HashSet<Predicate>();
-		StringBuilder hypothesesString = new StringBuilder();
+		Set<Predicate> allHypotheses = new HashSet<Predicate>();
+		// StringBuilder hypothesesString = new StringBuilder();
 		for (Predicate predicate : sequent.hypIterable()) {
-			hypotheses.add(predicate);
-			hypothesesString.append(predicateToProlog(predicate));
-			hypothesesString.append(" & ");
+			allHypotheses.add(predicate);
+			// hypothesesString.append(predicateToProlog(predicate));
+			// hypothesesString.append(" & ");
+		}
+
+		Set<Predicate> selectedHypotheses = new HashSet<Predicate>();
+		// StringBuilder hypothesesString = new StringBuilder();
+		for (Predicate predicate : sequent.selectedHypIterable()) {
+			selectedHypotheses.add(predicate);
+			// hypothesesString.append(predicateToProlog(predicate));
+			// hypothesesString.append(" & ");
 		}
 
 		/*
@@ -92,10 +98,17 @@ public class DisproverReasoner implements IReasoner {
 		// Logger.info("Disprover: Sending Goal: "+
 		// UnicodeTranslator.toAscii(predicateToProlog(goal)));
 
-		IEventBRoot root = getRoot(sequent);
+		AEventBContextParseUnit context = DisproverContextCreator
+				.createDisproverContext(sequent);
 
+		// find the IEventBProject belonging to the sequent
+		IPOSequent origin = (IPOSequent) sequent.getOrigin();
+		IRodinProject project = origin.getRodinProject();
+		IEventBProject evbProject = (IEventBProject) project
+				.getAdapter(IEventBProject.class);
 		ICounterExample counterExample = DisproverCommand.disprove(
-				Animator.getAnimator(), hypotheses, goal, root, pm);
+				Animator.getAnimator(), evbProject, allHypotheses,
+				selectedHypotheses, goal, timeoutFactor, context, pm);
 		// Logger.info("Disprover: Result: " + counterExample.toString());
 
 		return counterExample;
@@ -103,36 +116,11 @@ public class DisproverReasoner implements IReasoner {
 
 	private String predicateToProlog(Predicate pred) {
 		PrologTermStringOutput pto = new PrologTermStringOutput();
-		PredicateVisitor v = new PredicateVisitor();
+		TranslationVisitor v = new TranslationVisitor();
 		pred.accept(v);
 		ASTProlog p = new ASTProlog(pto, null);
 		v.getPredicate().apply(p);
 		return pto.toString();
-	}
-
-	private IEventBRoot getRoot(IProverSequent sequent) {
-		POSequent origin = (POSequent) sequent.getOrigin();
-		InternalElement poRoot = origin.getRoot();
-
-		// IPORoot poRoot = origin.getComponent().getPORoot();
-		String name = poRoot.getElementName();
-		IEventBProject eventBProject = (IEventBProject) poRoot
-				.getRodinProject().getAdapter(IEventBProject.class);
-
-		// We don't know whether we have a machine or a context.
-		IMachineRoot machineRoot = eventBProject.getMachineRoot(name);
-		IContextRoot contextRoot = eventBProject.getContextRoot(name);
-
-		if (machineRoot.exists()) {
-			return machineRoot;
-
-		} else if (contextRoot.exists()) {
-			return contextRoot;
-		} else {
-			// Neither Machine nor Context
-			throw new RuntimeException(
-					"Cannot use ProB Disprover on non Machine/Context Files");
-		}
 	}
 
 	/**
@@ -145,24 +133,51 @@ public class DisproverReasoner implements IReasoner {
 		Predicate goal = sequent.goal();
 
 		IAntecedent ante = ProverFactory.makeAntecedent(goal);
+		
+		if (counterExample == null) {
+			return ProverFactory.reasonerFailure(this, input,
+					"ProB: Error occurred.");
+		}
 
-		if (counterExample.timeoutOccured())
+		if (counterExample.timeoutOccured()) {
+			System.out.println(sequent.toString() + ": Timeout occured.");
 			return ProverFactory.reasonerFailure(this, input,
 					"ProB: Timeout occurred.");
+		}
 
-		if (!counterExample.counterExampleFound() && counterExample.isProof())
+		if (!counterExample.counterExampleFound() && counterExample.isProof()) {
+			System.out.println(sequent.toString() + ": Proof.");
 			return ProverFactory.makeProofRule(this, input, sequent.goal(),
 					null, IConfidence.DISCHARGED_MAX,
 					"ProB (no enumeration / all cases checked)");
+		}
 
-		if (!counterExample.counterExampleFound())
+		if (!counterExample.counterExampleFound()) {
+			System.out.println(sequent.toString() + ": Unsure.");
+
+			return ProverFactory.reasonerFailure(
+					this,
+					input,
+					"ProB: No Counter-Example found due to "
+							+ counterExample.getReason()
+							+ ", but there might exist one.");
+		}
+
+		if (counterExample.counterExampleFound()
+				&& counterExample.onlySelectedHypotheses()) {
+			System.out.println(sequent.toString()
+					+ ": Counter-Example for selected hypotheses found.");
+
 			return ProverFactory
-					.reasonerFailure(this, input,
-							"ProB: No Counter-Example found, but there might exist one.");
+					.reasonerFailure(
+							this,
+							input,
+							"ProB: Counter-Example for selected Hypotheses found, Goal not provable from selected Hypotheses (may be provable with all Hypotheses)");
+		}
 
+		System.out.println(sequent.toString() + ": Counter-Example found.");
 		return ProverFactory.makeProofRule(this, input, null, null,
-				IConfidence.PENDING,
-				"Counter-Example: " + counterExample.toString(), ante);
+				IConfidence.PENDING, counterExample.toString(), ante);
 	}
 
 	@Override

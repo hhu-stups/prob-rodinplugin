@@ -13,6 +13,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.core.runtime.CoreException;
 import org.eventb.core.IConvergenceElement.Convergence;
 import org.eventb.core.ILabeledElement;
 import org.eventb.core.IMachineRoot;
@@ -34,14 +35,16 @@ import org.eventb.core.ISCVariable;
 import org.eventb.core.ISCVariant;
 import org.eventb.core.ISCWitness;
 import org.eventb.core.ITraceableElement;
+import org.eventb.core.IVariant;
+import org.eventb.core.ast.Assignment;
 import org.eventb.core.ast.FormulaFactory;
 import org.eventb.core.ast.ITypeEnvironment;
+import org.eventb.core.ast.ITypeEnvironmentBuilder;
 import org.eventb.core.basis.Event;
 import org.eventb.core.basis.Guard;
 import org.eventb.core.seqprover.IConfidence;
 import org.rodinp.core.IElementType;
 import org.rodinp.core.IRodinElement;
-import org.rodinp.core.IRodinFile;
 import org.rodinp.core.RodinDBException;
 
 import de.be4.classicalb.core.parser.node.AAnticipatedEventstatus;
@@ -69,7 +72,6 @@ import de.be4.classicalb.core.parser.node.PWitness;
 import de.be4.classicalb.core.parser.node.TIdentifierLiteral;
 import de.prob.core.translator.TranslationFailedException;
 import de.prob.eventb.translator.AbstractComponentTranslator;
-import de.prob.eventb.translator.AssignmentVisitor;
 import de.prob.logging.Logger;
 
 public class ModelTranslator extends AbstractComponentTranslator {
@@ -94,8 +96,8 @@ public class ModelTranslator extends AbstractComponentTranslator {
 		ModelTranslator modelTranslator = new ModelTranslator(model);
 		try {
 			modelTranslator.translate();
-		} catch (RodinDBException re) {
-			final String message = "Rodin Database Exception: \n"
+		} catch (CoreException re) {
+			final String message = "Rodin Database Exception / Core Exception: \n"
 					+ re.getLocalizedMessage();
 			throw new TranslationFailedException(modelTranslator.getClass()
 					.toString(), message);
@@ -139,16 +141,15 @@ public class ModelTranslator extends AbstractComponentTranslator {
 		origin = machine.getMachineRoot();
 		ff = machine.getFormulaFactory();
 		try {
-			te = machine.getTypeEnvironment(ff);
-		} catch (RodinDBException e) {
+			te = machine.getTypeEnvironment();
+		} catch (CoreException e) {
 			final String message = "A Rodin exception occured during translation process. Original Exception: ";
 			throw new TranslationFailedException(machine.getComponentName(),
 					message + e.getLocalizedMessage());
 		}
 	}
 
-	private void translate() throws RodinDBException,
-			TranslationFailedException {
+	private void translate() throws CoreException, TranslationFailedException {
 
 		final String message = "machine.getRodinFile().isConsistent() [Note: Maybe you can fix this Rodin problem by refreshing and rebuilding the project]";
 		Logger.assertProB(message, machine.getRodinFile().isConsistent());
@@ -170,55 +171,68 @@ public class ModelTranslator extends AbstractComponentTranslator {
 		addUnitPragmas(machine.getSCVariables());
 	}
 
-	private void collectProofInfo() throws RodinDBException {
-
-		IPSRoot proofStatus = machine.getPSRoot();
-		IPSStatus[] statuses = proofStatus.getStatuses();
-
+	private void collectProofInfo() {
 		List<String> bugs = new LinkedList<String>();
+		try {
+			IPSRoot proofStatus = machine.getPSRoot();
+			IPSStatus[] statuses = proofStatus.getStatuses();
 
-		for (IPSStatus status : statuses) {
-			final int confidence = status.getConfidence();
-			boolean broken = status.isBroken();
+			for (IPSStatus status : statuses) {
+				final int confidence = status.getConfidence();
+				boolean broken = status.isBroken();
 
-			EProofStatus pstatus = EProofStatus.UNPROVEN;
+				EProofStatus pstatus = EProofStatus.UNPROVEN;
 
-			if (!broken
-					&& (confidence > IConfidence.PENDING && confidence <= IConfidence.REVIEWED_MAX))
-				pstatus = EProofStatus.REVIEWED;
-			if (!broken && confidence == IConfidence.DISCHARGED_MAX)
-				pstatus = EProofStatus.PROVEN;
+				if (!broken
+						&& (confidence > IConfidence.PENDING && confidence <= IConfidence.REVIEWED_MAX))
+					pstatus = EProofStatus.REVIEWED;
+				if (!broken && confidence == IConfidence.DISCHARGED_MAX)
+					pstatus = EProofStatus.PROVEN;
 
-			IPOSequent sequent = status.getPOSequent();
-			IPOSource[] sources = sequent.getSources();
+				IPOSequent sequent = status.getPOSequent();
+				IPOSource[] sources = sequent.getSources();
 
-			String name = sequent.getDescription();
+				String name = sequent.getDescription();
 
-			ArrayList<SequentSource> s = new ArrayList<SequentSource>(
-					sources.length);
-			for (IPOSource source : sources) {
+				ArrayList<SequentSource> s = new ArrayList<SequentSource>(
+						sources.length);
+				for (IPOSource source : sources) {
 
-				IRodinElement srcElement = source.getSource();
-				if (!srcElement.exists()
-						|| !(srcElement instanceof ILabeledElement)) {
-					bugs.add(status.getElementName());
-					break;
+					IRodinElement srcElement = source.getSource();
+					if (!srcElement.exists()
+							|| (!(srcElement instanceof ILabeledElement) && !(srcElement instanceof IVariant))) {
+						bugs.add(status.getElementName());
+						break;
+					}
+
+					if (srcElement instanceof ILabeledElement) {
+						ILabeledElement le = (ILabeledElement) srcElement;
+						IElementType<? extends IRodinElement> type = srcElement
+								.getElementType();
+						s.add(new SequentSource(type, le.getLabel()));
+					} else if (srcElement instanceof IVariant) {
+						/*
+						 * Variants are not ILabeledElements, hence we need to
+						 * find another "label"
+						 */
+						IElementType<? extends IRodinElement> type = srcElement
+								.getElementType();
+						s.add(new SequentSource(type, machine
+								.getComponentName()));
+					}
+
+					if (srcElement instanceof Guard) {
+						Event srcEvent = (Event) srcElement.getParent();
+						String srvEventName = srcEvent.getLabel();
+						s.add(new SequentSource(srcEvent.getElementType(),
+								srvEventName));
+					}
+
 				}
-
-				ILabeledElement le = (ILabeledElement) srcElement;
-				IElementType<? extends IRodinElement> type = srcElement
-						.getElementType();
-				s.add(new SequentSource(type, le.getLabel()));
-
-				if (srcElement instanceof Guard) {
-					Event srcEvent = (Event) srcElement.getParent();
-					String srvEventName = srcEvent.getLabel();
-					s.add(new SequentSource(srcEvent.getElementType(),
-							srvEventName));
-				}
-
+				addProof(new ProofObligation(origin, s, name, pstatus));
 			}
-			addProof(new ProofObligation(origin, s, name, pstatus));
+		} catch (Exception e) {
+			bugs.add(e.getLocalizedMessage());
 		}
 
 		if (!bugs.isEmpty()) {
@@ -229,7 +243,7 @@ public class ModelTranslator extends AbstractComponentTranslator {
 
 	}
 
-	private void translateMachine() throws RodinDBException,
+	private void translateMachine() throws CoreException,
 			TranslationFailedException {
 		model.setName(new TIdentifierLiteral(machine.getRodinFile()
 				.getBareName()));
@@ -253,7 +267,7 @@ public class ModelTranslator extends AbstractComponentTranslator {
 		model.setModelClauses(clauses);
 	}
 
-	private AVariantModelClause processVariant() throws RodinDBException,
+	private AVariantModelClause processVariant() throws CoreException,
 			TranslationFailedException {
 		final ISCVariant[] variant = machine.getSCVariants();
 		final AVariantModelClause var;
@@ -270,7 +284,7 @@ public class ModelTranslator extends AbstractComponentTranslator {
 		return var;
 	}
 
-	private ARefinesModelClause processRefines() throws RodinDBException,
+	private ARefinesModelClause processRefines() throws CoreException,
 			TranslationFailedException {
 		final ISCRefinesMachine[] refinesClauses = machine
 				.getSCRefinesClauses();
@@ -303,7 +317,7 @@ public class ModelTranslator extends AbstractComponentTranslator {
 	}
 
 	private AEventsModelClause processEvents()
-			throws TranslationFailedException, RodinDBException {
+			throws TranslationFailedException, CoreException {
 		final AEventsModelClause clause = new AEventsModelClause();
 		final ISCEvent[] events = machine.getSCEvents();
 		final List<PEvent> eventsList = new ArrayList<PEvent>(events.length);
@@ -311,13 +325,13 @@ public class ModelTranslator extends AbstractComponentTranslator {
 
 			broken = broken || !revent.isAccurate();
 
-			ITypeEnvironment localEnv = revent.getTypeEnvironment(te, ff);
+			ITypeEnvironmentBuilder localEnv = revent.getTypeEnvironment(te);
 			localEnv.addAll(te);
 
 			ISCVariable[] variables = machine.getSCVariables();
 			for (ISCVariable variable : variables) {
 				if (variable.isAbstract() || variable.isConcrete()) {
-					localEnv.add(variable.getIdentifier(ff).withPrime(ff));
+					localEnv.add(variable.getIdentifier(ff).withPrime());
 				}
 			}
 
@@ -344,7 +358,7 @@ public class ModelTranslator extends AbstractComponentTranslator {
 	}
 
 	private PEventstatus extractEventStatus(final ISCEvent revent)
-			throws TranslationFailedException, RodinDBException {
+			throws TranslationFailedException, CoreException {
 		Convergence convergence = revent.getConvergence();
 		PEventstatus status;
 		switch (convergence) {
@@ -365,7 +379,7 @@ public class ModelTranslator extends AbstractComponentTranslator {
 	}
 
 	private List<TIdentifierLiteral> extractRefinedEvents(final ISCEvent revent)
-			throws RodinDBException {
+			throws CoreException {
 		final ISCRefinesEvent[] refinesClauses = revent.getSCRefinesClauses();
 		final List<TIdentifierLiteral> refines = new ArrayList<TIdentifierLiteral>(
 				refinesClauses.length);
@@ -393,7 +407,7 @@ public class ModelTranslator extends AbstractComponentTranslator {
 
 	private void extractGuards(final ISCEvent revent,
 			final ITypeEnvironment localEnv, final List<PPredicate> guardsList,
-			final List<PPredicate> theoremsList) throws RodinDBException {
+			final List<PPredicate> theoremsList) throws CoreException {
 		final ISCGuard[] guards = revent.getSCGuards();
 		for (final ISCGuard guard : guards) {
 			final PPredicate predicate = translatePredicate(ff, localEnv, guard);
@@ -426,7 +440,7 @@ public class ModelTranslator extends AbstractComponentTranslator {
 	}
 
 	private List<PWitness> extractWitnesses(final ISCEvent revent,
-			final ITypeEnvironment localEnv) throws RodinDBException {
+			final ITypeEnvironment localEnv) throws CoreException {
 		final ISCWitness[] witnesses = revent.getSCWitnesses();
 		final List<PWitness> witnessList = new ArrayList<PWitness>(
 				witnesses.length);
@@ -442,27 +456,29 @@ public class ModelTranslator extends AbstractComponentTranslator {
 	}
 
 	private List<PSubstitution> extractActions(final ISCEvent revent,
-			final ITypeEnvironment localEnv) throws RodinDBException {
+			final ITypeEnvironment localEnv) throws CoreException {
 		final ISCAction[] actions = revent.getSCActions();
 		final List<PSubstitution> actionList = new ArrayList<PSubstitution>();
 		for (final ISCAction action : actions) {
-			final AssignmentVisitor visitor = new AssignmentVisitor();
-			action.getAssignment(ff, localEnv).accept(visitor);
-			final PSubstitution substitution = visitor.getSubstitution();
+			final Assignment assignment = action.getAssignment(localEnv);
+			final PSubstitution substitution = TranslationVisitor
+					.translateAssignment(assignment);
 			actionList.add(substitution);
 			labelMapping.put(substitution, action);
 		}
 		return actionList;
 	}
 
-	private AInvariantModelClause processInvariants() throws RodinDBException {
+	private AInvariantModelClause processInvariants() throws CoreException,
+			TranslationFailedException {
 		final AInvariantModelClause invariantModelClause = new AInvariantModelClause();
 		invariantModelClause.setPredicates(getPredicateList(
 				machine.getSCInvariants(), false));
 		return invariantModelClause;
 	}
 
-	private ATheoremsModelClause processTheorems() throws RodinDBException {
+	private ATheoremsModelClause processTheorems() throws CoreException,
+			TranslationFailedException {
 		final ATheoremsModelClause theoremsModelClause = new ATheoremsModelClause();
 		theoremsModelClause.setPredicates(getPredicateList(
 				machine.getSCInvariants(), true));
@@ -482,9 +498,11 @@ public class ModelTranslator extends AbstractComponentTranslator {
 	 *            false, if all theorems shall be filtered out
 	 * @return
 	 * @throws RodinDBException
+	 * @throws TranslationFailedException
 	 */
 	private List<PPredicate> getPredicateList(final ISCInvariant[] predicates,
-			final boolean theorems) throws RodinDBException {
+			final boolean theorems) throws CoreException,
+			TranslationFailedException {
 		final List<PPredicate> list = new ArrayList<PPredicate>(
 				predicates.length);
 		for (final ISCInvariant evPredicate : predicates) {
@@ -494,7 +512,7 @@ public class ModelTranslator extends AbstractComponentTranslator {
 			}
 			// only use predicates that are defined in the current refinement
 			// level, not in an abstract machine
-			if (!isDefinedInAbstraction(evPredicate)) {
+			if (isDefinedHere(evPredicate)) {
 				final PPredicate predicate = translatePredicate(ff, te,
 						evPredicate);
 				list.add(predicate);
@@ -504,28 +522,19 @@ public class ModelTranslator extends AbstractComponentTranslator {
 		return list;
 	}
 
-	private boolean isDefinedInAbstraction(final ITraceableElement element)
-			throws RodinDBException {
+	private boolean isDefinedHere(final ITraceableElement element)
+			throws CoreException, TranslationFailedException {
 		final IRodinElement parentsource = element.getSource().getParent();
 		final boolean result;
+		final String currentName = machine.getComponentName();
 
 		if (parentsource instanceof IMachineRoot) {
-			IMachineRoot src = (IMachineRoot) parentsource;
-
-			// do a finer level check
-			String srcName = src.getRodinFile().getBareName();
-
-			// is the source one of the refined machines?
-			for (IRodinFile abstr : machine.getAbstractSCMachines())
-				if (abstr.getBareName().equals(srcName))
-					return true;
-
-			result = false;
-
-			// result = !machine.getRodinFile().getBareName()
-			// .equals(src.getRodinFile().getBareName());
+			final IMachineRoot src = (IMachineRoot) parentsource;
+			final String srcName = src.getRodinFile().getBareName();
+			result = currentName.equals(srcName);
 		} else {
-			result = false;
+			throw new TranslationFailedException("Machine " + currentName,
+					"Source of invariant is not a machine");
 		}
 		return result;
 	}

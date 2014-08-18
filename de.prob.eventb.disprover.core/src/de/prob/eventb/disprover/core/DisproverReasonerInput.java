@@ -1,6 +1,9 @@
 package de.prob.eventb.disprover.core;
 
+import org.eventb.core.ast.FormulaFactory;
+import org.eventb.core.ast.ITypeEnvironment;
 import org.eventb.core.seqprover.IReasonerInput;
+import org.eventb.core.seqprover.ITranslatableReasonerInput;
 import org.eventb.core.seqprover.proofBuilder.ReplayHints;
 
 /**
@@ -11,7 +14,8 @@ import org.eventb.core.seqprover.proofBuilder.ReplayHints;
  * 
  * @author jastram
  */
-public class DisproverReasonerInput implements IReasonerInput {
+public class DisproverReasonerInput implements IReasonerInput,
+		ITranslatableReasonerInput {
 	@Override
 	public void applyHints(ReplayHints renaming) {
 		// TODO Auto-generated method stub
@@ -27,6 +31,18 @@ public class DisproverReasonerInput implements IReasonerInput {
 	public boolean hasError() {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	@Override
+	public ITypeEnvironment getTypeEnvironment(FormulaFactory arg0) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public IReasonerInput translate(FormulaFactory arg0) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

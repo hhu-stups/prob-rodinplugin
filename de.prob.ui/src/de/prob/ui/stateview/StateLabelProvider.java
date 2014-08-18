@@ -4,14 +4,11 @@
 package de.prob.ui.stateview;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.Display;
 
 import de.prob.core.domainobjects.State;
-import de.prob.ui.stateview.statetree.EStateTreeElementProperty;
-import de.prob.ui.stateview.statetree.StateDependendElement;
-import de.prob.ui.stateview.statetree.StaticStateElement;
+import de.prob.ui.stateview.statetree.*;
 
 /**
  * A StateLabelProvider defines some properties of an entry in a table (like
@@ -40,7 +37,7 @@ public class StateLabelProvider {
 		return null;
 	}
 
-	public Color getForeground(final State state,
+	public Color getForeground(final State state, final boolean hasChanged,
 			final StaticStateElement element) {
 		final EStateTreeElementProperty property = getPropertyValue(state,
 				element);
@@ -57,7 +54,19 @@ public class StateLabelProvider {
 				colorcst = SWT.COLOR_GRAY;
 				break;
 			case NONBOOLEAN:
-				colorcst = SWT.COLOR_BLACK;
+				if ("TRUE".equals(element.getValue(state).getValue())) {
+					colorcst = SWT.COLOR_DARK_GREEN;
+					break;
+				}
+				if ("FALSE".equals(element.getValue(state).getValue())) {
+					colorcst = SWT.COLOR_RED;
+					break;
+				}
+				if (hasChanged) {
+					colorcst = SWT.COLOR_BLUE;
+				} else {
+					colorcst = SWT.COLOR_BLACK;
+				}
 				break;
 			case ERROR:
 				colorcst = SWT.COLOR_MAGENTA;

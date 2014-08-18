@@ -6,37 +6,31 @@
 
 package de.prob.ui.eventb;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.*;
 import org.eclipse.core.runtime.jobs.Job;
 
 import de.prob.core.Animator;
-import de.prob.core.command.ConsistencyCheckingCommand;
-import de.prob.core.command.ConsistencyCheckingSearchOption;
-import de.prob.core.command.SetPreferenceCommand;
-import de.prob.core.command.ConsistencyCheckingCommand.Result;
+import de.prob.core.command.*;
+import de.prob.core.command.ModelCheckingCommand.Result;
 import de.prob.exceptions.ProBException;
 
-public class ConsistencyCheckingJob extends Job {
+public class ModelCheckingJob extends Job {
 
 	private final Animator animator = Animator.getAnimator();
 	private boolean abort = false;
 	private final List<String> options;
 	private final String symmetryOption;
-	private Result modelCheckingResult = null;
+	private ModelCheckingResult<Result> modelCheckingResult = null;
+	private int workedSoFar = 0;
 
-	public ConsistencyCheckingJob(final String name,
-			final Set<ConsistencyCheckingSearchOption> options,
+	public ModelCheckingJob(final String name,
+			final Set<ModelCheckingSearchOption> options,
 			final String symmetryOption) {
 		super(name);
 		List<String> optlist = new ArrayList<String>();
-		for (ConsistencyCheckingSearchOption modelCheckingOption : options) {
+		for (ModelCheckingSearchOption modelCheckingOption : options) {
 			optlist.add(modelCheckingOption.name());
 		}
 		this.options = optlist;
@@ -44,7 +38,7 @@ public class ConsistencyCheckingJob extends Job {
 	}
 
 	public Result getModelCheckingResult() {
-		return modelCheckingResult;
+		return modelCheckingResult.getResult();
 	}
 
 	@Override
@@ -53,16 +47,28 @@ public class ConsistencyCheckingJob extends Job {
 			return Status.CANCEL_STATUS;
 		}
 
-		monitor.beginTask("Model checking", IProgressMonitor.UNKNOWN);
+		monitor.beginTask("Model Checking", 1000);
 		while (!abort) {
 			try {
 				modelCheckingResult = doSomeModelchecking();
 				options.remove("inspect_existing_nodes");
-				monitor.worked(500);
+
+				monitor.setTaskName("Model Checking - States: "
+						+ modelCheckingResult.getNumStates()
+						+ " (processed "
+						+ modelCheckingResult.getProcessedTotal()
+						+ ") - Transitions: "
+						+ modelCheckingResult.getNumTransitions());
+
+				int difference = modelCheckingResult.getWorked() - workedSoFar;
+				if (difference > 0) {
+					monitor.worked(difference);
+					workedSoFar = modelCheckingResult.getWorked();
+				}
 			} catch (ProBException e) {
 				return Status.CANCEL_STATUS; // Failed
 			}
-			abort = modelCheckingResult.isAbort() || monitor.isCanceled();
+			abort = getModelCheckingResult().isAbort() || monitor.isCanceled();
 		}
 		return Status.OK_STATUS;
 	}
@@ -77,9 +83,9 @@ public class ConsistencyCheckingJob extends Job {
 		return true;
 	}
 
-	private Result doSomeModelchecking() throws ProBException {
-		return ConsistencyCheckingCommand.modelcheck(animator, 500, options)
-				.getResult();
+	private ModelCheckingResult<Result> doSomeModelchecking()
+			throws ProBException {
+		return ModelCheckingCommand.modelcheck(animator, 500, options);
 	}
 
 }

@@ -6,34 +6,42 @@
 
 package de.bmotionstudio.rodin;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
-import org.rodinp.core.IRodinProject;
-import org.rodinp.core.RodinCore;
-import org.rodinp.core.RodinDBException;
 
 
 public class BMotionStudioContentProvider implements ITreeContentProvider {
 
 	public Object[] getChildren(final Object parentElement) {
 
+		List<Object> res = new ArrayList<Object>();
+
 		if (parentElement instanceof IProject) {
 
 			final IProject project = (IProject) parentElement;
 
-			// if it is a RodinProject return the IRodinProject from the DB.
-			final IRodinProject proj = RodinCore.valueOf(project);
-			if (proj.exists()) {
+			if (project.exists()) {
 
 				try {
-					return proj
-							.getRootElementsOfType(IBMotionSurfaceRoot.ELEMENT_TYPE);
-				} catch (final RodinDBException e) {
+					for (IResource rs : project.members()) {
+						if (rs.getFileExtension() != null
+								&& rs.getFileExtension().equals("bmso")) {
+							res.add(new BMotionStudioRodinFile(rs));
+						}
+
+					}
+				} catch (CoreException e) {
 					e.printStackTrace();
 				}
-
 			}
+
+			return res.toArray(new BMotionStudioRodinFile[res.size()]);
 
 		}
 

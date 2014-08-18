@@ -1,27 +1,21 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="prob_target" sequenceNumber="20">
+<?pde version="3.8"?><target name="prob_target" sequenceNumber="32">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
-<unit id="org.eventb.ide.feature.group" version="2.7.0.r15250"/>
-<unit id="fr.systerel.editor.feature.group" version="0.6.4.r15250"/>
-<unit id="org.rodinp.feature.group" version="1.6.0.r15250"/>
-<unit id="org.rodinp.platform.product" version="2.7.0.r15250"/>
-<unit id="org.rodinp.platform.feature.group" version="2.7.0.r15250"/>
-<unit id="org.rodinp.platform.product.root.feature.feature.group" version="2.7.0.r15250"/>
-<repository location="http://rodin-b-sharp.sourceforge.net/core-updates"/>
+<unit id="org.eclipse.gef" version="0.0.0"/>
+<repository location="http://download.eclipse.org/tools/gef/updates/releases"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
-<unit id="ac.soton.eventb.emf.core.extension.feature.feature.group" version="1.3.0.201206030057"/>
-<unit id="org.eventb.emf.feature.feature.group" version="3.7.0.201204300914"/>
-<repository location="http://rodin-b-sharp.sourceforge.net/updates"/>
+<repository location="http://rodin-b-sharp.sourceforge.net/updates/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
-<unit id="org.eventb.theory.feature.feature.group" version="2.0.0"/>
-<repository location="http://www.stups.uni-duesseldorf.de/ProB/buildlibs/theory/"/>
-</location>
-<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
-<unit id="epp.package.java" version="1.4.2.20120213-0813"/>
-<repository location="http://download.eclipse.org/releases/indigo/"/>
+<unit id="org.eventb.ide.feature.group" version="3.0.1.201406111447-5326174"/>
+<unit id="fr.systerel.editor.feature.group" version="0.7.0.201406111447-5326174"/>
+<unit id="org.rodinp.feature.group" version="1.7.0.201406111447-5326174"/>
+<unit id="org.rodinp.platform.feature.group" version="3.0.0.201406111447-5326174"/>
+<unit id="org.rodinp.platform.tests.feature.group" version="3.0.0.201406111447-5326174"/>
+<unit id="org.rodinp.platform.sources.feature.group" version="3.0.0.201406111447-5326174"/>
+<repository location="http://www.stups.uni-duesseldorf.de/ProB/buildlibs/rodin/"/>
 </location>
 </locations>
 </target>

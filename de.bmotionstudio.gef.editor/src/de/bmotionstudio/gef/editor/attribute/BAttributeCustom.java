@@ -22,7 +22,7 @@ public class BAttributeCustom extends AbstractAttribute {
 
 	@Override
 	public String getName() {
-		return "a2:This";
+		return "a2:this";
 	}
 
 }

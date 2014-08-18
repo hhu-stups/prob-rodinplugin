@@ -8,11 +8,11 @@ package de.prob.eventb.translator;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eventb.core.ISCExpressionElement;
 import org.eventb.core.ISCIdentifierElement;
 import org.eventb.core.ISCPredicateElement;
@@ -41,7 +41,6 @@ public abstract class AbstractComponentTranslator {
 		return Collections.unmodifiableMap(labelMapping);
 	}
 
-	private boolean theoryIsUsed = false;
 	private final List<IPragma> pragmas = new ArrayList<IPragma>();
 	private final List<ProofObligation> proofs = new ArrayList<ProofObligation>();
 	private final String resourceName;
@@ -90,30 +89,16 @@ public abstract class AbstractComponentTranslator {
 
 	protected PPredicate translatePredicate(FormulaFactory ff,
 			final ITypeEnvironment env, final ISCPredicateElement predicate)
-			throws RodinDBException {
-		final PredicateVisitor visitor = new PredicateVisitor(
-				new LinkedList<String>());
-		final Predicate pred = predicate.getPredicate(ff, env);
-		pred.accept(visitor);
-		final PPredicate result = visitor.getPredicate();
-		theoryIsUsed |= TranslationVisitor.checkNewImplementation(pred, result);
-		return result;
+			throws CoreException {
+		final Predicate pred = predicate.getPredicate(env);
+		return TranslationVisitor.translatePredicate(pred);
 	}
 
 	protected PExpression translateExpression(FormulaFactory ff,
 			final ITypeEnvironment env, final ISCExpressionElement expression)
-			throws RodinDBException {
-		final ExpressionVisitor visitor = new ExpressionVisitor(
-				new LinkedList<String>());
-		final Expression expr = expression.getExpression(ff, env);
-		expr.accept(visitor);
-		final PExpression result = visitor.getExpression();
-		theoryIsUsed |= TranslationVisitor.checkNewImplementation(expr, result);
-		return result;
-	}
-
-	public boolean isTheoryUsed() {
-		return theoryIsUsed;
+			throws CoreException {
+		final Expression expr = expression.getExpression(env);
+		return TranslationVisitor.translateExpression(expr);
 	}
 
 	abstract public Node getAST();

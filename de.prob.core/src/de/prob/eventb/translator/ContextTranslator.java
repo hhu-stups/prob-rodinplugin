@@ -13,7 +13,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.CoreException;
 import org.eventb.core.IContextRoot;
 import org.eventb.core.IEventBRoot;
 import org.eventb.core.IExtendsContext;
@@ -61,6 +63,7 @@ import de.prob.core.translator.TranslationFailedException;
 import de.prob.eventb.translator.internal.EProofStatus;
 import de.prob.eventb.translator.internal.ProofObligation;
 import de.prob.eventb.translator.internal.SequentSource;
+import de.prob.logging.Logger;
 
 public final class ContextTranslator extends AbstractComponentTranslator {
 
@@ -79,12 +82,12 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 		try {
 			assertConsistentModel(context);
 			final FormulaFactory ff = context.getFormulaFactory();
-			final ITypeEnvironment te = context.getTypeEnvironment(ff);
+			final ITypeEnvironment te = context.getTypeEnvironment();
 			final ContextTranslator translator = new ContextTranslator(context,
 					ff, te, context);
 			translator.translate();
 			return translator;
-		} catch (RodinDBException e) {
+		} catch (CoreException e) {
 			throw createTranslationFailedException(context, e);
 		}
 	}
@@ -98,7 +101,7 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 		try {
 			assertConsistentModel(context.getRoot());
 			translator.translate();
-		} catch (RodinDBException e) {
+		} catch (CoreException e) {
 			throw createTranslationFailedException(context, e);
 		}
 		return translator;
@@ -124,7 +127,7 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 	}
 
 	private static TranslationFailedException createTranslationFailedException(
-			final ISCContext context, RodinDBException e)
+			final ISCContext context, CoreException e)
 			throws TranslationFailedException {
 		final String message = "A Rodin exception occured during translation process. Possible cause: building aborted or still in progress. Please wait until building has finished before starting ProB. If this does not help, perform a clean and start ProB after building has finished. Original Exception: ";
 		return new TranslationFailedException(context.getComponentName(),
@@ -162,7 +165,7 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 		this.root = root;
 	}
 
-	private void translate() throws RodinDBException {
+	private void translate() throws CoreException {
 		translateContext();
 		collectProofInfo();
 		collectPragmas();
@@ -180,47 +183,57 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 	}
 
 	private void collectProofInfo(IEventBRoot origin) throws RodinDBException {
-
-		IPSRoot proofStatus = origin.getPSRoot();
-		IPSStatus[] statuses = proofStatus.getStatuses();
-
 		List<String> bugs = new LinkedList<String>();
 
-		for (IPSStatus status : statuses) {
-			final int confidence = status.getConfidence();
-			boolean broken = status.isBroken();
+		try {
+			IPSRoot proofStatus = origin.getPSRoot();
+			IPSStatus[] statuses = proofStatus.getStatuses();
 
-			EProofStatus pstatus = EProofStatus.UNPROVEN;
+			for (IPSStatus status : statuses) {
+				final int confidence = status.getConfidence();
+				boolean broken = status.isBroken();
 
-			if (!broken && confidence == IConfidence.REVIEWED_MAX)
-				pstatus = EProofStatus.REVIEWED;
-			if (!broken && confidence == IConfidence.DISCHARGED_MAX)
-				pstatus = EProofStatus.PROVEN;
+				EProofStatus pstatus = EProofStatus.UNPROVEN;
 
-			IPOSequent sequent = status.getPOSequent();
-			IPOSource[] sources = sequent.getSources();
+				if (!broken && confidence == IConfidence.REVIEWED_MAX)
+					pstatus = EProofStatus.REVIEWED;
+				if (!broken && confidence == IConfidence.DISCHARGED_MAX)
+					pstatus = EProofStatus.PROVEN;
 
-			String name = sequent.getDescription();
+				IPOSequent sequent = status.getPOSequent();
+				IPOSource[] sources = sequent.getSources();
 
-			ArrayList<SequentSource> s = new ArrayList<SequentSource>(
-					sources.length);
-			for (IPOSource source : sources) {
+				String name = sequent.getDescription();
 
-				IRodinElement srcElement = source.getSource();
-				if (!srcElement.exists()
-						|| !(srcElement instanceof ILabeledElement)) {
-					bugs.add(status.getElementName());
-					break;
+				ArrayList<SequentSource> s = new ArrayList<SequentSource>(
+						sources.length);
+				for (IPOSource source : sources) {
+
+					IRodinElement srcElement = source.getSource();
+					if (!srcElement.exists()
+							|| !(srcElement instanceof ILabeledElement)) {
+						bugs.add(status.getElementName());
+						break;
+					}
+
+					ILabeledElement le = (ILabeledElement) srcElement;
+
+					s.add(new SequentSource(srcElement.getElementType(), le
+							.getLabel()));
+
 				}
-
-				ILabeledElement le = (ILabeledElement) srcElement;
-
-				s.add(new SequentSource(srcElement.getElementType(), le
-						.getLabel()));
-
+				addProof(new ProofObligation(origin, s, name, pstatus));
 			}
-			addProof(new ProofObligation(origin, s, name, pstatus));
+		} catch (RodinDBException e) {
+			bugs.add(e.getLocalizedMessage());
 		}
+		
+		if (!bugs.isEmpty()) {
+			String message = "Translation incomplete due to a Bug in Rodin. This does not affect correctness of the Animation/Model Checking but can decrease its performance. Skipped discharged information about: "
+					+ StringUtils.join(bugs, ",");
+			Logger.notifyUser(message);
+		}
+
 
 	}
 
@@ -232,7 +245,7 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 		return depContext;
 	}
 
-	private void translateContext() throws RodinDBException {
+	private void translateContext() throws CoreException {
 		model.setName(new TIdentifierLiteral(context.getComponentName()));
 
 		final List<PContextClause> clauses = new ArrayList<PContextClause>();
@@ -244,7 +257,7 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 		model.setContextClauses(clauses);
 	}
 
-	private AExtendsContextClause processExtends() throws RodinDBException {
+	private AExtendsContextClause processExtends() throws CoreException {
 
 		if (context instanceof ISCContextRoot)
 			return processExtendsForContextRoot();
@@ -293,7 +306,7 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 	}
 
 	private AExtendsContextClause processExtendsForContextRoot()
-			throws RodinDBException {
+			throws CoreException {
 		ISCExtendsContext[] extendsClauses = null;
 		ISCContextRoot rcontext = (ISCContextRoot) context;
 
@@ -371,14 +384,14 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 		return Arrays.asList(constantsContextClause, abstractConstantsClause);
 	}
 
-	private ATheoremsContextClause processTheorems() throws RodinDBException {
+	private ATheoremsContextClause processTheorems() throws CoreException {
 		final ISCAxiom[] axioms = context.getSCAxioms();
 		final ATheoremsContextClause theoremsContextClause = new ATheoremsContextClause();
 		theoremsContextClause.setPredicates(extractPredicates(axioms, true));
 		return theoremsContextClause;
 	}
 
-	private AAxiomsContextClause processAxioms() throws RodinDBException {
+	private AAxiomsContextClause processAxioms() throws CoreException {
 		final ISCAxiom[] axioms = context.getSCAxioms();
 		final AAxiomsContextClause axiomsContextClause = new AAxiomsContextClause();
 		axiomsContextClause.setPredicates(extractPredicates(axioms, false));
@@ -386,7 +399,7 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 	}
 
 	private List<PPredicate> extractPredicates(final ISCAxiom[] predicates,
-			final boolean theorems) throws RodinDBException {
+			final boolean theorems) throws CoreException {
 		final List<PPredicate> list = new ArrayList<PPredicate>(
 				predicates.length);
 		for (final ISCAxiom element : predicates) {

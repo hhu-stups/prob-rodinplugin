@@ -5,11 +5,11 @@ package de.prob.core.langdep;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang.ObjectUtils;
+import org.eclipse.core.runtime.CoreException;
 import org.eventb.core.IContextRoot;
 import org.eventb.core.IEventBRoot;
 import org.eventb.core.IMachineRoot;
@@ -26,7 +26,7 @@ import org.eventb.core.ast.FormulaFactory;
 import org.eventb.core.ast.IParseResult;
 import org.eventb.core.ast.ITypeCheckResult;
 import org.eventb.core.ast.ITypeEnvironment;
-import org.eventb.core.ast.LanguageVersion;
+import org.eventb.core.ast.ITypeEnvironmentBuilder;
 import org.eventb.core.ast.Predicate;
 import org.eventb.core.ast.Type;
 import org.rodinp.core.IRodinFile;
@@ -34,12 +34,13 @@ import org.rodinp.core.RodinDBException;
 
 import de.be4.classicalb.core.parser.analysis.prolog.ASTProlog;
 import de.be4.classicalb.core.parser.node.Node;
+import de.be4.classicalb.core.parser.node.PExpression;
+import de.be4.classicalb.core.parser.node.PPredicate;
 import de.prob.core.Animator;
 import de.prob.core.LanguageDependendAnimationPart;
 import de.prob.core.command.LoadEventBModelCommand;
-import de.prob.eventb.translator.ExpressionVisitor;
 import de.prob.eventb.translator.FormulaTranslator;
-import de.prob.eventb.translator.PredicateVisitor;
+import de.prob.eventb.translator.internal.TranslationVisitor;
 import de.prob.exceptions.ProBException;
 import de.prob.parserbase.ProBParseException;
 import de.prob.prolog.output.IPrologTermOutput;
@@ -63,32 +64,30 @@ public class EventBAnimatorPart implements LanguageDependendAnimationPart {
 			final String expression1, final boolean wrap)
 			throws ProBParseException {
 		final String expression = FormulaTranslator.translate(expression1);
-		final FormulaFactory ff = FormulaFactory.getDefault();
-		final IParseResult parseResult = ff.parseExpression(expression,
-				LanguageVersion.LATEST, null);
+
+		final FormulaFactory ff = root.getFormulaFactory();
+		final IParseResult parseResult = ff.parseExpression(expression, null);
+
 		checkParseResult(parseResult);
 		final Expression ee = parseResult.getParsedExpression();
 		typeCheck(ff, ee);
-		final ExpressionVisitor visitor = new ExpressionVisitor(
-				new LinkedList<String>());
-		ee.accept(visitor);
-		toPrologTerm(pto, visitor.getExpression(), wrap, EXPR_WRAPPER);
+		final PExpression expr = TranslationVisitor.translateExpression(ee);
+		toPrologTerm(pto, expr, wrap, EXPR_WRAPPER);
 	}
 
 	public void parsePredicate(final IPrologTermOutput pto,
 			final String predicate1, final boolean wrap)
 			throws ProBParseException {
 		final String predicate = FormulaTranslator.translate(predicate1);
-		final FormulaFactory ff = FormulaFactory.getDefault();
-		final IParseResult parseResult = ff.parsePredicate(predicate,
-				LanguageVersion.LATEST, null);
+
+		final FormulaFactory ff = root.getFormulaFactory();
+		final IParseResult parseResult = ff.parsePredicate(predicate, null);
+
 		checkParseResult(parseResult);
 		final Predicate pp = parseResult.getParsedPredicate();
 		typeCheck(ff, pp);
-		final PredicateVisitor visitor = new PredicateVisitor(
-				new LinkedList<String>());
-		pp.accept(visitor);
-		toPrologTerm(pto, visitor.getPredicate(), wrap, PRED_WRAPPER);
+		final PPredicate apred = TranslationVisitor.translatePredicate(pp);
+		toPrologTerm(pto, apred, wrap, PRED_WRAPPER);
 	}
 
 	private void toPrologTerm(final IPrologTermOutput pto,
@@ -131,15 +130,15 @@ public class EventBAnimatorPart implements LanguageDependendAnimationPart {
 
 		try {
 			if (root instanceof IMachineRoot)
-				typeEnv = root.getSCMachineRoot().getTypeEnvironment(ff);
+				typeEnv = root.getSCMachineRoot().getTypeEnvironment();
 			if (root instanceof ISCMachineRoot)
-				typeEnv = root.getSCMachineRoot().getTypeEnvironment(ff);
+				typeEnv = root.getSCMachineRoot().getTypeEnvironment();
 			if (root instanceof IContextRoot)
-				typeEnv = root.getSCContextRoot().getTypeEnvironment(ff);
+				typeEnv = root.getSCContextRoot().getTypeEnvironment();
 			if (root instanceof ISCContextRoot)
-				typeEnv = root.getSCContextRoot().getTypeEnvironment(ff);
+				typeEnv = root.getSCContextRoot().getTypeEnvironment();
 
-		} catch (RodinDBException e) {
+		} catch (CoreException e) {
 			throw rodin2parseException(e);
 		}
 		return typeEnv;
@@ -200,12 +199,16 @@ public class EventBAnimatorPart implements LanguageDependendAnimationPart {
 	private Predicate parseTransPredicate(final String predicateString,
 			final ISCEvent event) throws ProBParseException {
 		final String utf8String = FormulaTranslator.translate(predicateString);
-		final FormulaFactory ff = FormulaFactory.getDefault();
-		final IParseResult parseResult = ff.parsePredicate(utf8String,
-				LanguageVersion.LATEST, null);
+
+		final FormulaFactory ff = root.getFormulaFactory();
+		final IParseResult parseResult = ff.parsePredicate(utf8String, null);
+
 		checkParseResult(parseResult);
 		final Predicate predicate = parseResult.getParsedPredicate();
-		final ITypeEnvironment typeEnv = getTypeEnvironment(ff).clone();
+
+		final ITypeEnvironmentBuilder typeEnv = ff.makeTypeEnvironment();
+		typeEnv.addAll(getTypeEnvironment(ff));
+
 		addEventParameters(event, ff, typeEnv, new ArrayList<String>());
 		final ISCMachineRoot machine = ((IMachineRoot) root).getSCMachineRoot();
 		addPostStateVariables(machine, ff, typeEnv, new ArrayList<String>());
@@ -214,7 +217,7 @@ public class EventBAnimatorPart implements LanguageDependendAnimationPart {
 	}
 
 	private void addPostStateVariables(final ISCMachineRoot machine,
-			final FormulaFactory ff, final ITypeEnvironment typeEnv,
+			final FormulaFactory ff, final ITypeEnvironmentBuilder typeEnv,
 			final ArrayList<String> allVariables) throws ProBParseException {
 		try {
 			final ISCVariable[] variables = machine.getSCVariables();
@@ -224,13 +227,13 @@ public class EventBAnimatorPart implements LanguageDependendAnimationPart {
 						.getRoot();
 				addPostStateVariables(absMachine, ff, typeEnv, allVariables);
 			}
-		} catch (RodinDBException e) {
+		} catch (CoreException e) {
 			throw rodin2parseException(e);
 		}
 	}
 
 	private void addEventParameters(final ISCEvent event,
-			final FormulaFactory ff, final ITypeEnvironment typeEnv,
+			final FormulaFactory ff, final ITypeEnvironmentBuilder typeEnv,
 			final Collection<String> allParameters) throws ProBParseException {
 		try {
 			ISCParameter[] params = event.getSCParameters();
@@ -240,16 +243,16 @@ public class EventBAnimatorPart implements LanguageDependendAnimationPart {
 			// for (final ISCEvent absEvent : event.getAbstractSCEvents()) {
 			// addEventParameters(absEvent, ff, typeEnv, allParameters);
 			// }
-		} catch (RodinDBException e) {
+		} catch (CoreException e) {
 			throw rodin2parseException(e);
 		}
 	}
 
 	private void addAllIdentifiers(final FormulaFactory ff,
-			final ITypeEnvironment typeEnv,
+			final ITypeEnvironmentBuilder typeEnv,
 			final Collection<String> allParameters,
 			final ISCIdentifierElement[] ids, final String postfix)
-			throws RodinDBException {
+			throws CoreException {
 		for (final ISCIdentifierElement identifier : ids) {
 			final String name = identifier.getIdentifierString() + postfix;
 			if (!allParameters.contains(name)) {
@@ -260,7 +263,7 @@ public class EventBAnimatorPart implements LanguageDependendAnimationPart {
 		}
 	}
 
-	private ProBParseException rodin2parseException(final RodinDBException e) {
+	private ProBParseException rodin2parseException(final CoreException e) {
 		return new ProBParseException(
 				"Error in the underlying Rodin Database.\nTry cleaning your workspace.\n Details: "
 						+ e.getLocalizedMessage());
@@ -275,11 +278,10 @@ public class EventBAnimatorPart implements LanguageDependendAnimationPart {
 		pto.openTerm("event");
 		pto.printAtom(eventName);
 		if (predicate != null) {
-			final PredicateVisitor visitor = new PredicateVisitor(
-					new LinkedList<String>());
-			predicate.accept(visitor);
+			final PPredicate apred = TranslationVisitor
+					.translatePredicate(predicate);
 			final ASTProlog prolog = new ASTProlog(pto, null);
-			visitor.getPredicate().apply(prolog);
+			apred.apply(prolog);
 		}
 		pto.closeTerm();
 		if (wrap) {

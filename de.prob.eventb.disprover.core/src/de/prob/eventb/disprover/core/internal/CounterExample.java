@@ -1,7 +1,6 @@
 package de.prob.eventb.disprover.core.internal;
 
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.*;
 
 /**
  * This class wraps the results from a Disprover run. It either indicates that
@@ -17,11 +16,20 @@ class CounterExample implements ICounterExample {
 	public final SortedMap<String, String> state = new TreeMap<String, String>();
 	private final boolean timeoutOccured;
 	private boolean proof = false;
+	private boolean selectedHypotheses = false;
+	private String reason = "";
 
 	CounterExample(final boolean counterExampleFound,
-			final boolean timeoutOccured) {
+			final boolean timeoutOccured, final boolean selectedHypotheses) {
 		this.counterExampleFound = counterExampleFound;
 		this.timeoutOccured = timeoutOccured;
+		this.selectedHypotheses = selectedHypotheses;
+	}
+
+	CounterExample(final boolean counterExampleFound,
+			final boolean timeoutOccured, String reason) {
+		this(counterExampleFound, timeoutOccured, false);
+		this.reason = reason;
 	}
 
 	@Override
@@ -62,5 +70,15 @@ class CounterExample implements ICounterExample {
 	@Override
 	public boolean timeoutOccured() {
 		return timeoutOccured;
+	}
+
+	@Override
+	public String getReason() {
+		return reason;
+	}
+
+	@Override
+	public boolean onlySelectedHypotheses() {
+		return selectedHypotheses;
 	}
 }

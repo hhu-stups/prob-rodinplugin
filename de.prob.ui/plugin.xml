@@ -82,7 +82,7 @@
             category="de.hhu.stups.prob"
             class="de.prob.ui.ltl.CounterExampleViewPart"
             id="de.prob.ui.ltl.CounterExampleView"
-            name="Ltl Counter-Example"
+            name="LTL Counter-Example"
             restorable="true">
       </view>
    </extension>
@@ -179,8 +179,8 @@
       </command>
       <command
             categoryId="de.prob.ui.commands.category"
-            id="de.prob.ui.consistency_checking"
-            name="Consistencychecking">
+            id="de.prob.ui.model_checking"
+            name="Modelchecking">
       </command>
       
       <command
@@ -280,7 +280,7 @@
       <command
             id="de.prob.ui.stateview.toggleShowDuplicates"
             name="Toggle Show Duplicates">
-         <state class="org.eclipse.jface.commands.ToggleState"
+         <state class="org.eclipse.ui.handlers.RegistryToggleState:true"
             id="de.prob.ui.stateview.duplicateFilterState" />
       </command>
       <command
@@ -292,6 +292,10 @@
       <command
             id="de.prob.ui.show_parameter_dialog"
             name="Show Parameter Dialog">
+      </command>
+      <command
+            id="de.prob.ui.show_custom_precondition_dialog"
+            name="Execute with additional Guard">
       </command>
       <command
             categoryId="de.prob.ui.commands.category"
@@ -365,6 +369,11 @@
             id="de.prob.ui.assertion_check"
             name="Check Context Theorems">
       </command>
+      <command
+            categoryId="de.prob.ui.commands.category"
+            id="de.prob.ui.find_valid_state"
+            name="Find State satisfying Predicate">
+      </command>
    </extension>
    <extension
          point="org.eclipse.ui.handlers">
@@ -406,7 +415,7 @@
          </class>
       </handler>
       <handler
-            commandId="de.prob.ui.consistency_checking">
+            commandId="de.prob.ui.model_checking">
          <enabledWhen>
            <with variable="de.prob.core.model_loaded">
                   <equals
@@ -415,7 +424,7 @@
                </with>
          </enabledWhen>
          <class
-               class="de.prob.ui.eventb.ConsistencyCheckCommand">
+               class="de.prob.ui.eventb.ModelCheckCommand">
          </class>
       </handler>
       <handler
@@ -648,6 +657,12 @@
                class="de.prob.ui.operationview.ShowParameterDialogHandler">
          </class>
       </handler>
+            <handler
+            commandId="de.prob.ui.show_custom_precondition_dialog">
+         <class
+               class="de.prob.ui.operationview.CustomPreconditionDialogHandler">
+         </class>
+      </handler>
       <handler
             commandId="de.prob.ui.deadlock_check">
          <class class="de.prob.ui.deadlock.DeadlockCheckHandler"/>
@@ -672,7 +687,7 @@
       </handler>
       <handler
             commandId="de.prob.ui.opview.checks">
-            <class class="de.prob.ui.eventb.ConsistencyCheckCommand" />
+            <class class="de.prob.ui.eventb.ModelCheckCommand" />
                      <enabledWhen>
            <with variable="de.prob.core.model_loaded">
                   <equals
@@ -780,7 +795,7 @@
       <handler
             commandId="de.prob.ui.assertion_check">
          <enabledWhen>
-            <and>
+            <or>
                <with
                      variable="de.prob.core.model_loaded">
                   <equals
@@ -790,14 +805,28 @@
                <with
                      variable="de.prob.core.context_loaded">
                   <equals
-                        value="disabled">
+                        value="enabled">
                   </equals>
                </with>
-            </and>
+            </or>
          </enabledWhen>
          <class
                class="de.prob.ui.assertion.AssertionCheckHandler">
          </class>
+      </handler>
+      <handler
+            commandId="de.prob.ui.find_valid_state">
+         <class
+               class="de.prob.ui.findvalidstate.FindValidStateHandler">
+         </class>
+         <enabledWhen>
+            <with
+                  variable="de.prob.core.model_loaded">
+               <equals
+                     value="enabled">
+               </equals>
+            </with>
+         </enabledWhen>
       </handler>
 <!--      <handler
             commandId="de.prob.ui.startdmc">
@@ -1012,6 +1041,22 @@
          <separator
                name="de.prob.ui.separator2"
                visible="true">
+                           <visibleWhen>
+               <with
+                     variable="selection">
+                  <iterate
+                        operator="or">
+                     <or>
+                        <instanceof
+                              value="org.eventb.core.IMachineRoot">
+                        </instanceof>
+                        <instanceof
+                              value="org.eventb.core.IContextRoot">
+                        </instanceof>
+                     </or>
+                  </iterate>
+               </with>
+            </visibleWhen>
          </separator>
          <command
                commandId="de.prob.ui.starteventbanimation"
@@ -1023,9 +1068,14 @@
             variable="selection">
          <iterate
                operator="or">
-            <instanceof
-                  value="org.eventb.core.IEventBRoot">
-            </instanceof>
+            <or>
+               <instanceof
+                     value="org.eventb.core.IMachineRoot">
+               </instanceof>
+               <instanceof
+                     value="org.eventb.core.IContextRoot">
+               </instanceof>
+            </or>
          </iterate>
       </with>
             </visibleWhen>
@@ -1053,17 +1103,6 @@
                icon="icons/new_prob_mini.png"
                id="more_commands"
                label="ProB Classic ...">
-            <visibleWhen>
-               <with
-                     variable="selection">
-                  <iterate
-                        operator="or">
-                     <instanceof
-                           value="org.eventb.core.IEventBRoot">
-                     </instanceof>
-                  </iterate>
-               </with>
-            </visibleWhen>
             <command
                   commandId="de.prob.ui.newcore.export"
                   icon="icons/prob_mini_logo.gif"
@@ -1076,10 +1115,42 @@
                   label="Open in ProB classic"
                   style="push">
             </command>
+            <visibleWhen>
+               <with
+                     variable="selection">
+                  <iterate
+                        operator="or">
+                     <or>
+                        <instanceof
+                              value="org.eventb.core.IMachineRoot">
+                        </instanceof>
+                        <instanceof
+                              value="org.eventb.core.IContextRoot">
+                        </instanceof>
+                     </or>
+                  </iterate>
+               </with>
+            </visibleWhen>
          </menu>
          <separator
                name="de.prob.ui.separator1"
                visible="true">
+                           <visibleWhen>
+               <with
+                     variable="selection">
+                  <iterate
+                        operator="or">
+                     <or>
+                        <instanceof
+                              value="org.eventb.core.IMachineRoot">
+                        </instanceof>
+                        <instanceof
+                              value="org.eventb.core.IContextRoot">
+                        </instanceof>
+                     </or>
+                  </iterate>
+               </with>
+            </visibleWhen>
          </separator>
       </menuContribution>
       <menuContribution
@@ -1093,7 +1164,7 @@
       <menuContribution
             locationURI="menu:de.prob.ui.opview.checks">
          <command
-               commandId="de.prob.ui.consistency_checking"
+               commandId="de.prob.ui.model_checking"
                icon="icons/Consistency.png"
                label="Model Checking"
                mnemonic="C"
@@ -1134,6 +1205,13 @@
                   icon="icons/CBCInvariantCheck.png"
                   label="Context Theorems"
                   mnemonic="C"
+                  style="push">
+            </command>
+            <command
+                  commandId="de.prob.ui.find_valid_state"
+                  icon="icons/CBCInvariantCheck.png"
+                  label="Find State satisfying Predicate"
+                  mnemonic="f"
                   style="push">
             </command>
          </menu>

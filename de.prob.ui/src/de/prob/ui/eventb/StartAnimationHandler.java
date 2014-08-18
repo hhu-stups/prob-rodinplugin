@@ -36,7 +36,6 @@ import de.prob.exceptions.ProBException;
 import de.prob.logging.Logger;
 import de.prob.ui.PerspectiveFactory;
 import de.prob.ui.services.ContextLoadedProvider;
-import de.prob.ui.services.ModelLoadedProvider;
 
 public class StartAnimationHandler extends AbstractHandler implements IHandler {
 
@@ -148,10 +147,10 @@ public class StartAnimationHandler extends AbstractHandler implements IHandler {
 		}
 		return root;
 	}
-	
+
 	private void updateContextLoadedProvider(boolean isContext) {
-		ISourceProviderService service = (ISourceProviderService) 
-				PlatformUI.getWorkbench().getService(ISourceProviderService.class);
+		ISourceProviderService service = (ISourceProviderService) PlatformUI
+				.getWorkbench().getService(ISourceProviderService.class);
 		ContextLoadedProvider sourceProvider = (ContextLoadedProvider) service
 				.getSourceProvider(ContextLoadedProvider.SERVICE);
 		sourceProvider.setEnabled(isContext);

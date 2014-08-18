@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.zip.GZIPOutputStream;
 
 import org.apache.commons.codec.binary.Base64;
+import org.eclipse.core.runtime.CoreException;
 import org.eventb.core.IConvergenceElement.Convergence;
 import org.eventb.core.IEventBProject;
 import org.eventb.core.IEventBRoot;
@@ -34,7 +35,6 @@ import org.eventb.core.ISCWitness;
 import org.rodinp.core.IInternalElement;
 import org.rodinp.core.IInternalElementType;
 import org.rodinp.core.IRodinFile;
-import org.rodinp.core.RodinDBException;
 
 import com.thoughtworks.xstream.XStream;
 
@@ -125,7 +125,7 @@ public class EventBModelTranslator {
 				constants.add(new EventBConstant(iscConstant.getElementName()));
 			}
 			c.addConstants(constants);
-		} catch (RodinDBException e) {
+		} catch (CoreException e) {
 			e.printStackTrace();
 		}
 		contexts.put(c.getName(), c);
@@ -189,14 +189,14 @@ public class EventBModelTranslator {
 				events.add(extractEvent(iscEvent));
 			}
 			machine.addEvents(events);
-		} catch (RodinDBException e) {
+		} catch (CoreException e) {
 			e.printStackTrace();
 		}
 		machines.put(machine.getName(), machine);
 		return machine;
 	}
 
-	private Event extractEvent(final ISCEvent iscEvent) throws RodinDBException {
+	private Event extractEvent(final ISCEvent iscEvent) throws CoreException {
 		String name = iscEvent.getLabel();
 
 		int typeId = iscEvent.getConvergence().getCode();
@@ -273,10 +273,11 @@ public class EventBModelTranslator {
 	public File getModelFile() {
 		return modelFile;
 	}
-	
+
 	public String serialized() {
 		XStream xstream = new XStream();
-		String xml = xstream.toXML(new ModelObject(getMachines(), getContexts(), modelFile, mainComponent));
+		String xml = xstream.toXML(new ModelObject(getMachines(),
+				getContexts(), modelFile, mainComponent));
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		GZIPOutputStream gzip;
 		byte[] bytes;

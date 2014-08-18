@@ -113,12 +113,15 @@ public class AnimatorImpl {
 	}
 
 	public synchronized final ITrace getTraceImpl() {
-		if (connector instanceof ServerTraceConnection) {
+		final ITrace trace;
+		if (connector != null && connector instanceof ServerTraceConnection) {
 			ServerTraceConnection conn = (ServerTraceConnection) connector;
 			conn.preferenceToTrace("seed: " + getSeed().toString());
-			return conn.getTrace();
+			trace = conn.getTrace();
+		} else {
+			trace = null;
 		}
-		return null;
+		return trace;
 	}
 
 	public void setSeed(final RandomSeed seed) {
@@ -206,6 +209,8 @@ public class AnimatorImpl {
 	}
 
 	public void sendUserInterruptSignal() {
-		connector.sendUserInterruptSignal();
+		if (connector != null) {
+			connector.sendUserInterruptSignal();
+		}
 	}
 }

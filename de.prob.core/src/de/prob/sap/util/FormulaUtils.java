@@ -3,13 +3,11 @@
  */
 package de.prob.sap.util;
 
-import java.util.LinkedList;
-
 import org.eventb.core.ast.Predicate;
 
 import de.be4.classicalb.core.parser.analysis.prolog.ASTProlog;
 import de.be4.classicalb.core.parser.node.PPredicate;
-import de.prob.eventb.translator.PredicateVisitor;
+import de.prob.eventb.translator.internal.TranslationVisitor;
 import de.prob.prolog.output.IPrologTermOutput;
 
 /**
@@ -27,10 +25,8 @@ public final class FormulaUtils {
 	 */
 	static public void printPredicate(final Predicate predicate,
 			final IPrologTermOutput pto) {
-		final PredicateVisitor visitor = new PredicateVisitor(
-				new LinkedList<String>());
-		predicate.accept(visitor);
-		final PPredicate probPredicate = visitor.getPredicate();
+		final PPredicate probPredicate = TranslationVisitor
+				.translatePredicate(predicate);
 		final ASTProlog prolog = new ASTProlog(pto, null);
 		probPredicate.apply(prolog);
 	}

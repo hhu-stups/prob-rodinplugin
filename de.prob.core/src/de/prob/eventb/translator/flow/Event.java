@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eventb.core.ISCAction;
 import org.eventb.core.ISCEvent;
 import org.eventb.core.ISCGuard;
@@ -18,6 +19,7 @@ import org.eventb.core.ast.BoundIdentDecl;
 import org.eventb.core.ast.FormulaFactory;
 import org.eventb.core.ast.FreeIdentifier;
 import org.eventb.core.ast.ITypeEnvironment;
+import org.eventb.core.ast.ITypeEnvironmentBuilder;
 import org.eventb.core.ast.Predicate;
 import org.eventb.core.ast.QuantifiedPredicate;
 import org.rodinp.core.RodinDBException;
@@ -46,7 +48,7 @@ public class Event {
 	}
 
 	private Event(final ISCEvent evt, final FlowAnalysis analysis)
-			throws RodinDBException {
+			throws CoreException {
 		this.analysis = analysis;
 		this.name = evt.getLabel();
 		this.localTypeEnv = generateLocalTypeEnvironment(evt, analysis);
@@ -72,29 +74,29 @@ public class Event {
 	}
 
 	private Predicate getGuard(final FlowAnalysis analysis, ISCEvent event)
-			throws RodinDBException {
+			throws CoreException {
 		ISCParameter[] parameters = event.getSCParameters();
 		ISCGuard[] guards = event.getSCGuards();
 
 		FormulaFactory factory = analysis.FF;
 
-		ITypeEnvironment typenv = factory.makeTypeEnvironment();
+		ITypeEnvironmentBuilder typenv = factory.makeTypeEnvironment();
 		typenv.addAll(analysis.getTypeEnvironment());
 		typenv.addAll(freeIdentifiers);
 
 		Predicate[] gPreds = new Predicate[guards.length];
 		for (int k = 0; k < guards.length; k++) {
-			gPreds[k] = guards[k].getPredicate(factory, typenv);
+			gPreds[k] = guards[k].getPredicate(typenv);
 		}
 
 		if (guards.length == 0)
 			return factory.makeLiteralPredicate(Predicate.BTRUE, null);
 		Predicate conjPred = guards.length == 1 ? gPreds[0] : factory
 				.makeAssociativePredicate(Predicate.LAND, gPreds, null);
-		Predicate predicate = parameters.length == 0 ? conjPred : factory
-				.makeQuantifiedPredicate(Predicate.EXISTS, boundIdentifiers,
-						conjPred.bindTheseIdents(
-								Arrays.asList(freeIdentifiers), factory), null);
+		Predicate predicate = parameters.length == 0 ? conjPred
+				: factory.makeQuantifiedPredicate(Predicate.EXISTS,
+						boundIdentifiers, conjPred.bindTheseIdents(Arrays
+								.asList(freeIdentifiers)), null);
 		return predicate;
 
 	}
@@ -104,10 +106,10 @@ public class Event {
 	}
 
 	private List<Assignment> getAssignments(final FlowAnalysis analysis,
-			final List<ISCAction> actions) throws RodinDBException {
+			final List<ISCAction> actions) throws CoreException {
 		List<Assignment> assignements = new ArrayList<Assignment>();
 		for (ISCAction action : actions) {
-			assignements.add(action.getAssignment(analysis.FF, localTypeEnv));
+			assignements.add(action.getAssignment(localTypeEnv));
 		}
 		return Collections.unmodifiableList(assignements);
 	}
@@ -158,17 +160,17 @@ public class Event {
 	}
 
 	private ITypeEnvironment generateLocalTypeEnvironment(final ISCEvent evt,
-			final FlowAnalysis analysis) throws RodinDBException {
+			final FlowAnalysis analysis) throws CoreException {
 		final ITypeEnvironment globalTypeEnvironment = analysis
 				.getTypeEnvironment();
-		final ITypeEnvironment typeEnvironment = evt.getTypeEnvironment(
-				globalTypeEnvironment, analysis.FF);
+		final ITypeEnvironmentBuilder typeEnvironment = evt
+				.getTypeEnvironment(globalTypeEnvironment);
 		typeEnvironment.addAll(globalTypeEnvironment);
 		return typeEnvironment;
 	}
 
 	public static Event create(final ISCEvent evt, final FlowAnalysis analysis)
-			throws RodinDBException {
+			throws CoreException {
 		Event event = new Event(evt, analysis);
 		return event;
 	}
@@ -183,7 +185,7 @@ public class Event {
 				// FIXME We need to deal with non deterministic assignments
 				// here
 			}
-			p = p.applyAssignments(deterministic, analysis.FF);
+			p = p.applyAssignments(deterministic);
 		}
 
 		return p;

@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eventb.core.ISCEvent;
 import org.eventb.core.ISCMachineRoot;
 import org.eventb.core.ISCVariable;
@@ -22,7 +22,7 @@ import de.be4.classicalb.core.parser.analysis.prolog.ASTProlog;
 import de.be4.classicalb.core.parser.analysis.prolog.ClassicalPositionPrinter;
 import de.be4.classicalb.core.parser.analysis.prolog.NodeIdAssignment;
 import de.be4.classicalb.core.parser.node.PPredicate;
-import de.prob.eventb.translator.PredicateVisitor;
+import de.prob.eventb.translator.internal.TranslationVisitor;
 import de.prob.prolog.output.IPrologTermOutput;
 
 public class FlowAnalysis {
@@ -55,9 +55,8 @@ public class FlowAnalysis {
 			pout.printAtom(evt.toString());
 			pout.openList();
 			final Predicate predicate = evt.getGuardsAfterAssignment();
-			PredicateVisitor pv = new PredicateVisitor(new LinkedList<String>());
-			predicate.accept(pv);
-			PPredicate p = pv.getPredicate();
+			final PPredicate p = TranslationVisitor
+					.translatePredicate(predicate);
 			p.apply(prolog);
 			pout.closeList();
 			pout.closeTerm();
@@ -65,8 +64,8 @@ public class FlowAnalysis {
 
 	}
 
-	public FlowAnalysis(final ISCMachineRoot model) throws RodinDBException {
-		this.typeEnvironment = model.getTypeEnvironment(FF);
+	public FlowAnalysis(final ISCMachineRoot model) throws CoreException {
+		this.typeEnvironment = model.getTypeEnvironment();
 		this.identifiers = enumerateVariables(model.getSCVariables());
 		this.events = createEvents(model);
 		noEffect = new ArrayList<EventTuple>();
@@ -92,7 +91,7 @@ public class FlowAnalysis {
 	}
 
 	private ArrayList<Event> createEvents(final ISCMachineRoot model)
-			throws RodinDBException {
+			throws CoreException {
 		ISCEvent[] revents = model.getSCEvents();
 		final ArrayList<Event> arrayList = new ArrayList<Event>(revents.length);
 
@@ -112,7 +111,7 @@ public class FlowAnalysis {
 	}
 
 	private Map<FreeIdentifier, Integer> enumerateVariables(
-			final ISCVariable[] variables) throws RodinDBException {
+			final ISCVariable[] variables) throws CoreException {
 		Map<FreeIdentifier, Integer> varNumber = new HashMap<FreeIdentifier, Integer>();
 		int count = 0;
 		for (ISCVariable variable : variables) {

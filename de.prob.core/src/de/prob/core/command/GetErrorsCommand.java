@@ -1,6 +1,8 @@
 /**
- * 
- */
+ * (c) 2009 Lehrstuhl fuer Softwaretechnik und Programmiersprachen, Heinrich
+ * Heine Universitaet Duesseldorf This software is licenced under EPL 1.0
+ * (http://www.eclipse.org/org/documents/epl-v10.html)
+ * */
 package de.prob.core.command;
 
 import java.util.List;
@@ -20,6 +22,7 @@ public class GetErrorsCommand implements IComposableCommand {
 	public static final String ERRORS_VARIABLE = "Errors";
 	private List<String> errors;
 
+	@Override
 	public void processResult(
 			final ISimplifiedROMap<String, PrologTerm> bindings)
 			throws CommandException {
@@ -27,6 +30,7 @@ public class GetErrorsCommand implements IComposableCommand {
 				.get(ERRORS_VARIABLE));
 	}
 
+	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
 		pto.openTerm("getErrorMessages").printVariable(ERRORS_VARIABLE)
 				.closeTerm();
