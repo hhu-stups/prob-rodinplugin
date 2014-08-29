@@ -1,17 +1,31 @@
 package de.prob.eventb.disprover.core;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.eclipse.core.runtime.Status;
-import org.eventb.core.*;
+import org.eventb.core.IEventBProject;
+import org.eventb.core.IPOSequent;
 import org.eventb.core.ast.Predicate;
-import org.eventb.core.seqprover.*;
+import org.eventb.core.seqprover.IConfidence;
+import org.eventb.core.seqprover.IProofMonitor;
+import org.eventb.core.seqprover.IProofRule;
 import org.eventb.core.seqprover.IProofRule.IAntecedent;
-import org.rodinp.core.*;
+import org.eventb.core.seqprover.IProverSequent;
+import org.eventb.core.seqprover.IReasoner;
+import org.eventb.core.seqprover.IReasonerInput;
+import org.eventb.core.seqprover.IReasonerInputReader;
+import org.eventb.core.seqprover.IReasonerInputWriter;
+import org.eventb.core.seqprover.IReasonerOutput;
+import org.eventb.core.seqprover.ProverFactory;
+import org.eventb.core.seqprover.SerializeException;
+import org.rodinp.core.IRodinProject;
+import org.rodinp.core.RodinDBException;
 
 import de.be4.classicalb.core.parser.analysis.prolog.ASTProlog;
 import de.be4.classicalb.core.parser.node.AEventBContextParseUnit;
-import de.prob.core.*;
+import de.prob.core.Animator;
+import de.prob.core.PrologException;
 import de.prob.eventb.disprover.core.internal.DisproverCommand;
 import de.prob.eventb.disprover.core.internal.ICounterExample;
 import de.prob.eventb.disprover.core.translation.DisproverContextCreator;
@@ -114,6 +128,7 @@ public class DisproverReasoner implements IReasoner {
 		return counterExample;
 	}
 
+	@SuppressWarnings("unused")
 	private String predicateToProlog(Predicate pred) {
 		PrologTermStringOutput pto = new PrologTermStringOutput();
 		TranslationVisitor v = new TranslationVisitor();
@@ -133,7 +148,7 @@ public class DisproverReasoner implements IReasoner {
 		Predicate goal = sequent.goal();
 
 		IAntecedent ante = ProverFactory.makeAntecedent(goal);
-		
+
 		if (counterExample == null) {
 			return ProverFactory.reasonerFailure(this, input,
 					"ProB: Error occurred.");

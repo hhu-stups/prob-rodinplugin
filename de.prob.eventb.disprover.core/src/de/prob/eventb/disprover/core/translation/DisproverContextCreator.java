@@ -1,12 +1,26 @@
 package de.prob.eventb.disprover.core.translation;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.eventb.core.ast.*;
+import org.eventb.core.ast.FormulaFactory;
+import org.eventb.core.ast.ITypeEnvironment;
 import org.eventb.core.ast.ITypeEnvironment.IIterator;
+import org.eventb.core.ast.Predicate;
 import org.eventb.core.seqprover.IProverSequent;
 
-import de.be4.classicalb.core.parser.node.*;
+import de.be4.classicalb.core.parser.node.AAxiomsContextClause;
+import de.be4.classicalb.core.parser.node.AConstantsContextClause;
+import de.be4.classicalb.core.parser.node.ADeferredSetSet;
+import de.be4.classicalb.core.parser.node.AEventBContextParseUnit;
+import de.be4.classicalb.core.parser.node.AIdentifierExpression;
+import de.be4.classicalb.core.parser.node.AMemberPredicate;
+import de.be4.classicalb.core.parser.node.ASetsContextClause;
+import de.be4.classicalb.core.parser.node.PContextClause;
+import de.be4.classicalb.core.parser.node.PExpression;
+import de.be4.classicalb.core.parser.node.PPredicate;
+import de.be4.classicalb.core.parser.node.PSet;
+import de.be4.classicalb.core.parser.node.TIdentifierLiteral;
 import de.prob.eventb.disprover.core.internal.DisproverIdentifier;
 import de.prob.eventb.translator.internal.TranslationVisitor;
 
@@ -43,7 +57,7 @@ public class DisproverContextCreator {
 
 			DisproverIdentifier id = new DisproverIdentifier(
 					typeIterator.getName(), typeIterator.getType(),
-					typeIterator.isGivenSet(), ff);
+					typeIterator.isGivenSet());
 
 			// sets are added to the context, vars to the model
 			if (id.isGivenSet()) {
