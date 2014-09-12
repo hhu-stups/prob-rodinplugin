@@ -3,6 +3,7 @@ package de.prob.eventb.disprover.ui.export;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Date;
 
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -142,6 +143,18 @@ public class ExportPOsHandler extends AbstractHandler implements IHandler {
 		ASTProlog modelAst = new ASTProlog(pto, null);
 		TranslationVisitor tVisitor = new TranslationVisitor();
 
+		Date date = new Date();
+		pto.openTerm("generated");
+		pto.printNumber(date.getTime());
+		pto.printAtom(date.toString());
+		pto.closeTerm();
+		pto.fullstop();
+
+		pto.openTerm("machine_name");
+		pto.printAtom(poRoot.getElementName());
+		pto.closeTerm();
+		pto.fullstop();
+
 		IPOSequent[] sequents = poRoot.getSequents();
 		for (IPOSequent ipoSequent : sequents) {
 			IProverSequent proverSequent = toProverSequent(ipoSequent);
@@ -171,6 +184,8 @@ public class ExportPOsHandler extends AbstractHandler implements IHandler {
 				tVisitor.getPredicate().apply(modelAst);
 			}
 			pto.closeList();
+			pto.closeTerm();
+			pto.fullstop();
 		}
 	}
 
