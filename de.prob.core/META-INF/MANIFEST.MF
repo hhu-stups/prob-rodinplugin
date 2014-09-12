@@ -122,6 +122,7 @@ Bundle-Activator: de.prob.core.internal.Activator
 Eclipse-BuddyPolicy: registered
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ClassPath: .,
+ lib/dependencies/xstream-1.4.7.jar,
  lib/dependencies/unicode-2.4.30-SNAPSHOT.jar,
  lib/dependencies/theorymapping-2.4.30-SNAPSHOT.jar,
  lib/dependencies/prologlib-2.4.30-SNAPSHOT.jar,
