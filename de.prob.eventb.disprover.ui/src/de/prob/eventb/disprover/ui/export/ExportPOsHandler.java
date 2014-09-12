@@ -138,7 +138,7 @@ public class ExportPOsHandler extends AbstractHandler implements IHandler {
 
 	private static void exportPOs(PrintWriter fw, IPORoot poRoot)
 			throws RodinDBException {
-		PrologTermOutput pto = new PrologTermOutput(fw);
+		PrologTermOutput pto = new PrologTermOutput(fw, false);
 		ASTProlog modelAst = new ASTProlog(pto, null);
 		TranslationVisitor tVisitor = new TranslationVisitor();
 
