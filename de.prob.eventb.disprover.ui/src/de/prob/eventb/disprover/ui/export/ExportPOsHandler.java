@@ -151,7 +151,7 @@ public class ExportPOsHandler extends AbstractHandler implements IHandler {
 			// disprover_po(Name,Context,Goal,Hyps,SelectedHyps)
 			pto.openTerm("disprover_po");
 
-			pto.printAtom(proverSequent.toString());
+			pto.printAtom(ipoSequent.getElementName());
 
 			disproverContext.apply(modelAst);
 
