@@ -72,5 +72,32 @@
             name="ProB (Dis-)Prover">
       </page>
    </extension>
+   <extension
+         point="org.eclipse.ui.commands">
+      <command
+            id="de.prob.eventb.disprover.ui.exportpos"
+            name="Export Proof Obligations for ProB">
+      </command>
+   </extension>
+   <extension
+         point="org.eclipse.ui.handlers">
+      <handler
+            class="de.prob.eventb.disprover.ui.export.ExportPOsHandler"
+            commandId="de.prob.eventb.disprover.ui.exportpos">
+      </handler>
+   </extension>
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            allPopups="false"
+            locationURI="popup:more_commands">
+         <command
+               commandId="de.prob.eventb.disprover.ui.exportpos"
+               icon="icons/prob_mini_logo.gif"
+               label="Export POs for ProB"
+               style="push">
+         </command>
+      </menuContribution>
+   </extension>
 
 </plugin>
