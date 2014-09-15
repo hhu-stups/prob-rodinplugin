@@ -24,10 +24,13 @@ import org.eventb.core.IEventBRoot;
 import org.eventb.core.IMachineRoot;
 import org.eventb.core.IPORoot;
 import org.eventb.core.IPOSequent;
+import org.eventb.core.IPSRoot;
+import org.eventb.core.IPSStatus;
 import org.eventb.core.ast.Predicate;
 import org.eventb.core.pm.IProofAttempt;
 import org.eventb.core.pm.IProofComponent;
 import org.eventb.core.pm.IProofManager;
+import org.eventb.core.seqprover.IConfidence;
 import org.eventb.core.seqprover.IProofTree;
 import org.eventb.core.seqprover.IProverSequent;
 import org.osgi.service.prefs.BackingStoreException;
@@ -111,11 +114,13 @@ public class ExportPOsHandler extends AbstractHandler implements IHandler {
 				if (root instanceof IContextRoot) {
 					IContextRoot croot = (IContextRoot) root;
 					IPORoot poRoot = croot.getSCContextRoot().getPORoot();
-					exportPOs(fw, poRoot);
+					IPSRoot psRoot = croot.getSCContextRoot().getPSRoot();
+					exportPOs(fw, poRoot, psRoot);
 				} else if (root instanceof IMachineRoot) {
 					IMachineRoot croot = (IMachineRoot) root;
 					IPORoot poRoot = croot.getSCMachineRoot().getPORoot();
-					exportPOs(fw, poRoot);
+					IPSRoot psRoot = croot.getSCMachineRoot().getPSRoot();
+					exportPOs(fw, poRoot, psRoot);
 				} else {
 					throw new IllegalArgumentException(
 							"Not a Context or Machine root.");
@@ -137,7 +142,7 @@ public class ExportPOsHandler extends AbstractHandler implements IHandler {
 		}
 	}
 
-	private static void exportPOs(PrintWriter fw, IPORoot poRoot)
+	private static void exportPOs(PrintWriter fw, IPORoot poRoot, IPSRoot psRoot)
 			throws RodinDBException {
 		PrologTermOutput pto = new PrologTermOutput(fw, false);
 		ASTProlog modelAst = new ASTProlog(pto, null);
@@ -184,6 +189,15 @@ public class ExportPOsHandler extends AbstractHandler implements IHandler {
 				tVisitor.getPredicate().apply(modelAst);
 			}
 			pto.closeList();
+
+			// The result: true = proven in rodin, unknown else
+			IPSStatus status = psRoot.getStatus(ipoSequent.getElementName());
+			if (status.getConfidence() == IConfidence.DISCHARGED_MAX) {
+				pto.printAtom("true");
+			} else {
+				pto.printAtom("unknown");
+			}
+
 			pto.closeTerm();
 			pto.fullstop();
 		}
