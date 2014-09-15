@@ -155,6 +155,11 @@ public class ExportPOsHandler extends AbstractHandler implements IHandler {
 		pto.closeTerm();
 		pto.fullstop();
 
+		pto.openTerm("project_name");
+		pto.printAtom(poRoot.getRodinProject().getElementName());
+		pto.closeTerm();
+		pto.fullstop();
+
 		pto.openTerm("machine_name");
 		pto.printAtom(poRoot.getElementName());
 		pto.closeTerm();
