@@ -2,7 +2,7 @@
 import org.apache.tools.ant.taskdefs.condition.Os
 
 project.ext{
-	
+
 	targetRepositories = ["http://download.eclipse.org/releases/indigo/",
                           "http://rodin-b-sharp.sourceforge.net/updates",
                           "http://rodin-b-sharp.sourceforge.net/core-updates"
@@ -18,7 +18,7 @@ apply from: 'tycho_build.gradle'
 
 
 task bMotionStudioHelpCustumBuild(type: Exec){
-	
+
 	commandLine 'ant', '-f','de.bmotionstudio.help/customBuild.xml'
 }
 
@@ -36,7 +36,7 @@ project(':de.prob.core') {
 	}
 
 
-        def parser_version = '2.4.30-SNAPSHOT'
+        def parser_version = '2.4.33-SNAPSHOT'
 
 	dependencies {
 	 compile group: "de.prob", name: "answerparser", version: parser_version , changing: true
@@ -49,7 +49,7 @@ project(':de.prob.core') {
 	 compile group: "de.prob", name: "theorymapping", version: parser_version , changing: true
 	 compile 'commons-lang:commons-lang:2.6'
 	}
-	
+
 }
 
 project(':de.prob.ui') {
@@ -75,11 +75,11 @@ def download(address,target) {
 task downloadCli << {
 		def dir = workspacePath+'de.prob.core/prob/'
 		delete file(dir)
-	    new File(dir).mkdirs() 
-	
+	    new File(dir).mkdirs()
+
 		['leopard64':'macos','linux32':'linux','linux64':'linux64','win32':'windows'].each {
 		def n = it.getKey()
-	
+
 		def targetdir = dir+it.getValue()
 		def targetzip = dir+"probcli_${n}.zip"
 		def url = "http://nightly.cobra.cs.uni-duesseldorf.de/cli/probcli_${n}.zip"
@@ -101,20 +101,20 @@ task downloadCli << {
 		   into targetdir
 	    }
 	delete file(targetzip)
-	
+
 }
 
 
 
 task downloadCli2 ( type: Exec ) {
-	
+
 		def dir = workspacePath+'de.prob.core/prob/'
 		delete file(dir)
-	    new File(dir).mkdirs() 
-	
+	    new File(dir).mkdirs()
+
 		['leopard64':'macos','linux32':'linux','linux64':'linux64','win32':'windows'].each {
 		def n = it.getKey()
-	
+
 		def targetdir = dir+it.getValue()
 		def targetzip = dir+"probcli_${n}.zip"
 		def url = "http://nightly.cobra.cs.uni-duesseldorf.de/cli/probcli_${n}.zip"
@@ -136,17 +136,17 @@ task downloadCli2 ( type: Exec ) {
 		   into targetdir
 	    }
 	delete file(targetzip)
-			
+
 	['leopard64':'macos','linux32':'linux','linux64':'linux64'].each {
-	
+
 		def n = it.getKey()
 		targetdir = dir+it.getValue()
 
 		download( "http://nightly.cobra.cs.uni-duesseldorf.de/cspm/cspm-"+n, targetdir+"/cspm" )
 	}
-	commandLine 'chmod', 'a+x', dir+'linux'+'/cspm', dir+'linux64'+'/cspm', dir+'macos'+'/cspm' 
-	//commandLine 'chmod', 'a+x', dir+'*'+'/cspm' 
-	
+	commandLine 'chmod', 'a+x', dir+'linux'+'/cspm', dir+'linux64'+'/cspm', dir+'macos'+'/cspm'
+	//commandLine 'chmod', 'a+x', dir+'*'+'/cspm'
+
 	download( "http://nightly.cobra.cs.uni-duesseldorf.de/cspm/cspm-windows", dir+"windows"+"/cspm.exe" )
 }
 
@@ -166,4 +166,3 @@ task collectArtifacts(type:Copy) {
 	    from workspacePath + "index.html"
 	    into workspacePath + 'updatesite'
 }
-
