@@ -21,6 +21,7 @@ import de.prob.core.domainobjects.State;
 import de.prob.core.domainobjects.StateError;
 import de.prob.core.domainobjects.Variable;
 import de.prob.core.domainobjects.eval.PredicateEvalElement;
+import de.prob.core.internal.Activator;
 import de.prob.exceptions.ProBException;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
@@ -186,6 +187,7 @@ public final class ConstructTraceCommand implements IComposableCommand {
 					statePrologTerm.getArgument(4).toString().equals("true"),
 					stateValues, enabledOperations, stateErrors, opTimeouts);
 
+			Activator.computedState(s);
 			animator.getHistory().add(s, op);
 			animator.announceCurrentStateChanged(s, op);
 		}
