@@ -6,10 +6,16 @@
 
 package de.prob.core.command;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import de.prob.core.Animator;
-import de.prob.core.domainobjects.*;
+import de.prob.core.domainobjects.Operation;
+import de.prob.core.domainobjects.State;
+import de.prob.core.domainobjects.StateError;
+import de.prob.core.domainobjects.Variable;
 import de.prob.core.internal.Activator;
 import de.prob.exceptions.ProBException;
 import de.prob.logging.Logger;
@@ -80,10 +86,8 @@ public final class ExploreStateCommand implements IComposableCommand {
 
 		// only show error message on SETUP_CONSTANTS and
 		// PARTIALLY_SETUP_CONSTANTS
-		if (enabledOperations.size() == 1
-				&& enabledOperations.get(0).getName().toLowerCase()
-						.contains("constants") && unsatPropertiesExist) {
-			Logger.notifyUserWithoutBugreport("ProB could not find valid constants wich satisfy the properties:\n\n"
+		if (unsatPropertiesExist) {
+			Logger.notifyUserWithoutBugreport("ProB could not find valid constants wich satisfy the properties.\n"
 					+ unsatPropsCommand.getUnsatPropertiesDescription());
 
 		} else if (!initialised && enabledOperations.isEmpty()
