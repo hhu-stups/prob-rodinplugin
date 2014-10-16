@@ -3,6 +3,9 @@ package de.prob.eventb.disprover.core.internal;
 import java.util.*;
 
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.PlatformUI;
 import org.eventb.core.*;
 import org.eventb.core.ast.Predicate;
 import org.eventb.core.seqprover.*;
@@ -167,6 +170,15 @@ public class DisproverReasoner implements IReasoner {
 			System.out.println(sequent.toString()
 					+ ": Counter-Example for selected hypotheses found.");
 
+			Shell activeShell = PlatformUI.getWorkbench()
+					.getActiveWorkbenchWindow().getShell();
+			MessageDialog
+					.openWarning(
+							activeShell,
+							"Goal not provable",
+							"ProB found a Counter-Example for the selected Hypotheses, Goal not provable from selected Hypotheses but may be provable with all Hypotheses.\n"
+									+ counterExample.toString());
+
 			return ProverFactory
 					.reasonerFailure(
 							this,
@@ -189,5 +201,4 @@ public class DisproverReasoner implements IReasoner {
 	public void serializeInput(final IReasonerInput input,
 			final IReasonerInputWriter writer) throws SerializeException {
 	}
-
 }
