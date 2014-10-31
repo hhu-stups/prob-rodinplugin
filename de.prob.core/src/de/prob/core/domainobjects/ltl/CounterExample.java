@@ -51,10 +51,11 @@ public class CounterExample {
 				.asList(modelCheckingResult.getInitPathOps()));
 		ceSize = modelCheckingResult.getCounterexample().size();
 
-		final List<ArrayList<Boolean>> predicateValues = createStates(modelCheckingResult
-				.getCounterexample());
-
 		final String[] atomicFormulaNames = createAtomicNames(modelCheckingResult);
+
+		final List<ArrayList<Boolean>> predicateValues = createStates(modelCheckingResult
+				.getCounterexample(), atomicFormulaNames);
+
 		propositionRoot = createExample(modelCheckingResult.getStructure(),
 				atomicFormulaNames, predicateValues);
 		propositionRoot.setVisible(true);
@@ -73,10 +74,17 @@ public class CounterExample {
 		return res;
 	}
 
-	private List<ArrayList<Boolean>> createStates(final ListPrologTerm example) {
+	private List<ArrayList<Boolean>> createStates(final ListPrologTerm example, String[] atomicFormulaNames) {
 		List<ArrayList<Boolean>> predicateValues = new ArrayList<ArrayList<Boolean>>();
 
-		for (int i = 0; i < example.size(); i++) {
+		// A bug fix from 31.10.2014: changed the termination condition from
+		// 'i < example.size()' to 'i < atomicFormulaNames.length'. The statement
+		// predicateValues.get(i).add(value == 0 ? false : true) in the inner for-loop (lines 98-105)
+		// crashed once the reported counter-example 'example' had less atoms as atomic propositions,
+		// e.g. for 'G ({x/=1} & {y<=10})' with 'example = [atom(0,[0,1],none)]' an IndexOutOfBounds-Exception
+		// had been thrown. Note that the bug-fix has been not thoroughly tested and there may be other issues
+		// that may occur.
+		for (int i = 0; i < atomicFormulaNames.length; i++) {
 			predicateValues.add(new ArrayList<Boolean>());
 		}
 
@@ -92,12 +100,15 @@ public class CounterExample {
 			for (int i = 0; i < values.size(); i++) {
 				int value = ((IntegerPrologTerm) values.get(i)).getValue()
 						.intValue();
-				predicateValues.get(i).add(value == 0 ? false : true);
+				// Doesn't have to be a 'predicateValues.get(index)' and not
+				// 'predicateValues.get(i)' (predicateValues is a list of boolean lists)
+				//predicateValues.get(index).add(value == 0 ? false : true);
+ 				predicateValues.get(i).add(value == 0 ? false : true);
 			}
 
 			final Operation operation = NONE.equals(operationTerm) ? null
 					: Operation.fromPrologTerm(operationTerm);
-			final CounterExampleState ceState = new CounterExampleState(index,
+ 			final CounterExampleState ceState = new CounterExampleState(index,
 					stateId, operation);
 			states.add(ceState);
 			index++;
