@@ -4,9 +4,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.core.runtime.Status;
-import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.PlatformUI;
 import org.eventb.core.IEventBProject;
 import org.eventb.core.IPOSequent;
 import org.eventb.core.ast.Predicate;
@@ -185,15 +182,6 @@ public class DisproverReasoner implements IReasoner {
 				&& counterExample.onlySelectedHypotheses()) {
 			System.out.println(sequent.toString()
 					+ ": Counter-Example for selected hypotheses found.");
-
-			Shell activeShell = PlatformUI.getWorkbench()
-					.getActiveWorkbenchWindow().getShell();
-			MessageDialog
-					.openWarning(
-							activeShell,
-							"Goal not provable",
-							"ProB found a Counter-Example for the selected Hypotheses, Goal not provable from selected Hypotheses but may be provable with all Hypotheses.\n"
-									+ counterExample.toString());
 
 			return ProverFactory
 					.reasonerFailure(
