@@ -147,6 +147,13 @@ public class DisproverReasoner implements IReasoner {
 
 		Predicate goal = sequent.goal();
 
+		// currently, we assume that all existing hypotheses have been used
+		// TODO: make ProB figure out which ones were actually used
+		Set<Predicate> usedHyps = new HashSet<Predicate>();
+		for (Predicate predicate : sequent.hypIterable()) {
+			usedHyps.add(predicate);
+		}
+
 		IAntecedent ante = ProverFactory.makeAntecedent(goal);
 
 		if (counterExample == null) {
@@ -163,7 +170,7 @@ public class DisproverReasoner implements IReasoner {
 		if (!counterExample.counterExampleFound() && counterExample.isProof()) {
 			System.out.println(sequent.toString() + ": Proof.");
 			return ProverFactory.makeProofRule(this, input, sequent.goal(),
-					null, IConfidence.DISCHARGED_MAX,
+					usedHyps, IConfidence.DISCHARGED_MAX,
 					"ProB (no enumeration / all cases checked)");
 		}
 
@@ -191,8 +198,8 @@ public class DisproverReasoner implements IReasoner {
 		}
 
 		System.out.println(sequent.toString() + ": Counter-Example found.");
-		return ProverFactory.makeProofRule(this, input, null, null,
-				IConfidence.PENDING, counterExample.toString(), ante);
+		return ProverFactory.makeProofRule(this, input, sequent.goal(),
+				usedHyps, IConfidence.PENDING, counterExample.toString(), ante);
 	}
 
 	@Override
