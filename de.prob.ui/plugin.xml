@@ -1041,22 +1041,6 @@
          <separator
                name="de.prob.ui.separator2"
                visible="true">
-                           <visibleWhen>
-               <with
-                     variable="selection">
-                  <iterate
-                        operator="or">
-                     <or>
-                        <instanceof
-                              value="org.eventb.core.IMachineRoot">
-                        </instanceof>
-                        <instanceof
-                              value="org.eventb.core.IContextRoot">
-                        </instanceof>
-                     </or>
-                  </iterate>
-               </with>
-            </visibleWhen>
          </separator>
          <command
                commandId="de.prob.ui.starteventbanimation"
@@ -1135,22 +1119,6 @@
          <separator
                name="de.prob.ui.separator1"
                visible="true">
-                           <visibleWhen>
-               <with
-                     variable="selection">
-                  <iterate
-                        operator="or">
-                     <or>
-                        <instanceof
-                              value="org.eventb.core.IMachineRoot">
-                        </instanceof>
-                        <instanceof
-                              value="org.eventb.core.IContextRoot">
-                        </instanceof>
-                     </or>
-                  </iterate>
-               </with>
-            </visibleWhen>
          </separator>
       </menuContribution>
       <menuContribution
