@@ -407,7 +407,7 @@ public class Theories {
 	private static void processDefinitions(FormulaFactory ff,
 			ITypeEnvironment te, IPrologTermOutput prologOutput,
 			ISCDirectOperatorDefinition[] directOperatorDefinitions)
-			throws RodinDBException {
+			throws CoreException {
 		for (ISCDirectOperatorDefinition def : directOperatorDefinitions) {
 			Formula<?> scFormula = def.getSCFormula(ff, te);
 
