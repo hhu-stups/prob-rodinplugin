@@ -224,18 +224,25 @@ litigation.
    </license>
 
    <requires>
-      <import plugin="org.eclipse.core.runtime" version="3.5.0" match="compatible"/>
-      <import plugin="org.rodinp.core" version="1.7.0" match="equivalent"/>
-      <import plugin="org.eventb.core.ast" version="3.0.0"/>
-      <import plugin="org.eclipse.core.resources" version="3.5.0" match="compatible"/>
-      <import plugin="org.eventb.core.seqprover" version="3.0.0"/>
-      <import plugin="org.eventb.core" version="3.0.0"/>
-      <import plugin="de.prob.ui" version="7.4.0" match="equivalent"/>
       <import plugin="org.eclipse.ui" version="3.5.0" match="compatible"/>
       <import plugin="org.eclipse.ui.ide" version="3.5.0" match="compatible"/>
-      <import plugin="de.prob.core" version="9.4.0" match="equivalent"/>
-      <import plugin="org.eclipse.core.expressions" version="3.4.101" match="compatible"/>
+      <import plugin="org.eclipse.core.runtime" version="3.5.0" match="compatible"/>
       <import plugin="org.eclipse.gef" version="3.7.0" match="compatible"/>
+      <import plugin="de.prob.core" version="9.4.0" match="equivalent"/>
+      <import plugin="org.eventb.core" version="3.0.0"/>
+      <import plugin="org.eclipse.core.resources" version="3.5.0" match="compatible"/>
+      <import plugin="org.rodinp.core" version="1.7.0" match="equivalent"/>
+      <import plugin="org.eventb.core.ast" version="3.0.0"/>
+      <import plugin="org.eventb.core.seqprover" version="3.0.0"/>
+      <import plugin="de.prob.ui" version="7.4.0" match="equivalent"/>
+      <import plugin="org.eclipse.core.expressions" version="3.4.101" match="compatible"/>
+      <import plugin="org.eclipse.ui.views" version="3.5.0" match="compatible"/>
+      <import plugin="org.eclipse.core.databinding" version="1.2.0" match="compatible"/>
+      <import plugin="org.eclipse.jface.databinding" version="1.2.1" match="compatible"/>
+      <import plugin="org.eclipse.core.databinding.beans" version="1.1.1" match="compatible"/>
+      <import plugin="org.eclipse.help" version="3.5.100" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.ui.navigator" version="3.5.0" match="greaterOrEqual"/>
+      <import plugin="de.bmotionstudio.gef.editor" version="5.5.0" match="equivalent"/>
    </requires>
 
    <plugin

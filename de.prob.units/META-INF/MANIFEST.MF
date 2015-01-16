@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: ProB Physical Units Support
 Bundle-SymbolicName: de.prob.units;singleton:=true
-Bundle-Version: 7.4.1.qualifier
+Bundle-Version: 7.4.2.qualifier
 Bundle-Activator: de.prob.units.Activator
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.core.commands,
