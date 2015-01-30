@@ -70,7 +70,7 @@ public final class LtlCheckingJob extends Job {
 	}
 
 	private Result doSomeModelchecking() throws ProBException {
-		return LtlCheckingCommand.modelCheck(animator, formula, 500, option);
+		return LtlCheckingCommand.modelCheck(animator, formula, -1, option); // this used to be 500 instead of -1, but currently the Java side does not seem to cope with the LTL model checker returning; -1 means no maximum value
 	}
 
 	private boolean setSymmetry() {
