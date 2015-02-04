@@ -121,7 +121,7 @@ public class DisproverReasoner implements IReasoner {
 		IEventBProject evbProject = (IEventBProject) project
 				.getAdapter(IEventBProject.class);
 		ICounterExample counterExample = DisproverCommand.disprove(
-				Animator.getAnimator(), evbProject, allHypotheses,
+				Animator.getAuxAnimator(), evbProject, allHypotheses,
 				selectedHypotheses, goal, timeoutFactor, context, pm);
 		// Logger.info("Disprover: Result: " + counterExample.toString());
 
