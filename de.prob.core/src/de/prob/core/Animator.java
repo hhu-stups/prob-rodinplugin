@@ -39,6 +39,7 @@ import de.prob.exceptions.ProBException;
 public final class Animator {
 
 	private static Animator animator = new Animator();
+	private static Animator auxanimator = null;
 
 	/**
 	 * 
@@ -65,6 +66,14 @@ public final class Animator {
 	public final static Animator getAnimator() {
 		return animator;
 	}
+
+	public final static Animator getAuxAnimator() {
+		if (auxanimator == null) {
+			auxanimator = new Animator();
+		}
+		return auxanimator;
+	}
+
 
 	/**
 	 * Terminates the current animation (forcefully!) and restarts the ProB
