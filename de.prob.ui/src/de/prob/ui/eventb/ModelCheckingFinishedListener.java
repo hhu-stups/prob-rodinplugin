@@ -134,8 +134,9 @@ public class ModelCheckingFinishedListener extends JobChangeAdapter {
 		StringBuffer sb = new StringBuffer();
 		sb.append("Invariant violation found.\n");
 		sb.append("ProB has detected a state that violates the invariant.\n");
-		sb.append("The following is the trace that led to the violation:\n");
-		appendTrace(trace, sb);
+		// no longer show trace of state ids to user; not very useful 
+		//sb.append("The following is the trace that led to the violation:\n");
+		//appendTrace(trace, sb);
 		return sb.toString();
 	}
 
