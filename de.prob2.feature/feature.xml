@@ -2,7 +2,7 @@
 <feature
       id="de.prob2.feature"
       label="ProB for Rodin2"
-      version="2.4.8.qualifier"
+      version="2.4.9.qualifier"
       provider-name="HHU Düsseldorf STUPS Group">
 
    <description url="http://www.stups.uni-duesseldorf.de/ProB">
