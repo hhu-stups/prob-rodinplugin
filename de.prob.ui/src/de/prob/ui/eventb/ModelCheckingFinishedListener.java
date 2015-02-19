@@ -144,24 +144,25 @@ public class ModelCheckingFinishedListener extends JobChangeAdapter {
 		StringBuffer sb = new StringBuffer();
 		sb.append("Theorem violation found.\n");
 		sb.append("ProB has detected a state that violates the theorems.\n");
-		sb.append("The following is the trace that led to the violation:\n");
-		appendTrace(trace, sb);
+		// no longer show trace of state ids to user; not very useful
+		//sb.append("The following is the trace that led to the violation:\n");
+		//appendTrace(trace, sb);
 		return sb.toString();
 	}
 
 	private String createStateErrorResult(final List<String> trace) {
 		StringBuffer sb = new StringBuffer();
 		sb.append("ProB has detected an erroneous state (e.g., witness error, guard strengthening error).\n");
-		sb.append("The following is the trace that led to the error:\n");
-		appendTrace(trace, sb);
+		//sb.append("The following is the trace that led to the error:\n");
+		//appendTrace(trace, sb);
 		return sb.toString();
 	}
 
 	private String createWDErrorResult(final List<String> trace) {
 		StringBuffer sb = new StringBuffer();
 		sb.append("ProB has detected a state which caused a well-definedness error(e.g., division by zero).\n");
-		sb.append("The following is the trace that led to the error:\n");
-		appendTrace(trace, sb);
+		//sb.append("The following is the trace that led to the error:\n");
+		//appendTrace(trace, sb);
 		return sb.toString();
 	}
 
@@ -169,8 +170,8 @@ public class ModelCheckingFinishedListener extends JobChangeAdapter {
 		StringBuffer sb = new StringBuffer();
 		sb.append("ProB has detected a state which caused an internal error.\n");
 		sb.append("This is probably a bug (please report).\n");
-		sb.append("The following is the trace that led to the error:\n");
-		appendTrace(trace, sb);
+		//sb.append("The following is the trace that led to the error:\n");
+		//appendTrace(trace, sb);
 		return sb.toString();
 	}
 
@@ -178,8 +179,8 @@ public class ModelCheckingFinishedListener extends JobChangeAdapter {
 		StringBuffer sb = new StringBuffer();
 		sb.append("Deadlock found.\n");
 		sb.append("ProB has detected a state where all guards are false.\n");
-		sb.append("The following is the trace that led to the deadlock:\n");
-		appendTrace(trace, sb);
+		//sb.append("The following is the trace that led to the deadlock:\n");
+		//appendTrace(trace, sb);
 		return sb.toString();
 	}
 
