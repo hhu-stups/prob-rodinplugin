@@ -2,11 +2,11 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: ProB Symbolic Evaluation Support
 Bundle-SymbolicName: de.prob.symbolic;singleton:=true
-Bundle-Version: 1.0.0.qualifier
+Bundle-Version: 7.4.2.qualifier
 Bundle-Activator: de.prob.symbolic.Activator
 Require-Bundle: org.eclipse.core.runtime,
  de.prob.core;bundle-version="[9.4.0,9.5.0)",
- org.eventb.ui;bundle-version="[3.0.0,3.1.0)",
+ org.eventb.ui;bundle-version="[3.0.0,3.2.0)",
  de.prob.ui;bundle-version="[7.4.0,7.5.0)",
  org.rodinp.core;bundle-version="[1.7.0,1.8.0)",
  org.eclipse.ui;bundle-version="[3.5.0,4.0.0)",

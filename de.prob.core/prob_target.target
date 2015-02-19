@@ -1,21 +1,22 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="prob_target" sequenceNumber="32">
+<?pde version="3.8"?><target name="prob_target" sequenceNumber="39">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.gef" version="0.0.0"/>
-<repository location="http://download.eclipse.org/tools/gef/updates/releases"/>
+<unit id="org.eventb.ide.feature.group" version="3.1.0.201412171041-e1a03f3"/>
+<unit id="fr.systerel.editor.feature.group" version="0.8.0.201412171041-e1a03f3"/>
+<unit id="org.rodinp.feature.group" version="1.7.0.201412171041-e1a03f3"/>
+<unit id="org.rodinp.platform.feature.group" version="3.1.0.201412171041-e1a03f3"/>
+<unit id="org.rodinp.platform.sources.feature.group" version="3.1.0.201412171041-e1a03f3"/>
+<unit id="org.rodinp.platform.tests.feature.group" version="3.1.0.201412171041-e1a03f3"/>
+<repository location="http://www.stups.uni-duesseldorf.de/ProB/buildlibs/rodin/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
+<unit id="org.eventb.theory.feature.feature.group" version="3.0.0"/>
 <repository location="http://rodin-b-sharp.sourceforge.net/updates/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
-<unit id="org.eventb.ide.feature.group" version="3.0.1.201406111447-5326174"/>
-<unit id="fr.systerel.editor.feature.group" version="0.7.0.201406111447-5326174"/>
-<unit id="org.rodinp.feature.group" version="1.7.0.201406111447-5326174"/>
-<unit id="org.rodinp.platform.feature.group" version="3.0.0.201406111447-5326174"/>
-<unit id="org.rodinp.platform.tests.feature.group" version="3.0.0.201406111447-5326174"/>
-<unit id="org.rodinp.platform.sources.feature.group" version="3.0.0.201406111447-5326174"/>
-<repository location="http://www.stups.uni-duesseldorf.de/ProB/buildlibs/rodin/"/>
+<unit id="org.eclipse.gef.sdk.feature.group" version="3.9.101.201408150207"/>
+<repository location="http://download.eclipse.org/releases/luna"/>
 </location>
 </locations>
 </target>

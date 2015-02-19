@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eventb.core.ast.Expression;
-import org.eventb.core.ast.FormulaFactory;
 import org.eventb.core.ast.Type;
 
 import de.be4.classicalb.core.parser.node.AIdentifierExpression;
@@ -28,13 +27,10 @@ public class DisproverIdentifier {
 
 	private final String name;
 	private final Type type;
-	private final FormulaFactory ff;
 	private final boolean givenSet;
 
-	public DisproverIdentifier(String name, Type type, boolean givenSet,
-			FormulaFactory ff) {
+	public DisproverIdentifier(String name, Type type, boolean givenSet) {
 		this.givenSet = givenSet;
-		this.ff = ff;
 		this.name = name;
 		this.type = type;
 	}

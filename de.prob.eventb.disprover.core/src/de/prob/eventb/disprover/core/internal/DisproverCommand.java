@@ -12,15 +12,23 @@ import org.osgi.service.prefs.Preferences;
 
 import de.be4.classicalb.core.parser.analysis.prolog.ASTProlog;
 import de.be4.classicalb.core.parser.node.AEventBContextParseUnit;
-import de.prob.core.*;
-import de.prob.core.command.*;
+import de.prob.core.Animator;
+import de.prob.core.ProBCommandJob;
+import de.prob.core.command.ClearMachineCommand;
+import de.prob.core.command.CommandException;
+import de.prob.core.command.ComposedCommand;
+import de.prob.core.command.IComposableCommand;
+import de.prob.core.command.SetPreferenceCommand;
+import de.prob.core.command.SetPreferencesCommand;
+import de.prob.core.command.StartAnimationCommand;
 import de.prob.eventb.disprover.core.DisproverReasoner;
 import de.prob.eventb.disprover.core.command.DisproverLoadCommand;
 import de.prob.eventb.translator.internal.TranslationVisitor;
 import de.prob.exceptions.ProBException;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
-import de.prob.prolog.term.*;
+import de.prob.prolog.term.ListPrologTerm;
+import de.prob.prolog.term.PrologTerm;
 
 /**
  * The DisproverCommand takes two sets of ASTs (one for the machine and a list
@@ -109,8 +117,7 @@ public class DisproverCommand implements IComposableCommand {
 	public void writeCommand(final IPrologTermOutput pto) {
 		pto.openTerm("cbc_disprove");
 
-		Predicate pred = goal;
-		translatePredicate(pto, pred);
+		translatePredicate(pto, goal);
 		pto.openList();
 		for (Predicate p : this.allHypotheses) {
 			translatePredicate(pto, p);

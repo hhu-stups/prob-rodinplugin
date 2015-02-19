@@ -1,17 +1,31 @@
 package de.prob.eventb.disprover.core;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.eclipse.core.runtime.Status;
-import org.eventb.core.*;
+import org.eventb.core.IEventBProject;
+import org.eventb.core.IPOSequent;
 import org.eventb.core.ast.Predicate;
-import org.eventb.core.seqprover.*;
+import org.eventb.core.seqprover.IConfidence;
+import org.eventb.core.seqprover.IProofMonitor;
+import org.eventb.core.seqprover.IProofRule;
 import org.eventb.core.seqprover.IProofRule.IAntecedent;
-import org.rodinp.core.*;
+import org.eventb.core.seqprover.IProverSequent;
+import org.eventb.core.seqprover.IReasoner;
+import org.eventb.core.seqprover.IReasonerInput;
+import org.eventb.core.seqprover.IReasonerInputReader;
+import org.eventb.core.seqprover.IReasonerInputWriter;
+import org.eventb.core.seqprover.IReasonerOutput;
+import org.eventb.core.seqprover.ProverFactory;
+import org.eventb.core.seqprover.SerializeException;
+import org.rodinp.core.IRodinProject;
+import org.rodinp.core.RodinDBException;
 
 import de.be4.classicalb.core.parser.analysis.prolog.ASTProlog;
 import de.be4.classicalb.core.parser.node.AEventBContextParseUnit;
-import de.prob.core.*;
+import de.prob.core.Animator;
+import de.prob.core.PrologException;
 import de.prob.eventb.disprover.core.internal.DisproverCommand;
 import de.prob.eventb.disprover.core.internal.ICounterExample;
 import de.prob.eventb.disprover.core.translation.DisproverContextCreator;
@@ -107,13 +121,14 @@ public class DisproverReasoner implements IReasoner {
 		IEventBProject evbProject = (IEventBProject) project
 				.getAdapter(IEventBProject.class);
 		ICounterExample counterExample = DisproverCommand.disprove(
-				Animator.getAnimator(), evbProject, allHypotheses,
+				Animator.getAuxAnimator(), evbProject, allHypotheses,
 				selectedHypotheses, goal, timeoutFactor, context, pm);
 		// Logger.info("Disprover: Result: " + counterExample.toString());
 
 		return counterExample;
 	}
 
+	@SuppressWarnings("unused")
 	private String predicateToProlog(Predicate pred) {
 		PrologTermStringOutput pto = new PrologTermStringOutput();
 		TranslationVisitor v = new TranslationVisitor();
@@ -132,8 +147,15 @@ public class DisproverReasoner implements IReasoner {
 
 		Predicate goal = sequent.goal();
 
+		// currently, we assume that all existing hypotheses have been used
+		// TODO: make ProB figure out which ones were actually used
+		Set<Predicate> usedHyps = new HashSet<Predicate>();
+		for (Predicate predicate : sequent.hypIterable()) {
+			usedHyps.add(predicate);
+		}
+
 		IAntecedent ante = ProverFactory.makeAntecedent(goal);
-		
+
 		if (counterExample == null) {
 			return ProverFactory.reasonerFailure(this, input,
 					"ProB: Error occurred.");
@@ -148,7 +170,7 @@ public class DisproverReasoner implements IReasoner {
 		if (!counterExample.counterExampleFound() && counterExample.isProof()) {
 			System.out.println(sequent.toString() + ": Proof.");
 			return ProverFactory.makeProofRule(this, input, sequent.goal(),
-					null, IConfidence.DISCHARGED_MAX,
+					usedHyps, IConfidence.DISCHARGED_MAX,
 					"ProB (no enumeration / all cases checked)");
 		}
 
@@ -176,8 +198,8 @@ public class DisproverReasoner implements IReasoner {
 		}
 
 		System.out.println(sequent.toString() + ": Counter-Example found.");
-		return ProverFactory.makeProofRule(this, input, null, null,
-				IConfidence.PENDING, counterExample.toString(), ante);
+		return ProverFactory.makeProofRule(this, input, sequent.goal(),
+				usedHyps, IConfidence.PENDING, counterExample.toString(), ante);
 	}
 
 	@Override

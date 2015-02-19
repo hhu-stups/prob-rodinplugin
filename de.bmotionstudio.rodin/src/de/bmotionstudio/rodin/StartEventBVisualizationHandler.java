@@ -32,7 +32,7 @@ public class StartEventBVisualizationHandler extends
 			IWorkspace workspace = ResourcesPlugin.getWorkspace();
 			IPath location = Path.fromOSString(resource.getFullPath()
 					.toOSString());
-			return workspace.getRoot().getFileForLocation(location);
+			return workspace.getRoot().getFile(location);
 		}
 		return null;
 	}
