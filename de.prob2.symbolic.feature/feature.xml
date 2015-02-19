@@ -2,7 +2,7 @@
 <feature
       id="de.prob2.symbolic.feature"
       label="ProB for Rodin3 - Symbolic Constants Support"
-      version="3.0.7.qualifier"
+      version="3.0.8.qualifier"
       provider-name="HHU Düsseldorf STUPS Group">
 
    <description url="http://www.stups.uni-duesseldorf.de/ProB">
