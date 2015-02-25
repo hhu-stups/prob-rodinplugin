@@ -172,6 +172,7 @@ public class DisproverCommand implements IComposableCommand {
 		if ("contradiction_in_hypotheses".equals(term.getFunctor())) {
 			counterExample = new CounterExample(false, false, false);
 			counterExample.setProof(true);
+			counterExample.setDoubleCheckFailed(true);
 		}
 
 		if ("solution".equals(term.getFunctor())) {

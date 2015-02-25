@@ -3,24 +3,7 @@ package de.prob.eventb.disprover.core;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.eclipse.core.runtime.Status;
-import org.eventb.core.IEventBProject;
-import org.eventb.core.IPOSequent;
-import org.eventb.core.ast.Predicate;
-import org.eventb.core.seqprover.IConfidence;
-import org.eventb.core.seqprover.IProofMonitor;
-import org.eventb.core.seqprover.IProofRule;
-import org.eventb.core.seqprover.IProofRule.IAntecedent;
-import org.eventb.core.seqprover.IProverSequent;
-import org.eventb.core.seqprover.IReasoner;
-import org.eventb.core.seqprover.IReasonerInput;
-import org.eventb.core.seqprover.IReasonerInputReader;
-import org.eventb.core.seqprover.IReasonerInputWriter;
-import org.eventb.core.seqprover.IReasonerOutput;
-import org.eventb.core.seqprover.ProverFactory;
-import org.eventb.core.seqprover.SerializeException;
-import org.rodinp.core.IRodinProject;
-import org.rodinp.core.RodinDBException;
+import javax.sql.rowset.Predicate;
 
 import de.be4.classicalb.core.parser.analysis.prolog.ASTProlog;
 import de.be4.classicalb.core.parser.node.AEventBContextParseUnit;
@@ -167,11 +150,20 @@ public class DisproverReasoner implements IReasoner {
 					"ProB: Timeout occurred.");
 		}
 
-		if (!counterExample.counterExampleFound() && counterExample.isProof()) {
+		if (!counterExample.counterExampleFound() && counterExample.isProof()
+				&& !counterExample.doubleCheckFailed()) {
 			System.out.println(sequent.toString() + ": Proof.");
 			return ProverFactory.makeProofRule(this, input, sequent.goal(),
 					usedHyps, IConfidence.DISCHARGED_MAX,
 					"ProB (no enumeration / all cases checked)");
+		}
+
+		if (!counterExample.counterExampleFound() && counterExample.isProof()
+				&& counterExample.doubleCheckFailed()) {
+			System.out.println(sequent.toString() + ": Proof.");
+			return ProverFactory.makeProofRule(this, input, sequent.goal(),
+					usedHyps, IConfidence.DISCHARGED_MAX,
+					"ProB (contradiction in hypotheses)");
 		}
 
 		if (!counterExample.counterExampleFound()) {
