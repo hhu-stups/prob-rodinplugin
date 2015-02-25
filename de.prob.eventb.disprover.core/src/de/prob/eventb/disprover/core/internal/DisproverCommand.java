@@ -1,9 +1,14 @@
 package de.prob.eventb.disprover.core.internal;
 
 import java.util.Set;
-import java.util.prefs.Preferences;
 
-import javax.sql.rowset.Predicate;
+import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.core.runtime.preferences.InstanceScope;
+import org.eventb.core.IEventBProject;
+import org.eventb.core.ast.Predicate;
+import org.eventb.core.seqprover.IProofMonitor;
+import org.osgi.service.prefs.Preferences;
 
 import de.be4.classicalb.core.parser.analysis.prolog.ASTProlog;
 import de.be4.classicalb.core.parser.node.AEventBContextParseUnit;
