@@ -6,13 +6,31 @@
 
 package de.prob.core;
 
+import org.eclipse.core.runtime.IStatus;
+
 import de.prob.exceptions.ProBException;
+import de.prob.logging.Logger;
 
 public class PrologException extends ProBException {
 
 	private static final long serialVersionUID = -7087955720127900792L;
+	private final boolean onlyWarnings;
 
-	public PrologException(final String message) {
+	public PrologException(final String message, final boolean onlyWarnings) {
 		super(message, true);
+		this.onlyWarnings = onlyWarnings;
+	}
+
+	@Override
+	public final void notifyUserOnce() {
+		if (!handled) {
+			handled = true;
+			if (onlyWarnings) {
+				Logger.log(IStatus.WARNING, Logger.NOBUGREPORT,
+						this.getMessage(), this);
+			} else {
+				Logger.notifyUser(this.getMessage(), this);
+			}
+		}
 	}
 }

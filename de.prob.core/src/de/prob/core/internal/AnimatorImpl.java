@@ -177,7 +177,8 @@ public class AnimatorImpl {
 				errors = getErrors.getErrors();
 			}
 			if (errors != null && !errors.isEmpty()) {
-				ProblemHandler.raisePrologException(errors);
+				ProblemHandler.raisePrologException(errors,
+						getErrors.onlyWarningsOccurred());
 			}
 		}
 	}
