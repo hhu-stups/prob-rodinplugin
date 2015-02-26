@@ -24,7 +24,6 @@ import de.prob.core.command.StartAnimationCommand;
 import de.prob.eventb.disprover.core.DisproverReasoner;
 import de.prob.eventb.disprover.core.command.DisproverLoadCommand;
 import de.prob.eventb.translator.internal.TranslationVisitor;
-import de.prob.exceptions.ProBException;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.ListPrologTerm;
@@ -66,7 +65,7 @@ public class DisproverCommand implements IComposableCommand {
 			IEventBProject project, Set<Predicate> allHypotheses,
 			Set<Predicate> selectedHypotheses, Predicate goal, int timeout,
 			AEventBContextParseUnit context, IProofMonitor pm)
-			throws ProBException, InterruptedException {
+			throws InterruptedException {
 		Preferences prefNode = Platform.getPreferencesService().getRootNode()
 				.node(InstanceScope.SCOPE).node("prob_disprover_preferences");
 
