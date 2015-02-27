@@ -5,11 +5,24 @@ import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.*;
-import org.eclipse.swt.layout.*;
-import org.eclipse.swt.widgets.*;
-import org.eclipse.ui.*;
-import org.osgi.service.prefs.*;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.events.VerifyEvent;
+import org.eclipse.swt.events.VerifyListener;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchPreferencePage;
+import org.osgi.service.prefs.BackingStoreException;
+import org.osgi.service.prefs.Preferences;
 
 public class DisproverPreferences extends PreferencePage implements
 		IWorkbenchPreferencePage {
@@ -38,6 +51,7 @@ public class DisproverPreferences extends PreferencePage implements
 	private Text timeoutTextField;
 	private Button checkCLPFD;
 	private Button checkCHR;
+	private Button checkCSE;
 
 	public DisproverPreferences() {
 		super();
@@ -127,6 +141,12 @@ public class DisproverPreferences extends PreferencePage implements
 		Label chrRemark = new Label(pageComponent, SWT.WRAP);
 		chrRemark
 				.setText("Note: The CHR Solver can only be used in conjunction with the CLP(FD) solver.");
+		chrRemark.setLayoutData(gridData2);
+
+		new Label(pageComponent, SWT.NONE)
+				.setText("Use Common Subexpression Elemination:");
+		checkCSE = new Button(pageComponent, SWT.CHECK);
+		checkCSE.setSelection(prefNode.getBoolean("clpfd", true));
 
 		return pageComponent;
 	}
@@ -136,6 +156,7 @@ public class DisproverPreferences extends PreferencePage implements
 		prefNode.put("timeout", timeoutTextField.getText());
 		prefNode.putBoolean("clpfd", checkCLPFD.getSelection());
 		prefNode.putBoolean("chr", checkCHR.getSelection());
+		prefNode.putBoolean("cse", checkCSE.getSelection());
 		try {
 			prefNode.flush();
 		} catch (BackingStoreException e) {

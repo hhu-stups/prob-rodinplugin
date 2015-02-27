@@ -79,6 +79,10 @@ public class DisproverCommand implements IComposableCommand {
 				Boolean.toString(prefNode.getBoolean("clpfd", true)));
 		final SetPreferenceCommand setCHR = new SetPreferenceCommand("CHR",
 				Boolean.toString(prefNode.getBoolean("clpfd", true)));
+		final SetPreferenceCommand setCSE = new SetPreferenceCommand("CSE",
+				Boolean.toString(prefNode.getBoolean("cse", true)));
+		final SetPreferenceCommand setCSEPred = new SetPreferenceCommand(
+				"CSE_PRED", Boolean.toString(prefNode.getBoolean("cse", true)));
 
 		DisproverLoadCommand load = new DisproverLoadCommand(project, context);
 
@@ -88,8 +92,8 @@ public class DisproverCommand implements IComposableCommand {
 				selectedHypotheses, goal, timeout
 						* prefNode.getInt("timeout", 1000));
 
-		composed = new ComposedCommand(clear, setPrefs, setCLPFD, setCHR, load,
-				start, disprove);
+		composed = new ComposedCommand(clear, setPrefs, setCLPFD, setCHR,
+				setCSE, setCSEPred, load, start, disprove);
 
 		final Job job = new ProBCommandJob("Disproving", animator, composed);
 		job.setUser(true);
