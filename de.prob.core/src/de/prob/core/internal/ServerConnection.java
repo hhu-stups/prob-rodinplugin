@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.nio.charset.Charset;
 
 import de.prob.cli.CliException;
 import de.prob.cli.CliStarter;
@@ -49,6 +50,7 @@ public class ServerConnection implements IServerConnection {
 		return lastCommand;
 	}
 
+	@Override
 	public String getDebuggingKey() {
 		return cli == null ? null : cli.getDebuggingKey();
 	}
@@ -75,6 +77,7 @@ public class ServerConnection implements IServerConnection {
 		}
 	}
 
+	@Override
 	public String sendCommand(final String commandString) throws ProBException {
 		if (shutdown) {
 			final String message = "probcli is currently shutting down";
@@ -100,7 +103,8 @@ public class ServerConnection implements IServerConnection {
 		try {
 			input = readAnswer();
 			if (input == null)
-				throw new IOException("ProB binary returned nothing - it might have crashed");
+				throw new IOException(
+						"ProB binary returned nothing - it might have crashed");
 		} catch (final IOException e) {
 			shutdown();
 			String message = "Exception while reading from socket";
@@ -152,7 +156,9 @@ public class ServerConnection implements IServerConnection {
 				// trim white spaces and append
 				// instead of removing the last byte trim is used, because on
 				// windows prob uses \r\n as new line.
-				result.append((new String(buffer, 0, count)).trim());
+				String s = new String(buffer, 0, count, Charset
+						.defaultCharset().name());
+				result.append(s.replace("\r", "").replace("\n", ""));
 			} else {
 				done = true;
 			}
@@ -161,6 +167,7 @@ public class ServerConnection implements IServerConnection {
 		return result.length() > 0 ? result.toString() : null;
 	}
 
+	@Override
 	public void startup(final File file) throws CliException {
 		if (shutdown) {
 			startcli(file);
@@ -173,6 +180,7 @@ public class ServerConnection implements IServerConnection {
 		}
 	}
 
+	@Override
 	public void shutdown() {
 		if (!shutdown) {
 			if (socket != null) {
@@ -199,6 +207,7 @@ public class ServerConnection implements IServerConnection {
 		}
 	}
 
+	@Override
 	public int getCliPortNumber() {
 		return cli.getPort();
 	}
