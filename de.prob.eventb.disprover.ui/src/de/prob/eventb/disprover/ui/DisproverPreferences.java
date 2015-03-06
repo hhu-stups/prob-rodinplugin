@@ -52,7 +52,7 @@ public class DisproverPreferences extends PreferencePage implements
 	private Button checkCLPFD;
 	private Button checkCHR;
 	private Button checkCSE;
-	private Button doubleEval;
+	private Button checkDoubleEval;
 
 	public DisproverPreferences() {
 		super();
@@ -147,12 +147,12 @@ public class DisproverPreferences extends PreferencePage implements
 		new Label(pageComponent, SWT.NONE)
 				.setText("Use Common Subexpression Elemination:");
 		checkCSE = new Button(pageComponent, SWT.CHECK);
-		checkCSE.setSelection(prefNode.getBoolean("clpfd", true));
+		checkCSE.setSelection(prefNode.getBoolean("cse", false));
 
 		new Label(pageComponent, SWT.NONE)
 				.setText("Check (Hypotheses ^ Goal) in addition to (Hypotheses ^ not Goal) to identify contradiction in hypotheses :");
-		doubleEval = new Button(pageComponent, SWT.CHECK);
-		doubleEval.setSelection(prefNode.getBoolean("clpfd", true));
+		checkDoubleEval = new Button(pageComponent, SWT.CHECK);
+		checkDoubleEval.setSelection(prefNode.getBoolean("doubleeval", false));
 
 		return pageComponent;
 	}
@@ -163,7 +163,7 @@ public class DisproverPreferences extends PreferencePage implements
 		prefNode.putBoolean("clpfd", checkCLPFD.getSelection());
 		prefNode.putBoolean("chr", checkCHR.getSelection());
 		prefNode.putBoolean("cse", checkCSE.getSelection());
-		prefNode.putBoolean("doubleeval", doubleEval.getSelection());
+		prefNode.putBoolean("doubleeval", checkDoubleEval.getSelection());
 		try {
 			prefNode.flush();
 		} catch (BackingStoreException e) {
