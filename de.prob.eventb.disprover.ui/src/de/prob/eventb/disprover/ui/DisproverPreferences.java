@@ -52,6 +52,7 @@ public class DisproverPreferences extends PreferencePage implements
 	private Button checkCLPFD;
 	private Button checkCHR;
 	private Button checkCSE;
+	private Button doubleEval;
 
 	public DisproverPreferences() {
 		super();
@@ -148,6 +149,11 @@ public class DisproverPreferences extends PreferencePage implements
 		checkCSE = new Button(pageComponent, SWT.CHECK);
 		checkCSE.setSelection(prefNode.getBoolean("clpfd", true));
 
+		new Label(pageComponent, SWT.NONE)
+				.setText("Check (Hypotheses ^ Goal) in addition to (Hypotheses ^ not Goal) to identify contradiction in hypotheses :");
+		doubleEval = new Button(pageComponent, SWT.CHECK);
+		doubleEval.setSelection(prefNode.getBoolean("clpfd", true));
+
 		return pageComponent;
 	}
 
@@ -157,6 +163,7 @@ public class DisproverPreferences extends PreferencePage implements
 		prefNode.putBoolean("clpfd", checkCLPFD.getSelection());
 		prefNode.putBoolean("chr", checkCHR.getSelection());
 		prefNode.putBoolean("cse", checkCSE.getSelection());
+		prefNode.putBoolean("doubleeval", doubleEval.getSelection());
 		try {
 			prefNode.flush();
 		} catch (BackingStoreException e) {
