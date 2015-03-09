@@ -56,7 +56,7 @@ public class ExportPOsHandler extends AbstractHandler implements IHandler {
 			final Shell shell = HandlerUtil.getActiveShell(event);
 			final String fileName = askForExportFile(prefs, shell, root);
 			if (fileName != null) {
-				exportPOs(fileName, root);
+				exportPOs(shell, fileName, root);
 			}
 		}
 		return null;
@@ -104,7 +104,8 @@ public class ExportPOsHandler extends AbstractHandler implements IHandler {
 		return result;
 	}
 
-	public static void exportPOs(final String filename, final IEventBRoot root) {
+	public static void exportPOs(final Shell shell, final String filename,
+			final IEventBRoot root) {
 		final boolean isSafeToWrite = isSafeToWrite(filename);
 
 		if (isSafeToWrite) {
@@ -132,8 +133,11 @@ public class ExportPOsHandler extends AbstractHandler implements IHandler {
 			} catch (IOException e) {
 				Logger.notifyUser("Unable to create file '" + filename + "'");
 			} catch (RodinDBException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				MessageDialog
+						.openError(
+								shell,
+								"A RodinDBException Occured",
+								"A RodinDBException occured while fetching sequents. Exported POs might be incomplete.");
 			} finally {
 				if (fw != null) {
 					fw.close();
