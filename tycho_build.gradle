@@ -111,12 +111,12 @@ try{
 try{
 	targetRepositories = targetRepositories
 }catch(MissingPropertyException e){
-	project.ext.targetRepositories = ["http://download.eclipse.org/releases/indigo/"]
+	project.ext.targetRepositories = ["http://download.eclipse.org/releases/luna/"]
 }
 
 try{
 	buildProduct = buildProduct
-	
+
 }catch(MissingPropertyException e){
 	project.ext.buildProduct = false
 }
