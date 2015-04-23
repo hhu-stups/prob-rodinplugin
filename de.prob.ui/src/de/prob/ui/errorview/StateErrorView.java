@@ -55,7 +55,7 @@ public class StateErrorView extends StateBasedViewPart {
 		TreeViewerColumn col = new TreeViewerColumn(errorTree, SWT.LEFT);
 		col.getColumn().setText("Short description");
 		col.getColumn().setResizable(true);
-		col.getColumn().setWidth(100);
+		col.getColumn().setWidth(200);
 
 		errorTree.setContentProvider(new ErrorContentProvider());
 		errorTree.setLabelProvider(new ErrorLabelProvider());
