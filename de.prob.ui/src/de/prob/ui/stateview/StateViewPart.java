@@ -123,6 +123,7 @@ public class StateViewPart extends StateBasedViewPart {
 		MenuManager menuMgr = new MenuManager("#PopupMenu");
 		menuMgr.setRemoveAllWhenShown(true);
 		menuMgr.addMenuListener(new IMenuListener() {
+			@Override
 			public void menuAboutToShow(final IMenuManager manager) {
 				x.fillContextMenu(manager);
 			}
@@ -142,10 +143,12 @@ public class StateViewPart extends StateBasedViewPart {
 				TextTransfer.getInstance() };
 		treeViewer.addDragSupport(DND.DROP_COPY, transferTypes,
 				new DragSourceListener() {
+					@Override
 					public void dragStart(final DragSourceEvent event) {
 						// System.out.println("dragStart");
 					}
 
+					@Override
 					public void dragSetData(final DragSourceEvent event) {
 						// System.out.println("dragSetData");
 						final IStructuredSelection selection = (IStructuredSelection) treeViewer
@@ -178,6 +181,7 @@ public class StateViewPart extends StateBasedViewPart {
 						}
 					}
 
+					@Override
 					public void dragFinished(final DragSourceEvent event) {
 						// System.out.println("dragFinished");
 					}
@@ -271,6 +275,7 @@ public class StateViewPart extends StateBasedViewPart {
 		// define some colors and fonts
 		final Display display = Display.getCurrent();
 		final Color gray = display.getSystemColor(SWT.COLOR_GRAY);
+		final Color orange = display.getSystemColor(SWT.COLOR_DARK_YELLOW);
 		final Color green = display.getSystemColor(SWT.COLOR_GREEN);
 		final Color red = display.getSystemColor(SWT.COLOR_RED);
 		final Font bold = JFaceResources.getFontRegistry().getBold(
@@ -326,7 +331,9 @@ public class StateViewPart extends StateBasedViewPart {
 				StateViewStrings.signalTimeoutTooltip);
 
 		final BooleanLabelProvider timeoutProvider = new BooleanLabelProvider();
-		timeoutProvider.setTexts(null, StateViewStrings.signalTimeoutMaxReached, StateViewStrings.signalTimeoutBad);
+		timeoutProvider.setTexts(null,
+				StateViewStrings.signalTimeoutMaxReached,
+				StateViewStrings.signalTimeoutBad);
 		timeoutProvider.setBackgroundColors(gray, orange, red);
 		timeoutProvider.setFonts(null, bold, bold);
 		timeoutProvider.hideWhenInactive(false);
@@ -370,6 +377,7 @@ public class StateViewPart extends StateBasedViewPart {
 	}
 
 	private static class InvContentProvider extends SimpleContentProvider {
+		@Override
 		public Object convert(final Object element) {
 			final Boolean result;
 			if (element != null && element instanceof State) {
@@ -384,6 +392,7 @@ public class StateViewPart extends StateBasedViewPart {
 	}
 
 	private static class StateErrorProvider extends SimpleContentProvider {
+		@Override
 		public Object convert(final Object element) {
 			final Boolean result;
 			if (element != null && element instanceof State) {
@@ -398,16 +407,17 @@ public class StateViewPart extends StateBasedViewPart {
 	}
 
 	private static class TimeoutContentProvider extends SimpleContentProvider {
+		@Override
 		public Object convert(final Object element) {
 			final Boolean result;
 			if (element != null && element instanceof State) {
 				final State state = (State) element;
-		        if (state.isTimeoutOccured()) {
-			       result = Boolean.FALSE;
-			    } else {
-				   result = (state.isMaxOperationReached() ? Boolean.TRUE : null);
-			   }
-			}
+				if (state.isTimeoutOccured()) {
+					result = Boolean.FALSE;
+				} else {
+					result = (state.isMaxOperationReached() ? Boolean.TRUE
+							: null);
+				}
 			} else {
 				result = null;
 			}
@@ -417,12 +427,14 @@ public class StateViewPart extends StateBasedViewPart {
 
 	private static class ModelChangeContentProvider extends
 			SimpleContentProvider {
+		@Override
 		public Object convert(final Object element) {
 			return !Animator.getAnimator().isDirty();
 		}
 	}
 
 	private static class ResetAnimationListener implements MouseListener {
+		@Override
 		public void mouseDoubleClick(final MouseEvent event) {
 			Animator animator = Animator.getAnimator();
 			LanguageDependendAnimationPart ldp = animator
@@ -436,15 +448,18 @@ public class StateViewPart extends StateBasedViewPart {
 			}
 		}
 
+		@Override
 		public void mouseDown(final MouseEvent arg0) {
 		}
 
+		@Override
 		public void mouseUp(final MouseEvent arg0) {
 		}
 
 	}
 
 	private static class ErrorViewDoubleClick implements MouseListener {
+		@Override
 		public void mouseDoubleClick(final MouseEvent event) {
 			IWorkbenchPage wpage = PlatformUI.getWorkbench()
 					.getActiveWorkbenchWindow().getActivePage();
@@ -455,9 +470,11 @@ public class StateViewPart extends StateBasedViewPart {
 			}
 		}
 
+		@Override
 		public void mouseDown(final MouseEvent arg0) {
 		}
 
+		@Override
 		public void mouseUp(final MouseEvent arg0) {
 		}
 	}
@@ -471,6 +488,7 @@ public class StateViewPart extends StateBasedViewPart {
 
 	private void refreshTreeView() {
 		final Runnable refresh = new Runnable() {
+			@Override
 			public void run() {
 				treeViewer.refresh();
 			}
