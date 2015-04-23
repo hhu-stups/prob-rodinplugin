@@ -326,9 +326,9 @@ public class StateViewPart extends StateBasedViewPart {
 				StateViewStrings.signalTimeoutTooltip);
 
 		final BooleanLabelProvider timeoutProvider = new BooleanLabelProvider();
-		timeoutProvider.setTexts(null, null, StateViewStrings.signalTimeoutBad);
-		timeoutProvider.setBackgroundColors(gray, gray, red);
-		timeoutProvider.setFonts(null, null, bold);
+		timeoutProvider.setTexts(null, StateViewStrings.signalTimeoutMaxReached, StateViewStrings.signalTimeoutBad);
+		timeoutProvider.setBackgroundColors(gray, orange, red);
+		timeoutProvider.setFonts(null, bold, bold);
 		timeoutProvider.hideWhenInactive(false);
 		timeoutViewer.setLabelProvider(timeoutProvider);
 		timeoutViewer.setContentProvider(new TimeoutContentProvider());
@@ -388,6 +388,7 @@ public class StateViewPart extends StateBasedViewPart {
 			final Boolean result;
 			if (element != null && element instanceof State) {
 				final State state = (State) element;
+				// check if constantsSetUp
 				result = Boolean.valueOf(!state.hasStateBasedErrors());
 			} else {
 				result = null;
@@ -401,7 +402,12 @@ public class StateViewPart extends StateBasedViewPart {
 			final Boolean result;
 			if (element != null && element instanceof State) {
 				final State state = (State) element;
-				result = state.isTimeoutOccured() ? Boolean.FALSE : null;
+		        if (state.isTimeoutOccured()) {
+			       result = Boolean.FALSE;
+			    } else {
+				   result = (state.isMaxOperationReached() ? Boolean.TRUE : null);
+			   }
+			}
 			} else {
 				result = null;
 			}

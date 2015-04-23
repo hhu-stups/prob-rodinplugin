@@ -24,6 +24,7 @@ public class StateViewStrings extends NLS {
 
 	public static String signalTimeoutTooltip;
 	public static String signalTimeoutBad;
+	public static String signalTimeoutMaxReached;
 
 	public static String columnHeaderName;
 	public static String columnHeaderCurrentvalue;
