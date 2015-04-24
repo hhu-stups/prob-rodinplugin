@@ -50,12 +50,12 @@ public class StateErrorView extends StateBasedViewPart {
 		errorTree = new TreeViewer(sashForm);
 		errorTree.getTree().setHeaderVisible(false);
 		errorTree.getTree().setLinesVisible(false);
-		errorTree.setAutoExpandLevel(2);
+		errorTree.setAutoExpandLevel(3);
 
 		TreeViewerColumn col = new TreeViewerColumn(errorTree, SWT.LEFT);
 		col.getColumn().setText("Short description");
 		col.getColumn().setResizable(true);
-		col.getColumn().setWidth(175);
+		col.getColumn().setWidth(150);
 
 		errorTree.setContentProvider(new ErrorContentProvider());
 		errorTree.setLabelProvider(new ErrorLabelProvider());
