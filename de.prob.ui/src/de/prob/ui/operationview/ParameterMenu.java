@@ -1,9 +1,13 @@
 package de.prob.ui.operationview;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.ui.menus.*;
+import org.eclipse.ui.menus.CommandContributionItem;
+import org.eclipse.ui.menus.CommandContributionItemParameter;
+import org.eclipse.ui.menus.ExtensionContributionFactory;
+import org.eclipse.ui.menus.IContributionRoot;
 import org.eclipse.ui.services.IServiceLocator;
 
 import de.prob.core.domainobjects.Operation;

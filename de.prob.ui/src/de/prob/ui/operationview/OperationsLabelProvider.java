@@ -41,6 +41,7 @@ class OperationsLabelProvider extends LabelProvider implements
 	// character code for "times" (similar to the letter x)
 	private static final char TIMES = 215;
 
+	@Override
 	public Image getColumnImage(final Object element, final int columnIndex) {
 		if (columnIndex == 0) {
 			if (element instanceof String) {
@@ -58,6 +59,7 @@ class OperationsLabelProvider extends LabelProvider implements
 		return null;
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public String getColumnText(final Object element, final int columnIndex) {
 
@@ -90,8 +92,9 @@ class OperationsLabelProvider extends LabelProvider implements
 					List<String> args = op.getArguments();
 					int columnWidth = this.operationTableViewer.getViewer()
 							.getTable().getColumn(columnIndex).getWidth();
-					return OperationTableViewer.convertParamsToString(10,
-							columnWidth / 6, args);
+					return OperationTableViewer.convertParamsToString(
+							columnWidth / 6 / args.size(), columnWidth / 6,
+							args);
 
 				}
 			}
