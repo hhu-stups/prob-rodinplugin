@@ -93,8 +93,8 @@ class OperationsLabelProvider extends LabelProvider implements
 					int columnWidth = this.operationTableViewer.getViewer()
 							.getTable().getColumn(columnIndex).getWidth();
 					return OperationTableViewer.convertParamsToString(
-							columnWidth / 6 / args.size(), columnWidth / 6,
-							args);
+							columnWidth / 6 / Math.max(args.size(), 1),
+							columnWidth / 6, args);
 
 				}
 			}
