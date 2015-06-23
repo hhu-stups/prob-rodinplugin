@@ -66,12 +66,12 @@ public class ProblemHandler {
 	 *            The List of Error Messages from ProB
 	 * @throws PrologException
 	 */
-	public static void raisePrologException(final List<String> errors)
-			throws PrologException {
+	public static void raisePrologException(final List<String> errors,
+			final boolean onlyWarnings) throws PrologException {
 		final String message = "ProB reported errors:\n"
 				+ StringUtils.join(errors, '\n');
 		Logger.notifyUser(message);
-		throw new PrologException(message);
+		throw new PrologException(message, onlyWarnings);
 	}
 
 	/**

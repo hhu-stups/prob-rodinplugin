@@ -24,7 +24,6 @@ import de.prob.core.command.StartAnimationCommand;
 import de.prob.eventb.disprover.core.DisproverReasoner;
 import de.prob.eventb.disprover.core.command.DisproverLoadCommand;
 import de.prob.eventb.translator.internal.TranslationVisitor;
-import de.prob.exceptions.ProBException;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.ListPrologTerm;
@@ -66,7 +65,7 @@ public class DisproverCommand implements IComposableCommand {
 			IEventBProject project, Set<Predicate> allHypotheses,
 			Set<Predicate> selectedHypotheses, Predicate goal, int timeout,
 			AEventBContextParseUnit context, IProofMonitor pm)
-			throws ProBException, InterruptedException {
+			throws InterruptedException {
 		Preferences prefNode = Platform.getPreferencesService().getRootNode()
 				.node(InstanceScope.SCOPE).node("prob_disprover_preferences");
 
@@ -79,7 +78,14 @@ public class DisproverCommand implements IComposableCommand {
 		final SetPreferenceCommand setCLPFD = new SetPreferenceCommand("CLPFD",
 				Boolean.toString(prefNode.getBoolean("clpfd", true)));
 		final SetPreferenceCommand setCHR = new SetPreferenceCommand("CHR",
-				Boolean.toString(prefNode.getBoolean("clpfd", true)));
+				Boolean.toString(prefNode.getBoolean("chr", true)));
+		final SetPreferenceCommand setCSE = new SetPreferenceCommand("CSE",
+				Boolean.toString(prefNode.getBoolean("cse", false)));
+		final SetPreferenceCommand setCSEPred = new SetPreferenceCommand(
+				"CSE_PRED", Boolean.toString(prefNode.getBoolean("cse", false)));
+		final SetPreferenceCommand setDoubleEval = new SetPreferenceCommand(
+				"DOUBLE_EVALUATION", Boolean.toString(prefNode.getBoolean(
+						"doubleeval", true)));
 
 		DisproverLoadCommand load = new DisproverLoadCommand(project, context);
 
@@ -89,8 +95,8 @@ public class DisproverCommand implements IComposableCommand {
 				selectedHypotheses, goal, timeout
 						* prefNode.getInt("timeout", 1000));
 
-		composed = new ComposedCommand(clear, setPrefs, setCLPFD, setCHR, load,
-				start, disprove);
+		composed = new ComposedCommand(clear, setPrefs, setCLPFD, setCHR,
+				setCSE, setCSEPred, setDoubleEval, load, start, disprove);
 
 		final Job job = new ProBCommandJob("Disproving", animator, composed);
 		job.setUser(true);
@@ -172,6 +178,12 @@ public class DisproverCommand implements IComposableCommand {
 		if ("contradiction_found".equals(term.getFunctor())) {
 			counterExample = new CounterExample(false, false, false);
 			counterExample.setProof(true);
+		}
+
+		if ("contradiction_in_hypotheses".equals(term.getFunctor())) {
+			counterExample = new CounterExample(false, false, false);
+			counterExample.setProof(true);
+			counterExample.setDoubleCheckFailed(true);
 		}
 
 		if ("solution".equals(term.getFunctor())) {

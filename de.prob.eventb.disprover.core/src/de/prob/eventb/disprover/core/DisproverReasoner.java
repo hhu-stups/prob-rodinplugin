@@ -25,12 +25,10 @@ import org.rodinp.core.RodinDBException;
 import de.be4.classicalb.core.parser.analysis.prolog.ASTProlog;
 import de.be4.classicalb.core.parser.node.AEventBContextParseUnit;
 import de.prob.core.Animator;
-import de.prob.core.PrologException;
 import de.prob.eventb.disprover.core.internal.DisproverCommand;
 import de.prob.eventb.disprover.core.internal.ICounterExample;
 import de.prob.eventb.disprover.core.translation.DisproverContextCreator;
 import de.prob.eventb.translator.internal.TranslationVisitor;
-import de.prob.exceptions.ProBException;
 import de.prob.logging.Logger;
 import de.prob.prolog.output.PrologTermStringOutput;
 
@@ -63,25 +61,17 @@ public class DisproverReasoner implements IReasoner {
 			ICounterExample ce = evaluateSequent(sequent, disproverInput,
 					timeoutFactor, pm);
 			return createDisproverResult(ce, sequent, input);
-		} catch (PrologException e) {
-			Logger.log(Logger.WARNING, Status.WARNING, e.getMessage(), e);
-			return ProverFactory.reasonerFailure(this, input, e.getMessage());
-		} catch (ProBException e) {
-			Logger.log(Logger.WARNING, Status.WARNING, e.getMessage(), e);
-			return ProverFactory.reasonerFailure(this, input, e.getMessage());
 		} catch (RodinDBException e) {
 			Logger.log(Logger.WARNING, Status.WARNING, e.getMessage(), e);
 			return ProverFactory.reasonerFailure(this, input, e.getMessage());
 		} catch (InterruptedException e) {
 			return ProverFactory.reasonerFailure(this, input, e.getMessage());
-
 		}
 	}
 
 	private ICounterExample evaluateSequent(final IProverSequent sequent,
 			final DisproverReasonerInput disproverInput, int timeoutFactor,
-			IProofMonitor pm) throws ProBException, RodinDBException,
-			InterruptedException {
+			IProofMonitor pm) throws RodinDBException, InterruptedException {
 		// Logger.info("Calling Disprover on Sequent");
 
 		Set<Predicate> allHypotheses = new HashSet<Predicate>();
@@ -167,11 +157,20 @@ public class DisproverReasoner implements IReasoner {
 					"ProB: Timeout occurred.");
 		}
 
-		if (!counterExample.counterExampleFound() && counterExample.isProof()) {
+		if (!counterExample.counterExampleFound() && counterExample.isProof()
+				&& !counterExample.doubleCheckFailed()) {
 			System.out.println(sequent.toString() + ": Proof.");
 			return ProverFactory.makeProofRule(this, input, sequent.goal(),
 					usedHyps, IConfidence.DISCHARGED_MAX,
 					"ProB (no enumeration / all cases checked)");
+		}
+
+		if (!counterExample.counterExampleFound() && counterExample.isProof()
+				&& counterExample.doubleCheckFailed()) {
+			System.out.println(sequent.toString() + ": Proof.");
+			return ProverFactory.makeProofRule(this, input, sequent.goal(),
+					usedHyps, IConfidence.DISCHARGED_MAX,
+					"ProB (contradiction in hypotheses)");
 		}
 
 		if (!counterExample.counterExampleFound()) {

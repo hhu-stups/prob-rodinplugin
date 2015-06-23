@@ -1,6 +1,7 @@
 package de.prob.eventb.disprover.core.internal;
 
-import java.util.*;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 /**
  * This class wraps the results from a Disprover run. It either indicates that
@@ -16,6 +17,7 @@ class CounterExample implements ICounterExample {
 	public final SortedMap<String, String> state = new TreeMap<String, String>();
 	private final boolean timeoutOccured;
 	private boolean proof = false;
+	private boolean doubleCheckFailed = false;
 	private boolean selectedHypotheses = false;
 	private String reason = "";
 
@@ -80,5 +82,13 @@ class CounterExample implements ICounterExample {
 	@Override
 	public boolean onlySelectedHypotheses() {
 		return selectedHypotheses;
+	}
+
+	public void setDoubleCheckFailed(boolean b) {
+		doubleCheckFailed = b;
+	}
+
+	public boolean doubleCheckFailed() {
+		return doubleCheckFailed;
 	}
 }

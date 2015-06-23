@@ -33,7 +33,7 @@ public class StateErrorView extends StateBasedViewPart {
 
 	@Override
 	public Control createStatePartControl(final Composite parent) {
-		SashForm sashForm = new SashForm(parent, SWT.HORIZONTAL | SWT.SMOOTH);
+		SashForm sashForm = new SashForm(parent, SWT.HORIZONTAL | SWT.SMOOTH | SWT.NO_TRIM); //  can we use things likw SWT.NOTRIM
 
 		createErrorTree(sashForm);
 
@@ -50,12 +50,12 @@ public class StateErrorView extends StateBasedViewPart {
 		errorTree = new TreeViewer(sashForm);
 		errorTree.getTree().setHeaderVisible(false);
 		errorTree.getTree().setLinesVisible(false);
-		errorTree.setAutoExpandLevel(2);
+		errorTree.setAutoExpandLevel(3);
 
 		TreeViewerColumn col = new TreeViewerColumn(errorTree, SWT.LEFT);
 		col.getColumn().setText("Short description");
 		col.getColumn().setResizable(true);
-		col.getColumn().setWidth(100);
+		col.getColumn().setWidth(150);
 
 		errorTree.setContentProvider(new ErrorContentProvider());
 		errorTree.setLabelProvider(new ErrorLabelProvider());
