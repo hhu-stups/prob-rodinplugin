@@ -5,3 +5,9 @@ branches:
   - develop
 jdk:
 - oraclejdk7
+after_success:  find updatesite/ -type f -exec curl -u $FTP_USER:$FTP_PASS --ftp-create-dirs
+   -T {} ftp://cobra.cs.uni-duesseldorf.de/upload/{} \;
+env:
+  global:
+  - secure: CK1LGzTPR6iqzMo/hmoYlEumPxEgNTNX+4zzb5FsxNnnmqwsa+3Vmwlmbn7ZOIbhxVoooQTP4z93Cn1H4jlmoxJPlTO9gndotLz11P8pk71bUidDyS62voG5GmLjFiWKA2ip63KhhMAI9QhADD8pEftuOv4sCgf4lWoSX3o1JGo=
+  - secure: HpoA/g90rs1CRyv6D9oAv4snIcdkNHlmv8WU7oWyHQEKTQk4qNZpxaNozJdnDz3EACAWfr/1N6JcBE1ZLXWXQ3fNl7ZD6CvlEXOvDPImcpN0qhpCEQ9uUjrbCsrINcBHxcC3ooHmGaeZAU5/ASBQXFSQZubKcDEbx4DCejxDAr8=
