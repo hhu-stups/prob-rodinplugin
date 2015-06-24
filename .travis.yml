@@ -1,0 +1,7 @@
+language: java
+script: gradle createPoms downloadCli collectDependencies && mvn -f de.prob.parent/pom.xml install && gradle collectArtifacts
+branches:
+  only:
+  - develop
+jdk:
+- oraclejdk7
