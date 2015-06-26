@@ -9,7 +9,12 @@ before_install:
     - export PATH=$M2_HOME/bin:$PATH
     - mvn --version
 
-script: gradle createPoms downloadCli collectDependencies && mvn -f de.prob.parent/pom.xml install && gradle collectArtifacts
+script: 
+    - gradle createPoms 
+    - gradle downloadCli 
+    - gradle collectDependencies 
+    - mvn -f de.prob.parent/pom.xml install 
+    - gradle collectArtifacts
 branches:
   only:
   - develop
