@@ -13,7 +13,7 @@ script:
     - gradle createPoms 
     - gradle downloadCli 
     - gradle collectDependencies 
-    - ant -f de.bmotionstudio.help/customBuild.xml
+    - ant -f de.bmotionstudio.help/customBuild.xml generate-help
     - mvn -f de.prob.parent/pom.xml install 
     - gradle collectArtifacts
 branches:
