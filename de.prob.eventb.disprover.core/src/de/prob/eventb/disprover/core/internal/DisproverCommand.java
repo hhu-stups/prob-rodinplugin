@@ -139,6 +139,8 @@ public class DisproverCommand implements IComposableCommand {
 		}
 		pto.closeList();
 		pto.printNumber(timeout);
+		pto.emptyList(); // do not submit extra options because we set the
+							// preference above
 		pto.printVariable(RESULT);
 		pto.closeTerm();
 	}
