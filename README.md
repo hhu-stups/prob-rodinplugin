@@ -1,5 +1,7 @@
 <img src="https://github.com/bendisposto/prob/raw/develop/logo.png" width="500" align="center">
 
+[![Build Status](https://travis-ci.org/bendisposto/prob.svg?branch=develop)](https://travis-ci.org/bendisposto/prob)
+
 # The ProB Model Checker and Animator
 
 The ProB source code is distributed under the EPL license (http://www.eclipse.org/org/documents/epl-v10.html).
