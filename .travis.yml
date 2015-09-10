@@ -1,5 +1,5 @@
 language: java
-sudo: false
+sudo: true
 
 before_install:
     - sudo rm -f /etc/mavenrc
