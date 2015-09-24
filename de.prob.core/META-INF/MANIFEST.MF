@@ -122,6 +122,7 @@ Bundle-Activator: de.prob.core.internal.Activator
 Eclipse-BuddyPolicy: registered
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ClassPath: .,
+ lib/dependencies/ptolemy-jfmi-1.1.0.jar,
  lib/dependencies/unicode-2.4.40.jar,
  lib/dependencies/theorymapping-2.4.40.jar,
  lib/dependencies/prologlib-2.4.40.jar,
