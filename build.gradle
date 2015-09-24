@@ -28,24 +28,21 @@ completeInstall.dependsOn bMotionStudioHelpCustumBuild
 project(':de.prob.core') {
 
 	repositories {
-		maven {
-		  name "cobra"
-		  url "http://cobra.cs.uni-duesseldorf.de/artifactory/repo"
-		}
+	  mavenCentral()
 	}
 
 
-        def parser_version = '2.4.33-SNAPSHOT'
+        def parser_version = '2.4.40'
 
 	dependencies {
-	 compile group: "de.prob", name: "answerparser", version: parser_version , changing: true
-	 compile group: "de.prob", name: "bparser", version: parser_version , changing: true
-	 compile group: "de.prob", name: "cliparser", version: parser_version , changing: true
-	 compile group: "de.prob", name: "ltlparser", version: parser_version , changing: true
-	 compile group: "de.prob", name: "parserbase", version: parser_version , changing: true
-	 compile group: "de.prob", name: "prologlib", version: parser_version , changing: true
-	 compile group: "de.prob", name: "unicode", version: parser_version , changing: true
-	 compile group: "de.prob", name: "theorymapping", version: parser_version , changing: true
+	 compile group: "de.hhu.stups", name: "answerparser", version: parser_version , changing: true
+	 compile group: "de.hhu.stups", name: "bparser", version: parser_version , changing: true
+	 compile group: "de.hhu.stups", name: "cliparser", version: parser_version , changing: true
+	 compile group: "de.hhu.stups", name: "ltlparser", version: parser_version , changing: true
+	 compile group: "de.hhu.stups", name: "parserbase", version: parser_version , changing: true
+	 compile group: "de.hhu.stups", name: "prologlib", version: parser_version , changing: true
+	 compile group: "de.hhu.stups", name: "unicode", version: parser_version , changing: true
+	 compile group: "de.hhu.stups", name: "theorymapping", version: parser_version , changing: true
 	 compile 'commons-lang:commons-lang:2.6'
 	}
 
@@ -53,10 +50,7 @@ project(':de.prob.core') {
 
 project(':de.prob.ui') {
 	repositories {
-		maven {
-		  name "cobra"
-		  url "http://cobra.cs.uni-duesseldorf.de/artifactory/repo"
-		}
+		mavenCentral()
 	}
 	dependencies {
 	 	compile 'commons-codec:commons-codec:1.6'
