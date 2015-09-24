@@ -81,6 +81,9 @@ public class DisproverCommand implements IComposableCommand {
 				Boolean.toString(prefNode.getBoolean("chr", true)));
 		final SetPreferenceCommand setCSE = new SetPreferenceCommand("CSE",
 				Boolean.toString(prefNode.getBoolean("cse", false)));
+		final SetPreferenceCommand setSMT = new SetPreferenceCommand(
+				"SMT_SUPPORTED_INTERPRETER", Boolean.toString(prefNode
+						.getBoolean("smt", false)));
 		final SetPreferenceCommand setCSEPred = new SetPreferenceCommand(
 				"CSE_PRED", Boolean.toString(prefNode.getBoolean("cse", false)));
 		final SetPreferenceCommand setDoubleEval = new SetPreferenceCommand(
@@ -96,7 +99,8 @@ public class DisproverCommand implements IComposableCommand {
 						* prefNode.getInt("timeout", 1000));
 
 		composed = new ComposedCommand(clear, setPrefs, setCLPFD, setCHR,
-				setCSE, setCSEPred, setDoubleEval, load, start, disprove);
+				setSMT, setCSE, setCSEPred, setDoubleEval, load, start,
+				disprove);
 
 		final Job job = new ProBCommandJob("Disproving", animator, composed);
 		job.setUser(true);
@@ -135,6 +139,8 @@ public class DisproverCommand implements IComposableCommand {
 		}
 		pto.closeList();
 		pto.printNumber(timeout);
+		pto.emptyList(); // do not submit extra options because we set the
+							// preference above
 		pto.printVariable(RESULT);
 		pto.closeTerm();
 	}

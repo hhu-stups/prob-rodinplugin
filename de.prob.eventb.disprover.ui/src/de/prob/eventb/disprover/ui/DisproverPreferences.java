@@ -52,6 +52,7 @@ public class DisproverPreferences extends PreferencePage implements
 	private Button checkCLPFD;
 	private Button checkCHR;
 	private Button checkCSE;
+	private Button checkSMT;
 	private Button checkDoubleEval;
 
 	public DisproverPreferences() {
@@ -150,6 +151,11 @@ public class DisproverPreferences extends PreferencePage implements
 		checkCSE.setSelection(prefNode.getBoolean("cse", false));
 
 		new Label(pageComponent, SWT.NONE)
+				.setText("Enable SMT Solver Support in Interpreter:");
+		checkSMT = new Button(pageComponent, SWT.CHECK);
+		checkSMT.setSelection(prefNode.getBoolean("smt", false));
+
+		new Label(pageComponent, SWT.NONE)
 				.setText("Check (Hypotheses ^ Goal) in addition to (Hypotheses ^ not Goal) to identify contradiction in hypotheses :");
 		checkDoubleEval = new Button(pageComponent, SWT.CHECK);
 		checkDoubleEval.setSelection(prefNode.getBoolean("doubleeval", false));
@@ -163,6 +169,7 @@ public class DisproverPreferences extends PreferencePage implements
 		prefNode.putBoolean("clpfd", checkCLPFD.getSelection());
 		prefNode.putBoolean("chr", checkCHR.getSelection());
 		prefNode.putBoolean("cse", checkCSE.getSelection());
+		prefNode.putBoolean("smt", checkSMT.getSelection());
 		prefNode.putBoolean("doubleeval", checkDoubleEval.getSelection());
 		try {
 			prefNode.flush();
