@@ -16,6 +16,7 @@ public enum SymmetryReductionOption {
 
 	private final String description;
 	private final int pos;
+	private static int selectedOption = 0;
 
 	private SymmetryReductionOption(final int pos, final String description) {
 		this.pos = pos;
@@ -28,6 +29,14 @@ public enum SymmetryReductionOption {
 
 	public final String getDescription() {
 		return description;
+	}
+
+	public final boolean isSelectedOption() {
+		return selectedOption == this.getPos();
+	}
+
+	public static final void setSelectedOption(int option) {
+		SymmetryReductionOption.selectedOption = option;
 	}
 
 	private static final Map<Integer, SymmetryReductionOption> lookup = new HashMap<Integer, SymmetryReductionOption>();
