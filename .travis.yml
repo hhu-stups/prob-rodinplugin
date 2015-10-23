@@ -23,7 +23,7 @@ branches:
 jdk:
 - oraclejdk7
 after_success:
-- travis-custom-deploy sftp org.eventb.texteditor.repository/target/repository/
+- travis-custom-deploy sftp updatesite/
 env:
   global:
   - secure: EBtNmeY6KPX+MMmEwd4+GJWkWJ4mQ4R+yV0O0Uu4/9QoO/6InUEMbeRJt3xYQ9ewjKMNPLY85EknZxBUWvJURyOicmuP1gbHYEfYjIYbbZrAE+82NDtbhe6eUjlAIpms/q7WZ78IEvghUeO6mnsPiJ0hmm0tVlQz5khHsm10wGs=
