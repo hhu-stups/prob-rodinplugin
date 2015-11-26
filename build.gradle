@@ -32,7 +32,7 @@ project(':de.prob.core') {
 	}
 
 
-        def parser_version = '2.4.40'
+        def parser_version = '2.5.0'
 
 	dependencies {
 	 compile group: "de.hhu.stups", name: "answerparser", version: parser_version , changing: true
