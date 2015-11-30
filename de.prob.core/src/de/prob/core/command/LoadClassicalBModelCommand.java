@@ -48,13 +48,10 @@ public final class LoadClassicalBModelCommand {
 	private LoadClassicalBModelCommand(final IEventBRoot model) {
 	}
 
-
-	private static void removeObsoletePreferences(final Animator animator)
-			throws ProBException {
+	private static void removeObsoletePreferences(final Animator animator) throws ProBException {
 		if (!preferencesAlreadyCleanedUp) {
 			// get all preference names from ProB
-			Collection<ProBPreference> prefs = GetPreferencesCommand
-					.getPreferences(animator);
+			Collection<ProBPreference> prefs = GetPreferencesCommand.getPreferences(animator);
 			Set<String> probPrefNames = new HashSet<String>();
 			for (ProBPreference probpref : prefs) {
 				probPrefNames.add(probpref.name);
@@ -69,8 +66,7 @@ public final class LoadClassicalBModelCommand {
 						// preference does not exists anymore
 						preferences.remove(prefname);
 						foundObsoletePreference = true;
-						String message = "removed obsolete preference from preferences store: "
-								+ prefname;
+						String message = "removed obsolete preference from preferences store: " + prefname;
 						Logger.info(message);
 					}
 				}
@@ -83,31 +79,26 @@ public final class LoadClassicalBModelCommand {
 			preferencesAlreadyCleanedUp = true;
 		}
 	}
-	
-	public static void load(final Animator animator, final File model, String name)
-			throws ProBException {
+
+	public static void load(final Animator animator, final File model, String name) throws ProBException {
 		animator.resetDirty();
 		removeObsoletePreferences(animator);
 
 		final ClearMachineCommand clear = new ClearMachineCommand();
-		final SetPreferencesCommand setPrefs = SetPreferencesCommand
-				.createSetPreferencesCommand(animator);
+		final SetPreferencesCommand setPrefs = SetPreferencesCommand.createSetPreferencesCommand(animator);
 		final IComposableCommand load = getLoadCommand(model, name);
 		final StartAnimationCommand start = new StartAnimationCommand();
 		final ExploreStateCommand explore = new ExploreStateCommand("root");
 
-		final ComposedCommand composed = new ComposedCommand(clear, setPrefs,
-				load, start, explore);
+		final ComposedCommand composed = new ComposedCommand(clear, setPrefs, load, start, explore);
 
 		animator.execute(composed);
 
 		final State commandResult = explore.getState();
-		animator.announceCurrentStateChanged(commandResult,
-				Operation.NULL_OPERATION);
+		animator.announceCurrentStateChanged(commandResult, Operation.NULL_OPERATION);
 	}
 
-		private static IComposableCommand getLoadCommand(final File model, final String name)
-			throws ProBException {
+	private static IComposableCommand getLoadCommand(final File model, final String name) throws ProBException {
 		return new IComposableCommand() {
 
 			@Override
@@ -121,8 +112,7 @@ public final class LoadClassicalBModelCommand {
 			}
 
 			@Override
-			public void processResult(
-					final ISimplifiedROMap<String, PrologTerm> bindings) {
+			public void processResult(final ISimplifiedROMap<String, PrologTerm> bindings) {
 				Animator.getAnimator().announceReset();
 				ListPrologTerm e = (ListPrologTerm) bindings.get("Errors");
 				if (!e.isEmpty()) {
@@ -135,7 +125,6 @@ public final class LoadClassicalBModelCommand {
 				}
 			}
 		};
-					
 
 	}
 
@@ -143,9 +132,8 @@ public final class LoadClassicalBModelCommand {
 		BParser bParser = new BParser();
 		try {
 			Start ast = bParser.parseFile(model, false);
-			final RecursiveMachineLoader rml = new RecursiveMachineLoader(
-					model.getParent(), null);
-			rml.loadAllMachines(model, ast, null, bParser.getDefinitions(), null);
+			final RecursiveMachineLoader rml = new RecursiveMachineLoader(model.getParent(), null);
+			rml.loadAllMachines(model, ast, null, bParser.getDefinitions());
 			StructuredPrologOutput output = new StructuredPrologOutput();
 			StructuredPrologOutput out = new StructuredPrologOutput();
 			rml.printAsProlog(output);
@@ -156,19 +144,18 @@ public final class LoadClassicalBModelCommand {
 			iterator.next();
 			iterator.next();
 			while (iterator.hasNext()) {
-				CompoundPrologTerm prologTerm = (CompoundPrologTerm) iterator
-						.next();
+				CompoundPrologTerm prologTerm = (CompoundPrologTerm) iterator.next();
 				out.printTerm(prologTerm.getArgument(1));
 			}
 			out.closeList();
 			out.fullstop();
 			return out.getSentences().iterator().next();
 		} catch (IOException e) {
-			Logger.notifyUser("IO Error",e);
-			throw new CommandException(e.getLocalizedMessage(),e);
+			Logger.notifyUser("IO Error", e);
+			throw new CommandException(e.getLocalizedMessage(), e);
 		} catch (BException e) {
-			Logger.notifyUser("Parser Error "+e.getLocalizedMessage(),e);
-			throw new CommandException(e.getLocalizedMessage(),e);
+			Logger.notifyUser("Parser Error " + e.getLocalizedMessage(), e);
+			throw new CommandException(e.getLocalizedMessage(), e);
 		}
 	}
 }

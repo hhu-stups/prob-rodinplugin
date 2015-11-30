@@ -42,7 +42,6 @@ import org.rodinp.core.IRodinProject;
 import org.rodinp.core.RodinCore;
 import org.rodinp.core.RodinDBException;
 
-import de.be4.classicalb.core.parser.analysis.pragma.internal.ClassifiedPragma;
 import de.be4.classicalb.core.parser.node.AAbstractConstantsContextClause;
 import de.be4.classicalb.core.parser.node.AAxiomsContextClause;
 import de.be4.classicalb.core.parser.node.AConstantsContextClause;
@@ -71,20 +70,19 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 	private final ISCContext context;
 	private final AEventBContextParseUnit model = new AEventBContextParseUnit();
 	private final Map<String, ISCContext> depContext = new HashMap<String, ISCContext>();
-	private final List<ClassifiedPragma> proofspragmas = new ArrayList<ClassifiedPragma>();
+	// private final List<ClassifiedPragma> proofspragmas = new
+	// ArrayList<ClassifiedPragma>();
 
 	private final IEventBRoot root;
 	private final FormulaFactory ff;
 	private final ITypeEnvironment te;
 
-	public static ContextTranslator create(final ISCContextRoot context)
-			throws TranslationFailedException {
+	public static ContextTranslator create(final ISCContextRoot context) throws TranslationFailedException {
 		try {
 			assertConsistentModel(context);
 			final FormulaFactory ff = context.getFormulaFactory();
 			final ITypeEnvironment te = context.getTypeEnvironment();
-			final ContextTranslator translator = new ContextTranslator(context,
-					ff, te, context);
+			final ContextTranslator translator = new ContextTranslator(context, ff, te, context);
 			translator.translate();
 			return translator;
 		} catch (CoreException e) {
@@ -92,12 +90,10 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 		}
 	}
 
-	public static ContextTranslator create(final ISCInternalContext context,
-			final FormulaFactory ff, final ITypeEnvironment te)
-			throws TranslationFailedException {
+	public static ContextTranslator create(final ISCInternalContext context, final FormulaFactory ff,
+			final ITypeEnvironment te) throws TranslationFailedException {
 		final IEventBRoot root = getRootContext(context);
-		final ContextTranslator translator = new ContextTranslator(context, ff,
-				te, root);
+		final ContextTranslator translator = new ContextTranslator(context, ff, te, root);
 		try {
 			assertConsistentModel(context.getRoot());
 			translator.translate();
@@ -111,8 +107,7 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 		try {
 			String elementName = context.getElementName();
 			IRodinProject rodinProject = context.getRodinProject();
-			IRodinFile rodinFile = rodinProject.getRodinFile(elementName
-					+ ".bcc");
+			IRodinFile rodinFile = rodinProject.getRodinFile(elementName + ".bcc");
 			if (rodinFile.exists()) {
 				final IInternalElement element = rodinFile.getRoot();
 				if (element instanceof IEventBRoot) {
@@ -126,16 +121,13 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 		return null;
 	}
 
-	private static TranslationFailedException createTranslationFailedException(
-			final ISCContext context, CoreException e)
-			throws TranslationFailedException {
+	private static TranslationFailedException createTranslationFailedException(final ISCContext context,
+			CoreException e) throws TranslationFailedException {
 		final String message = "A Rodin exception occured during translation process. Possible cause: building aborted or still in progress. Please wait until building has finished before starting ProB. If this does not help, perform a clean and start ProB after building has finished. Original Exception: ";
-		return new TranslationFailedException(context.getComponentName(),
-				message + e.getLocalizedMessage());
+		return new TranslationFailedException(context.getComponentName(), message + e.getLocalizedMessage());
 	}
 
-	private static boolean assertConsistentModel(IInternalElement machine_root)
-			throws RodinDBException {
+	private static boolean assertConsistentModel(IInternalElement machine_root) throws RodinDBException {
 		return Assert.isTrue(machine_root.getRodinFile().isConsistent());
 	}
 
@@ -155,8 +147,7 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 	 *            the root to access the proofs
 	 * @throws TranslationFailedException
 	 */
-	private ContextTranslator(final ISCContext context,
-			final FormulaFactory ff, final ITypeEnvironment te,
+	private ContextTranslator(final ISCContext context, final FormulaFactory ff, final ITypeEnvironment te,
 			final IEventBRoot root) throws TranslationFailedException {
 		super(context.getComponentName());
 		this.context = context;
@@ -205,21 +196,18 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 
 				String name = sequent.getDescription();
 
-				ArrayList<SequentSource> s = new ArrayList<SequentSource>(
-						sources.length);
+				ArrayList<SequentSource> s = new ArrayList<SequentSource>(sources.length);
 				for (IPOSource source : sources) {
 
 					IRodinElement srcElement = source.getSource();
-					if (!srcElement.exists()
-							|| !(srcElement instanceof ILabeledElement)) {
+					if (!srcElement.exists() || !(srcElement instanceof ILabeledElement)) {
 						bugs.add(status.getElementName());
 						break;
 					}
 
 					ILabeledElement le = (ILabeledElement) srcElement;
 
-					s.add(new SequentSource(srcElement.getElementType(), le
-							.getLabel()));
+					s.add(new SequentSource(srcElement.getElementType(), le.getLabel()));
 
 				}
 				addProof(new ProofObligation(origin, s, name, pstatus));
@@ -227,13 +215,12 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 		} catch (RodinDBException e) {
 			bugs.add(e.getLocalizedMessage());
 		}
-		
+
 		if (!bugs.isEmpty()) {
 			String message = "Translation incomplete due to a Bug in Rodin. This does not affect correctness of the Animation/Model Checking but can decrease its performance. Skipped discharged information about: "
 					+ StringUtils.join(bugs, ",");
 			Logger.notifyUser(message);
 		}
-
 
 	}
 
@@ -270,11 +257,9 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 		}
 	}
 
-	private AExtendsContextClause processExtendsForInternalContext()
-			throws RodinDBException {
+	private AExtendsContextClause processExtendsForInternalContext() throws RodinDBException {
 		ISCInternalContext icontext = (ISCInternalContext) context;
-		IExtendsContext[] extendsClauses = icontext
-				.getChildrenOfType(IExtendsContext.ELEMENT_TYPE);
+		IExtendsContext[] extendsClauses = icontext.getChildrenOfType(IExtendsContext.ELEMENT_TYPE);
 
 		try {
 			extendsClauses = getSeenContexts(icontext);
@@ -282,44 +267,36 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 			// Use the default value
 		}
 
-		final List<TIdentifierLiteral> extendsList = new ArrayList<TIdentifierLiteral>(
-				extendsClauses.length);
+		final List<TIdentifierLiteral> extendsList = new ArrayList<TIdentifierLiteral>(extendsClauses.length);
 
 		for (final IExtendsContext extendsContext : extendsClauses) {
-			final String name = extendsContext.getAbstractSCContext()
-					.getComponentName();
+			final String name = extendsContext.getAbstractSCContext().getComponentName();
 			extendsList.add(new TIdentifierLiteral(name));
 		}
 
 		return new AExtendsContextClause(extendsList);
 	}
 
-	private IExtendsContext[] getSeenContexts(ISCInternalContext icontext)
-			throws RodinDBException {
+	private IExtendsContext[] getSeenContexts(ISCInternalContext icontext) throws RodinDBException {
 		IExtendsContext[] extendsClauses;
 		String fname = icontext.getComponentName();
-		IRodinFile file = icontext.getRodinProject().getRodinFile(
-				fname + ".buc");
+		IRodinFile file = icontext.getRodinProject().getRodinFile(fname + ".buc");
 		IContextRoot root = (IContextRoot) file.getRoot();
 		extendsClauses = root.getExtendsClauses();
 		return extendsClauses;
 	}
 
-	private AExtendsContextClause processExtendsForContextRoot()
-			throws CoreException {
+	private AExtendsContextClause processExtendsForContextRoot() throws CoreException {
 		ISCExtendsContext[] extendsClauses = null;
 		ISCContextRoot rcontext = (ISCContextRoot) context;
 
 		extendsClauses = rcontext.getSCExtendsClauses();
 
-		final List<TIdentifierLiteral> extendsList = new ArrayList<TIdentifierLiteral>(
-				extendsClauses.length);
+		final List<TIdentifierLiteral> extendsList = new ArrayList<TIdentifierLiteral>(extendsClauses.length);
 
 		for (final ISCExtendsContext extendsContext : extendsClauses) {
-			ISCContextRoot root = (ISCContextRoot) extendsContext
-					.getAbstractSCContext().getRoot();
-			final String name = extendsContext.getAbstractSCContext()
-					.getComponentName();
+			ISCContextRoot root = (ISCContextRoot) extendsContext.getAbstractSCContext().getRoot();
+			final String name = extendsContext.getAbstractSCContext().getComponentName();
 			extendsList.add(new TIdentifierLiteral(name));
 			depContext.put(name, root);
 		}
@@ -330,9 +307,8 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 		final ISCCarrierSet[] carrierSets = context.getSCCarrierSets();
 		final List<PSet> setList = new ArrayList<PSet>(carrierSets.length);
 		for (final ISCCarrierSet carrierSet : carrierSets) {
-			final ADeferredSetSet deferredSet = new ADeferredSetSet(
-					Arrays.asList(new TIdentifierLiteral[] { new TIdentifierLiteral(
-							carrierSet.getIdentifierString()) }));
+			final ADeferredSetSet deferredSet = new ADeferredSetSet(Arrays
+					.asList(new TIdentifierLiteral[] { new TIdentifierLiteral(carrierSet.getIdentifierString()) }));
 			setList.add(deferredSet);
 		}
 		return new ASetsContextClause(setList);
@@ -341,10 +317,8 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 	private List<PContextClause> processConstants() throws RodinDBException {
 		final ISCConstant[] constants = context.getSCConstants();
 
-		final List<PExpression> concreteConstants = new ArrayList<PExpression>(
-				constants.length);
-		final List<PExpression> abstractConstants = new ArrayList<PExpression>(
-				constants.length);
+		final List<PExpression> concreteConstants = new ArrayList<PExpression>(constants.length);
+		final List<PExpression> abstractConstants = new ArrayList<PExpression>(constants.length);
 
 		for (final ISCConstant constant : constants) {
 			boolean isAbstractConstant = false;
@@ -363,15 +337,11 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 			}
 
 			if (isAbstractConstant) {
-				abstractConstants
-						.add(new AIdentifierExpression(
-								Arrays.asList(new TIdentifierLiteral[] { new TIdentifierLiteral(
-										constant.getIdentifierString()) })));
+				abstractConstants.add(new AIdentifierExpression(Arrays
+						.asList(new TIdentifierLiteral[] { new TIdentifierLiteral(constant.getIdentifierString()) })));
 			} else {
-				concreteConstants
-						.add(new AIdentifierExpression(
-								Arrays.asList(new TIdentifierLiteral[] { new TIdentifierLiteral(
-										constant.getIdentifierString()) })));
+				concreteConstants.add(new AIdentifierExpression(Arrays
+						.asList(new TIdentifierLiteral[] { new TIdentifierLiteral(constant.getIdentifierString()) })));
 			}
 		}
 
@@ -398,26 +368,26 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 		return axiomsContextClause;
 	}
 
-	private List<PPredicate> extractPredicates(final ISCAxiom[] predicates,
-			final boolean theorems) throws CoreException {
-		final List<PPredicate> list = new ArrayList<PPredicate>(
-				predicates.length);
+	private List<PPredicate> extractPredicates(final ISCAxiom[] predicates, final boolean theorems)
+			throws CoreException {
+		final List<PPredicate> list = new ArrayList<PPredicate>(predicates.length);
 		for (final ISCAxiom element : predicates) {
 			if (element.isTheorem() == theorems) {
 				final PPredicate predicate = translatePredicate(ff, te, element);
 				list.add(predicate);
 				labelMapping.put(predicate, element);
-				proofspragmas.add(new ClassifiedPragma("discharged", predicate,
-						Arrays.asList(new String[0]), Arrays
-								.asList(new String[0]), NO_POS, NO_POS));
+				// proofspragmas.add(new ClassifiedPragma("discharged",
+				// predicate,
+				// Arrays.asList(new String[0]), Arrays
+				// .asList(new String[0]), NO_POS, NO_POS));
 			}
 		}
 		return list;
 	}
 
-	public List<ClassifiedPragma> getProofspragmas() {
-		return proofspragmas;
-	}
+	// public List<ClassifiedPragma> getProofspragmas() {
+	// return proofspragmas;
+	// }
 
 	@Override
 	public String getResource() {
