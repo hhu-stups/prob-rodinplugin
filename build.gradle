@@ -129,18 +129,6 @@ task downloadCli2 ( type: Exec ) {
 		   into targetdir
 	    }
 	delete file(targetzip)
-
-	['leopard64':'macos','linux32':'linux','linux64':'linux64'].each {
-
-		def n = it.getKey()
-		targetdir = dir+it.getValue()
-
-		download( "http://nightly.cobra.cs.uni-duesseldorf.de/cspm/cspm-"+n, targetdir+"/cspm" )
-	}
-	commandLine 'chmod', 'a+x', dir+'linux'+'/cspm', dir+'linux64'+'/cspm', dir+'macos'+'/cspm'
-	//commandLine 'chmod', 'a+x', dir+'*'+'/cspm'
-
-	download( "http://nightly.cobra.cs.uni-duesseldorf.de/cspm/cspm-windows", dir+"windows"+"/cspm.exe" )
 }
 
 
