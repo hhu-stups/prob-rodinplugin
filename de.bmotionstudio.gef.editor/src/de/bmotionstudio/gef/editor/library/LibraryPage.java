@@ -78,6 +78,7 @@ public class LibraryPage extends Page {
 		gd.horizontalIndent = 0;
 
 		previewCanvas = new Canvas(libMainContainer, SWT.BORDER);
+		previewCanvas.setLayout(gl);
 		previewCanvas.addPaintListener(new PaintListener() {
 			public void paintControl(final PaintEvent e) {
 				if (previewImage == null) {
@@ -90,8 +91,8 @@ public class LibraryPage extends Page {
 		previewCanvas.setLayoutData(gd);
 
 		Composite libContainer = new Composite(libMainContainer, SWT.NONE);
+		libContainer.setLayout(gl);
 		libContainer.setLayoutData(gd);
-		libContainer.setLayout(new FillLayout());
 
 		tvLibrary = new TableViewer(libContainer, SWT.FULL_SELECTION
 				| SWT.V_SCROLL | SWT.MULTI);
