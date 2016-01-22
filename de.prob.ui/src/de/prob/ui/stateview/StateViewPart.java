@@ -1,7 +1,7 @@
-/** 
- * (c) 2009 Lehrstuhl fuer Softwaretechnik und Programmiersprachen, 
+/**
+ * (c) 2009 Lehrstuhl fuer Softwaretechnik und Programmiersprachen,
  * Heinrich Heine Universitaet Duesseldorf
- * This software is licenced under EPL 1.0 (http://www.eclipse.org/org/documents/epl-v10.html) 
+ * This software is licenced under EPL 1.0 (http://www.eclipse.org/org/documents/epl-v10.html)
  * */
 
 package de.prob.ui.stateview;
@@ -72,7 +72,7 @@ import de.prob.ui.stateview.statetree.StaticStateElement;
 
 /**
  * This is the view that shows variables and formulas for the current state.
- * 
+ *
  * @author plagge
  */
 public class StateViewPart extends StateBasedViewPart {
@@ -358,7 +358,7 @@ public class StateViewPart extends StateBasedViewPart {
 				Font fontOfFirstColumn = item.getFont(1);
 				FontData fd = fontOfFirstColumn.getFontData()[0];
 				if ((fd.getStyle() & SWT.BOLD) != 0) {
-					event.height = fd.getHeight() + 10;
+					event.height = fd.getHeight() + 8;
 				}
 			}
 		});
