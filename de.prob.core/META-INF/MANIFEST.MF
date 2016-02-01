@@ -117,6 +117,14 @@ Bundle-Activator: de.prob.core.internal.Activator
 Eclipse-BuddyPolicy: registered
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ClassPath: .,
+ lib/dependencies/unicode-2.5.1.jar,
+ lib/dependencies/theorymapping-2.5.1.jar,
+ lib/dependencies/prologlib-2.5.1.jar,
+ lib/dependencies/parserbase-2.5.1.jar,
+ lib/dependencies/ltlparser-2.5.1.jar,
+ lib/dependencies/cliparser-2.5.1.jar,
+ lib/dependencies/bparser-2.5.1.jar,
+ lib/dependencies/answerparser-2.5.1.jar,
  lib/dependencies/unicode-2.5.0.jar,
  lib/dependencies/theorymapping-2.5.0.jar,
  lib/dependencies/prologlib-2.5.0.jar,
