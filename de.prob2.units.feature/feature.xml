@@ -2,13 +2,13 @@
 <feature
       id="de.prob2.units.feature"
       label="ProB for Rodin3 - Physical Units Support"
-      version="3.0.8.qualifier"
+      version="3.0.9.qualifier"
       provider-name="HHU Düsseldorf STUPS Group">
 
    <description url="http://www.stups.uni-duesseldorf.de/ProB">
-      ProB is an animator and model checker for the B-Method. It allows fully automatic animation of many B specifications, and can be used to systematically check a specification for errors. 
-Part of the research and development was conducted within the EPSRC funded projects ABCD and iMoc, and within the EU funded project Rodin. 
-Development is continued under the EU funded project Deploy and the DFG project Gepavas. 
+      ProB is an animator and model checker for the B-Method. It allows fully automatic animation of many B specifications, and can be used to systematically check a specification for errors.
+Part of the research and development was conducted within the EPSRC funded projects ABCD and iMoc, and within the EU funded project Rodin.
+Development is continued under the EU funded project Deploy and the DFG project Gepavas.
 ProB has been successfully used on various industrial specifications and is now being used within Siemens.
    </description>
 
@@ -18,13 +18,13 @@ ProB has been successfully used on various industrial specifications and is now 
 
    <license url="http://www.eclipse.org/org/documents/epl-v10.html">
       ProB can be used freely for commercial, non-commercial and academic
-use under the Eclipse Public Licence v. 1.0. (below) 
+use under the Eclipse Public Licence v. 1.0. (below)
 For availability of commercial support, please contact the author
-(http://www.stups.uni-duesseldorf.de/~leuschel). 
+(http://www.stups.uni-duesseldorf.de/~leuschel).
 Use of ProB&apos;s nauty library for symmetry reduction implies further
 restrictions (no applications with nontrivial military significance,
 see http://cs.anu.edu.au/~bdm/nauty/).
---- 
+---
 Eclipse Public License - v. 1.0
 THE ACCOMPANYING PROGRAM IS PROVIDED UNDER THE TERMS OF THIS
 ECLIPSE PUBLIC LICENSE (&quot;AGREEMENT&quot;). ANY USE, REPRODUCTION OR
