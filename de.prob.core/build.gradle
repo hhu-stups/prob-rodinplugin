@@ -3,17 +3,17 @@ apply plugin: 'java'
 def parser_version = '2.4.18-SNAPSHOT'
 
 dependencies {
- compile group: "de.prob", name: "answerparser", version: parser_version , changing: true
- compile group: "de.prob", name: "bparser", version: parser_version , changing: true
- compile group: "de.prob", name: "cliparser", version: parser_version , changing: true
- compile group: "de.prob", name: "ltlparser", version: parser_version , changing: true
- compile group: "de.prob", name: "parserbase", version: parser_version , changing: true
- compile group: "de.prob", name: "prologlib", version: parser_version , changing: true
- compile group: "de.prob", name: "unicode", version: parser_version , changing: true
- compile group: "de.prob", name: "theorymapping", version: parser_version , changing: true
+ compile group: "de.hhu.stups", name: "answerparser", version: parser_version , changing: true
+ compile group: "de.hhu.stups", name: "bparser", version: parser_version , changing: true
+ compile group: "de.hhu.stups", name: "cliparser", version: parser_version , changing: true
+ compile group: "de.hhu.stups", name: "ltlparser", version: parser_version , changing: true
+ compile group: "de.hhu.stups", name: "parserbase", version: parser_version , changing: true
+ compile group: "de.hhu.stups", name: "prologlib", version: parser_version , changing: true
+ compile group: "de.hhu.stups", name: "unicode", version: parser_version , changing: true
+ compile group: "de.hhu.stups", name: "theorymapping", version: parser_version , changing: true
  compile 'commons-lang:commons-lang:2.6'
  compile 'commons-codec:commons-codec:1.6'
  compile 'com.thoughtworks.xstream:xstream:1.4.7'
  compile group: 'net.java.dev.jna', name: 'jna', version: '3.4.0'
- compile group: 'edu.berkeley.eecs.ptolemy', name: 'jfmi', version: '1.0.2-SNAPSHOT'
+ compile group: 'de.hhu.stups', name: 'ptolemy-jfmi', version: '1.1.1-SNAPSHOT'
 }
