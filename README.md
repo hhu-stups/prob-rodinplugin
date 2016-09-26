@@ -18,10 +18,10 @@ The ProB binary and source distributions contain the nauty library (http://cs.an
 For availability of commercial support, please contact Formal Mind (http://www.formalmind.com).
 
 # Bugs
-Please report bugs and feature requests at http://jira.cobra.cs.uni-duesseldorf.de/
+Please report bugs and feature requests at https://probjira.atlassian.net
 
 # Prolog Source Code
-The latest source code of the Prolog binary can be downloaded from http://nightly.cobra.cs.uni-duesseldorf.de/source/. To build the Prolog binaries you require a Sicstus 4 (http://sicstus.sics.se/index.html) licence.
+The latest source code of the Prolog binary can be downloaded from https://www3.hhu.de/stups/downloads/prob/source/. To build the Prolog binaries you require a Sicstus 4 (http://sicstus.sics.se/index.html) licence.
 
 # ProB 2.0
 The development repository for ProB 2.0 is avaliable from https://github.com/bendisposto/prob2
