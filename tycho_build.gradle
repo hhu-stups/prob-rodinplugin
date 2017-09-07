@@ -424,6 +424,8 @@ subprojects {
 					*	be taken from a different key word, please change the
 					*	regular expression and the substring above
 					*/
+
+					versionNumber = versionNumber.replace(".qualifier","-SNAPSHOT")
 				}
 
 				if(  it ==~ /Bundle-SymbolicName:.+/ ){
