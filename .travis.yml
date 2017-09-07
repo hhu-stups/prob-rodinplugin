@@ -21,7 +21,7 @@ branches:
   only:
   - develop
 jdk:
-- oraclejdk7
+- oraclejdk8
 after_success:
 - travis-custom-deploy sftp updatesite/
 env:
