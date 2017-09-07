@@ -471,6 +471,7 @@ subprojects {
 
 				artifactId   = parsedXml.attribute("id")
 				versionNumber = parsedXml.attribute("version")
+				versionNumber = versionNumber.replace(".qualifier","-SNAPSHOT")
 
 				println artifactId
 				println "\t"+versionNumber
