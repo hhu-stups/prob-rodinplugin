@@ -9,4 +9,4 @@ Require-Bundle: org.eclipse.ui,
  org.eventb.core;bundle-version="[2.1.0,2.6.0)",
  de.prob.core;bundle-version="9.3.0"
 Bundle-ActivationPolicy: lazy
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8

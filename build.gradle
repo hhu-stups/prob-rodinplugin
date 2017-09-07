@@ -53,7 +53,7 @@ project(':de.prob.ui') {
 		mavenCentral()
 	}
 	dependencies {
-	 	compile 'commons-codec:commons-codec:1.6'
+	 	compile 'commons-codec:commons-codec:1.8'
 	}
 }
 

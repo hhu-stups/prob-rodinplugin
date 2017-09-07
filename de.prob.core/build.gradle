@@ -12,7 +12,7 @@ dependencies {
  compile group: "de.hhu.stups", name: "unicode", version: parser_version , changing: true
  compile group: "de.hhu.stups", name: "theorymapping", version: parser_version , changing: true
  compile 'commons-lang:commons-lang:2.6'
- compile 'commons-codec:commons-codec:1.6'
+ compile 'commons-codec:commons-codec:1.8'
  compile 'com.thoughtworks.xstream:xstream:1.4.7'
  compile group: 'net.java.dev.jna', name: 'jna', version: '3.4.0'
  compile group: 'de.hhu.stups', name: 'ptolemy-jfmi', version: '1.1.0'
