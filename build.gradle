@@ -5,8 +5,7 @@ project.ext{
 
 	targetRepositories = ["http://download.eclipse.org/releases/luna/",
                           "http://rodin-b-sharp.sourceforge.net/updates",
-                          "http://rodin-b-sharp.sourceforge.net/core-updates"
-                          ]
+                          "https://www3.hhu.de/stups/buildlibs/org.rodinp.dev/"]
 
 	groupID = "de.prob"
 }
