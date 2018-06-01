@@ -8,7 +8,7 @@ before_install:
 - export M2_HOME=$PWD/apache-maven-3.0.5
 - export PATH=$M2_HOME/bin:$PATH
 - mvn --version
-- rvm install 2.0.0
+- rvm install 2.4.1
 - gem install travis-custom-deploy
 script:
 - gradle createPoms
