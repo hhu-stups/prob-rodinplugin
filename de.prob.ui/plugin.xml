@@ -508,12 +508,6 @@
                         value="enabled">
                   </equals>
                </with>
-               <with
-                     variable="de.prob.core.history.backward_service">
-                  <equals
-                        value="enabled">
-                  </equals>
-               </with>
             </and>
          </enabledWhen>
       </handler>
@@ -526,12 +520,6 @@
             <and>
                <with
                      variable="de.prob.core.model_loaded">
-                  <equals
-                        value="enabled">
-                  </equals>
-               </with>
-                              <with
-                     variable="de.prob.core.history.forward_service">
                   <equals
                         value="enabled">
                   </equals>
@@ -1264,17 +1252,6 @@
             provider="de.prob.ui.services.ModelLoadedProvider">
          <variable
                name="de.prob.core.model_loaded"
-               priorityLevel="workbench">
-         </variable>
-      </sourceProvider>
-      <sourceProvider
-            provider="de.prob.ui.services.HistoryActiveProvider">
-         <variable
-               name="de.prob.core.history.forward_service"
-               priorityLevel="workbench">
-         </variable>
-         <variable
-               name="de.prob.core.history.backward_service"
                priorityLevel="workbench">
          </variable>
       </sourceProvider>

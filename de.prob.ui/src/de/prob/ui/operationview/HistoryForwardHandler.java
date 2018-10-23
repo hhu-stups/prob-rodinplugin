@@ -17,17 +17,16 @@ public class HistoryForwardHandler extends AbstractHandler implements IHandler {
 		Logger.assertProB("history != null", history != null);
 		int pos = history.getCurrentPosition() + 1;
 		try {
-			pos = Integer
-					.parseInt(event.getParameter("de.prob.ui.history.pos"));
+			pos = Integer.parseInt(event.getParameter("de.prob.ui.history.pos"));
 		} catch (NumberFormatException e) {
 			// one step back
 		}
-		Logger.assertProB("pos < last position", pos < history.size());
-		try {
-			history.gotoPos(pos);
-		} catch (ProBException e) {
-			Logger.notifyUser("Internal Error. Please submit a bugreport", e);
-		}
+		if (pos < history.size())
+			try {
+				history.gotoPos(pos);
+			} catch (ProBException e) {
+				Logger.notifyUser("Internal Error. Please submit a bugreport", e);
+			}
 		return null;
 	}
 
