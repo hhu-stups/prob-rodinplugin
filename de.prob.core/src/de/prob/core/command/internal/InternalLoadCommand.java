@@ -24,7 +24,7 @@ public final class InternalLoadCommand implements IComposableCommand {
 			TranslatorFactory.translate(model, pto);
 		} catch (TranslationFailedException e) {
 			throw new CommandException(
-					"Translation from Event-B to ProB's internal representation failed",
+					"Translation from Event-B to ProB's internal representation failed: " + e.getMessage(),
 					e);
 		}
 	}
