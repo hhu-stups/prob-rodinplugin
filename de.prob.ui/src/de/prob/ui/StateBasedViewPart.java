@@ -132,11 +132,7 @@ public abstract class StateBasedViewPart extends ViewPart implements
 		};
 		Display.getDefault().asyncExec(runnable);
 
-		ISourceProviderService service = (ISourceProviderService) getSite()
-				.getService(ISourceProviderService.class);
-		HistoryActiveProvider sourceProvider = (HistoryActiveProvider) service
-				.getSourceProvider(HistoryActiveProvider.FORWARD_SERVICE);
-		sourceProvider.historyChange();
+
 
 	}
 
