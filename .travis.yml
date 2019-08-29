@@ -11,11 +11,11 @@ before_install:
 - rvm install 2.4.1
 - gem install travis-custom-deploy
 script:
-- gradle createPoms
-- gradle downloadCli
-- gradle collectDependencies
+- ./gradlew createPoms
+- ./gradlew downloadCli
+- ./gradlew collectDependencies
 - mvn -f de.prob.parent/pom.xml install
-- gradle collectArtifacts
+- ./gradlew collectArtifacts
 branches:
   only:
   - develop
