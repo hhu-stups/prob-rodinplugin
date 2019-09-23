@@ -31,11 +31,14 @@ public class ParameterMenu extends ExtensionContributionFactory {
 
 		nondetcounter = 0;
 
-		for (Operation operation : operations) {
-			long id = operation.getId();
-			additions.addContributionItem(
-					createEntry(serviceLocator, operation, id), null);
+		if (operations.size()<=10) {
+			// if number of operations small: show enabled operations first
+			for (Operation operation : operations) {
+				long id = operation.getId();
+				additions.addContributionItem(
+						createEntry(serviceLocator, operation, id), null);
 
+			}
 		}
 
 		CommandContributionItemParameter contributionParameters = new CommandContributionItemParameter(
@@ -53,6 +56,17 @@ public class ParameterMenu extends ExtensionContributionFactory {
 		CommandContributionItem customGuardDialogItem = new CommandContributionItem(
 				contributionCustomGuard);
 		additions.addContributionItem(customGuardDialogItem, null);
+
+		if (operations.size()>10) {
+			// if number of operations large: show enabled operations last
+			// TODO: nested view according to parameters or group entries together into submenus of 20 operations or so
+			for (Operation operation : operations) {
+				long id = operation.getId();
+				additions.addContributionItem(
+						createEntry(serviceLocator, operation, id), null);
+
+			}
+		}
 
 	}
 
