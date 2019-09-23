@@ -84,7 +84,7 @@ public class StartAnimationHandler extends AbstractHandler implements IHandler {
 				stringBuffer.append(string);
 				stringBuffer.append('\n');
 			}
-			if (1=1)
+			if (true)
 			   // TO DO: use preference whether to pop-up such errors or simply log them
 			   // Unfortunately the GetPreferencesCommand gets ProBPreference object which do not contain the current value
 			   // we could also change the label in StateViewPart.java, e.g. modelchangeProvider or add a new label
