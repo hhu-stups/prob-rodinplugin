@@ -511,6 +511,7 @@ public class OperationSelectionDialog extends TrayDialog {
 					else
 						return argument;
 				} else
+				    // TODO: obtain non-deterministically assigned variables and display them
 					return "Non-deterministic choice #" + entry.getPosition();
 			}
 		}
