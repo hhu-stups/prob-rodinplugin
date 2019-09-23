@@ -262,6 +262,7 @@ public class StateViewPart extends StateBasedViewPart {
 		final Display display = Display.getCurrent();
 		final Color gray = display.getSystemColor(SWT.COLOR_GRAY);
 		final Color orange = display.getSystemColor(SWT.COLOR_DARK_YELLOW);
+		final Color yellow = display.getSystemColor(SWT.COLOR_YELLOW);
 		final Color green = display.getSystemColor(SWT.COLOR_GREEN);
 		final Color red = display.getSystemColor(SWT.COLOR_RED);
 		final Font bold = JFaceResources.getFontRegistry().getBold(JFaceResources.BANNER_FONT);
@@ -298,7 +299,7 @@ public class StateViewPart extends StateBasedViewPart {
 		final BooleanLabelProvider modelchangeProvider = new BooleanLabelProvider();
 		// setTexts(final String inactive, final String ok, final String ko)
 		modelchangeProvider.setTexts(null, StateViewStrings.signalModelhasRodinErrors, StateViewStrings.signalModelmodifiedBad);
-		modelchangeProvider.setBackgroundColors(gray, orange, red);
+		modelchangeProvider.setBackgroundColors(gray, yellow, red);
 		modelchangeProvider.setFonts(null, bold, bold);
 		modelchangeProvider.hideWhenInactive(false);
 		modelchangeViewer.setLabelProvider(modelchangeProvider);
