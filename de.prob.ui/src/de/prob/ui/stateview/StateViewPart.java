@@ -415,9 +415,9 @@ public class StateViewPart extends StateBasedViewPart {
 	private static class ModelChangeContentProvider extends SimpleContentProvider {
 		@Override
 		public Object convert(final Object element) {
-		    if Animator.getAnimator().isDirty()
+		    if (Animator.getAnimator().isDirty())
 		      return false;  // ko string is signalModelmodifiedBad
-		    else if Animator.getAnimator().isRodinProjectHasErrorsOrWarnings()
+		    else if (Animator.getAnimator().isRodinProjectHasErrorsOrWarnings())
 		      return true; // ok string is signalModelhasRodinErrors
 		    else
 		      return null; // leave box empty and gray
