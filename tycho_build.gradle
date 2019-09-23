@@ -326,9 +326,12 @@ subprojects {
 
 	}
 
-	task setClassPath(dependsOn: 'collectDependencies')<<{
-
+	task setClassPath(dependsOn: 'collectDependencies'){
 		description = "\tAdds all your Dependencies from your local lib folder in each project to it's classpath"
+
+
+		doLast {
+
 		if( excludeFromClassPath.every{ it != project.name }){
 			def dependencyList = []
 			try{
@@ -368,13 +371,13 @@ subprojects {
 			}
 		}// if exclude projectAbfrage
 
-	}// setClassPath
+	} /// doLast
+} // setClassPath
 
-
-	task deleteFromClassPath()<<{
+	task deleteFromClassPath(){
 
 		description = "\tDeletes all your Dependencies located in your local lib folder from each project's classpath"
-
+doLast{
 		try{
 
 			boolean depsDelete = false
@@ -391,14 +394,15 @@ subprojects {
 		}
 
 	}
+}
 
 	/////---- 			For a complete classPath Refresh please execute 'gradle deleteFromClassPath setClassPath'				----///////
 
 	////////////////////////////////////////////////////////////////////////////////////////////
 
-	task deploy() <<{
+	task deploy() {
 		description = "\tGenerating the Tycho Poms. Please remember to add a '.qualifier' to the version numbers!"
-
+doLast {
 		String 	versionNumber = 'Version Number Error:\tcheck Manifest for Bundle-Version Number and make sure to add a ".qualifier" to the version numbers!\n'
 		String 	artifactId = 'Could not find Bundle-SymbolicName in Manifest.file'
 
@@ -481,8 +485,8 @@ subprojects {
 				f << feature(artifactId, versionNumber)
 			}
 		}
-	}//deploy
-
+	} //doLast
+}//deploy
 
 }// defining subprojects
 
@@ -491,9 +495,9 @@ clean {
 	dependsOn += subprojects.deleteArtifacts
 }
 
-task createParent() << {
+task createParent() {
 	//		---------				 define Parent 				---------		//
-
+doLast{
 	new File(workspacePath+"${parentID}").mkdir()
 	String versionNumber 	=	'1.0.0.qualifier'
 	String artifactId 		=	parentId()
@@ -517,9 +521,10 @@ task createParent() << {
 	f << endParent()
 
 }
+}
 
-task createRepository() << {
-
+task createRepository()  {
+doLast{
 	//			------------	 	define Repository			---------		//
 
 	new File(workspacePath+"${repositoryName}").mkdir()
@@ -561,7 +566,7 @@ task createRepository() << {
 	pom.delete()
 	pom << reposi()
 }// end of repository definition
-
+}
 
 task createPoms(dependsOn: [createParent, createRepository, subprojects.deploy])
 
