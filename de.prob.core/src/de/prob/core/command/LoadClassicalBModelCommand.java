@@ -82,7 +82,7 @@ public final class LoadClassicalBModelCommand {
 
 	public static void load(final Animator animator, final File model, String name) throws ProBException {
 		animator.resetDirty();
-		animator.resetRodinProjectHasErrorsOrWarnings();
+		animator.resetRodinProjectHasErrorsOrWarnings(); // classical B machines have no Rodin project
 		removeObsoletePreferences(animator);
 
 		final ClearMachineCommand clear = new ClearMachineCommand();
