@@ -33,6 +33,13 @@ public class CustomPreconditionInputDialog extends InputDialog {
 		sb.append("Enter Guard to be added to the Event \"");
 		sb.append(op.getName());
 		sb.append("\" before execution.");
+		if (op.getArguments().size()>0) {
+			sb.append("\nParameters are:");
+			for (String arg : op.getArguments()) {
+			    sb.append(" ");
+			    sb.append(arg);
+			}
+		}
 
 		// sb.append("\nYou may use the parameters: ");
 
