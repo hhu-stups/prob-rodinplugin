@@ -29,7 +29,7 @@ public class OpenClassicHandler extends AbstractHandler implements IHandler {
 
 		final String location = getBinaryLocation();
 		if (location == null) {
-			Logger.notifyUserWithoutBugreport("You need to specify a location for the ProB tcl/tk version. See Preferences -> ProB Classic");
+			Logger.notifyUserWithoutBugreport("You need to specify a location for the ProB Tcl/Tk version. See Preferences -> ProB Classic. Details: "+ e.getLocalizedMessage());
 		} else {
 			final IEventBRoot root = getSelection();
 			if (root != null) {
@@ -79,7 +79,7 @@ public class OpenClassicHandler extends AbstractHandler implements IHandler {
 			new Thread(new ClassicConsole(output)).start();
 
 		} catch (IOException e) {
-			Logger.notifyUserWithoutBugreport("You need to specify a location for the ProB tcl/tk version. See Preferences -> ProB Classic");
+			Logger.notifyUserWithoutBugreport("You need to specify a location for the ProB Tcl/Tk version. See Preferences -> ProB Classic. Detail: "+ e.getLocalizedMessage());
 		}
 	}
 
