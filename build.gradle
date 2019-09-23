@@ -64,7 +64,8 @@ def download(address,target) {
 	    out.close()
 }
 
-task downloadCli << {
+task downloadCli  {
+	doLast{
 		def dir = workspacePath+'de.prob.core/prob/'
 		delete file(dir)
 	    new File(dir).mkdirs()
@@ -93,7 +94,7 @@ task downloadCli << {
 		   into targetdir
 	    }
 	delete file(targetzip)
-
+}
 }
 
 
