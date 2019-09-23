@@ -72,6 +72,7 @@ public final class LoadEventBModelCommand {
 	public static void load(final Animator animator, final IEventBRoot model) throws ProBException {
 		boolean context = checkForContexts(model);
 		animator.resetDirty();
+		animator.resetRodinProjectHasErrorsOrWarnings();
 		removeObsoletePreferences(animator);
 
 		final LanguageDependendAnimationPart ldp = new EventBAnimatorPart(model);

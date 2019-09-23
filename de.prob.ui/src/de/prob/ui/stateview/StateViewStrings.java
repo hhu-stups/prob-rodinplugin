@@ -21,6 +21,7 @@ public class StateViewStrings extends NLS {
 
 	public static String signalModelmodifiedTooltip;
 	public static String signalModelmodifiedBad;
+	public static String signalModelhasRodinErrors;
 
 	public static String signalTimeoutTooltip;
 	public static String signalTimeoutBad;

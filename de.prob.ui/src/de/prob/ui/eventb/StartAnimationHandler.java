@@ -76,6 +76,7 @@ public class StartAnimationHandler extends AbstractHandler implements IHandler {
 		ArrayList<String> errors = new ArrayList<String>();
 		boolean realError = checkErrorMarkers(resource, errors);
 		if (!errors.isEmpty()) {
+		    Animator.getAnimator().setRodinProjectHasErrorsOrWarnings();
 			String message = "Some components in your project contain "
 					+ (realError ? "errors" : "warnings")
 					+ ". This can lead to unexpected behavior (e.g. missing variables) when animating.\n\nDetails:\n";
@@ -94,6 +95,8 @@ public class StartAnimationHandler extends AbstractHandler implements IHandler {
 			else
 				Logger.notifyUserAboutWarningWithoutBugreport(stringBuffer
 						.toString());
+		} else {
+		     Animator.getAnimator().resetRodinProjectHasErrorsOrWarnings();
 		}
 		;
 

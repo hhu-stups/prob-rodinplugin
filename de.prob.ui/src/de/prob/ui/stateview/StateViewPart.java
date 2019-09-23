@@ -296,9 +296,10 @@ public class StateViewPart extends StateBasedViewPart {
 		modelchangeViewer.addMouseListener(new ResetAnimationListener());
 
 		final BooleanLabelProvider modelchangeProvider = new BooleanLabelProvider();
-		modelchangeProvider.setTexts(null, null, StateViewStrings.signalModelmodifiedBad);
-		modelchangeProvider.setBackgroundColors(gray, gray, red);
-		modelchangeProvider.setFonts(null, null, bold);
+		// setTexts(final String inactive, final String ok, final String ko)
+		modelchangeProvider.setTexts(null, StateViewStrings.signalModelhasRodinErrors, StateViewStrings.signalModelmodifiedBad);
+		modelchangeProvider.setBackgroundColors(gray, orange, red);
+		modelchangeProvider.setFonts(null, bold, bold);
 		modelchangeProvider.hideWhenInactive(false);
 		modelchangeViewer.setLabelProvider(modelchangeProvider);
 		modelchangeViewer.setContentProvider(new ModelChangeContentProvider());
@@ -414,7 +415,12 @@ public class StateViewPart extends StateBasedViewPart {
 	private static class ModelChangeContentProvider extends SimpleContentProvider {
 		@Override
 		public Object convert(final Object element) {
-			return !Animator.getAnimator().isDirty();
+		    if Animator.getAnimator().isDirty()
+		      return false;  // ko string is signalModelmodifiedBad
+		    else if Animator.getAnimator().isRodinProjectHasErrorsOrWarnings()
+		      return true; // ok string is signalModelhasRodinErrors
+		    else
+		      return null; // leave box empty and gray
 		}
 	}
 

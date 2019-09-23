@@ -82,6 +82,7 @@ public final class LoadClassicalBModelCommand {
 
 	public static void load(final Animator animator, final File model, String name) throws ProBException {
 		animator.resetDirty();
+		animator.resetRodinProjectHasErrorsOrWarnings();
 		removeObsoletePreferences(animator);
 
 		final ClearMachineCommand clear = new ClearMachineCommand();
