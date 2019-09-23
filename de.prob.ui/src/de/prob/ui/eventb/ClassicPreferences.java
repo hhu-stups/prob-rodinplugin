@@ -89,7 +89,7 @@ public class ClassicPreferences extends PreferencePage implements
 				.getShell(), text));
 		Label versionRemark = new Label(pageComponent, SWT.WRAP);
 		versionRemark
-				.setText("Note: This needs a tcl/tk version of ProB that is not older than 1.3.0 Beta6\nYou can obtain a copy of ProB from http://www.stups.uni-duesseldorf.de/ProB\n");
+				.setText("Note: This needs a version of ProB Tcl/Tk that is newer than 1.3.0.\nThe path to the binary may not contain spaces.\nYou can obtain a copy of ProB Tcl/Tk from http://www.stups.uni-duesseldorf.de/ProB\n"); // precisely 1.3.0-beta6
 
 		GridData gridData2 = new GridData();
 		gridData2.horizontalSpan = 3;
