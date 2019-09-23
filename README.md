@@ -7,7 +7,7 @@
 [![Build Status](https://travis-ci.org/bendisposto/prob.svg?branch=develop)](https://travis-ci.org/bendisposto/prob)
 
 The ProB source code is distributed under the EPL license (http://www.eclipse.org/org/documents/epl-v10.html).
-(C) 2000-2011 Michael Leuschel and many others.
+(C) 2000-2019 Michael Leuschel and many others.
 
 For updates please visit the ProB website: http://www.stups.uni-duesseldorf.de/ProB/
 
