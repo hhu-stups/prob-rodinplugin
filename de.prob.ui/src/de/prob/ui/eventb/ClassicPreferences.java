@@ -45,6 +45,7 @@ public class ClassicPreferences extends PreferencePage implements
 			super.widgetSelected(e);
 			FileDialog dialog = new FileDialog(shell, SWT.OPEN);
 			String open = dialog.open();
+			open = open.replaceAll(" ", "\\\\ ");
 			text.setText(open);
 		}
 
@@ -85,11 +86,11 @@ public class ClassicPreferences extends PreferencePage implements
 
 		Button browseButton = new Button(pageComponent, SWT.PUSH);
 		browseButton.setText("Browse");
-		browseButton.addSelectionListener(new PushButton(pageComponent
-				.getShell(), text));
+		browseButton.addSelectionListener(new PushButton(pageComponent.getShell(), text));
 		Label versionRemark = new Label(pageComponent, SWT.WRAP);
-		versionRemark
-				.setText("Note: This needs a version of ProB Tcl/Tk that is newer than 1.3.0.\nThe path to the binary may not contain spaces.\nYou can obtain a copy of ProB Tcl/Tk from http://www.stups.uni-duesseldorf.de/ProB\n"); // precisely 1.3.0-beta6
+		versionRemark.setText(
+				"Note: This needs a version of ProB Tcl/Tk that is newer than 1.3.0.\nYou can obtain a copy of ProB Tcl/Tk from http://www.stups.uni-duesseldorf.de/ProB\n"); // precisely
+																																																								// 1.3.0-beta6
 
 		GridData gridData2 = new GridData();
 		gridData2.horizontalSpan = 3;
