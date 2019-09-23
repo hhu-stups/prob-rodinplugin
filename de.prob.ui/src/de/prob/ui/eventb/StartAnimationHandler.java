@@ -90,6 +90,7 @@ public class StartAnimationHandler extends AbstractHandler implements IHandler {
 			   // Unfortunately the GetPreferencesCommand gets ProBPreference object which do not contain the current value
 			   // we could also change the label in StateViewPart.java, e.g. modelchangeProvider or add a new label
 			   Logger.info(stringBuffer.toString());
+			   LimitedLogger.getLogger().log(stringBuffer.toString(),rootElement.getElementName(), null);
 			else if (realError)
 				Logger.notifyUserWithoutBugreport(stringBuffer.toString());
 			else
