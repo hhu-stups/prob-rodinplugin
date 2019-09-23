@@ -79,7 +79,9 @@ public class OpenClassicHandler extends AbstractHandler implements IHandler {
 			new Thread(new ClassicConsole(output)).start();
 
 		} catch (IOException e) {
-			Logger.notifyUserWithoutBugreport("You need to specify a correct location for the ProB Tcl/Tk version. See Preferences -> ProB Classic. Detail: "+ e.getLocalizedMessage());
+			Logger.notifyUserWithoutBugreport("You need to specify a correct location for the ProB Tcl/Tk version. See Preferences -> ProB Classic.\nProB Tcl/Tk location: "+ probBinary + 
+			 "\nModel file: " + modelFile +
+			 "\nError message: "+ e.getLocalizedMessage());
 		}
 	}
 
