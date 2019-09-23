@@ -298,11 +298,11 @@ public final class Animator {
 	 */
 	public void setRodinProjectHasErrorsOrWarnings() {
 		this.rodinProjectHasErrorsOrWarnings = true;
-		Logger.info("setRodinProjectHasErrorsOrWarnings !!");
+		LimitedLogger.getLogger().log("setRodinProjectHasErrorsOrWarnings !!",null,null);
 	}
 	public void resetRodinProjectHasErrorsOrWarnings() {
 		this.rodinProjectHasErrorsOrWarnings = false;
-		Logger.info("resetRodinProjectHasErrorsOrWarnings");
+		LimitedLogger.getLogger().log("resetRodinProjectHasErrorsOrWarnings",null,null);
 	}
 	public boolean isRodinProjectHasErrorsOrWarnings() {
 		return rodinProjectHasErrorsOrWarnings;
