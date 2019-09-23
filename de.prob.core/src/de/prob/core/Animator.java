@@ -298,9 +298,11 @@ public final class Animator {
 	 */
 	public void setRodinProjectHasErrorsOrWarnings() {
 		this.rodinProjectHasErrorsOrWarnings = true;
+		Logger.info("setRodinProjectHasErrorsOrWarnings !!");
 	}
 	public void resetRodinProjectHasErrorsOrWarnings() {
 		this.rodinProjectHasErrorsOrWarnings = false;
+		Logger.info("resetRodinProjectHasErrorsOrWarnings");
 	}
 	public boolean isRodinProjectHasErrorsOrWarnings() {
 		return rodinProjectHasErrorsOrWarnings;

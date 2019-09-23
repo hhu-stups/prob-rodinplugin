@@ -79,7 +79,7 @@ public class StartAnimationHandler extends AbstractHandler implements IHandler {
 		    Animator.getAnimator().setRodinProjectHasErrorsOrWarnings();
 			String message = "Some components in your project contain "
 					+ (realError ? "errors" : "warnings")
-					+ ". This can lead to unexpected behavior (e.g. missing variables) when animating.\n\nDetails:\n";
+					+ "\n This can lead to unexpected behavior (e.g. missing variables) when animating with ProB.\nDetails:\n";
 			StringBuffer stringBuffer = new StringBuffer(message);
 			for (String string : errors) {
 				stringBuffer.append(string);
