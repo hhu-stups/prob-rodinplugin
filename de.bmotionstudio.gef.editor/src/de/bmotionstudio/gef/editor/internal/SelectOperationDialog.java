@@ -48,7 +48,7 @@ public class SelectOperationDialog extends Dialog {
 		container.setLayout(gl);
 
 		Label lb = new Label(container, SWT.NONE);
-		lb.setText("Select an operation:");
+		lb.setText("Select an event:");
 		lb.setLayoutData(new GridData(GridData.VERTICAL_ALIGN_BEGINNING));
 
 		listViewer = new ListViewer(container);
@@ -72,7 +72,7 @@ public class SelectOperationDialog extends Dialog {
 	@Override
 	protected void configureShell(Shell newShell) {
 		super.configureShell(newShell);
-		newShell.setText("Please select an operation ...");
+		newShell.setText("Please select an event ...");
 	}
 
 	@Override
@@ -89,7 +89,7 @@ public class SelectOperationDialog extends Dialog {
 
 		if (selectedOperation == null) {
 			MessageDialog.openError(Display.getDefault().getActiveShell(),
-					"An error occurred", "Please select an operation ...");
+					"An error occurred", "Please select an event ...");
 			return;
 		} else {
 			setReturnCode(OK);

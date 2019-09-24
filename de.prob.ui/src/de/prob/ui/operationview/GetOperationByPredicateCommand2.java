@@ -66,7 +66,7 @@ public final class GetOperationByPredicateCommand2 implements
 			parsedEvalElement = PredicateEvalElement.fromRodin(parsedPredicate);
 		} catch (BException e) {
 			String message = "Fatal error when trying to parse " + predicate
-					+ ". Execution of operation " + name + " aborted.";
+					+ ". Execution of event " + name + " aborted.";
 			ProblemHandler.raiseCommandException(message);
 			parsedEvalElement = null;
 		} finally {

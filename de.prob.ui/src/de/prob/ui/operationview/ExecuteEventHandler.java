@@ -39,7 +39,7 @@ public class ExecuteEventHandler extends AbstractHandler implements IHandler {
 				} catch (ProBException e) {
 					e.notifyUserOnce();
 					throw new ExecutionException(
-							"executing the operation failed", e);
+							"executing the event failed", e);
 				}
 			}
 		}
