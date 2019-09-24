@@ -30,7 +30,7 @@ public class CustomPreconditionDialogHandler extends AbstractHandler implements
 
 		if (filtered.size() != 1) {
 			Logger.notifyUser(filtered.size()
-					+ " operations selected. An additional Guard can only be added to a single operation");
+					+ " operations selected. An additional Guard Constraint can only be added to a single operation");
 			return null;
 		}
 
