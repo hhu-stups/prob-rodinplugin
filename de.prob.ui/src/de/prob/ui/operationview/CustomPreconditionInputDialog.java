@@ -62,8 +62,8 @@ public class CustomPreconditionInputDialog extends InputDialog {
 		    sb.append(vals.get(i));
 		    if(i!=sze-1) { sb.append(" & ");}
 		}
-		
 		return sb.toString();
+		// TODO: ideally we would want to store the predicate provided by the user, in case the execution fails
 	}
 
 	private Operation getCustomOperation() {
