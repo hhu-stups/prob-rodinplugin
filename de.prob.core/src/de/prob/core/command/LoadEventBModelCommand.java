@@ -107,7 +107,8 @@ public final class LoadEventBModelCommand {
 				Logger.notifyUserWithoutBugreport(message);
 			}
 		} catch (CommandException ex) {
-			Logger.notifyUser("Event-B Model or Context could not be loaded due to an exception: " + ex.getMessage(),
+			Logger.notifyUser("Event-B Model or Context could not be loaded due to an exception: " 
+			                  + ex.getMessage() + "\nTry cleaning the Rodin project (Project -> Clean).",
 					ex);
 		}
 
