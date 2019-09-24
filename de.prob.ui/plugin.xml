@@ -295,7 +295,7 @@
       </command>
       <command
             id="de.prob.ui.show_custom_precondition_dialog"
-            name="Execute with additional Guard">
+            name="Execute with Additional Guard Constraint">
       </command>
       <command
             categoryId="de.prob.ui.commands.category"
@@ -346,7 +346,7 @@
       </command>
       <command
           id="de.prob.ui.ltl.showcounterexampleinhistory"
-          name="Show counter-example in history">
+          name="Show Counter-example in History">
       </command> 
       <command
           id="de.prob.ui.ltl.counterexamplezoominhandler"
