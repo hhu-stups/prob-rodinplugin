@@ -28,7 +28,7 @@ public class CustomPreconditionInputDialog extends InputDialog {
 
 	public CustomPreconditionInputDialog(final Shell parentShell, Operation op, Animator a) {
 		super(parentShell, "Execute with additional Guard Constraint", getMenuText(op,a),
-				"", new EventBInputValidator());
+				getDefaultPredicate(op,a), new EventBInputValidator());
 		this.op = op;
 		animator = a;
 	}
@@ -38,25 +38,31 @@ public class CustomPreconditionInputDialog extends InputDialog {
 		sb.append("Enter Guard Constraint to be added to the Event \"");
 		sb.append(op.getName());
 		sb.append("\" before execution.");
-		sb.append("\nParameters are: ");
-		sb.append(getOperationParams(op,animator));
-		if (op.getArguments().size()>0) {
-			sb.append("\nValues are:");
-			for (String arg : op.getArguments()) {
+		List<String> params = getOperationParams(op,animator);
+		if(params.size()>0) {
+			sb.append("\nParameters are:");
+			for (String arg : params) {
 			    sb.append(" ");
-			    sb.append(arg); // these are the parameter values not the parameter names !!!
+			    sb.append(arg);
 			}
 		}
 
-		// sb.append("\nYou may use the parameters: ");
+		return sb.toString();
+	}
 
-		// List<String> arguments = op.getArguments();
-		// for (int i = 0; i < arguments.size() - 1; i++) {
-		// sb.append(arguments.get(i));
-		// sb.append("' ");
-		// }
-		// sb.append(arguments.get(arguments.size() - 1));
-
+	private static String getDefaultPredicate(Operation op, Animator animator) {
+		// get a predicate with all parameters and filling in values from selected operation in view
+		StringBuffer sb = new StringBuffer();
+		List<String> params = getOperationParams(op,animator);
+		List<String> vals = op.getArguments();
+		int sze = Math.min(params.size(),vals.size());
+		for (int i = 0; i < sze - 1; i++) {
+		    sb.append(params.get(i));
+		    sb.append(" = ");
+		    sb.append(vals.get(i));
+		    if(i!=sze-1) { sb.append(" & ");}
+		}
+		
 		return sb.toString();
 	}
 
