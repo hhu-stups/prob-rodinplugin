@@ -56,7 +56,7 @@ public class CustomPreconditionInputDialog extends InputDialog {
 		List<String> params = getOperationParams(op,animator);
 		List<String> vals = op.getArguments();
 		int sze = Math.min(params.size(),vals.size());
-		for (int i = 0; i < sze - 1; i++) {
+		for (int i = 0; i < sze; i++) {
 		    sb.append(params.get(i));
 		    sb.append(" = ");
 		    sb.append(vals.get(i));

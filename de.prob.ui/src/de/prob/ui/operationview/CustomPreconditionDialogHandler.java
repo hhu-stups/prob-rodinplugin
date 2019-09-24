@@ -41,6 +41,7 @@ public class CustomPreconditionDialogHandler extends AbstractHandler implements
 		try {
 			ExecuteOperationCommand
 					.executeOperation(Animator.getAnimator(), op);
+					// TODO: provide feedback when we cannot execute operation
 		} catch (ProBException e) {
 			e.notifyUserOnce();
 		}
