@@ -19,6 +19,7 @@ import de.prob.core.command.*;
 import de.prob.core.domainobjects.Operation;
 import de.prob.core.domainobjects.OperationInfo;
 import de.prob.exceptions.ProBException;
+import de.prob.logging.Logger;
 import de.prob.unicode.UnicodeTranslator;
 
 public class CustomPreconditionInputDialog extends InputDialog {
@@ -72,8 +73,11 @@ public class CustomPreconditionInputDialog extends InputDialog {
 					animator, op.getSource(),
 					Operation.getInternalName(op.getName()),
 					UnicodeTranslator.toUnicode(getValue()));
-
-			ExecuteOperationCommand.executeOperation(animator, customOp);
+            if (customOp==null) {
+            	Logger.notifyUser("Could not execute the event "+ op.getName() + " with the additional predicate provided!");
+            } else {
+			    ExecuteOperationCommand.executeOperation(animator, customOp);
+            }
 		} catch (ProBException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
