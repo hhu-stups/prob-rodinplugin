@@ -39,9 +39,14 @@ public class CustomPreconditionDialogHandler extends AbstractHandler implements
 		if (op == null)
 			return null;
 		try {
+			int hisSize = Animator.getAnimator().getHistory().size();
+			System.out.println("History Size = " + hisSize);
 			ExecuteOperationCommand
 					.executeOperation(Animator.getAnimator(), op);
 					// TODO: provide feedback when we cannot execute operation
+			if (Animator.getAnimator().getHistory().size() <= hisSize) {
+				Logger.notifyUser("Could not execute event "+ filtered.get(0).getName() + " with the additional predicate provided!");
+			}
 		} catch (ProBException e) {
 			e.notifyUserOnce();
 		}
