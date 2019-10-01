@@ -10,8 +10,7 @@ import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 
 /**
- * This command makes ProB search for a deadlock with an optional predicate to
- * limit the search space.
+ * This command makes ProB search for a violation of the static assertions on constants
  * 
  * @author plagge
  */
@@ -71,7 +70,7 @@ public class ConstraintBasedAssertionCheckCommand implements IComposableCommand 
 					.toString();
 		} else
 			throw new CommandException(
-					"unexpected result from deadlock check: " + resultTerm);
+					"unexpected result from static assertion check: " + resultTerm);
 		this.result = result;
 
 	}
