@@ -315,7 +315,12 @@
       <command
             categoryId="de.prob.ui.commands.category"
             id="de.prob.ui.assertion_check"
-            name="Check Assertions">
+            name="Check Context Theorems">
+      </command>
+      <command
+            categoryId="de.prob.ui.commands.category"
+            id="de.prob.ui.assertion_dyn_check"
+            name="Check Invariant Theorems">
       </command>
       <command
             categoryId="de.prob.ui.commands.category"
@@ -363,11 +368,6 @@
       <command
             id="de.prob.ui.newcore.export"
             name="Export for new Core">
-      </command>
-      <command
-            categoryId="de.prob.ui.commands.category"
-            id="de.prob.ui.assertion_check"
-            name="Check Context Theorems">
       </command>
       <command
             categoryId="de.prob.ui.commands.category"
@@ -803,6 +803,28 @@
          </class>
       </handler>
       <handler
+            commandId="de.prob.ui.assertion_dyn_check">
+         <enabledWhen>
+            <or>
+               <with
+                     variable="de.prob.core.model_loaded">
+                  <equals
+                        value="enabled">
+                  </equals>
+               </with>
+               <with
+                     variable="de.prob.core.context_loaded">
+                  <equals
+                        value="enabled">
+                  </equals>
+               </with>
+            </or>
+         </enabledWhen>
+         <class
+               class="de.prob.ui.assertion.AssertionDynCheckHandler">
+         </class>
+      </handler>
+      <handler
             commandId="de.prob.ui.find_valid_state">
          <class
                class="de.prob.ui.findvalidstate.FindValidStateHandler">
@@ -1161,6 +1183,13 @@
                   icon="icons/CBCInvariantCheck.png"
                   label="Context Theorems"
                   mnemonic="C"
+                  style="push">
+            </command>
+            <command
+                  commandId="de.prob.ui.assertion_dyn_check"
+                  icon="icons/CBCInvariantCheck.png"
+                  label="Invariant Theorems"
+                  mnemonic="T"
                   style="push">
             </command>
             <command
