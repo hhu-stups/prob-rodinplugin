@@ -9,8 +9,8 @@ import org.eclipse.swt.widgets.Shell;
 
 import de.prob.core.Animator;
 import de.prob.core.ProBJobFinishedListener;
-import de.prob.core.command.ConstraintBasedAssertionCheckCommand;
-import de.prob.core.command.ConstraintBasedAssertionCheckCommand.ResultType;
+import de.prob.core.command.ConstraintBasedDynamicAssertionCheckCommand;
+import de.prob.core.command.ConstraintBasedDynamicAssertionCheckCommand.ResultType;
 import de.prob.core.command.ExecuteOperationCommand;
 import de.prob.core.command.IComposableCommand;
 import de.prob.core.domainobjects.Operation;
@@ -35,7 +35,7 @@ public class AssertionDynCheckFinishedListener extends ProBJobFinishedListener {
 	@Override
 	protected void showResult(final IComposableCommand cmd,
 			final Animator animator) {
-		final ConstraintBasedAssertionCheckCommand command = (ConstraintBasedAssertionCheckCommand) cmd;
+		final ConstraintBasedDynamicAssertionCheckCommand command = (ConstraintBasedDynamicAssertionCheckCommand) cmd;
 		final ResultType result = command.getResult();
 		final int dialogType;
 		final String dialogTitle;
@@ -89,7 +89,7 @@ public class AssertionDynCheckFinishedListener extends ProBJobFinishedListener {
 	}
 
 	private void displayCounterExample(
-			final ConstraintBasedAssertionCheckCommand command,
+			final ConstraintBasedDynamicAssertionCheckCommand command,
 			final Animator animator) {
 		final Operation operation = command.getCounterExampleOperation();
 		try {

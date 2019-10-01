@@ -13,7 +13,6 @@ import org.eclipse.ui.handlers.HandlerUtil;
 import de.prob.core.Animator;
 import de.prob.core.LanguageDependendAnimationPart;
 import de.prob.core.ProBCommandJob;
-import de.prob.core.command.ConstraintBasedAssertionCheckCommand;
 import de.prob.core.command.ConstraintBasedDynamicAssertionCheckCommand;
 import de.prob.logging.Logger;
 
@@ -29,7 +28,7 @@ public class AssertionDynCheckHandler extends AbstractHandler {
 		if (Animator.getAnimator().isMachineLoaded()) {
 			performAssertionCheck(shell);
 		} else {
-			Logger.notifyUser("No ProB animation running. This is a bug. Please submit a report. Error in declaraion for class DeadlockCheckHandler");
+			Logger.notifyUser("No ProB animation running. This is a bug. Please submit a report. Error in declaraion for class AssertionDynCheckHandler");
 		}
 		return null;
 	}

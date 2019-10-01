@@ -28,7 +28,7 @@ public class AssertionCheckHandler extends AbstractHandler {
 		if (Animator.getAnimator().isMachineLoaded()) {
 			performAssertionCheck(shell);
 		} else {
-			Logger.notifyUser("No ProB animation running. This is a bug. Please submit a report. Error in declaraion for class DeadlockCheckHandler");
+			Logger.notifyUser("No ProB animation running. This is a bug. Please submit a report. Error in declaraion for class AssertionCheckHandler");
 		}
 		return null;
 	}
