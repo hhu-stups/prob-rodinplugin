@@ -18,7 +18,7 @@ import de.prob.exceptions.ProBException;
 import de.prob.logging.Logger;
 
 /**
- * This JobChangeAdapter presents the user the results of a deadlock freedom
+ * This JobChangeAdapter presents the user the results of a assertion
  * check.
  * 
  * @see AssertionCheckHandler
@@ -60,13 +60,13 @@ public class AssertionCheckFinishedListener extends ProBJobFinishedListener {
 			case COUNTER_EXAMPLE:
 				dialogType = MessageDialog.WARNING;
 				dialogTitle = "COUNTER-EXAMPLE FOUND!";
-				message = "The model contains a Counter-Example state, it will be shown in the state view.";
+				message = "The model contains a Counter-Example state for the Context Theorems, it will be shown in the state view.";
 				displayCounterExample(command, animator);
 				break;
 			case INTERRUPTED:
 				dialogType = MessageDialog.WARNING;
 				dialogTitle = " Interrupt";
-				message = "The deadlock check has been interrupted by the user or a time-out.";
+				message = "The context theorem check has been interrupted by the user or a time-out.";
 				break;
 			default:
 				Logger.notifyUser("Unexpected result: " + result);
@@ -74,7 +74,7 @@ public class AssertionCheckFinishedListener extends ProBJobFinishedListener {
 			}
 		}
 		if (shell.isDisposed()) {
-			System.out.println("Deadlock freedom check finished: "
+			System.out.println("Context Theorems check finished: "
 					+ dialogTitle);
 		} else {
 			final Runnable runnable = new Runnable() {
