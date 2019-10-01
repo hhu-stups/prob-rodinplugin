@@ -365,9 +365,9 @@
       </schedulerEvent>
       <schedulerEvent
             class="de.bmotionstudio.gef.editor.scheduler.ExecuteOperationByPredicateMulti"
-            description="Execute an operation by a predicate"
+            description="Execute an event by a predicate"
             menu="true"
-            name="Execute Operation (Multi)">
+            name="Execute Event (Multi)">
       </schedulerEvent>
    </extension>
    <extension
