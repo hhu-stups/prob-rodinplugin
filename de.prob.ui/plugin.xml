@@ -8,7 +8,7 @@
       <page
             class="de.prob.ui.eventb.ClassicPreferences"
             id="de.prob.ui.probclassic"
-            name="ProB Classic"
+            name="ProB Standalone"
             category="probpreferences">
       </page>
    </extension>
@@ -1096,17 +1096,17 @@
                commandId="de.prob.ui.navigator.context"
                icon="icons/new_prob_mini.png"
                id="more_commands"
-               label="ProB Classic ...">
+               label="ProB Standalone ...">
             <command
                   commandId="de.prob.ui.newcore.export"
                   icon="icons/prob_mini_logo.gif"
-                  label="Export for use in ProB classic"
+                  label="Export for use in ProB Standalone"
                   style="push">
             </command>
             <command
                   commandId="de.prob.ui.classic.open"
                   icon="icons/prob_mini_logo.gif"
-                  label="Open in ProB classic"
+                  label="Open in ProB Standalone"
                   style="push">
             </command>
             <visibleWhen>

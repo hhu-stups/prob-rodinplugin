@@ -23,20 +23,32 @@ import de.prob.logging.Logger;
 public class OpenClassicHandler extends AbstractHandler implements IHandler {
 
 	private ISelection fSelection;
+	
+	private static final String PROB_CLASSIC_NAME = "ProB Tcl/Tk";
+	private static final String PROB_STANDALONE_NAME = "ProB Standalone";
+	private static final String PROB2_NAME = "ProB2-UI";
 
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
 		fSelection = HandlerUtil.getCurrentSelection(event);
 
-		final String location = getBinaryLocation();
-		if (location == null) {
-			Logger.notifyUserWithoutBugreport("You need to specify a location for the ProB Tcl/Tk version. See Preferences -> ProB Classic.");
+		final String prob_location = getBinaryLocation();
+		if (prob_location == null) {
+			Logger.notifyUserWithoutBugreport("You need to specify a location for" + PROB_STANDALONE_NAME +". See Preferences -> ProB Standalone.");
 		} else {
 			final IEventBRoot root = getSelection();
 			if (root != null) {
-				final File temp = createTempFile();
-				final String tmp = temp.getAbsolutePath();
-				ExportNewCoreHandler.exportToClassic(tmp, root);
-				runProBClassic(location, tmp);
+				if(prob_location.endsWith(".jar")) {
+					// TO DO: we can open directly the .bum or .buc files with ProB2; we need to get it from root
+					final File temp = createTempFile();
+					final String tmp = temp.getAbsolutePath();
+					ExportNewCoreHandler.exportToClassic(tmp, root);
+					runProB2(prob_location, tmp);
+				} else {	
+					final File temp = createTempFile();
+					final String tmp = temp.getAbsolutePath();
+					ExportNewCoreHandler.exportToClassic(tmp, root);
+					runProBClassic(prob_location, tmp);
+				}
 			}
 		}
 		return null;
@@ -56,7 +68,7 @@ public class OpenClassicHandler extends AbstractHandler implements IHandler {
 					if (line == null) {
 						break;
 					}
-					System.out.println("ProB Classic: " + line);
+					System.out.println(PROB_STANDALONE_NAME + ": " + line);
 				}
 			} catch (IOException e) {
 			} finally {
@@ -79,12 +91,39 @@ public class OpenClassicHandler extends AbstractHandler implements IHandler {
 			new Thread(new ClassicConsole(output)).start();
 
 		} catch (IOException e) {
-			Logger.notifyUserWithoutBugreport("You need to specify a correct location for the ProB Tcl/Tk version. See Preferences -> ProB Classic.\nProB Tcl/Tk location: "+ probBinary + 
+			Logger.notifyUserWithoutBugreport("You need to specify a correct location for "
+			+ PROB_CLASSIC_NAME + ". See Preferences -> ProB Standalone.\n"
+			+ PROB_CLASSIC_NAME + " location: "+ probBinary + 
 			 "\nModel file: " + modelFile +
 			 "\nError message: "+ e.getLocalizedMessage());
 		}
 	}
 
+	private void runProB2(final String probBinary, final String modelFile) {
+	 // call prob2-ui jar file
+	 // from command-line it is: java -jar prob2-ui-1.0.1-SNAPSHOT-all.jar --machine-file  FILE
+		Process process = null;
+		try {
+			final String command = "java -jar " + probBinary + " --machine-file " + modelFile;
+			process = Runtime.getRuntime().exec(command);
+			final BufferedReader output = new BufferedReader(
+					new InputStreamReader(process.getInputStream()));
+			new Thread(new ClassicConsole(output)).start();
+			
+			// TODO: maybe use
+			//ProcessBuilder pb = new ProcessBuilder("/path/to/java", "-jar", probBinary, "--machine-file",modelFile);
+            // pb.directory(new File("preferred/working/directory"));
+            // Process p = pb.start();
+
+		} catch (IOException e) {
+			Logger.notifyUserWithoutBugreport("You need to specify a correct location for "
+			+ PROB2_NAME + ". See Preferences -> ProB Standalone.\n"
+			+ PROB2_NAME + " location: "+ probBinary + 
+			 "\nModel file: " + modelFile +
+			 "\nError message: "+ e.getLocalizedMessage());
+		}
+	}
+	
 	private String getBinaryLocation() {
 		Preferences preferences = Platform.getPreferencesService()
 				.getRootNode().node(InstanceScope.SCOPE)

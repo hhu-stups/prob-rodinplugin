@@ -78,7 +78,7 @@ public class ClassicPreferences extends PreferencePage implements
 		pageComponent.setLayout(layout);
 
 		Label label = new Label(pageComponent, SWT.NONE);
-		label.setText("Location of ProB classic:");
+		label.setText("Location of ProB Standalone:");
 		text = new Text(pageComponent, SWT.NONE);
 		String location = prefNode.get("location", "");
 		// text.setLayoutData(new RowData(100, SWT.DEFAULT));
@@ -89,7 +89,7 @@ public class ClassicPreferences extends PreferencePage implements
 		browseButton.addSelectionListener(new PushButton(pageComponent.getShell(), text));
 		Label versionRemark = new Label(pageComponent, SWT.WRAP);
 		versionRemark.setText(
-				"Note: This needs a version of ProB Tcl/Tk that is newer than 1.3.0.\nYou can obtain a copy of ProB Tcl/Tk from http://www.stups.uni-duesseldorf.de/ProB\n"); // precisely
+				"Note: This needs a version of ProB2-UI (jar file) that is at least 1.0.1 or a version of ProB Tcl/Tk that is at least 1.3.1.\nYou can obtain both from http://www.stups.uni-duesseldorf.de/ProB\n"); // precisely
 																																																								// 1.3.0-beta6
 
 		GridData gridData2 = new GridData();
