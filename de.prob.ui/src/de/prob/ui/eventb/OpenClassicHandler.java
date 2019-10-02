@@ -38,11 +38,9 @@ public class OpenClassicHandler extends AbstractHandler implements IHandler {
 			final IEventBRoot root = getSelection();
 			if (root != null) {
 				if(prob_location.endsWith(".jar")) {
-					// TO DO: we can open directly the .bum or .buc files with ProB2; we need to get it from root
-					final File temp = createTempFile();
-					final String tmp = temp.getAbsolutePath();
-					ExportNewCoreHandler.exportToClassic(tmp, root);
-					runProB2(prob_location, tmp);
+					//  we can open directly the .bum or .buc files with ProB2; we need to get it from root
+					// we could also get a platform URI: URI fileURI = URI.createPlatformResourceURI(root.getResource().getFullPath().toString(), true);
+					runProB2(prob_location, root.getResource().getFullPath().toString());
 				} else {	
 					final File temp = createTempFile();
 					final String tmp = temp.getAbsolutePath();
