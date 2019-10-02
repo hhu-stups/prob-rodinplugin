@@ -16,7 +16,7 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.eventb.core.IEventBRoot;
-import org.eventb.core.IMachineRoot;
+//import org.eventb.core.IMachineRoot;
 import org.osgi.service.prefs.Preferences;
 
 import de.prob.logging.Logger;
@@ -146,15 +146,15 @@ public class OpenClassicHandler extends AbstractHandler implements IHandler {
 		return temp;
 	}
 
-	private IMachineRoot getSelection() {
+	private IEventBRoot getSelection() {
 		if (!(fSelection instanceof IStructuredSelection))
 			return null;
 		final IStructuredSelection ssel = (IStructuredSelection) fSelection;
 		if (ssel.size() != 1)
 			return null;
-		if (!(ssel.getFirstElement() instanceof IMachineRoot))
+		if (!(ssel.getFirstElement() instanceof IEventBRoot)) // was IMachineRoot
 			return null;
-		return (IMachineRoot) ssel.getFirstElement();
+		return (IEventBRoot) ssel.getFirstElement();
 	}
 
 }
