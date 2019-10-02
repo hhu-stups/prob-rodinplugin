@@ -9,6 +9,8 @@ import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.IHandler;
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.viewers.ISelection;
@@ -40,7 +42,9 @@ public class OpenClassicHandler extends AbstractHandler implements IHandler {
 				if(prob_location.endsWith(".jar")) {
 					//  we can open directly the .bum or .buc files with ProB2; we need to get it from root
 					// we could also get a platform URI: URI fileURI = URI.createPlatformResourceURI(root.getResource().getFullPath().toString(), true);
-					runProB2(prob_location, root.getResource().getFullPath().toString());
+					String bum_buc_path = ResourcesPlugin.getWorkspace().getRoot().getLocation().toString()
+							              + root.getResource().getFullPath().toString();
+					runProB2(prob_location, bum_buc_path);
 				} else {	
 					final File temp = createTempFile();
 					final String tmp = temp.getAbsolutePath();
