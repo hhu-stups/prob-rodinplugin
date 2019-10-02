@@ -50,6 +50,8 @@ public class OpenClassicHandler extends AbstractHandler implements IHandler {
 					ExportNewCoreHandler.exportToClassic(tmp, root);
 					runProBClassic(prob_location, tmp);
 				}
+			} else {
+			    Logger.notifyUserWithoutBugreport("You need to select a context or machine to open with " + PROB_STANDALONE_NAME);
 			}
 		}
 		return null;
