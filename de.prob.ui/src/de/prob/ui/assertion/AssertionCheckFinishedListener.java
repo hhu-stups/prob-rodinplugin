@@ -50,17 +50,17 @@ public class AssertionCheckFinishedListener extends ProBJobFinishedListener {
 			case NO_COUNTER_EXAMPLE_EXISTS:
 				dialogType = MessageDialog.INFORMATION;
 				dialogTitle = "No Counter-Example Exists";
-				message = "No Counter-Example to the Context Theorems exists.";
+				message = "No Counter-Example to the Context Theorems exists (for current settings of deferred sets).\nIf your model contains deferred sets, there may exist counter-examples for other sizes of these sets.";
 				break;
 			case NO_COUNTER_EXAMPLE_FOUND:
 				dialogType = MessageDialog.INFORMATION;
 				dialogTitle = "No Counter-Example Found";
-				message = "No Counter-Example to the Context Theorems was found.";
+				message = "No Counter-Example to the Context Theorems was found (but one may exist).";
 				break;
 			case COUNTER_EXAMPLE:
 				dialogType = MessageDialog.WARNING;
 				dialogTitle = "COUNTER-EXAMPLE FOUND!";
-				message = "The model contains a Counter-Example state for the Context Theorems, it will be shown in the state view.";
+				message = "A counter-example to the context theorems was found: it will be shown in the state view.\nThis counter-example state satisfies the axioms but not all theorems.";
 				displayCounterExample(command, animator);
 				break;
 			case INTERRUPTED:

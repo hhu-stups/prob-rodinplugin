@@ -50,17 +50,17 @@ public class AssertionDynCheckFinishedListener extends ProBJobFinishedListener {
 			case NO_COUNTER_EXAMPLE_EXISTS:
 				dialogType = MessageDialog.INFORMATION;
 				dialogTitle = "No Counter-Example Exists";
-				message = "No Counter-Example to the Invariant Theorems exists.";
+				message = "No counter-example to the invariant theorems exists (for current settings of deferred sets).\nIf your model contains deferred sets, there may exist counter-examples for other sizes of these sets.";
 				break;
 			case NO_COUNTER_EXAMPLE_FOUND:
 				dialogType = MessageDialog.INFORMATION;
 				dialogTitle = "No Counter-Example Found";
-				message = "No Counter-Example to the Invariant Theorems was found.";
+				message = "No counter-example to the invariant theorems was found (but one may exist).";
 				break;
 			case COUNTER_EXAMPLE:
 				dialogType = MessageDialog.WARNING;
 				dialogTitle = "COUNTER-EXAMPLE FOUND!";
-				message = "The model contains a Counter-Example state to the Invariant Theorems, it will be shown in the state view.";
+				message = "A counter-example to the invariant theorems was found: it will be shown in the state view.\nThis counter-example state satisfies the invariants but may not be reachable from the initialisation.";
 				displayCounterExample(command, animator);
 				break;
 			case INTERRUPTED:

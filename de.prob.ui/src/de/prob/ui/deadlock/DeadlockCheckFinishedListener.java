@@ -49,7 +49,7 @@ public class DeadlockCheckFinishedListener extends ProBJobFinishedListener {
 			case NO_DEADLOCK:
 				dialogType = MessageDialog.INFORMATION;
 				dialogTitle = "No Deadlock Found";
-				message = "The model does not contain any deadlock.";
+				message = "The model does not contain any deadlock (for current settings of deferred sets).\nIf your model contains deferred sets, there may exist counter-examples for other sizes of these sets.";
 				break;
 			case ERROR:
 				dialogType = MessageDialog.ERROR;
@@ -59,7 +59,7 @@ public class DeadlockCheckFinishedListener extends ProBJobFinishedListener {
 			case DEADLOCK_FOUND:
 				dialogType = MessageDialog.WARNING;
 				dialogTitle = "DEADLOCK FOUND!";
-				message = "The model contains a deadlocking state satisfying the invariant, it will be shown in the state view.";
+				message = "The model contains a deadlocking state satisfying the invariant, it will be shown in the state view.\nThe state may not be reachable from the initialisation.";
 				displayDeadlock(command, animator);
 				break;
 			case INTERRUPTED:
