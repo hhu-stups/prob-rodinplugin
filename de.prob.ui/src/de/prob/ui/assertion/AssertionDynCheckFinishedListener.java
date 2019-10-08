@@ -60,7 +60,7 @@ public class AssertionDynCheckFinishedListener extends ProBJobFinishedListener {
 			case COUNTER_EXAMPLE:
 				dialogType = MessageDialog.WARNING;
 				dialogTitle = "COUNTER-EXAMPLE FOUND!";
-				message = "A counter-example to the invariant theorems was found: it will be shown in the state view.\nThis counter-example state satisfies the invariants but may not be reachable from the initialisation.";
+				message = "A counter-example to the invariant theorems was found: it will be shown in the state view.\nThis counter-example state satisfies the invariants but not all theorems. It may not be reachable from the initialisation.";
 				displayCounterExample(command, animator);
 				break;
 			case INTERRUPTED:
