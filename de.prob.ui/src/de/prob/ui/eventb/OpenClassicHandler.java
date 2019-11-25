@@ -114,8 +114,9 @@ public class OpenClassicHandler extends AbstractHandler implements IHandler {
 			
 			final String[] command = {"java", "-jar", probBinary, "--machine-file", modelFile};
 			System.out.println("Launching ProB2UI using command: " + command);
-			ProcessBuilder pb = new ProcessBuilder(command);
-			Process process = pb.start();
+			ProcessBuilder pb = new ProcessBuilder(command).redirectErrorStream(true);
+			// Process process = 
+			pb.start();
 			
 			// TODO: maybe use
 			//ProcessBuilder pb = new ProcessBuilder("/path/to/java", "-jar", probBinary, "--machine-file",modelFile);
