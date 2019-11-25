@@ -1,10 +1,10 @@
-<img src="https://github.com/bendisposto/prob/raw/develop/logo.png" width="500" align="center">
+<img src="https://github.com/hhu-stups/prob-rodinplugin/raw/develop/logo.png" width="500" align="center">
 
-[![Build Status](https://travis-ci.org/bendisposto/prob.svg?branch=develop)](https://travis-ci.org/bendisposto/prob)
+[![Build Status](https://travis-ci.org/hhu-stups/prob-rodinplugin.svg?branch=develop)](https://travis-ci.org/hhu-stups/prob-rodinplugin)
 
 # The ProB Model Checker and Animator
 
-[![Build Status](https://travis-ci.org/bendisposto/prob.svg?branch=develop)](https://travis-ci.org/bendisposto/prob)
+[![Build Status](https://travis-ci.org/hhu-stups/prob-rodinplugin.svg?branch=develop)](https://travis-ci.org/hhu-stups/prob-rodinplugin)
 
 The ProB source code is distributed under the EPL license (http://www.eclipse.org/org/documents/epl-v10.html).
 (C) 2000-2019 Michael Leuschel and many others.
