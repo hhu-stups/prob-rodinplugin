@@ -107,16 +107,20 @@ public class OpenClassicHandler extends AbstractHandler implements IHandler {
 	 // from command-line it is: java -jar prob2-ui-1.0.1-SNAPSHOT-all.jar --machine-file  FILE
 		Process process = null;
 		try {
-			final String command = "java -jar " + probBinary + " --machine-file " + modelFile;
-			process = Runtime.getRuntime().exec(command);
-			final BufferedReader output = new BufferedReader(
-					new InputStreamReader(process.getInputStream()));
-			new Thread(new ClassicConsole(output)).start();
+			// final String command = "java -jar " + probBinary + " --machine-file " + modelFile;
+			//process = Runtime.getRuntime().exec(command);
+			//final BufferedReader output = new BufferedReader(
+			//		new InputStreamReader(process.getInputStream()));
+			//new Thread(new ClassicConsole(output)).start();
+			
+			final String[] command = {"java", "-jar", probBinary, "--machine-file", modelFile};
+            process = new ProcessBuilder(command).redirectErrorStream().start();
 			
 			// TODO: maybe use
 			//ProcessBuilder pb = new ProcessBuilder("/path/to/java", "-jar", probBinary, "--machine-file",modelFile);
             // pb.directory(new File("preferred/working/directory"));
             // Process p = pb.start();
+             
 
 		} catch (IOException e) {
 			Logger.notifyUserWithoutBugreport("You need to specify a correct location for "
