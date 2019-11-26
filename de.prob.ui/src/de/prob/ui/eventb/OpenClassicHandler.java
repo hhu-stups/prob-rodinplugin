@@ -120,8 +120,14 @@ public class OpenClassicHandler extends AbstractHandler implements IHandler {
 			final BufferedReader output = new BufferedReader(
 					new InputStreamReader(process.getInputStream()));
 			new Thread(new ClassicConsole(output)).start();
+			
+			process.waitFor(); // I hope this will not block Rodin
 
-		} catch (IOException e) {
+	        if (process.exitValue() != 0) {
+				Logger.notifyUserWithoutBugreport("Error launching ProB2UI with java -jar" + probBinary + ". Exit code: " + process.exitValue());
+	        }
+
+		} catch (IOException | InterruptedException e) {
 			Logger.notifyUserWithoutBugreport("You need to specify a correct location for "
 			+ PROB2_NAME + ". See Preferences -> ProB Standalone.\n"
 			+ PROB2_NAME + " location: "+ probBinary + 
