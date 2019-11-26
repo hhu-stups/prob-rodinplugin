@@ -74,6 +74,7 @@ public class OpenClassicHandler extends AbstractHandler implements IHandler {
 						break;
 					}
 					System.out.println(PROB_STANDALONE_NAME + ": " + line);
+					LimitedLogger.getLogger().log(line,PROB_STANDALONE_NAME,null);
 				}
 			} catch (IOException e) {
 			} finally {
@@ -124,7 +125,7 @@ public class OpenClassicHandler extends AbstractHandler implements IHandler {
 			process.waitFor(); // I hope this will not block Rodin
 
 	        if (process.exitValue() != 0) {
-				Logger.notifyUserWithoutBugreport("Error launching ProB2UI with java -jar" + probBinary + ". Exit code: " + process.exitValue());
+				Logger.notifyUserWithoutBugreport("Failed to launch ProB2UI with java -jar" + probBinary + ". Exit code: " + process.exitValue());
 	        }
 
 		} catch (IOException | InterruptedException e) {
