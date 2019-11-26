@@ -1,5 +1,7 @@
 package de.prob.ui.eventb;
 
+import de.prob.core.LimitedLogger;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -110,7 +112,8 @@ public class OpenClassicHandler extends AbstractHandler implements IHandler {
 			//process = Runtime.getRuntime().exec(command);
 			
 			final String[] command = {"java", "-jar", probBinary, "--machine-file", modelFile};
-			System.out.println("Launching ProB2UI using command: java -jar " + probBinary);
+			System.out.println("Launching ProB2UI using: java -jar " + probBinary);
+			LimitedLogger.getLogger().log("Launching ProB2UI using: java -jar " + probBinary + " --machine-file " + modelFile,"ProB2UI",null);
 			ProcessBuilder pb = new ProcessBuilder(command).redirectErrorStream(true);
 			Process process = pb.start();
 			
