@@ -112,6 +112,18 @@ public class OpenClassicHandler extends AbstractHandler implements IHandler {
 			// final String command = "java -jar " + probBinary + " --machine-file " + modelFile;
 			//process = Runtime.getRuntime().exec(command);
 			
+            // get some version info first:
+			final String[] vcommand = {"java", "-version"};
+			ProcessBuilder vpb = new ProcessBuilder(vcommand).redirectErrorStream(true);
+			Process vprocess = vpb.start();
+			final BufferedReader voutput = new BufferedReader(
+					new InputStreamReader(vprocess.getInputStream()));
+			new Thread(new ClassicConsole(voutput)).start();
+			vprocess.waitFor(); // this blocks Rodin
+	        if (vprocess.exitValue() != 0) {
+				Logger.notifyUserWithoutBugreport("Failed to start java -version. Exit code: " + vprocess.exitValue());
+	        }
+			
 			final String[] command = {"java", "-jar", probBinary, "--machine-file", modelFile};
 			System.out.println("Launching ProB2UI using: java -jar " + probBinary);
 			LimitedLogger.getLogger().log("Launching ProB2UI using: java -jar " + probBinary + " --machine-file " + modelFile,"ProB2UI",null);
@@ -122,12 +134,8 @@ public class OpenClassicHandler extends AbstractHandler implements IHandler {
 					new InputStreamReader(process.getInputStream()));
 			new Thread(new ClassicConsole(output)).start();
 			
-//			process.waitFor(); // this blocks Rodin
-//	        if (process.exitValue() != 0) {
-//				Logger.notifyUserWithoutBugreport("Failed to launch ProB2UI with java -jar" + probBinary + ". Exit code: " + process.exitValue());
-//	        }
-//		} catch (IOException | InterruptedException e) {
-		} catch (IOException e) {
+		} catch (IOException | InterruptedException e) {
+//		} catch (IOException e) {
 			Logger.notifyUserWithoutBugreport("You need to specify a correct location for "
 			+ PROB2_NAME + ". See Preferences -> ProB Standalone.\n"
 			+ PROB2_NAME + " location: "+ probBinary + 
