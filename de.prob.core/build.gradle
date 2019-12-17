@@ -3,18 +3,14 @@ apply plugin: 'java'
 def parser_version = '2.5.1'
 
 dependencies {
- compile files("../parsers/answerparser-2.5.1-uc.jar")
- compile files("../parsers/bparser-2.5.1-uc.jar")
- compile files("../parsers/cliparser-2.5.1-uc.jar")
- compile files("../parsers/eventbalg-2.5.1-uc.jar")
- compile files("../parsers/eventbstruct-2.5.1-uc.jar")
- compile files("../parsers/ltlparser-2.5.1-uc.jar")
- compile files("../parsers/parserbase-2.5.1-uc.jar")
- compile files("../parsers/probparsers-2.5.1-uc.jar")
- compile files("../parsers/prologlib-2.5.1-uc.jar")
- compile files("../parsers/theorymapping-2.5.1-uc.jar")
- compile files("../parsers/translator-2.5.1-uc.jar")
- compile files("../parsers/unicode-2.5.1-uc.jar")
+ compile group: "de.hhu.stups", name: "answerparser", version: parser_version , changing: true
+ compile group: "de.hhu.stups", name: "bparser", version: parser_version , changing: true
+ compile group: "de.hhu.stups", name: "cliparser", version: parser_version , changing: true
+ compile group: "de.hhu.stups", name: "ltlparser", version: parser_version , changing: true
+ compile group: "de.hhu.stups", name: "parserbase", version: parser_version , changing: true
+ compile group: "de.hhu.stups", name: "prologlib", version: parser_version , changing: true
+ compile group: "de.hhu.stups", name: "unicode", version: parser_version , changing: true
+ compile group: "de.hhu.stups", name: "theorymapping", version: parser_version , changing: true
  compile 'commons-lang:commons-lang:2.6'
  compile 'commons-codec:commons-codec:1.8'
  compile 'com.thoughtworks.xstream:xstream:1.4.7'
