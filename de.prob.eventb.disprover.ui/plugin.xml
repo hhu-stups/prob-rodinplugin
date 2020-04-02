@@ -94,7 +94,7 @@
          <command
                commandId="de.prob.eventb.disprover.ui.exportpos"
                icon="icons/prob_mini_logo.gif"
-               label="Export POs for ProB"
+               label="Export POs for ProB (probcli)"
                style="push">
          </command>
       </menuContribution>
