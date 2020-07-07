@@ -11,7 +11,7 @@ The ProB source code is distributed under the EPL license (http://www.eclipse.or
 
 For updates please visit the ProB website: http://www.stups.uni-duesseldorf.de/ProB/
 
-ProB comes with ABSOLUTELY NO WARRANTY OF ANY KIND ! This software is distributed in the hope that it will be useful but WITHOUT ANY WARRANTY. The author(s) do not accept responsibility to anyone for the consequences of using it or for whether it serves any particular purpose or works at all. No warranty is made about the software or its performance.
+ProB comes with ABSOLUTELY NO WARRANTY OF ANY KIND! This software is distributed in the hope that it will be useful but WITHOUT ANY WARRANTY. The author(s) do not accept responsibility to anyone for the consequences of using it or for whether it serves any particular purpose or works at all. No warranty is made about the software or its performance.
 
 The ProB binary and source distributions contain the nauty library (http://cs.anu.edu.au/~bdm/nauty/) which imply further restrictions: the ProB model checker with nauty symmetry reduction cannot be used for applications with nontrivial military significance.
 
@@ -21,10 +21,8 @@ For availability of commercial support, please contact Formal Mind (http://www.f
 Please report bugs and feature requests at https://probjira.atlassian.net
 
 # Prolog Source Code
-The latest source code of the Prolog binary can be downloaded from https://www3.hhu.de/stups/downloads/prob/source/. To build the Prolog binaries you require a Sicstus 4 (http://sicstus.sics.se/index.html) licence.
-
-# ProB 2.0
-The development repository for ProB 2.0 is avaliable from https://github.com/bendisposto/prob2
+The latest source code of the Prolog binary can be downloaded from https://www3.hhu.de/stups/downloads/prob/source/.
+To build the Prolog binaries you require a Sicstus 4 (http://sicstus.sics.se/index.html) licence.
 
 
 # Setting up the development environment
