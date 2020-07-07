@@ -27,7 +27,7 @@ To build the Prolog binaries you require a Sicstus 4 (http://sicstus.sics.se/ind
 
 # Setting up the development environment
 
-- Clone the repository (http://github.com/bendisposto/prob)
+- Clone the repository (https://github.com/hhu-stups/prob-rodinplugin)
   We suggest to fork the project on github (see https://help.github.com/articles/fork-a-repo)
 
 - We use gradle to manage the dependencies to the libraries, thus you will need gradle installed on your computer.
