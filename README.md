@@ -15,7 +15,7 @@ ProB comes with ABSOLUTELY NO WARRANTY OF ANY KIND! This software is distributed
 
 The ProB binary and source distributions contain the nauty library (http://cs.anu.edu.au/~bdm/nauty/) which imply further restrictions: the ProB model checker with nauty symmetry reduction cannot be used for applications with nontrivial military significance.
 
-For availability of commercial support, please contact Michael Leuschel (http://www.stups.uni-duesseldorf.de/~leuschel/).
+For availability of commercial support, please contact Michael Leuschel (http://www.stups.uni-duesseldorf.de/~leuschel).
 
 # Bugs
 Please report bugs and feature requests at https://probjira.atlassian.net
