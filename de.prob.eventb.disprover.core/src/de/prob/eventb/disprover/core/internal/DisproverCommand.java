@@ -106,11 +106,12 @@ public class DisproverCommand implements IComposableCommand {
 		job.setUser(true);
 		job.schedule();
 
-		while (job.getResult() == null && !pm.isCanceled()) {
+		while (job.getResult() == null && 
+		       (pm==null or !pm.isCanceled())) {
 			Thread.sleep(200);
 		}
 
-		if (pm.isCanceled()) {
+		if (pm != null && pm.isCanceled()) {
 			job.cancel();
 			throw new InterruptedException();
 		}
