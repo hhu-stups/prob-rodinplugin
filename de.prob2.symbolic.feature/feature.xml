@@ -19,7 +19,7 @@ and is now being used within Siemens.
    </description>
 
    <copyright>
-      (C) 2000-2011 Michael Leuschel (and many others) All rights reserved.
+      (C) 2000-2020 Michael Leuschel (and many others) All rights reserved.
    </copyright>
 
    <license url="http://www.eclipse.org/org/documents/epl-v10.html">
@@ -233,7 +233,7 @@ litigation.
       <import plugin="org.eclipse.core.runtime"/>
       <import plugin="de.prob.core" version="9.4.0" match="equivalent"/>
       <import plugin="de.prob.ui" version="7.4.0" match="equivalent"/>
-      <import plugin="org.rodinp.core" version="1.7.0" match="equivalent"/>
+      <import plugin="org.rodinp.core" version="1.7.0" match="compatible"/>
       <import plugin="org.eclipse.ui" version="3.5.0" match="compatible"/>
       <import plugin="org.eventb.core" version="3.0.0"/>
       <import plugin="org.eventb.ui" version="3.0.0"/>
