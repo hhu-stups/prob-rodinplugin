@@ -111,7 +111,7 @@ public class DisproverReasoner implements IReasoner {
 		IEventBProject evbProject;
 		
 		if (origin==null) { // no origin available; seems to happen in Rodin 3.5RC upon startup
-		   System.out.println("No origin available for sequent")
+		   System.out.println("No origin available for sequent");
 		   // throw new InterruptedException(); // Should we do this instead of trying to work with null project?
 		   evbProject = null;
 		} else {
