@@ -12,7 +12,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eventb.core.ast;bundle-version="[3.0.0,4.0.0)",
  org.eventb.core.seqprover;bundle-version="[3.0.0,4.0.0)",
  org.eclipse.osgi,
- org.rodinp.core;bundle-version="[1.7.0,1.8.0)",
+ org.rodinp.core;bundle-version="[1.7.0,1.9.0)",
  org.eventb.core;bundle-version="[3.0.0,4.0.0)",
  de.prob.ui;bundle-version="7.4.0"
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
