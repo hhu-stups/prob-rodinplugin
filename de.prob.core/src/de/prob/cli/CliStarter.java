@@ -215,7 +215,7 @@ public final class CliStarter {
 			while (!endReached && (line = input.readLine()) != null) { // NOPMD
 				applyPatterns(patterns, line);
 				endReached = patterns.isEmpty()
-						|| line.contains("starting command loop");
+						|| line.contains("starting command loop"); // printed in prob_socketserver.pl
 			}
 		} catch (IOException e) {
 			final String message = "Problem while starting ProB. Cannot read from input stream.";
