@@ -73,6 +73,7 @@ public final class DisproverLoadCommand implements IComposableCommand {
 	private boolean theoriesUsed() throws TranslationFailedException {
 		try {
 			final IRodinElement[] elements;
+			if (project==null) { return false;}
 			elements = project.getRodinProject().getChildren();
 			for (IRodinElement element : elements) {
 				if (element instanceof IRodinFile) {

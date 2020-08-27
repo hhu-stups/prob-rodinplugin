@@ -107,9 +107,18 @@ public class DisproverReasoner implements IReasoner {
 
 		// find the IEventBProject belonging to the sequent
 		IPOSequent origin = (IPOSequent) sequent.getOrigin();
-		IRodinProject project = origin.getRodinProject();
-		IEventBProject evbProject = (IEventBProject) project
-				.getAdapter(IEventBProject.class);
+		
+		IEventBProject evbProject;
+		
+		if (origin==null) { // no origin available; seems to happen in Rodin 3.5RC upon startup
+		   System.out.println("No origin available for sequent")
+		   // throw new InterruptedException(); // Should we do this instead of trying to work with null project?
+		   evbProject = null;
+		} else {
+			IRodinProject project = origin.getRodinProject();
+			evbProject = (IEventBProject) project
+					.getAdapter(IEventBProject.class);
+		}
 		ICounterExample counterExample = DisproverCommand.disprove(
 				Animator.getAuxAnimator(), evbProject, allHypotheses,
 				selectedHypotheses, goal, timeoutFactor, context, pm);
