@@ -107,7 +107,7 @@ public class DisproverCommand implements IComposableCommand {
 		job.schedule();
 
 		while (job.getResult() == null && 
-		       (pm == null || !pm.isCanceled())) { // try to treat case IProofMonitor pm is null
+		       (pm == null || !pm.isCanceled())) { // treat case IProofMonitor is null; done by Rodin 3.5RC at startup
 			Thread.sleep(200);
 		}
 
