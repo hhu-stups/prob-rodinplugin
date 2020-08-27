@@ -227,7 +227,7 @@ litigation.
       <import plugin="org.eclipse.ui" version="3.5.0" match="compatible"/>
       <import plugin="org.eclipse.ui.ide" version="3.5.0" match="compatible"/>
       <import plugin="org.eclipse.core.runtime" version="3.5.0" match="compatible"/>
-      <import plugin="org.eclipse.gef" version="3.7.0" match="compatible"/>
+      <import plugin="org.eclipse.gef" version="3.7.0" match="greaterOrEqual"/>
       <import plugin="de.prob.core" version="9.4.0" match="equivalent"/>
       <import plugin="org.eventb.core" version="3.0.0"/>
       <import plugin="org.eclipse.core.resources" version="3.5.0" match="compatible"/>
