@@ -6,10 +6,14 @@
       provider-name="HHU Düsseldorf STUPS Group">
 
    <description url="http://www.stups.uni-duesseldorf.de/ProB">
-      ProB is an animator and model checker for the B-Method. It allows fully automatic animation of many B specifications, and can be used to systematically check a specification for errors. 
-Part of the research and development was conducted within the EPSRC funded projects ABCD and iMoc, and within the EU funded project Rodin. 
-Development is continued under the EU funded project Deploy and the DFG project Gepavas. 
-ProB has been successfully used on various industrial specifications and is now being used within Siemens.
+      ProB is an animator and model checker for the B-Method. It allows
+fully automatic animation of many B specifications, and can be
+used to systematically check a specification for errors.
+Part of the research and development was conducted within the
+EPSRC funded projects ABCD and iMoc, and within the EU funded
+projects Rodin and Deploy and the DFG projects Gepavas and Gepavas II.
+ProB has been successfully used on various industrial specifications
+and is now being used within Siemens, Alstom, Thales.
    </description>
 
    <copyright>
