@@ -197,7 +197,7 @@ public class DisproverReasoner implements IReasoner {
 				&& counterExample.onlySelectedHypotheses()) {
 			System.out.println(sequent.toString()
 					+ ": Counter-Example for selected hypotheses found.");
-            Sysemt.out.println(counterExample.toString()); 
+            System.out.println(counterExample.toString()); 
 			return ProverFactory
 					.reasonerFailure(
 							this,
