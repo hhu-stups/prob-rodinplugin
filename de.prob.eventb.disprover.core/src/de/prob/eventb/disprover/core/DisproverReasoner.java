@@ -122,7 +122,7 @@ public class DisproverReasoner implements IReasoner {
 		ICounterExample counterExample = DisproverCommand.disprove(
 				Animator.getAuxAnimator(), evbProject, allHypotheses,
 				selectedHypotheses, goal, timeoutFactor, context, pm);
-		// Logger.info("Disprover: Result: " + counterExample.toString());
+		Logger.info("Disprover: Result: " + counterExample.toString());
 
 		return counterExample;
 	}
@@ -197,12 +197,12 @@ public class DisproverReasoner implements IReasoner {
 				&& counterExample.onlySelectedHypotheses()) {
 			System.out.println(sequent.toString()
 					+ ": Counter-Example for selected hypotheses found.");
-
+            Sysemt.out.println(counterExample.toString()); 
 			return ProverFactory
 					.reasonerFailure(
 							this,
 							input,
-							"ProB: Counter-Example for selected Hypotheses found, Goal not provable from selected Hypotheses (may be provable with all Hypotheses)");
+							"ProB: Counter-Example to Goal for selected Hypotheses found (may be provable with all Hypotheses): " + counterExample.toString()); // use abbreviate or substring(0, Math.min(s.length(), 100));
 		}
 
 		System.out.println(sequent.toString() + ": Counter-Example found.");
