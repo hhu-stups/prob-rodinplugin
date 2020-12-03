@@ -50,7 +50,7 @@ public class DisproverCommand implements IComposableCommand {
 	private final Set<Predicate> selectedHypotheses;
 	private final Predicate goal;
 	private final int timeout;
-	private final Boolean exportPO
+	private final Boolean exportPO;
 
 	private static ComposedCommand composed;
 
