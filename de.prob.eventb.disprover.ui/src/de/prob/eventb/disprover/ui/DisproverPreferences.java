@@ -54,6 +54,7 @@ public class DisproverPreferences extends PreferencePage implements
 	private Button checkCSE;
 	private Button checkSMT;
 	private Button checkDoubleEval;
+	private Button checkExportSelectedHyps;
 
 	public DisproverPreferences() {
 		super();
@@ -151,14 +152,19 @@ public class DisproverPreferences extends PreferencePage implements
 		checkCSE.setSelection(prefNode.getBoolean("cse", false));
 
 		new Label(pageComponent, SWT.NONE)
-				.setText("Enable SMT Solver Support in Interpreter:");
+				.setText("Enable SMT solver support in ProB interpreter:");
 		checkSMT = new Button(pageComponent, SWT.CHECK);
 		checkSMT.setSelection(prefNode.getBoolean("smt", false));
 
 		new Label(pageComponent, SWT.NONE)
-				.setText("Check (Hypotheses ^ Goal) in addition to (Hypotheses ^ not Goal) to identify contradiction in hypotheses :");
+				.setText("Check (Hypotheses ^ Goal) in addition to (Hypotheses ^ not Goal) to identify contradiction in hypotheses:");
 		checkDoubleEval = new Button(pageComponent, SWT.CHECK);
 		checkDoubleEval.setSelection(prefNode.getBoolean("doubleeval", false));
+
+		new Label(pageComponent, SWT.NONE)
+				.setText("Export selected hypotheses to B text file (/tmp/ProB_Rodin_PO_SelectedHyps.mch):");
+		checkExportSelectedHyps = new Button(pageComponent, SWT.CHECK);
+		checkExportSelectedHyps.setSelection(prefNode.getBoolean("exportpo", false));
 
 		return pageComponent;
 	}
@@ -171,6 +177,7 @@ public class DisproverPreferences extends PreferencePage implements
 		prefNode.putBoolean("cse", checkCSE.getSelection());
 		prefNode.putBoolean("smt", checkSMT.getSelection());
 		prefNode.putBoolean("doubleeval", checkDoubleEval.getSelection());
+		prefNode.putBoolean("exportpo", checkExportSelectedHyps.getSelection());
 		try {
 			prefNode.flush();
 		} catch (BackingStoreException e) {
