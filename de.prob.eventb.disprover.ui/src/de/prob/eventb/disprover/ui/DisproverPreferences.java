@@ -162,7 +162,7 @@ public class DisproverPreferences extends PreferencePage implements
 		checkDoubleEval.setSelection(prefNode.getBoolean("doubleeval", false));
 
 		new Label(pageComponent, SWT.NONE)
-				.setText("Export selected hypotheses to B text file (/tmp/ProB_Rodin_PO_SelectedHyps.mch):");
+				.setText("Export Goal and selected Hypotheses to B file (/tmp/ProB_Rodin_PO_SelectedHyps.mch):");
 		checkExportSelectedHyps = new Button(pageComponent, SWT.CHECK);
 		checkExportSelectedHyps.setSelection(prefNode.getBoolean("exportpo", false));
 
