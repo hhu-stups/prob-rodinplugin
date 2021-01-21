@@ -7,7 +7,7 @@
 [![Build Status](https://travis-ci.org/hhu-stups/prob-rodinplugin.svg?branch=develop)](https://travis-ci.org/hhu-stups/prob-rodinplugin)
 
 The ProB source code is distributed under the EPL license (http://www.eclipse.org/org/documents/epl-v10.html).
-(C) 2000-2020 Michael Leuschel and many others.
+(C) 2000-2021 Michael Leuschel and many others.
 
 For updates please visit the ProB website: https://www3.hhu.de/stups/prob/
 
