@@ -18,7 +18,7 @@ The ProB binary and source distributions contain the nauty library (http://cs.an
 For availability of commercial support, please contact Michael Leuschel (http://www.stups.uni-duesseldorf.de/~leuschel).
 
 # Bugs
-Please report bugs and feature requests at https://probjira.atlassian.net
+Please report bugs and feature requests at https://github.com/hhu-stups/prob-issues
 
 # Prolog Source Code
 The latest source code of the Prolog binary can be downloaded from https://www3.hhu.de/stups/downloads/prob/source/.
