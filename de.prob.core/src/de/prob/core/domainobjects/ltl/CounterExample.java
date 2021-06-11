@@ -146,7 +146,7 @@ public class CounterExample {
 
 				final String name = atomicFormulaNames[atomicId];
 
-				Logger.assertProB("CounterExample invalid",
+				Logger.assertProB("CounterExample functor invalid: "+functor,
 						values.length == predicateValues.get(atomicId).size());
 
 				for (int i = 0; i < predicateValues.get(atomicId).size(); i++) {
