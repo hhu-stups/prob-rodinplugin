@@ -22,7 +22,7 @@ Please report bugs and feature requests at the new site https://github.com/hhu-s
 
 # Prolog Source Code
 The latest source code of the Prolog binary can be downloaded from https://www3.hhu.de/stups/downloads/prob/source/.
-To build the Prolog binaries you require a Sicstus 4 (http://sicstus.sics.se/index.html) licence.
+To build the Prolog binaries you require a SICStus 4 (http://sicstus.sics.se/index.html) licence.
 
 
 # Setting up the development environment
