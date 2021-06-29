@@ -681,6 +681,12 @@ def parentPom(artifactId) { """<?xml version="1.0" encoding="UTF-8"?>
 		<tycho-version>${tychoVersion}</tycho-version>
 	</properties>
 
+	<pluginRepositories>
+		<pluginRepository>
+			<id>central</id>
+			<url>https://repo1.maven.org/maven2</url>
+		</pluginRepository>
+	</pluginRepositories> 
    <repositories>
 	<!-- configure p2 repository to resolve against -->
 
