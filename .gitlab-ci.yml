@@ -2,7 +2,6 @@ build:
   stage: build
   image: openjdk:8-jdk-slim
   before_script:
-    - sudo rm -f /etc/mavenrc
     - wget http://www.us.apache.org/dist/maven/maven-3/3.0.5/binaries/apache-maven-3.0.5-bin.tar.gz
     - tar -zxvf apache-maven-3.0.5-bin.tar.gz
     - export MAVEN_OPTS="-Xmx512m -XX:MaxPermSize=192m"
