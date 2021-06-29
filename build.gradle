@@ -70,7 +70,7 @@ task downloadCli  {
 		delete file(dir)
 	    new File(dir).mkdirs()
 
-		['leopard64':'macos','linux32':'linux','linux64':'linux64','win32':'windows'].each {
+		['leopard64':'macos','linux32':'linux','linux64':'linux64','win64':'windows'].each {
 		def n = it.getKey()
 
 		def targetdir = dir+it.getValue()
@@ -86,8 +86,8 @@ task downloadCli  {
 	}
 
 	def targetdir = dir+"windows/"
-	def targetzip = targetdir+"windowslib32.zip"
-	download("https://www3.hhu.de/stups/downloads/prob/cli/nightly/windowslib32.zip",targetzip)
+	def targetzip = targetdir+"windowslib64.zip"
+	download("https://www3.hhu.de/stups/downloads/prob/cli/nightly/windowslib64.zip",targetzip)
 	FileTree zip = zipTree(targetzip)
 	    copy {
 		   from zip
@@ -105,7 +105,7 @@ task downloadCli2 ( type: Exec ) {
 		delete file(dir)
 	    new File(dir).mkdirs()
 
-		['leopard64':'macos','linux32':'linux','linux64':'linux64','win32':'windows'].each {
+		['leopard64':'macos','linux32':'linux','linux64':'linux64','win64':'windows'].each {
 		def n = it.getKey()
 
 		def targetdir = dir+it.getValue()
@@ -121,8 +121,8 @@ task downloadCli2 ( type: Exec ) {
 	}
 
 	def targetdir = dir+"windows/"
-	def targetzip = targetdir+"windowslib32.zip"
-	download("https://www3.hhu.de/stups/downloads/prob/cli/nightly/windowslib32.zip",targetzip)
+	def targetzip = targetdir+"windowslib64.zip"
+	download("https://www3.hhu.de/stups/downloads/prob/cli/nightly/windowslib64.zip",targetzip)
 	FileTree zip = zipTree(targetzip)
 	    copy {
 		   from zip
