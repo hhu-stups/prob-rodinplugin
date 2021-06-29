@@ -1,0 +1,30 @@
+build:
+  stage: build
+  image: openjdk:8-jdk-slim
+  before_script:
+    - sudo rm -f /etc/mavenrc
+    - wget http://www.us.apache.org/dist/maven/maven-3/3.0.5/binaries/apache-maven-3.0.5-bin.tar.gz
+    - tar -zxvf apache-maven-3.0.5-bin.tar.gz
+    - export MAVEN_OPTS="-Xmx512m -XX:MaxPermSize=192m"
+    - export M2_HOME=$PWD/apache-maven-3.0.5
+    - export PATH=$M2_HOME/bin:$PATH
+    - mvn --version
+  script:
+    - ./gradlew createPoms
+    - ./gradlew downloadCli
+    - ./gradlew collectDependencies
+    - mvn -f de.prob.parent/pom.xml install
+    - ./gradlew collectArtifacts
+  artifacts:
+    paths:
+      - updatesite
+
+deploy:
+  stage: deploy
+  only:
+    - develop@general/stups/prob_rodin_plugin
+  image: $CI_REGISTRY/stups/prob/prob-docker/internal/deployment:0.5
+  variables:
+    DEPLOY_REMOTEDIR: "stupshome/stups/rodin/prob1/nightly"
+  script:
+    - travis-custom-deploy sftp updatesite/
