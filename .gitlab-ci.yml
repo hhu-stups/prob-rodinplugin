@@ -4,8 +4,11 @@ build:
   before_script:
     - export DEBIAN_FRONTEND="noninteractive"
     - apt-get update
-    - apt-get install --assume-yes curl
-    - curl --location -o apache-maven-3.0.5-bin.tar.gz http://www.us.apache.org/dist/maven/maven-3/3.0.5/binaries/apache-maven-3.0.5-bin.tar.gz
+    # perl provides shasum
+    - apt-get install --assume-yes curl perl
+    - curl --location -o apache-maven-3.0.5-bin.tar.gz https://archive.apache.org/dist/maven/maven-3/3.0.5/binaries/apache-maven-3.0.5-bin.tar.gz
+    - md5sum --quiet --check - <<< "94c51f0dd139b4b8549204d0605a5859 *apache-maven-3.0.5-bin.tar.gz"
+    - shasum --algorithm 1 --quiet --check - <<< "aecc0d3d67732939c0056d4a0d8510483ee1167e *apache-maven-3.0.5-bin.tar.gz"
     - tar -zxvf apache-maven-3.0.5-bin.tar.gz
     - export MAVEN_OPTS="-Xmx512m -XX:MaxPermSize=192m"
     - export M2_HOME=$PWD/apache-maven-3.0.5
