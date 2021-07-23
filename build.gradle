@@ -1,11 +1,12 @@
 // to trigger a full tycho build please use 'gradle deleteFromClassPath completeInstall'
 import org.apache.tools.ant.taskdefs.condition.Os
 
-project.ext{
-
-	targetRepositories = ["http://download.eclipse.org/releases/luna/",
-                          "http://rodin-b-sharp.sourceforge.net/updates",
-                          "https://www3.hhu.de/stups/buildlibs/org.rodinp.dev/"]
+project.ext {
+	targetRepositories = [
+		"http://download.eclipse.org/releases/luna/",
+		"http://rodin-b-sharp.sourceforge.net/updates",
+		"https://www3.hhu.de/stups/buildlibs/org.rodinp.dev/",
+	]
 
 	groupID = "de.prob"
 }
@@ -16,7 +17,6 @@ apply from: 'tycho_build.gradle'
 
 
 /*task bMotionStudioHelpCustumBuild(type: Exec){
-
 	commandLine 'ant', '-f','de.bmotionstudio.help/customBuild.xml'
 }
 
@@ -25,26 +25,23 @@ install.dependsOn bMotionStudioHelpCustumBuild
 completeInstall.dependsOn bMotionStudioHelpCustumBuild*/
 
 project(':de.prob.core') {
-
 	repositories {
-	  mavenCentral()
+		mavenCentral()
 	}
 
-
-        def parser_version = '2.5.1'
+	def parser_version = '2.5.1'
 
 	dependencies {
-	 compile group: "de.hhu.stups", name: "answerparser", version: parser_version , changing: true
-	 compile group: "de.hhu.stups", name: "bparser", version: parser_version , changing: true
-	 compile group: "de.hhu.stups", name: "cliparser", version: parser_version , changing: true
-	 compile group: "de.hhu.stups", name: "ltlparser", version: parser_version , changing: true
-	 compile group: "de.hhu.stups", name: "parserbase", version: parser_version , changing: true
-	 compile group: "de.hhu.stups", name: "prologlib", version: parser_version , changing: true
-	 compile group: "de.hhu.stups", name: "unicode", version: parser_version , changing: true
-	 compile group: "de.hhu.stups", name: "theorymapping", version: parser_version , changing: true
-	 compile 'commons-lang:commons-lang:2.6'
+		compile group: "de.hhu.stups", name: "answerparser", version: parser_version, changing: true
+		compile group: "de.hhu.stups", name: "bparser", version: parser_version, changing: true
+		compile group: "de.hhu.stups", name: "cliparser", version: parser_version, changing: true
+		compile group: "de.hhu.stups", name: "ltlparser", version: parser_version, changing: true
+		compile group: "de.hhu.stups", name: "parserbase", version: parser_version, changing: true
+		compile group: "de.hhu.stups", name: "prologlib", version: parser_version, changing: true
+		compile group: "de.hhu.stups", name: "unicode", version: parser_version, changing: true
+		compile group: "de.hhu.stups", name: "theorymapping", version: parser_version, changing: true
+		compile 'commons-lang:commons-lang:2.6'
 	}
-
 }
 
 project(':de.prob.ui') {
@@ -52,98 +49,95 @@ project(':de.prob.ui') {
 		mavenCentral()
 	}
 	dependencies {
-	 	compile 'commons-codec:commons-codec:1.8'
+		compile 'commons-codec:commons-codec:1.8'
 	}
 }
 
 
 def download(address,target) {
-	    def file = new FileOutputStream(target)
-	    def out = new BufferedOutputStream(file)
-	    out << new URL(address).openStream()
-	    out.close()
+	def file = new FileOutputStream(target)
+	def out = new BufferedOutputStream(file)
+	out << new URL(address).openStream()
+	out.close()
 }
 
-task downloadCli  {
+task downloadCli {
 	doLast{
-		def dir = workspacePath+'de.prob.core/prob/'
+		def dir = workspacePath + 'de.prob.core/prob/'
 		delete file(dir)
-	    new File(dir).mkdirs()
+		new File(dir).mkdirs()
 
 		['leopard64':'macos','linux32':'linux','linux64':'linux64','win64':'windows'].each {
-		def n = it.getKey()
+			def n = it.getKey()
 
-		def targetdir = dir+it.getValue()
-		def targetzip = dir+"probcli_${n}.zip"
-		def url = "https://www3.hhu.de/stups/downloads/prob/cli/nightly/probcli_${n}.zip"
-		download(url,targetzip)
-	    FileTree zip = zipTree(targetzip)
-	    copy {
-		   from zip
-		   into targetdir
-	    }
+			def targetdir = dir + it.getValue()
+			def targetzip = dir + "probcli_${n}.zip"
+			def url = "https://www3.hhu.de/stups/downloads/prob/cli/nightly/probcli_${n}.zip"
+			download(url, targetzip)
+			FileTree zip = zipTree(targetzip)
+			copy {
+				from zip
+				into targetdir
+			}
+			delete file(targetzip)
+		}
+
+		def targetdir = dir + "windows/"
+		def targetzip = targetdir + "windowslib64.zip"
+		download("https://www3.hhu.de/stups/downloads/prob/cli/nightly/windowslib64.zip",targetzip)
+		FileTree zip = zipTree(targetzip)
+			copy {
+				from zip
+				into targetdir
+			}
 		delete file(targetzip)
 	}
-
-	def targetdir = dir+"windows/"
-	def targetzip = targetdir+"windowslib64.zip"
-	download("https://www3.hhu.de/stups/downloads/prob/cli/nightly/windowslib64.zip",targetzip)
-	FileTree zip = zipTree(targetzip)
-	    copy {
-		   from zip
-		   into targetdir
-	    }
-	delete file(targetzip)
-}
 }
 
 
+task downloadCli2 (type: Exec) {
+	def dir = workspacePath + 'de.prob.core/prob/'
+	delete file(dir)
+	new File(dir).mkdirs()
 
-task downloadCli2 ( type: Exec ) {
-
-		def dir = workspacePath+'de.prob.core/prob/'
-		delete file(dir)
-	    new File(dir).mkdirs()
-
-		['leopard64':'macos','linux32':'linux','linux64':'linux64','win64':'windows'].each {
+	['leopard64':'macos','linux32':'linux','linux64':'linux64','win64':'windows'].each {
 		def n = it.getKey()
 
-		def targetdir = dir+it.getValue()
-		def targetzip = dir+"probcli_${n}.zip"
+		def targetdir = dir + it.getValue()
+		def targetzip = dir + "probcli_${n}.zip"
 		def url = "https://www3.hhu.de/stups/downloads/prob/cli/nightly//probcli_${n}.zip"
-		download(url,targetzip)
-	    FileTree zip = zipTree(targetzip)
-	    copy {
-		   from zip
-		   into targetdir
-	    }
+		download(url, targetzip)
+		FileTree zip = zipTree(targetzip)
+		copy {
+			from zip
+			into targetdir
+		}
 		delete file(targetzip)
 	}
 
-	def targetdir = dir+"windows/"
-	def targetzip = targetdir+"windowslib64.zip"
-	download("https://www3.hhu.de/stups/downloads/prob/cli/nightly/windowslib64.zip",targetzip)
+	def targetdir = dir + "windows/"
+	def targetzip = targetdir + "windowslib64.zip"
+	download("https://www3.hhu.de/stups/downloads/prob/cli/nightly/windowslib64.zip", targetzip)
 	FileTree zip = zipTree(targetzip)
-	    copy {
-		   from zip
-		   into targetdir
-	    }
+	copy {
+		from zip
+		into targetdir
+	}
 	delete file(targetzip)
 }
-
 
 
 completeInstall.dependsOn downloadCli
 completeInstall.dependsOn subprojects.setClassPath
 
 task deleteOldArtifacts(type: Delete) {
-  	String updateSite = workspacePath+'updatesite'
+	String updateSite = workspacePath + 'updatesite'
 	delete updateSite
 }
 
-task collectArtifacts(type:Copy) {
-	    from workspacePath + groupID+'.repository/target/repository/'
-	    into workspacePath + 'updatesite'
-	    from workspacePath + "index.html"
-	    into workspacePath + 'updatesite'
+task collectArtifacts(type: Copy) {
+	from workspacePath + groupID + '.repository/target/repository/'
+	into workspacePath + 'updatesite'
+	from workspacePath + "index.html"
+	into workspacePath + 'updatesite'
 }
