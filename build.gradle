@@ -1,6 +1,10 @@
 // to trigger a full tycho build please use 'gradle deleteFromClassPath completeInstall'
 import org.apache.tools.ant.taskdefs.condition.Os
 
+wrapper {
+	gradleVersion = "6.8.1"
+}
+
 project.ext {
 	targetRepositories = [
 		"http://download.eclipse.org/releases/luna/",
