@@ -288,8 +288,7 @@ subprojects {
 
 	// Copy Dependencies into subprojects DependencyFolder
 	task collectDependencies(type: Copy) {
-		from configurations.compile
-		from configurations.runtime
+		from configurations.runtimeClasspath
 
 		into "${dependencyFolder}"
 	}
