@@ -99,38 +99,6 @@ task downloadCli {
 }
 
 
-task downloadCli2 (type: Exec) {
-	def dir = workspacePath + 'de.prob.core/prob/'
-	delete file(dir)
-	new File(dir).mkdirs()
-
-	['leopard64':'macos','linux32':'linux','linux64':'linux64','win64':'windows'].each {
-		def n = it.getKey()
-
-		def targetdir = dir + it.getValue()
-		def targetzip = dir + "probcli_${n}.zip"
-		def url = "https://www3.hhu.de/stups/downloads/prob/cli/nightly//probcli_${n}.zip"
-		download(url, targetzip)
-		FileTree zip = zipTree(targetzip)
-		copy {
-			from zip
-			into targetdir
-		}
-		delete file(targetzip)
-	}
-
-	def targetdir = dir + "windows/"
-	def targetzip = targetdir + "windowslib64.zip"
-	download("https://www3.hhu.de/stups/downloads/prob/cli/nightly/windowslib64.zip", targetzip)
-	FileTree zip = zipTree(targetzip)
-	copy {
-		from zip
-		into targetdir
-	}
-	delete file(targetzip)
-}
-
-
 completeInstall.dependsOn downloadCli
 completeInstall.dependsOn subprojects.setClassPath
 
