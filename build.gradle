@@ -85,16 +85,6 @@ task downloadCli {
 			}
 			delete file(targetzip)
 		}
-
-		def targetdir = dir + "windows/"
-		def targetzip = targetdir + "windowslib64.zip"
-		download("https://www3.hhu.de/stups/downloads/prob/cli/nightly/windowslib64.zip",targetzip)
-		FileTree zip = zipTree(targetzip)
-			copy {
-				from zip
-				into targetdir
-			}
-		delete file(targetzip)
 	}
 }
 
