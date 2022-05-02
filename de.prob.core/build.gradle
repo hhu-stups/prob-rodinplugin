@@ -4,9 +4,9 @@ def parser_version = '2.5.1'
 
 dependencies {
 	// Note: After changing/updating dependencies or their versions here,
-	// you also need to update the corresponding entries in the Eclipse .classpath file!
-	// (.classpath is used by the Tycho build,
-	// so compilation will fail if it doesn't list all dependencies correctly.)
+	// you also need to update the corresponding entries in META-INF/MANIFEST.MF!
+	// To be safe, you should probably also update the Eclipse .classpath file
+	// (it might be used by the Tycho build - not sure).
 	implementation group: "de.hhu.stups", name: "answerparser", version: parser_version , changing: true
 	implementation group: "de.hhu.stups", name: "bparser", version: parser_version , changing: true
 	implementation group: "de.hhu.stups", name: "cliparser", version: parser_version , changing: true

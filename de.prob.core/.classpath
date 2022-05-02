@@ -6,7 +6,7 @@
 	<classpathentry kind="output" path="bin"/>
 	<!--
 	Note: These dependencies are downloaded using Gradle.
-	To change/update dependencies, you need to update both the build.gradle and this list.
+	To change/update dependencies, you need to update the build.gradle, the META-INF/MANIFEST.MF, and this list.
 	-->
 	<classpathentry exported="true" kind="lib" path="lib/dependencies/answerparser-2.5.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/dependencies/bparser-2.5.1.jar"/>
