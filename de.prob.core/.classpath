@@ -16,6 +16,7 @@
 	<classpathentry exported="true" kind="lib" path="lib/dependencies/jna-3.4.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/dependencies/jsr305-1.3.9.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/dependencies/ltlparser-2.5.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/dependencies/mxparser-1.2.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/dependencies/parserbase-2.5.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/dependencies/prologlib-2.5.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/dependencies/ptolemy-jfmi-1.1.0.jar"/>
