@@ -7,13 +7,13 @@ dependencies {
 	// you also need to update the corresponding entries in META-INF/MANIFEST.MF!
 	// To be safe, you should probably also update the Eclipse .classpath file
 	// (it might be used by the Tycho build - not sure).
-	implementation group: "de.hhu.stups", name: "answerparser", version: parser_version , changing: true
-	implementation group: "de.hhu.stups", name: "bparser", version: parser_version , changing: true
-	implementation group: "de.hhu.stups", name: "ltlparser", version: parser_version , changing: true
-	implementation group: "de.hhu.stups", name: "parserbase", version: parser_version , changing: true
-	implementation group: "de.hhu.stups", name: "prologlib", version: parser_version , changing: true
-	implementation group: "de.hhu.stups", name: "unicode", version: parser_version , changing: true
-	implementation group: "de.hhu.stups", name: "theorymapping", version: parser_version , changing: true
+	implementation group: "de.hhu.stups", name: "answerparser", version: parser_version
+	implementation group: "de.hhu.stups", name: "bparser", version: parser_version
+	implementation group: "de.hhu.stups", name: "ltlparser", version: parser_version
+	implementation group: "de.hhu.stups", name: "parserbase", version: parser_version
+	implementation group: "de.hhu.stups", name: "prologlib", version: parser_version
+	implementation group: "de.hhu.stups", name: "unicode", version: parser_version
+	implementation group: "de.hhu.stups", name: "theorymapping", version: parser_version
 	implementation 'commons-lang:commons-lang:2.6'
 	implementation 'commons-codec:commons-codec:1.8'
 	implementation 'com.thoughtworks.xstream:xstream:1.4.19'
