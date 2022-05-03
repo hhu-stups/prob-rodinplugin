@@ -2,7 +2,7 @@
 import org.apache.tools.ant.taskdefs.condition.Os
 
 wrapper {
-	gradleVersion = "6.8.1"
+	gradleVersion = "7.4.2"
 }
 
 project.ext {
