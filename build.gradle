@@ -38,7 +38,6 @@ project(':de.prob.core') {
 	dependencies {
 		implementation group: "de.hhu.stups", name: "answerparser", version: parser_version, changing: true
 		implementation group: "de.hhu.stups", name: "bparser", version: parser_version, changing: true
-		implementation group: "de.hhu.stups", name: "cliparser", version: parser_version, changing: true
 		implementation group: "de.hhu.stups", name: "ltlparser", version: parser_version, changing: true
 		implementation group: "de.hhu.stups", name: "parserbase", version: parser_version, changing: true
 		implementation group: "de.hhu.stups", name: "prologlib", version: parser_version, changing: true

@@ -10,7 +10,6 @@
 	-->
 	<classpathentry exported="true" kind="lib" path="lib/dependencies/answerparser-2.5.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/dependencies/bparser-2.5.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/dependencies/cliparser-2.5.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/dependencies/commons-codec-1.8.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/dependencies/commons-lang-2.6.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/dependencies/jna-3.4.0.jar"/>
