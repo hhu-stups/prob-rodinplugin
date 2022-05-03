@@ -209,6 +209,14 @@ public class BMotionEditorPlugin extends AbstractUIPlugin {
 		return controlServices;
 	}
 
+	public static void allowTypes(XStream xstream) {
+		xstream.allowTypesByWildcard(new String[] {
+			"de.bmotionstudio.gef.editor.**",
+			"org.eclipse.draw2d.geometry.Point",
+			"org.eclipse.swt.graphics.RGB",
+		});
+	}
+
 	public static void setAliases(XStream xstream) {
 		xstream.registerConverter(new BControlListConverter());
 		xstream.alias("control", BControl.class);
@@ -216,6 +224,7 @@ public class BMotionEditorPlugin extends AbstractUIPlugin {
 		xstream.alias("guide", BMotionGuide.class);
 		xstream.alias("connection", BConnection.class);
 		xstream.alias("children", BControlList.class);
+		allowTypes(xstream);
 	}
 
 }
