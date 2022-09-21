@@ -97,11 +97,11 @@ public final class LoadEventBModelCommand {
 				int solsFound = explore.getState().getEnabledOperations().size();
 				if (solsFound > 0) {
 					message = "A timeout occured when finding constants after finding " + solsFound + " solution(s)."
-							+ " Typically this means, that your axioms are too complicated for automatical solving. "
+							+ " Typically this means, that your axioms are too complicated for automatic solving. "
 							+ "You might create an animation refinement using the context menu to help ProB finding all solutions.";
 				} else {
 					message = "A timeout occured when finding constants."
-							+ " Typically this means, that your axioms are too complicated for automatical solving. "
+							+ " Typically this means, that your axioms are too complicated for automatic solving. "
 							+ "You might create an animation refinement using the context menu to help ProB finding a solution.";
 				}
 				Logger.notifyUserWithoutBugreport(message);
