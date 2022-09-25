@@ -134,6 +134,8 @@ public class TypedIdentifierGenerator {
 	private static Map<String, Handler> initHandlers() {
 		Map<String, Handler> handlers = new HashMap<String, Handler>();
 		handlers.put("integer/0", new BasicHandler(BaseProbType.INTEGER));
+		handlers.put("float/0", new BasicHandler(BaseProbType.FLOAT));
+		handlers.put("real/0", new BasicHandler(BaseProbType.REAL));
 		handlers.put("string/0", new BasicHandler(BaseProbType.STRING));
 		handlers.put("boolean/0", new BasicHandler(BaseProbType.BOOL));
 		handlers.put("pred/0", new BasicHandler(BaseProbType.PREDICATE));
