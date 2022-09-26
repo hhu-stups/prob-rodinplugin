@@ -28,7 +28,7 @@ deploy:
   stage: deploy
   only:
     - develop@general/stups/prob_rodin_plugin
-  image: $CI_REGISTRY/stups/prob/prob-docker/internal/deployment:0.5
+  image: $CI_REGISTRY/stups/prob/prob-docker/internal/deployment:0.7
   variables:
     DEPLOY_REMOTEDIR: "stupshome/stups/rodin/prob1/nightly"
   script:
