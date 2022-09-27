@@ -35,7 +35,7 @@ project(':de.prob.core') {
 		mavenCentral()
 	}
 
-	def parser_version = '2.5.6'
+	def parser_version = '2.9.23'
 
 	dependencies {
 		// Note: After changing/updating dependencies or their versions here,
