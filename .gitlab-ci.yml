@@ -6,12 +6,12 @@ build:
     - apt-get update
     # perl provides shasum
     - apt-get install --assume-yes curl perl
-    - curl --location -o apache-maven-3.1.1-bin.tar.gz https://archive.apache.org/dist/maven/maven-3/3.1.1/binaries/apache-maven-3.1.1-bin.tar.gz
-    - md5sum --quiet --check - <<< "6342fdf6b0aabc1457c7f8cc218127ed *apache-maven-3.1.1-bin.tar.gz"
-    - shasum --algorithm 1 --quiet --check - <<< "630eea2107b0742acb315b214009ba08602dda5f *apache-maven-3.1.1-bin.tar.gz"
-    - tar -zxvf apache-maven-3.1.1-bin.tar.gz
+    - curl --location -o apache-maven-3.2.5-bin.tar.gz https://archive.apache.org/dist/maven/maven-3/3.2.5/binaries/apache-maven-3.2.5-bin.tar.gz
+    - md5sum --quiet --check - <<< "b2d88f02bd3a08a9df1f0b0126ebd8dc *apache-maven-3.2.5-bin.tar.gz"
+    - shasum --algorithm 1 --quiet --check - <<< "41009327d5494e0e8970b25b77ffed8934cd7ca1 *apache-maven-3.2.5-bin.tar.gz"
+    - tar -zxvf apache-maven-3.2.5-bin.tar.gz
     - export MAVEN_OPTS="-Xmx512m -XX:MaxPermSize=192m"
-    - export M2_HOME=$PWD/apache-maven-3.1.1
+    - export M2_HOME=$PWD/apache-maven-3.2.5
     - export PATH=$M2_HOME/bin:$PATH
     - mvn --version
   script:
