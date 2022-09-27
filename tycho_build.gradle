@@ -106,7 +106,7 @@ try {
 try {
 	targetRepositories = targetRepositories
 } catch (MissingPropertyException e) {
-	project.ext.targetRepositories = ["http://download.eclipse.org/releases/luna/"]
+	project.ext.targetRepositories = ["https://download.eclipse.org/releases/luna/"]
 }
 
 try {

@@ -7,8 +7,8 @@ wrapper {
 
 project.ext {
 	targetRepositories = [
-		"http://download.eclipse.org/releases/luna/",
-		"http://rodin-b-sharp.sourceforge.net/updates",
+		"https://download.eclipse.org/releases/luna/",
+		"https://rodin-b-sharp.sourceforge.net/updates",
 		"https://www3.hhu.de/stups/buildlibs/org.rodinp.dev/",
 	]
 
