@@ -13,7 +13,7 @@ import org.apache.tools.ant.taskdefs.condition.Os
 apply plugin: 'base'
 
 import groovy.io.FileType
-project.ext.tychoVersion = "1.0.0"
+project.ext.tychoVersion = "1.7.0"
 
 try {
 	excludeFromTychoBuild = excludeFromTychoBuild
