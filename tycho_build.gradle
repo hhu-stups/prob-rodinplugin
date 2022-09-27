@@ -541,6 +541,7 @@ def artifact(artifactId,versionNumber) {"""
 			<plugin>
 				<groupId>org.eclipse.tycho</groupId>
 				<artifactId>tycho-compiler-plugin</artifactId>
+				<version>\${tycho-version}</version>
 				<configuration>
 					<source>1.8</source>
 					<target>1.8</target>
@@ -560,6 +561,7 @@ def testArtifact(artifactId,versionNumber) {"""
 			<plugin>
 				<groupId>org.eclipse.tycho</groupId>
 				<artifactId>tycho-surefire-plugin</artifactId>
+				<version>\${tycho-version}</version>
 				<configuration>
 					<!-- <useUIHarness>true</useUIHarness> -->
 					<!-- <useUIThread>true</useUIThread> -->
