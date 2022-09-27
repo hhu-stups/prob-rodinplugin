@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import de.be4.classicalb.core.parser.exceptions.BException;
+import de.be4.classicalb.core.parser.exceptions.BCompoundException;
 import de.bmotionstudio.gef.editor.Animation;
 import de.bmotionstudio.gef.editor.AttributeConstants;
 import de.bmotionstudio.gef.editor.model.BControl;
@@ -213,7 +213,7 @@ public class BMSUtil {
 					opRandom);
 
 		} catch (ProBException e) {
-		} catch (BException e) {
+		} catch (BCompoundException e) {
 		}
 
 		return null;

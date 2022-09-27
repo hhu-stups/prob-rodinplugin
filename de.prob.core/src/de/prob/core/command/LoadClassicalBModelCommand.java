@@ -19,7 +19,7 @@ import org.osgi.service.prefs.Preferences;
 
 import de.be4.classicalb.core.parser.BParser;
 import de.be4.classicalb.core.parser.analysis.prolog.RecursiveMachineLoader;
-import de.be4.classicalb.core.parser.exceptions.BException;
+import de.be4.classicalb.core.parser.exceptions.BCompoundException;
 import de.be4.classicalb.core.parser.node.Start;
 import de.prob.core.Animator;
 import de.prob.core.domainobjects.Operation;
@@ -154,7 +154,7 @@ public final class LoadClassicalBModelCommand {
 		} catch (IOException e) {
 			Logger.notifyUser("IO Error", e);
 			throw new CommandException(e.getLocalizedMessage(), e);
-		} catch (BException e) {
+		} catch (BCompoundException e) {
 			Logger.notifyUser("Parser Error " + e.getLocalizedMessage(), e);
 			throw new CommandException(e.getLocalizedMessage(), e);
 		}

@@ -13,7 +13,7 @@ import java.util.List;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.swt.widgets.Shell;
 
-import de.be4.classicalb.core.parser.exceptions.BException;
+import de.be4.classicalb.core.parser.exceptions.BCompoundException;
 import de.prob.core.Animator;
 import de.prob.core.command.*;
 import de.prob.core.domainobjects.Operation;
@@ -81,7 +81,7 @@ public class CustomPreconditionInputDialog extends InputDialog {
 		} catch (ProBException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (BException e) {
+		} catch (BCompoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

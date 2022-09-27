@@ -7,7 +7,7 @@
 package de.prob.core.domainobjects.eval;
 
 import de.be4.classicalb.core.parser.BParser;
-import de.be4.classicalb.core.parser.exceptions.BException;
+import de.be4.classicalb.core.parser.exceptions.BCompoundException;
 import de.be4.classicalb.core.parser.node.Start;
 import de.prob.core.Animator;
 import de.prob.core.command.EvaluateRawExpressionsCommand;
@@ -30,7 +30,7 @@ public abstract class AbstractEvalElement {
 	public abstract String getLabel();
 
 	protected Start parse(final String prefix, final String code)
-			throws BException {
+			throws BCompoundException {
 		final BParser parser = new BParser();
 		final Start modelAst = parser.parse(prefix + code, false);
 		return modelAst;

@@ -9,6 +9,7 @@ package de.prob.core.domainobjects.eval;
 import org.eventb.core.ast.Expression;
 
 import de.be4.classicalb.core.parser.BParser;
+import de.be4.classicalb.core.parser.exceptions.BCompoundException;
 import de.be4.classicalb.core.parser.exceptions.BException;
 import de.be4.classicalb.core.parser.node.AExpressionParseUnit;
 import de.be4.classicalb.core.parser.node.EOF;
@@ -22,10 +23,10 @@ public final class ExpressionEvalElement extends AbstractEvalElement {
 	private final String expression;
 
 	public static ExpressionEvalElement fromRodin(final Expression expression)
-			throws BException {
+			throws BCompoundException {
 		if (expression == null) {
 			String message = "Expression input must not be null";
-			throw new BException("", new NullPointerException(message));
+			throw new BCompoundException(new BException("", message, new NullPointerException(message)));
 		}
 		final PExpression expr = TranslationVisitor
 				.translateExpression(expression);
@@ -35,11 +36,11 @@ public final class ExpressionEvalElement extends AbstractEvalElement {
 	}
 
 	public static ExpressionEvalElement create(final String expression)
-			throws BException {
+			throws BCompoundException {
 		return new ExpressionEvalElement(expression);
 	}
 
-	public ExpressionEvalElement(final String expression) throws BException {
+	public ExpressionEvalElement(final String expression) throws BCompoundException {
 		this.expression = expression;
 		parse = parse(BParser.EXPRESSION_PREFIX, expression);
 	}

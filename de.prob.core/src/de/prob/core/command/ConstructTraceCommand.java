@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Set;
 
 import de.be4.classicalb.core.parser.analysis.prolog.ASTProlog;
-import de.be4.classicalb.core.parser.exceptions.BException;
+import de.be4.classicalb.core.parser.exceptions.BCompoundException;
 import de.prob.core.Animator;
 import de.prob.core.domainobjects.Operation;
 import de.prob.core.domainobjects.State;
@@ -53,7 +53,7 @@ public final class ConstructTraceCommand implements IComposableCommand {
 		for (String string : predicates) {
 			try {
 				evalElement.add(PredicateEvalElement.create(string));
-			} catch (BException e) {
+			} catch (BCompoundException e) {
 				throw new IllegalArgumentException(
 						"Formula must be a predicate: " + string);
 			}
