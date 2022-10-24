@@ -345,8 +345,7 @@ public final class CliStarter {
 	public void sendUserInterruptReference() {
 		if (userInterruptReference != null) {
 			try {
-				final OsSpecificInfo osInfo = getOsInfo(Platform.getOS(),
-						Platform.getOSArch());
+				final OsSpecificInfo osInfo = getOsInfo(Platform.getOS());
 				final String command = getCliPath() + File.separator
 						+ osInfo.subdir + File.separator
 						+ osInfo.userInterruptCmd;
