@@ -65,12 +65,11 @@ public final class CliStarter {
 		debuggingKey = null;
 
 		final String os = Platform.getOS();
-		final String arch = Platform.getOSArch();
 		final File applicationPath = getCliPath();
 
 		final String fullcp = createFullClasspath(os, applicationPath);
 
-		final OsSpecificInfo osInfo = getOsInfo(os, arch);
+		final OsSpecificInfo osInfo = getOsInfo(os);
 
 		final String osPath = applicationPath + File.separator + osInfo.subdir;
 		final String executable = osPath + File.separator + osInfo.cliName;
@@ -135,7 +134,7 @@ public final class CliStarter {
 
 	}
 
-	private OsSpecificInfo getOsInfo(final String os, String architecture)
+	private OsSpecificInfo getOsInfo(final String os)
 			throws CliException {
 		if (os.equals(Platform.OS_MACOSX)) {
 			return new OsSpecificInfo("macos", "probcli.sh", "sh",
@@ -147,11 +146,7 @@ public final class CliStarter {
 		}
 
 		if (os.equals(Platform.OS_LINUX)) {
-			String linux = "linux";
-			if (architecture.equals(Platform.ARCH_X86_64)) {
-				linux = "linux64";
-			}
-			return new OsSpecificInfo(linux, "probcli.sh", "sh",
+			return new OsSpecificInfo("linux64", "probcli.sh", "sh",
 					"lib/send_user_interrupt");
 		}
 		final CliException cliException = new CliException(
