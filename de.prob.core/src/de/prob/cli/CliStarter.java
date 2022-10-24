@@ -136,23 +136,25 @@ public final class CliStarter {
 
 	private OsSpecificInfo getOsInfo(final String os)
 			throws CliException {
-		if (os.equals(Platform.OS_MACOSX)) {
-			return new OsSpecificInfo("macos", "probcli.sh", "sh",
-					"lib/send_user_interrupt");
-		}
 		if (os.equals(Platform.OS_WIN32)) {
 			return new OsSpecificInfo("windows", "probcli.exe", null,
 					"lib\\send_user_interrupt.exe");
-		}
+		} else {
+			final String subdir;
+			if (os.equals(Platform.OS_MACOSX)) {
+				subdir = "macos";
+			} else if (os.equals(Platform.OS_LINUX)) {
+				subdir = "linux64";
+			} else {
+				final CliException cliException = new CliException(
+						"ProB does not support the plattform: " + os);
+				cliException.notifyUserOnce();
+				throw cliException;
+			}
 
-		if (os.equals(Platform.OS_LINUX)) {
-			return new OsSpecificInfo("linux64", "probcli.sh", "sh",
-					"lib/send_user_interrupt");
+			return new OsSpecificInfo(subdir, "probcli.sh", "sh",
+				"lib/send_user_interrupt");
 		}
-		final CliException cliException = new CliException(
-				"ProB does not support the plattform: " + os);
-		cliException.notifyUserOnce();
-		throw cliException;
 	}
 
 	@SuppressWarnings("unchecked")
