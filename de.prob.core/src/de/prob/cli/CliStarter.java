@@ -139,11 +139,11 @@ public final class CliStarter {
 			throws CliException {
 		if (os.equals(Platform.OS_MACOSX)) {
 			return new OsSpecificInfo("macos", "probcli.sh", "sh",
-					"send_user_interrupt");
+					"lib/send_user_interrupt");
 		}
 		if (os.equals(Platform.OS_WIN32)) {
 			return new OsSpecificInfo("windows", "probcli.exe", null,
-					"send_user_interrupt.exe");
+					"lib\\send_user_interrupt.exe");
 		}
 
 		if (os.equals(Platform.OS_LINUX)) {
@@ -152,7 +152,7 @@ public final class CliStarter {
 				linux = "linux64";
 			}
 			return new OsSpecificInfo(linux, "probcli.sh", "sh",
-					"send_user_interrupt");
+					"lib/send_user_interrupt");
 		}
 		final CliException cliException = new CliException(
 				"ProB does not support the plattform: " + os);
