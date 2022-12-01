@@ -265,30 +265,6 @@ public final class CliStarter {
 			throw new CliException("Input/output error when trying t find '"
 					+ fileURL + "'");
 		}
-
-		// final Path path = new Path("prob");
-		// final URL fileURL = FileLocator.find(
-		// Activator.getDefault().getBundle(), path, null);
-		// if (fileURL == null) {
-		// throw new CliException(
-		// "Unable to find directory with prob executables.");
-		// }
-		// URL resolved;
-		// try {
-		// resolved = FileLocator.resolve(fileURL);
-		// } catch (IOException e2) {
-		// throw new CliException("Input/output error when trying t find '"
-		// + fileURL + "'");
-		// }
-		// URI uri;
-		// try {
-		// uri = new URI(resolved.getProtocol(), resolved.getPath(), null);
-		// } catch (URISyntaxException e1) {
-		// throw new CliException("Unable to construct file '"
-		// + resolved.getPath() + "'");
-		// }
-		//
-		// return new File(uri);
 	}
 
 	private static class OutputLoggerThread extends Thread {
