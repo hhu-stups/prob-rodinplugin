@@ -11,6 +11,9 @@ import java.net.*;
 import java.security.*;
 import java.util.*;
 
+import org.eclipse.core.filesystem.EFS;
+import org.eclipse.core.filesystem.IFileInfo;
+import org.eclipse.core.filesystem.IFileStore;
 import org.eclipse.core.runtime.*;
 import org.osgi.framework.Bundle;
 
@@ -60,6 +63,19 @@ public final class CliStarter {
 		return debuggingKey;
 	}
 
+	// Based on org.eventb.core.seqprover.xprover.BundledFileExtractor.BundledFileDescriptor#makeExecutable
+	// (from rodin-b-sharp/rodincore/org.eventb.core.seqprover)
+	private void setExecutable(final File path, final boolean executable) throws CliException {
+		final IFileStore store = EFS.getLocalFileSystem().getStore(path.toURI());
+		final IFileInfo info = store.fetchInfo();
+		info.setAttribute(EFS.ATTRIBUTE_EXECUTABLE, executable);
+		try {
+			store.putInfo(info, EFS.SET_ATTRIBUTES, null);
+		} catch (CoreException e) {
+			throw new CliException("Failed to set executable permission", e, false);
+		}
+	}
+
 	private void startProlog(final File file) throws CliException {
 		prologProcess = null;
 		debuggingKey = null;
@@ -76,10 +92,11 @@ public final class CliStarter {
 		Logger.info("Starting ProB CLI for " + os + " ... Path is "
 				+ executable);
 
-		List<String> command = new ArrayList<String>();
-		if (osInfo.helperCmd != null) {
-			command.add(osInfo.helperCmd);
+		if (osInfo.needsExecutePermission) {
+			setExecutable(new File(executable), true);
 		}
+
+		List<String> command = new ArrayList<String>();
 		command.add(executable);
 		// command.add("-ll");
 		command.add("-sf");
@@ -137,8 +154,8 @@ public final class CliStarter {
 	private OsSpecificInfo getOsInfo(final String os)
 			throws CliException {
 		if (os.equals(Platform.OS_WIN32)) {
-			return new OsSpecificInfo("windows", "probcli.exe", null,
-					"lib\\send_user_interrupt.exe");
+			return new OsSpecificInfo("windows", "probcli.exe",
+					"lib\\send_user_interrupt.exe", false);
 		} else {
 			final String subdir;
 			if (os.equals(Platform.OS_MACOSX)) {
@@ -152,8 +169,8 @@ public final class CliStarter {
 				throw cliException;
 			}
 
-			return new OsSpecificInfo(subdir, "probcli.sh", "sh",
-				"lib/send_user_interrupt");
+			return new OsSpecificInfo(subdir, "probcli.sh",
+				"lib/send_user_interrupt", true);
 		}
 	}
 
@@ -325,6 +342,11 @@ public final class CliStarter {
 				final String command = getCliPath() + File.separator
 						+ osInfo.subdir + File.separator
 						+ osInfo.userInterruptCmd;
+
+				if (osInfo.needsExecutePermission) {
+					setExecutable(new File(command), true);
+				}
+
 				Runtime.getRuntime().exec(
 						new String[] { command,
 								userInterruptReference.toString() });
@@ -341,15 +363,15 @@ public final class CliStarter {
 	private static class OsSpecificInfo {
 		final String subdir;
 		final String cliName;
-		final String helperCmd;
 		final String userInterruptCmd;
+		final boolean needsExecutePermission;
 
 		public OsSpecificInfo(final String subdir, final String cliName,
-				final String helperCmd, final String userInterruptCmd) {
+				final String userInterruptCmd, final boolean needsExecutePermission) {
 			this.subdir = subdir;
 			this.cliName = cliName;
-			this.helperCmd = helperCmd;
 			this.userInterruptCmd = userInterruptCmd;
+			this.needsExecutePermission = needsExecutePermission;
 		}
 
 	}
