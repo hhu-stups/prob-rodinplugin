@@ -322,10 +322,6 @@ public final class Animator {
 		return getImplementation().isMachineLoaded();
 	}
 
-	public String getDebuggingKey() {
-		return getImplementation().getDebuggingKey();
-	}
-
 	public LanguageDependendAnimationPart getLanguageDependendPart() {
 		return getImplementation().getLangdep();
 	}

@@ -8,7 +8,6 @@ package de.prob.cli;
 
 import java.io.*;
 import java.net.*;
-import java.security.*;
 import java.util.*;
 
 import org.eclipse.core.filesystem.EFS;
@@ -26,7 +25,6 @@ public final class CliStarter {
 			"ParserAspects.jar", "aspectjrt.jar", "prolog.jar" };
 
 	private Process prologProcess;
-	private String debuggingKey;
 
 	private int port = -1;
 	private Long userInterruptReference = null;
@@ -59,10 +57,6 @@ public final class CliStarter {
 		}
 	}
 
-	public String getDebuggingKey() {
-		return debuggingKey;
-	}
-
 	// Based on org.eventb.core.seqprover.xprover.BundledFileExtractor.BundledFileDescriptor#makeExecutable
 	// (from rodin-b-sharp/rodincore/org.eventb.core.seqprover)
 	private void setExecutable(final File path, final boolean executable) throws CliException {
@@ -78,7 +72,6 @@ public final class CliStarter {
 
 	private void startProlog(final File file) throws CliException {
 		prologProcess = null;
-		debuggingKey = null;
 
 		final String os = Platform.getOS();
 		final File applicationPath = getCliPath();
@@ -110,11 +103,8 @@ public final class CliStarter {
 			command.add(file.getAbsolutePath());
 		}
 
-		createDebuggingKey();
-
 		final ProcessBuilder pb = new ProcessBuilder();
 		pb.command(command);
-		pb.environment().put("PROB_DEBUGGING_KEY", debuggingKey);
 		pb.environment().put("TRAILSTKSIZE", "1M");
 		pb.environment().put("PROLOGINCSIZE", "50M");
 		pb.environment().put("PROB_HOME", osPath);
@@ -211,16 +201,6 @@ public final class CliStarter {
 	private void startErrorLogger(final BufferedReader output) {
 		errLogger = new OutputLoggerThread("(Error " + port + ")", output);
 		errLogger.start();
-	}
-
-	private void createDebuggingKey() {
-		Random random;
-		try {
-			random = SecureRandom.getInstance("SHA1PRNG");
-		} catch (NoSuchAlgorithmException e) {
-			random = new Random();
-		}
-		debuggingKey = Long.toHexString(random.nextLong());
 	}
 
 	private void analyseStdout(final BufferedReader input,

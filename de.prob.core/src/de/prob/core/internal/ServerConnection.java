@@ -50,11 +50,6 @@ public class ServerConnection implements IServerConnection {
 		return lastCommand;
 	}
 
-	@Override
-	public String getDebuggingKey() {
-		return cli == null ? null : cli.getDebuggingKey();
-	}
-
 	private void establishConnection(final int port) throws CliException {
 		try {
 			socket = new Socket(InetAddress.getByName(null), port);

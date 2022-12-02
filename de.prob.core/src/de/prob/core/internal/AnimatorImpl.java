@@ -145,10 +145,6 @@ public class AnimatorImpl {
 		return this.description != null;
 	}
 
-	public synchronized String getDebuggingKey() {
-		return connector == null ? null : connector.getDebuggingKey();
-	}
-
 	public void execute(final IComposableCommand command) throws ProBException {
 		checkConnector(command.getClass().getName());
 
