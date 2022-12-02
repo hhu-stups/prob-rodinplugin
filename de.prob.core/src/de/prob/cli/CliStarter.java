@@ -105,7 +105,6 @@ public final class CliStarter {
 
 		final ProcessBuilder pb = new ProcessBuilder();
 		pb.command(command);
-		pb.environment().put("PROB_HOME", osPath);
 		try {
 			prologProcess = pb.start();
 		} catch (IOException e) {
