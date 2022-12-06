@@ -21,8 +21,9 @@ deploy:
   stage: deploy
   only:
     - develop@general/stups/prob_rodin_plugin
-  image: $CI_REGISTRY/stups/prob/prob-docker/internal/deployment:0.7
-  variables:
-    DEPLOY_REMOTEDIR: "stupshome/stups/rodin/prob1/nightly"
+  image: alpine:3
+  before_script:
+    - apk update
+    - apk add lftp openssh-client
   script:
-    - travis-custom-deploy sftp updatesite/
+    - LFTP_PASSWORD="${DEPLOY_PASSWORD}" lftp -c "set sftp:auto-confirm yes; open --user ${DEPLOY_USERNAME} --env-password sftp://${DEPLOY_HOST}/${DEPLOY_REMOTE_BASEDIR}/rodin/prob1/nightly/; mirror -vvv -R updatesite .; exit"
