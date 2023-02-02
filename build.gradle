@@ -9,7 +9,7 @@ project.ext {
 	targetRepositories = [
 		"https://download.eclipse.org/releases/luna/",
 		"https://rodin-b-sharp.sourceforge.net/updates",
-		"https://www3.hhu.de/stups/buildlibs/org.rodinp.dev/",
+		"https://stups.hhu-hosting.de/buildlibs/org.rodinp.dev/",
 	]
 
 	groupID = "de.prob"
@@ -90,7 +90,7 @@ task downloadCli {
 
 			def targetdir = dir + it.getValue()
 			def targetzip = dir + "probcli_${n}.zip"
-			def url = "https://www3.hhu.de/stups/downloads/prob/cli/nightly/probcli_${n}.zip"
+			def url = "https://stups.hhu-hosting.de/downloads/prob/cli/nightly/probcli_${n}.zip"
 			download(url, targetzip)
 			FileTree zip = zipTree(targetzip)
 			copy {

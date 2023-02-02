@@ -9,7 +9,7 @@
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eventb.ide.feature.group" version="3.3.0.201704022034-f9fbb0d"/>
 <unit id="org.rodinp.feature.group" version="1.8.0.201704022034-f9fbb0d"/>
-<repository location="https://www3.hhu.de/stups/buildlibs/org.rodinp.dev"/>
+<repository location="https://stups.hhu-hosting.de/buildlibs/org.rodinp.dev"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eventb.theory.feature.feature.group" version="4.0.0.RC1"/>
