@@ -26,4 +26,4 @@ deploy:
     - apk update
     - apk add lftp openssh-client
   script:
-    - LFTP_PASSWORD="${DEPLOY_PASSWORD}" lftp -c "set sftp:auto-confirm yes; open --user ${DEPLOY_USERNAME} --env-password sftp://${DEPLOY_HOST}/${DEPLOY_REMOTE_BASEDIR}/rodin/prob1/nightly/; mirror -vvv -R updatesite .; exit"
+    - LFTP_PASSWORD="${DEPLOY_PASSWORD}" lftp -c "set sftp:auto-confirm yes; open --user ${DEPLOY_USERNAME} --env-password sftp://${DEPLOY_HOST}/${DEPLOY_REMOTE_BASEDIR}/rodin/prob1/nightly/; mirror -vvv -R updatesite ."
