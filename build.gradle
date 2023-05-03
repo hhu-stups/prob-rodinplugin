@@ -85,12 +85,12 @@ task downloadCli {
 		delete file(dir)
 		new File(dir).mkdirs()
 
-		['leopard64':'macos','linux64':'linux64','win64':'windows'].each {
+		['macos':'macos','linux64':'linux64','win64':'windows'].each {
 			def n = it.getKey()
 
 			def targetdir = dir + it.getValue()
 			def targetzip = dir + "probcli_${n}.zip"
-			def url = "https://stups.hhu-hosting.de/downloads/prob/cli/nightly/probcli_${n}.zip"
+			def url = "https://stups.hhu-hosting.de/downloads/prob/cli/releases/1.12.1/probcli_${n}.zip"
 			download(url, targetzip)
 			FileTree zip = zipTree(targetzip)
 			copy {
