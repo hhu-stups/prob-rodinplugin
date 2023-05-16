@@ -41,20 +41,10 @@ public class ConnectionDeleteCommand extends Command {
 		this.connection = conn;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.gef.commands.Command#execute()
-	 */
 	public void execute() {
 		connection.disconnect();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.gef.commands.Command#undo()
-	 */
 	public void undo() {
 		connection.reconnect();
 	}

@@ -35,11 +35,6 @@ public class BRadioButton extends BControl {
 		super(visualization);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see de.bmotionstudio.gef.editor.model.BControl#getType()
-	 */
 	@Override
 	public String getType() {
 		return TYPE;

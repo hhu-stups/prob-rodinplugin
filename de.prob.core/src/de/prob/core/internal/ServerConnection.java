@@ -41,11 +41,6 @@ public class ServerConnection implements IServerConnection {
 		cli = new CliStarter(file);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see de.prob.core.IServerConnection#getLastCommand()
-	 */
 	public String getLastCommand() {
 		return lastCommand;
 	}

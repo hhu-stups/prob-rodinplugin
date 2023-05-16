@@ -67,11 +67,6 @@ public class ConnectionCreateCommand extends Command {
 		this.source = source;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.gef.commands.Command#canExecute()
-	 */
 	public boolean canExecute() {
 		// disallow source -> source connections
 		if (source.equals(target)) {
@@ -88,11 +83,6 @@ public class ConnectionCreateCommand extends Command {
 		return true;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.gef.commands.Command#execute()
-	 */
 	public void execute() {
 		// create a new connection between source and target
 		connection.setSource(source);
@@ -100,11 +90,6 @@ public class ConnectionCreateCommand extends Command {
 		connection.reconnect();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.gef.commands.Command#redo()
-	 */
 	public void redo() {
 		connection.reconnect();
 	}
@@ -124,11 +109,6 @@ public class ConnectionCreateCommand extends Command {
 		this.target = target;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.gef.commands.Command#undo()
-	 */
 	public void undo() {
 		connection.disconnect();
 	}

@@ -26,11 +26,6 @@ public final class EventBMachineTranslator extends EventBTranslator {
 
 	private final ISCMachineRoot machine;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see de.prob.core.translator.ITranslator#getPrologTerm()
-	 */
 	// public String getPrologTerm() {
 	// return term;
 	// }

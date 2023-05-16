@@ -77,11 +77,6 @@ public class BMSImageFigure extends AbstractBMotionFigure {
 
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see de.bmotionstudio.gef.editor.figure.IBMotionFigure#deactivateFigure()
-	 */
 	@Override
 	public void deactivateFigure() {
 		if (currentGIFThread != null)

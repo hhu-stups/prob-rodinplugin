@@ -58,11 +58,6 @@ public class ConnectionReconnectCommand extends Command {
 	/** The original target endpoint. */
 	private BControl oldTarget;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.gef.commands.Command#canExecute()
-	 */
 	public boolean canExecute() {
 		if (newSource != null) {
 			return checkSourceReconnection();

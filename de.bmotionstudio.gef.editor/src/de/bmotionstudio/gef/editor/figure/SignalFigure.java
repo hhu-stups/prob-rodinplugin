@@ -100,20 +100,10 @@ public class SignalFigure extends AbstractBMotionFigure {
 		add(panel);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see de.bmotionstudio.gef.editor.figure.IBMotionFigure#deactivateFigure()
-	 */
 	@Override
 	public void deactivateFigure() {
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see de.bmotionstudio.gef.editor.figure.IBMotionFigure#activateFigure()
-	 */
 	@Override
 	public void activateFigure() {
 	}

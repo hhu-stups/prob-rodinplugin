@@ -20,24 +20,11 @@ import de.bmotionstudio.gef.editor.part.BShapePart;
  */
 public class BRectangleService extends AbstractBControlService implements
 		IBControlService {
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * de.bmotionstudio.gef.editor.IBControlService#createControl(de.bmotionstudio
-	 * .gef.editor.model.Visualization)
-	 */
 	@Override
 	public BControl createControl(Visualization visualization) {
 		return new BShape(visualization);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see de.bmotionstudio.gef.editor.IBControlService#createEditPart()
-	 */
 	@Override
 	public BMSAbstractEditPart createEditPart() {
 		return new BShapePart();

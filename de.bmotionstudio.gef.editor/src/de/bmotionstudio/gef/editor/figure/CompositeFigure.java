@@ -131,11 +131,6 @@ public class CompositeFigure extends AbstractBMotionFigure {
 		getParent().setConstraint(this, rect);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see de.bmotionstudio.gef.editor.figure.IBMotionFigure#deactivateFigure()
-	 */
 	@Override
 	public void deactivateFigure() {
 		if (layerImage != null)

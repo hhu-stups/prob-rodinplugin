@@ -59,13 +59,6 @@ public class BMotionEditorPlugin extends AbstractUIPlugin {
 	public BMotionEditorPlugin() {
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.eclipse.ui.plugin.AbstractUIPlugin#start(org.osgi.framework.BundleContext
-	 * )
-	 */
 	@Override
 	public void start(final BundleContext context) throws Exception {
 		super.start(context);
@@ -73,13 +66,6 @@ public class BMotionEditorPlugin extends AbstractUIPlugin {
 		initExtensionClasses();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext
-	 * )
-	 */
 	@Override
 	public void stop(final BundleContext context) throws Exception {
 		plugin = null;

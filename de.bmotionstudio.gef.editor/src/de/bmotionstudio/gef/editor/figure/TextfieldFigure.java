@@ -49,11 +49,6 @@ public class TextfieldFigure extends AbstractBMotionFigure {
 		return lb.getText();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see de.bmotionstudio.gef.editor.figure.IBMotionFigure#deactivateFigure()
-	 */
 	@Override
 	public void deactivateFigure() {
 		if (foregroundColor != null)

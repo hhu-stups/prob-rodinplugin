@@ -257,11 +257,6 @@ public class BMotionStudioEditorPage extends GraphicalEditorWithFlyoutPalette {
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.ui.IWorkbenchPart#dispose()
-	 */
 	public void dispose() {
 		// remove CommandStackListener
 		getCommandStack().removeCommandStackListener(getCommandStackListener());

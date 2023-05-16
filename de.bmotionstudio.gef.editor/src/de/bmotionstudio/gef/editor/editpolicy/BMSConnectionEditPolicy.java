@@ -17,14 +17,6 @@ import de.bmotionstudio.gef.editor.model.BConnection;
 import de.bmotionstudio.gef.editor.model.BControl;
 
 public class BMSConnectionEditPolicy extends GraphicalNodeEditPolicy {
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.gef.editpolicies.GraphicalNodeEditPolicy#
-	 * getConnectionCompleteCommand
-	 * (org.eclipse.gef.requests.CreateConnectionRequest)
-	 */
 	protected Command getConnectionCompleteCommand(
 			CreateConnectionRequest request) {
 		ConnectionCreateCommand cmd = null;
@@ -36,13 +28,6 @@ public class BMSConnectionEditPolicy extends GraphicalNodeEditPolicy {
 		return cmd;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.gef.editpolicies.GraphicalNodeEditPolicy#
-	 * getConnectionCreateCommand
-	 * (org.eclipse.gef.requests.CreateConnectionRequest)
-	 */
 	protected Command getConnectionCreateCommand(CreateConnectionRequest request) {
 		ConnectionCreateCommand cmd = null;
 		Object newObject = request.getNewObject();
@@ -57,12 +42,6 @@ public class BMSConnectionEditPolicy extends GraphicalNodeEditPolicy {
 		return cmd;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.gef.editpolicies.GraphicalNodeEditPolicy#
-	 * getReconnectSourceCommand (org.eclipse.gef.requests.ReconnectRequest)
-	 */
 	protected Command getReconnectSourceCommand(ReconnectRequest request) {
 		ConnectionReconnectCommand cmd = null;
 		Object newObject = request.getConnectionEditPart().getModel();
@@ -76,12 +55,6 @@ public class BMSConnectionEditPolicy extends GraphicalNodeEditPolicy {
 		return cmd;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.gef.editpolicies.GraphicalNodeEditPolicy#
-	 * getReconnectTargetCommand (org.eclipse.gef.requests.ReconnectRequest)
-	 */
 	protected Command getReconnectTargetCommand(ReconnectRequest request) {
 		ConnectionReconnectCommand cmd = null;
 		Object newObject = request.getConnectionEditPart().getModel();

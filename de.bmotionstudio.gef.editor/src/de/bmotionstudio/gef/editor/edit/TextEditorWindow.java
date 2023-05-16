@@ -75,22 +75,12 @@ public class TextEditorWindow extends Window {
 		super.configureShell(newShell);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.jface.window.Window#setReturnCode(int)
-	 */
 	@Override
 	protected void setReturnCode(int code) {
 		result.setReturncode(code);
 		super.setReturnCode(code);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.jface.window.Window#close()
-	 */
 	@Override
 	public boolean close() {
 		result.setValue(text.getText());

@@ -20,24 +20,11 @@ import de.bmotionstudio.gef.editor.part.BImagePart;
  */
 public class BImageService extends AbstractBControlService implements
 		IBControlService {
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * de.bmotionstudio.gef.editor.IBControlService#createControl(de.bmotionstudio
-	 * .gef.editor.model.Visualization)
-	 */
 	@Override
 	public BControl createControl(Visualization visualization) {
 		return new BImage(visualization);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see de.bmotionstudio.gef.editor.IBControlService#createEditPart()
-	 */
 	@Override
 	public BMSAbstractEditPart createEditPart() {
 		return new BImagePart();

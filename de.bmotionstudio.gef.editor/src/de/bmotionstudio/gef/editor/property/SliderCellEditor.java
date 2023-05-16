@@ -125,9 +125,6 @@ public class SliderCellEditor extends CellEditor {
 		return result;
 	}
 
-	/*
-	 * (non-Javadoc) Method declared on CellEditor.
-	 */
 	protected Control createControl(Composite parent) {
 		Font font = parent.getFont();
 		Color bg = parent.getBackground();
@@ -176,8 +173,8 @@ public class SliderCellEditor extends CellEditor {
 		return editor;
 	}
 
-	/*
-	 * (non-Javadoc) Override in order to remove the button's focus listener if
+	/**
+	 * Override in order to remove the button's focus listener if
 	 * the celleditor is deactivating.
 	 */
 	public void deactivate() {
@@ -188,16 +185,12 @@ public class SliderCellEditor extends CellEditor {
 		super.deactivate();
 	}
 
-	/*
-	 * (non-Javadoc) Method declared on CellEditor.
-	 */
 	protected Object doGetValue() {
 		return value;
 	}
 
-	/*
-	 * (non-Javadoc) Method declared on CellEditor. The focus is set to the cell
-	 * editor's button.
+	/**
+	 * The focus is set to the cell editor's button.
 	 */
 	protected void doSetFocus() {
 		slider.setFocus(); // add a FocusListener to the button
@@ -225,9 +218,6 @@ public class SliderCellEditor extends CellEditor {
 		return buttonFocusListener;
 	}
 
-	/*
-	 * (non-Javadoc) Method declared on CellEditor.
-	 */
 	protected void doSetValue(Object value) {
 		this.value = value;
 		updateContents(value);

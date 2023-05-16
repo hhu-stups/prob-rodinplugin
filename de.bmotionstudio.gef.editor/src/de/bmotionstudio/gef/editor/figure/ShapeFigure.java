@@ -412,11 +412,6 @@ public class ShapeFigure extends AbstractBMotionFigure {
 		repaint();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see de.bmotionstudio.gef.editor.figure.IBMotionFigure#deactivateFigure()
-	 */
 	@Override
 	public void deactivateFigure() {
 		if (img != null)
