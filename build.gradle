@@ -1,5 +1,4 @@
 // to trigger a full tycho build please use 'gradle deleteFromClassPath completeInstall'
-import org.apache.tools.ant.taskdefs.condition.Os
 
 project.ext {
 	targetRepositories = [
