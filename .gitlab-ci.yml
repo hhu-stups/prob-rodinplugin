@@ -11,6 +11,7 @@ build:
   script:
     - ./gradlew createPoms downloadCli collectDependencies
     - mvn -Dmaven.repo.local="$CI_PROJECT_DIR/maven_repo_local" -f de.prob.parent/pom.xml install
+    - cp index.html de.prob.repository/target/repository/
   cache:
     paths:
       - .gradle/caches
@@ -30,4 +31,4 @@ deploy:
     - apk update
     - apk add lftp openssh-client
   script:
-    - LFTP_PASSWORD="${DEPLOY_PASSWORD}" lftp -c "set cmd:fail-exit true; set sftp:auto-confirm true; open --user ${DEPLOY_USERNAME} --env-password sftp://${DEPLOY_HOST}/${DEPLOY_REMOTE_BASEDIR}/rodin/prob1/nightly/; put -e index.html; mirror -vvv -R de.prob.repository/target/repository ."
+    - LFTP_PASSWORD="${DEPLOY_PASSWORD}" lftp -c "set cmd:fail-exit true; set sftp:auto-confirm true; open --user ${DEPLOY_USERNAME} --env-password sftp://${DEPLOY_HOST}/${DEPLOY_REMOTE_BASEDIR}/rodin/prob1/nightly/; mirror -vvv -R de.prob.repository/target/repository ."
