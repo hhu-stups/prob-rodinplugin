@@ -980,7 +980,7 @@ public abstract class AbstractEventBTests extends AbstractTests {
 					expected,
 					evt.getLabel() + ":" + evt.getConvergence() + ":"
 							+ evt.isExtended());
-		} catch (RodinDBException e) {
+		} catch (CoreException e) {
 			e.printStackTrace();
 			fail("There should be no exception");
 			return;

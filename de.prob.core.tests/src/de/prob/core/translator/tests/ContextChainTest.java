@@ -7,9 +7,14 @@ import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eventb.core.IContextRoot;
 import org.eventb.core.IEventBProject;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
 
 import de.prob.core.translator.TranslationFailedException;
 import de.prob.eventb.translator.TranslatorFactory;
+
+import static org.junit.Assert.assertEquals;
 
 public class ContextChainTest extends AbstractEventBTests {
 	private StringWriter stringWriter;
@@ -40,7 +45,7 @@ public class ContextChainTest extends AbstractEventBTests {
 		TranslatorFactory.translate(context2, writer);
 
 		assertEquals(
-				"package(load_event_b_project([],[event_b_context(none,'TestContext2',[extends(none,['TestContext1']),constants(none,[]),abstract_constants(none,[]),axioms(none,[]),theorems(none,[]),sets(none,[])]),event_b_context(none,'TestContext1',[extends(none,[]),constants(none,[]),axioms(none,[]),theorems(none,[]),sets(none,[])])],[exporter_version(3)],_Error)).\n",
+				"package(load_event_b_project([],[event_b_context(none,'TestContext2',[extends(none,['TestContext1']),constants(none,[]),abstract_constants(none,[]),axioms(none,[]),theorems(none,[]),sets(none,[])]),event_b_context(none,'TestContext1',[extends(none,[]),constants(none,[]),abstract_constants(none,[]),axioms(none,[]),theorems(none,[]),sets(none,[])])],[exporter_version(3)],_Error)).\n",
 				stringWriter.getBuffer().toString());
 	}
 }

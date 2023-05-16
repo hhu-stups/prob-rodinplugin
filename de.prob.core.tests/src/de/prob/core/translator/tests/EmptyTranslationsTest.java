@@ -8,9 +8,14 @@ import org.eclipse.core.runtime.CoreException;
 import org.eventb.core.IContextRoot;
 import org.eventb.core.IEventBProject;
 import org.eventb.core.IMachineRoot;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
 
 import de.prob.core.translator.TranslationFailedException;
 import de.prob.eventb.translator.TranslatorFactory;
+
+import static org.junit.Assert.assertEquals;
 
 public class EmptyTranslationsTest extends AbstractEventBTests {
 	private StringWriter stringWriter;
