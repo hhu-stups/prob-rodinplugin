@@ -1,6 +1,8 @@
 build:
   stage: build
   image: openjdk:8-jdk-slim
+  variables:
+    GRADLE_USER_HOME: "$CI_PROJECT_DIR/.gradle"
   before_script:
     - export DEBIAN_FRONTEND="noninteractive"
     - apt-get update
@@ -10,7 +12,13 @@ build:
     - ./gradlew createPoms
     - ./gradlew downloadCli
     - ./gradlew collectDependencies
-    - mvn -f de.prob.parent/pom.xml install
+    - mvn -Dmaven.repo.local="$CI_PROJECT_DIR/maven_repo_local" -f de.prob.parent/pom.xml install
+  cache:
+    paths:
+      - .gradle/caches
+      - .gradle/native
+      - .gradle/wrapper
+      - maven_repo_local
   artifacts:
     paths:
       - de.prob.repository/target/repository
