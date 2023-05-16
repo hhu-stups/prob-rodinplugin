@@ -12,17 +12,6 @@ project.ext {
 
 apply from: 'tycho_build.gradle'
 
-// Local tasks
-
-
-/*task bMotionStudioHelpCustumBuild(type: Exec){
-	commandLine 'ant', '-f','de.bmotionstudio.help/customBuild.xml'
-}
-
-install.dependsOn bMotionStudioHelpCustumBuild
-
-completeInstall.dependsOn bMotionStudioHelpCustumBuild*/
-
 project(':de.prob.core') {
 	apply plugin: "java"
 
