@@ -8,7 +8,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eventb.core.IContextRoot;
 import org.eventb.core.IEventBProject;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import de.prob.core.translator.TranslationFailedException;
@@ -28,7 +27,6 @@ public class ContextWithConstantsTest extends AbstractEventBTests {
 		writer = new PrintWriter(stringWriter);
 	}
 
-	@Ignore
 	@Test
 	public void testContextWithConstants() throws CoreException,
 			TranslationFailedException {
