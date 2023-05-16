@@ -37,6 +37,10 @@ import org.rodinp.core.RodinCore;
 import org.rodinp.core.RodinDBException;
 import org.rodinp.internal.core.debug.DebugHelpers;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
+
 /**
  * @author htson
  *         <p>
@@ -60,33 +64,8 @@ public abstract class AbstractEventBTests extends AbstractTests {
 	 */
 	protected static final FormulaFactory ff = FormulaFactory.getDefault();
 
-	/**
-	 * Constructor: Create max_size test case.
-	 */
-	public AbstractEventBTests() {
-		super();
-	}
-
-	/**
-	 * Constructor: Create max_size test case with the given name.
-	 * 
-	 * @param name
-	 *            the name of test
-	 */
-	public AbstractEventBTests(String name) {
-		super(name);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see junit.framework.TestCase#setUp()
-	 */
 	@Before
-	@Override
-	protected void setUp() throws Exception {
-		super.setUp();
-
+	public void setUp() throws Exception {
 		// ensure autobuilding is turned off
 		IWorkspaceDescription wsDescription = workspace.getDescription();
 		if (wsDescription.isAutoBuilding()) {
@@ -102,16 +81,9 @@ public abstract class AbstractEventBTests extends AbstractTests {
 
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see junit.framework.TestCase#tearDown()
-	 */
 	@After
-	@Override
-	protected void tearDown() throws Exception {
+	public void tearDown() throws Exception {
 		workspace.getRoot().delete(true, null);
-		super.tearDown();
 	}
 
 	// =========================================================================

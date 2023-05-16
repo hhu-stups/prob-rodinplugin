@@ -13,13 +13,15 @@ import org.junit.Test;
 import de.prob.core.translator.TranslationFailedException;
 import de.prob.eventb.translator.TranslatorFactory;
 
+import static org.junit.Assert.assertEquals;
+
 public class MachineWithVariablesTest extends AbstractEventBTests {
 	private StringWriter stringWriter;
 	private PrintWriter writer;
 
 	@Before
 	@Override
-	protected void setUp() throws Exception {
+	public void setUp() throws Exception {
 		super.setUp();
 		stringWriter = new StringWriter();
 		writer = new PrintWriter(stringWriter);

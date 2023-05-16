@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import junit.framework.Assert;
 import de.prob.core.command.LtlCheckingCommand.PathType;
 import de.prob.core.domainobjects.ltl.CounterExample;
 import de.prob.core.domainobjects.ltl.CounterExampleBinaryOperator;
@@ -16,6 +15,8 @@ import de.prob.core.domainobjects.ltl.CounterExamplePredicate;
 import de.prob.core.domainobjects.ltl.CounterExampleProposition;
 import de.prob.core.domainobjects.ltl.CounterExampleUnaryOperator;
 import de.prob.core.domainobjects.ltl.CounterExampleValueType;
+
+import org.junit.Assert;
 
 public class LtlTestDescription {
 	private final CounterExample counterExample;

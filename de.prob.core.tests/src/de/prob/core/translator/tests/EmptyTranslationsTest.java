@@ -23,7 +23,7 @@ public class EmptyTranslationsTest extends AbstractEventBTests {
 
 	@Before
 	@Override
-	protected void setUp() throws Exception {
+	public void setUp() throws Exception {
 		super.setUp();
 		stringWriter = new StringWriter();
 		writer = new PrintWriter(stringWriter);

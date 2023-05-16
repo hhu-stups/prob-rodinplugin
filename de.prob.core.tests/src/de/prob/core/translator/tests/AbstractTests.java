@@ -4,7 +4,9 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author htson
@@ -12,25 +14,7 @@ import junit.framework.TestCase;
  *         This abstract class contains utility methods supporting testing.
  *         </p>
  */
-public abstract class AbstractTests extends TestCase {
-
-	/**
-	 * Constructor: Create max_size test case.
-	 */
-	public AbstractTests() {
-		super();
-	}
-
-	/**
-	 * Constructor: Create max_size test case with the given name.
-	 * 
-	 * @param name
-	 *            the name of test
-	 */
-	public AbstractTests(String name) {
-		super(name);
-	}
-
+public abstract class AbstractTests {
 	/**
 	 * Utility method to compare two string collections. The expected collection
 	 * is given in terms of an array of strings. The actual collection is given
