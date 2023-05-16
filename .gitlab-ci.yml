@@ -5,7 +5,6 @@ build:
     - export DEBIAN_FRONTEND="noninteractive"
     - apt-get update
     - apt-get install --assume-yes maven
-    - export MAVEN_OPTS="-Xmx512m -XX:MaxPermSize=192m"
     - mvn --version
   script:
     - ./gradlew createPoms
