@@ -89,15 +89,3 @@ task downloadCli {
 
 completeInstall.dependsOn downloadCli
 completeInstall.dependsOn subprojects.setClassPath
-
-task deleteOldArtifacts(type: Delete) {
-	String updateSite = workspacePath + 'updatesite'
-	delete updateSite
-}
-
-task collectArtifacts(type: Copy) {
-	from workspacePath + groupID + '.repository/target/repository/'
-	into workspacePath + 'updatesite'
-	from workspacePath + "index.html"
-	into workspacePath + 'updatesite'
-}
