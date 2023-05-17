@@ -5,7 +5,7 @@ Bundle-SymbolicName: de.prob.eventb.disprover.core;singleton:=true
 Bundle-Version: 2.0.5.qualifier
 Bundle-Vendor: Heinrich-Heine University Dusseldorf
 Require-Bundle: org.eclipse.core.runtime;bundle-version="[3.5.0,4.0.0)",
- de.prob.core;bundle-version="[9.4.0,9.5.0)",
+ de.prob.core;bundle-version="[9.4.4,9.5.0)",
  org.eventb.core.seqprover;bundle-version="[3.0.0,4.0.0)",
  org.eventb.core;bundle-version="[3.0.0,4.0.0)",
  org.eclipse.ui;bundle-version="[3.5.0,4.0.0)",
