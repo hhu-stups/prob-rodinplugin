@@ -88,4 +88,3 @@ task downloadCli {
 
 
 completeInstall.dependsOn downloadCli
-completeInstall.dependsOn subprojects.setClassPath
