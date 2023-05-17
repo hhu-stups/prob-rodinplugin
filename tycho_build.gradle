@@ -521,11 +521,6 @@ task completeInstall(dependsOn: [subprojects.collectDependencies, createPoms], t
 	commandLine 'mvn', 'install', '-f', workspacePath + parentID + '/pom.xml'
 }
 
-task tycho(dependsOn: [createPoms], type: Exec) {
-	description = "\tExecutes a 'mvn install' of the parent pom.xml and auto-generates Tycho Poms"
-	commandLine 'mvn', 'install', '-f', workspacePath + parentID + '/pom.xml'
-}
-
 
 // --- Defining Tycho POM parts -- //
 
