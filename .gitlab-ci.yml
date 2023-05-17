@@ -22,7 +22,7 @@ build:
     paths:
       - de.prob.repository/target/repository
 
-deploy:
+deploy:nightly:
   stage: deploy
   only:
     - develop@general/stups/prob_rodin_plugin
@@ -34,3 +34,16 @@ deploy:
     - apk add lftp openssh-client
   script:
     - LFTP_PASSWORD="${DEPLOY_PASSWORD}" lftp -c "set cmd:fail-exit true; set sftp:auto-confirm true; open --user ${DEPLOY_USERNAME} --env-password sftp://${DEPLOY_HOST}/${DEPLOY_REMOTE_BASEDIR}/rodin/prob1/nightly/; mirror -vvv -R de.prob.repository/target/repository ."
+
+deploy:release:
+  stage: deploy
+  only:
+    - master@general/stups/prob_rodin_plugin
+  image: alpine:3
+  variables:
+    GIT_STRATEGY: none
+  before_script:
+    - apk update
+    - apk add lftp openssh-client
+  script:
+    - LFTP_PASSWORD="${DEPLOY_PASSWORD}" lftp -c "set cmd:fail-exit true; set sftp:auto-confirm true; open --user ${DEPLOY_USERNAME} --env-password sftp://${DEPLOY_HOST}/${DEPLOY_REMOTE_BASEDIR}/rodin/prob1/; mkdir release-next; mirror -vvv -R de.prob.repository/target/repository release-next; mv release release-prev; mv release-next release"
