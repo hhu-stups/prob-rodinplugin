@@ -237,7 +237,7 @@ litigation.
       <import plugin="org.rodinp.core" version="1.7.0" match="compatible"/>
       <import plugin="org.eventb.ui" version="3.0.0"/>
       <import plugin="org.eclipse.osgi"/>
-      <import plugin="de.prob.ui" version="7.4.0" match="greaterOrEqual"/>
+      <import plugin="de.prob.ui" version="7.4.0" match="compatible"/>
       <import plugin="de.prob.eventb.disprover.core" version="2.0.0" match="equivalent"/>
    </requires>
 
