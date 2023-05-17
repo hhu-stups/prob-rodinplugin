@@ -9,7 +9,7 @@ build:
     - apt-get install --assume-yes maven
     - mvn --version
   script:
-    - ./gradlew createPoms downloadCli collectDependencies
+    - ./gradlew prepareMaven
     - mvn -Dmaven.repo.local="$CI_PROJECT_DIR/maven_repo_local" -f de.prob.parent/pom.xml install
     - cp index.html de.prob.repository/target/repository/
   cache:

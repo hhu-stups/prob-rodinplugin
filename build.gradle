@@ -87,4 +87,4 @@ task downloadCli {
 }
 
 
-completeInstall.dependsOn downloadCli
+prepareMaven.dependsOn downloadCli
