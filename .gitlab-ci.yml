@@ -1,6 +1,6 @@
 build:
   stage: build
-  image: openjdk:8-jdk-slim
+  image: eclipse-temurin:8
   variables:
     GRADLE_USER_HOME: "$CI_PROJECT_DIR/.gradle"
   before_script:
