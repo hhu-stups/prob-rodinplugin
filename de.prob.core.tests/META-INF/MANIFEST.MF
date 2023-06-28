@@ -11,6 +11,6 @@ Require-Bundle: org.eclipse.ui,
  org.eventb.core.ast;bundle-version="[3.3.0,4.0.0)",
  org.junit;bundle-version="[4.0.0,5.0.0)",
  org.rodinp.core;bundle-version="[1.7.0,2.0.0)",
- de.prob.core;bundle-version="[9.4.4,9.5.0)"
+ de.prob.core;bundle-version="[9.4.5,9.5.0)"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
