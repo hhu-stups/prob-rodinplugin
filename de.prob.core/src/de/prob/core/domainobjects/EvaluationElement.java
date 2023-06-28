@@ -6,9 +6,9 @@ import java.util.List;
 import de.prob.core.Animator;
 import de.prob.core.command.EvaluationExpandCommand;
 import de.prob.core.command.EvaluationGetValuesCommand;
-import de.prob.eventb.translator.FormulaTranslator;
 import de.prob.exceptions.ProBException;
 import de.prob.prolog.term.PrologTerm;
+import de.prob.unicode.UnicodeTranslator;
 
 public class EvaluationElement {
 	private final PrologTerm id;
@@ -82,7 +82,7 @@ public class EvaluationElement {
 
 		public EvLazyInformation(final String label,
 				final EvaluationElement[] children) {
-			this.label = FormulaTranslator.translate(label);
+			this.label = UnicodeTranslator.toUnicode(label);
 			this.children = children;
 		}
 	}

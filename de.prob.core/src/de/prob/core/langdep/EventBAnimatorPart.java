@@ -39,11 +39,11 @@ import de.be4.classicalb.core.parser.node.PPredicate;
 import de.prob.core.Animator;
 import de.prob.core.LanguageDependendAnimationPart;
 import de.prob.core.command.LoadEventBModelCommand;
-import de.prob.eventb.translator.FormulaTranslator;
 import de.prob.eventb.translator.internal.TranslationVisitor;
 import de.prob.exceptions.ProBException;
 import de.prob.parserbase.ProBParseException;
 import de.prob.prolog.output.IPrologTermOutput;
+import de.prob.unicode.UnicodeTranslator;
 
 /**
  * @author plagge
@@ -63,7 +63,7 @@ public class EventBAnimatorPart implements LanguageDependendAnimationPart {
 	public void parseExpression(final IPrologTermOutput pto,
 			final String expression1, final boolean wrap)
 			throws ProBParseException {
-		final String expression = FormulaTranslator.translate(expression1);
+		final String expression = UnicodeTranslator.toUnicode(expression1);
 
 		final FormulaFactory ff = root.getFormulaFactory();
 		final IParseResult parseResult = ff.parseExpression(expression, null);
@@ -78,7 +78,7 @@ public class EventBAnimatorPart implements LanguageDependendAnimationPart {
 	public void parsePredicate(final IPrologTermOutput pto,
 			final String predicate1, final boolean wrap)
 			throws ProBParseException {
-		final String predicate = FormulaTranslator.translate(predicate1);
+		final String predicate = UnicodeTranslator.toUnicode(predicate1);
 
 		final FormulaFactory ff = root.getFormulaFactory();
 		final IParseResult parseResult = ff.parsePredicate(predicate, null);
@@ -198,7 +198,7 @@ public class EventBAnimatorPart implements LanguageDependendAnimationPart {
 
 	private Predicate parseTransPredicate(final String predicateString,
 			final ISCEvent event) throws ProBParseException {
-		final String utf8String = FormulaTranslator.translate(predicateString);
+		final String utf8String = UnicodeTranslator.toUnicode(predicateString);
 
 		final FormulaFactory ff = root.getFormulaFactory();
 		final IParseResult parseResult = ff.parsePredicate(utf8String, null);

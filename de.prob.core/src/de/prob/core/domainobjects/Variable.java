@@ -9,11 +9,11 @@ package de.prob.core.domainobjects;
 import org.apache.commons.lang.ObjectUtils;
 
 import de.prob.core.command.CommandException;
-import de.prob.eventb.translator.FormulaTranslator;
 import de.prob.parser.BindingGenerator;
 import de.prob.parser.ResultParserException;
 import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.PrologTerm;
+import de.prob.unicode.UnicodeTranslator;
 
 public final class Variable {
 
@@ -50,8 +50,7 @@ public final class Variable {
 				throw commandException;
 			}
 			// value = ReverseTranslate.reverseTranslate(term.getFunctor());
-			value = FormulaTranslator.translate(
-					term.getFunctor());
+			value = UnicodeTranslator.toUnicode(term.getFunctor());
 		}
 
 	}
