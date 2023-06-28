@@ -6,15 +6,24 @@
 
 package de.prob.core.command;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
-import org.eventb.core.*;
-import org.osgi.service.prefs.*;
+import org.eventb.core.IContextRoot;
+import org.eventb.core.IEventBRoot;
+import org.eventb.core.IMachineRoot;
+import org.osgi.service.prefs.BackingStoreException;
+import org.osgi.service.prefs.Preferences;
 import org.rodinp.core.RodinDBException;
 
-import de.prob.core.*;
+import de.prob.core.Animator;
+import de.prob.core.LanguageDependendAnimationPart;
 import de.prob.core.command.internal.InternalLoadCommand;
-import de.prob.core.domainobjects.*;
+import de.prob.core.domainobjects.MachineDescription;
+import de.prob.core.domainobjects.Operation;
+import de.prob.core.domainobjects.ProBPreference;
+import de.prob.core.domainobjects.State;
 import de.prob.core.langdep.EventBAnimatorPart;
 import de.prob.exceptions.ProBException;
 import de.prob.logging.Logger;
@@ -51,8 +60,7 @@ public final class LoadEventBModelCommand {
 		return false;
 	}
 
-	public static PrologTerm toPrologTerm(IEventBRoot model)
-			throws CommandException {
+	public static PrologTerm toPrologTerm(IEventBRoot model) throws CommandException {
 		StructuredPrologOutput out = new StructuredPrologOutput();
 
 		final InternalLoadCommand load = new InternalLoadCommand(model);
@@ -61,45 +69,55 @@ public final class LoadEventBModelCommand {
 		return out.getSentences().iterator().next();
 	}
 
-	public static void load(final Animator animator, final IEventBRoot model)
-			throws ProBException {
+	public static void load(final Animator animator, final IEventBRoot model) throws ProBException {
 		boolean context = checkForContexts(model);
 		animator.resetDirty();
+		// animator.resetRodinProjectHasErrorsOrWarnings(); // set in StartAnimationHandler; reset here would override this
 		removeObsoletePreferences(animator);
 
 		final LanguageDependendAnimationPart ldp = new EventBAnimatorPart(model);
 
 		final ClearMachineCommand clear = new ClearMachineCommand();
-		final SetPreferencesCommand setPrefs = SetPreferencesCommand
-				.createSetPreferencesCommand(animator);
+		final SetPreferencesCommand setPrefs = SetPreferencesCommand.createSetPreferencesCommand(animator);
 		final InternalLoadCommand load = new InternalLoadCommand(model);
 		final StartAnimationCommand start = new StartAnimationCommand();
-		final SetMachineObjectsCommand getMObjects = new SetMachineObjectsCommand(
-				animator, ldp);
+		final SetMachineObjectsCommand getMObjects = new SetMachineObjectsCommand(animator, ldp);
 		final ExploreStateCommand explore = new ExploreStateCommand("root");
 
-		final ComposedCommand composed = new ComposedCommand(clear, setPrefs,
-				load, start, getMObjects, explore);
+		final ComposedCommand composed = new ComposedCommand(clear, setPrefs, load, start, getMObjects, explore);
 
-		animator.execute(composed);
+		try {
+			animator.execute(composed);
 
-		final State commandResult = explore.getState();
-		animator.announceCurrentStateChanged(commandResult,
-				Operation.NULL_OPERATION);
+			final State commandResult = explore.getState();
+			animator.announceCurrentStateChanged(commandResult, Operation.NULL_OPERATION);
 
-		if (commandResult.isTimeoutOccured() && context) {
-			final String message = "A timeout occured when finding constants. Typically this means, that your axioms are too complicated for automatical solving. You might create an animation refinement using the context menu to help ProB finding a solution.";
-			Logger.notifyUserWithoutBugreport(message);
+			if (commandResult.isTimeoutOccured() && context) {
+				final String message;
+				int solsFound = explore.getState().getEnabledOperations().size();
+				if (solsFound > 0) {
+					message = "A timeout occured when finding constants after finding " + solsFound + " solution(s)."
+							+ " Typically this means, that your axioms are too complicated for automatic solving. "
+							+ "You might create an animation refinement using the context menu to help ProB finding all solutions.";
+				} else {
+					message = "A timeout occured when finding constants."
+							+ " Typically this means, that your axioms are too complicated for automatic solving. "
+							+ "You might create an animation refinement using the context menu to help ProB finding a solution.";
+				}
+				Logger.notifyUserWithoutBugreport(message);
+			}
+		} catch (CommandException ex) {
+			Logger.notifyUser("Event-B Model or Context could not be loaded due to an exception: " 
+			                  + ex.getMessage() + "\nTry cleaning the Rodin project (Project -> Clean).",
+					ex);
 		}
 
 	}
 
-	private static void removeObsoletePreferences(final Animator animator)
-			throws ProBException {
+	private static void removeObsoletePreferences(final Animator animator) throws ProBException {
 		if (!preferencesAlreadyCleanedUp) {
 			// get all preference names from ProB
-			Collection<ProBPreference> prefs = GetPreferencesCommand
-					.getPreferences(animator);
+			Collection<ProBPreference> prefs = GetPreferencesCommand.getPreferences(animator);
 			Set<String> probPrefNames = new HashSet<String>();
 			for (ProBPreference probpref : prefs) {
 				probPrefNames.add(probpref.name);
@@ -114,8 +132,7 @@ public final class LoadEventBModelCommand {
 						// preference does not exists anymore
 						preferences.remove(prefname);
 						foundObsoletePreference = true;
-						String message = "removed obsolete preference from preferences store: "
-								+ prefname;
+						String message = "removed obsolete preference from preferences store: " + prefname;
 						Logger.info(message);
 					}
 				}
@@ -129,22 +146,18 @@ public final class LoadEventBModelCommand {
 		}
 	}
 
-	private static class SetMachineObjectsCommand extends
-			GetMachineObjectsCommand {
+	private static class SetMachineObjectsCommand extends GetMachineObjectsCommand {
 		private final Animator animator;
 		private final LanguageDependendAnimationPart ldp;
 
-		public SetMachineObjectsCommand(final Animator animator,
-				final LanguageDependendAnimationPart ldp) {
+		public SetMachineObjectsCommand(final Animator animator, final LanguageDependendAnimationPart ldp) {
 			super();
 			this.animator = animator;
 			this.ldp = ldp;
 		}
 
 		@Override
-		public void processResult(
-				final ISimplifiedROMap<String, PrologTerm> bindings)
-				throws CommandException {
+		public void processResult(final ISimplifiedROMap<String, PrologTerm> bindings) throws CommandException {
 			super.processResult(bindings);
 			animator.setMachineDescription(new MachineDescription(getResult()));
 			animator.setLanguageDependendPart(ldp);

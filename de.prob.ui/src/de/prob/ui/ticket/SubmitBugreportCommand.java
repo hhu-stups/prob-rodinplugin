@@ -25,7 +25,8 @@ public class SubmitBugreportCommand extends AbstractHandler implements IHandler 
 		IWebBrowser browser;
 		try {
 			browser = PlatformUI.getWorkbench().getBrowserSupport().createBrowser("jira");
-			browser.openURL(new URL("http://jira.cobra.cs.uni-duesseldorf.de/"));
+			browser.openURL(new URL("https://probjira.atlassian.net"));
+			// TODO: should we switch to https://github.com/hhu-stups/prob-issues/issues/new
 		} catch (PartInitException e) {
 			e.printStackTrace();
 		} catch (MalformedURLException e) {

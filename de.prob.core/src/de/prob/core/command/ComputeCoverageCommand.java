@@ -29,21 +29,19 @@ public final class ComputeCoverageCommand implements IComposableCommand {
 		private final List<String> nodes = new ArrayList<String>();
 		private final List<String> uncovered = new ArrayList<String>();
 
-		public ComputeCoverageResult(
-				final IntegerPrologTerm totalNumberOfNodes,
-				final IntegerPrologTerm totalNumberOfTransitions,
-				final ListPrologTerm ops, final ListPrologTerm nodes,
+		public ComputeCoverageResult(final IntegerPrologTerm totalNumberOfNodes,
+				final IntegerPrologTerm totalNumberOfTransitions, final ListPrologTerm ops, final ListPrologTerm nodes,
 				final ListPrologTerm uncovered) {
 			this.totalNumberOfNodes = totalNumberOfNodes.getValue();
 			this.totalNumberOfTransitions = totalNumberOfTransitions.getValue();
 			for (PrologTerm op : ops) {
-				this.getOps().add(op.toString());
+				this.getOps().add(op.getFunctor());
 			}
 			for (PrologTerm node : nodes) {
-				this.getNodes().add(node.toString());
+				this.getNodes().add(node.getFunctor());
 			}
 			for (PrologTerm unc : uncovered) {
-				this.getUncovered().add(unc.toString());
+				this.getUncovered().add(unc.getFunctor());
 			}
 
 		}
@@ -72,8 +70,7 @@ public final class ComputeCoverageCommand implements IComposableCommand {
 	private ComputeCoverageCommand() {
 	}
 
-	public static ComputeCoverageResult getCoverage(final Animator a)
-			throws ProBException {
+	public static ComputeCoverageResult getCoverage(final Animator a) throws ProBException {
 		ComputeCoverageCommand computeCoverageCommand = new ComputeCoverageCommand();
 		a.execute(computeCoverageCommand);
 		return computeCoverageCommand.getResult();
@@ -83,27 +80,23 @@ public final class ComputeCoverageCommand implements IComposableCommand {
 		return coverageResult;
 	}
 
-	public void processResult(
-			final ISimplifiedROMap<String, PrologTerm> bindings)
-			throws CommandException {
+	@Override
+	public void processResult(final ISimplifiedROMap<String, PrologTerm> bindings) throws CommandException {
 
-		IntegerPrologTerm totalNodeNr = (IntegerPrologTerm) bindings
-				.get("TotalNodeNr");
-		IntegerPrologTerm totalTransNr = (IntegerPrologTerm) bindings
-				.get("TotalTransSum");
+		IntegerPrologTerm totalNodeNr = (IntegerPrologTerm) bindings.get("TotalNodeNr");
+		IntegerPrologTerm totalTransNr = (IntegerPrologTerm) bindings.get("TotalTransSum");
 
 		ListPrologTerm ops = (ListPrologTerm) bindings.get("OpStat");
 		ListPrologTerm nodes = (ListPrologTerm) bindings.get("NodeStat");
 		ListPrologTerm uncovered = (ListPrologTerm) bindings.get("Uncovered");
-		coverageResult = new ComputeCoverageResult(totalNodeNr, totalTransNr,
-				ops, nodes, uncovered);
+		coverageResult = new ComputeCoverageResult(totalNodeNr, totalTransNr, ops, nodes, uncovered);
 
 	}
 
+	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
-		pto.openTerm("compute_coverage").printVariable("TotalNodeNr")
-				.printVariable("TotalTransSum").printVariable("NodeStat")
-				.printVariable("OpStat").printVariable("Uncovered").closeTerm();
+		pto.openTerm("compute_coverage").printVariable("TotalNodeNr").printVariable("TotalTransSum")
+				.printVariable("NodeStat").printVariable("OpStat").printVariable("Uncovered").closeTerm();
 	}
 
 }

@@ -24,7 +24,6 @@ import de.prob.core.command.StartAnimationCommand;
 import de.prob.eventb.disprover.core.DisproverReasoner;
 import de.prob.eventb.disprover.core.command.DisproverLoadCommand;
 import de.prob.eventb.translator.internal.TranslationVisitor;
-import de.prob.exceptions.ProBException;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.ListPrologTerm;
@@ -51,22 +50,25 @@ public class DisproverCommand implements IComposableCommand {
 	private final Set<Predicate> selectedHypotheses;
 	private final Predicate goal;
 	private final int timeout;
+	private final Boolean exportPO;
 
 	private static ComposedCommand composed;
 
 	public DisproverCommand(Set<Predicate> allHypotheses,
-			Set<Predicate> selectedHypotheses, Predicate goal, int timeout) {
+			Set<Predicate> selectedHypotheses, Predicate goal, int timeout,
+			Boolean exportPO) {
 		this.allHypotheses = allHypotheses;
 		this.selectedHypotheses = selectedHypotheses;
 		this.goal = goal;
 		this.timeout = timeout;
+		this.exportPO = exportPO;
 	}
 
 	public static ICounterExample disprove(Animator animator,
 			IEventBProject project, Set<Predicate> allHypotheses,
-			Set<Predicate> selectedHypotheses, Predicate goal, int timeout,
+			Set<Predicate> selectedHypotheses, Predicate goal, int timeoutFactor,
 			AEventBContextParseUnit context, IProofMonitor pm)
-			throws ProBException, InterruptedException {
+			throws InterruptedException {
 		Preferences prefNode = Platform.getPreferencesService().getRootNode()
 				.node(InstanceScope.SCOPE).node("prob_disprover_preferences");
 
@@ -79,28 +81,41 @@ public class DisproverCommand implements IComposableCommand {
 		final SetPreferenceCommand setCLPFD = new SetPreferenceCommand("CLPFD",
 				Boolean.toString(prefNode.getBoolean("clpfd", true)));
 		final SetPreferenceCommand setCHR = new SetPreferenceCommand("CHR",
-				Boolean.toString(prefNode.getBoolean("clpfd", true)));
+				Boolean.toString(prefNode.getBoolean("chr", true)));
+		final SetPreferenceCommand setCSE = new SetPreferenceCommand("CSE",
+				Boolean.toString(prefNode.getBoolean("cse", false)));
+		final SetPreferenceCommand setSMT = new SetPreferenceCommand(
+				"SMT_SUPPORTED_INTERPRETER", Boolean.toString(prefNode
+						.getBoolean("smt", false)));
+		final SetPreferenceCommand setCSEPred = new SetPreferenceCommand(
+				"CSE_PRED", Boolean.toString(prefNode.getBoolean("cse", false)));
+		final SetPreferenceCommand setDoubleEval = new SetPreferenceCommand(
+				"DOUBLE_EVALUATION", Boolean.toString(prefNode.getBoolean(
+						"doubleeval", true)));
 
 		DisproverLoadCommand load = new DisproverLoadCommand(project, context);
 
 		StartAnimationCommand start = new StartAnimationCommand();
 
 		DisproverCommand disprove = new DisproverCommand(allHypotheses,
-				selectedHypotheses, goal, timeout
-						* prefNode.getInt("timeout", 1000));
+				selectedHypotheses, goal, 
+				timeoutFactor * prefNode.getInt("timeout", 1000),
+				prefNode.getBoolean("exportpo", false));
 
-		composed = new ComposedCommand(clear, setPrefs, setCLPFD, setCHR, load,
-				start, disprove);
+		composed = new ComposedCommand(clear, setPrefs, setCLPFD, setCHR,
+				setSMT, setCSE, setCSEPred, setDoubleEval, load, start,
+				disprove);
 
 		final Job job = new ProBCommandJob("Disproving", animator, composed);
 		job.setUser(true);
 		job.schedule();
 
-		while (job.getResult() == null && !pm.isCanceled()) {
+		while (job.getResult() == null && 
+		       (pm == null || !pm.isCanceled())) { // treat case IProofMonitor is null; done by Rodin 3.5RC at startup
 			Thread.sleep(200);
 		}
 
-		if (pm.isCanceled()) {
+		if (pm != null && pm.isCanceled()) {
 			job.cancel();
 			throw new InterruptedException();
 		}
@@ -129,6 +144,19 @@ public class DisproverCommand implements IComposableCommand {
 		}
 		pto.closeList();
 		pto.printNumber(timeout);
+		if (this.exportPO) {
+			pto.openList();
+		    pto.openTerm("disprover_option");
+		    pto.openTerm("export_po_as_machine");// Note: other valid options : wd_prover_timeout(T), unsat_core,...
+			pto.printAtom("/tmp/ProB_Rodin_PO_SelectedHyps.mch");  
+			             // TO DO: provide user preference path; TO DO: we could runProBClassic(prob_location, tmp);
+		    pto.closeTerm();
+		    pto.closeTerm();
+			pto.closeList();
+		} else {
+			pto.emptyList(); // do not submit extra options because we set the
+							 // preference above; we could transmit additional valid_disprover_option
+		}
 		pto.printVariable(RESULT);
 		pto.closeTerm();
 	}
@@ -172,6 +200,12 @@ public class DisproverCommand implements IComposableCommand {
 		if ("contradiction_found".equals(term.getFunctor())) {
 			counterExample = new CounterExample(false, false, false);
 			counterExample.setProof(true);
+		}
+
+		if ("contradiction_in_hypotheses".equals(term.getFunctor())) {
+			counterExample = new CounterExample(false, false, false);
+			counterExample.setProof(true);
+			counterExample.setDoubleCheckFailed(true);
 		}
 
 		if ("solution".equals(term.getFunctor())) {

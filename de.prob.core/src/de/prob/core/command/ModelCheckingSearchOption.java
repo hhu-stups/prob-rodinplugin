@@ -23,7 +23,7 @@ public enum ModelCheckingSearchOption {
 
 	private final String text;
 	private final int pos;
-	private final boolean enabledByDefault;
+	private boolean enabledByDefault;
 
 	private ModelCheckingSearchOption(final int pos, final String text,
 			final boolean enabledByDefault) {
@@ -51,6 +51,10 @@ public enum ModelCheckingSearchOption {
 
 	public final boolean isEnabledByDefault() {
 		return enabledByDefault;
+	}
+
+	public final void setEnabledByDefault(boolean val) {
+		this.enabledByDefault = val;
 	}
 
 	public final static ModelCheckingSearchOption get(final int code) {

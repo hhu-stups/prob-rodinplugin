@@ -37,7 +37,7 @@ public abstract class ProBException extends Exception {
 		this.handled = b;
 	}
 
-	public final void notifyUserOnce() {
+	public void notifyUserOnce() {
 		if (!handled) {
 			handled = true;
 			Logger.notifyUser(this.getMessage(), this);

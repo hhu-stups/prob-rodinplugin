@@ -150,12 +150,6 @@ public class WizardExecuteOperationByPredicateMulti extends SchedulerWizard {
 		addPage(new MultiPage("MultiPage"));
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * de.bmotionstudio.gef.editor.scheduler.SchedulerWizard#prepareToFinish()
-	 */
 	@Override
 	protected Boolean prepareToFinish() {
 		if (((ExecuteOperationByPredicateMulti) getScheduler())
@@ -177,11 +171,6 @@ public class WizardExecuteOperationByPredicateMulti extends SchedulerWizard {
 		return true;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see de.bmotionstudio.gef.editor.scheduler.SchedulerWizard#getSize()
-	 */
 	@Override
 	public Point getSize() {
 		return new Point(700, 500);

@@ -17,11 +17,6 @@ import de.prob.eventb.disprover.core.Disprover;
 import de.prob.eventb.disprover.core.DisproverReasonerInput;
 
 public class DisproverTacticProvider extends DefaultTacticProvider {
-
-	protected boolean useContexts() {
-		return false;
-	}
-
 	protected static class MyPredicateApplication implements
 			IPredicateApplication {
 		@Override

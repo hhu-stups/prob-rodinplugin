@@ -19,8 +19,10 @@ import de.prob.prolog.term.PrologTerm;
  * @author plagge
  */
 public class GetErrorsCommand implements IComposableCommand {
-	public static final String ERRORS_VARIABLE = "Errors";
+	private static final String ERRORS_VARIABLE = "Errors";
+	private static final String ONLY_WARNINGS_VARIABLE = "OnlyWarnings";
 	private List<String> errors;
+	private boolean onlyWarnings;
 
 	@Override
 	public void processResult(
@@ -28,16 +30,22 @@ public class GetErrorsCommand implements IComposableCommand {
 			throws CommandException {
 		errors = PrologTerm.atomicStrings((ListPrologTerm) bindings
 				.get(ERRORS_VARIABLE));
+		onlyWarnings = "true".equals(bindings.get(ONLY_WARNINGS_VARIABLE)
+				.getFunctor());
 	}
 
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
-		pto.openTerm("getErrorMessages").printVariable(ERRORS_VARIABLE)
-				.closeTerm();
+		pto.openTerm("getErrorMessages").printVariable(ONLY_WARNINGS_VARIABLE)
+				.printVariable(ERRORS_VARIABLE).closeTerm();
 	}
 
 	public List<String> getErrors() {
 		return errors;
+	}
+
+	public boolean onlyWarningsOccurred() {
+		return onlyWarnings;
 	}
 
 }

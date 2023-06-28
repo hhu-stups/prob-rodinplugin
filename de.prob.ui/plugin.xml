@@ -8,7 +8,7 @@
       <page
             class="de.prob.ui.eventb.ClassicPreferences"
             id="de.prob.ui.probclassic"
-            name="ProB Classic"
+            name="ProB Standalone"
             category="probpreferences">
       </page>
    </extension>
@@ -295,7 +295,7 @@
       </command>
       <command
             id="de.prob.ui.show_custom_precondition_dialog"
-            name="Execute with additional Guard">
+            name="Execute with Additional Guard Constraint">
       </command>
       <command
             categoryId="de.prob.ui.commands.category"
@@ -315,7 +315,12 @@
       <command
             categoryId="de.prob.ui.commands.category"
             id="de.prob.ui.assertion_check"
-            name="Check Assertions">
+            name="Check Context Theorems">
+      </command>
+      <command
+            categoryId="de.prob.ui.commands.category"
+            id="de.prob.ui.assertion_dyn_check"
+            name="Check Invariant Theorems">
       </command>
       <command
             categoryId="de.prob.ui.commands.category"
@@ -346,7 +351,7 @@
       </command>
       <command
           id="de.prob.ui.ltl.showcounterexampleinhistory"
-          name="Show counter-example in history">
+          name="Show Counter-example in History">
       </command> 
       <command
           id="de.prob.ui.ltl.counterexamplezoominhandler"
@@ -363,11 +368,6 @@
       <command
             id="de.prob.ui.newcore.export"
             name="Export for new Core">
-      </command>
-      <command
-            categoryId="de.prob.ui.commands.category"
-            id="de.prob.ui.assertion_check"
-            name="Check Context Theorems">
       </command>
       <command
             categoryId="de.prob.ui.commands.category"
@@ -508,12 +508,6 @@
                         value="enabled">
                   </equals>
                </with>
-               <with
-                     variable="de.prob.core.history.backward_service">
-                  <equals
-                        value="enabled">
-                  </equals>
-               </with>
             </and>
          </enabledWhen>
       </handler>
@@ -526,12 +520,6 @@
             <and>
                <with
                      variable="de.prob.core.model_loaded">
-                  <equals
-                        value="enabled">
-                  </equals>
-               </with>
-                              <with
-                     variable="de.prob.core.history.forward_service">
                   <equals
                         value="enabled">
                   </equals>
@@ -815,6 +803,28 @@
          </class>
       </handler>
       <handler
+            commandId="de.prob.ui.assertion_dyn_check">
+         <enabledWhen>
+            <or>
+               <with
+                     variable="de.prob.core.model_loaded">
+                  <equals
+                        value="enabled">
+                  </equals>
+               </with>
+               <with
+                     variable="de.prob.core.context_loaded">
+                  <equals
+                        value="enabled">
+                  </equals>
+               </with>
+            </or>
+         </enabledWhen>
+         <class
+               class="de.prob.ui.assertion.AssertionDynCheckHandler">
+         </class>
+      </handler>
+      <handler
             commandId="de.prob.ui.find_valid_state">
          <class
                class="de.prob.ui.findvalidstate.FindValidStateHandler">
@@ -1086,17 +1096,17 @@
                commandId="de.prob.ui.navigator.context"
                icon="icons/new_prob_mini.png"
                id="more_commands"
-               label="ProB Classic ...">
+               label="ProB Standalone ...">
             <command
                   commandId="de.prob.ui.newcore.export"
                   icon="icons/prob_mini_logo.gif"
-                  label="Export for use in ProB classic"
+                  label="Export for use in ProB Standalone"
                   style="push">
             </command>
             <command
                   commandId="de.prob.ui.classic.open"
                   icon="icons/prob_mini_logo.gif"
-                  label="Open in ProB classic"
+                  label="Open in ProB Standalone"
                   style="push">
             </command>
             <visibleWhen>
@@ -1173,6 +1183,13 @@
                   icon="icons/CBCInvariantCheck.png"
                   label="Context Theorems"
                   mnemonic="C"
+                  style="push">
+            </command>
+            <command
+                  commandId="de.prob.ui.assertion_dyn_check"
+                  icon="icons/CBCInvariantCheck.png"
+                  label="Invariant Theorems"
+                  mnemonic="T"
                   style="push">
             </command>
             <command
@@ -1264,17 +1281,6 @@
             provider="de.prob.ui.services.ModelLoadedProvider">
          <variable
                name="de.prob.core.model_loaded"
-               priorityLevel="workbench">
-         </variable>
-      </sourceProvider>
-      <sourceProvider
-            provider="de.prob.ui.services.HistoryActiveProvider">
-         <variable
-               name="de.prob.core.history.forward_service"
-               priorityLevel="workbench">
-         </variable>
-         <variable
-               name="de.prob.core.history.backward_service"
                priorityLevel="workbench">
          </variable>
       </sourceProvider>

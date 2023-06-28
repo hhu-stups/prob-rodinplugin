@@ -18,7 +18,7 @@ import de.prob.exceptions.ProBException;
 import de.prob.logging.Logger;
 
 /**
- * This JobChangeAdapter presents the user the results of a deadlock freedom
+ * This JobChangeAdapter presents the user the results of a assertion
  * check.
  * 
  * @see AssertionCheckHandler
@@ -50,23 +50,23 @@ public class AssertionCheckFinishedListener extends ProBJobFinishedListener {
 			case NO_COUNTER_EXAMPLE_EXISTS:
 				dialogType = MessageDialog.INFORMATION;
 				dialogTitle = "No Counter-Example Exists";
-				message = "No Counter-Example to the Context Theorems exists.";
+				message = "No Counter-Example to the Context Theorems exists (for current settings of deferred sets).\nIf your model contains deferred sets, there may exist counter-examples for other sizes of these sets.";
 				break;
 			case NO_COUNTER_EXAMPLE_FOUND:
 				dialogType = MessageDialog.INFORMATION;
 				dialogTitle = "No Counter-Example Found";
-				message = "No Counter-Example to the Context Theorems was found.";
+				message = "No Counter-Example to the Context Theorems was found (but one may exist).";
 				break;
 			case COUNTER_EXAMPLE:
 				dialogType = MessageDialog.WARNING;
 				dialogTitle = "COUNTER-EXAMPLE FOUND!";
-				message = "The model contains a Counter-Example state, it will be shown in the state view.";
+				message = "A counter-example to the context theorems was found: it will be shown in the state view.\nThis counter-example state satisfies the axioms but not all theorems.";
 				displayCounterExample(command, animator);
 				break;
 			case INTERRUPTED:
 				dialogType = MessageDialog.WARNING;
 				dialogTitle = " Interrupt";
-				message = "The deadlock check has been interrupted by the user or a time-out.";
+				message = "The context theorem check has been interrupted by the user or a time-out.";
 				break;
 			default:
 				Logger.notifyUser("Unexpected result: " + result);
@@ -74,7 +74,7 @@ public class AssertionCheckFinishedListener extends ProBJobFinishedListener {
 			}
 		}
 		if (shell.isDisposed()) {
-			System.out.println("Deadlock freedom check finished: "
+			System.out.println("Context Theorems check finished: "
 					+ dialogTitle);
 		} else {
 			final Runnable runnable = new Runnable() {

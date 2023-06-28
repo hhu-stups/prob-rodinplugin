@@ -20,6 +20,8 @@ public class BaseProbType extends ProbDataType {
 	public final static BaseProbType PREDICATE = new BaseProbType("predicate");
 	public final static BaseProbType SUBSTITUTION = new BaseProbType(
 			"substitution");
+	public final static BaseProbType REAL = new BaseProbType("REAL");
+	public final static BaseProbType FLOAT = new BaseProbType("FLOAT");
 
 	private final String type;
 

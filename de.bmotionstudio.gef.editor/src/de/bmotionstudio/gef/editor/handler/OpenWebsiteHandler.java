@@ -19,7 +19,7 @@ import de.prob.logging.Logger;
 
 public class OpenWebsiteHandler extends AbstractHandler {
 
-	private static final String URL = "http://www.stups.uni-duesseldorf.de/BMotionStudio/";
+	private static final String URL = "https://prob.hhu.de/w/index.php/BMotion_Studio";
 
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		try {

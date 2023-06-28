@@ -5,11 +5,24 @@ import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.*;
-import org.eclipse.swt.layout.*;
-import org.eclipse.swt.widgets.*;
-import org.eclipse.ui.*;
-import org.osgi.service.prefs.*;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.events.VerifyEvent;
+import org.eclipse.swt.events.VerifyListener;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchPreferencePage;
+import org.osgi.service.prefs.BackingStoreException;
+import org.osgi.service.prefs.Preferences;
 
 public class DisproverPreferences extends PreferencePage implements
 		IWorkbenchPreferencePage {
@@ -38,6 +51,10 @@ public class DisproverPreferences extends PreferencePage implements
 	private Text timeoutTextField;
 	private Button checkCLPFD;
 	private Button checkCHR;
+	private Button checkCSE;
+	private Button checkSMT;
+	private Button checkDoubleEval;
+	private Button checkExportSelectedHyps;
 
 	public DisproverPreferences() {
 		super();
@@ -127,6 +144,27 @@ public class DisproverPreferences extends PreferencePage implements
 		Label chrRemark = new Label(pageComponent, SWT.WRAP);
 		chrRemark
 				.setText("Note: The CHR Solver can only be used in conjunction with the CLP(FD) solver.");
+		chrRemark.setLayoutData(gridData2);
+
+		new Label(pageComponent, SWT.NONE)
+				.setText("Use Common Subexpression Elemination:");
+		checkCSE = new Button(pageComponent, SWT.CHECK);
+		checkCSE.setSelection(prefNode.getBoolean("cse", false));
+
+		new Label(pageComponent, SWT.NONE)
+				.setText("Enable SMT solver support in ProB interpreter:");
+		checkSMT = new Button(pageComponent, SWT.CHECK);
+		checkSMT.setSelection(prefNode.getBoolean("smt", false));
+
+		new Label(pageComponent, SWT.NONE)
+				.setText("Check (Hypotheses ^ Goal) in addition to (Hypotheses ^ not Goal) to identify contradiction in hypotheses:");
+		checkDoubleEval = new Button(pageComponent, SWT.CHECK);
+		checkDoubleEval.setSelection(prefNode.getBoolean("doubleeval", false));
+
+		new Label(pageComponent, SWT.NONE)
+				.setText("Export Goal and selected Hypotheses to B file (/tmp/ProB_Rodin_PO_SelectedHyps.mch):");
+		checkExportSelectedHyps = new Button(pageComponent, SWT.CHECK);
+		checkExportSelectedHyps.setSelection(prefNode.getBoolean("exportpo", false));
 
 		return pageComponent;
 	}
@@ -136,6 +174,10 @@ public class DisproverPreferences extends PreferencePage implements
 		prefNode.put("timeout", timeoutTextField.getText());
 		prefNode.putBoolean("clpfd", checkCLPFD.getSelection());
 		prefNode.putBoolean("chr", checkCHR.getSelection());
+		prefNode.putBoolean("cse", checkCSE.getSelection());
+		prefNode.putBoolean("smt", checkSMT.getSelection());
+		prefNode.putBoolean("doubleeval", checkDoubleEval.getSelection());
+		prefNode.putBoolean("exportpo", checkExportSelectedHyps.getSelection());
 		try {
 			prefNode.flush();
 		} catch (BackingStoreException e) {

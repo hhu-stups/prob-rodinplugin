@@ -91,9 +91,6 @@ public class IntegerCellEditor extends CellEditor {
 		}
 	}
 
-	/*
-	 * (non-Javadoc) Method declared on CellEditor.
-	 */
 	protected Control createControl(Composite parent) {
 		text = new Text(parent, getStyle());
 		text.addSelectionListener(new SelectionAdapter() {
@@ -157,9 +154,6 @@ public class IntegerCellEditor extends CellEditor {
 		return Integer.valueOf(Integer.parseInt(text.getText()));
 	}
 
-	/*
-	 * (non-Javadoc) Method declared on CellEditor.
-	 */
 	protected void doSetFocus() {
 		if (text != null) {
 			text.selectAll();

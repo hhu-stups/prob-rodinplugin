@@ -43,7 +43,5 @@ public interface IServerConnection {
 
 	public abstract void startup(File file) throws CliException;
 
-	String getDebuggingKey();
-
 	void sendUserInterruptSignal();
 }

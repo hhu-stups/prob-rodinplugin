@@ -76,19 +76,28 @@ public class StartAnimationHandler extends AbstractHandler implements IHandler {
 		ArrayList<String> errors = new ArrayList<String>();
 		boolean realError = checkErrorMarkers(resource, errors);
 		if (!errors.isEmpty()) {
+		    Animator.getAnimator().setRodinProjectHasErrorsOrWarnings();
 			String message = "Some components in your project contain "
 					+ (realError ? "errors" : "warnings")
-					+ ". This can lead to unexpected behavior (e.g. missing variables) when animating.\n\nDetails:\n";
+					+ "!\n This can lead to unexpected behavior (e.g. missing variables) when animating with ProB.\nDetails:\n";
 			StringBuffer stringBuffer = new StringBuffer(message);
 			for (String string : errors) {
 				stringBuffer.append(string);
 				stringBuffer.append('\n');
 			}
-			if (realError)
+			if (true) {
+			   // TO DO: use preference whether to pop-up such errors or simply log them
+			   // Unfortunately the GetPreferencesCommand gets ProBPreference object which do not contain the current value
+			   // we could also change the label in StateViewPart.java, e.g. modelchangeProvider or add a new label
+			   Logger.info(stringBuffer.toString());
+			   LimitedLogger.getLogger().log(stringBuffer.toString(),rootElement.getElementName(), null);
+			} else if (realError)
 				Logger.notifyUserWithoutBugreport(stringBuffer.toString());
 			else
 				Logger.notifyUserAboutWarningWithoutBugreport(stringBuffer
 						.toString());
+		} else {
+		     Animator.getAnimator().resetRodinProjectHasErrorsOrWarnings();
 		}
 		;
 

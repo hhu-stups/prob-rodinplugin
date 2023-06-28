@@ -79,11 +79,6 @@ public class FixedConnectionAnchor extends AbstractConnectionAnchor {
 		fireAnchorMoved();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
 	public boolean equals(Object o) {
 		if (o instanceof FixedConnectionAnchor) {
 			FixedConnectionAnchor fa = (FixedConnectionAnchor) o;
@@ -99,11 +94,6 @@ public class FixedConnectionAnchor extends AbstractConnectionAnchor {
 		return false;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Object#hashCode()
-	 */
 	public int hashCode() {
 		return ((this.leftToRight ? 31 : 0) + (this.topDown ? 37 : 0)
 				+ this.offsetH * 43 + this.offsetV * 47)

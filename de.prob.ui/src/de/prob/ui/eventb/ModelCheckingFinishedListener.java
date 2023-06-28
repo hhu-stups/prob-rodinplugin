@@ -1,5 +1,5 @@
 /** 
- * (c) 2009-11 Lehrstuhl fuer Softwaretechnik und Programmiersprachen, 
+ * (c) 2009-20 Lehrstuhl fuer Softwaretechnik und Programmiersprachen, 
  * Heinrich Heine Universitaet Duesseldorf
  * This software is licenced under EPL 1.0 (http://www.eclipse.org/org/documents/epl-v10.html) 
  * */
@@ -193,12 +193,12 @@ public class ModelCheckingFinishedListener extends JobChangeAdapter {
 
 	private String createOkButNotFinishedResult() {
 		return "No errors found, but not all possible "
-				+ "nodes have been visited (Due to animation parameter restrictions).";
+				+ "states have been visited (Due to animation parameter restrictions).";
 	}
 
 	private String createOkResult() {
 		return "No errors found\n"
-				+ "Model Checking finished, all nodes visited.\n";
+				+ "Model Checking finished, all states visited.\n";
 	}
 
 	private void replayErrorTrace() throws ProBException {
@@ -222,7 +222,7 @@ public class ModelCheckingFinishedListener extends JobChangeAdapter {
 	private void appendCoverageStatistics(final ComputeCoverageResult coverage,
 			final String PID, final MultiStatus info) {
 		info.add(new Status(IStatus.INFO, PID, 1, "Coverage statistics:", null));
-		info.add(new Status(IStatus.INFO, PID, 1, "Total Number of Nodes:"
+		info.add(new Status(IStatus.INFO, PID, 1, "Total Number of States:"
 				+ coverage.getTotalNumberOfNodes(), null));
 		info.add(new Status(IStatus.INFO, PID, 1,
 				"Total Number of Transitions:"

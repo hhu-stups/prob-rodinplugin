@@ -51,6 +51,9 @@ public class ModelCheckingDialog extends Dialog {
 				final Button[] checks) {
 			HashSet<ModelCheckingSearchOption> result = new HashSet<ModelCheckingSearchOption>();
 			for (int i = 0; i < checks.length; i++) {
+				// store selection for next model checking dialog
+				ModelCheckingSearchOption.get(i).setEnabledByDefault(
+						checks[i].getSelection());
 				if (checks[i].getSelection()) {
 					result.add(ModelCheckingSearchOption.get(i));
 				}
@@ -66,6 +69,7 @@ public class ModelCheckingDialog extends Dialog {
 					break;
 				}
 			}
+			SymmetryReductionOption.setSelectedOption(symmetryOption);
 			return SymmetryReductionOption.get(symmetryOption).name();
 		}
 
@@ -75,8 +79,7 @@ public class ModelCheckingDialog extends Dialog {
 			job = new ModelCheckingJob("Model Checking", selectSettings,
 					symmetryOption);
 			job.setUser(true);
-			job.addJobChangeListener(new ModelCheckingFinishedListener(
-					shell));
+			job.addJobChangeListener(new ModelCheckingFinishedListener(shell));
 			job.schedule();
 		}
 
@@ -129,7 +132,7 @@ public class ModelCheckingDialog extends Dialog {
 		for (int i = 0; i < symmetryOptions.length; i++) {
 			symmetry[i] = new Button(group, SWT.RADIO);
 			symmetry[i].setText(symmetryOptions[i].getDescription());
-			symmetry[i].setSelection(symmetryOptions[i].isDefault());
+			symmetry[i].setSelection(symmetryOptions[i].isSelectedOption());
 		}
 		return symmetry;
 	}

@@ -145,10 +145,6 @@ public class AnimatorImpl {
 		return this.description != null;
 	}
 
-	public synchronized String getDebuggingKey() {
-		return connector == null ? null : connector.getDebuggingKey();
-	}
-
 	public void execute(final IComposableCommand command) throws ProBException {
 		checkConnector(command.getClass().getName());
 
@@ -177,7 +173,8 @@ public class AnimatorImpl {
 				errors = getErrors.getErrors();
 			}
 			if (errors != null && !errors.isEmpty()) {
-				ProblemHandler.raisePrologException(errors);
+				ProblemHandler.raisePrologException(errors,
+						getErrors.onlyWarningsOccurred());
 			}
 		}
 	}

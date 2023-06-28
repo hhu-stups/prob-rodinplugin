@@ -1,13 +1,13 @@
 /*******************************************************************************
  * Copyright (c) 2004, 2005 Elias Volanakis and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- *
- * Contributors:
- *    Elias Volanakis - initial API and implementation
- *******************************************************************************/
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    Elias Volanakis - initial API and implementation
+ *******************************************************************************/
 package de.bmotionstudio.gef.editor.command;
 
 import java.util.Iterator;
@@ -67,11 +67,6 @@ public class ConnectionCreateCommand extends Command {
 		this.source = source;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.gef.commands.Command#canExecute()
-	 */
 	public boolean canExecute() {
 		// disallow source -> source connections
 		if (source.equals(target)) {
@@ -88,11 +83,6 @@ public class ConnectionCreateCommand extends Command {
 		return true;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.gef.commands.Command#execute()
-	 */
 	public void execute() {
 		// create a new connection between source and target
 		connection.setSource(source);
@@ -100,11 +90,6 @@ public class ConnectionCreateCommand extends Command {
 		connection.reconnect();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.gef.commands.Command#redo()
-	 */
 	public void redo() {
 		connection.reconnect();
 	}
@@ -124,11 +109,6 @@ public class ConnectionCreateCommand extends Command {
 		this.target = target;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.gef.commands.Command#undo()
-	 */
 	public void undo() {
 		connection.disconnect();
 	}

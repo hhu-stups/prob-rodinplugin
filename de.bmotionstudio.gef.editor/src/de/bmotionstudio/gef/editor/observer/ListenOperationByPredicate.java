@@ -9,7 +9,7 @@ package de.bmotionstudio.gef.editor.observer;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.be4.classicalb.core.parser.exceptions.BException;
+import de.be4.classicalb.core.parser.exceptions.BCompoundException;
 import de.bmotionstudio.gef.editor.Animation;
 import de.bmotionstudio.gef.editor.AttributeConstants;
 import de.bmotionstudio.gef.editor.attribute.AbstractAttribute;
@@ -128,7 +128,7 @@ public class ListenOperationByPredicate extends Observer {
 						// addError(control, animation,
 						// "An error occurred while evaluating. Reason: "
 						// + e.getMessage());
-					} catch (BException e) {
+					} catch (BCompoundException e) {
 						// addError(control, animation, "Parsing error in: "
 						// + fPredicate + " Reason: " + e.getMessage());
 					}

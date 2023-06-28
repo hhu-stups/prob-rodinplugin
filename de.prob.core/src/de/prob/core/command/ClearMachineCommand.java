@@ -13,15 +13,7 @@ import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.PrologTerm;
 
 public class ClearMachineCommand implements IComposableCommand {
-
-	private static final ClearCmd CLEAR_CMD = new ClearCmd();
-	private final GetPrologRandomSeed getRandomSeed;
-	private final ComposedCommand cmd;
-
-	public ClearMachineCommand() {
-		this.getRandomSeed = new GetPrologRandomSeed();
-		this.cmd = new ComposedCommand(getRandomSeed, CLEAR_CMD);
-	}
+	public ClearMachineCommand() {}
 
 	public static void clearMachine(final Animator animator)
 			throws ProBException {
@@ -30,26 +22,9 @@ public class ClearMachineCommand implements IComposableCommand {
 
 	public void processResult(
 			final ISimplifiedROMap<String, PrologTerm> bindings)
-			throws CommandException {
-		cmd.processResult(bindings);
-		final Animator animator = Animator.getAnimator();
-		animator.setRandomSeed(getRandomSeed.getSeed());
+			throws CommandException {}
+
+	public void writeCommand(final IPrologTermOutput pto) {
+		pto.openTerm("clear_loaded_machines").closeTerm();
 	}
-
-	public void writeCommand(final IPrologTermOutput pto)
-			throws CommandException {
-		cmd.writeCommand(pto);
-	}
-
-	private final static class ClearCmd implements IComposableCommand {
-		public void processResult(
-				final ISimplifiedROMap<String, PrologTerm> bindings)
-				throws CommandException {
-		}
-
-		public void writeCommand(final IPrologTermOutput pto) {
-			pto.openTerm("clear_loaded_machines").closeTerm();
-		}
-	}
-
 }

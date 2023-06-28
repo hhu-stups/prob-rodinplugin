@@ -7,9 +7,13 @@ import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eventb.core.IContextRoot;
 import org.eventb.core.IEventBProject;
+import org.junit.Before;
+import org.junit.Test;
 
 import de.prob.core.translator.TranslationFailedException;
 import de.prob.eventb.translator.TranslatorFactory;
+
+import static org.junit.Assert.assertEquals;
 
 public class ContextWithConstantsTest extends AbstractEventBTests {
 	private StringWriter stringWriter;
@@ -17,13 +21,12 @@ public class ContextWithConstantsTest extends AbstractEventBTests {
 
 	@Before
 	@Override
-	protected void setUp() throws Exception {
+	public void setUp() throws Exception {
 		super.setUp();
 		stringWriter = new StringWriter();
 		writer = new PrintWriter(stringWriter);
 	}
 
-	@Ignore
 	@Test
 	public void testContextWithConstants() throws CoreException,
 			TranslationFailedException {

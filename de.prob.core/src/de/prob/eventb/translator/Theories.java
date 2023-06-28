@@ -377,8 +377,13 @@ public class Theories {
 		prologOutput.openTerm("case");
 		prologOutput.printAtom(indArg);
 		prologOutput.openList();
-		for (FreeIdentifier fi : ex.getFreeIdentifiers()) {
-			prologOutput.printAtom(fi.getName());
+		if(ex==null) {
+		    throw new IllegalStateException("Empty expression for axiomatic recursive definition case " + es +
+		                        " and inductive argument " + indArg);
+		} else {
+            for (FreeIdentifier fi : ex.getFreeIdentifiers()) {
+                prologOutput.printAtom(fi.getName());
+            }
 		}
 		prologOutput.closeList();
 		printExpression(prologOutput, ex);

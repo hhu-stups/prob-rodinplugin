@@ -14,7 +14,7 @@ import org.eventb.core.ast.IParseResult;
 import org.eventb.core.ast.Predicate;
 
 import de.be4.classicalb.core.parser.analysis.prolog.ASTProlog;
-import de.be4.classicalb.core.parser.exceptions.BException;
+import de.be4.classicalb.core.parser.exceptions.BCompoundException;
 import de.prob.core.Animator;
 import de.prob.core.ProblemHandler;
 import de.prob.core.command.CommandException;
@@ -64,9 +64,9 @@ public final class GetOperationByPredicateCommand2 implements
 
 		try {
 			parsedEvalElement = PredicateEvalElement.fromRodin(parsedPredicate);
-		} catch (BException e) {
+		} catch (BCompoundException e) {
 			String message = "Fatal error when trying to parse " + predicate
-					+ ". Execution of operation " + name + " aborted.";
+					+ ". Execution of event " + name + " aborted.";
 			ProblemHandler.raiseCommandException(message);
 			parsedEvalElement = null;
 		} finally {
@@ -79,7 +79,7 @@ public final class GetOperationByPredicateCommand2 implements
 	 */
 	public static Operation getOperation(final Animator a,
 			final String stateId, final String name, final String predicate)
-			throws ProBException, BException {
+			throws ProBException, BCompoundException {
 
 		List<Operation> operations = getOperations(a, stateId, name, predicate,
 				1);
@@ -104,14 +104,14 @@ public final class GetOperationByPredicateCommand2 implements
 	 * @param nrOfSolutions
 	 *            - maximum number of solutions
 	 * @return an Operation or null
-	 * @throws BException
+	 * @throws BCompoundException
 	 *             - if the B predicate contains errors
 	 * @throws ProBException
 	 *             - if something terrible happens ;-)
 	 */
 	public static List<Operation> getOperations(final Animator a,
 			final String stateId, final String name, final String predicate,
-			final int nrOfSolutions) throws ProBException, BException {
+			final int nrOfSolutions) throws ProBException, BCompoundException {
 
 		GetOperationByPredicateCommand2 executeOperationCommand = new GetOperationByPredicateCommand2(
 				stateId, name, predicate, nrOfSolutions);

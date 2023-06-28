@@ -145,11 +145,15 @@ public class CounterExample {
 				int atomicId = atomic.getValue().intValue();
 
 				final String name = atomicFormulaNames[atomicId];
+				
+				int atomicIdSize = predicateValues.get(atomicId).size();
 
-				Logger.assertProB("CounterExample invalid",
-						values.length == predicateValues.get(atomicId).size());
+				Logger.assertProB("CounterExampleProposition invalid, expected values.length = " +
+				                  values.length + ", got term with: " + atomicIdSize +
+				                   " values; Prolog term = " + term.toString(),
+						values.length == atomicIdSize);
 
-				for (int i = 0; i < predicateValues.get(atomicId).size(); i++) {
+				for (int i = 0; i < atomicIdSize; i++) {
 					values[i] = predicateValues.get(atomicId).get(i) ? CounterExampleValueType.TRUE
 							: CounterExampleValueType.FALSE;
 				}

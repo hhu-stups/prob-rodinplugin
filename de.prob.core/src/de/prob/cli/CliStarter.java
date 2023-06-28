@@ -8,9 +8,11 @@ package de.prob.cli;
 
 import java.io.*;
 import java.net.*;
-import java.security.*;
 import java.util.*;
 
+import org.eclipse.core.filesystem.EFS;
+import org.eclipse.core.filesystem.IFileInfo;
+import org.eclipse.core.filesystem.IFileStore;
 import org.eclipse.core.runtime.*;
 import org.osgi.framework.Bundle;
 
@@ -23,7 +25,6 @@ public final class CliStarter {
 			"ParserAspects.jar", "aspectjrt.jar", "prolog.jar" };
 
 	private Process prologProcess;
-	private String debuggingKey;
 
 	private int port = -1;
 	private Long userInterruptReference = null;
@@ -56,48 +57,54 @@ public final class CliStarter {
 		}
 	}
 
-	public String getDebuggingKey() {
-		return debuggingKey;
+	// Based on org.eventb.core.seqprover.xprover.BundledFileExtractor.BundledFileDescriptor#makeExecutable
+	// (from rodin-b-sharp/rodincore/org.eventb.core.seqprover)
+	private void setExecutable(final File path, final boolean executable) throws CliException {
+		final IFileStore store = EFS.getLocalFileSystem().getStore(path.toURI());
+		final IFileInfo info = store.fetchInfo();
+		info.setAttribute(EFS.ATTRIBUTE_EXECUTABLE, executable);
+		try {
+			store.putInfo(info, EFS.SET_ATTRIBUTES, null);
+		} catch (CoreException e) {
+			throw new CliException("Failed to set executable permission", e, false);
+		}
 	}
 
 	private void startProlog(final File file) throws CliException {
 		prologProcess = null;
-		debuggingKey = null;
 
 		final String os = Platform.getOS();
-		final String arch = Platform.getOSArch();
 		final File applicationPath = getCliPath();
 
 		final String fullcp = createFullClasspath(os, applicationPath);
 
-		final OsSpecificInfo osInfo = getOsInfo(os, arch);
+		final OsSpecificInfo osInfo = getOsInfo(os);
 
 		final String osPath = applicationPath + File.separator + osInfo.subdir;
 		final String executable = osPath + File.separator + osInfo.cliName;
 		Logger.info("Starting ProB CLI for " + os + " ... Path is "
 				+ executable);
 
-		List<String> command = new ArrayList<String>();
-		if (osInfo.helperCmd != null) {
-			command.add(osInfo.helperCmd);
+		if (osInfo.needsExecutePermission) {
+			setExecutable(new File(executable), true);
 		}
+
+		List<String> command = new ArrayList<String>();
 		command.add(executable);
 		// command.add("-ll");
 		command.add("-sf");
+		command.add("-p");command.add("use_safety_ltl_model_checker");command.add("false");
 		command.add("-parsercp");
+		 // disable LTL safety model check as the counter examples lead to assertion failures 
+		 // in CounterExampleProposition in CounterExample.java
 		command.add(fullcp);
 
 		if (file != null) {
 			command.add(file.getAbsolutePath());
 		}
 
-		createDebuggingKey();
-
 		final ProcessBuilder pb = new ProcessBuilder();
 		pb.command(command);
-		pb.environment().put("PROB_DEBUGGING_KEY", debuggingKey);
-		pb.environment().put("TRAILSTKSIZE", "1M");
-		pb.environment().put("PROLOGINCSIZE", "50M");
 		pb.environment().put("PROB_HOME", osPath);
 		try {
 			prologProcess = pb.start();
@@ -132,29 +139,27 @@ public final class CliStarter {
 
 	}
 
-	private OsSpecificInfo getOsInfo(final String os, String architecture)
+	private OsSpecificInfo getOsInfo(final String os)
 			throws CliException {
-		if (os.equals(Platform.OS_MACOSX)) {
-			return new OsSpecificInfo("macos", "probcli.sh", "sh",
-					"send_user_interrupt");
-		}
 		if (os.equals(Platform.OS_WIN32)) {
-			return new OsSpecificInfo("windows", "probcli.exe", null,
-					"send_user_interrupt.exe");
-		}
-
-		if (os.equals(Platform.OS_LINUX)) {
-			String linux = "linux";
-			if (architecture.equals(Platform.ARCH_X86_64)) {
-				linux = "linux64";
+			return new OsSpecificInfo("windows", "probcli.exe",
+					"lib\\send_user_interrupt.exe", false);
+		} else {
+			final String subdir;
+			if (os.equals(Platform.OS_MACOSX)) {
+				subdir = "macos";
+			} else if (os.equals(Platform.OS_LINUX)) {
+				subdir = "linux64";
+			} else {
+				final CliException cliException = new CliException(
+						"ProB does not support the plattform: " + os);
+				cliException.notifyUserOnce();
+				throw cliException;
 			}
-			return new OsSpecificInfo(linux, "probcli.sh", "sh",
-					"send_user_interrupt");
+
+			return new OsSpecificInfo(subdir, "probcli.sh",
+				"lib/send_user_interrupt", true);
 		}
-		final CliException cliException = new CliException(
-				"ProB does not support the plattform: " + os);
-		cliException.notifyUserOnce();
-		throw cliException;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -196,16 +201,6 @@ public final class CliStarter {
 		errLogger.start();
 	}
 
-	private void createDebuggingKey() {
-		Random random;
-		try {
-			random = SecureRandom.getInstance("SHA1PRNG");
-		} catch (NoSuchAlgorithmException e) {
-			random = new Random();
-		}
-		debuggingKey = Long.toHexString(random.nextLong());
-	}
-
 	private void analyseStdout(final BufferedReader input,
 			Collection<? extends CliPattern<?>> patterns) throws CliException {
 		patterns = new ArrayList<CliPattern<?>>(patterns);
@@ -215,7 +210,7 @@ public final class CliStarter {
 			while (!endReached && (line = input.readLine()) != null) { // NOPMD
 				applyPatterns(patterns, line);
 				endReached = patterns.isEmpty()
-						|| line.contains("starting command loop");
+						|| line.contains("starting command loop"); // printed in prob_socketserver.pl
 			}
 		} catch (IOException e) {
 			final String message = "Problem while starting ProB. Cannot read from input stream.";
@@ -265,30 +260,6 @@ public final class CliStarter {
 			throw new CliException("Input/output error when trying t find '"
 					+ fileURL + "'");
 		}
-
-		// final Path path = new Path("prob");
-		// final URL fileURL = FileLocator.find(
-		// Activator.getDefault().getBundle(), path, null);
-		// if (fileURL == null) {
-		// throw new CliException(
-		// "Unable to find directory with prob executables.");
-		// }
-		// URL resolved;
-		// try {
-		// resolved = FileLocator.resolve(fileURL);
-		// } catch (IOException e2) {
-		// throw new CliException("Input/output error when trying t find '"
-		// + fileURL + "'");
-		// }
-		// URI uri;
-		// try {
-		// uri = new URI(resolved.getProtocol(), resolved.getPath(), null);
-		// } catch (URISyntaxException e1) {
-		// throw new CliException("Unable to construct file '"
-		// + resolved.getPath() + "'");
-		// }
-		//
-		// return new File(uri);
 	}
 
 	private static class OutputLoggerThread extends Thread {
@@ -345,11 +316,15 @@ public final class CliStarter {
 	public void sendUserInterruptReference() {
 		if (userInterruptReference != null) {
 			try {
-				final OsSpecificInfo osInfo = getOsInfo(Platform.getOS(),
-						Platform.getOSArch());
+				final OsSpecificInfo osInfo = getOsInfo(Platform.getOS());
 				final String command = getCliPath() + File.separator
 						+ osInfo.subdir + File.separator
 						+ osInfo.userInterruptCmd;
+
+				if (osInfo.needsExecutePermission) {
+					setExecutable(new File(command), true);
+				}
+
 				Runtime.getRuntime().exec(
 						new String[] { command,
 								userInterruptReference.toString() });
@@ -366,15 +341,15 @@ public final class CliStarter {
 	private static class OsSpecificInfo {
 		final String subdir;
 		final String cliName;
-		final String helperCmd;
 		final String userInterruptCmd;
+		final boolean needsExecutePermission;
 
 		public OsSpecificInfo(final String subdir, final String cliName,
-				final String helperCmd, final String userInterruptCmd) {
+				final String userInterruptCmd, final boolean needsExecutePermission) {
 			this.subdir = subdir;
 			this.cliName = cliName;
-			this.helperCmd = helperCmd;
 			this.userInterruptCmd = userInterruptCmd;
+			this.needsExecutePermission = needsExecutePermission;
 		}
 
 	}

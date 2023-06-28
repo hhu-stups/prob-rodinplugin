@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.be4.classicalb.core.parser.analysis.prolog.ASTProlog;
-import de.be4.classicalb.core.parser.exceptions.BException;
+import de.be4.classicalb.core.parser.exceptions.BCompoundException;
 import de.prob.core.Animator;
 import de.prob.core.ProblemHandler;
 import de.prob.core.domainobjects.Operation;
@@ -51,7 +51,7 @@ public final class GetOperationByPredicateCommand implements IComposableCommand 
 		PredicateEvalElement parsedEvalElement = null;
 		try {
 			parsedEvalElement = PredicateEvalElement.create(predicate);
-		} catch (BException e) {
+		} catch (BCompoundException e) {
 			String message = "Fatal error when trying to parse " + predicate
 					+ ". Execution of operation " + name + " aborted.";
 			ProblemHandler.raiseCommandException(message);
@@ -66,7 +66,7 @@ public final class GetOperationByPredicateCommand implements IComposableCommand 
 	 */
 	public static Operation getOperation(final Animator a,
 			final String stateId, final String name, final String predicate)
-			throws ProBException, BException {
+			throws ProBException, BCompoundException {
 
 		List<Operation> operations = getOperations(a, stateId, name, predicate,
 				1);
@@ -91,14 +91,14 @@ public final class GetOperationByPredicateCommand implements IComposableCommand 
 	 * @param nrOfSolutions
 	 *            - maximum number of solutions
 	 * @return an Operation or null
-	 * @throws BException
+	 * @throws BCompoundException
 	 *             - if the B predicate contains errors
 	 * @throws ProBException
 	 *             - if something terrible happens ;-)
 	 */
 	public static List<Operation> getOperations(final Animator a,
 			final String stateId, final String name, final String predicate,
-			final int nrOfSolutions) throws ProBException, BException {
+			final int nrOfSolutions) throws ProBException, BCompoundException {
 
 		GetOperationByPredicateCommand executeOperationCommand = new GetOperationByPredicateCommand(
 				stateId, name, predicate, nrOfSolutions);

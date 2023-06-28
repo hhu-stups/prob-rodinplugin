@@ -10,6 +10,7 @@ import org.eventb.core.ast.Predicate;
 
 import de.be4.classicalb.core.parser.BParser;
 import de.be4.classicalb.core.parser.analysis.DepthFirstAdapter;
+import de.be4.classicalb.core.parser.exceptions.BCompoundException;
 import de.be4.classicalb.core.parser.exceptions.BException;
 import de.be4.classicalb.core.parser.node.AConjunctPredicate;
 import de.be4.classicalb.core.parser.node.ADisjunctPredicate;
@@ -30,10 +31,10 @@ public class PredicateEvalElement extends AbstractEvalElement {
 	private final String predicate;
 
 	public static PredicateEvalElement fromRodin(final Predicate predicate)
-			throws BException {
+			throws BCompoundException {
 		if (predicate == null) {
 			String message = "Predicate input must not be null";
-			throw new BException("", new NullPointerException(message));
+			throw new BCompoundException(new BException("", message, new NullPointerException(message)));
 		}
 		final PPredicate apred = TranslationVisitor
 				.translatePredicate(predicate);
@@ -43,11 +44,11 @@ public class PredicateEvalElement extends AbstractEvalElement {
 	}
 
 	public static PredicateEvalElement create(final String predicate)
-			throws BException {
+			throws BCompoundException {
 		return new PredicateEvalElement(predicate);
 	}
 
-	private PredicateEvalElement(final String predicate) throws BException {
+	private PredicateEvalElement(final String predicate) throws BCompoundException {
 		this.predicate = predicate;
 		parse = parse(BParser.PREDICATE_PREFIX, predicate);
 	}

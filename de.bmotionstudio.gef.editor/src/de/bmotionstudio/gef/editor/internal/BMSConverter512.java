@@ -294,6 +294,7 @@ public class BMSConverter512 {
 		xstream.alias("guide", BMotionGuide.class);
 		xstream.alias("connection", BConnection.class);
 		xstream.alias("children", BControlList.class);
+		BMotionEditorPlugin.allowTypes(xstream);
 
 		Visualization visualization = (Visualization) xstream
 				.fromXML(byteArrayInputStream);

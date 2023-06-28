@@ -1,21 +1,37 @@
 package de.prob.ui.operationview;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
-import org.eclipse.core.commands.*;
+import org.eclipse.core.commands.Command;
 import org.eclipse.core.commands.State;
-import org.eclipse.jface.viewers.*;
+import org.eclipse.jface.layout.TableColumnLayout;
+import org.eclipse.jface.viewers.ColumnWeightData;
+import org.eclipse.jface.viewers.DoubleClickEvent;
+import org.eclipse.jface.viewers.IDoubleClickListener;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.TableViewerColumn;
+import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.*;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Table;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.commands.ICommandService;
 import org.eclipse.ui.handlers.IHandlerService;
 
-import de.prob.core.*;
-import de.prob.core.command.*;
-import de.prob.core.domainobjects.*;
+import de.prob.core.Animator;
+import de.prob.core.LimitedLogger;
+import de.prob.core.command.ExecuteOperationCommand;
+import de.prob.core.command.GetOperationNamesCommand;
+import de.prob.core.domainobjects.Operation;
+import de.prob.core.domainobjects.OperationInfo;
 import de.prob.exceptions.ProBException;
 import de.prob.logging.Logger;
 
@@ -39,11 +55,14 @@ public class OperationTableViewer {
 			return true;
 		}
 	};
+	private TableColumnLayout layout;
 
 	private OperationTableViewer(final Composite parent, final int style) {
 		parent.addDisposeListener(new TableDisposedListener());
 		viewer = new TableViewer(parent, style);
-		createColumns();
+
+		createColumns(parent);
+
 		viewer.setContentProvider(new OperationsContentProvider(operationNames));
 		viewer.setLabelProvider(new OperationsLabelProvider(this));
 		viewer.addDoubleClickListener(new OTVDoubleClickListener());
@@ -69,7 +88,10 @@ public class OperationTableViewer {
 		packTableColumns();
 	}
 
-	private void createColumns() {
+	private void createColumns(Composite parent) {
+		layout = new TableColumnLayout();
+		parent.setLayout(layout);
+
 		TableViewerColumn column1 = new TableViewerColumn(viewer, SWT.NONE);
 		column1.getColumn().setText("Event");
 		column1.getColumn().setResizable(true);
@@ -79,15 +101,19 @@ public class OperationTableViewer {
 		column2.getColumn().setText("Parameter(s)");
 		column2.getColumn().setResizable(true);
 		column2.getColumn().pack();
+
+		layout.setColumnData(column1.getColumn(), new ColumnWeightData(0,
+				column1.getColumn().getWidth()));
+		layout.setColumnData(column2.getColumn(), new ColumnWeightData(100,
+				column2.getColumn().getWidth()));
 	}
 
 	/**
 	 * Recalculate size of all columns
 	 */
 	private void packTableColumns() {
-		for (TableColumn column : viewer.getTable().getColumns()) {
-			column.pack();
-		}
+		// only pack the first column, the second one extends automatically
+		viewer.getTable().getColumns()[0].pack();
 	}
 
 	/**

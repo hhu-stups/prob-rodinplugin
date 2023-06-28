@@ -278,70 +278,28 @@ public abstract class BMSAbstractEditPart extends AbstractGraphicalEditPart
 		return anchor;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.eclipse.gef.editparts.AbstractGraphicalEditPart#getModelSourceConnections
-	 * ()
-	 */
 	protected List<?> getModelSourceConnections() {
 		return getCastedModel().getSourceConnections();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.eclipse.gef.editparts.AbstractGraphicalEditPart#getModelTargetConnections
-	 * ()
-	 */
 	protected List<?> getModelTargetConnections() {
 		return getCastedModel().getTargetConnections();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.eclipse.gef.NodeEditPart#getSourceConnectionAnchor(org.eclipse.gef
-	 * .ConnectionEditPart)
-	 */
 	public ConnectionAnchor getSourceConnectionAnchor(
 			ConnectionEditPart connection) {
 		return getConnectionAnchor();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.eclipse.gef.NodeEditPart#getSourceConnectionAnchor(org.eclipse.gef
-	 * .Request)
-	 */
 	public ConnectionAnchor getSourceConnectionAnchor(Request request) {
 		return getConnectionAnchor();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.eclipse.gef.NodeEditPart#getTargetConnectionAnchor(org.eclipse.gef
-	 * .ConnectionEditPart)
-	 */
 	public ConnectionAnchor getTargetConnectionAnchor(
 			ConnectionEditPart connection) {
 		return getConnectionAnchor();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.eclipse.gef.NodeEditPart#getTargetConnectionAnchor(org.eclipse.gef
-	 * .Request)
-	 */
 	public ConnectionAnchor getTargetConnectionAnchor(Request request) {
 		return getConnectionAnchor();
 	}

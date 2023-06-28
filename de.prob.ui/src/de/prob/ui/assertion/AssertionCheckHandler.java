@@ -17,8 +17,7 @@ import de.prob.core.command.ConstraintBasedAssertionCheckCommand;
 import de.prob.logging.Logger;
 
 /**
- * This handler provides a simple dialog to ask for an optional predicate to
- * check for deadlocks in the model.
+ * This handler provides a way to start the static assertion checking command
  * 
  * @author plagge
  */
@@ -29,7 +28,7 @@ public class AssertionCheckHandler extends AbstractHandler {
 		if (Animator.getAnimator().isMachineLoaded()) {
 			performAssertionCheck(shell);
 		} else {
-			Logger.notifyUser("No ProB animation running. This is a bug. Please submit a report. Error in declaraion for class DeadlockCheckHandler");
+			Logger.notifyUser("No ProB animation running. This is a bug. Please submit a report. Error in declaraion for class AssertionCheckHandler");
 		}
 		return null;
 	}

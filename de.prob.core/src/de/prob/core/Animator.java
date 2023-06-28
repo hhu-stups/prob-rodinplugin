@@ -46,6 +46,7 @@ public final class Animator {
 	 */
 	private IConnectionProvider connectionProvider = null;
 	private volatile boolean dirty;
+	private volatile boolean rodinProjectHasErrorsOrWarnings;
 	private final Map<Object, Object> dataStore = new HashMap<Object, Object>();
 
 	private AnimatorImpl implementation;
@@ -290,6 +291,23 @@ public final class Animator {
 	public boolean isDirty() {
 		return dirty;
 	}
+	
+	
+	/**
+	 * Puts the information that the associated Rodin project has errors or warnings.
+	 */
+	public void setRodinProjectHasErrorsOrWarnings() {
+		this.rodinProjectHasErrorsOrWarnings = true;
+		//System.out.println("** setRodinProjectHasErrorsOrWarnings() !!");
+	}
+	public void resetRodinProjectHasErrorsOrWarnings() {
+		this.rodinProjectHasErrorsOrWarnings = false;
+	}
+	public boolean isRodinProjectHasErrorsOrWarnings() {
+		return rodinProjectHasErrorsOrWarnings;
+	}
+	
+	
 
 	public void setMachineDescription(
 			final MachineDescription machineDescription) {
@@ -302,10 +320,6 @@ public final class Animator {
 
 	public boolean isMachineLoaded() {
 		return getImplementation().isMachineLoaded();
-	}
-
-	public String getDebuggingKey() {
-		return getImplementation().getDebuggingKey();
 	}
 
 	public LanguageDependendAnimationPart getLanguageDependendPart() {

@@ -45,6 +45,7 @@ public class ClassicPreferences extends PreferencePage implements
 			super.widgetSelected(e);
 			FileDialog dialog = new FileDialog(shell, SWT.OPEN);
 			String open = dialog.open();
+			open = open.replaceAll(" ", "\\\\ ");
 			text.setText(open);
 		}
 
@@ -77,7 +78,7 @@ public class ClassicPreferences extends PreferencePage implements
 		pageComponent.setLayout(layout);
 
 		Label label = new Label(pageComponent, SWT.NONE);
-		label.setText("Location of ProB classic:");
+		label.setText("Location of ProB Standalone:");
 		text = new Text(pageComponent, SWT.NONE);
 		String location = prefNode.get("location", "");
 		// text.setLayoutData(new RowData(100, SWT.DEFAULT));
@@ -85,11 +86,11 @@ public class ClassicPreferences extends PreferencePage implements
 
 		Button browseButton = new Button(pageComponent, SWT.PUSH);
 		browseButton.setText("Browse");
-		browseButton.addSelectionListener(new PushButton(pageComponent
-				.getShell(), text));
+		browseButton.addSelectionListener(new PushButton(pageComponent.getShell(), text));
 		Label versionRemark = new Label(pageComponent, SWT.WRAP);
-		versionRemark
-				.setText("Note: This needs a tcl/tk version of ProB that is not older than 1.3.0 Beta6\nYou can obtain a copy of ProB from http://www.stups.uni-duesseldorf.de/ProB\n");
+		versionRemark.setText(
+				"Note: This needs a version of ProB2-UI (jar file) that is at least 1.0.1 or a version of ProB Tcl/Tk that is at least 1.3.1.\nYou can obtain both from http://www.stups.uni-duesseldorf.de/ProB\n"); // precisely
+																																																								// 1.3.0-beta6
 
 		GridData gridData2 = new GridData();
 		gridData2.horizontalSpan = 3;

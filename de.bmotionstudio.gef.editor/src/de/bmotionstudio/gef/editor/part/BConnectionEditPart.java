@@ -63,11 +63,6 @@ public class BConnectionEditPart extends BMSAbstractEditPart implements
 	public static final ConnectionAnchor DEFAULT_TARGET_ANCHOR = new XYAnchor(
 			new Point(100, 100));
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see de.bmotionstudio.gef.editor.part.AppAbstractEditPart#deactivate()
-	 */
 	@Override
 	public void deactivate() {
 		super.deactivate();

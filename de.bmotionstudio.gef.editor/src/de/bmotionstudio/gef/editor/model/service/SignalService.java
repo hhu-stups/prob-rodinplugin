@@ -19,24 +19,11 @@ import de.bmotionstudio.gef.editor.part.SignalPart;
  */
 public class SignalService extends AbstractBControlService implements
 		IBControlService {
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * de.bmotionstudio.gef.editor.IBControlService#createControl(de.bmotionstudio
-	 * .gef.editor.model.Visualization)
-	 */
 	@Override
 	public BControl createControl(Visualization visualization) {
 		return new Signal(visualization);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see de.bmotionstudio.gef.editor.IBControlService#createEditPart()
-	 */
 	@Override
 	public BMSAbstractEditPart createEditPart() {
 		return new SignalPart();
