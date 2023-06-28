@@ -14,11 +14,9 @@ import org.eclipse.ui.browser.IWebBrowser;
 public class SubmitBugreportCommand extends AbstractHandler implements IHandler {
 
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
-		IWebBrowser browser;
 		try {
-			browser = PlatformUI.getWorkbench().getBrowserSupport().createBrowser("jira");
-			browser.openURL(new URL("https://probjira.atlassian.net"));
-			// TODO: should we switch to https://github.com/hhu-stups/prob-issues/issues/new
+			IWebBrowser browser = PlatformUI.getWorkbench().getBrowserSupport().createBrowser("de.prob.ui.ticket");
+			browser.openURL(new URL("https://github.com/hhu-stups/prob-issues/issues/new/choose"));
 		} catch (MalformedURLException | PartInitException e) {
 			throw new ExecutionException(e.getMessage(), e);
 		}
