@@ -21,6 +21,8 @@ build:
   artifacts:
     paths:
       - de.prob.repository/target/repository
+      - "*/target/work/configuration/*.log"
+    when: always
 
 deploy:nightly:
   stage: deploy
