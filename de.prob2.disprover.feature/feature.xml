@@ -2,7 +2,7 @@
 <feature
       id="de.prob2.disprover.feature"
       label="ProB for Rodin3 - (Dis)Prover"
-      version="3.0.11.qualifier"
+      version="3.1.0.qualifier"
       provider-name="HHU Düsseldorf STUPS Group">
 
    <description url="http://www.stups.uni-duesseldorf.de/ProB">
@@ -229,7 +229,7 @@ litigation.
 
    <requires>
       <import plugin="org.eclipse.core.runtime" version="3.5.0" match="compatible"/>
-      <import plugin="de.prob.core" version="9.4.5" match="equivalent"/>
+      <import plugin="de.prob.core" version="9.5.0" match="equivalent"/>
       <import plugin="org.eventb.core.seqprover" version="3.0.0"/>
       <import plugin="org.eventb.core" version="3.0.0"/>
       <import plugin="org.eclipse.ui" version="3.5.0" match="compatible"/>
@@ -237,8 +237,8 @@ litigation.
       <import plugin="org.rodinp.core" version="1.7.0" match="compatible"/>
       <import plugin="org.eventb.ui" version="3.0.0"/>
       <import plugin="org.eclipse.osgi"/>
-      <import plugin="de.prob.ui" version="7.4.3" match="equivalent"/>
-      <import plugin="de.prob.eventb.disprover.core" version="2.0.6" match="equivalent"/>
+      <import plugin="de.prob.ui" version="7.5.0" match="equivalent"/>
+      <import plugin="de.prob.eventb.disprover.core" version="2.1.0" match="equivalent"/>
    </requires>
 
    <plugin
