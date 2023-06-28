@@ -2,9 +2,14 @@
 
 project.ext {
 	targetRepositories = [
-		"https://download.eclipse.org/releases/luna/",
+		// Temporarily using the Eclipse 2021-03 update site to stay compatible with Tycho < 2.1.0. See:
+		// https://bugs.eclipse.org/bugs/show_bug.cgi?id=564890#c16
+		// https://github.com/eclipse-tycho/tycho/commit/f4ec8f0c6c1e9fdecb096bbcfd4cd6c29cedf0d0
+		// Once we update Tycho (requires Java 11),
+		// this can be switched to Eclipse 2022-03 (same as Rodin 3.8 uses).
+		"https://download.eclipse.org/releases/2021-03/",
+		"https://rodin-b-sharp.sourceforge.net/core-updates/",
 		"https://rodin-b-sharp.sourceforge.net/updates",
-		"https://stups.hhu-hosting.de/buildlibs/org.rodinp.dev/",
 	]
 
 	groupID = "de.prob"
