@@ -4,13 +4,13 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.zip.GZIPOutputStream;
 
-import org.apache.commons.codec.binary.Base64;
 import org.eclipse.core.runtime.CoreException;
 import org.eventb.core.IConvergenceElement.Convergence;
 import org.eventb.core.IEventBProject;
@@ -289,7 +289,7 @@ public class EventBModelTranslator {
 		} catch (IOException e) {
 			bytes = xml.getBytes();
 		}
-		return Base64.encodeBase64String(bytes);
+		return Base64.getMimeEncoder().encodeToString(bytes);
 	}
 
 }

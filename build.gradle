@@ -39,7 +39,6 @@ project(':de.prob.core') {
 		implementation group: "de.hhu.stups", name: "unicode", version: parser_version
 		implementation group: "de.hhu.stups", name: "theorymapping", version: parser_version
 		implementation 'commons-lang:commons-lang:2.6'
-		implementation 'commons-codec:commons-codec:1.8'
 		implementation 'com.thoughtworks.xstream:xstream:1.4.19'
 		// Current versions of XStream depend on MXParser, but not any specific version of it.
 		// To avoid the version number changing unexpectedly and breaking the MANIFEST.MF classpath entries,
