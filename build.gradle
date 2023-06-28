@@ -88,3 +88,8 @@ task downloadCli {
 
 
 prepareMaven.dependsOn downloadCli
+
+task deleteCli(type: Delete) {
+	delete("de.prob.core/prob")
+}
+clean.dependsOn(deleteCli)

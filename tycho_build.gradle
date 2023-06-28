@@ -282,7 +282,7 @@ subprojects {
 	// apply plugin: 'eclipse'
 
 	task deleteArtifacts(type: Delete) {
-		delete 'target','pom.xml'
+		delete 'target', 'pom.xml', dependencyFolder
 	}
 
 	// Copy Dependencies into subprojects DependencyFolder
@@ -466,6 +466,11 @@ task createParent() {
 	}
 }
 
+task deleteParent(type: Delete) {
+	delete(workspacePath + "${parentID}")
+}
+clean.dependsOn(deleteParent)
+
 // define Repository
 task createRepository() {
 	doLast{
@@ -507,6 +512,11 @@ task createRepository() {
 		pom << reposi()
 	}
 }
+
+task deleteRepository(type: Delete) {
+	delete(workspacePath + "${repositoryName}")
+}
+clean.dependsOn(deleteRepository)
 
 task createPoms(dependsOn: [createParent, createRepository, subprojects.deploy])
 
