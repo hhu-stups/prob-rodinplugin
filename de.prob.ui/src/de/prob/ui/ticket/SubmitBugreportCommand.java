@@ -15,7 +15,7 @@ public class SubmitBugreportCommand extends AbstractHandler implements IHandler 
 
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
 		try {
-			IWebBrowser browser = PlatformUI.getWorkbench().getBrowserSupport().createBrowser("de.prob.ui.ticket");
+			IWebBrowser browser = PlatformUI.getWorkbench().getBrowserSupport().getExternalBrowser();
 			browser.openURL(new URL("https://github.com/hhu-stups/prob-issues/issues/new/choose"));
 		} catch (MalformedURLException | PartInitException e) {
 			throw new ExecutionException(e.getMessage(), e);
