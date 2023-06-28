@@ -51,16 +51,6 @@ project(':de.prob.core') {
 	}
 }
 
-project(':de.prob.ui') {
-	repositories {
-		mavenCentral()
-	}
-	dependencies {
-		implementation 'commons-codec:commons-codec:1.8'
-	}
-}
-
-
 def download(address,target) {
 	def file = new FileOutputStream(target)
 	def out = new BufferedOutputStream(file)

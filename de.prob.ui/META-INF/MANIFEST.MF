@@ -18,7 +18,3 @@ Bundle-Vendor: HHU Düsseldorf STUPS Group
 Bundle-Activator: de.prob.ui.ProbUiPlugin
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: de.prob.ui
-Bundle-ClassPath: lib/apache_xmlrpc.jar,
- lib/ws_commons.jar,
- lib/dependencies/commons-codec-1.8.jar,
- .
