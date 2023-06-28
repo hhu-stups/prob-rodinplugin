@@ -6,12 +6,11 @@ import java.net.URL;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
-import org.eclipse.core.commands.IHandler;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.browser.IWebBrowser;
 
-public class SubmitBugreportCommand extends AbstractHandler implements IHandler {
+public class SubmitBugreportCommand extends AbstractHandler {
 
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
 		try {
