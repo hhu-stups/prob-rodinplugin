@@ -10,12 +10,10 @@
 	-->
 	<classpathentry exported="true" kind="lib" path="lib/dependencies/answerparser-2.12.4.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/dependencies/bparser-2.12.4.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/dependencies/jna-3.4.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/dependencies/ltlparser-2.12.4.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/dependencies/mxparser-1.2.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/dependencies/parserbase-2.12.4.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/dependencies/prologlib-2.12.4.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/dependencies/ptolemy-jfmi-1.1.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/dependencies/sablecc-runtime-3.4.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/dependencies/theorymapping-2.12.4.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/dependencies/unicode-2.12.4.jar"/>

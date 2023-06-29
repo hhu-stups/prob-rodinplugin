@@ -44,8 +44,6 @@ project(':de.prob.core') {
 		// hardcode a specific MXParser version here.
 		// It *should* be safe to update this when a new version is released.
 		implementation group: 'io.github.x-stream', name: 'mxparser', version: '1.2.2'
-		implementation group: 'net.java.dev.jna', name: 'jna', version: '3.4.0'
-		implementation group: 'de.hhu.stups', name: 'ptolemy-jfmi', version: '1.1.0'
 	}
 }
 
