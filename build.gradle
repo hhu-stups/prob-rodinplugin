@@ -28,9 +28,11 @@ project(':de.prob.core') {
 
 	dependencies {
 		// Note: After changing/updating dependencies or their versions here,
-		// you also need to update the corresponding entries in META-INF/MANIFEST.MF!
-		// To be safe, you should probably also update the Eclipse .classpath file
-		// (it might be used by the Tycho build - not sure).
+		// run "./gradlew clean setClassPath prepareMaven".
+		// This downloads the dependencies and configures them in all appropriate places.
+		// If you updated or removed any dependencies,
+		// you also need to *manually* delete the old dependencies/versions
+		// from the relevant .classpath and META-INF/MANIFEST.MF files.
 		implementation group: "de.hhu.stups", name: "answerparser", version: parser_version
 		implementation group: "de.hhu.stups", name: "bparser", version: parser_version
 		implementation group: "de.hhu.stups", name: "ltlparser", version: parser_version
