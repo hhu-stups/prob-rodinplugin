@@ -171,10 +171,7 @@ public final class Activator extends Plugin {
 	}
 
 	@Override
-	public void stop(final BundleContext context) throws Exception { // NOPMD
-		// by Jens Bendisposto on 7/20/07 12:19 PM
-		// Method is declared in org.eclipse.core.runtime.Plugin
-
+	public void stop(final BundleContext context) throws Exception {
 		cancelAllJobs();
 		final Animator animator = Animator.getAnimator();
 		if (animator != null) {

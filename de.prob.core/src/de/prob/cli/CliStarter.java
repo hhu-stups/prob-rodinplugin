@@ -207,7 +207,7 @@ public final class CliStarter {
 		try {
 			String line;
 			boolean endReached = false;
-			while (!endReached && (line = input.readLine()) != null) { // NOPMD
+			while (!endReached && (line = input.readLine()) != null) {
 				applyPatterns(patterns, line);
 				endReached = patterns.isEmpty()
 						|| line.contains("starting command loop"); // printed in prob_socketserver.pl

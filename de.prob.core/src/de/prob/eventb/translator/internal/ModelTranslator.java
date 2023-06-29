@@ -4,8 +4,7 @@
  * (http://www.eclipse.org/org/documents/epl-v10.html)
  * */
 
-package de.prob.eventb.translator.internal; // NOPMD by bendisposto
-// High coupling to the ast is ok
+package de.prob.eventb.translator.internal;
 
 import java.util.ArrayList;
 import java.util.Arrays;
