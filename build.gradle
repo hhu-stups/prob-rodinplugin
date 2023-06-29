@@ -57,6 +57,7 @@ project(":de.bmotionstudio.gef.editor") {
 		// hardcode a specific MXParser version here.
 		// It *should* be safe to update this when a new version is released.
 		implementation group: "io.github.x-stream", name: "mxparser", version: "1.2.2"
+		implementation group: "org.codehaus.groovy", name: "groovy", version: "2.0.5"
 	}
 }
 
