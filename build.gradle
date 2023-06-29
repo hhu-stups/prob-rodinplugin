@@ -38,12 +38,23 @@ project(':de.prob.core') {
 		implementation group: "de.hhu.stups", name: "prologlib", version: parser_version
 		implementation group: "de.hhu.stups", name: "unicode", version: parser_version
 		implementation group: "de.hhu.stups", name: "theorymapping", version: parser_version
-		implementation 'com.thoughtworks.xstream:xstream:1.4.19'
+	}
+}
+
+project(":de.bmotionstudio.gef.editor") {
+	apply(plugin: "java")
+
+	repositories {
+		mavenCentral()
+	}
+
+	dependencies {
+		implementation group: "com.thoughtworks.xstream", name: "xstream", version: "1.4.19"
 		// Current versions of XStream depend on MXParser, but not any specific version of it.
 		// To avoid the version number changing unexpectedly and breaking the MANIFEST.MF classpath entries,
 		// hardcode a specific MXParser version here.
 		// It *should* be safe to update this when a new version is released.
-		implementation group: 'io.github.x-stream', name: 'mxparser', version: '1.2.2'
+		implementation group: "io.github.x-stream", name: "mxparser", version: "1.2.2"
 	}
 }
 
