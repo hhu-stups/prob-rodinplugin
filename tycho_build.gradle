@@ -298,8 +298,9 @@ subprojects {
 		doLast {
 			if (excludeFromClassPath.every {it != project.name}) {
 				def dependencyList = []
-				try {
-					def dir = new File(workspacePath + project.name + "/" + dependencyFolder).eachFile() {file ->
+				def depsFolder = new File(workspacePath + project.name + "/" + dependencyFolder)
+				if (depsFolder.exists()) {
+					depsFolder.eachFile() {file ->
 						if (!(file.getName() ==~ /.*\.txt/)) {
 							dependencyList << file.getName()
 						}
@@ -330,8 +331,6 @@ subprojects {
 					warningReadMe << "Do Not Remove any Jars/Libraries in this Folder!\nThis folder contains all of your dependencies defined in your gradle script.\n"
 					warningReadMe << "Removing or renaming any of these files will result in an Error in your .classpath file\n"
 					warningReadMe << "If any error concerning missing dependencies should occur please run 'gradle deleteFromClassPath setClassPath' in your workspace folder from your shell."
-				} catch (Exception e) {
-					println project.name + " has no dependencies in '${dependencyFolder}' defined: Classpath will not be changed"
 				}
 			}
 		}
@@ -341,19 +340,15 @@ subprojects {
 		description = "\tDeletes all your Dependencies located in your local lib folder from each project's classpath"
 
 		doLast {
-			try {
-				boolean depsDelete = false
-				def depsFolder = new File(workspacePath + project.name + '/' + dependencyFolder)
-				if (depsFolder.exists()) {
-					depsDelete = true
-				}
-				depsFolder.deleteDir()
+			boolean depsDelete = false
+			def depsFolder = new File(workspacePath + project.name + '/' + dependencyFolder)
+			if (depsFolder.exists()) {
+				depsDelete = true
+			}
+			depsFolder.deleteDir()
 
-				if (features.every {it != project.name} && depsDelete) {
-					deleteLibFromCP(project.name)
-				}
-			} catch (Exception e) {
-				println project.name+" has no dependencies in '${dependencyFolder}' defined: Classpath will not be changed"
+			if (features.every {it != project.name} && depsDelete) {
+				deleteLibFromCP(project.name)
 			}
 		}
 	}
