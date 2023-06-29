@@ -149,13 +149,7 @@ Export-Package: de.bmotionstudio.gef.editor;
    org.eclipse.swt.widgets,
    de.bmotionstudio.gef.editor"
 Bundle-ClassPath: .,
- lib/dependencies/antlr-2.7.7.jar,
- lib/dependencies/asm-4.0.jar,
- lib/dependencies/asm-analysis-4.0.jar,
- lib/dependencies/asm-commons-4.0.jar,
- lib/dependencies/asm-tree-4.0.jar,
- lib/dependencies/asm-util-4.0.jar,
- lib/dependencies/groovy-2.0.5.jar,
+ lib/dependencies/groovy-2.5.22.jar,
  lib/dependencies/mxparser-1.2.2.jar,
  lib/dependencies/xmlpull-1.1.3.1.jar,
  lib/dependencies/xstream-1.4.20.jar
