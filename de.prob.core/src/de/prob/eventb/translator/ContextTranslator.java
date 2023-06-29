@@ -13,7 +13,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eventb.core.IContextRoot;
@@ -218,7 +217,7 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 
 		if (!bugs.isEmpty()) {
 			String message = "Translation incomplete due to a Bug in Rodin. This does not affect correctness of the Animation/Model Checking but can decrease its performance. Skipped discharged information about: "
-					+ StringUtils.join(bugs, ",");
+					+ String.join(",", bugs);
 			Logger.notifyUser(message);
 		}
 

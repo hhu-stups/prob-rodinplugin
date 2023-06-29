@@ -4,10 +4,12 @@
 package de.prob.ui.historyview;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.ObjectUtils;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.DoubleClickEvent;
@@ -168,15 +170,17 @@ public class HistoryView extends StateBasedViewPart {
 		final Animator animator = Animator.getAnimator();
 		MachineDescription machineDescription = animator
 				.getMachineDescription();
-		String[] models = new String[0];
+		List<String> models;
 		if (machineDescription != null) {
-			models = machineDescription.getModelNames().toArray(new String[0]);
-			ArrayUtils.reverse(models);
+			models = new ArrayList<>(machineDescription.getModelNames());
+			Collections.reverse(models);
+		} else {
+			models = Collections.emptyList();
 		}
 		final TableColumnLayout layout = new TableColumnLayout();
 		composite.setLayout(layout);
 		labelProviders = new ArrayList<HistoryLabelProvider>();
-		if (models.length > 0) {
+		if (!models.isEmpty()) {
 			int pos = 0;
 			for (final String model : models) {
 				final boolean isFirst = pos == 0;
@@ -227,7 +231,7 @@ public class HistoryView extends StateBasedViewPart {
 				vItems[i] = new HistViewItem(i, activeItem, state, op, cs);
 			}
 			current = vItems[activeItem];
-			ArrayUtils.reverse(vItems);
+			Collections.reverse(Arrays.asList(vItems));
 		} else {
 			current = null;
 		}
@@ -256,10 +260,8 @@ public class HistoryView extends StateBasedViewPart {
 			// The item representing the root state has no operation leading to
 			// it, so we have to check if it is null
 			this.previousStateIsSameAsCurrent = operation != null
-					&& ObjectUtils.equals(currentState.getId(),
-							operation.getSource());
-			this.followingStateIsSameAsCurrent = ObjectUtils.equals(
-					currentState, dstState);
+					&& Objects.equals(currentState.getId(), operation.getSource());
+			this.followingStateIsSameAsCurrent = Objects.equals(currentState, dstState);
 		}
 
 		public State getDestination() {

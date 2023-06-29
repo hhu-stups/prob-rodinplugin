@@ -12,8 +12,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
-
 import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.IntegerPrologTerm;
 import de.prob.prolog.term.ListPrologTerm;
@@ -289,7 +287,7 @@ public final class Operation {
 		if (argsPretty.isEmpty()) {
 			return name;
 		} else {
-			return name + "(" + StringUtils.join(argsPretty, ',') + ")";
+			return name + "(" + String.join(",", argsPretty) + ")";
 		}
 	}
 

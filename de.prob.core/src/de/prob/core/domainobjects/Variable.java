@@ -6,7 +6,7 @@
 
 package de.prob.core.domainobjects;
 
-import org.apache.commons.lang.ObjectUtils;
+import java.util.Objects;
 
 import de.prob.core.command.CommandException;
 import de.prob.parser.BindingGenerator;
@@ -94,7 +94,7 @@ public final class Variable {
 		} else if (obj != null && obj instanceof Variable) {
 			Variable other = (Variable) obj;
 			equal = this.identifier.equals(other.identifier)
-					&& ObjectUtils.equals(this.value, other.value);
+					&& Objects.equals(this.value, other.value);
 		} else {
 			equal = false;
 		}

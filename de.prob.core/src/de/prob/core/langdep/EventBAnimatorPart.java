@@ -6,9 +6,9 @@ package de.prob.core.langdep;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
-import org.apache.commons.lang.ObjectUtils;
 import org.eclipse.core.runtime.CoreException;
 import org.eventb.core.IContextRoot;
 import org.eventb.core.IEventBRoot;
@@ -187,7 +187,7 @@ public class EventBAnimatorPart implements LanguageDependendAnimationPart {
 		final ISCMachineRoot machine = ((IMachineRoot) root).getSCMachineRoot();
 		try {
 			for (final ISCEvent event : machine.getSCEvents()) {
-				if (ObjectUtils.equals(event.getLabel(), eventName))
+				if (Objects.equals(event.getLabel(), eventName))
 					return event;
 			}
 			throw new ProBParseException("unknown event " + eventName);

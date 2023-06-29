@@ -5,8 +5,6 @@ package de.prob.core.command;
 
 import java.util.List;
 
-import org.apache.commons.lang.ArrayUtils;
-
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.output.PrologTermDelegate;
@@ -77,14 +75,14 @@ public class ComposedCommand implements IComposableCommand {
 	public void reprocessResult(final IComposableCommand command,
 			final ISimplifiedROMap<String, PrologTerm> bindings)
 			throws CommandException {
-		final int index = ArrayUtils.indexOf(cmds, command);
-		if (index >= 0) {
-			final PrefixMap<PrologTerm> prefixMap = new PrefixMap<PrologTerm>(
-					bindings);
-			processPrefixedCommand(prefixMap, index);
-		} else
-			throw new IllegalArgumentException(
-					"cannot reprocess command, command unknown");
+		for (int i = 0; i < cmds.length; i++) {
+			if (command.equals(cmds[i])) {
+				final PrefixMap<PrologTerm> prefixMap = new PrefixMap<PrologTerm>(bindings);
+				processPrefixedCommand(prefixMap, i);
+				return;
+			}
+		}
+		throw new IllegalArgumentException("cannot reprocess command, command unknown");
 	}
 
 	/**

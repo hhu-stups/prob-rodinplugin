@@ -8,8 +8,6 @@ package de.prob.core;
 
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
-
 import de.prob.cli.CliException;
 import de.prob.core.command.CommandException;
 import de.prob.core.internal.ResultParserException;
@@ -69,7 +67,7 @@ public class ProblemHandler {
 	public static void raisePrologException(final List<String> errors,
 			final boolean onlyWarnings) throws PrologException {
 		final String message = "ProB reported errors:\n"
-				+ StringUtils.join(errors, '\n');
+				+ String.join("\n", errors);
 		Logger.notifyUser(message);
 		throw new PrologException(message, onlyWarnings);
 	}
