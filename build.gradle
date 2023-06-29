@@ -49,7 +49,7 @@ project(":de.bmotionstudio.gef.editor") {
 	}
 
 	dependencies {
-		implementation group: "com.thoughtworks.xstream", name: "xstream", version: "1.4.19"
+		implementation group: "com.thoughtworks.xstream", name: "xstream", version: "1.4.20"
 		// Current versions of XStream depend on MXParser, but not any specific version of it.
 		// To avoid the version number changing unexpectedly and breaking the MANIFEST.MF classpath entries,
 		// hardcode a specific MXParser version here.
