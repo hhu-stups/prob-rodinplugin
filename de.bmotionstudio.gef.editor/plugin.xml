@@ -348,6 +348,10 @@
             class="de.bmotionstudio.gef.editor.observer.ColumnObserver"
             name="Column Observer">
       </observer>
+      <observer
+            class="de.bmotionstudio.gef.editor.observer.ExternalObserverScript"
+            name="External Observer Script">
+      </observer>
    </extension>
    <extension
          point="de.bmotionstudio.gef.editor.schedulerEvent">
