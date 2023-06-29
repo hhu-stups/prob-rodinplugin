@@ -205,7 +205,7 @@ def addRunTimeLib(String libPar, String projectPar) {
 	newMf.delete()
 	mf.eachLine {line ->
 		if (line ==~ /.*Bundle-ClassPath:.*\.jar.*/) {
-			libsInLine = line.replaceAll(/[\ \t]*Bundle-ClassPath:[\ \t]*/, '')
+			def libsInLine = line.replaceAll(/[\ \t]*Bundle-ClassPath:[\ \t]*/, '')
 			line = line.replaceFirst(/[^\ \t]*\.jar[\ \,]*/, dependencyFolder + libPar + ",\n " + libsInLine) // /[^\ \t]*.\.jar[\ \,]*/
 		} else {
 			if (line ==~ /.*Bundle-ClassPath: \.[\ \t]*/) {
