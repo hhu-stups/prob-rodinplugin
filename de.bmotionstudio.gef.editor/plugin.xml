@@ -348,10 +348,6 @@
             class="de.bmotionstudio.gef.editor.observer.ColumnObserver"
             name="Column Observer">
       </observer>
-      <observer
-            class="de.bmotionstudio.gef.editor.observer.ExternalObserverScript"
-            name="External Observer Script">
-      </observer>
    </extension>
    <extension
          point="de.bmotionstudio.gef.editor.schedulerEvent">
@@ -576,63 +572,6 @@
             <control
                   id="de.bmotionstudio.gef.editor.visualization">
             </control>
-         </observer>
-         <observer
-               id="de.bmotionstudio.gef.editor.observer.ExternalObserverScript">
-            <control
-                  id="de.bmotionstudio.gef.editor.image">
-            </control>
-            <control
-                  id="de.bmotionstudio.gef.editor.button">
-            </control>
-            <control
-                  id="de.bmotionstudio.gef.editor.composite">
-            </control>
-            <control
-                  id="de.bmotionstudio.gef.editor.text">
-            </control>
-            <control
-                  id="de.bmotionstudio.gef.editor.rectangle">
-            </control>
-            <control
-                  id="de.bmotionstudio.gef.editor.radiobutton">
-            </control>
-            <control
-                  id="de.bmotionstudio.gef.editor.checkbox">
-            </control>
-            <control
-                  id="de.bmotionstudio.gef.editor.connection">
-            </control>
-            <control
-                  id="de.bmotionstudio.gef.editor.ellipse">
-            </control>
-            <control
-                  id="de.bmotionstudio.gef.editor.textfield">
-            </control>
-            <control
-                  id="de.bmotionstudio.gef.editor.tablecell">
-            </control>
-            <control
-                  id="de.bmotionstudio.gef.editor.table">
-            </control>
-            <control
-                  id="de.bmotionstudio.gef.editor.tablecolumn">
-            </control>
-            <control
-                  id="de.bmotionstudio.gef.editor.light">
-            </control>    
-            <control
-                  id="de.bmotionstudio.gef.editor.signal">
-            </control>
-            <control
-                  id="de.bmotionstudio.gef.editor.switch">
-            </control>
-            <control
-                  id="de.bmotionstudio.gef.editor.track">
-            </control>
-            <control
-                  id="de.bmotionstudio.gef.editor.tracknode">
-            </control>                            
          </observer>
          <observer
                id="de.bmotionstudio.gef.editor.observer.SwitchImage">
