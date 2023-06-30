@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde version="3.8"?>
-<target name="prob_target" sequenceNumber="45">
+<target name="prob_target" sequenceNumber="46">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.gef.sdk.feature.group" version="3.9.101.201408150207"/>
-<repository location="https://download.eclipse.org/releases/luna"/>
+<unit id="org.eclipse.gef.sdk.feature.group" version="3.11.0.201606061308"/>
+<repository location="https://download.eclipse.org/releases/2022-03/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
-<unit id="org.eventb.ide.feature.group" version="3.3.0.201704022034-f9fbb0d"/>
-<unit id="org.rodinp.feature.group" version="1.8.0.201704022034-f9fbb0d"/>
-<repository location="https://stups.hhu-hosting.de/buildlibs/org.rodinp.dev"/>
+<unit id="org.eventb.ide.feature.group" version="3.8.0.202304051545-af2f57e1e"/>
+<unit id="org.rodinp.feature.group" version="1.9.0.202304051545-af2f57e1e"/>
+<repository location="https://rodin-b-sharp.sourceforge.net/core-updates/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
-<unit id="org.eventb.theory.feature.feature.group" version="4.0.0.RC1"/>
+<unit id="org.eventb.theory.feature.feature.group" version="4.0.4.202204011240-f60c57a0"/>
 <repository location="https://rodin-b-sharp.sourceforge.net/updates/"/>
 </location>
 </locations>
