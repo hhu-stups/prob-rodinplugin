@@ -12,7 +12,7 @@
 apply plugin: 'base'
 
 import groovy.io.FileType
-project.ext.tychoVersion = "1.7.0"
+project.ext.tychoVersion = "2.7.5"
 
 try {
 	excludeFromTychoBuild = excludeFromTychoBuild
