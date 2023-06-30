@@ -16,5 +16,5 @@ Require-Bundle: org.eclipse.ui;bundle-version="[3.5.0,4.0.0)",
 Bundle-ActivationPolicy: lazy
 Bundle-Vendor: HHU Düsseldorf STUPS Group
 Bundle-Activator: de.prob.ui.ProbUiPlugin
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-11
 Export-Package: de.prob.ui

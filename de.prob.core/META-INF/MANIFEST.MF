@@ -74,7 +74,7 @@ Export-Package: de.be4.classicalb.core.parser,
  de.prob.unicode.node
 Bundle-Activator: de.prob.core.internal.Activator
 Eclipse-BuddyPolicy: registered
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-11
 Bundle-ClassPath: .,
  lib/dependencies/sablecc-runtime-3.4.1.jar,
  lib/dependencies/unicode-2.12.4.jar,
