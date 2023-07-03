@@ -4,13 +4,13 @@ Bundle-Name: ProB Symbolic Evaluation Support
 Bundle-SymbolicName: de.prob.symbolic;singleton:=true
 Bundle-Version: 7.5.0.qualifier
 Bundle-Activator: de.prob.symbolic.Activator
-Require-Bundle: org.eclipse.core.runtime,
- de.prob.core;bundle-version="[9.5.0,9.6.0)",
- org.eventb.ui;bundle-version="[3.0.0,4.0.0)",
+Require-Bundle: de.prob.core;bundle-version="[9.5.0,9.6.0)",
  de.prob.ui;bundle-version="[7.5.0,7.6.0)",
- org.rodinp.core;bundle-version="[1.7.0,2.0.0)",
+ org.eclipse.core.runtime,
  org.eclipse.ui;bundle-version="[3.5.0,4.0.0)",
- org.eventb.core;bundle-version="[3.0.0,4.0.0)"
+ org.eventb.core;bundle-version="[3.0.0,4.0.0)",
+ org.eventb.ui;bundle-version="[3.0.0,4.0.0)",
+ org.rodinp.core;bundle-version="[1.7.0,2.0.0)"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-11
 Bundle-Vendor: HHU Düsseldorf STUPS Group

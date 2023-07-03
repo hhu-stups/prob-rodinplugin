@@ -4,12 +4,12 @@ Bundle-Name: ProB Disprover Core for EventB
 Bundle-SymbolicName: de.prob.eventb.disprover.core;singleton:=true
 Bundle-Version: 2.1.0.qualifier
 Bundle-Vendor: Heinrich-Heine University Dusseldorf
-Require-Bundle: org.eclipse.core.runtime;bundle-version="[3.5.0,4.0.0)",
- de.prob.core;bundle-version="[9.5.0,9.6.0)",
- org.eventb.core.seqprover;bundle-version="[3.0.0,4.0.0)",
- org.eventb.core;bundle-version="[3.0.0,4.0.0)",
+Require-Bundle: de.prob.core;bundle-version="[9.5.0,9.6.0)",
+ org.eclipse.core.runtime;bundle-version="[3.5.0,4.0.0)",
  org.eclipse.ui;bundle-version="[3.5.0,4.0.0)",
+ org.eventb.core;bundle-version="[3.0.0,4.0.0)",
  org.eventb.core.ast;bundle-version="[3.0.0,4.0.0)",
+ org.eventb.core.seqprover;bundle-version="[3.0.0,4.0.0)",
  org.rodinp.core;bundle-version="[1.7.0,2.0.0)"
 Bundle-RequiredExecutionEnvironment: JavaSE-11
 Bundle-ActivationPolicy: lazy
