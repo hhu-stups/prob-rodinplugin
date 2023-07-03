@@ -484,21 +484,10 @@ task createRepository() {
 			featureVersionNumber  = parsedXml.attribute("version")
 			featureArtifactId  = parsedXml.attribute("id")
 
-			if (noDescriptions) {
-				categoryDescriptions[0].put(features[i], parsedXml.attribute("label"))
-				categoryDescriptions[1].put(features[i], parsedXml.description.text())
-			}
-			f << categoryFeatures(featureArtifactId.replace(workspacePath, ''), featureVersionNumber)
+			f << categoryFeature(categoryId, featureArtifactId.replace(workspacePath, ''), featureVersionNumber)
 		}
 
-		for (int i = 0; i < features.size(); i++) {
-			if (noDescriptions) {
-				// featureName, label, description
-				f << categoryDescription(features[i], categoryDescriptions[0][features[i]],categoryDescriptions[1][features[i]])
-			} else {
-				f << categoryDescription(features[i], categoryDescriptions[features[i]][0],categoryDescriptions[features[i]][1])
-			}
-		}
+		f << categoryDef(categoryId, categoryLabel, categoryDescription)
 
 		f << categoryEnd()
 
@@ -723,14 +712,14 @@ def categoryHead() {"""\
 <site>
 """}
 
-def categoryFeatures(artifactId, versionNumber) {"""
+def categoryFeature(category, artifactId, versionNumber) {"""
 	<feature url="features/${artifactId}_${versionNumber}.jar" id="${artifactId}" version="${versionNumber}">
-		<category name="${artifactId}.category"/>
+		<category name="${category}"/>
 	</feature>
 """}
 
-def categoryDescription(artifactId, categoryName, categorydescription) {"""
-	<category-def name="${artifactId}.category" label="${categoryName}">
+def categoryDef(id, label, categorydescription) {"""
+	<category-def name="${id}" label="${label}">
 		<description>
 ${categorydescription}
 		</description>
