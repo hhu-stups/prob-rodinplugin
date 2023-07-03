@@ -61,16 +61,6 @@ try {
 	project.ext.parentID = groupID + ".parent"
 }
 
-Boolean noDescriptions = false // in case of using own CategoryDescription Map
-
-try {
-	categoryDescriptions = categoryDescriptions
-} catch (MissingPropertyException e) {
-	project.ext.categoryDescriptions = [[:], [:]] // label and descriptions of the features
-	noDescriptions = true
-	// categoryDescriptions = [["feature": "labelName", "feature2": "label"], ["feature": "featureDescription", "feature2": "feature2Description"]] // label and descriptions of the features
-}
-
 try {
 	buildProduct = buildProduct
 } catch (MissingPropertyException e) {
