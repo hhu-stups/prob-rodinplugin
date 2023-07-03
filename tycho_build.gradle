@@ -39,37 +39,6 @@ try {
 }
 
 try {
-	groupID = groupID
-} catch (MissingPropertyException e) {
-	// workspace nach releng durchsuchen
-	def folderNames = []
-	def folders = []
-	println "folders:"
-	new File(workspacePath+".").listFiles().each{dir ->
-		if (dir.isDirectory()) {
-			folders << dir.getName()
-		}
-	}
-
-	folders.each { it ->
-		it = (String)it.replaceFirst(/\.\//, "")
-		// subProjects eventuell unnötig settings.gradle datei stattdessen benutzen
-		if (!(it ==~ /\..+/ || it ==~ /.*.repository/ || it ==~ /.*.parent/)) {
-			folderNames << it
-		}
-	}
-
-	project.ext.groupID = "group"
-	for (int i = 0; i < folderNames.size(); i++) {
-		if (folderNames[i] ==~ /.*\.[rR]eleng/) {
-			groupID = folderNames[i]
-			groupID = groupID.replace(".releng", "")
-			groupID = groupID.replace(".Releng", "")
-		}
-	}
-}
-
-try {
 	features = features
 } catch (MissingPropertyException e) {
 	project.ext.features = []
@@ -100,12 +69,6 @@ try {
 	project.ext.categoryDescriptions = [[:], [:]] // label and descriptions of the features
 	noDescriptions = true
 	// categoryDescriptions = [["feature": "labelName", "feature2": "label"], ["feature": "featureDescription", "feature2": "feature2Description"]] // label and descriptions of the features
-}
-
-try {
-	targetRepositories = targetRepositories
-} catch (MissingPropertyException e) {
-	project.ext.targetRepositories = ["https://download.eclipse.org/releases/luna/"]
 }
 
 try {
