@@ -62,29 +62,6 @@ try {
 }
 
 
-// returns the name of a subproject listed in the settings.gradle file
-def projects(int i) {
-	return subprojects.name[i]
-}
-
-
-// returns the number of projects listed in the settings.gradle file
-def numberOfProjects() {
-	return subprojects.name.size()
-}
-
-
-// This is the project of the parent Pom
-// The Tycho Maven Build is triggered from this project's pom
-def parentId() {
-	return parentID
-}
-
-// This Group ID will be used in every sub project
-def groupId() {
-	return groupID
-}
-
 // Add certain Jar to Library
 def addLibToCP(def project, def libPar) {
 	def filePar = new File(workspacePath + project + "/.classpath")
@@ -388,19 +365,18 @@ task createParent() {
 	doLast {
 		new File(workspacePath + "${parentID}").mkdir()
 		String versionNumber = '1.0.0.qualifier'
-		String artifactId = parentId()
 
-		def f = new File(workspacePath + artifactId + '/pom.xml')
+		def f = new File(workspacePath + parentID + '/pom.xml')
 		f.delete()
-		f << parentPom(artifactId)
+		f << parentPom(parentID)
 		for (int i = 0; i < targetRepositories.size(); i++) {
 			f << repos(targetRepositories[i], i)
 		}
 		f << endRepos()
 		f << moduleStart()
-		for (int i = 0; i < numberOfProjects(); i++) {
-			if (excludeFromTychoBuild.every {it != projects(i)}) {
-				f << module(projects(i))
+		subprojects.each {subproj ->
+			if (excludeFromTychoBuild.every {it != subproj.name}) {
+				f << module(subproj.name)
 			}
 		}
 		f << module(repositoryName)
@@ -469,7 +445,7 @@ task completeInstall(dependsOn: [prepareMaven], type: Exec) {
 
 
 def artifact(artifactId,versionNumber) {"""
-	<groupId>${groupId()}</groupId>
+	<groupId>${groupID}</groupId>
 	<artifactId>${artifactId}</artifactId>
 	<version>${versionNumber}</version>
 	<packaging>eclipse-plugin</packaging>
@@ -488,7 +464,7 @@ def artifact(artifactId,versionNumber) {"""
 """}
 
 def testArtifact(artifactId,versionNumber) {"""
-	<groupId>${groupId()}</groupId>
+	<groupId>${groupID}</groupId>
 	<artifactId>${artifactId}</artifactId>
 	<version>${versionNumber}</version>
 	<packaging>eclipse-test-plugin</packaging>
@@ -514,10 +490,10 @@ def start() {"""\
 
 def elder() {"""
 	<parent>
-		<groupId>${groupId()}</groupId>
-		<artifactId>${parentId()}</artifactId>
+		<groupId>${groupID}</groupId>
+		<artifactId>${parentID}</artifactId>
 		<version>1.0.0.qualifier</version>
-		<relativePath>../${parentId()}/pom.xml</relativePath>
+		<relativePath>../${parentID}/pom.xml</relativePath>
 	</parent>
 """}
 
@@ -533,7 +509,7 @@ def parentPom(artifactId) {"""\
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>${groupId()}</groupId>
+	<groupId>${groupID}</groupId>
 	<artifactId>${artifactId}</artifactId>
 	<version>1.0.0.qualifier</version>
 
@@ -581,8 +557,6 @@ def moduleStart() {"""
 	<!-- the modules that should be built together -->
 	<modules>
 """}
-
-// for (int i = 0; i < numberOfProjects(); i++)
 
 def module(String project) {"""\
 		<module>../${project}</module>
@@ -647,12 +621,12 @@ def feature(artifactId, versionNumber) {"""\
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>${groupId()}</groupId>
-		<artifactId>${parentId()}</artifactId>
+		<groupId>${groupID}</groupId>
+		<artifactId>${parentID}</artifactId>
 		<version>1.0.0.qualifier</version>
-		<relativePath>../${parentId()}/pom.xml</relativePath>
+		<relativePath>../${parentID}/pom.xml</relativePath>
 	</parent>
-	<groupId>${groupId()}</groupId>
+	<groupId>${groupID}</groupId>
 	<artifactId>${artifactId}</artifactId>
 	<version>${versionNumber}</version>
 	<packaging>eclipse-feature</packaging>
