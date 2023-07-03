@@ -4,9 +4,7 @@ Bundle-Name: ProB Symbolic Evaluation Support
 Bundle-SymbolicName: de.prob.symbolic;singleton:=true
 Bundle-Version: 7.5.0.qualifier
 Bundle-Activator: de.prob.symbolic.Activator
-Require-Bundle: de.prob.core;bundle-version="[9.5.0,9.6.0)",
- de.prob.ui;bundle-version="[7.5.0,7.6.0)",
- org.eclipse.core.runtime;bundle-version="[3.20.0,4.0.0)",
+Require-Bundle: org.eclipse.core.runtime;bundle-version="[3.20.0,4.0.0)",
  org.eclipse.ui;bundle-version="[3.118.0,4.0.0)",
  org.eventb.core;bundle-version="[3.5.0,4.0.0)",
  org.eventb.ui;bundle-version="[3.5.0,4.0.0)",
