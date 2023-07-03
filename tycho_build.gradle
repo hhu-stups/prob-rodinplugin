@@ -15,18 +15,6 @@ import groovy.io.FileType
 project.ext.tychoVersion = "2.7.5"
 
 try {
-	excludeFromTychoBuild = excludeFromTychoBuild
-} catch (MissingPropertyException e) {
-	project.ext.excludeFromTychoBuild = []
-}
-
-try {
-	excludeFromClassPath = excludeFromClassPath
-} catch (MissingPropertyException e) {
-	project.ext.excludeFromClassPath = []
-}
-
-try {
 	workspacePath = workspacePath
 } catch (MissingPropertyException e) {
 	project.ext.workspacePath = ""
@@ -220,42 +208,40 @@ subprojects {
 		description = "\tAdds all your Dependencies from your local lib folder in each project to it's classpath"
 
 		doLast {
-			if (excludeFromClassPath.every {it != project.name}) {
-				def dependencyList = []
-				def depsFolder = new File(workspacePath + project.name + "/" + dependencyFolder)
-				if (depsFolder.exists()) {
-					depsFolder.eachFile() {file ->
-						if (!(file.getName() ==~ /.*\.txt/)) {
-							dependencyList << file.getName()
-						}
+			def dependencyList = []
+			def depsFolder = new File(workspacePath + project.name + "/" + dependencyFolder)
+			if (depsFolder.exists()) {
+				depsFolder.eachFile() {file ->
+					if (!(file.getName() ==~ /.*\.txt/)) {
+						dependencyList << file.getName()
 					}
-
-					if (features.every {it != project.name}) {
-						boolean BundleClassPathPresent = checkForRunTimeLibs(project.name)
-						for (int icp = 0; icp < dependencyList.size; icp++) {
-							// Adds Lib to .classPath file
-							addLibToCP(project.name, dependencyList[icp])
-
-							if (!BundleClassPathPresent) {
-								// Adds Lib to Manifest File
-								createRunTimeLib(dependencyList[icp], project.name)
-								BundleClassPathPresent = true
-							} else if (!checkRunTimeLib(dependencyList[icp], project.name)) {
-								// if library not present add it to RunTimeLibrary
-								addRunTimeLib(dependencyList[icp], project.name)
-							}
-						}
-						// could still be usefull for debugging, that's why it's not deleted
-						/*dependencyList.each {dep ->
-							println project.name + ": " + dep
-						}*/
-					}
-					def warningReadMe = new File(workspacePath + project.name + "/" + dependencyFolder + "_README.txt")
-					warningReadMe.delete()
-					warningReadMe << "Do Not Remove any Jars/Libraries in this Folder!\nThis folder contains all of your dependencies defined in your gradle script.\n"
-					warningReadMe << "Removing or renaming any of these files will result in an Error in your .classpath file\n"
-					warningReadMe << "If any error concerning missing dependencies should occur please run 'gradle deleteFromClassPath setClassPath' in your workspace folder from your shell."
 				}
+
+				if (features.every {it != project.name}) {
+					boolean BundleClassPathPresent = checkForRunTimeLibs(project.name)
+					for (int icp = 0; icp < dependencyList.size; icp++) {
+						// Adds Lib to .classPath file
+						addLibToCP(project.name, dependencyList[icp])
+
+						if (!BundleClassPathPresent) {
+							// Adds Lib to Manifest File
+							createRunTimeLib(dependencyList[icp], project.name)
+							BundleClassPathPresent = true
+						} else if (!checkRunTimeLib(dependencyList[icp], project.name)) {
+							// if library not present add it to RunTimeLibrary
+							addRunTimeLib(dependencyList[icp], project.name)
+						}
+					}
+					// could still be usefull for debugging, that's why it's not deleted
+					/*dependencyList.each {dep ->
+						println project.name + ": " + dep
+					}*/
+				}
+				def warningReadMe = new File(workspacePath + project.name + "/" + dependencyFolder + "_README.txt")
+				warningReadMe.delete()
+				warningReadMe << "Do Not Remove any Jars/Libraries in this Folder!\nThis folder contains all of your dependencies defined in your gradle script.\n"
+				warningReadMe << "Removing or renaming any of these files will result in an Error in your .classpath file\n"
+				warningReadMe << "If any error concerning missing dependencies should occur please run 'gradle deleteFromClassPath setClassPath' in your workspace folder from your shell."
 			}
 		}
 	}
@@ -375,9 +361,7 @@ task createParent() {
 		f << endRepos()
 		f << moduleStart()
 		subprojects.each {subproj ->
-			if (excludeFromTychoBuild.every {it != subproj.name}) {
-				f << module(subproj.name)
-			}
+			f << module(subproj.name)
 		}
 		f << module(repositoryName)
 		f << endParent()
