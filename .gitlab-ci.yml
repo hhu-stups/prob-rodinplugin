@@ -32,7 +32,7 @@ deploy:nightly:
     - apk update
     - apk add lftp openssh-client
   script:
-    - LFTP_PASSWORD="${DEPLOY_PASSWORD}" lftp -c "set cmd:fail-exit true; set sftp:auto-confirm true; open --user ${DEPLOY_USERNAME} --env-password sftp://${DEPLOY_HOST}/${DEPLOY_REMOTE_BASEDIR}/rodin/prob1/nightly/; mirror -vvv -R de.prob.repository/target/repository ."
+    - LFTP_PASSWORD="${DEPLOY_PASSWORD}" lftp -c "set cmd:fail-exit true; set sftp:auto-confirm true; open --user ${DEPLOY_USERNAME} --env-password sftp://${DEPLOY_HOST}/${DEPLOY_REMOTE_BASEDIR}/rodin/prob1/nightly/; mirror -vvv -R --delete de.prob.repository/target/repository ."
 
 deploy:release:
   stage: deploy
