@@ -83,7 +83,7 @@ task downloadCli {
 		delete file(dir)
 		new File(dir).mkdirs()
 
-		['macos':'macos','linux64':'linux64','win64':'windows'].each {
+		['macos':'macos', 'linux64':'linux64', 'windows64':'windows'].each {
 			def n = it.getKey()
 
 			def targetdir = dir + it.getValue()
