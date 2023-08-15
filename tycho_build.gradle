@@ -308,9 +308,6 @@ subprojects {
 
 				content.eachLine(printFileLine)
 
-				println artifactId
-				println "\t" + versionNumber
-
 				def f = new File(workspacePath + artifactId + '/pom.xml')
 				f.delete()
 
@@ -329,9 +326,6 @@ subprojects {
 				artifactId = parsedXml.attribute("id")
 				versionNumber = parsedXml.attribute("version")
 				versionNumber = versionNumber.replace(".qualifier", "-SNAPSHOT")
-
-				println artifactId
-				println "\t" + versionNumber
 
 				def f = new File(workspacePath + artifactId + '/pom.xml')
 				f.delete()
