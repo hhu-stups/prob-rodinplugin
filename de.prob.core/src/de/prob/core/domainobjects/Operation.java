@@ -12,13 +12,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
-
-import de.prob.eventb.translator.FormulaTranslator;
 import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.IntegerPrologTerm;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
+import de.prob.unicode.UnicodeTranslator;
 
 public final class Operation {
 	private static final String INTERNAL_NAME_INITIALISE_MACHINE = "$initialise_machine";
@@ -200,7 +198,7 @@ public final class Operation {
 		List<String> argsPretty = new ArrayList<String>(argsPrettyTerm.size());
 		for (final PrologTerm ppTerm : argsPrettyTerm) {
 			final String ppArg = PrologTerm.atomicString(ppTerm);
-			final String niceArg = FormulaTranslator.translate(ppArg);
+			final String niceArg = UnicodeTranslator.toUnicode(ppArg);
 			argsPretty.add(niceArg);
 		}
 		return Collections.unmodifiableList(argsPretty);
@@ -289,7 +287,7 @@ public final class Operation {
 		if (argsPretty.isEmpty()) {
 			return name;
 		} else {
-			return name + "(" + StringUtils.join(argsPretty, ',') + ")";
+			return name + "(" + String.join(",", argsPretty) + ")";
 		}
 	}
 

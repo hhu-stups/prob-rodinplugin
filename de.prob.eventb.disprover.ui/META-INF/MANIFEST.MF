@@ -2,20 +2,20 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: ProB Disprover UI for EventB
 Bundle-SymbolicName: de.prob.eventb.disprover.ui;singleton:=true
-Bundle-Version: 2.0.6.qualifier
+Bundle-Version: 2.1.0.qualifier
 Bundle-Vendor: Heinrich-Heine University Dusseldorf
-Require-Bundle: org.eclipse.core.runtime,
- org.eventb.ui;bundle-version="[3.0.0,4.0.0)",
- de.prob.eventb.disprover.core;bundle-version="[2.0.0,2.1.0)",
- org.eclipse.ui;bundle-version="[3.5.0,4.0.0)",
- de.prob.core;bundle-version="[9.4.5,9.5.0)",
- org.eventb.core.ast;bundle-version="[3.0.0,4.0.0)",
- org.eventb.core.seqprover;bundle-version="[3.0.0,4.0.0)",
- org.eclipse.osgi,
- org.rodinp.core;bundle-version="[1.7.0,2.0.0)",
- org.eventb.core;bundle-version="[3.0.0,4.0.0)",
- de.prob.ui;bundle-version="[7.4.3,7.5.0)"
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Require-Bundle: de.prob.core;bundle-version="[9.5.0,9.6.0)",
+ de.prob.eventb.disprover.core;bundle-version="[2.1.0,2.2.0)",
+ de.prob.ui;bundle-version="[7.5.0,7.6.0)",
+ org.eclipse.core.runtime;bundle-version="[3.20.0,4.0.0)",
+ org.eclipse.osgi;bundle-version="[3.16.0,4.0.0)",
+ org.eclipse.ui;bundle-version="[3.118.0,4.0.0)",
+ org.eventb.core;bundle-version="[3.5.0,4.0.0)",
+ org.eventb.core.ast;bundle-version="[3.5.0,4.0.0)",
+ org.eventb.core.seqprover;bundle-version="[3.4.0,4.0.0)",
+ org.eventb.ui;bundle-version="[3.5.0,4.0.0)",
+ org.rodinp.core;bundle-version="[1.9.0,2.0.0)"
+Bundle-RequiredExecutionEnvironment: JavaSE-11
 Bundle-ActivationPolicy: lazy
 Bundle-Localization: plugin
 Bundle-Activator: de.prob.eventb.disprover.ui.DisproverActivator

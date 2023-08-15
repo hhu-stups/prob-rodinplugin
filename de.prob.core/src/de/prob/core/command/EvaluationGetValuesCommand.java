@@ -17,13 +17,13 @@ import de.prob.core.domainobjects.EvaluationStateElement;
 import de.prob.core.domainobjects.History;
 import de.prob.core.domainobjects.HistoryBasedCache;
 import de.prob.core.domainobjects.State;
-import de.prob.eventb.translator.FormulaTranslator;
 import de.prob.exceptions.ProBException;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
+import de.prob.unicode.UnicodeTranslator;
 
 /**
  * This command sends a list of expression IDs and a state ID to ProB and
@@ -36,8 +36,8 @@ import de.prob.prolog.term.PrologTerm;
 public class EvaluationGetValuesCommand implements IComposableCommand {
 	private static final String COMMAND_NAME = "evaluation_get_values";
 	private static final String VALUE_VARNAME = "Values";
-	private static final String TRUE = FormulaTranslator.translate("true");
-	private static final String FALSE = FormulaTranslator.translate("false");
+	private static final String TRUE = UnicodeTranslator.toUnicode("true");
+	private static final String FALSE = UnicodeTranslator.toUnicode("false");
 	private static final String CACHE_KEY = EvaluationGetValuesCommand.class
 			.getName() + ".valuecache";
 
@@ -191,7 +191,7 @@ public class EvaluationGetValuesCommand implements IComposableCommand {
 				final String valString = ((CompoundPrologTerm) vc
 						.getArgument(1)).getFunctor();
 				final String translated = valString.length() == 0 ? ""
-						: FormulaTranslator.translate(valString);
+						: UnicodeTranslator.toUnicode(valString);
 				value = new EvaluationResult(translated, true, false, false,
 						false);
 			} else if (valueTerm.hasFunctor("e", 1)) {

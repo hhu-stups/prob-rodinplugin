@@ -113,26 +113,6 @@ public class ExportNewCoreHandler extends AbstractHandler implements IHandler {
 		}
 	}
 
-	// private static String serialize(Project project, String maincomponent) {
-	// NewCoreModelTranslation translation = new NewCoreModelTranslation();
-	// Model model = translation.translate(project, maincomponent);
-	// // XStream xstream = new XStream(new JettisonMappedXmlDriver());
-	// XStream xstream = new XStream();
-	// String xml = xstream.toXML(model);
-	// ByteArrayOutputStream out = new ByteArrayOutputStream();
-	// GZIPOutputStream gzip;
-	// byte[] bytes;
-	// try {
-	// gzip = new GZIPOutputStream(out);
-	// gzip.write(xml.getBytes());
-	// gzip.close();
-	// bytes = out.toByteArray();
-	// } catch (IOException e) {
-	// bytes = xml.getBytes();
-	// }
-	// return Base64.encodeBase64String(bytes);
-	// }
-
 	private static boolean isSafeToWrite(final String filename) {
 		if (new File(filename).exists()) {
 			final MessageDialog dialog = new MessageDialog(null, "File exists",

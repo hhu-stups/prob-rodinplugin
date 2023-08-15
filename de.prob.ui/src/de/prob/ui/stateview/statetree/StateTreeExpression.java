@@ -6,8 +6,7 @@ package de.prob.ui.stateview.statetree;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import org.apache.commons.lang.ObjectUtils;
+import java.util.Objects;
 
 import de.prob.core.command.EvaluationGetValuesCommand;
 import de.prob.core.command.EvaluationGetValuesCommand.EvaluationResult;
@@ -78,7 +77,7 @@ public class StateTreeExpression extends AbstractStateTreeElement {
 			e.notifyUserOnce();
 			return false;
 		}
-		return !ObjectUtils.equals(curval, lastval);
+		return !Objects.equals(curval, lastval);
 	}
 
 	private String getResultString(final State state) throws ProBException {

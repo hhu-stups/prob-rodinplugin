@@ -1,12 +1,9 @@
 build:
   stage: build
-  image: eclipse-temurin:8
+  image: maven:3-eclipse-temurin-11
   variables:
     GRADLE_USER_HOME: "$CI_PROJECT_DIR/.gradle"
   before_script:
-    - export DEBIAN_FRONTEND="noninteractive"
-    - apt-get update
-    - apt-get install --assume-yes maven
     - mvn --version
   script:
     - ./gradlew prepareMaven
@@ -21,6 +18,8 @@ build:
   artifacts:
     paths:
       - de.prob.repository/target/repository
+      - "*/target/work/configuration/*.log"
+    when: always
 
 deploy:nightly:
   stage: deploy
@@ -33,7 +32,7 @@ deploy:nightly:
     - apk update
     - apk add lftp openssh-client
   script:
-    - LFTP_PASSWORD="${DEPLOY_PASSWORD}" lftp -c "set cmd:fail-exit true; set sftp:auto-confirm true; open --user ${DEPLOY_USERNAME} --env-password sftp://${DEPLOY_HOST}/${DEPLOY_REMOTE_BASEDIR}/rodin/prob1/nightly/; mirror -vvv -R de.prob.repository/target/repository ."
+    - LFTP_PASSWORD="${DEPLOY_PASSWORD}" lftp -c "set cmd:fail-exit true; set sftp:auto-confirm true; open --user ${DEPLOY_USERNAME} --env-password sftp://${DEPLOY_HOST}/${DEPLOY_REMOTE_BASEDIR}/rodin/prob1/nightly/; mirror -vvv -R --delete de.prob.repository/target/repository ."
 
 deploy:release:
   stage: deploy

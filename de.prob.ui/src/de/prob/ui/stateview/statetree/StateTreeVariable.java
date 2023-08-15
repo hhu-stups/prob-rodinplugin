@@ -3,7 +3,7 @@
  */
 package de.prob.ui.stateview.statetree;
 
-import org.apache.commons.lang.ObjectUtils;
+import java.util.Objects;
 
 import de.prob.core.domainobjects.State;
 import de.prob.core.domainobjects.Variable;
@@ -45,7 +45,7 @@ public class StateTreeVariable extends AbstractStateTreeElement {
 	public boolean hasChanged(final State current, final State last) {
 		final String curVal = getValueOfVar(current);
 		final String lastVal = getValueOfVar(last);
-		return !ObjectUtils.equals(curVal, lastVal);
+		return !Objects.equals(curVal, lastVal);
 	}
 
 	private String getValueOfVar(final State state) {

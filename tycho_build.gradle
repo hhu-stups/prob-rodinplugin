@@ -12,19 +12,7 @@
 apply plugin: 'base'
 
 import groovy.io.FileType
-project.ext.tychoVersion = "1.7.0"
-
-try {
-	excludeFromTychoBuild = excludeFromTychoBuild
-} catch (MissingPropertyException e) {
-	project.ext.excludeFromTychoBuild = []
-}
-
-try {
-	excludeFromClassPath = excludeFromClassPath
-} catch (MissingPropertyException e) {
-	project.ext.excludeFromClassPath = []
-}
+project.ext.tychoVersion = "2.7.5"
 
 try {
 	workspacePath = workspacePath
@@ -36,37 +24,6 @@ try {
 	dependencyFolder = dependencyFolder
 } catch (MissingPropertyException e) {
 	project.ext.dependencyFolder = "lib/dependencies/" // Folder in each subproject where
-}
-
-try {
-	groupID = groupID
-} catch (MissingPropertyException e) {
-	// workspace nach releng durchsuchen
-	def folderNames = []
-	def folders = []
-	println "folders:"
-	new File(workspacePath+".").listFiles().each{dir ->
-		if (dir.isDirectory()) {
-			folders << dir.getName()
-		}
-	}
-
-	folders.each { it ->
-		it = (String)it.replaceFirst(/\.\//, "")
-		// subProjects eventuell unnötig settings.gradle datei stattdessen benutzen
-		if (!(it ==~ /\..+/ || it ==~ /.*.repository/ || it ==~ /.*.parent/)) {
-			folderNames << it
-		}
-	}
-
-	project.ext.groupID = "group"
-	for (int i = 0; i < folderNames.size(); i++) {
-		if (folderNames[i] ==~ /.*\.[rR]eleng/) {
-			groupID = folderNames[i]
-			groupID = groupID.replace(".releng", "")
-			groupID = groupID.replace(".Releng", "")
-		}
-	}
 }
 
 try {
@@ -92,51 +49,6 @@ try {
 	project.ext.parentID = groupID + ".parent"
 }
 
-Boolean noDescriptions = false // in case of using own CategoryDescription Map
-
-try {
-	categoryDescriptions = categoryDescriptions
-} catch (MissingPropertyException e) {
-	project.ext.categoryDescriptions = [[:], [:]] // label and descriptions of the features
-	noDescriptions = true
-	// categoryDescriptions = [["feature": "labelName", "feature2": "label"], ["feature": "featureDescription", "feature2": "feature2Description"]] // label and descriptions of the features
-}
-
-try {
-	targetRepositories = targetRepositories
-} catch (MissingPropertyException e) {
-	project.ext.targetRepositories = ["https://download.eclipse.org/releases/luna/"]
-}
-
-try {
-	buildProduct = buildProduct
-} catch (MissingPropertyException e) {
-	project.ext.buildProduct = false
-}
-
-
-// returns the name of a subproject listed in the settings.gradle file
-def projects(int i) {
-	return subprojects.name[i]
-}
-
-
-// returns the number of projects listed in the settings.gradle file
-def numberOfProjects() {
-	return subprojects.name.size()
-}
-
-
-// This is the project of the parent Pom
-// The Tycho Maven Build is triggered from this project's pom
-def parentId() {
-	return parentID
-}
-
-// This Group ID will be used in every sub project
-def groupId() {
-	return groupID
-}
 
 // Add certain Jar to Library
 def addLibToCP(def project, def libPar) {
@@ -205,7 +117,7 @@ def addRunTimeLib(String libPar, String projectPar) {
 	newMf.delete()
 	mf.eachLine {line ->
 		if (line ==~ /.*Bundle-ClassPath:.*\.jar.*/) {
-			libsInLine = line.replaceAll(/[\ \t]*Bundle-ClassPath:[\ \t]*/, '')
+			def libsInLine = line.replaceAll(/[\ \t]*Bundle-ClassPath:[\ \t]*/, '')
 			line = line.replaceFirst(/[^\ \t]*\.jar[\ \,]*/, dependencyFolder + libPar + ",\n " + libsInLine) // /[^\ \t]*.\.jar[\ \,]*/
 		} else {
 			if (line ==~ /.*Bundle-ClassPath: \.[\ \t]*/) {
@@ -282,7 +194,7 @@ subprojects {
 	// apply plugin: 'eclipse'
 
 	task deleteArtifacts(type: Delete) {
-		delete 'target','pom.xml'
+		delete 'target', 'pom.xml', dependencyFolder
 	}
 
 	// Copy Dependencies into subprojects DependencyFolder
@@ -296,43 +208,40 @@ subprojects {
 		description = "\tAdds all your Dependencies from your local lib folder in each project to it's classpath"
 
 		doLast {
-			if (excludeFromClassPath.every {it != project.name}) {
-				def dependencyList = []
-				try {
-					def dir = new File(workspacePath + project.name + "/" + dependencyFolder).eachFile() {file ->
-						if (!(file.getName() ==~ /.*\.txt/)) {
-							dependencyList << file.getName()
-						}
+			def dependencyList = []
+			def depsFolder = new File(workspacePath + project.name + "/" + dependencyFolder)
+			if (depsFolder.exists()) {
+				depsFolder.eachFile() {file ->
+					if (!(file.getName() ==~ /.*\.txt/)) {
+						dependencyList << file.getName()
 					}
-
-					if (features.every {it != project.name}) {
-						boolean BundleClassPathPresent = checkForRunTimeLibs(project.name)
-						for (int icp = 0; icp < dependencyList.size; icp++) {
-							// Adds Lib to .classPath file
-							addLibToCP(project.name, dependencyList[icp])
-
-							if (!BundleClassPathPresent) {
-								// Adds Lib to Manifest File
-								createRunTimeLib(dependencyList[icp], project.name)
-								BundleClassPathPresent = true
-							} else if (!checkRunTimeLib(dependencyList[icp], project.name)) {
-								// if library not present add it to RunTimeLibrary
-								addRunTimeLib(dependencyList[icp], project.name)
-							}
-						}
-						// could still be usefull for debugging, that's why it's not deleted
-						/*dependencyList.each {dep ->
-							println project.name + ": " + dep
-						}*/
-					}
-					def warningReadMe = new File(workspacePath + project.name + "/" + dependencyFolder + "_README.txt")
-					warningReadMe.delete()
-					warningReadMe << "Do Not Remove any Jars/Libraries in this Folder!\nThis folder contains all of your dependencies defined in your gradle script.\n"
-					warningReadMe << "Removing or renaming any of these files will result in an Error in your .classpath file\n"
-					warningReadMe << "If any error concerning missing dependencies should occur please run 'gradle deleteFromClassPath setClassPath' in your workspace folder from your shell."
-				} catch (Exception e) {
-					println project.name + " has no dependencies in '${dependencyFolder}' defined: Classpath will not be changed"
 				}
+
+				if (features.every {it != project.name}) {
+					boolean BundleClassPathPresent = checkForRunTimeLibs(project.name)
+					for (int icp = 0; icp < dependencyList.size; icp++) {
+						// Adds Lib to .classPath file
+						addLibToCP(project.name, dependencyList[icp])
+
+						if (!BundleClassPathPresent) {
+							// Adds Lib to Manifest File
+							createRunTimeLib(dependencyList[icp], project.name)
+							BundleClassPathPresent = true
+						} else if (!checkRunTimeLib(dependencyList[icp], project.name)) {
+							// if library not present add it to RunTimeLibrary
+							addRunTimeLib(dependencyList[icp], project.name)
+						}
+					}
+					// could still be usefull for debugging, that's why it's not deleted
+					/*dependencyList.each {dep ->
+						println project.name + ": " + dep
+					}*/
+				}
+				def warningReadMe = new File(workspacePath + project.name + "/" + dependencyFolder + "_README.txt")
+				warningReadMe.delete()
+				warningReadMe << "Do Not Remove any Jars/Libraries in this Folder!\nThis folder contains all of your dependencies defined in your gradle script.\n"
+				warningReadMe << "Removing or renaming any of these files will result in an Error in your .classpath file\n"
+				warningReadMe << "If any error concerning missing dependencies should occur please run 'gradle deleteFromClassPath setClassPath' in your workspace folder from your shell."
 			}
 		}
 	}
@@ -341,19 +250,15 @@ subprojects {
 		description = "\tDeletes all your Dependencies located in your local lib folder from each project's classpath"
 
 		doLast {
-			try {
-				boolean depsDelete = false
-				def depsFolder = new File(workspacePath + project.name + '/' + dependencyFolder)
-				if (depsFolder.exists()) {
-					depsDelete = true
-				}
-				depsFolder.deleteDir()
+			boolean depsDelete = false
+			def depsFolder = new File(workspacePath + project.name + '/' + dependencyFolder)
+			if (depsFolder.exists()) {
+				depsDelete = true
+			}
+			depsFolder.deleteDir()
 
-				if (features.every {it != project.name} && depsDelete) {
-					deleteLibFromCP(project.name)
-				}
-			} catch (Exception e) {
-				println project.name+" has no dependencies in '${dependencyFolder}' defined: Classpath will not be changed"
+			if (features.every {it != project.name} && depsDelete) {
+				deleteLibFromCP(project.name)
 			}
 		}
 	}
@@ -446,25 +351,27 @@ task createParent() {
 	doLast {
 		new File(workspacePath + "${parentID}").mkdir()
 		String versionNumber = '1.0.0.qualifier'
-		String artifactId = parentId()
 
-		def f = new File(workspacePath + artifactId + '/pom.xml')
+		def f = new File(workspacePath + parentID + '/pom.xml')
 		f.delete()
-		f << parentPom(artifactId)
+		f << parentPom(parentID)
 		for (int i = 0; i < targetRepositories.size(); i++) {
 			f << repos(targetRepositories[i], i)
 		}
 		f << endRepos()
 		f << moduleStart()
-		for (int i = 0; i < numberOfProjects(); i++) {
-			if (excludeFromTychoBuild.every {it != projects(i)}) {
-				f << module(projects(i))
-			}
+		subprojects.each {subproj ->
+			f << module(subproj.name)
 		}
 		f << module(repositoryName)
 		f << endParent()
 	}
 }
+
+task deleteParent(type: Delete) {
+	delete(workspacePath + "${parentID}")
+}
+clean.dependsOn(deleteParent)
 
 // define Repository
 task createRepository() {
@@ -484,21 +391,10 @@ task createRepository() {
 			featureVersionNumber  = parsedXml.attribute("version")
 			featureArtifactId  = parsedXml.attribute("id")
 
-			if (noDescriptions) {
-				categoryDescriptions[0].put(features[i], parsedXml.attribute("label"))
-				categoryDescriptions[1].put(features[i], parsedXml.description.text())
-			}
-			f << categoryFeatures(featureArtifactId.replace(workspacePath, ''), featureVersionNumber)
+			f << categoryFeature(categoryId, featureArtifactId.replace(workspacePath, ''), featureVersionNumber)
 		}
 
-		for (int i = 0; i < features.size(); i++) {
-			if (noDescriptions) {
-				// featureName, label, description
-				f << categoryDescription(features[i], categoryDescriptions[0][features[i]],categoryDescriptions[1][features[i]])
-			} else {
-				f << categoryDescription(features[i], categoryDescriptions[features[i]][0],categoryDescriptions[features[i]][1])
-			}
-		}
+		f << categoryDef(categoryId, categoryLabel, categoryDescription)
 
 		f << categoryEnd()
 
@@ -507,6 +403,11 @@ task createRepository() {
 		pom << reposi()
 	}
 }
+
+task deleteRepository(type: Delete) {
+	delete(workspacePath + "${repositoryName}")
+}
+clean.dependsOn(deleteRepository)
 
 task createPoms(dependsOn: [createParent, createRepository, subprojects.deploy])
 
@@ -528,7 +429,7 @@ task completeInstall(dependsOn: [prepareMaven], type: Exec) {
 
 
 def artifact(artifactId,versionNumber) {"""
-	<groupId>${groupId()}</groupId>
+	<groupId>${groupID}</groupId>
 	<artifactId>${artifactId}</artifactId>
 	<version>${versionNumber}</version>
 	<packaging>eclipse-plugin</packaging>
@@ -539,8 +440,7 @@ def artifact(artifactId,versionNumber) {"""
 				<artifactId>tycho-compiler-plugin</artifactId>
 				<version>\${tycho-version}</version>
 				<configuration>
-					<source>1.8</source>
-					<target>1.8</target>
+					<release>11</release>
 				</configuration>
 				</plugin>
 		</plugins>
@@ -548,7 +448,7 @@ def artifact(artifactId,versionNumber) {"""
 """}
 
 def testArtifact(artifactId,versionNumber) {"""
-	<groupId>${groupId()}</groupId>
+	<groupId>${groupID}</groupId>
 	<artifactId>${artifactId}</artifactId>
 	<version>${versionNumber}</version>
 	<packaging>eclipse-test-plugin</packaging>
@@ -574,10 +474,10 @@ def start() {"""\
 
 def elder() {"""
 	<parent>
-		<groupId>${groupId()}</groupId>
-		<artifactId>${parentId()}</artifactId>
+		<groupId>${groupID}</groupId>
+		<artifactId>${parentID}</artifactId>
 		<version>1.0.0.qualifier</version>
-		<relativePath>../${parentId()}/pom.xml</relativePath>
+		<relativePath>../${parentID}/pom.xml</relativePath>
 	</parent>
 """}
 
@@ -593,7 +493,7 @@ def parentPom(artifactId) {"""\
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>${groupId()}</groupId>
+	<groupId>${groupID}</groupId>
 	<artifactId>${artifactId}</artifactId>
 	<version>1.0.0.qualifier</version>
 
@@ -642,8 +542,6 @@ def moduleStart() {"""
 	<modules>
 """}
 
-// for (int i = 0; i < numberOfProjects(); i++)
-
 def module(String project) {"""\
 		<module>../${project}</module>
 """}
@@ -672,46 +570,8 @@ def reposi() {"""\
 	<artifactId>${repositoryName}</artifactId>
 	<version>1.0.0.qualifier</version>
 	<packaging>eclipse-repository</packaging>
-
-	${reposiBuildStep()}
 </project>
 """}
-
-def String reposiBuildStep(){
-	if (buildProduct != false) {
-		return """
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.eclipse.tycho</groupId>
-				<artifactId>tycho-p2-director-plugin</artifactId>
-				<version>\${tycho-version}</version>
-				<executions>
-					<execution>
-						<!-- (optional) install the product for all configured os/ws/arch environments using p2 director -->
-						<id>materialize-products</id>
-						<goals>
-							<goal>materialize-products</goal>
-						</goals>
-					</execution>
-
-					<execution>
-						<!-- (optional) create product zips (one per os/ws/arch) -->
-						<id>archive-products</id>
-						<goals>
-							<goal>archive-products</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
-	</build>
-		"""
-	} else {
-		return "\n"
-	}
-}
-
 
 // creates a category in
 def categoryHead() {"""\
@@ -719,14 +579,14 @@ def categoryHead() {"""\
 <site>
 """}
 
-def categoryFeatures(artifactId, versionNumber) {"""
+def categoryFeature(category, artifactId, versionNumber) {"""
 	<feature url="features/${artifactId}_${versionNumber}.jar" id="${artifactId}" version="${versionNumber}">
-		<category name="${artifactId}.category"/>
+		<category name="${category}"/>
 	</feature>
 """}
 
-def categoryDescription(artifactId, categoryName, categorydescription) {"""
-	<category-def name="${artifactId}.category" label="${categoryName}">
+def categoryDef(id, label, categorydescription) {"""
+	<category-def name="${id}" label="${label}">
 		<description>
 ${categorydescription}
 		</description>
@@ -745,83 +605,18 @@ def feature(artifactId, versionNumber) {"""\
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>${groupId()}</groupId>
-		<artifactId>${parentId()}</artifactId>
+		<groupId>${groupID}</groupId>
+		<artifactId>${parentID}</artifactId>
 		<version>1.0.0.qualifier</version>
-		<relativePath>../${parentId()}/pom.xml</relativePath>
+		<relativePath>../${parentID}/pom.xml</relativePath>
 	</parent>
-	<groupId>${groupId()}</groupId>
+	<groupId>${groupID}</groupId>
 	<artifactId>${artifactId}</artifactId>
 	<version>${versionNumber}</version>
 	<packaging>eclipse-feature</packaging>
 </project>
 """}
 // end of feature pom
-
-
-// -------- In case you want to generate the product definition ------ //
-/*
-def productXML(){
-"""\
-<?xml version="1.0" encoding="UTF-8"?>
-<?pde version="3.5"?>
-
-<product name="${groupID}.product" uid="${groupID}" id="${groupID}.product" application="${product}" version="1.0.0.qualifier" useFeatures="true" includeLaunchers="true">
-	<configIni use="default">
-	</configIni>
-
-	<launcherArgs>
-		<programArgs>-consoleLog</programArgs>
-		<vmArgs>-Xdock:icon=../Resources/Eclipse.icns -XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts -Xdock:icon=../Resources/Eclipse.icns -XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts -Xms40m -Xmx512m -Xdock:icon=../Resources/Eclipse.icns -XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts</vmArgs>
-		<vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts</vmArgsMac>
-	</launcherArgs>
-
-	<plugins>
-	</plugins>
-	<features>
-""" + listProductFeature() + """
-		<feature id="org.eclipse.rcp" version="3.7.2.v20120120-1424-9DB5FmnFq5JCf1UA38R-kz0S0272"/>
-	</features>
-	<configurations>
-		<plugin id="org.eclipse.core.runtime" autoStart="true" startLevel="0" />
-		<plugin id="org.eclipse.equinox.common" autoStart="true" startLevel="2" />
-		<plugin id="org.eclipse.osgi" autoStart="true" startLevel="-1" />
-	</configurations>
-</product>
-"""
-
-/*
-"""\
-<?xml version="1.0" encoding="UTF-8"?>
-<?pde version="3.5"?>
-
-<product name="de.prob.product" uid="de.prob" id="de.prob.standalone.product" application="de.prob.standalone.application" version="1.0.0.qualifier" useFeatures="true" includeLaunchers="true">
-	<configIni use="default">
-	</configIni>
-
-	<launcherArgs>
-		<vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts</vmArgsMac>
-	</launcherArgs>
-
-	<plugins>
-	</plugins>
-</product>
-"""*/
-
-/*
-	<feature id="birkhoff.feature" version="1.0.0.qualifier"/>
-*/
-/*
-}
-
-def String listProductFeatures(){
-	String returnString = ""
-	for (int i = 0; i < features.size(); i++) {
-		returnString += '\n\t\t<feature id="${features[i]}" version="1.0.0.qualifier"/>'
-	}
-	return returnString
-}
-*/
 
 // Build Script can be executed via gradle install
 // For a complete classPath Refresh please execute 'gradle deleteFromClassPath setClassPath'

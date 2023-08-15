@@ -8,6 +8,7 @@ package de.prob.ui.ticket;
 
 import org.eclipse.core.runtime.ILogListener;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.swt.widgets.Display;
 
 import de.prob.logging.Logger;
@@ -27,14 +28,12 @@ public final class ProBLogListener implements ILogListener {
 		final int code = status.getCode();
 
 		if (code == Logger.BUGREPORT || code == Logger.NOBUGREPORT) {
-			final boolean bugreport = false; // ;code == Logger.BUGREPORT;
 			display.asyncExec(new Runnable() {
 				public void run() {
 					String title = (status.getSeverity() == IStatus.ERROR) ? "An Error occured"
 							: "Warning";
-					// Notice: ErrorTICKETDialog to provide Bugreport-Button
-					ErrorTicketDialog.openError(display.getActiveShell(),
-							"ProB Problem", title, status, bugreport);
+					ErrorDialog.openError(display.getActiveShell(),
+							"ProB Problem", title, status);
 				}
 			});
 		}

@@ -4,15 +4,13 @@
  * (http://www.eclipse.org/org/documents/epl-v10.html)
  * */
 
-package de.prob.eventb.translator.internal; // NOPMD by bendisposto
-// High coupling to the ast is ok
+package de.prob.eventb.translator.internal;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.CoreException;
 import org.eventb.core.IConvergenceElement.Convergence;
 import org.eventb.core.ILabeledElement;
@@ -237,7 +235,7 @@ public class ModelTranslator extends AbstractComponentTranslator {
 
 		if (!bugs.isEmpty()) {
 			String message = "Translation incomplete due to a Bug in Rodin. This does not affect correctness of the Animation/Model Checking but can decrease its performance. Skipped discharged information about: "
-					+ StringUtils.join(bugs, ",");
+					+ String.join(",", bugs);
 			Logger.notifyUser(message);
 		}
 

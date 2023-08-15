@@ -33,7 +33,7 @@ To build the Prolog binaries you require a SICStus 4 (http://sicstus.sics.se/ind
 - We use gradle to manage the dependencies to the libraries, thus you will need gradle installed on your computer.
   (see http://www.gradle.org/)
 
-- In the workspace directory run the completeInstall task (```gradle completeInstall```), alternatively you can also run the downloadCli and collectDependencies tasks (```gradle downloadCli collectDependencies```). This will download the latest nightly build of the Prolog binary and the required Java libraries (such as apache commons, etc.)
+- In the workspace directory run the completeInstall task (```gradle completeInstall```), alternatively you can also run the downloadCli and collectDependencies tasks (```gradle downloadCli collectDependencies```). This will download the latest nightly build of the Prolog binary and the required Java libraries (such as the parser libraries).
 
 - Install Eclipse for RCP Development
 

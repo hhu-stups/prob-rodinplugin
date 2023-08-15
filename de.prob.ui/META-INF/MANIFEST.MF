@@ -2,23 +2,19 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: ProB Ui Plug-in
 Bundle-SymbolicName: de.prob.ui;singleton:=true
-Bundle-Version: 7.4.3.qualifier
-Require-Bundle: org.eclipse.ui;bundle-version="[3.5.0,4.0.0)",
- org.eclipse.core.runtime;bundle-version="[3.5.0,4.0.0)",
- org.eclipse.core.resources;bundle-version="[3.5.0,4.0.0)",
- org.eclipse.ui.ide;bundle-version="[3.5.0,4.0.0)",
- de.prob.core;bundle-version="[9.4.5,9.5.0)",
- org.eventb.core;bundle-version="[3.0.0,4.0.0)",
- org.eclipse.core.expressions;bundle-version="[3.4.101,4.0.0)",
- org.eclipse.gef;bundle-version="[3.7.0,4.0.0)",
- org.eventb.core.ast;bundle-version="[3.0.0,4.0.0)",
- org.rodinp.core;bundle-version="[1.7.0,2.0.0)"
+Bundle-Version: 7.5.0.qualifier
+Require-Bundle: de.prob.core;bundle-version="[9.5.0,9.6.0)",
+ org.eclipse.core.expressions;bundle-version="[3.7.0,4.0.0)",
+ org.eclipse.core.resources;bundle-version="[3.13.0,4.0.0)",
+ org.eclipse.core.runtime;bundle-version="[3.20.0,4.0.0)",
+ org.eclipse.gef;bundle-version="[3.11.0,4.0.0)",
+ org.eclipse.ui;bundle-version="[3.118.0,4.0.0)",
+ org.eclipse.ui.ide;bundle-version="[3.18.0,4.0.0)",
+ org.eventb.core;bundle-version="[3.5.0,4.0.0)",
+ org.eventb.core.ast;bundle-version="[3.5.0,4.0.0)",
+ org.rodinp.core;bundle-version="[1.9.0,2.0.0)"
 Bundle-ActivationPolicy: lazy
 Bundle-Vendor: HHU Düsseldorf STUPS Group
 Bundle-Activator: de.prob.ui.ProbUiPlugin
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-11
 Export-Package: de.prob.ui
-Bundle-ClassPath: lib/apache_xmlrpc.jar,
- lib/ws_commons.jar,
- lib/dependencies/commons-codec-1.8.jar,
- .

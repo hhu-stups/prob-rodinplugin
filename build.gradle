@@ -2,12 +2,27 @@
 
 project.ext {
 	targetRepositories = [
-		"https://download.eclipse.org/releases/luna/",
+		"https://download.eclipse.org/releases/2022-03/",
+		"https://rodin-b-sharp.sourceforge.net/core-updates/",
 		"https://rodin-b-sharp.sourceforge.net/updates",
-		"https://stups.hhu-hosting.de/buildlibs/org.rodinp.dev/",
 	]
 
 	groupID = "de.prob"
+
+	categoryId = "de.prob2.feature.category"
+	categoryLabel = "ProB for Rodin"
+	// When editing the description here,
+	// also update the descriptions in all feature.xml files!
+	categoryDescription = """\
+	ProB is an animator and model checker for the B-Method. It allows
+	fully automatic animation of many B specifications, and can be
+	used to systematically check a specification for errors.
+	Part of the research and development was conducted within the
+	EPSRC funded projects ABCD and iMoc, and within the EU funded
+	projects Rodin and Deploy and the DFG projects Gepavas and Gepavas II.
+	ProB has been successfully used on various industrial specifications
+	and is now being used e.g. within Siemens, Alstom, Thales and ClearSy.
+	""".stripIndent()
 }
 
 apply from: 'tycho_build.gradle'
@@ -19,13 +34,15 @@ project(':de.prob.core') {
 		mavenCentral()
 	}
 
-	def parser_version = '2.12.4'
+	def parser_version = "2.12.7"
 
 	dependencies {
 		// Note: After changing/updating dependencies or their versions here,
-		// you also need to update the corresponding entries in META-INF/MANIFEST.MF!
-		// To be safe, you should probably also update the Eclipse .classpath file
-		// (it might be used by the Tycho build - not sure).
+		// run "./gradlew clean setClassPath prepareMaven".
+		// This downloads the dependencies and configures them in all appropriate places.
+		// If you updated or removed any dependencies,
+		// you also need to *manually* delete the old dependencies/versions
+		// from the relevant .classpath and META-INF/MANIFEST.MF files.
 		implementation group: "de.hhu.stups", name: "answerparser", version: parser_version
 		implementation group: "de.hhu.stups", name: "bparser", version: parser_version
 		implementation group: "de.hhu.stups", name: "ltlparser", version: parser_version
@@ -33,28 +50,25 @@ project(':de.prob.core') {
 		implementation group: "de.hhu.stups", name: "prologlib", version: parser_version
 		implementation group: "de.hhu.stups", name: "unicode", version: parser_version
 		implementation group: "de.hhu.stups", name: "theorymapping", version: parser_version
-		implementation 'commons-lang:commons-lang:2.6'
-		implementation 'commons-codec:commons-codec:1.8'
-		implementation 'com.thoughtworks.xstream:xstream:1.4.19'
+	}
+}
+
+project(":de.bmotionstudio.gef.editor") {
+	apply(plugin: "java")
+
+	repositories {
+		mavenCentral()
+	}
+
+	dependencies {
+		implementation group: "com.thoughtworks.xstream", name: "xstream", version: "1.4.20"
 		// Current versions of XStream depend on MXParser, but not any specific version of it.
 		// To avoid the version number changing unexpectedly and breaking the MANIFEST.MF classpath entries,
 		// hardcode a specific MXParser version here.
 		// It *should* be safe to update this when a new version is released.
-		implementation group: 'io.github.x-stream', name: 'mxparser', version: '1.2.2'
-		implementation group: 'net.java.dev.jna', name: 'jna', version: '3.4.0'
-		implementation group: 'de.hhu.stups', name: 'ptolemy-jfmi', version: '1.1.0'
+		implementation group: "io.github.x-stream", name: "mxparser", version: "1.2.2"
 	}
 }
-
-project(':de.prob.ui') {
-	repositories {
-		mavenCentral()
-	}
-	dependencies {
-		implementation 'commons-codec:commons-codec:1.8'
-	}
-}
-
 
 def download(address,target) {
 	def file = new FileOutputStream(target)
@@ -69,12 +83,12 @@ task downloadCli {
 		delete file(dir)
 		new File(dir).mkdirs()
 
-		['macos':'macos','linux64':'linux64','win64':'windows'].each {
+		['macos':'macos', 'linux64':'linux64', 'windows64':'windows'].each {
 			def n = it.getKey()
 
 			def targetdir = dir + it.getValue()
 			def targetzip = dir + "probcli_${n}.zip"
-			def url = "https://stups.hhu-hosting.de/downloads/prob/cli/releases/1.12.1/probcli_${n}.zip"
+			def url = "https://stups.hhu-hosting.de/downloads/prob/cli/releases/1.12.2/probcli_${n}.zip"
 			download(url, targetzip)
 			FileTree zip = zipTree(targetzip)
 			copy {
@@ -88,3 +102,8 @@ task downloadCli {
 
 
 prepareMaven.dependsOn downloadCli
+
+task deleteCli(type: Delete) {
+	delete("de.prob.core/prob")
+}
+clean.dependsOn(deleteCli)
