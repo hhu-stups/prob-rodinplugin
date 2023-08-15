@@ -2,8 +2,8 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: BMotion Studio Rodin Integration
 Bundle-SymbolicName: de.bmotionstudio.rodin;singleton:=true
-Bundle-Version: 1.3.0.qualifier
-Fragment-Host: de.bmotionstudio.gef.editor;bundle-version="[5.6.0,5.7.0)"
+Bundle-Version: 1.3.1.qualifier
+Fragment-Host: de.bmotionstudio.gef.editor;bundle-version="[5.6.1,5.7.0)"
 Bundle-RequiredExecutionEnvironment: JavaSE-11
 Bundle-Vendor: HHU Düsseldorf STUPS Group
 Require-Bundle: org.eclipse.ui.navigator;bundle-version="3.5.0"

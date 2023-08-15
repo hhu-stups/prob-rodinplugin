@@ -2,8 +2,8 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: ProB Ui Plug-in
 Bundle-SymbolicName: de.prob.ui;singleton:=true
-Bundle-Version: 7.5.0.qualifier
-Require-Bundle: de.prob.core;bundle-version="[9.5.0,9.6.0)",
+Bundle-Version: 7.5.1.qualifier
+Require-Bundle: de.prob.core;bundle-version="[9.5.1,9.6.0)",
  org.eclipse.core.expressions;bundle-version="[3.7.0,4.0.0)",
  org.eclipse.core.resources;bundle-version="[3.13.0,4.0.0)",
  org.eclipse.core.runtime;bundle-version="[3.20.0,4.0.0)",
