@@ -34,7 +34,7 @@ project(':de.prob.core') {
 		mavenCentral()
 	}
 
-	def parser_version = '2.12.4'
+	def parser_version = "2.12.7"
 
 	dependencies {
 		// Note: After changing/updating dependencies or their versions here,
@@ -88,7 +88,7 @@ task downloadCli {
 
 			def targetdir = dir + it.getValue()
 			def targetzip = dir + "probcli_${n}.zip"
-			def url = "https://stups.hhu-hosting.de/downloads/prob/cli/nightly/probcli_${n}.zip"
+			def url = "https://stups.hhu-hosting.de/downloads/prob/cli/releases/1.12.2/probcli_${n}.zip"
 			download(url, targetzip)
 			FileTree zip = zipTree(targetzip)
 			copy {
