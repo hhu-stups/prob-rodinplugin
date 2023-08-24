@@ -12,7 +12,6 @@ import java.util.Map;
 
 import de.prob.cli.CliException;
 import de.prob.core.IServerConnection;
-import de.prob.core.ITrace;
 import de.prob.core.LanguageDependendAnimationPart;
 import de.prob.core.ProblemHandler;
 import de.prob.core.command.CommandException;
@@ -110,18 +109,6 @@ public class AnimatorImpl {
 
 	public boolean isRunning() {
 		return true;
-	}
-
-	public synchronized final ITrace getTraceImpl() {
-		final ITrace trace;
-		if (connector != null && connector instanceof ServerTraceConnection) {
-			ServerTraceConnection conn = (ServerTraceConnection) connector;
-			conn.preferenceToTrace("seed: " + getSeed().toString());
-			trace = conn.getTrace();
-		} else {
-			trace = null;
-		}
-		return trace;
 	}
 
 	public void setSeed(final RandomSeed seed) {

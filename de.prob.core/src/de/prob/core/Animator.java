@@ -10,8 +10,6 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.osgi.service.prefs.Preferences;
-
 import de.prob.core.command.IComposableCommand;
 import de.prob.core.domainobjects.History;
 import de.prob.core.domainobjects.MachineDescription;
@@ -20,10 +18,10 @@ import de.prob.core.domainobjects.RandomSeed;
 import de.prob.core.domainobjects.State;
 import de.prob.core.internal.Activator;
 import de.prob.core.internal.AnimatorImpl;
-import de.prob.core.internal.ServerTraceConnection;
-import de.prob.core.internal.TraceConnectionProvider;
+import de.prob.core.internal.ServerConnection;
 import de.prob.exceptions.ProBException;
 
+import org.osgi.service.prefs.Preferences;
 
 /**
  * Animator is a singleton Proxy used to communicate with ProB. The method
@@ -41,10 +39,6 @@ public final class Animator {
 	private static Animator animator = new Animator();
 	private static Animator auxanimator = null;
 
-	/**
-	 * 
-	 */
-	private IConnectionProvider connectionProvider = null;
 	private volatile boolean dirty;
 	private volatile boolean rodinProjectHasErrorsOrWarnings;
 	private final Map<Object, Object> dataStore = new HashMap<Object, Object>();
@@ -98,7 +92,7 @@ public final class Animator {
 	}
 
 	private final synchronized void createNewImplementation(final File file) {
-		final AnimatorImpl impl = new AnimatorImpl(getIServerConnection(), file);
+		final AnimatorImpl impl = new AnimatorImpl(new ServerConnection(), file);
 		setImplementation(impl);
 		StaticListenerRegistry.registerComputationListener(getHistory());
 	}
@@ -210,40 +204,6 @@ public final class Animator {
 			createNewImplementation(null);
 		}
 		return implementation;
-	}
-
-	/**
-	 * 
-	 * @param {@link IConnectionProvider} provider
-	 */
-	public final synchronized void setConnectionProvider(
-			final IConnectionProvider provider) {
-		connectionProvider = provider;
-	}
-
-	/**
-	 * @return {@link IServerConnection}, by default (that means
-	 *         <code>connectionProvider == null</code>) the
-	 *         {@link ServerTraceConnection}. If a {@link IConnectionProvider}
-	 *         is set, it is asked to provide a new IServerConnection
-	 * 
-	 */
-	private final synchronized IServerConnection getIServerConnection() {
-		if (connectionProvider == null) {
-			connectionProvider = new TraceConnectionProvider();
-		}
-		return connectionProvider.getISeverConnection();
-	}
-
-	/**
-	 * 
-	 * @return {@link ITrace}, or null if the IServerConnection is not a
-	 *         {@link ServerTraceConnection}
-	 */
-	public final synchronized ITrace getTrace() {
-		if (implementation != null)
-			return implementation.getTraceImpl();
-		return null;
 	}
 
 	public final synchronized RandomSeed getRandomSeed() {
