@@ -33,12 +33,5 @@ public final class ProBLogListener implements ILogListener {
 				}
 			});
 		}
-
-		display.asyncExec(new Runnable() {
-			public void run() {
-				LogView.writeToLog(status.getMessage());
-			}
-		});
-
 	}
 }
