@@ -23,9 +23,8 @@ public abstract class ProBJobFinishedListener extends JobChangeAdapter {
 				showResult(checkJob.getCommand(), checkJob.getAnimator());
 			}
 		} else {
-			final String message = "The job has a wrong type. Expected ProBCommandJob but got "
-					+ job.getClass();
-			Logger.notifyUserWithoutBugreport(message);
+			Logger.notifyUser("The job has a wrong type. Expected ProBCommandJob but got "
+					+ job.getClass());
 		}
 	}
 

@@ -165,8 +165,7 @@ public class ServerConnection implements IServerConnection {
 			shutdown = false;
 		} else {
 			// This should never happen
-			final String message = "Tried to start a server that is already running";
-			Logger.notifyUserWithoutBugreport(message);
+			Logger.notifyUser("Tried to start a server that is already running");
 		}
 	}
 

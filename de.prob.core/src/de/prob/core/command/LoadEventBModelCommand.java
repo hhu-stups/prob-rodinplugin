@@ -104,7 +104,7 @@ public final class LoadEventBModelCommand {
 							+ " Typically this means, that your axioms are too complicated for automatic solving. "
 							+ "You might create an animation refinement using the context menu to help ProB finding a solution.";
 				}
-				Logger.notifyUserWithoutBugreport(message);
+				Logger.notifyUser(message);
 			}
 		} catch (CommandException ex) {
 			Logger.notifyUser("Event-B Model or Context could not be loaded due to an exception: " 

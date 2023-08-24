@@ -27,7 +27,7 @@ public final class ProBLogListener implements ILogListener {
 
 		final int code = status.getCode();
 
-		if (code == Logger.BUGREPORT || code == Logger.NOBUGREPORT) {
+		if (code == Logger.NOTIFY_USER) {
 			display.asyncExec(new Runnable() {
 				public void run() {
 					String title = (status.getSeverity() == IStatus.ERROR) ? "An Error occured"

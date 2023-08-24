@@ -68,8 +68,7 @@ public class StartDistributedModelcheckHandler extends AbstractHandler implement
 		final IFile resource = extractResource(rootElement);
 
 		if (!checkErrorMarkers(resource)) {
-			String message = "A model/context in your project contains Errors or Warnings. This can lead to unexpected behavior (e.g. missing variables) when animating.";
-			Logger.notifyUserWithoutBugreport(message);
+			Logger.notifyUser("A model/context in your project contains Errors or Warnings. This can lead to unexpected behavior (e.g. missing variables) when animating.");
 		}
 		;
 
@@ -83,7 +82,7 @@ public class StartDistributedModelcheckHandler extends AbstractHandler implement
                     s = new Socket("localhost", 4444);
                     new ObjectOutputStream(s.getOutputStream()).writeObject(output);
                 } catch (IOException e) {
-                    Logger.notifyUserWithoutBugreport("unable to connect to master", e);
+                    Logger.notifyUser("unable to connect to master", e);
                 } finally {
                     if (s != null) {
                         try {

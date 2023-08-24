@@ -27,8 +27,7 @@ public final class Logger {
 	public static final int DEBUG = 0;
 	public static final int INFO = 1;
 	public static final int WARNING = 2;
-	public static final int BUGREPORT = 4;
-	public static final int NOBUGREPORT = 8;
+	public static final int NOTIFY_USER = 4;
 
 	/**
 	 * Registers a new {@link ILogListener}. The listener's
@@ -59,20 +58,11 @@ public final class Logger {
 	 */
 	public static void notifyUser(final String message,
 			final Throwable throwable) {
-		log(IStatus.ERROR, BUGREPORT, message, throwable);
+		log(IStatus.ERROR, NOTIFY_USER, message, throwable);
 	}
 
 	public static void notifyUser(final String message) {
 		notifyUser(message, null);
-	}
-
-	public static void notifyUserWithoutBugreport(final String message,
-			final Throwable throwable) {
-		log(IStatus.ERROR, NOBUGREPORT, message, throwable);
-	}
-
-	public static void notifyUserWithoutBugreport(final String message) {
-		notifyUserWithoutBugreport(message, null);
 	}
 
 	/**
@@ -150,9 +140,5 @@ public final class Logger {
 
 	private static void log(final IStatus status) {
 		Activator.getDefault().getLog().log(status);
-	}
-
-	public static void notifyUserAboutWarningWithoutBugreport(String string) {
-		log(IStatus.WARNING, NOBUGREPORT, string, null);
 	}
 }
