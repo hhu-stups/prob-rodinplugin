@@ -11,8 +11,6 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.swt.widgets.Display;
 
-import de.prob.logging.Logger;
-
 public final class ProBLogListener implements ILogListener {
 
 	private static final Display display = Display.getDefault();
@@ -25,9 +23,7 @@ public final class ProBLogListener implements ILogListener {
 			return;
 		}
 
-		final int code = status.getCode();
-
-		if (code == Logger.NOTIFY_USER) {
+		if (status.getSeverity() == IStatus.ERROR || status.getSeverity() == IStatus.WARNING) {
 			display.asyncExec(new Runnable() {
 				public void run() {
 					String title = (status.getSeverity() == IStatus.ERROR) ? "An Error occured"

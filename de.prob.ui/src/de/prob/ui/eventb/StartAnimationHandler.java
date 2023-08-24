@@ -95,7 +95,7 @@ public class StartAnimationHandler extends AbstractHandler implements IHandler {
 			} else if (realError)
 				Logger.notifyUser(stringBuffer.toString());
 			else
-				Logger.log(IStatus.WARNING, Logger.NOTIFY_USER, stringBuffer.toString(), null);
+				Logger.log(IStatus.WARNING, stringBuffer.toString(), null);
 		} else {
 		     Animator.getAnimator().resetRodinProjectHasErrorsOrWarnings();
 		}

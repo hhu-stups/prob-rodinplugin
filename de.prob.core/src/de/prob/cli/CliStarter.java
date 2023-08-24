@@ -259,14 +259,13 @@ public final class CliStarter {
 					if (line == null) {
 						break;
 					}
-					// Logger.log(IStatus.INFO, IStatus.OK, prefix + line,
-					// null);
+					// Logger.log(IStatus.INFO, prefix + line, null);
 					System.err.println(prefix + line);
 				}
 			} catch (IOException e) {
 				if (!"Stream closed".equals(e.getMessage())) {
 					final String message = "OutputLogger died with error";
-					Logger.log(IStatus.INFO, Logger.DEBUG, message, e);
+					Logger.log(IStatus.INFO, message, e);
 				}
 			} finally {
 				if (in != null) {

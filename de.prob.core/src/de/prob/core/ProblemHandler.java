@@ -16,8 +16,8 @@ import de.prob.logging.Logger;
 public class ProblemHandler {
 
 	/**
-	 * Notifies the User about a fatal problem inside a command by adding a
-	 * {@link Logger#FATALERROR} to the log. This method takes a message
+	 * Notifies the User about a fatal problem inside a command by adding an error
+	 * to the log. This method takes a message
 	 * describing the problem.<br>
 	 * 
 	 * <b>Note:</b> Calling this method logs the problem and throws a new
@@ -37,8 +37,8 @@ public class ProblemHandler {
 	}
 
 	/**
-	 * Notifies the User about a fatal problem inside a command by adding a
-	 * {@link Logger#FATALERROR} to the log. This method takes a message
+	 * Notifies the User about a fatal problem inside a command by adding an error
+	 * to the log. This method takes a message
 	 * describing the problem.<br>
 	 * 
 	 * <b>Note:</b> Calling this method logs the problem and throws a new
@@ -74,8 +74,8 @@ public class ProblemHandler {
 
 	/**
 	 * 
-	 * Notifies the User about a fatal problem by adding a
-	 * {@link Logger#FATALERROR} to the log. This method takes a message
+	 * Notifies the User about a fatal problem by adding an error
+	 * to the log. This method takes a message
 	 * describing the problem and the causing exception.
 	 * 
 	 * Note: Calling this method logs the problem and throws a CliException that
@@ -95,8 +95,8 @@ public class ProblemHandler {
 
 	/**
 	 * 
-	 * Notifies the User about a fatal problem by adding a
-	 * {@link Logger#FATALERROR} to the log. This method takes a message
+	 * Notifies the User about a fatal problem by adding an error
+	 * to the log. This method takes a message
 	 * describing the problem and the causing exception.
 	 * 
 	 * Note: Calling this method logs the problem and throws a CliException that

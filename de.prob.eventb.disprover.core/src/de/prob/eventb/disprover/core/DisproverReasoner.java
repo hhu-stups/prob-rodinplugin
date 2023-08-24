@@ -3,7 +3,17 @@ package de.prob.eventb.disprover.core;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.eclipse.core.runtime.Status;
+import de.be4.classicalb.core.parser.analysis.prolog.ASTProlog;
+import de.be4.classicalb.core.parser.node.AEventBContextParseUnit;
+import de.prob.core.Animator;
+import de.prob.eventb.disprover.core.internal.DisproverCommand;
+import de.prob.eventb.disprover.core.internal.ICounterExample;
+import de.prob.eventb.disprover.core.translation.DisproverContextCreator;
+import de.prob.eventb.translator.internal.TranslationVisitor;
+import de.prob.logging.Logger;
+import de.prob.prolog.output.PrologTermStringOutput;
+
+import org.eclipse.core.runtime.IStatus;
 import org.eventb.core.IEventBProject;
 import org.eventb.core.IPOSequent;
 import org.eventb.core.ast.Predicate;
@@ -21,16 +31,6 @@ import org.eventb.core.seqprover.ProverFactory;
 import org.eventb.core.seqprover.SerializeException;
 import org.rodinp.core.IRodinProject;
 import org.rodinp.core.RodinDBException;
-
-import de.be4.classicalb.core.parser.analysis.prolog.ASTProlog;
-import de.be4.classicalb.core.parser.node.AEventBContextParseUnit;
-import de.prob.core.Animator;
-import de.prob.eventb.disprover.core.internal.DisproverCommand;
-import de.prob.eventb.disprover.core.internal.ICounterExample;
-import de.prob.eventb.disprover.core.translation.DisproverContextCreator;
-import de.prob.eventb.translator.internal.TranslationVisitor;
-import de.prob.logging.Logger;
-import de.prob.prolog.output.PrologTermStringOutput;
 
 public class DisproverReasoner implements IReasoner {
 
@@ -62,7 +62,7 @@ public class DisproverReasoner implements IReasoner {
 					timeoutFactor, pm);
 			return createDisproverResult(ce, sequent, input);
 		} catch (RodinDBException e) {
-			Logger.log(Logger.WARNING, Status.WARNING, e.getMessage(), e);
+			Logger.log(IStatus.WARNING, e.getMessage(), e);
 			return ProverFactory.reasonerFailure(this, input, e.getMessage());
 		} catch (InterruptedException e) {
 			return ProverFactory.reasonerFailure(this, input, e.getMessage());
