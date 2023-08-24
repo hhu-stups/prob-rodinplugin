@@ -21,7 +21,6 @@ import de.prob.core.command.IComposableCommand;
 import de.prob.core.domainobjects.History;
 import de.prob.core.domainobjects.HistoryItem;
 import de.prob.core.domainobjects.MachineDescription;
-import de.prob.core.domainobjects.RandomSeed;
 import de.prob.core.domainobjects.State;
 import de.prob.core.sablecc.node.Start;
 import de.prob.exceptions.ProBException;
@@ -40,8 +39,6 @@ public class AnimatorImpl {
 	private final History history = new History();
 
 	private IServerConnection connector;
-
-	private RandomSeed seed;
 
 	private MachineDescription description;
 
@@ -109,14 +106,6 @@ public class AnimatorImpl {
 
 	public boolean isRunning() {
 		return true;
-	}
-
-	public void setSeed(final RandomSeed seed) {
-		this.seed = seed;
-	}
-
-	public RandomSeed getSeed() {
-		return seed;
 	}
 
 	public synchronized void setMachineDescription(

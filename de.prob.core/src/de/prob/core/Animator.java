@@ -14,7 +14,6 @@ import de.prob.core.command.IComposableCommand;
 import de.prob.core.domainobjects.History;
 import de.prob.core.domainobjects.MachineDescription;
 import de.prob.core.domainobjects.Operation;
-import de.prob.core.domainobjects.RandomSeed;
 import de.prob.core.domainobjects.State;
 import de.prob.core.internal.Activator;
 import de.prob.core.internal.AnimatorImpl;
@@ -204,14 +203,6 @@ public final class Animator {
 			createNewImplementation(null);
 		}
 		return implementation;
-	}
-
-	public final synchronized RandomSeed getRandomSeed() {
-		return getImplementation().getSeed();
-	}
-
-	public final synchronized void setRandomSeed(final RandomSeed seed) {
-		getImplementation().setSeed(seed);
 	}
 
 	// just for testing
