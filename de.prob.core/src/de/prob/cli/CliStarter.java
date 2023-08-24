@@ -21,9 +21,6 @@ import de.prob.core.internal.Activator;
 import de.prob.logging.Logger;
 
 public final class CliStarter {
-	private static final String[] JARS = new String[] { "BParser.jar",
-			"ParserAspects.jar", "aspectjrt.jar", "prolog.jar" };
-
 	private Process prologProcess;
 
 	private int port = -1;
@@ -76,8 +73,6 @@ public final class CliStarter {
 		final String os = Platform.getOS();
 		final File applicationPath = getCliPath();
 
-		final String fullcp = createFullClasspath(os, applicationPath);
-
 		final OsSpecificInfo osInfo = getOsInfo(os);
 
 		final String osPath = applicationPath + File.separator + osInfo.subdir;
@@ -94,10 +89,8 @@ public final class CliStarter {
 		// command.add("-ll");
 		command.add("-sf");
 		command.add("-p");command.add("use_safety_ltl_model_checker");command.add("false");
-		command.add("-parsercp");
 		 // disable LTL safety model check as the counter examples lead to assertion failures 
 		 // in CounterExampleProposition in CounterExample.java
-		command.add(fullcp);
 
 		if (file != null) {
 			command.add(file.getAbsolutePath());
@@ -170,25 +163,6 @@ public final class CliStarter {
 		analyseStdout(input, Arrays.asList(portPattern, intPattern));
 		port = portPattern.getValue();
 		userInterruptReference = intPattern.getValue();
-	}
-
-	private static String createFullClasspath(final String os, final File path)
-			throws CliException {
-		final File base = new File(path.getParentFile().getParentFile(),
-				"de.prob.common");
-		final File common = new File(base, "common");
-		final File lib = new File(common, "lib");
-		final StringBuilder sb = new StringBuilder();
-		boolean isFirst = true;
-		for (final String jar : JARS) {
-			final File entry = new File(lib, jar);
-			if (!isFirst) {
-				sb.append(File.pathSeparator);
-			}
-			sb.append(entry.getPath());
-			isFirst = false;
-		}
-		return sb.toString();
 	}
 
 	private void startOutputLogger(final BufferedReader input) {
