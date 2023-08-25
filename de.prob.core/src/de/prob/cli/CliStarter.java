@@ -102,10 +102,7 @@ public final class CliStarter {
 		try {
 			prologProcess = pb.start();
 		} catch (IOException e) {
-			final String message = "Problem while starting up ProB CLI. Tried to execute:"
-					+ executable;
-			Logger.notifyUser(message, e);
-			throw new CliException(message, e, true);
+			throw new CliException("Problem while starting up ProB CLI. Tried to execute:" + executable, e, false);
 		}
 
 		Assert.isNotNull(prologProcess);
@@ -144,10 +141,7 @@ public final class CliStarter {
 			} else if (os.equals(Platform.OS_LINUX)) {
 				subdir = "linux64";
 			} else {
-				final CliException cliException = new CliException(
-						"ProB does not support the plattform: " + os);
-				cliException.notifyUserOnce();
-				throw cliException;
+				throw new CliException("ProB does not support the plattform: " + os);
 			}
 
 			return new OsSpecificInfo(subdir, "probcli.sh",
@@ -187,9 +181,7 @@ public final class CliStarter {
 						|| line.contains("starting command loop"); // printed in prob_socketserver.pl
 			}
 		} catch (IOException e) {
-			final String message = "Problem while starting ProB. Cannot read from input stream.";
-			Logger.notifyUser(message, e);
-			throw new CliException(message, e, true);
+			throw new CliException("Problem while starting ProB. Cannot read from input stream.", e, true);
 		}
 		for (CliPattern<?> p : patterns) {
 			p.notFound();
@@ -228,11 +220,9 @@ public final class CliStarter {
 
 			return new File(resolvedUri);
 		} catch (URISyntaxException e) {
-			throw new CliException("Unable to construct file '"
-					+ entry.getPath() + "'");
+			throw new CliException("Unable to construct file '" + entry.getPath() + "'", e, false);
 		} catch (IOException e2) {
-			throw new CliException("Input/output error when trying t find '"
-					+ fileURL + "'");
+			throw new CliException("Input/output error when trying t find '" + fileURL + "'", e2, false);
 		}
 	}
 

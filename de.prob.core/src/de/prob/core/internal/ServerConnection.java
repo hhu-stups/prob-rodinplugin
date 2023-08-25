@@ -62,8 +62,7 @@ public class ServerConnection implements IServerConnection {
 					outputStream = null;
 				}
 			}
-			ProblemHandler.handleCliException(
-					"Opening connection to ProB server failed", e);
+			throw new CliException("Opening connection to ProB server failed", e, false);
 		}
 	}
 

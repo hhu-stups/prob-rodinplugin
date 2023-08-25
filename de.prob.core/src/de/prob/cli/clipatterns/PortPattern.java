@@ -39,14 +39,7 @@ public class PortPattern extends CliPattern<Integer> {
 
 	@Override
 	public void notFound() throws CliException {
-		// final String message = "Could not determine port of ProB server";
-		// Logger.notifyUser(message);
-		// throw new CliException(message);
-
-		CliException cliException = new CliException(
-				"Could not determine port of ProB server");
-		cliException.notifyUserOnce();
-		throw cliException;
+		throw new CliException("Could not determine port of ProB server");
 	}
 
 }

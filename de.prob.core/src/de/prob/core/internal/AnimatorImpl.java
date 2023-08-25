@@ -98,8 +98,7 @@ public class AnimatorImpl {
 		try {
 			connector.startup(file);
 		} catch (CliException e) {
-			// The user has been notified by the underlying implementation, so
-			// we only invalidate the connector
+			e.notifyUserOnce();
 			connector = null;
 		}
 	}
