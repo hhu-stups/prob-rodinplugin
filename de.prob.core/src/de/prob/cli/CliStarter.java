@@ -202,27 +202,29 @@ public final class CliStarter {
 
 	private File getCliPath() throws CliException {
 		final Bundle bundle = Activator.getDefault().getBundle();
-		final String fileURL = "prob";
-		final URL entry = bundle.getEntry(fileURL);
+		final URL entry = bundle.getEntry("prob");
 
 		if (entry == null) {
 			throw new CliException(
 					"Unable to find directory with prob executables.");
 		}
 
+		URL fileUrl;
 		try {
-			URL resolvedUrl = FileLocator.find(bundle, new Path(fileURL), null);
+			fileUrl = FileLocator.toFileURL(entry);
+		} catch (IOException e) {
+			throw new CliException("Input/output error when trying to find '" + entry + "'", e, false);
+		}
 
-			// We need to use the 3-arg constructor of URI in order to properly
-			// escape file system chars.
-			URI resolvedUri = new URI("file", FileLocator
-					.toFileURL(resolvedUrl).getPath(), null);
-
-			return new File(resolvedUri);
+		try {
+			// Eclipse has a long-standing bug where Bundle.getEntry etc. don't correctly escape spaces, non-ASCII characters, etc. in file URLs.
+			// This makes it impossible to use the standard URL.toURI() method - it will throw an URISyntaxException for these unescaped characters.
+			// As a workaround, use Eclipse's URIUtil.toURI(URL), which escapes such unescaped characters.
+			// https://bugs.eclipse.org/bugs/show_bug.cgi?id=145096
+			// https://probjira.atlassian.net/browse/PROBPLUGIN-87
+			return new File(URIUtil.toURI(fileUrl));
 		} catch (URISyntaxException e) {
 			throw new CliException("Unable to construct file '" + entry.getPath() + "'", e, false);
-		} catch (IOException e2) {
-			throw new CliException("Input/output error when trying t find '" + fileURL + "'", e2, false);
 		}
 	}
 
