@@ -322,7 +322,7 @@ public class Theories {
 			throws CoreException {
 
 		prologOutput.openTerm("operator");
-		prologOutput.printAtom(opDef.getLabel());
+		prologOutput.printAtom(opDef.getLabel()); // Name of the operator
 
 		final FormulaFactory ff = theory.getFormulaFactory();
 		final ITypeEnvironment teFromFF = theory.getTypeEnvironment(ff);
@@ -337,6 +337,9 @@ public class Theories {
 		}
 
 		// WD Condition
+		// TODO: does not seem to get the user-defined WD conditions
+		// we should probably call in INewOperatorDefinition.java : IOperatorWDCondition[] getOperatorWDConditions() throws RodinDBException;
+		// and convert this to a Predicate
 		Predicate wdCondition = opDef.getWDCondition(ff, te);
 		printPredicate(prologOutput, wdCondition);
 
