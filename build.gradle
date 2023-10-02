@@ -32,9 +32,13 @@ project(':de.prob.core') {
 
 	repositories {
 		mavenCentral()
+		maven {
+			name "Sonatype snapshots"
+			url "https://oss.sonatype.org/content/repositories/snapshots/"
+		}
 	}
 
-	def parser_version = "2.12.7"
+	def parser_version = "2.12.8-SNAPSHOT"
 
 	dependencies {
 		// Note: After changing/updating dependencies or their versions here,
@@ -88,7 +92,7 @@ task downloadCli {
 
 			def targetdir = dir + it.getValue()
 			def targetzip = dir + "probcli_${n}.zip"
-			def url = "https://stups.hhu-hosting.de/downloads/prob/cli/releases/1.12.2/probcli_${n}.zip"
+			def url = "https://stups.hhu-hosting.de/downloads/prob/cli/nightly/probcli_${n}.zip"
 			download(url, targetzip)
 			FileTree zip = zipTree(targetzip)
 			copy {
