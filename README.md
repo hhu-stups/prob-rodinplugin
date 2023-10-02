@@ -26,14 +26,48 @@ To build the Prolog binaries you require a [SICStus 4](https://sicstus.sics.se/)
 
 ## Setting up the development environment
 
-- Clone the repository (https://github.com/hhu-stups/prob-rodinplugin)
+### Requirements
 
-- We use gradle to manage the dependencies to the libraries, thus you will need gradle installed on your computer.
-  (see https://gradle.org/)
+* Java 11 or later
+* Maven 3 or later (Maven 3.9 recommended)
+* Gradle (will be downloaded automatically by the Gradle wrapper)
 
-- In the workspace directory run the completeInstall task (`gradle completeInstall`), alternatively you can also run the downloadCli and collectDependencies tasks (`gradle downloadCli collectDependencies`). This will download the latest nightly build of the Prolog binary and the required Java libraries (such as the parser libraries).
+### Building without Eclipse
 
-- Install Eclipse for RCP Development
+After cloning the repository, run these commands in the repository root:
+
+```sh
+$ ./gradlew prepareMaven
+$ mvn -f de.prob.parent/pom.xml install
+```
+
+This will build the plugin into a local Eclipse plugin repository.
+To test your build of the plugin, you need to configure this repository in Rodin:
+
+* Open the Rodin preferences and go to Install/Update > Available Software Sites
+* Click on "Add..."
+* Enter "ProB local" as the name
+* Click on "Local..." and select the directory .../prob-rodinplugin/de.prob.repository/target/repository
+* Click on "Add"
+* Make sure that the "ProB local" repository is checked
+
+Once the repository is configured, use Help > Check for Updates to update the ProB plugin to your locally built version.
+
+Note that if you have both "ProB nightly" and "ProB local" enabled, Rodin will prefer whichever one was built more recently.
+To ensure that only your local build is used, you can temporarily uncheck "ProB nightly".
+
+To revert to the official build of the plugin, uncheck the "ProB local" plugin repository, re-check either "ProB" or "ProB nightly", then use Help > Check for Updates again.
+(If this doesn't work, you might need to completely uninstall and reinstall the ProB plugin.)
+
+### Building with Eclipse
+
+This requires Eclipse for RCP Development.
+
+After cloning the repository, run this command in the repository root
+
+```sh
+$ ./gradlew prepareMaven
+```
 
 - Import the projects into Eclipse. At this point Eclipse will complain about errors, the reason is that the target platform (i.e., Rodin) hasn't been setup yet).
 
