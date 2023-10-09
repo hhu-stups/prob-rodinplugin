@@ -1,3 +1,5 @@
+import java.util.concurrent.TimeUnit
+
 // to trigger a full tycho build please use 'gradle deleteFromClassPath completeInstall'
 
 project.ext {
@@ -26,6 +28,12 @@ project.ext {
 }
 
 apply from: 'tycho_build.gradle'
+
+configurations.all {
+	resolutionStrategy {
+		cacheChangingModulesFor(0, TimeUnit.SECONDS)
+	}
+}
 
 project(':de.prob.core') {
 	apply plugin: "java"
