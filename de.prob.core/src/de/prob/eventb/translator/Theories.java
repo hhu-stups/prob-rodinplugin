@@ -245,15 +245,8 @@ public class Theories {
 	private static void printMappings(Collection<OperatorMapping> mappings,
 			IPrologTermOutput pto) {
 		pto.openList();
-		// Currently, we support only one kind of operator mapping, just tagging
-		// an operator to indicate that an optimized ProB implementation should
-		// be used. We do not invest any effort in preparing future kinds of
-		// other operator mappings.
 		for (OperatorMapping mapping : mappings) {
-			pto.openTerm("tag");
-			pto.printAtom(mapping.getOperatorName());
-			pto.printAtom(mapping.getSpec());
-			pto.closeTerm();
+			mapping.printProlog(pto);
 		}
 		pto.closeList();
 	}
