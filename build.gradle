@@ -29,9 +29,11 @@ project.ext {
 
 apply from: 'tycho_build.gradle'
 
-configurations.all {
-	resolutionStrategy {
-		cacheChangingModulesFor(0, TimeUnit.SECONDS)
+allprojects {
+	configurations.all {
+		resolutionStrategy {
+			cacheChangingModulesFor(0, TimeUnit.SECONDS)
+		}
 	}
 }
 
