@@ -25,6 +25,8 @@ import de.prob.core.sablecc.node.Start;
 import de.prob.exceptions.ProBException;
 import de.prob.logging.Logger;
 import de.prob.parser.BindingGenerator;
+import de.prob.parser.ProBResultParser;
+import de.prob.parser.ResultParserException;
 import de.prob.prolog.output.PrologTermStringOutput;
 import de.prob.prolog.term.PrologTerm;
 
@@ -72,14 +74,7 @@ public class AnimatorImpl {
 		return item == null ? null : item.getState();
 	}
 
-	public synchronized Start sendCommandImpl(final String command)
-			throws ProBException {
-		String input = connector.sendCommand(command);
-		return parseResult(input);
-	}
-
-	private Start parseResult(final String input) throws CliException,
-			ResultParserException {
+	private Start parseResult(final String input) {
 		if (input == null)
 			return null;
 		else
@@ -158,13 +153,17 @@ public class AnimatorImpl {
 		PrologTermStringOutput pto = new PrologTermStringOutput();
 		command.writeCommand(pto);
 		final String query = pto.fullstop().toString();
-		final Start ast = sendCommandImpl(query);
+		String input;
+		synchronized (this) {
+			input = connector.sendCommand(query);
+		}
 		Map<String, PrologTerm> bindings;
 		try {
+			final Start ast = parseResult(input);
 			bindings = BindingGenerator.createBindingMustNotFail(query, ast);
-		} catch (de.prob.parser.ResultParserException e) {
-			Logger.notifyUser(e.getMessage());
-			throw new CommandException(e.getMessage());
+		} catch (ResultParserException e) {
+			Logger.notifyUser(e.getMessage(), e);
+			throw new CommandException(e.getMessage(), e);
 		}
 		return new SimplifiedROMap<String, PrologTerm>(bindings);
 	}

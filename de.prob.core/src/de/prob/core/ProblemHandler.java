@@ -10,7 +10,6 @@ import java.util.List;
 
 import de.prob.cli.CliException;
 import de.prob.core.command.CommandException;
-import de.prob.core.internal.ResultParserException;
 import de.prob.logging.Logger;
 
 public class ProblemHandler {
@@ -113,26 +112,4 @@ public class ProblemHandler {
 		Logger.notifyUser(message, t);
 		throw new CliException(message, t, true);
 	}
-
-	/**
-	 * 
-	 * Notifies the User about a fatal problem by adding a
-	 * {@link Logger#FATALERROR} to the log. This method takes a message
-	 * describing the problem and the causing exception.
-	 * 
-	 * Note: Calling this method logs the problem and throws a CliException that
-	 * wraps the original problem
-	 * 
-	 * @param message
-	 *            Description of the problem
-	 * @param throwable
-	 *            Causing exception
-	 * @throws ResultParserException
-	 */
-	public static void handleResultPareserException(final String message,
-			final Throwable t) throws ResultParserException {
-		Logger.notifyUser(message, t);
-		throw new ResultParserException(message, t);
-	}
-
 }
