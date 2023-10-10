@@ -17,8 +17,12 @@ import java.nio.charset.Charset;
 import de.prob.cli.CliException;
 import de.prob.cli.CliStarter;
 import de.prob.core.ProblemHandler;
+import de.prob.core.sablecc.node.ACallBackResult;
+import de.prob.core.sablecc.node.AProgressResult;
+import de.prob.core.sablecc.node.PResult;
 import de.prob.exceptions.ProBException;
 import de.prob.logging.Logger;
+import de.prob.parser.ProBResultParser;
 
 public class ServerConnection {
 	private Socket socket = null;
@@ -54,14 +58,22 @@ public class ServerConnection {
 		}
 	}
 
-	public String sendCommand(final String commandString) throws ProBException {
+	public PResult sendCommand(final String commandString) throws ProBException {
 		if (shutdown) {
 			final String message = "probcli is currently shutting down";
 			ProblemHandler.raiseCliException(message);
 		}
 		checkState();
 		sendQuery(commandString);
-		return getAnswer();
+		PResult topnode = ProBResultParser.parse(getAnswer()).getPResult();
+		// Skip over all progress and callback results, which we don't support here (yet?).
+		while (topnode instanceof AProgressResult || topnode instanceof ACallBackResult) {
+			if (topnode instanceof ACallBackResult) {
+				sendQuery("call_back_not_supported.");
+			}
+			topnode = ProBResultParser.parse(getAnswer()).getPResult();
+		}
+		return topnode;
 	}
 
 	private void sendQuery(final String commandString) throws ProBException {

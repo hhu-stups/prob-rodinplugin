@@ -21,11 +21,14 @@ import de.prob.core.domainobjects.History;
 import de.prob.core.domainobjects.HistoryItem;
 import de.prob.core.domainobjects.MachineDescription;
 import de.prob.core.domainobjects.State;
-import de.prob.core.sablecc.node.Start;
+import de.prob.core.sablecc.node.ACallBackResult;
+import de.prob.core.sablecc.node.AProgressResult;
+import de.prob.core.sablecc.node.AYesResult;
+import de.prob.core.sablecc.node.PResult;
 import de.prob.exceptions.ProBException;
 import de.prob.logging.Logger;
 import de.prob.parser.BindingGenerator;
-import de.prob.parser.ProBResultParser;
+import de.prob.parser.PrologTermGenerator;
 import de.prob.parser.ResultParserException;
 import de.prob.prolog.output.PrologTermStringOutput;
 import de.prob.prolog.term.PrologTerm;
@@ -72,13 +75,6 @@ public class AnimatorImpl {
 	public State getCurrentStateImpl() {
 		HistoryItem item = history.getCurrent();
 		return item == null ? null : item.getState();
-	}
-
-	private Start parseResult(final String input) {
-		if (input == null)
-			return null;
-		else
-			return ProBResultParser.parse(input);
 	}
 
 	public History getHistoryImpl() {
@@ -153,14 +149,22 @@ public class AnimatorImpl {
 		PrologTermStringOutput pto = new PrologTermStringOutput();
 		command.writeCommand(pto);
 		final String query = pto.fullstop().toString();
-		String input;
-		synchronized (this) {
-			input = connector.sendCommand(query);
-		}
 		Map<String, PrologTerm> bindings;
 		try {
-			final Start ast = parseResult(input);
-			bindings = BindingGenerator.createBindingMustNotFail(query, ast);
+			PResult topnode;
+			synchronized (this) {
+				topnode = connector.sendCommand(query);
+			}
+			// If probcli doesn't return anything, sendCommand throws an exception.
+			assert topnode != null;
+			// Progress and callback results are handled inside sendCommand.
+			assert !(topnode instanceof AProgressResult);
+			assert !(topnode instanceof ACallBackResult);
+
+			if (!(topnode instanceof AYesResult)) {
+				throw new ResultParserException("Prolog query failed - received " + topnode.getClass().getSimpleName() + " in response to query: " + query, null);
+			}
+			bindings = BindingGenerator.createBinding(PrologTermGenerator.toPrologTerm(topnode));
 		} catch (ResultParserException e) {
 			Logger.notifyUser(e.getMessage(), e);
 			throw new CommandException(e.getMessage(), e);

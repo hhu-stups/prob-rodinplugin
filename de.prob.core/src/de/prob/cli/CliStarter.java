@@ -87,7 +87,7 @@ public final class CliStarter {
 		List<String> command = new ArrayList<String>();
 		command.add(executable);
 		// command.add("-ll");
-		command.add("-sf_no_callback"); // start socket server on free port; no parser call backs available in ProB1 
+		command.add("-sf");
 		command.add("-p");command.add("use_safety_ltl_model_checker");command.add("false");
 		 // disable LTL safety model check as the counter examples lead to assertion failures 
 		 // in CounterExampleProposition in CounterExample.java
