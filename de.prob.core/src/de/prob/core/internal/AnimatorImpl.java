@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 
 import de.prob.cli.CliException;
-import de.prob.core.IServerConnection;
 import de.prob.core.LanguageDependendAnimationPart;
 import de.prob.core.ProblemHandler;
 import de.prob.core.command.CommandException;
@@ -38,7 +37,7 @@ public class AnimatorImpl {
 
 	private final History history = new History();
 
-	private IServerConnection connector;
+	private ServerConnection connector;
 
 	private MachineDescription description;
 
@@ -46,8 +45,7 @@ public class AnimatorImpl {
 
 	private LanguageDependendAnimationPart langdep;
 
-	public AnimatorImpl(final IServerConnection serverConnection,
-			final File file) {
+	public AnimatorImpl(final ServerConnection serverConnection, final File file) {
 		this.file = file;
 		setConnector(serverConnection);
 	}
@@ -92,8 +90,7 @@ public class AnimatorImpl {
 		return history;
 	}
 
-	private synchronized void setConnector(
-			final IServerConnection serverConnection) {
+	private synchronized void setConnector(final ServerConnection serverConnection) {
 		this.connector = serverConnection;
 		try {
 			connector.startup(file);

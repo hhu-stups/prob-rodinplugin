@@ -16,13 +16,11 @@ import java.nio.charset.Charset;
 
 import de.prob.cli.CliException;
 import de.prob.cli.CliStarter;
-import de.prob.core.IServerConnection;
 import de.prob.core.ProblemHandler;
 import de.prob.exceptions.ProBException;
 import de.prob.logging.Logger;
 
-public class ServerConnection implements IServerConnection {
-
+public class ServerConnection {
 	private Socket socket = null;
 	private BufferedInputStream inputStream = null;
 	private PrintStream outputStream = null;
@@ -66,7 +64,6 @@ public class ServerConnection implements IServerConnection {
 		}
 	}
 
-	@Override
 	public String sendCommand(final String commandString) throws ProBException {
 		if (shutdown) {
 			final String message = "probcli is currently shutting down";
@@ -156,7 +153,6 @@ public class ServerConnection implements IServerConnection {
 		return result.length() > 0 ? result.toString() : null;
 	}
 
-	@Override
 	public void startup(final File file) throws CliException {
 		if (shutdown) {
 			startcli(file);
@@ -168,7 +164,6 @@ public class ServerConnection implements IServerConnection {
 		}
 	}
 
-	@Override
 	public void shutdown() {
 		if (!shutdown) {
 			if (socket != null) {
@@ -195,12 +190,10 @@ public class ServerConnection implements IServerConnection {
 		}
 	}
 
-	@Override
 	public int getCliPortNumber() {
 		return cli.getPort();
 	}
 
-	@Override
 	public void sendUserInterruptSignal() {
 		if (cli != null) {
 			cli.sendUserInterruptReference();
