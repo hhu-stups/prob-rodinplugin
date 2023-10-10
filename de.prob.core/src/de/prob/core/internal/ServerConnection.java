@@ -27,20 +27,10 @@ public class ServerConnection {
 
 	private CliStarter cli = null;
 
-	private String lastCommand;
-
 	private volatile boolean shutdown = true;
-
-	// private static final ScheduledExecutorService exec = new
-	// ScheduledThreadPoolExecutor(
-	// 1);
 
 	private void startcli(final File file) throws CliException {
 		cli = new CliStarter(file);
-	}
-
-	public String getLastCommand() {
-		return lastCommand;
 	}
 
 	private void establishConnection(final int port) throws CliException {
@@ -75,7 +65,6 @@ public class ServerConnection {
 	}
 
 	private void sendQuery(final String commandString) throws ProBException {
-		lastCommand = commandString;
 		Logger.assertProB("commandString.trim().endsWith(\".\")", commandString
 				.trim().endsWith("."));
 
@@ -98,24 +87,6 @@ public class ServerConnection {
 		}
 		return input;
 	}
-
-	// private String timedRun(final Callable<String> r, final long timeOut,
-	// final TimeUnit unit) throws InterruptedException, ProBException {
-	// String s = null;
-	// Future<String> task = exec.submit(r);
-	// try {
-	// s = task.get(timeOut, unit);
-	// } catch (TimeoutException e) {
-	// final String message = "Timeout while waiting for ProB's answer";
-	// ProblemHandler.handleCliException(message, e);
-	// } catch (ExecutionException e) {
-	// final String message = e.getCause().getLocalizedMessage();
-	// ProblemHandler.handleCliException(message, e.getCause());
-	// } finally {
-	// task.cancel(true);
-	// }
-	// return s;
-	// }
 
 	protected String readAnswer() throws IOException {
 		final StringBuilder result = new StringBuilder();
@@ -188,10 +159,6 @@ public class ServerConnection {
 		if (inputStream == null || outputStream == null) {
 			ProblemHandler.raiseCliException("Stream to ProB server not ready");
 		}
-	}
-
-	public int getCliPortNumber() {
-		return cli.getPort();
 	}
 
 	public void sendUserInterruptSignal() {
