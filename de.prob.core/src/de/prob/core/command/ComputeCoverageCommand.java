@@ -15,6 +15,7 @@ import de.prob.exceptions.ProBException;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.AIntegerPrologTerm;
+import de.prob.prolog.term.IntegerPrologTerm;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 
