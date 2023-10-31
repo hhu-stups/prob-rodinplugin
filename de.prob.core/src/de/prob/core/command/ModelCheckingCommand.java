@@ -59,12 +59,9 @@ public final class ModelCheckingCommand implements IComposableCommand {
 		CompoundPrologTerm term = (CompoundPrologTerm) bindings.get("Result");
 
 		CompoundPrologTerm stats = (CompoundPrologTerm) bindings.get("Stats");
-		int processedTotal = ((IntegerPrologTerm) stats.getArgument(3))
-				.getValue().intValue();
-		int numStates = ((IntegerPrologTerm) stats.getArgument(1)).getValue()
-				.intValue();
-		int numTransitions = ((IntegerPrologTerm) stats.getArgument(2))
-				.getValue().intValue();
+		int processedTotal = ((AIntegerPrologTerm) stats.getArgument(3)).intValueExact();
+		int numStates = ((AIntegerPrologTerm) stats.getArgument(1)).intValueExact();
+		int numTransitions = ((AIntegerPrologTerm) stats.getArgument(2)).intValueExact();
 
 		result = new ModelCheckingResult<Result>(Result.class, term,
 				processedTotal, numStates, numTransitions);

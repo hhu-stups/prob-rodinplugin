@@ -1,5 +1,6 @@
 **/bin/
 **/target/
+.idea/
 .gradle/
 .metadata/
 **/pom.xml

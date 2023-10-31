@@ -25,7 +25,7 @@ import de.prob.core.command.LoadEventBModelCommand;
 import de.prob.exceptions.ProBException;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
-import de.prob.prolog.term.IntegerPrologTerm;
+import de.prob.prolog.term.AIntegerPrologTerm;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 import de.prob.sap.exceptions.ParseProblemException;
@@ -133,9 +133,9 @@ public class GenerateTestcaseCommand implements IComposableCommand {
 	public void processResult(
 			final ISimplifiedROMap<String, PrologTerm> bindings)
 			throws CommandException {
-		final IntegerPrologTerm pNumberTests = (IntegerPrologTerm) bindings
+		final AIntegerPrologTerm pNumberTests = (AIntegerPrologTerm) bindings
 				.get(NUMBER_TESTCASES);
-		final int numberOfTests = pNumberTests.getValue().intValue();
+		final int numberOfTests = pNumberTests.intValueExact();
 
 		final ListPrologTerm pEvents = (ListPrologTerm) bindings
 				.get(UNCOVERED_EVENTS);

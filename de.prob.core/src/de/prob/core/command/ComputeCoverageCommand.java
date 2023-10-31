@@ -14,7 +14,7 @@ import de.prob.core.Animator;
 import de.prob.exceptions.ProBException;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
-import de.prob.prolog.term.IntegerPrologTerm;
+import de.prob.prolog.term.AIntegerPrologTerm;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 
@@ -29,8 +29,15 @@ public final class ComputeCoverageCommand implements IComposableCommand {
 		private final List<String> nodes = new ArrayList<String>();
 		private final List<String> uncovered = new ArrayList<String>();
 
+		@Deprecated
 		public ComputeCoverageResult(final IntegerPrologTerm totalNumberOfNodes,
 				final IntegerPrologTerm totalNumberOfTransitions, final ListPrologTerm ops, final ListPrologTerm nodes,
+				final ListPrologTerm uncovered) {
+			this((AIntegerPrologTerm) totalNumberOfNodes, totalNumberOfTransitions, ops, nodes, uncovered);
+		}
+
+		public ComputeCoverageResult(final AIntegerPrologTerm totalNumberOfNodes,
+				final AIntegerPrologTerm totalNumberOfTransitions, final ListPrologTerm ops, final ListPrologTerm nodes,
 				final ListPrologTerm uncovered) {
 			this.totalNumberOfNodes = totalNumberOfNodes.getValue();
 			this.totalNumberOfTransitions = totalNumberOfTransitions.getValue();
@@ -83,8 +90,8 @@ public final class ComputeCoverageCommand implements IComposableCommand {
 	@Override
 	public void processResult(final ISimplifiedROMap<String, PrologTerm> bindings) throws CommandException {
 
-		IntegerPrologTerm totalNodeNr = (IntegerPrologTerm) bindings.get("TotalNodeNr");
-		IntegerPrologTerm totalTransNr = (IntegerPrologTerm) bindings.get("TotalTransSum");
+		AIntegerPrologTerm totalNodeNr = (AIntegerPrologTerm) bindings.get("TotalNodeNr");
+		AIntegerPrologTerm totalTransNr = (AIntegerPrologTerm) bindings.get("TotalTransSum");
 
 		ListPrologTerm ops = (ListPrologTerm) bindings.get("OpStat");
 		ListPrologTerm nodes = (ListPrologTerm) bindings.get("NodeStat");
