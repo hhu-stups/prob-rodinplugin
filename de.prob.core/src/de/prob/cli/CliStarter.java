@@ -197,12 +197,12 @@ public final class CliStarter {
 	}
 
 	private void startOutputLogger(final BufferedReader input) {
-		stdLogger = new OutputLoggerThread("(Output " + port + ")", input);
+		stdLogger = new OutputLoggerThread("(Output " + port + ")", input, false);
 		stdLogger.start();
 	}
 
 	private void startErrorLogger(final BufferedReader output) {
-		errLogger = new OutputLoggerThread("(Error " + port + ")", output);
+		errLogger = new OutputLoggerThread("(Error " + port + ")", output, true);
 		errLogger.start();
 	}
 
@@ -272,12 +272,15 @@ public final class CliStarter {
 
 		private final String prefix;
 
+		private final boolean logToLog;
+
 		private volatile boolean shutingDown = false;
 
-		public OutputLoggerThread(final String name, final BufferedReader in) {
+		public OutputLoggerThread(final String name, final BufferedReader in, boolean logToLog) {
 			super();
 			prefix = "[" + name + "] ";
 			this.in = in;
+			this.logToLog = logToLog;
 		}
 
 		@Override
@@ -289,7 +292,9 @@ public final class CliStarter {
 					if (line == null) {
 						break;
 					}
-					// Logger.log(IStatus.INFO, prefix + line, null);
+					if (logToLog) {
+						Logger.log(IStatus.INFO, prefix + line, null);
+					}
 					System.err.println(prefix + line);
 				}
 			} catch (IOException e) {
