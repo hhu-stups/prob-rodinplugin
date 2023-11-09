@@ -89,6 +89,7 @@ public final class CliStarter {
 		// command.add("-ll");
 		command.add("-sf");
 		command.add("-p");command.add("use_safety_ltl_model_checker");command.add("false");
+		command.add("-prob_application_type");command.add("rodin"); // supported as of 9/11/2023
 		 // disable LTL safety model check as the counter examples lead to assertion failures 
 		 // in CounterExampleProposition in CounterExample.java
 
