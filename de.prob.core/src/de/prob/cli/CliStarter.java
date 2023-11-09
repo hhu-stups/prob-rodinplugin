@@ -123,6 +123,7 @@ public final class CliStarter {
 
 		final ProcessBuilder pb = new ProcessBuilder();
 		pb.command(command);
+		pb.environment().put("NO_COLOR", "1");
 		pb.environment().put("PROB_HOME", osPath);
 		try {
 			prologProcess = pb.start();
