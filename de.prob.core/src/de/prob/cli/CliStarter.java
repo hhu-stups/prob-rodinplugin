@@ -67,6 +67,20 @@ public final class CliStarter {
 		}
 	}
 
+	/**
+	 * Return {@code process}'s exit code as an {@link Integer}, or {@link Optional#empty()} if it is still running.
+	 *
+	 * @param process the process whose exit code to get
+	 * @return {@code process}'s exit code, or {@link Optional#empty()} if it is still running
+	 */
+	private static Optional<Integer> getProcessExitCode(Process process) {
+		try {
+			return Optional.of(process.exitValue());
+		} catch (final IllegalThreadStateException ignored) {
+			return Optional.empty();
+		}
+	}
+
 	private void startProlog(final File file) throws CliException {
 		prologProcess = null;
 
@@ -125,7 +139,19 @@ public final class CliStarter {
 
 		startErrorLogger(output);
 
-		extractCliInformation(input);
+		try {
+			extractCliInformation(input);
+		} catch (CliException e) {
+			// Check if the CLI exited while extracting the information.
+			final Optional<Integer> exitCode = getProcessExitCode(prologProcess);
+			if (exitCode.isPresent()) {
+				// CLI exited, report the exit code.
+				throw new CliException("ProB CLI exited with status " + exitCode.get() + " before socket connection could be opened", e, false);
+			} else {
+				// CLI didn't exit, just rethrow the error.
+				throw e;
+			}
+		}
 		// log output from Prolog
 		startOutputLogger(input);
 
@@ -187,6 +213,7 @@ public final class CliStarter {
 			String line;
 			boolean endReached = false;
 			while (!endReached && (line = input.readLine()) != null) {
+				Logger.info("probcli startup output: " + line);
 				applyPatterns(patterns, line);
 				endReached = patterns.isEmpty()
 						|| line.contains("starting command loop"); // printed in prob_socketserver.pl
