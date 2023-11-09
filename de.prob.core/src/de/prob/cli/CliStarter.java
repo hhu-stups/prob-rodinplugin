@@ -186,7 +186,6 @@ public final class CliStarter {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	private void extractCliInformation(final BufferedReader input)
 			throws CliException {
 		final PortPattern portPattern = new PortPattern();
