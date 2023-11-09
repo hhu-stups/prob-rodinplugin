@@ -85,6 +85,16 @@ public final class CliStarter {
 		}
 
 		List<String> command = new ArrayList<String>();
+		if (Platform.OS_MACOSX.equals(os)) {
+			// Run universal probcli as arm64 if possible (i. e. if the host processor is arm64),
+			// even if Rodin/Eclipse is running as x86_64.
+			// (The macOS default behavior is to match the architecture of the parent process,
+			// which is bad in our case,
+			// because x86_64 probcli under Rosetta 2 is much slower than native arm64 probcli.)
+			command.add("arch");
+			command.add("-arm64");
+			command.add("-x86_64");
+		}
 		command.add(executable);
 		// command.add("-ll");
 		command.add("-sf");
