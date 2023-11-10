@@ -14,6 +14,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.nio.file.NoSuchFileException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -405,7 +406,7 @@ public final class LtlCheckingDialog extends TrayDialog {
 					formulas.select(0);
 					close();
 
-				} catch (FileNotFoundException e) {
+				} catch (FileNotFoundException | NoSuchFileException e) {
 					Logger.notifyUser("File not found", e);
 				} catch (IOException e) {
 					Logger.notifyUser("Unexpected IO exception", e);
