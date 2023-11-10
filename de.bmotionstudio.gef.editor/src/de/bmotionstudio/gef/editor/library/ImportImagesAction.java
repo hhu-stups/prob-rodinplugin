@@ -8,8 +8,7 @@ package de.bmotionstudio.gef.editor.library;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.nio.file.NoSuchFileException;
+import java.io.IOException;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -91,7 +90,7 @@ public class ImportImagesAction extends AbstractLibraryAction {
 
 		} catch (CoreException e1) {
 			e1.printStackTrace();
-		} catch (FileNotFoundException | NoSuchFileException e) {
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 
