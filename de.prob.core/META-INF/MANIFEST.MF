@@ -81,6 +81,6 @@ Bundle-ClassPath: .,
  lib/dependencies/ltlparser-2.12.8-SNAPSHOT.jar,
  lib/dependencies/parserbase-2.12.8-SNAPSHOT.jar,
  lib/dependencies/prologlib-2.12.8-SNAPSHOT.jar,
- lib/dependencies/sablecc-runtime-3.6.0.jar,
+ lib/dependencies/sablecc-runtime-3.7.0-SNAPSHOT.jar,
  lib/dependencies/theorymapping-2.12.8-SNAPSHOT.jar,
  lib/dependencies/unicode-2.12.8-SNAPSHOT.jar
