@@ -162,7 +162,11 @@ public class AnimatorImpl {
 			assert !(topnode instanceof ACallBackResult);
 
 			if (!(topnode instanceof AYesResult)) {
-				throw new ResultParserException("Prolog query failed - received " + topnode.getClass().getSimpleName() + " in response to query: " + query, null);
+			    if (query.length() > 400) {
+				  throw new ResultParserException("Prolog query failed - received " + topnode.getClass().getSimpleName() + " in response to query: " + query.substring(0, 400), null);
+				} else {
+				  throw new ResultParserException("Prolog query failed - received " + topnode.getClass().getSimpleName() + " in response to query: " + query, null);
+				}
 			}
 			bindings = BindingGenerator.createBinding(PrologTermGenerator.toPrologTerm(topnode));
 		} catch (ResultParserException e) {
