@@ -416,6 +416,7 @@ public class Theories {
 				Predicate pp = (Predicate) scFormula;
 				printPredicate(prologOutput, pp);
 			}
+		    // TODO: we could insert the result type in the Prolog term; or at least if we have a pred or expr
 			if (scFormula instanceof Expression) {
 				Expression pp = (Expression) scFormula;
 				printExpression(prologOutput, pp);
@@ -488,6 +489,7 @@ public class Theories {
 			pto.openList();
 			// WD condition missing
 			pto.closeList();
+			// Result type is not written; we can maybe get it from: Formula<?> scFormula = def.getSCFormula(ff, te);
 			pto.closeTerm();
 		}
 		pto.closeList();
