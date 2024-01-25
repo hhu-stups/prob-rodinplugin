@@ -438,7 +438,7 @@ public class Theories {
 		   // the tuf file may contain org.eventb.theory.core.type="Baum(L)"
 		   // the tcf file now contains org.eventb.theory.core.type="Baum"
 		   // as one cannot adapt the type parameters inside an inductive type definition
-		   pto.printAtom("default_type_parameters")
+		   pto.printAtom("default_type_parameters");
 		}
 		pto.closeTerm();
 	}
