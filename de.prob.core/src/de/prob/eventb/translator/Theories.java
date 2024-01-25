@@ -435,18 +435,21 @@ public class Theories {
 			final IPrologTermOutput pto) throws CoreException {
 		pto.openTerm(functor);
 		pto.printAtom(id.getIdentifierString());
-		final String typeString = getAttributeValue(EventBAttributes.TYPE_ATTRIBUTE);
+		//final String typeString = getAttributeValue(EventBAttributes.TYPE_ATTRIBUTE);
 		// todo: is there a better way to check if type refers recursively to def?
-		if (def.getIdentifierString().equals(typeString)) {
+		//if (def.getIdentifierString().equals(typeString)) {
 			// the the checked theory files tcf no longer contain the type paras
 			// the tuf file may contain org.eventb.theory.core.type="Baum(L)"
 			// the tcf file now contains org.eventb.theory.core.type="Baum"
 			// getType would lead to a CoreException
 			// we print the type of the recursive data type directly
-		    pto.printTypeOfDataType(def,ff,pto);
-		} else {
+		    // pto.printTypeOfDataType(def,ff,pto);
+		//} else {
+		try {
 		    Type type = id.getType(ff);
 		    printType(type, pto);
+		} catch (CoreException e) {
+		    printTypeOfDataType(def,ff,pto);
 		}
 		pto.closeTerm();
 	}
