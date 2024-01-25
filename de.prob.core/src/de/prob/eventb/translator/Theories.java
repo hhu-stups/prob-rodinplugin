@@ -290,7 +290,7 @@ public class Theories {
 	}
 
 	private static void printConstructor(ISCDatatypeConstructor cons,
-	        ISCDatatypeDefinition def,
+			ISCDatatypeDefinition def,
 			FormulaFactory ff, IPrologTermOutput pto) throws CoreException {
 		pto.openTerm("constructor");
 		pto.printAtom(cons.getIdentifierString());
@@ -376,13 +376,12 @@ public class Theories {
 		prologOutput.openTerm("case");
 		prologOutput.printAtom(indArg);
 		prologOutput.openList();
-		if(ex==null) {
-		    throw new IllegalStateException("Empty expression for axiomatic recursive definition case " + es +
-		                        " and inductive argument " + indArg);
+		if (ex == null) {
+			throw new IllegalStateException("Empty expression for axiomatic recursive definition case " + es + " and inductive argument " + indArg);
 		} else {
-            for (FreeIdentifier fi : ex.getFreeIdentifiers()) {
-                prologOutput.printAtom(fi.getName());
-            }
+			for (FreeIdentifier fi : ex.getFreeIdentifiers()) {
+				prologOutput.printAtom(fi.getName());
+			}
 		}
 		prologOutput.closeList();
 		printExpression(prologOutput, ex);
@@ -419,7 +418,7 @@ public class Theories {
 				Predicate pp = (Predicate) scFormula;
 				printPredicate(prologOutput, pp);
 			}
-		    // TODO: we could insert the result type in the Prolog term; or at least if we have a pred or expr
+			// TODO: we could insert the result type in the Prolog term; or at least if we have a pred or expr
 			if (scFormula instanceof Expression) {
 				Expression pp = (Expression) scFormula;
 				printExpression(prologOutput, pp);
@@ -430,7 +429,7 @@ public class Theories {
 
 	private static void printTypedIdentifierForRecursiveDataTypeDef(final String functor,
 			final ISCIdentifierElement id,
-	        final ISCDatatypeDefinition def,
+			final ISCDatatypeDefinition def,
 			final FormulaFactory ff,
 			final IPrologTermOutput pto) throws CoreException {
 		pto.openTerm(functor);
@@ -454,7 +453,7 @@ public class Theories {
 	
 	// print the base type of a data type definition as an extended_expr
 	private static void printTypeOfDataType(
-	        final ISCDatatypeDefinition def,
+			final ISCDatatypeDefinition def,
 			final FormulaFactory ff,
 			final IPrologTermOutput pto) throws CoreException {
 		pto.openTerm("extended_expr");
@@ -476,8 +475,8 @@ public class Theories {
 		pto.openTerm(functor);
 		pto.printAtom(id.getIdentifierString());
 		
-        Type type = id.getType(ff);
-        printType(type, pto);
+		Type type = id.getType(ff);
+		printType(type, pto);
 			
 		pto.closeTerm();
 	}
