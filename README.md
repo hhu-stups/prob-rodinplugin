@@ -5,7 +5,7 @@
 ## License
 
 The ProB source code is distributed under the [EPL 1.0 license](https://www.eclipse.org/org/documents/epl-v10.html).
-(C) 2000-2021 Michael Leuschel and many others.
+(C) 2000-2024 Michael Leuschel and many others.
 
 For updates please visit the ProB website: https://prob.hhu.de/w/
 

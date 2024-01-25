@@ -430,8 +430,16 @@ public class Theories {
 			final IPrologTermOutput pto) throws CoreException {
 		pto.openTerm(functor);
 		pto.printAtom(id.getIdentifierString());
-		Type type = id.getType(ff);
-		printType(type, pto);
+		try {
+		   Type type = id.getType(ff);
+		   printType(type, pto);
+		} catch (CoreException e) {
+		   // the the checked theory files tcf no longer contain the type paras
+		   // the tuf file may contain org.eventb.theory.core.type="Baum(L)"
+		   // the tcf file now contains org.eventb.theory.core.type="Baum"
+		   // as one cannot adapt the type parameters inside an inductive type definition
+		   pto.printAtom("default_type_parameters")
+		}
 		pto.closeTerm();
 	}
 
