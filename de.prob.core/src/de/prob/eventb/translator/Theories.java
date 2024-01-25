@@ -467,6 +467,8 @@ public class Theories {
 			printType(arg.getSCGivenType(ff), pto);
 		}
 		pto.closeList();
+		pto.openList(); // empty list of predicate args
+		pto.closeList();
 		pto.closeTerm();
 	}
 	
