@@ -15,6 +15,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eventb.core.IEventBProject;
+import org.eventb.core.EventBAttributes;
 import org.eventb.core.ISCIdentifierElement;
 import org.eventb.core.ast.Expression;
 import org.eventb.core.ast.Formula;
@@ -281,7 +282,7 @@ public class Theories {
 		pto.closeList();
 		pto.openList();
 		for (ISCDatatypeConstructor cons : def.getConstructors()) {
-			printConstructor(cons, ff, pto);
+			printConstructor(cons, def, ff, pto);
 		}
 		pto.closeList();
 		pto.closeTerm();
@@ -289,12 +290,13 @@ public class Theories {
 	}
 
 	private static void printConstructor(ISCDatatypeConstructor cons,
+	        ISCDatatypeDefinition def,
 			FormulaFactory ff, IPrologTermOutput pto) throws CoreException {
 		pto.openTerm("constructor");
 		pto.printAtom(cons.getIdentifierString());
 		pto.openList();
 		for (ISCConstructorArgument arg : cons.getConstructorArguments()) {
-			printTypedIdentifier("destructor", arg, ff, pto);
+			printTypedIdentifierForRecursiveDataTypeDef("destructor", arg, def, ff, pto);
 		}
 		pto.closeList();
 		pto.closeTerm();
@@ -333,6 +335,7 @@ public class Theories {
 		// TODO: does not seem to get the user-defined WD conditions
 		// we should probably call in INewOperatorDefinition.java : IOperatorWDCondition[] getOperatorWDConditions() throws RodinDBException;
 		// and convert this to a Predicate
+		// but above we have ISCNewOperatorDefinition and not INewOperatorDefinition
 		Predicate wdCondition = opDef.getWDCondition(ff, te);
 		printPredicate(prologOutput, wdCondition);
 
@@ -425,21 +428,54 @@ public class Theories {
 		}
 	}
 
+	private static void printTypedIdentifierForRecursiveDataTypeDef(final String functor,
+			final ISCIdentifierElement id,
+	        final ISCDatatypeDefinition def,
+			final FormulaFactory ff,
+			final IPrologTermOutput pto) throws CoreException {
+		pto.openTerm(functor);
+		pto.printAtom(id.getIdentifierString());
+		final String typeString = getAttributeValue(EventBAttributes.TYPE_ATTRIBUTE);
+		// todo: is there a better way to check if type refers recursively to def?
+		if (def.getIdentifierString().equals(typeString)) {
+			// the the checked theory files tcf no longer contain the type paras
+			// the tuf file may contain org.eventb.theory.core.type="Baum(L)"
+			// the tcf file now contains org.eventb.theory.core.type="Baum"
+			// getType would lead to a CoreException
+			// we print the type of the recursive data type directly
+		    pto.printTypeOfDataType(def,ff,pto);
+		} else {
+		    Type type = id.getType(ff);
+		    printType(type, pto);
+		}
+		pto.closeTerm();
+	}
+	
+	// print the base type of a data type definition as an extended_expr
+	private static void printTypeOfDataType(
+	        final ISCDatatypeDefinition def,
+			final FormulaFactory ff,
+			final IPrologTermOutput pto) throws CoreException {
+		pto.openTerm("extended_expr");
+		pto.printAtom("none");
+		pto.printAtom(def.getIdentifierString());
+		pto.openList();
+		for (ISCTypeArgument arg : def.getTypeArguments()) {
+			printType(arg.getSCGivenType(ff), pto);
+		}
+		pto.closeList();
+		pto.closeTerm();
+	}
+	
 	private static void printTypedIdentifier(final String functor,
 			final ISCIdentifierElement id, final FormulaFactory ff,
 			final IPrologTermOutput pto) throws CoreException {
 		pto.openTerm(functor);
 		pto.printAtom(id.getIdentifierString());
-		try {
-			Type type = id.getType(ff);
-			printType(type, pto);
-		} catch (CoreException e) {
-			// the the checked theory files tcf no longer contain the type paras
-			// the tuf file may contain org.eventb.theory.core.type="Baum(L)"
-			// the tcf file now contains org.eventb.theory.core.type="Baum"
-			// as one cannot adapt the type parameters inside an inductive type definition
-			pto.printAtom("default_type_parameters");
-		}
+		
+        Type type = id.getType(ff);
+        printType(type, pto);
+			
 		pto.closeTerm();
 	}
 
