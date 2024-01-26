@@ -443,10 +443,10 @@ public class Theories {
 			// the tcf file now contains org.eventb.theory.core.type="Baum"
 			// getType would lead to a CoreException
 			// we print the type of the recursive data type directly
-		    printTypeOfDataType(def,ff,pto);
+			printTypeOfDataType(def,ff,pto);
 		} else {
-		    Type type = id.getType(ff);
-		    printType(type, pto);
+			Type type = id.getType(ff);
+			printType(type, pto);
 		}
 		pto.closeTerm();
 	}
