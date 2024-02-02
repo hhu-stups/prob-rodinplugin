@@ -6,7 +6,7 @@ build:
   before_script:
     - mvn --version
   script:
-    - ./gradlew prepareMaven
+    - ./gradlew --no-daemon --warning-mode=all prepareMaven
     - mvn -Dmaven.repo.local="$CI_PROJECT_DIR/maven_repo_local" -f de.prob.parent/pom.xml install
     - cp footer.html de.prob.repository/target/repository/
   cache:
