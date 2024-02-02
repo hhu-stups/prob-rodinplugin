@@ -30,6 +30,7 @@ import de.prob.logging.Logger;
 import de.prob.parser.BindingGenerator;
 import de.prob.parser.PrologTermGenerator;
 import de.prob.parser.ResultParserException;
+import de.prob.parser.SimplifiedROMap;
 import de.prob.prolog.output.PrologTermStringOutput;
 import de.prob.prolog.term.PrologTerm;
 
