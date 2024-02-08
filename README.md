@@ -41,6 +41,9 @@ $ ./gradlew prepareMaven
 $ mvn -f de.prob.parent/pom.xml install
 ```
 
+Adding the -U flag to force re-loading dependencies does not (seem to) work.
+Run ```./gradlew prepareMaven``` before running the mvn command to update.
+
 This will build the plugin into a local Eclipse plugin repository.
 To test your build of the plugin, you need to configure this repository in Rodin:
 
