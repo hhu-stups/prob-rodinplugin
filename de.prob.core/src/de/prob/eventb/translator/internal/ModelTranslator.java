@@ -12,6 +12,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eventb.core.EventBAttributes;
+import org.eventb.core.ICommentedElement;
 import org.eventb.core.IConvergenceElement.Convergence;
 import org.eventb.core.ILabeledElement;
 import org.eventb.core.IMachineRoot;
@@ -20,6 +22,7 @@ import org.eventb.core.IPOSource;
 import org.eventb.core.IPSRoot;
 import org.eventb.core.IPSStatus;
 import org.eventb.core.ISCAction;
+import org.eventb.core.IEvent;
 import org.eventb.core.ISCEvent;
 import org.eventb.core.ISCGuard;
 import org.eventb.core.ISCInternalContext;
@@ -47,6 +50,7 @@ import org.rodinp.core.RodinDBException;
 
 import de.be4.classicalb.core.parser.node.AAnticipatedEventstatus;
 import de.be4.classicalb.core.parser.node.AConvergentEventstatus;
+import de.be4.classicalb.core.parser.node.ADescriptionEvent;
 import de.be4.classicalb.core.parser.node.AEvent;
 import de.be4.classicalb.core.parser.node.AEventBModelParseUnit;
 import de.be4.classicalb.core.parser.node.AEventsModelClause;
@@ -68,6 +72,7 @@ import de.be4.classicalb.core.parser.node.PPredicate;
 import de.be4.classicalb.core.parser.node.PSubstitution;
 import de.be4.classicalb.core.parser.node.PWitness;
 import de.be4.classicalb.core.parser.node.TIdentifierLiteral;
+import de.be4.classicalb.core.parser.node.TPragmaFreeText;
 import de.prob.core.translator.TranslationFailedException;
 import de.prob.eventb.translator.AbstractComponentTranslator;
 import de.prob.logging.Logger;
@@ -348,7 +353,25 @@ public class ModelTranslator extends AbstractComponentTranslator {
 			event.setTheorems(theorems);
 			event.setWitness(extractWitnesses(revent, localEnv));
 			event.setAssignments(extractActions(revent, localEnv));
-			eventsList.add(event);
+			// Events have comments, but they are no longer present in the statically checked events
+			// hence we get the original unchecked source:
+			final IEvent ucevent = (IEvent) revent.getSource();
+			// this also works to access comment field; not sure which version is better:
+			//if((ucevent instanceof ICommentedElement) && ((ICommentedElement) ucevent).hasComment()) {
+			//	System.out.println("Description 1 of " + revent.getLabel() + ": " 
+			//               + ((ICommentedElement) ucevent).getComment());
+			//}
+			if (ucevent.hasAttribute(EventBAttributes.COMMENT_ATTRIBUTE)) {
+	           final String commentString = ucevent.getAttributeValue(EventBAttributes.COMMENT_ATTRIBUTE);
+			   System.out.println("Event " + revent.getLabel() + " has description " + commentString);
+			   final ADescriptionEvent devent = new ADescriptionEvent();
+			   devent.setEvent(event);
+			   final TPragmaFreeText desc = new TPragmaFreeText(commentString);
+			   devent.setContent(desc);
+			   eventsList.add(devent); // we add the event with a description node around it; requires new probcli
+			} else {
+			   eventsList.add(event);
+			}
 		}
 		clause.setEvent(eventsList);
 		return clause;
