@@ -358,19 +358,18 @@ public class ModelTranslator extends AbstractComponentTranslator {
 			final IEvent ucevent = (IEvent) revent.getSource();
 			// this also works to access comment field; not sure which version is better:
 			//if((ucevent instanceof ICommentedElement) && ((ICommentedElement) ucevent).hasComment()) {
-			//	System.out.println("Description 1 of " + revent.getLabel() + ": " 
-			//               + ((ICommentedElement) ucevent).getComment());
+			//	System.out.println("Description 1 of " + revent.getLabel() + ": " + ((ICommentedElement) ucevent).getComment());
 			//}
 			if (ucevent.hasAttribute(EventBAttributes.COMMENT_ATTRIBUTE)) {
-	           final String commentString = ucevent.getAttributeValue(EventBAttributes.COMMENT_ATTRIBUTE);
-			   System.out.println("Event " + revent.getLabel() + " has description " + commentString);
-			   final ADescriptionEvent devent = new ADescriptionEvent();
-			   devent.setEvent(event);
-			   final TPragmaFreeText desc = new TPragmaFreeText(commentString);
-			   devent.setContent(desc);
-			   eventsList.add(devent); // we add the event with a description node around it; requires new probcli
+				final String commentString = ucevent.getAttributeValue(EventBAttributes.COMMENT_ATTRIBUTE);
+				System.out.println("Event " + revent.getLabel() + " has description " + commentString);
+				final ADescriptionEvent devent = new ADescriptionEvent();
+				devent.setEvent(event);
+				final TPragmaFreeText desc = new TPragmaFreeText(commentString);
+				devent.setContent(desc);
+				eventsList.add(devent); // we add the event with a description node around it; requires new probcli
 			} else {
-			   eventsList.add(event);
+				eventsList.add(event);
 			}
 		}
 		clause.setEvent(eventsList);
