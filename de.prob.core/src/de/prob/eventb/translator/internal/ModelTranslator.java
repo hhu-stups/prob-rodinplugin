@@ -543,11 +543,11 @@ public class ModelTranslator extends AbstractComponentTranslator {
 					//System.out.println("Invariant/theorem " + predicate + " has description " + commentString);
 					final TPragmaFreeText desc = new TPragmaFreeText(commentString);
 					final ADescriptionPredicate dpred = new ADescriptionPredicate(desc,predicate);
-				    list.add(dpred);
-				    labelMapping.put(dpred, evPredicate);
+					list.add(dpred);
+					labelMapping.put(dpred, evPredicate);
 				} else {
-				    list.add(predicate);
-				    labelMapping.put(predicate, evPredicate);
+					list.add(predicate);
+					labelMapping.put(predicate, evPredicate);
 				}
 			}
 		}

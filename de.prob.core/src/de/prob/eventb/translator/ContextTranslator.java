@@ -383,8 +383,8 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 					//System.out.println("Axiom/theorem " + element + " has description " + commentString);
 					final TPragmaFreeText desc = new TPragmaFreeText(commentString);
 					final ADescriptionPredicate dpred = new ADescriptionPredicate(desc,predicate);
-				    list.add(dpred);
-				    labelMapping.put(dpred, element);
+					list.add(dpred);
+					labelMapping.put(dpred, element);
 				} else {
 					list.add(predicate);
 					labelMapping.put(predicate, element);
