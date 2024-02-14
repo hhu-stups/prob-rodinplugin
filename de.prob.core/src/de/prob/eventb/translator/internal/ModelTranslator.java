@@ -1,5 +1,5 @@
 /**
- * (c) 2009 Lehrstuhl fuer Softwaretechnik und Programmiersprachen, Heinrich
+ * (c) 2009-2024 Lehrstuhl fuer Softwaretechnik und Programmiersprachen, Heinrich
  * Heine Universitaet Duesseldorf This software is licenced under EPL 1.0
  * (http://www.eclipse.org/org/documents/epl-v10.html)
  * */
@@ -21,8 +21,10 @@ import org.eventb.core.IPOSequent;
 import org.eventb.core.IPOSource;
 import org.eventb.core.IPSRoot;
 import org.eventb.core.IPSStatus;
+import org.eventb.core.IPredicateElement;
 import org.eventb.core.ISCAction;
 import org.eventb.core.IEvent;
+import org.eventb.core.IInvariant;
 import org.eventb.core.ISCEvent;
 import org.eventb.core.ISCGuard;
 import org.eventb.core.ISCInternalContext;
@@ -51,6 +53,7 @@ import org.rodinp.core.RodinDBException;
 import de.be4.classicalb.core.parser.node.AAnticipatedEventstatus;
 import de.be4.classicalb.core.parser.node.AConvergentEventstatus;
 import de.be4.classicalb.core.parser.node.ADescriptionEvent;
+import de.be4.classicalb.core.parser.node.ADescriptionPredicate;
 import de.be4.classicalb.core.parser.node.AEvent;
 import de.be4.classicalb.core.parser.node.AEventBModelParseUnit;
 import de.be4.classicalb.core.parser.node.AEventsModelClause;
@@ -534,8 +537,18 @@ public class ModelTranslator extends AbstractComponentTranslator {
 			if (isDefinedHere(evPredicate)) {
 				final PPredicate predicate = translatePredicate(ff, te,
 						evPredicate);
-				list.add(predicate);
-				labelMapping.put(predicate, evPredicate);
+				final IInvariant ucp = (IInvariant) evPredicate.getSource(); // comments only attached in unchecked source
+				if (ucp.hasAttribute(EventBAttributes.COMMENT_ATTRIBUTE)) {
+					final String commentString = ucp.getAttributeValue(EventBAttributes.COMMENT_ATTRIBUTE);
+					//System.out.println("Invariant/theorem " + predicate + " has description " + commentString);
+					final TPragmaFreeText desc = new TPragmaFreeText(commentString);
+					final ADescriptionPredicate dpred = new ADescriptionPredicate(desc,predicate);
+				    list.add(dpred);
+				    labelMapping.put(dpred, evPredicate);
+				} else {
+				    list.add(predicate);
+				    labelMapping.put(predicate, evPredicate);
+				}
 			}
 		}
 		return list;
