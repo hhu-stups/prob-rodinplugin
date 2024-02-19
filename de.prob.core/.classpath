@@ -4,12 +4,12 @@
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="output" path="bin"/>
-	<classpathentry exported="true" kind="lib" path="lib/dependencies/answerparser-2.12.8-SNAPSHOT.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/dependencies/bparser-2.12.8-SNAPSHOT.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/dependencies/ltlparser-2.12.8-SNAPSHOT.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/dependencies/parserbase-2.12.8-SNAPSHOT.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/dependencies/prologlib-2.12.8-SNAPSHOT.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/dependencies/sablecc-runtime-3.7.0-SNAPSHOT.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/dependencies/theorymapping-2.12.8-SNAPSHOT.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/dependencies/unicode-2.12.8-SNAPSHOT.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/dependencies/answerparser-2.13.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/dependencies/bparser-2.13.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/dependencies/ltlparser-2.13.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/dependencies/parserbase-2.13.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/dependencies/prologlib-2.13.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/dependencies/sablecc-runtime-3.7.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/dependencies/theorymapping-2.13.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/dependencies/unicode-2.13.0.jar"/>
 </classpath>
