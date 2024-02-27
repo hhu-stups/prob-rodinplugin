@@ -101,37 +101,6 @@
             name="ProB">
       </page>
    </extension>
-    <!--  
-    <extension
-         point="org.eclipse.ui.actionSets">
-      <actionSet
-            description="Web Action Set"
-            id="de.prob.core.ticket.actionSet"
-            label="Web Action Set"
-            visible="true">
-      <menu
-               id="probMenu"
-               label="ProB">
-            <separator
-                  name="bugReport">
-            </separator>
-         </menu>
-         
-         <action
-               class="de.prob.ui.ticket.OpenBugReportWebsite"
-               id="OpenBugReportWebsite"
-               label="Open Bugreport Website"
-               menubarPath="probMenu/bugReport">
-         </action>
-         <action
-               class="de.prob.ui.ticket.NewBugReportAction"
-               id="NewBugReportAction"
-               label="Submit Bugreport"
-               menubarPath="probMenu/bugReport">
-         </action>
-      </actionSet>
-   </extension>
-   -->
    
    <extension
          point="org.eclipse.ui.commands">
@@ -140,21 +109,6 @@
             id="de.prob.ui.commands.category"
             name="ProB">
       </category>
-      <command
-            categoryId="de.prob.ui.commands.category"
-            id="de.prob.ui.openWebsite"
-            name="Open Website">
-         <commandParameter
-               id="de.prob.ui.openwebsite.url"
-               name="URL"
-               optional="false">
-         </commandParameter>
-      </command>
-      <command
-            categoryId="de.prob.ui.commands.category"
-            id="de.prob.ui.bugreport"
-            name="Submit Bugreport">
-      </command>
       <command
             categoryId="de.prob.ui.commands.category"
             id="de.prob.ui.probconfiguration"
@@ -360,18 +314,6 @@
    </extension>
    <extension
          point="org.eclipse.ui.handlers">
-      <handler
-            commandId="de.prob.ui.openWebsite">
-         <class
-               class="de.prob.ui.internal.OpenWebsiteCommand">
-         </class>
-      </handler>
-      <handler
-            commandId="de.prob.ui.bugreport">
-         <class
-               class="de.prob.ui.ticket.SubmitBugreportCommand">
-         </class>
-      </handler>
       <handler
             commandId="de.prob.ui.probconfiguration">
          <class
@@ -818,26 +760,6 @@
    </extension>
    <extension
          point="org.eclipse.ui.menus">
-      <menuContribution
-            locationURI="menu:contact">
-         <command
-               commandId="de.prob.ui.openWebsite"
-               label="Open ProB Website"
-               mnemonic="W"
-               style="push">  
-            <parameter
-                  name="de.prob.ui.openwebsite.url"
-                  value="http://www.stups.uni-duesseldorf.de/ProB">
-            </parameter>
-         </command>
-         <command
-               commandId="de.prob.ui.bugreport"
-               label="Open Bugtracker Website"
-               mnemonic="W"
-               style="push">
-         </command>
-      </menuContribution>
-
       <menuContribution
             locationURI="toolbar:de.prob.ui.StateView">
          <command

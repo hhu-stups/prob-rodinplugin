@@ -73,13 +73,6 @@
             </visibleWhen>
          </command>
       </menuContribution>
-      <menuContribution locationURI="menu:help">
-         <command
-               commandId="de.bmotionstudio.gef.editor.command.openBMotionStudioWebsite"
-               label="BMotion Studio website"
-               style="push">
-         </command>
-      </menuContribution>
       <menuContribution
             locationURI="toolbar:org.eclipse.ui.main.toolbar">
          <toolbar
@@ -104,11 +97,6 @@
    </extension>
    <extension
          point="org.eclipse.ui.commands">
-      <command
-            defaultHandler="de.bmotionstudio.gef.editor.handler.OpenWebsiteHandler"
-            id="de.bmotionstudio.gef.editor.command.openBMotionStudioWebsite"
-            name="Open website">
-      </command>
       <command
             id="de.bmotionstudio.command.startVisualizationFromEditor"
             name="Start Visualization from Editor">
