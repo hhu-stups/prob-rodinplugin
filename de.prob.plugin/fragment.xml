@@ -10,17 +10,6 @@
             name="ProB"> 
       </perspective>
    </extension>
- <!--  <extension
-         point="org.eclipse.ui.splashHandlers">
-      <splashHandler
-            class="de.prob.plugin.Splash"
-            id="de.prob.plugin.splash">
-      </splashHandler>
-      <splashHandlerProductBinding
-            productId="org.rodinp.platform.product"
-            splashId="de.prob.plugin.splash">
-      </splashHandlerProductBinding>
-   </extension> -->
    
      <extension
          point="org.eclipse.ui.menus">
