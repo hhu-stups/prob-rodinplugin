@@ -10,21 +10,6 @@ project.ext {
 	]
 
 	groupID = "de.prob"
-
-	categoryId = "de.prob2.feature.category"
-	categoryLabel = "ProB for Rodin"
-	// When editing the description here,
-	// also update the descriptions in all feature.xml files!
-	categoryDescription = """\
-	ProB is an animator and model checker for the B-Method. It allows
-	fully automatic animation of many B specifications, and can be
-	used to systematically check a specification for errors.
-	Part of the research and development was conducted within the
-	EPSRC funded projects ABCD and iMoc, and within the EU funded
-	projects Rodin and Deploy and the DFG projects Gepavas and Gepavas II.
-	ProB has been successfully used on various industrial specifications
-	and is now being used e.g. within Siemens, Alstom, Thales and ClearSy.
-	""".stripIndent()
 }
 
 apply from: 'tycho_build.gradle'

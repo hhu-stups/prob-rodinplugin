@@ -370,27 +370,7 @@ clean.dependsOn(deleteParent)
 // define Repository
 task createRepository() {
 	doLast{
-		new File(workspacePath + "${repositoryName}").mkdir()
-
-		String versionNumber = '1.0.0.qualifier'
-		String artifactId = repositoryName
-		String featureArtifactId
-		def f = new File(workspacePath + artifactId + '/category.xml')
-		f.delete()
-		f << categoryHead()
-		for (int i = 0; i < features.size(); i++) {
-			def parsedXml = new XmlParser().parse("${workspacePath}${features[i]}/feature.xml")
-
-			featureArtifactId  = parsedXml.attribute("id")
-
-			f << categoryFeature(categoryId, featureArtifactId.replace(workspacePath, ''))
-		}
-
-		f << categoryDef(categoryId, categoryLabel, categoryDescription)
-
-		f << categoryEnd()
-
-		def pom = new File(workspacePath + artifactId + '/pom.xml')
+		def pom = new File(workspacePath + repositoryName + '/pom.xml')
 		pom.delete()
 		pom << reposi()
 	}
@@ -564,31 +544,6 @@ def reposi() {"""\
 	<packaging>eclipse-repository</packaging>
 </project>
 """}
-
-// creates a category in
-def categoryHead() {"""\
-<?xml version="1.0" encoding="UTF-8"?>
-<site>
-"""}
-
-def categoryFeature(category, artifactId) {"""
-	<feature id="${artifactId}" version="0.0.0">
-		<category name="${category}"/>
-	</feature>
-"""}
-
-def categoryDef(id, label, categorydescription) {"""
-	<category-def name="${id}" label="${label}">
-		<description>
-${categorydescription}
-		</description>
-	</category-def>
-"""}
-
-def categoryEnd() {"""
-</site>
-"""}
-// end of category definition
 
 // feature pom
 def feature(artifactId, versionNumber) {"""\

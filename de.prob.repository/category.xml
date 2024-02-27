@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+
+	<feature id="de.prob2.disprover.feature" version="0.0.0">
+		<category name="de.prob2.feature.category"/>
+	</feature>
+
+	<feature id="de.prob2.feature" version="0.0.0">
+		<category name="de.prob2.feature.category"/>
+	</feature>
+
+	<feature id="de.prob2.symbolic.feature" version="0.0.0">
+		<category name="de.prob2.feature.category"/>
+	</feature>
+
+	<category-def name="de.prob2.feature.category" label="ProB for Rodin">
+		<description>
+ProB is an animator and model checker for the B-Method. It allows
+fully automatic animation of many B specifications, and can be
+used to systematically check a specification for errors.
+Part of the research and development was conducted within the
+EPSRC funded projects ABCD and iMoc, and within the EU funded
+projects Rodin and Deploy and the DFG projects Gepavas and Gepavas II.
+ProB has been successfully used on various industrial specifications
+and is now being used e.g. within Siemens, Alstom, Thales and ClearSy.
+
+		</description>
+	</category-def>
+
+</site>
