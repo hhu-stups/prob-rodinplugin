@@ -377,7 +377,8 @@ task createRepository() {
 }
 
 task deleteRepository(type: Delete) {
-	delete(workspacePath + "${repositoryName}")
+	delete(workspacePath + repositoryName + "/pom.xml")
+	delete(workspacePath + repositoryName + "/target")
 }
 clean.dependsOn(deleteRepository)
 
