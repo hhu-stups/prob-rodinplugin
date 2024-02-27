@@ -30,13 +30,6 @@
                      name="contact">
                </separator>
             </menu>
-            <menu
-                  id="analyze"
-                  label="Analyze">
-               <separator
-                     name="analyze">
-               </separator>
-            </menu>
          </menu>
       </menuContribution>
       <menuContribution

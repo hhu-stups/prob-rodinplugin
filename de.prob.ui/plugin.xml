@@ -320,11 +320,6 @@
             id="de.prob.ui.opview.checks"
             name="Checks">
       </command>
-      <command
-            categoryId="de.prob.ui.commands.category"
-            id="de.prob.ui.exampleanalyzecommand"
-            name="Example for Analyze Commands">
-      </command>
  <!--     <command
             id="de.prob.ui.startdmc"
             name="Start Distributed Modelcheck">
@@ -677,12 +672,6 @@
                </with>
          </enabledWhen>
             
-      </handler>
-      <handler
-            commandId="de.prob.ui.exampleanalyzecommand">
-         <class
-               class="de.prob.ui.internal.InvariantAnalyzeHandler">
-         </class>
       </handler>
       <handler commandId="de.prob.ui.ltl.counterexampleviewmenuhandler">
             <class class="de.prob.ui.ltl.handler.CounterExampleViewMenuHandler"/>
@@ -1194,18 +1183,6 @@
             </command>
          </menu>
       </menuContribution>
-      <!--
-      <menuContribution
-            allPopups="false"
-            locationURI="menu:analyze">
-         <command
-               commandId="de.prob.ui.exampleanalyzecommand"
-               label="Analyze Invariant"
-               mnemonic="I"
-               style="toggle">
-         </command>
-      </menuContribution>
-      -->
       <menuContribution locationURI="menu:de.prob.ui.ltl.CounterExampleView">
          <menu
                label="Show as">
