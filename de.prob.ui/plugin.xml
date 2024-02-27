@@ -320,11 +320,6 @@
             id="de.prob.ui.opview.checks"
             name="Checks">
       </command>
- <!--     <command
-            id="de.prob.ui.startdmc"
-            name="Start Distributed Modelcheck">
-      </command>
- -->     
       <command
           id="de.prob.ui.ltl.counterexampleviewmenuhandler"
           name="CounterExampleView Menu Command">
@@ -820,23 +815,6 @@
             </with>
          </enabledWhen>
       </handler>
-<!--      <handler
-            commandId="de.prob.ui.startdmc">
-         <class
-               class="de.prob.ui.eventb.StartDistributedModelcheckHandler">
-         </class>
-         <enabledWhen>
-            <with
-                  variable="selection">
-               <iterate
-                     operator="or">
-                  <instanceof
-                        value="org.eventb.core.IEventBRoot">
-                  </instanceof>
-               </iterate>
-            </with>
-         </enabledWhen>
-      </handler> -->
    </extension>
    <extension
          point="org.eclipse.ui.menus">
@@ -1056,24 +1034,6 @@
       </with>
             </visibleWhen>
          </command>
-  <!--       <command
-               commandId="de.prob.ui.startdmc"
-               icon="icons/prob.png"
-               label="Start Distributed Modelcheck"
-               style="push">
-            <visibleWhen>
-      <with
-            variable="selection">
-         <iterate
-               operator="or">
-            <instanceof
-                  value="org.eventb.core.IEventBRoot">
-            </instanceof>
-         </iterate>
-      </with>
-            </visibleWhen>
-         </command>
-  -->
          <menu
                commandId="de.prob.ui.navigator.context"
                icon="icons/new_prob_mini.png"
