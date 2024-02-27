@@ -16,33 +16,25 @@ import java.nio.charset.Charset;
 
 import de.prob.cli.CliException;
 import de.prob.cli.CliStarter;
-import de.prob.core.IServerConnection;
 import de.prob.core.ProblemHandler;
+import de.prob.core.sablecc.node.ACallBackResult;
+import de.prob.core.sablecc.node.AProgressResult;
+import de.prob.core.sablecc.node.PResult;
 import de.prob.exceptions.ProBException;
 import de.prob.logging.Logger;
+import de.prob.parser.ProBResultParser;
 
-public class ServerConnection implements IServerConnection {
-
+public class ServerConnection {
 	private Socket socket = null;
 	private BufferedInputStream inputStream = null;
 	private PrintStream outputStream = null;
 
 	private CliStarter cli = null;
 
-	private String lastCommand;
-
 	private volatile boolean shutdown = true;
-
-	// private static final ScheduledExecutorService exec = new
-	// ScheduledThreadPoolExecutor(
-	// 1);
 
 	private void startcli(final File file) throws CliException {
 		cli = new CliStarter(file);
-	}
-
-	public String getLastCommand() {
-		return lastCommand;
 	}
 
 	private void establishConnection(final int port) throws CliException {
@@ -62,24 +54,29 @@ public class ServerConnection implements IServerConnection {
 					outputStream = null;
 				}
 			}
-			ProblemHandler.handleCliException(
-					"Opening connection to ProB server failed", e);
+			throw new CliException("Opening connection to ProB server failed", e, false);
 		}
 	}
 
-	@Override
-	public String sendCommand(final String commandString) throws ProBException {
+	public PResult sendCommand(final String commandString) throws ProBException {
 		if (shutdown) {
 			final String message = "probcli is currently shutting down";
 			ProblemHandler.raiseCliException(message);
 		}
 		checkState();
 		sendQuery(commandString);
-		return getAnswer();
+		PResult topnode = ProBResultParser.parse(getAnswer()).getPResult();
+		// Skip over all progress and callback results, which we don't support here (yet?).
+		while (topnode instanceof AProgressResult || topnode instanceof ACallBackResult) {
+			if (topnode instanceof ACallBackResult) {
+				sendQuery("call_back_not_supported.");
+			}
+			topnode = ProBResultParser.parse(getAnswer()).getPResult();
+		}
+		return topnode;
 	}
 
 	private void sendQuery(final String commandString) throws ProBException {
-		lastCommand = commandString;
 		Logger.assertProB("commandString.trim().endsWith(\".\")", commandString
 				.trim().endsWith("."));
 
@@ -102,24 +99,6 @@ public class ServerConnection implements IServerConnection {
 		}
 		return input;
 	}
-
-	// private String timedRun(final Callable<String> r, final long timeOut,
-	// final TimeUnit unit) throws InterruptedException, ProBException {
-	// String s = null;
-	// Future<String> task = exec.submit(r);
-	// try {
-	// s = task.get(timeOut, unit);
-	// } catch (TimeoutException e) {
-	// final String message = "Timeout while waiting for ProB's answer";
-	// ProblemHandler.handleCliException(message, e);
-	// } catch (ExecutionException e) {
-	// final String message = e.getCause().getLocalizedMessage();
-	// ProblemHandler.handleCliException(message, e.getCause());
-	// } finally {
-	// task.cancel(true);
-	// }
-	// return s;
-	// }
 
 	protected String readAnswer() throws IOException {
 		final StringBuilder result = new StringBuilder();
@@ -157,7 +136,6 @@ public class ServerConnection implements IServerConnection {
 		return result.length() > 0 ? result.toString() : null;
 	}
 
-	@Override
 	public void startup(final File file) throws CliException {
 		if (shutdown) {
 			startcli(file);
@@ -165,12 +143,10 @@ public class ServerConnection implements IServerConnection {
 			shutdown = false;
 		} else {
 			// This should never happen
-			final String message = "Tried to start a server that is already running";
-			Logger.notifyUserWithoutBugreport(message);
+			Logger.notifyUser("Tried to start a server that is already running");
 		}
 	}
 
-	@Override
 	public void shutdown() {
 		if (!shutdown) {
 			if (socket != null) {
@@ -197,12 +173,6 @@ public class ServerConnection implements IServerConnection {
 		}
 	}
 
-	@Override
-	public int getCliPortNumber() {
-		return cli.getPort();
-	}
-
-	@Override
 	public void sendUserInterruptSignal() {
 		if (cli != null) {
 			cli.sendUserInterruptReference();

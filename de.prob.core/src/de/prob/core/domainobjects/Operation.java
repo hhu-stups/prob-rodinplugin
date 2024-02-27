@@ -12,8 +12,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import de.prob.prolog.term.AIntegerPrologTerm;
 import de.prob.prolog.term.CompoundPrologTerm;
-import de.prob.prolog.term.IntegerPrologTerm;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 import de.prob.unicode.UnicodeTranslator;
@@ -121,9 +121,8 @@ public final class Operation {
 	public static Operation fromPrologTerm(final PrologTerm rawOpTerm) {
 		final CompoundPrologTerm opTerm = (CompoundPrologTerm) rawOpTerm;
 
-		final IntegerPrologTerm pInt = (IntegerPrologTerm) opTerm
-				.getArgument(ID);
-		final long id = pInt.getValue().longValue();
+		final AIntegerPrologTerm pInt = (AIntegerPrologTerm) opTerm.getArgument(ID);
+		final long id = pInt.longValueExact();
 		final String name = PrologTerm.atomicString(opTerm.getArgument(NAME));
 		final EventType type = SPECIAL_EVENTS.get(name);
 		final String destId = getIdFromPrologTerm(opTerm.getArgument(DST));
@@ -171,8 +170,8 @@ public final class Operation {
 				.getArgument(ARGS_PRETTY));
 		this.hashCode = initHashCode();
 
-		final IntegerPrologTerm pInt = (IntegerPrologTerm) term.getArgument(ID);
-		this.id = pInt.getValue().longValue();
+		final AIntegerPrologTerm pInt = (AIntegerPrologTerm) term.getArgument(ID);
+		this.id = pInt.longValueExact();
 		this.eventStack = createEventStack((ListPrologTerm) term
 				.getArgument(INFOS));
 	}
@@ -244,10 +243,8 @@ public final class Operation {
 	}
 
 	private static String getIdFromPrologTerm(final PrologTerm destTerm) {
-		if (destTerm instanceof IntegerPrologTerm) {
-			return ((IntegerPrologTerm) destTerm).getValue().toString();
-		}
-		return ((CompoundPrologTerm) destTerm).getFunctor();
+		// integer terms have their string representation as functor
+		return destTerm.atomicToString();
 	}
 
 	public long getId() {

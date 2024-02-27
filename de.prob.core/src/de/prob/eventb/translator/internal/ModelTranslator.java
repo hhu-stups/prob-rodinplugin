@@ -1,5 +1,5 @@
 /**
- * (c) 2009 Lehrstuhl fuer Softwaretechnik und Programmiersprachen, Heinrich
+ * (c) 2009-2024 Lehrstuhl fuer Softwaretechnik und Programmiersprachen, Heinrich
  * Heine Universitaet Duesseldorf This software is licenced under EPL 1.0
  * (http://www.eclipse.org/org/documents/epl-v10.html)
  * */
@@ -12,6 +12,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eventb.core.EventBAttributes;
+import org.eventb.core.ICommentedElement;
 import org.eventb.core.IConvergenceElement.Convergence;
 import org.eventb.core.ILabeledElement;
 import org.eventb.core.IMachineRoot;
@@ -19,7 +21,10 @@ import org.eventb.core.IPOSequent;
 import org.eventb.core.IPOSource;
 import org.eventb.core.IPSRoot;
 import org.eventb.core.IPSStatus;
+import org.eventb.core.IPredicateElement;
 import org.eventb.core.ISCAction;
+import org.eventb.core.IEvent;
+import org.eventb.core.IInvariant;
 import org.eventb.core.ISCEvent;
 import org.eventb.core.ISCGuard;
 import org.eventb.core.ISCInternalContext;
@@ -47,6 +52,8 @@ import org.rodinp.core.RodinDBException;
 
 import de.be4.classicalb.core.parser.node.AAnticipatedEventstatus;
 import de.be4.classicalb.core.parser.node.AConvergentEventstatus;
+import de.be4.classicalb.core.parser.node.ADescriptionEvent;
+import de.be4.classicalb.core.parser.node.ADescriptionPredicate;
 import de.be4.classicalb.core.parser.node.AEvent;
 import de.be4.classicalb.core.parser.node.AEventBModelParseUnit;
 import de.be4.classicalb.core.parser.node.AEventsModelClause;
@@ -68,6 +75,7 @@ import de.be4.classicalb.core.parser.node.PPredicate;
 import de.be4.classicalb.core.parser.node.PSubstitution;
 import de.be4.classicalb.core.parser.node.PWitness;
 import de.be4.classicalb.core.parser.node.TIdentifierLiteral;
+import de.be4.classicalb.core.parser.node.TPragmaFreeText;
 import de.prob.core.translator.TranslationFailedException;
 import de.prob.eventb.translator.AbstractComponentTranslator;
 import de.prob.logging.Logger;
@@ -114,8 +122,7 @@ public class ModelTranslator extends AbstractComponentTranslator {
 
 	public AEventBModelParseUnit getModelAST() {
 		if (broken) {
-			final String message = "The machine contains Rodin Problems. ProB will continue, but you may observe unexpected behaviour";
-			Logger.notifyUserWithoutBugreport(message);
+			Logger.notifyUser("The machine contains Rodin Problems. ProB will continue, but you may observe unexpected behaviour");
 			return model;
 		}
 		return model;
@@ -349,7 +356,24 @@ public class ModelTranslator extends AbstractComponentTranslator {
 			event.setTheorems(theorems);
 			event.setWitness(extractWitnesses(revent, localEnv));
 			event.setAssignments(extractActions(revent, localEnv));
-			eventsList.add(event);
+			// Events have comments, but they are no longer present in the statically checked events
+			// hence we get the original unchecked source:
+			final IEvent ucevent = (IEvent) revent.getSource();
+			// this also works to access comment field; not sure which version is better:
+			//if((ucevent instanceof ICommentedElement) && ((ICommentedElement) ucevent).hasComment()) {
+			//	System.out.println("Description 1 of " + revent.getLabel() + ": " + ((ICommentedElement) ucevent).getComment());
+			//}
+			if (ucevent.hasAttribute(EventBAttributes.COMMENT_ATTRIBUTE)) {
+				final String commentString = ucevent.getAttributeValue(EventBAttributes.COMMENT_ATTRIBUTE);
+				System.out.println("Event " + revent.getLabel() + " has description " + commentString);
+				final ADescriptionEvent devent = new ADescriptionEvent();
+				devent.setEvent(event);
+				final TPragmaFreeText desc = new TPragmaFreeText(commentString);
+				devent.setContent(desc);
+				eventsList.add(devent); // we add the event with a description node around it; requires new probcli
+			} else {
+				eventsList.add(event);
+			}
 		}
 		clause.setEvent(eventsList);
 		return clause;
@@ -513,8 +537,18 @@ public class ModelTranslator extends AbstractComponentTranslator {
 			if (isDefinedHere(evPredicate)) {
 				final PPredicate predicate = translatePredicate(ff, te,
 						evPredicate);
-				list.add(predicate);
-				labelMapping.put(predicate, evPredicate);
+				final IInvariant ucp = (IInvariant) evPredicate.getSource(); // comments only attached in unchecked source
+				if (ucp.hasAttribute(EventBAttributes.COMMENT_ATTRIBUTE)) {
+					final String commentString = ucp.getAttributeValue(EventBAttributes.COMMENT_ATTRIBUTE);
+					//System.out.println("Invariant/theorem " + predicate + " has description " + commentString);
+					final TPragmaFreeText desc = new TPragmaFreeText(commentString);
+					final ADescriptionPredicate dpred = new ADescriptionPredicate(desc,predicate);
+					list.add(dpred);
+					labelMapping.put(dpred, evPredicate);
+				} else {
+					list.add(predicate);
+					labelMapping.put(predicate, evPredicate);
+				}
 			}
 		}
 		return list;

@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: ProB Animator Core
 Bundle-SymbolicName: de.prob.core;singleton:=true
-Bundle-Version: 9.5.0.qualifier
+Bundle-Version: 9.5.1.qualifier
 Require-Bundle: org.eclipse.core.filesystem;bundle-version="[1.7.0,2.0.0)",
  org.eclipse.core.resources;bundle-version="[3.13.0,4.0.0)",
  org.eclipse.core.runtime;bundle-version="[3.20.0,4.0.0)",
@@ -76,11 +76,11 @@ Bundle-Activator: de.prob.core.internal.Activator
 Eclipse-BuddyPolicy: registered
 Bundle-RequiredExecutionEnvironment: JavaSE-11
 Bundle-ClassPath: .,
- lib/dependencies/answerparser-2.12.7.jar,
- lib/dependencies/bparser-2.12.7.jar,
- lib/dependencies/ltlparser-2.12.7.jar,
- lib/dependencies/parserbase-2.12.7.jar,
- lib/dependencies/prologlib-2.12.7.jar,
- lib/dependencies/sablecc-runtime-3.6.0.jar,
- lib/dependencies/theorymapping-2.12.7.jar,
- lib/dependencies/unicode-2.12.7.jar
+ lib/dependencies/answerparser-2.13.0.jar,
+ lib/dependencies/bparser-2.13.0.jar,
+ lib/dependencies/ltlparser-2.13.0.jar,
+ lib/dependencies/parserbase-2.13.0.jar,
+ lib/dependencies/prologlib-2.13.0.jar,
+ lib/dependencies/sablecc-runtime-3.7.0.jar,
+ lib/dependencies/theorymapping-2.13.0.jar,
+ lib/dependencies/unicode-2.13.0.jar

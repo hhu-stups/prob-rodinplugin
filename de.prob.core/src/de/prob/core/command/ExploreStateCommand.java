@@ -87,12 +87,12 @@ public final class ExploreStateCommand implements IComposableCommand {
 		// only show error message on SETUP_CONSTANTS and
 		// PARTIALLY_SETUP_CONSTANTS
 		if (unsatPropertiesExist) {
-			Logger.notifyUserWithoutBugreport("ProB could not find valid constants wich satisfy the properties.\n"
+			Logger.notifyUser("ProB could not find valid constants wich satisfy the properties.\n"
 					+ unsatPropsCommand.getUnsatPropertiesDescription());
 
 		} else if (!initialised && enabledOperations.isEmpty()
 				&& !timeoutOccured) {
-			Logger.notifyUserWithoutBugreport("ProB could not find valid constants/variables. This might be caused by the animation settings (e.g., Integer range or deferred set size) or by an inconsistency in the axioms.");
+			Logger.notifyUser("ProB could not find valid constants/variables. This might be caused by the animation settings (e.g., Integer range or deferred set size) or by an inconsistency in the axioms.");
 		}
 
 		Set<String> timeouts = new HashSet<String>(

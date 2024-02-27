@@ -11,8 +11,8 @@ import de.prob.core.domainobjects.Operation;
 import de.prob.exceptions.ProBException;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
+import de.prob.prolog.term.AIntegerPrologTerm;
 import de.prob.prolog.term.CompoundPrologTerm;
-import de.prob.prolog.term.IntegerPrologTerm;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 
@@ -206,8 +206,7 @@ public final class LtlCheckingCommand implements IComposableCommand {
 				loopEntry = -1;
 			} else if (loopStatus.hasFunctor("loop", 1)) {
 				pathType = PathType.INFINITE;
-				loopEntry = ((IntegerPrologTerm) loopStatus.getArgument(1))
-						.getValue().intValue();
+				loopEntry = ((AIntegerPrologTerm) loopStatus.getArgument(1)).intValueExact();
 			} else
 				throw new CommandException(
 						"LTL model check returned unexpected loop status: "

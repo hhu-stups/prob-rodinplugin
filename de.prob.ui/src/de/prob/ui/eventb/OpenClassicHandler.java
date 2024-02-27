@@ -36,7 +36,7 @@ public class OpenClassicHandler extends AbstractHandler implements IHandler {
 
 		final String prob_location = getBinaryLocation();
 		if (prob_location == null) {
-			Logger.notifyUserWithoutBugreport("You need to specify a location for" + PROB_STANDALONE_NAME +". See Preferences -> ProB Standalone.");
+			Logger.notifyUser("You need to specify a location for" + PROB_STANDALONE_NAME +". See Preferences -> ProB Standalone.");
 		} else {
 			final IEventBRoot root = getSelection();
 			if (root != null) {
@@ -53,7 +53,7 @@ public class OpenClassicHandler extends AbstractHandler implements IHandler {
 					runProBClassic(prob_location, tmp);
 				}
 			} else {
-			    Logger.notifyUserWithoutBugreport("You need to select a context or machine to open with " + PROB_STANDALONE_NAME);
+			    Logger.notifyUser("You need to select a context or machine to open with " + PROB_STANDALONE_NAME);
 			}
 		}
 		return null;
@@ -97,7 +97,7 @@ public class OpenClassicHandler extends AbstractHandler implements IHandler {
 			new Thread(new ClassicConsole(output)).start();
 
 		} catch (IOException e) {
-			Logger.notifyUserWithoutBugreport("You need to specify a correct location for "
+			Logger.notifyUser("You need to specify a correct location for "
 			+ PROB_CLASSIC_NAME + ". See Preferences -> ProB Standalone.\n"
 			+ PROB_CLASSIC_NAME + " location: "+ probBinary + 
 			 "\nModel file: " + modelFile +
@@ -121,7 +121,7 @@ public class OpenClassicHandler extends AbstractHandler implements IHandler {
 			new Thread(new ClassicConsole(voutput)).start();
 			vprocess.waitFor(); // this blocks Rodin
 	        if (vprocess.exitValue() != 0) {
-				Logger.notifyUserWithoutBugreport("Failed to start java -version. Exit code: " + vprocess.exitValue());
+				Logger.notifyUser("Failed to start java -version. Exit code: " + vprocess.exitValue());
 	        }
 			
 			final String[] command = {"java", "-jar", probBinary, "--machine-file", modelFile};
@@ -136,7 +136,7 @@ public class OpenClassicHandler extends AbstractHandler implements IHandler {
 			
 		} catch (IOException | InterruptedException e) {
 //		} catch (IOException e) {
-			Logger.notifyUserWithoutBugreport("You need to specify a correct location for "
+			Logger.notifyUser("You need to specify a correct location for "
 			+ PROB2_NAME + ". See Preferences -> ProB Standalone.\n"
 			+ PROB2_NAME + " location: "+ probBinary + 
 			 "\nModel file: " + modelFile +
@@ -157,7 +157,7 @@ public class OpenClassicHandler extends AbstractHandler implements IHandler {
 			temp = File.createTempFile("prob_", ".eventb");
 			temp.deleteOnExit();
 		} catch (IOException e) {
-			Logger.notifyUserWithoutBugreport("Something went wrong while saving temp file.\n"
+			Logger.notifyUser("Something went wrong while saving temp file.\n"
 					+ e.getLocalizedMessage());
 		}
 		return temp;

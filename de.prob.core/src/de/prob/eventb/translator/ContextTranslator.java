@@ -15,6 +15,8 @@ import java.util.Map;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
+import org.eventb.core.EventBAttributes;
+import org.eventb.core.IAxiom;
 import org.eventb.core.IContextRoot;
 import org.eventb.core.IEventBRoot;
 import org.eventb.core.IExtendsContext;
@@ -45,6 +47,7 @@ import de.be4.classicalb.core.parser.node.AAbstractConstantsContextClause;
 import de.be4.classicalb.core.parser.node.AAxiomsContextClause;
 import de.be4.classicalb.core.parser.node.AConstantsContextClause;
 import de.be4.classicalb.core.parser.node.ADeferredSetSet;
+import de.be4.classicalb.core.parser.node.ADescriptionPredicate;
 import de.be4.classicalb.core.parser.node.AEventBContextParseUnit;
 import de.be4.classicalb.core.parser.node.AExtendsContextClause;
 import de.be4.classicalb.core.parser.node.AIdentifierExpression;
@@ -56,6 +59,7 @@ import de.be4.classicalb.core.parser.node.PExpression;
 import de.be4.classicalb.core.parser.node.PPredicate;
 import de.be4.classicalb.core.parser.node.PSet;
 import de.be4.classicalb.core.parser.node.TIdentifierLiteral;
+import de.be4.classicalb.core.parser.node.TPragmaFreeText;
 import de.hhu.stups.sablecc.patch.SourcePosition;
 import de.prob.core.translator.TranslationFailedException;
 import de.prob.eventb.translator.internal.EProofStatus;
@@ -373,8 +377,18 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 		for (final ISCAxiom element : predicates) {
 			if (element.isTheorem() == theorems) {
 				final PPredicate predicate = translatePredicate(ff, te, element);
-				list.add(predicate);
-				labelMapping.put(predicate, element);
+				final IAxiom uca = (IAxiom) element.getSource(); // comments only attached in unchecked source
+				if (uca.hasAttribute(EventBAttributes.COMMENT_ATTRIBUTE)) {
+					final String commentString = uca.getAttributeValue(EventBAttributes.COMMENT_ATTRIBUTE);
+					//System.out.println("Axiom/theorem " + element + " has description " + commentString);
+					final TPragmaFreeText desc = new TPragmaFreeText(commentString);
+					final ADescriptionPredicate dpred = new ADescriptionPredicate(desc,predicate);
+					list.add(dpred);
+					labelMapping.put(dpred, element);
+				} else {
+					list.add(predicate);
+					labelMapping.put(predicate, element);
+				}
 				// proofspragmas.add(new ClassifiedPragma("discharged",
 				// predicate,
 				// Arrays.asList(new String[0]), Arrays

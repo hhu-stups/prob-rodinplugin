@@ -17,6 +17,7 @@ import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -92,10 +93,9 @@ public class StartAnimationHandler extends AbstractHandler implements IHandler {
 			   Logger.info(stringBuffer.toString());
 			   LimitedLogger.getLogger().log(stringBuffer.toString(),rootElement.getElementName(), null);
 			} else if (realError)
-				Logger.notifyUserWithoutBugreport(stringBuffer.toString());
+				Logger.notifyUser(stringBuffer.toString());
 			else
-				Logger.notifyUserAboutWarningWithoutBugreport(stringBuffer
-						.toString());
+				Logger.log(IStatus.WARNING, stringBuffer.toString(), null);
 		} else {
 		     Animator.getAnimator().resetRodinProjectHasErrorsOrWarnings();
 		}

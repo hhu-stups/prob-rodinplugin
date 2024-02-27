@@ -11,8 +11,6 @@ import java.util.List;
 import java.util.Map;
 
 import de.prob.cli.CliException;
-import de.prob.core.IServerConnection;
-import de.prob.core.ITrace;
 import de.prob.core.LanguageDependendAnimationPart;
 import de.prob.core.ProblemHandler;
 import de.prob.core.command.CommandException;
@@ -22,12 +20,17 @@ import de.prob.core.command.IComposableCommand;
 import de.prob.core.domainobjects.History;
 import de.prob.core.domainobjects.HistoryItem;
 import de.prob.core.domainobjects.MachineDescription;
-import de.prob.core.domainobjects.RandomSeed;
 import de.prob.core.domainobjects.State;
-import de.prob.core.sablecc.node.Start;
+import de.prob.core.sablecc.node.ACallBackResult;
+import de.prob.core.sablecc.node.AProgressResult;
+import de.prob.core.sablecc.node.AYesResult;
+import de.prob.core.sablecc.node.PResult;
 import de.prob.exceptions.ProBException;
 import de.prob.logging.Logger;
 import de.prob.parser.BindingGenerator;
+import de.prob.parser.PrologTermGenerator;
+import de.prob.parser.ResultParserException;
+import de.prob.parser.SimplifiedROMap;
 import de.prob.prolog.output.PrologTermStringOutput;
 import de.prob.prolog.term.PrologTerm;
 
@@ -40,9 +43,7 @@ public class AnimatorImpl {
 
 	private final History history = new History();
 
-	private IServerConnection connector;
-
-	private RandomSeed seed;
+	private ServerConnection connector;
 
 	private MachineDescription description;
 
@@ -50,8 +51,7 @@ public class AnimatorImpl {
 
 	private LanguageDependendAnimationPart langdep;
 
-	public AnimatorImpl(final IServerConnection serverConnection,
-			final File file) {
+	public AnimatorImpl(final ServerConnection serverConnection, final File file) {
 		this.file = file;
 		setConnector(serverConnection);
 	}
@@ -78,58 +78,22 @@ public class AnimatorImpl {
 		return item == null ? null : item.getState();
 	}
 
-	public synchronized Start sendCommandImpl(final String command)
-			throws ProBException {
-		String input = connector.sendCommand(command);
-		return parseResult(input);
-	}
-
-	private Start parseResult(final String input) throws CliException,
-			ResultParserException {
-		if (input == null)
-			return null;
-		else
-			return ProBResultParser.parse(input);
-	}
-
 	public History getHistoryImpl() {
 		return history;
 	}
 
-	private synchronized void setConnector(
-			final IServerConnection serverConnection) {
+	private synchronized void setConnector(final ServerConnection serverConnection) {
 		this.connector = serverConnection;
 		try {
 			connector.startup(file);
 		} catch (CliException e) {
-			// The user has been notified by the underlying implementation, so
-			// we only invalidate the connector
+			e.notifyUserOnce();
 			connector = null;
 		}
 	}
 
 	public boolean isRunning() {
 		return true;
-	}
-
-	public synchronized final ITrace getTraceImpl() {
-		final ITrace trace;
-		if (connector != null && connector instanceof ServerTraceConnection) {
-			ServerTraceConnection conn = (ServerTraceConnection) connector;
-			conn.preferenceToTrace("seed: " + getSeed().toString());
-			trace = conn.getTrace();
-		} else {
-			trace = null;
-		}
-		return trace;
-	}
-
-	public void setSeed(final RandomSeed seed) {
-		this.seed = seed;
-	}
-
-	public RandomSeed getSeed() {
-		return seed;
 	}
 
 	public synchronized void setMachineDescription(
@@ -186,13 +150,29 @@ public class AnimatorImpl {
 		PrologTermStringOutput pto = new PrologTermStringOutput();
 		command.writeCommand(pto);
 		final String query = pto.fullstop().toString();
-		final Start ast = sendCommandImpl(query);
 		Map<String, PrologTerm> bindings;
 		try {
-			bindings = BindingGenerator.createBindingMustNotFail(query, ast);
-		} catch (de.prob.parser.ResultParserException e) {
-			Logger.notifyUser(e.getMessage());
-			throw new CommandException(e.getMessage());
+			PResult topnode;
+			synchronized (this) {
+				topnode = connector.sendCommand(query);
+			}
+			// If probcli doesn't return anything, sendCommand throws an exception.
+			assert topnode != null;
+			// Progress and callback results are handled inside sendCommand.
+			assert !(topnode instanceof AProgressResult);
+			assert !(topnode instanceof ACallBackResult);
+
+			if (!(topnode instanceof AYesResult)) {
+				String queryForMessage = query;
+				if (queryForMessage.length() > 400) {
+					queryForMessage = queryForMessage.substring(0, 400) + "...";
+				}
+				throw new ResultParserException("Prolog query failed - received " + topnode.getClass().getSimpleName() + " in response to query: " + queryForMessage, null);
+			}
+			bindings = BindingGenerator.createBinding(PrologTermGenerator.toPrologTerm(topnode));
+		} catch (ResultParserException e) {
+			Logger.notifyUser(e.getMessage(), e);
+			throw new CommandException(e.getMessage(), e);
 		}
 		return new SimplifiedROMap<String, PrologTerm>(bindings);
 	}

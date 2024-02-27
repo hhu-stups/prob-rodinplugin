@@ -123,7 +123,7 @@ public class OpenObserverAction extends SelectionAction {
 				}
 
 			} else {
-				Logger.notifyUserWithoutBugreport("The Observer \""
+				Logger.notifyUser("The Observer \""
 						+ observer.getName()
 						+ "\" does not support a wizard.");
 			}

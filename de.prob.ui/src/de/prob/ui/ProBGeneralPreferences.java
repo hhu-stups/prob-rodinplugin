@@ -35,8 +35,8 @@ import de.prob.core.command.GetPreferencesCommand;
 import de.prob.core.domainobjects.ProBPreference;
 import de.prob.exceptions.ProBException;
 import de.prob.logging.Logger;
+import de.prob.prolog.term.AIntegerPrologTerm;
 import de.prob.prolog.term.CompoundPrologTerm;
-import de.prob.prolog.term.IntegerPrologTerm;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 
@@ -154,12 +154,12 @@ public class ProBGeneralPreferences extends FieldEditorPreferencePage implements
 					BooleanFieldEditor.SEPARATE_LABEL, parent);
 		} else if (type.hasFunctor("range", 2)) {
 			final CompoundPrologTerm range = (CompoundPrologTerm) type;
-			final BigInteger lower = ((IntegerPrologTerm) range.getArgument(1))
+			final BigInteger lower = ((AIntegerPrologTerm) range.getArgument(1))
 					.getValue();
-			final BigInteger upper = ((IntegerPrologTerm) range.getArgument(2))
+			final BigInteger upper = ((AIntegerPrologTerm) range.getArgument(2))
 					.getValue();
-			field = createIntField(name, desc, parent, lower.intValue(), upper
-					.intValue());
+			field = createIntField(name, desc, parent, lower.intValueExact(), upper
+					.intValueExact());
 		} else if (type.isList()) {
 			final ListPrologTerm typelist = (ListPrologTerm) type;
 			final String[][] comboEntries = new String[typelist.size()][2];

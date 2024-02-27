@@ -1,5 +1,6 @@
 **/bin/
 **/target/
+.idea/
 .gradle/
 .metadata/
 **/pom.xml
@@ -9,4 +10,3 @@ updatesite/
 **/lib/dependencies/
 de.prob.core/prob/
 build/
-de.prob.repository/category.xml

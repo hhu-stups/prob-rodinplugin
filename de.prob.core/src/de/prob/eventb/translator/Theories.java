@@ -15,6 +15,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eventb.core.IEventBProject;
+import org.eventb.core.EventBAttributes;
 import org.eventb.core.ISCIdentifierElement;
 import org.eventb.core.ast.Expression;
 import org.eventb.core.ast.Formula;
@@ -245,15 +246,8 @@ public class Theories {
 	private static void printMappings(Collection<OperatorMapping> mappings,
 			IPrologTermOutput pto) {
 		pto.openList();
-		// Currently, we support only one kind of operator mapping, just tagging
-		// an operator to indicate that an optimized ProB implementation should
-		// be used. We do not invest any effort in preparing future kinds of
-		// other operator mappings.
 		for (OperatorMapping mapping : mappings) {
-			pto.openTerm("tag");
-			pto.printAtom(mapping.getOperatorName());
-			pto.printAtom(mapping.getSpec());
-			pto.closeTerm();
+			mapping.printProlog(pto);
 		}
 		pto.closeList();
 	}
@@ -288,7 +282,7 @@ public class Theories {
 		pto.closeList();
 		pto.openList();
 		for (ISCDatatypeConstructor cons : def.getConstructors()) {
-			printConstructor(cons, ff, pto);
+			printConstructor(cons, def, ff, pto);
 		}
 		pto.closeList();
 		pto.closeTerm();
@@ -296,12 +290,13 @@ public class Theories {
 	}
 
 	private static void printConstructor(ISCDatatypeConstructor cons,
+			ISCDatatypeDefinition def,
 			FormulaFactory ff, IPrologTermOutput pto) throws CoreException {
 		pto.openTerm("constructor");
 		pto.printAtom(cons.getIdentifierString());
 		pto.openList();
 		for (ISCConstructorArgument arg : cons.getConstructorArguments()) {
-			printTypedIdentifier("destructor", arg, ff, pto);
+			printTypedIdentifierForRecursiveDataTypeDef("destructor", arg, def, ff, pto);
 		}
 		pto.closeList();
 		pto.closeTerm();
@@ -322,7 +317,7 @@ public class Theories {
 			throws CoreException {
 
 		prologOutput.openTerm("operator");
-		prologOutput.printAtom(opDef.getLabel());
+		prologOutput.printAtom(opDef.getLabel()); // Name of the operator
 
 		final FormulaFactory ff = theory.getFormulaFactory();
 		final ITypeEnvironment teFromFF = theory.getTypeEnvironment(ff);
@@ -337,6 +332,10 @@ public class Theories {
 		}
 
 		// WD Condition
+		// TODO: does not seem to get the user-defined WD conditions
+		// we should probably call in INewOperatorDefinition.java : IOperatorWDCondition[] getOperatorWDConditions() throws RodinDBException;
+		// and convert this to a Predicate
+		// but above we have ISCNewOperatorDefinition and not INewOperatorDefinition
 		Predicate wdCondition = opDef.getWDCondition(ff, te);
 		printPredicate(prologOutput, wdCondition);
 
@@ -377,13 +376,12 @@ public class Theories {
 		prologOutput.openTerm("case");
 		prologOutput.printAtom(indArg);
 		prologOutput.openList();
-		if(ex==null) {
-		    throw new IllegalStateException("Empty expression for axiomatic recursive definition case " + es +
-		                        " and inductive argument " + indArg);
+		if (ex == null) {
+			throw new IllegalStateException("Empty expression for axiomatic recursive definition case " + es + " and inductive argument " + indArg);
 		} else {
-            for (FreeIdentifier fi : ex.getFreeIdentifiers()) {
-                prologOutput.printAtom(fi.getName());
-            }
+			for (FreeIdentifier fi : ex.getFreeIdentifiers()) {
+				prologOutput.printAtom(fi.getName());
+			}
 		}
 		prologOutput.closeList();
 		printExpression(prologOutput, ex);
@@ -420,6 +418,7 @@ public class Theories {
 				Predicate pp = (Predicate) scFormula;
 				printPredicate(prologOutput, pp);
 			}
+			// TODO: we could insert the result type in the Prolog term; or at least if we have a pred or expr
 			if (scFormula instanceof Expression) {
 				Expression pp = (Expression) scFormula;
 				printExpression(prologOutput, pp);
@@ -428,13 +427,57 @@ public class Theories {
 		}
 	}
 
+	private static void printTypedIdentifierForRecursiveDataTypeDef(final String functor,
+			final ISCIdentifierElement id,
+			final ISCDatatypeDefinition def,
+			final FormulaFactory ff,
+			final IPrologTermOutput pto) throws CoreException {
+		pto.openTerm(functor);
+		pto.printAtom(id.getIdentifierString());
+		final String typeString = id.getAttributeValue(EventBAttributes.TYPE_ATTRIBUTE);
+		// todo: is there a better way to check if type refers recursively to def? do we need to trim typeString?
+		// System.out.println("Inductive datatype: " + def.getIdentifierString() + " destructor arg has type: " + typeString);
+		if (def.getIdentifierString().equals(typeString)) {
+			// the checked theory files tcf no longer contain the type paras
+			// the tuf file may contain org.eventb.theory.core.type="Baum(L)"
+			// the tcf file now contains org.eventb.theory.core.type="Baum"
+			// getType would lead to a CoreException
+			// we print the type of the recursive data type directly
+			printTypeOfDataType(def,ff,pto);
+		} else {
+			Type type = id.getType(ff);
+			printType(type, pto);
+		}
+		pto.closeTerm();
+	}
+	
+	// print the base type of a data type definition as an extended_expr
+	private static void printTypeOfDataType(
+			final ISCDatatypeDefinition def,
+			final FormulaFactory ff,
+			final IPrologTermOutput pto) throws CoreException {
+		pto.openTerm("extended_expr");
+		pto.printAtom("none");
+		pto.printAtom(def.getIdentifierString());
+		pto.openList();
+		for (ISCTypeArgument arg : def.getTypeArguments()) {
+			printType(arg.getSCGivenType(ff), pto);
+		}
+		pto.closeList();
+		pto.openList(); // empty list of predicate args
+		pto.closeList();
+		pto.closeTerm();
+	}
+	
 	private static void printTypedIdentifier(final String functor,
 			final ISCIdentifierElement id, final FormulaFactory ff,
 			final IPrologTermOutput pto) throws CoreException {
 		pto.openTerm(functor);
 		pto.printAtom(id.getIdentifierString());
+		
 		Type type = id.getType(ff);
 		printType(type, pto);
+			
 		pto.closeTerm();
 	}
 
@@ -492,6 +535,7 @@ public class Theories {
 			pto.openList();
 			// WD condition missing
 			pto.closeList();
+			// Result type is not written; we can maybe get it from: Formula<?> scFormula = def.getSCFormula(ff, te);
 			pto.closeTerm();
 		}
 		pto.closeList();

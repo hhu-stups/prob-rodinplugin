@@ -26,8 +26,7 @@ public class PrologException extends ProBException {
 		if (!handled) {
 			handled = true;
 			if (onlyWarnings) {
-				Logger.log(IStatus.WARNING, Logger.NOBUGREPORT,
-						this.getMessage(), this);
+				Logger.log(IStatus.WARNING, this.getMessage(), this);
 			} else {
 				Logger.notifyUser(this.getMessage(), this);
 			}

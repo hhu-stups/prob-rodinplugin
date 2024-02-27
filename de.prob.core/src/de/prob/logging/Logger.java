@@ -23,13 +23,6 @@ import de.prob.parser.BindingGenerator;
  * 
  */
 public final class Logger {
-
-	public static final int DEBUG = 0;
-	public static final int INFO = 1;
-	public static final int WARNING = 2;
-	public static final int BUGREPORT = 4;
-	public static final int NOBUGREPORT = 8;
-
 	/**
 	 * Registers a new {@link ILogListener}. The listener's
 	 * {@link ILogListener#logging(IStatus, String)} method is called, if
@@ -42,8 +35,8 @@ public final class Logger {
 	}
 
 	/**
-	 * Notifies the User about a fatal problem by adding a
-	 * {@link Logger#FATALERROR} to the log. This method takes a message
+	 * Notifies the User about a fatal problem by adding an error
+	 * to the log. This method takes a message
 	 * describing the problem as well as an exception.
 	 * <p>
 	 * Note: Use this only if you don't want to throw an exception. If you want
@@ -59,20 +52,11 @@ public final class Logger {
 	 */
 	public static void notifyUser(final String message,
 			final Throwable throwable) {
-		log(IStatus.ERROR, BUGREPORT, message, throwable);
+		log(IStatus.ERROR, message, throwable);
 	}
 
 	public static void notifyUser(final String message) {
 		notifyUser(message, null);
-	}
-
-	public static void notifyUserWithoutBugreport(final String message,
-			final Throwable throwable) {
-		log(IStatus.ERROR, NOBUGREPORT, message, throwable);
-	}
-
-	public static void notifyUserWithoutBugreport(final String message) {
-		notifyUserWithoutBugreport(message, null);
 	}
 
 	/**
@@ -131,10 +115,8 @@ public final class Logger {
 		assertProB(assertion, false);
 	}
 
-	public static void log(final int severity, final int code,
-			final String message, final Throwable exception) {
-		final IStatus status = new Status(severity, Activator.PLUGIN_ID, code,
-				message, exception);
+	public static void log(final int severity, final String message, final Throwable exception) {
+		final IStatus status = new Status(severity, Activator.PLUGIN_ID, message, exception);
 		log(status);
 	}
 
@@ -150,9 +132,5 @@ public final class Logger {
 
 	private static void log(final IStatus status) {
 		Activator.getDefault().getLog().log(status);
-	}
-
-	public static void notifyUserAboutWarningWithoutBugreport(String string) {
-		log(IStatus.WARNING, NOBUGREPORT, string, null);
 	}
 }

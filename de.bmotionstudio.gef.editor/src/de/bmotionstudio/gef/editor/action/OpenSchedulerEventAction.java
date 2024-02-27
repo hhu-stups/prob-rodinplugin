@@ -124,7 +124,7 @@ public class OpenSchedulerEventAction extends SelectionAction {
 					}
 
 				} else {
-					Logger.notifyUserWithoutBugreport("The Scheduler Event \""
+					Logger.notifyUser("The Scheduler Event \""
 							+ newSchedulerEvent.getName()
 							+ "\" does not support a wizard.");
 				}

@@ -73,13 +73,6 @@
       </view>
       <view
             category="de.hhu.stups.prob"
-            class="de.prob.ui.ticket.LogView"
-            id="de.prob.ui.log"
-            name="ProB Log View"
-            restorable="true">
-      </view>
-      <view
-            category="de.hhu.stups.prob"
             class="de.prob.ui.ltl.CounterExampleViewPart"
             id="de.prob.ui.ltl.CounterExampleView"
             name="LTL Counter-Example"

@@ -9,8 +9,8 @@ import de.prob.core.command.LtlCheckingCommand.PathType;
 import de.prob.core.command.LtlCheckingCommand.Result;
 import de.prob.core.domainobjects.Operation;
 import de.prob.logging.Logger;
+import de.prob.prolog.term.AIntegerPrologTerm;
 import de.prob.prolog.term.CompoundPrologTerm;
-import de.prob.prolog.term.IntegerPrologTerm;
 import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 
@@ -98,8 +98,7 @@ public class CounterExample {
 					.getArgument(3);
 
 			for (int i = 0; i < values.size(); i++) {
-				int value = ((IntegerPrologTerm) values.get(i)).getValue()
-						.intValue();
+				int value = ((AIntegerPrologTerm) values.get(i)).intValueExact();
 				// Doesn't have to be a 'predicateValues.get(index)' and not
 				// 'predicateValues.get(i)' (predicateValues is a list of boolean lists)
 				//predicateValues.get(index).add(value == 0 ? false : true);
@@ -140,9 +139,9 @@ public class CounterExample {
 					Arrays.asList(values));
 		} else if (arity == 1) {
 			if (functor.equals("ap") || functor.equals("tp")) {
-				IntegerPrologTerm atomic = (IntegerPrologTerm) term
+				AIntegerPrologTerm atomic = (AIntegerPrologTerm) term
 						.getArgument(1);
-				int atomicId = atomic.getValue().intValue();
+				int atomicId = atomic.intValueExact();
 
 				final String name = atomicFormulaNames[atomicId];
 				

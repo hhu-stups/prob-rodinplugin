@@ -1,5 +1,5 @@
 /** 
- * (c) 2009 Lehrstuhl fuer Softwaretechnik und Programmiersprachen, 
+ * (c) 2009-2023 Lehrstuhl fuer Softwaretechnik und Programmiersprachen, 
  * Heinrich Heine Universitaet Duesseldorf
  * This software is licenced under EPL 1.0 (http://www.eclipse.org/org/documents/epl-v10.html) 
  * */
@@ -21,9 +21,6 @@ import de.prob.core.internal.Activator;
 import de.prob.logging.Logger;
 
 public final class CliStarter {
-	private static final String[] JARS = new String[] { "BParser.jar",
-			"ParserAspects.jar", "aspectjrt.jar", "prolog.jar" };
-
 	private Process prologProcess;
 
 	private int port = -1;
@@ -70,13 +67,25 @@ public final class CliStarter {
 		}
 	}
 
+	/**
+	 * Return {@code process}'s exit code as an {@link Integer}, or {@link Optional#empty()} if it is still running.
+	 *
+	 * @param process the process whose exit code to get
+	 * @return {@code process}'s exit code, or {@link Optional#empty()} if it is still running
+	 */
+	private static Optional<Integer> getProcessExitCode(Process process) {
+		try {
+			return Optional.of(process.exitValue());
+		} catch (final IllegalThreadStateException ignored) {
+			return Optional.empty();
+		}
+	}
+
 	private void startProlog(final File file) throws CliException {
 		prologProcess = null;
 
 		final String os = Platform.getOS();
 		final File applicationPath = getCliPath();
-
-		final String fullcp = createFullClasspath(os, applicationPath);
 
 		final OsSpecificInfo osInfo = getOsInfo(os);
 
@@ -90,14 +99,23 @@ public final class CliStarter {
 		}
 
 		List<String> command = new ArrayList<String>();
+		if (Platform.OS_MACOSX.equals(os)) {
+			// Run universal probcli as arm64 if possible (i. e. if the host processor is arm64),
+			// even if Rodin/Eclipse is running as x86_64.
+			// (The macOS default behavior is to match the architecture of the parent process,
+			// which is bad in our case,
+			// because x86_64 probcli under Rosetta 2 is much slower than native arm64 probcli.)
+			command.add("arch");
+			command.add("-arm64");
+			command.add("-x86_64");
+		}
 		command.add(executable);
 		// command.add("-ll");
 		command.add("-sf");
 		command.add("-p");command.add("use_safety_ltl_model_checker");command.add("false");
-		command.add("-parsercp");
+		command.add("-prob_application_type");command.add("rodin"); // supported as of 9/11/2023
 		 // disable LTL safety model check as the counter examples lead to assertion failures 
 		 // in CounterExampleProposition in CounterExample.java
-		command.add(fullcp);
 
 		if (file != null) {
 			command.add(file.getAbsolutePath());
@@ -105,14 +123,12 @@ public final class CliStarter {
 
 		final ProcessBuilder pb = new ProcessBuilder();
 		pb.command(command);
+		pb.environment().put("NO_COLOR", "1");
 		pb.environment().put("PROB_HOME", osPath);
 		try {
 			prologProcess = pb.start();
 		} catch (IOException e) {
-			final String message = "Problem while starting up ProB CLI. Tried to execute:"
-					+ executable;
-			Logger.notifyUser(message, e);
-			throw new CliException(message, e, true);
+			throw new CliException("Problem while starting up ProB CLI. Tried to execute:" + executable, e, false);
 		}
 
 		Assert.isNotNull(prologProcess);
@@ -124,7 +140,19 @@ public final class CliStarter {
 
 		startErrorLogger(output);
 
-		extractCliInformation(input);
+		try {
+			extractCliInformation(input);
+		} catch (CliException e) {
+			// Check if the CLI exited while extracting the information.
+			final Optional<Integer> exitCode = getProcessExitCode(prologProcess);
+			if (exitCode.isPresent()) {
+				// CLI exited, report the exit code.
+				throw new CliException("ProB CLI exited with status " + exitCode.get() + " before socket connection could be opened", e, false);
+			} else {
+				// CLI didn't exit, just rethrow the error.
+				throw e;
+			}
+		}
 		// log output from Prolog
 		startOutputLogger(input);
 
@@ -151,10 +179,7 @@ public final class CliStarter {
 			} else if (os.equals(Platform.OS_LINUX)) {
 				subdir = "linux64";
 			} else {
-				final CliException cliException = new CliException(
-						"ProB does not support the plattform: " + os);
-				cliException.notifyUserOnce();
-				throw cliException;
+				throw new CliException("ProB does not support the plattform: " + os);
 			}
 
 			return new OsSpecificInfo(subdir, "probcli.sh",
@@ -162,7 +187,6 @@ public final class CliStarter {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	private void extractCliInformation(final BufferedReader input)
 			throws CliException {
 		final PortPattern portPattern = new PortPattern();
@@ -172,32 +196,13 @@ public final class CliStarter {
 		userInterruptReference = intPattern.getValue();
 	}
 
-	private static String createFullClasspath(final String os, final File path)
-			throws CliException {
-		final File base = new File(path.getParentFile().getParentFile(),
-				"de.prob.common");
-		final File common = new File(base, "common");
-		final File lib = new File(common, "lib");
-		final StringBuilder sb = new StringBuilder();
-		boolean isFirst = true;
-		for (final String jar : JARS) {
-			final File entry = new File(lib, jar);
-			if (!isFirst) {
-				sb.append(File.pathSeparator);
-			}
-			sb.append(entry.getPath());
-			isFirst = false;
-		}
-		return sb.toString();
-	}
-
 	private void startOutputLogger(final BufferedReader input) {
-		stdLogger = new OutputLoggerThread("(Output " + port + ")", input);
+		stdLogger = new OutputLoggerThread("(Output " + port + ")", input, false);
 		stdLogger.start();
 	}
 
 	private void startErrorLogger(final BufferedReader output) {
-		errLogger = new OutputLoggerThread("(Error " + port + ")", output);
+		errLogger = new OutputLoggerThread("(Error " + port + ")", output, true);
 		errLogger.start();
 	}
 
@@ -208,14 +213,13 @@ public final class CliStarter {
 			String line;
 			boolean endReached = false;
 			while (!endReached && (line = input.readLine()) != null) {
+				Logger.info("probcli startup output: " + line);
 				applyPatterns(patterns, line);
 				endReached = patterns.isEmpty()
 						|| line.contains("starting command loop"); // printed in prob_socketserver.pl
 			}
 		} catch (IOException e) {
-			final String message = "Problem while starting ProB. Cannot read from input stream.";
-			Logger.notifyUser(message, e);
-			throw new CliException(message, e, true);
+			throw new CliException("Problem while starting ProB. Cannot read from input stream.", e, true);
 		}
 		for (CliPattern<?> p : patterns) {
 			p.notFound();
@@ -236,29 +240,29 @@ public final class CliStarter {
 
 	private File getCliPath() throws CliException {
 		final Bundle bundle = Activator.getDefault().getBundle();
-		final String fileURL = "prob";
-		final URL entry = bundle.getEntry(fileURL);
+		final URL entry = bundle.getEntry("prob");
 
 		if (entry == null) {
 			throw new CliException(
 					"Unable to find directory with prob executables.");
 		}
 
+		URL fileUrl;
 		try {
-			URL resolvedUrl = FileLocator.find(bundle, new Path(fileURL), null);
+			fileUrl = FileLocator.toFileURL(entry);
+		} catch (IOException e) {
+			throw new CliException("Input/output error when trying to find '" + entry + "'", e, false);
+		}
 
-			// We need to use the 3-arg constructor of URI in order to properly
-			// escape file system chars.
-			URI resolvedUri = new URI("file", FileLocator
-					.toFileURL(resolvedUrl).getPath(), null);
-
-			return new File(resolvedUri);
+		try {
+			// Eclipse has a long-standing bug where Bundle.getEntry etc. don't correctly escape spaces, non-ASCII characters, etc. in file URLs.
+			// This makes it impossible to use the standard URL.toURI() method - it will throw an URISyntaxException for these unescaped characters.
+			// As a workaround, use Eclipse's URIUtil.toURI(URL), which escapes such unescaped characters.
+			// https://bugs.eclipse.org/bugs/show_bug.cgi?id=145096
+			// https://probjira.atlassian.net/browse/PROBPLUGIN-87
+			return new File(URIUtil.toURI(fileUrl));
 		} catch (URISyntaxException e) {
-			throw new CliException("Unable to construct file '"
-					+ entry.getPath() + "'");
-		} catch (IOException e2) {
-			throw new CliException("Input/output error when trying t find '"
-					+ fileURL + "'");
+			throw new CliException("Unable to construct file '" + entry.getPath() + "'", e, false);
 		}
 	}
 
@@ -268,12 +272,15 @@ public final class CliStarter {
 
 		private final String prefix;
 
+		private final boolean logToLog;
+
 		private volatile boolean shutingDown = false;
 
-		public OutputLoggerThread(final String name, final BufferedReader in) {
+		public OutputLoggerThread(final String name, final BufferedReader in, boolean logToLog) {
 			super();
 			prefix = "[" + name + "] ";
 			this.in = in;
+			this.logToLog = logToLog;
 		}
 
 		@Override
@@ -285,14 +292,15 @@ public final class CliStarter {
 					if (line == null) {
 						break;
 					}
-					// Logger.log(IStatus.INFO, IStatus.OK, prefix + line,
-					// null);
+					if (logToLog) {
+						Logger.log(IStatus.INFO, prefix + line, null);
+					}
 					System.err.println(prefix + line);
 				}
 			} catch (IOException e) {
 				if (!"Stream closed".equals(e.getMessage())) {
 					final String message = "OutputLogger died with error";
-					Logger.log(IStatus.INFO, Logger.DEBUG, message, e);
+					Logger.log(IStatus.INFO, message, e);
 				}
 			} finally {
 				if (in != null) {

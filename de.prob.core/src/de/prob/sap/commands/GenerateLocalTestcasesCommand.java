@@ -12,7 +12,7 @@ import de.prob.core.command.IComposableCommand;
 import de.prob.exceptions.ProBException;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
-import de.prob.prolog.term.IntegerPrologTerm;
+import de.prob.prolog.term.AIntegerPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 
 public class GenerateLocalTestcasesCommand implements IComposableCommand {
@@ -41,10 +41,8 @@ public class GenerateLocalTestcasesCommand implements IComposableCommand {
 	public void processResult(
 			final ISimplifiedROMap<String, PrologTerm> bindings)
 			throws CommandException {
-		final int sat = ((IntegerPrologTerm) bindings.get("SAT")).getValue()
-				.intValue();
-		final int unsat = ((IntegerPrologTerm) bindings.get("UNSAT"))
-				.getValue().intValue();
+		final int sat = ((AIntegerPrologTerm) bindings.get("SAT")).intValueExact();
+		final int unsat = ((AIntegerPrologTerm) bindings.get("UNSAT")).intValueExact();
 		result = new LocalTestcasesResult(sat, unsat);
 
 	}

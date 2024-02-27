@@ -34,9 +34,7 @@ public class LtlCheckingFinishedListener extends JobChangeAdapter {
 				showResult(ltlJob.getModelCheckingResult());
 			}
 		} else {
-			final String message = "The job has a wrong type. Expected LtlCheckingJob but got "
-					+ job.getClass();
-			Logger.notifyUserWithoutBugreport(message);
+			Logger.notifyUser("The job has a wrong type. Expected LtlCheckingJob but got " + job.getClass());
 		}
 	}
 

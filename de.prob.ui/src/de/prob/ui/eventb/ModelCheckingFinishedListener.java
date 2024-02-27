@@ -47,9 +47,7 @@ public class ModelCheckingFinishedListener extends JobChangeAdapter {
 			ModelCheckingJob ccJob = (ModelCheckingJob) job;
 			showResult(ccJob.getModelCheckingResult());
 		} else {
-			final String message = "The job has a wrong type. Expected ModelCheckingJob but got "
-					+ job.getClass();
-			Logger.notifyUserWithoutBugreport(message);
+			Logger.notifyUser("The job has a wrong type. Expected ModelCheckingJob but got " + job.getClass());
 		}
 	}
 
