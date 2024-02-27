@@ -2,9 +2,9 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: BMotion Studio Editor Plug-in
 Bundle-SymbolicName: de.bmotionstudio.gef.editor;singleton:=true
-Bundle-Version: 5.6.1.qualifier
+Bundle-Version: 5.6.2.qualifier
 Bundle-Activator: de.bmotionstudio.gef.editor.BMotionEditorPlugin
-Require-Bundle: de.prob.core;bundle-version="[9.5.1,9.6.0)";visibility:=reexport,
+Require-Bundle: de.prob.core;bundle-version="[9.5.2,9.6.0)";visibility:=reexport,
  org.eclipse.core.databinding;bundle-version="[1.10.0,2.0.0)",
  org.eclipse.core.databinding.beans;bundle-version="[1.7.0,2.0.0)",
  org.eclipse.core.resources;bundle-version="[3.13.0,4.0.0)",
