@@ -228,9 +228,6 @@ litigation.
    </license>
 
    <requires>
-      <import plugin="de.bmotionstudio.gef.editor" version="5.6.2" match="equivalent"/>
-      <import plugin="de.prob.core" version="9.5.2" match="equivalent"/>
-      <import plugin="de.prob.ui" version="7.5.2" match="equivalent"/>
       <import plugin="org.eclipse.core.databinding" version="1.10.0" match="compatible"/>
       <import plugin="org.eclipse.core.databinding.beans" version="1.7.0" match="compatible"/>
       <import plugin="org.eclipse.core.expressions" version="3.7.0" match="compatible"/>
