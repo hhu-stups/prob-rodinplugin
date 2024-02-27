@@ -56,35 +56,29 @@
    <extension
          point="org.eclipse.ui.menus">
       <menuContribution
-            locationURI="menu:org.eclipse.ui.main.menu">
-         <menu
-               id="de.bmotionstudio.gef.editor.menu"
-               label="BMotion Studio">
-            <command
-                  commandId="de.bmotionstudio.gef.editor.command.openBMotionStudioWebsite"
-                  label="Open website"
-                  style="push">
-            </command>
-            <separator
-                  name="group.filter"
-                  visible="true">
-            </separator>
-            <command
-                  commandId="de.bmotionstudio.command.startVisualizationFromEditor"
-                  icon="icons/icon_run.png"
-                  label="Start Visualization"
-                  style="push">
-               <visibleWhen
-                     checkEnabled="true">
-                  <with
-                        variable="activeEditorId">
-                     <equals
-                           value="de.bmotionstudio.gef.editor.BMotionStudioEditor">
-                     </equals>
-                  </with>
-               </visibleWhen>
-            </command>
-         </menu>
+            locationURI="menu:org.eclipse.ui.run">
+         <command
+               commandId="de.bmotionstudio.command.startVisualizationFromEditor"
+               icon="icons/icon_run.png"
+               label="Start Visualization"
+               style="push">
+            <visibleWhen
+                  checkEnabled="true">
+               <with
+                     variable="activeEditorId">
+                  <equals
+                        value="de.bmotionstudio.gef.editor.BMotionStudioEditor">
+                  </equals>
+               </with>
+            </visibleWhen>
+         </command>
+      </menuContribution>
+      <menuContribution locationURI="menu:help">
+         <command
+               commandId="de.bmotionstudio.gef.editor.command.openBMotionStudioWebsite"
+               label="BMotion Studio website"
+               style="push">
+         </command>
       </menuContribution>
       <menuContribution
             locationURI="toolbar:org.eclipse.ui.main.toolbar">

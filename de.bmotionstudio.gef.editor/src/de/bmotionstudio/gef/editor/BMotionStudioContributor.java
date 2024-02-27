@@ -75,23 +75,19 @@ public class BMotionStudioContributor extends ActionBarContributor {
 
 		super.contributeToMenu(menuManager);
 
-		IContributionItem bMenu = menuManager
-				.find("de.bmotionstudio.gef.editor.menu");
-		if (bMenu != null) {
-
-			IMenuManager bmotionMenu = (IMenuManager) bMenu;
-			MenuManager viewMenu = new MenuManager("Editor");
+		IContributionItem editMenuContribution = menuManager.find("edit");
+		if (editMenuContribution != null) {
+			IMenuManager editMenu = (IMenuManager)editMenuContribution;
+			MenuManager viewMenu = new MenuManager("BMotion Studio", "de.bmotionstudio.gef.editor.menu");
 			viewMenu.add(getAction(GEFActionConstants.ZOOM_IN));
 			viewMenu.add(getAction(GEFActionConstants.ZOOM_OUT));
 			viewMenu.add(new Separator());
 			viewMenu.add(getAction(GEFActionConstants.TOGGLE_RULER_VISIBILITY));
 			viewMenu.add(getAction(GEFActionConstants.TOGGLE_GRID_VISIBILITY));
 			viewMenu.add(getAction(GEFActionConstants.TOGGLE_SNAP_TO_GEOMETRY));
-			bmotionMenu
-					.insertAfter(
-							"de.bmotionstudio.gef.editor.command.openBMotionStudioWebsite",
-							viewMenu);
 
+			editMenu.insertAfter("additions", new Separator("de.bmotionstudio.gef.editor.group"));
+			editMenu.insertAfter("de.bmotionstudio.gef.editor.group", viewMenu);
 		}
 
 	}
