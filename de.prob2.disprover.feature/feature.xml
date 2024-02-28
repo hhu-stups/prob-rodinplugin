@@ -7,7 +7,9 @@
       plugin="de.prob.eventb.disprover.ui">
 
    <description url="https://prob.hhu.de/w/">
-      ProB is an animator and model checker for the B-Method. It allows
+Allows using ProB as a (dis)prover while proving POs.
+
+ProB is an animator and model checker for the B-Method. It allows
 fully automatic animation of many B specifications, and can be
 used to systematically check a specification for errors.
 Part of the research and development was conducted within the
