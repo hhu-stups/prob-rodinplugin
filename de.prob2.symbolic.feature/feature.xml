@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="de.prob2.symbolic.feature"
-      label="ProB for Rodin3 - Symbolic Constants Support"
+      label="ProB for Rodin - Symbolic Constants Support"
       version="3.1.2.qualifier"
       provider-name="HHU Düsseldorf STUPS Group">
 
