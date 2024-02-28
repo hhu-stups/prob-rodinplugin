@@ -3,9 +3,10 @@
       id="de.prob2.disprover.feature"
       label="ProB for Rodin - (Dis)Prover"
       version="3.1.2.qualifier"
-      provider-name="HHU Düsseldorf STUPS Group">
+      provider-name="HHU Düsseldorf STUPS Group"
+      plugin="de.prob.eventb.disprover.ui">
 
-   <description url="http://www.stups.uni-duesseldorf.de/ProB">
+   <description url="https://prob.hhu.de/w/">
       ProB is an animator and model checker for the B-Method. It allows
 fully automatic animation of many B specifications, and can be
 used to systematically check a specification for errors.

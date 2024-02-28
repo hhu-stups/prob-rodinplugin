@@ -13,7 +13,7 @@ Require-Bundle: org.eclipse.core.filesystem;bundle-version="[1.7.0,2.0.0)",
  org.rodinp.core;bundle-version="[1.9.0,2.0.0)"
 Bundle-ActivationPolicy: lazy
 Eclipse-BundleShape: dir
-Bundle-Vendor: HHU Dusseldorf STUPS Group
+Bundle-Vendor: HHU Düsseldorf STUPS Group
 Export-Package: de.be4.classicalb.core.parser,
  de.be4.classicalb.core.parser.analysis,
  de.be4.classicalb.core.parser.analysis.checking,

@@ -89,8 +89,7 @@ public class ClassicPreferences extends PreferencePage implements
 		browseButton.addSelectionListener(new PushButton(pageComponent.getShell(), text));
 		Label versionRemark = new Label(pageComponent, SWT.WRAP);
 		versionRemark.setText(
-				"Note: This needs a version of ProB2-UI (jar file) that is at least 1.0.1 or a version of ProB Tcl/Tk that is at least 1.3.1.\nYou can obtain both from http://www.stups.uni-duesseldorf.de/ProB\n"); // precisely
-																																																								// 1.3.0-beta6
+				"Note: This needs a version of ProB2-UI (jar file) that is at least 1.0.1 or a version of ProB Tcl/Tk that is at least 1.3.1.\nYou can obtain both from https://prob.hhu.de/w/index.php/Download\n"); // precisely 1.3.0-beta6
 
 		GridData gridData2 = new GridData();
 		gridData2.horizontalSpan = 3;

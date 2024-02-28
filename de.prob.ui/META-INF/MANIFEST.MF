@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: ProB Ui Plug-in
+Bundle-Name: ProB Animator UI
 Bundle-SymbolicName: de.prob.ui;singleton:=true
 Bundle-Version: 7.5.2.qualifier
 Require-Bundle: de.prob.core;bundle-version="[9.5.2,9.6.0)",
