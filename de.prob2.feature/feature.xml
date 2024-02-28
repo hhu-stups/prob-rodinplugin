@@ -268,14 +268,6 @@ litigation.
          version="0.0.0"/>
 
    <plugin
-         id="de.prob.plugin"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         fragment="true"
-         unpack="false"/>
-
-   <plugin
          id="de.prob.ui"
          download-size="0"
          install-size="0"
