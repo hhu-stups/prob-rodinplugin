@@ -28,7 +28,7 @@
             visible="true">
          <action
                class="de.prob.ui.eventb.ShowProBConfigurations"
-               icon="icons/new_prob_mini.png"
+               icon="icons/prob.png"
                id="showProBConfigurations"
                label="Show ProB Configurations"
                style="pulldown"
@@ -965,18 +965,18 @@
          </command>
          <menu
                commandId="de.prob.ui.navigator.context"
-               icon="icons/new_prob_mini.png"
+               icon="icons/prob.png"
                id="more_commands"
                label="ProB Standalone ...">
             <command
                   commandId="de.prob.ui.newcore.export"
-                  icon="icons/prob_mini_logo.gif"
+                  icon="icons/prob.png"
                   label="Export for use in ProB Standalone"
                   style="push">
             </command>
             <command
                   commandId="de.prob.ui.classic.open"
-                  icon="icons/prob_mini_logo.gif"
+                  icon="icons/prob.png"
                   label="Open in ProB Standalone"
                   style="push">
             </command>

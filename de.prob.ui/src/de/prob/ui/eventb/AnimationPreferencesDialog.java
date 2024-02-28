@@ -504,7 +504,7 @@ public class AnimationPreferencesDialog extends PreferenceDialog {
 		@Override
 		public Image getImage(final Object element) {
 			return AbstractUIPlugin.imageDescriptorFromPlugin(pluginId,
-					"icons/new_prob_mini.png").createImage();
+					"icons/prob.png").createImage();
 		}
 	}
 
