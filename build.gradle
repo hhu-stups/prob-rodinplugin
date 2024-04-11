@@ -87,7 +87,7 @@ task downloadCli {
 
 			def targetdir = dir + it.getValue()
 			def targetzip = dir + "probcli_${n}.zip"
-			def url = "https://stups.hhu-hosting.de/downloads/prob/cli/releases/1.13.0/probcli_${n}.zip"
+			def url = "https://stups.hhu-hosting.de/downloads/prob/cli/nightly/probcli_${n}.zip"
 			download(url, targetzip)
 			FileTree zip = zipTree(targetzip)
 			copy {
