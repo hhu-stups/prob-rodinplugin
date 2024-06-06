@@ -106,8 +106,12 @@ public final class CliStarter {
 			// which is bad in our case,
 			// because x86_64 probcli under Rosetta 2 is much slower than native arm64 probcli.)
 			command.add("arch");
-			command.add("-arm64");
-			command.add("-x86_64");
+			// Use the generic -64 option instead of -arm64,
+			// because -arm64 causes an "Unknown architecture" error on x86_64 systems
+			// (contrary to what the arch(1) man page suggests).
+			// -64 corresponds to -arm64 on arm64 systems and -x86_64 on x86_64 systems,
+			// so it's always safe to use.
+			command.add("-64");
 		}
 		command.add(executable);
 		// command.add("-ll");
