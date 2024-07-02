@@ -174,7 +174,7 @@ public class WizardObserverCSwitchCoordinates extends ObserverWizard {
 				BeanProperties.value(ToggleObjectCoordinates.class, "bcontrol").observeDetail(contentProvider.getKnownElements()),
 				BeanProperties.value(ToggleObjectCoordinates.class, "x").observeDetail(contentProvider.getKnownElements()),
 				BeanProperties.value(ToggleObjectCoordinates.class, "y").observeDetail(contentProvider.getKnownElements()),
-				BeanProperties.value(ToggleObjectCoordinates.class, "animate").observeDetail(contentProvider.getKnownElements()),
+				// BeanProperties.value(ToggleObjectCoordinates.class, "animate").observeDetail(contentProvider.getKnownElements()),
 			}));
 
 			final WritableList input = new WritableList(
