@@ -310,12 +310,7 @@ public class CounterExampleTab {
 
 			treeViewer.refresh();
 			tableViewer.refresh();
-			// We know that each element is of type
-			// EditPart, but AbstractEditPart.getChildren() returns just
-			// a list
-			@SuppressWarnings("unchecked")
-			List<EditPart> children = rootEditPart.getChildren();
-			for (EditPart child : children) {
+			for (EditPart child : rootEditPart.getChildren()) {
 				child.refresh();
 			}
 

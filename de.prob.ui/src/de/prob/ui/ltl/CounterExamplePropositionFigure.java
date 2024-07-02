@@ -95,12 +95,7 @@ public abstract class CounterExamplePropositionFigure extends Figure implements
 			final IFigure parent = getParent();
 
 			if (parent != null) {
-				// We know that each element is of type
-				// IFigure, but IFigure.getParent() returns just a list
-				@SuppressWarnings("unchecked")
-				final List<IFigure> figures = parent.getChildren();
-
-				for (IFigure figure : figures) {
+				for (IFigure figure : parent.getChildren()) {
 					if (figure instanceof CounterExamplePropositionFigure) {
 						if (((CounterExamplePropositionFigure) figure)
 								.getModel().equals(proposition)) {
