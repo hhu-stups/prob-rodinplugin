@@ -7,8 +7,8 @@
 package de.bmotionstudio.gef.editor.observer.wizard;
 
 import org.eclipse.core.databinding.DataBindingContext;
-import org.eclipse.core.databinding.beans.BeansObservables;
-import org.eclipse.jface.databinding.swt.SWTObservables;
+import org.eclipse.core.databinding.beans.typed.BeanProperties;
+import org.eclipse.jface.databinding.swt.typed.WidgetProperties;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
@@ -75,14 +75,15 @@ public class WizardColumnObserver extends ObserverWizard {
 
 		private void initBindings(DataBindingContext dbc) {
 
-			dbc.bindValue(SWTObservables.observeText(txtPredicate, SWT.Modify),
-					BeansObservables.observeValue(
-							(ColumnObserver) getObserver(), "predicate"));
+			dbc.bindValue(
+					WidgetProperties.text(SWT.Modify).observe(txtPredicate),
+					BeanProperties.value(ColumnObserver.class, "predicate")
+							.observe((ColumnObserver) getObserver()));
 
 			dbc.bindValue(
-					SWTObservables.observeText(txtExpression, SWT.Modify),
-					BeansObservables.observeValue(
-							(ColumnObserver) getObserver(), "expression"));
+					WidgetProperties.text(SWT.Modify).observe(txtExpression),
+					BeanProperties.value(ColumnObserver.class, "expression")
+							.observe((ColumnObserver) getObserver()));
 
 		}
 

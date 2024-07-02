@@ -6,8 +6,9 @@
 package de.bmotionstudio.gef.editor.scheduler.wizard;
 
 import org.eclipse.core.databinding.DataBindingContext;
-import org.eclipse.core.databinding.beans.BeansObservables;
+import org.eclipse.core.databinding.beans.typed.BeanProperties;
 import org.eclipse.core.databinding.observable.list.WritableList;
+import org.eclipse.core.databinding.observable.map.IObservableMap;
 import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
 import org.eclipse.jface.databinding.viewers.ObservableMapLabelProvider;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -98,11 +99,12 @@ public class WizardExecuteOperationByPredicateMulti extends SchedulerWizard {
 			ObservableListContentProvider contentProvider = new ObservableListContentProvider();
 			tableViewer.setContentProvider(contentProvider);
 
-			tableViewer.setLabelProvider(new ObservableMapLabelProvider(
-					BeansObservables.observeMaps(
-							contentProvider.getKnownElements(), new String[] {
-									"executePredicate", "operationName",
-									"predicate", "maxrandom" })));
+			tableViewer.setLabelProvider(new ObservableMapLabelProvider(new IObservableMap[] {
+				BeanProperties.value(PredicateOperation.class, "executePredicate").observeDetail(contentProvider.getKnownElements()),
+				BeanProperties.value(PredicateOperation.class, "operationName").observeDetail(contentProvider.getKnownElements()),
+				BeanProperties.value(PredicateOperation.class, "predicate").observeDetail(contentProvider.getKnownElements()),
+				BeanProperties.value(PredicateOperation.class, "maxrandom").observeDetail(contentProvider.getKnownElements()),
+			}));
 			final WritableList input = new WritableList(
 					((ExecuteOperationByPredicateMulti) getScheduler())
 							.getOperationList(),

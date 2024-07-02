@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.databinding.DataBindingContext;
-import org.eclipse.core.databinding.beans.BeansObservables;
+import org.eclipse.core.databinding.beans.typed.BeanProperties;
 import org.eclipse.core.databinding.observable.list.ComputedList;
 import org.eclipse.core.databinding.observable.list.WritableList;
 import org.eclipse.core.databinding.observable.map.IObservableMap;
@@ -55,6 +55,7 @@ import de.bmotionstudio.gef.editor.edit.PredicateEditingSupport;
 import de.bmotionstudio.gef.editor.model.BControl;
 import de.bmotionstudio.gef.editor.observer.ListenOperationByPredicate;
 import de.bmotionstudio.gef.editor.observer.Observer;
+import de.bmotionstudio.gef.editor.observer.ObserverEvalObject;
 import de.bmotionstudio.gef.editor.observer.ObserverWizard;
 import de.bmotionstudio.gef.editor.property.CheckboxCellEditorHelper;
 import de.bmotionstudio.gef.editor.scheduler.PredicateOperation;
@@ -169,11 +170,13 @@ public class WizardObserverListenOperationByPredicate extends ObserverWizard {
 
 			ObservableListContentProvider contentProvider = new ObservableListContentProvider();
 			tableViewer.setContentProvider(contentProvider);
-			tableViewer.setLabelProvider(new ObserverLabelProvider(
-					BeansObservables.observeMaps(
-							contentProvider.getKnownElements(), new String[] {
-									"operationName", "predicate", "attribute",
-									"value", "isExpressionMode" })));
+			tableViewer.setLabelProvider(new ObserverLabelProvider(new IObservableMap[] {
+				BeanProperties.value(PredicateOperation.class, "operationName").observeDetail(contentProvider.getKnownElements()),
+				BeanProperties.value(PredicateOperation.class, "predicate").observeDetail(contentProvider.getKnownElements()),
+				BeanProperties.value(ObserverEvalObject.class, "attribute").observeDetail(contentProvider.getKnownElements()),
+				BeanProperties.value(ObserverEvalObject.class, "value").observeDetail(contentProvider.getKnownElements()),
+				BeanProperties.value(ObserverEvalObject.class, "isExpressionMode").observeDetail(contentProvider.getKnownElements()),
+			}));
 			final WritableList input = new WritableList(
 					((ListenOperationByPredicate) getObserver()).getList(),
 					PredicateOperation.class);

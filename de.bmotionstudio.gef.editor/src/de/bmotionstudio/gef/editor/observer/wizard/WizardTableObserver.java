@@ -9,8 +9,8 @@ package de.bmotionstudio.gef.editor.observer.wizard;
 import java.util.ArrayList;
 
 import org.eclipse.core.databinding.DataBindingContext;
-import org.eclipse.core.databinding.beans.BeansObservables;
-import org.eclipse.jface.databinding.swt.SWTObservables;
+import org.eclipse.core.databinding.beans.typed.BeanProperties;
+import org.eclipse.jface.databinding.swt.typed.WidgetProperties;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
@@ -152,22 +152,21 @@ public class WizardTableObserver extends ObserverWizard {
 
 		private void initBindings(DataBindingContext dbc) {
 
-			dbc.bindValue(SWTObservables.observeText(txtPredicate, SWT.Modify),
-					BeansObservables.observeValue(
-							(TableObserver) getObserver(), "predicate"));
+			dbc.bindValue(WidgetProperties.text(SWT.Modify).observe(txtPredicate),
+					BeanProperties.value(TableObserver.class, "predicate")
+							.observe((TableObserver) getObserver()));
 
-			dbc.bindValue(
-					SWTObservables.observeText(txtExpression, SWT.Modify),
-					BeansObservables.observeValue(
-							(TableObserver) getObserver(), "expression"));
+			dbc.bindValue(WidgetProperties.text(SWT.Modify).observe(txtExpression),
+					BeanProperties.value(TableObserver.class, "expression")
+							.observe((TableObserver) getObserver()));
 
-			dbc.bindValue(SWTObservables.observeSelection(cbOverrideCells),
-					BeansObservables.observeValue(
-							(TableObserver) getObserver(), "overrideCells"));
+			dbc.bindValue(WidgetProperties.widgetSelection().observe(cbOverrideCells),
+					BeanProperties.value(TableObserver.class, "overrideCells")
+							.observe((TableObserver) getObserver()));
 
-			dbc.bindValue(SWTObservables.observeSelection(cbKeepHeader),
-					BeansObservables.observeValue(
-							(TableObserver) getObserver(), "keepHeader"));
+			dbc.bindValue(WidgetProperties.widgetSelection().observe(cbKeepHeader),
+					BeanProperties.value(TableObserver.class, "keepHeader")
+							.observe((TableObserver) getObserver()));
 
 		}
 
