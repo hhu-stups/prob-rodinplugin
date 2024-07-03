@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
 
+	<feature id="de.bmotionstudio.feature" version="0.0.0">
+		<category name="de.prob2.feature.category"/>
+	</feature>
+
 	<feature id="de.prob2.disprover.feature" version="0.0.0">
 		<category name="de.prob2.feature.category"/>
 	</feature>

@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
-      id="de.prob2.feature"
-      label="ProB for Rodin"
+      id="de.bmotionstudio.feature"
+      label="ProB for Rodin - BMotion Studio"
       version="3.2.0.qualifier"
       provider-name="HHU Düsseldorf STUPS Group"
-      plugin="de.prob.ui">
+      plugin="de.bmotionstudio.rodin">
 
    <description url="https://prob.hhu.de/w/">
-ProB animator plug-in for Rodin.
-Note: BMotion Studio, previously included with the ProB animator, is now a separate plug-in.
+The BMotion Studio interactive visualization tool based on the ProB animator.
+Warning: Development of BMotion Studio has ended in 2013.
+This plug-in is maintained on a best-effort basis and not actively tested.
 
 ProB is an animator and model checker for the B-Method. It allows
 fully automatic animation of many B specifications, and can be
@@ -232,30 +233,36 @@ litigation.
    </license>
 
    <requires>
-      <import plugin="org.eclipse.core.expressions" version="3.7.0" match="compatible"/>
-      <import plugin="org.eclipse.core.filesystem" version="1.7.0" match="compatible"/>
+      <import plugin="de.prob.core" version="9.6.0" match="equivalent"/>
+      <import plugin="de.prob.ui" version="7.6.0" match="equivalent"/>
+      <import plugin="org.eclipse.core.databinding" version="1.10.0" match="compatible"/>
+      <import plugin="org.eclipse.core.databinding.beans" version="1.7.0" match="compatible"/>
       <import plugin="org.eclipse.core.resources" version="3.13.0" match="compatible"/>
       <import plugin="org.eclipse.core.runtime" version="3.20.0" match="compatible"/>
       <import plugin="org.eclipse.gef" version="3.11.0" match="compatible"/>
+      <import plugin="org.eclipse.jface.databinding" version="1.12.0" match="compatible"/>
       <import plugin="org.eclipse.ui" version="3.118.0" match="compatible"/>
       <import plugin="org.eclipse.ui.ide" version="3.18.0" match="compatible"/>
+      <import plugin="org.eclipse.ui.navigator" version="3.9.0" match="compatible"/>
+      <import plugin="org.eclipse.ui.views" version="3.10.0" match="compatible"/>
       <import plugin="org.eventb.core" version="3.5.0" match="compatible"/>
       <import plugin="org.eventb.core.ast" version="3.5.0" match="compatible"/>
-      <import plugin="org.eventb.core.seqprover" version="3.4.0" match="compatible"/>
       <import plugin="org.rodinp.core" version="1.9.0" match="compatible"/>
    </requires>
 
    <plugin
-         id="de.prob.core"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"/>
-
-   <plugin
-         id="de.prob.ui"
+         id="de.bmotionstudio.gef.editor"
          download-size="0"
          install-size="0"
          version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="de.bmotionstudio.rodin"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         fragment="true"
          unpack="false"/>
 
 </feature>
