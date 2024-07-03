@@ -474,6 +474,7 @@ def parentPom(artifactId) {"""\
 
 	<!-- this is the parent POM from which all modules inherit common settings -->
 	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<tycho-version>${tychoVersion}</tycho-version>
 	</properties>
 
