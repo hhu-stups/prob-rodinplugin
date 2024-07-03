@@ -2,7 +2,7 @@
 <feature
       id="de.prob2.feature"
       label="ProB for Rodin"
-      version="3.1.2.qualifier"
+      version="3.2.0.qualifier"
       provider-name="HHU Düsseldorf STUPS Group"
       plugin="de.prob.ui">
 
