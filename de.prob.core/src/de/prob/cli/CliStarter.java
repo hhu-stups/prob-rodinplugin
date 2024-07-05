@@ -9,6 +9,8 @@ package de.prob.cli;
 import java.io.*;
 import java.net.*;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.eclipse.core.filesystem.EFS;
 import org.eclipse.core.filesystem.IFileInfo;
@@ -16,15 +18,17 @@ import org.eclipse.core.filesystem.IFileStore;
 import org.eclipse.core.runtime.*;
 import org.osgi.framework.Bundle;
 
-import de.prob.cli.clipatterns.*;
 import de.prob.core.internal.Activator;
 import de.prob.logging.Logger;
 
 public final class CliStarter {
+	private static final Pattern CLI_PORT_PATTERN = Pattern.compile("^.*Port: (\\d+)$");
+	private static final Pattern CLI_USER_INTERRUPT_REFERENCE_PATTERN = Pattern.compile("^.*user interrupt reference id: *(\\d+|off) *$");
+
 	private Process prologProcess;
 
 	private int port = -1;
-	private Long userInterruptReference = null;
+	private long userInterruptReference = -1L;
 
 	private OutputLoggerThread stdLogger;
 	private OutputLoggerThread errLogger;
@@ -193,11 +197,45 @@ public final class CliStarter {
 
 	private void extractCliInformation(final BufferedReader input)
 			throws CliException {
-		final PortPattern portPattern = new PortPattern();
-		final InterruptRefPattern intPattern = new InterruptRefPattern();
-		analyseStdout(input, Arrays.asList(portPattern, intPattern));
-		port = portPattern.getValue();
-		userInterruptReference = intPattern.getValue();
+		Integer portTemp = null;
+		Long userInterruptReferenceTemp = null;
+		try {
+			for (String line; (line = input.readLine()) != null;) {
+				Logger.info("probcli startup output: " + line);
+
+				Matcher portMatcher = CLI_PORT_PATTERN.matcher(line);
+				if (portMatcher.matches()) {
+					portTemp = Integer.parseInt(portMatcher.group(1));
+					Logger.info("Received port number from CLI: " + portTemp);
+				}
+
+				Matcher userInterruptReferenceMatcher = CLI_USER_INTERRUPT_REFERENCE_PATTERN.matcher(line);
+				if (userInterruptReferenceMatcher.matches()) {
+					String userInterruptReferenceString = userInterruptReferenceMatcher.group(1);
+					if ("off".equals(userInterruptReferenceString)) {
+						userInterruptReferenceTemp = -1L;
+						Logger.info("This ProB build has user interrupt support disabled. Interrupting ProB may not work as expected.");
+					} else {
+						userInterruptReferenceTemp = Long.parseLong(userInterruptReferenceString);
+						Logger.info("Received user interrupt reference from CLI: " + userInterruptReferenceTemp);
+					}
+				}
+
+				if ((portTemp != null && userInterruptReferenceTemp != null) || line.contains("starting command loop")) {
+					break;
+				}
+			}
+		} catch (IOException | NumberFormatException e) {
+			throw new CliException("Error while reading information from CLI", e, false);
+		}
+
+		if (portTemp == null) {
+			throw new CliException("Did not receive port number from CLI");
+		} else if (userInterruptReferenceTemp == null) {
+			throw new CliException("Did not receive user interrupt reference from CLI");
+		}
+		port = portTemp;
+		userInterruptReference = userInterruptReferenceTemp;
 	}
 
 	private void startOutputLogger(final BufferedReader input) {
@@ -208,38 +246,6 @@ public final class CliStarter {
 	private void startErrorLogger(final BufferedReader output) {
 		errLogger = new OutputLoggerThread("(Error " + port + ")", output, true);
 		errLogger.start();
-	}
-
-	private void analyseStdout(final BufferedReader input,
-			Collection<? extends CliPattern<?>> patterns) throws CliException {
-		patterns = new ArrayList<CliPattern<?>>(patterns);
-		try {
-			String line;
-			boolean endReached = false;
-			while (!endReached && (line = input.readLine()) != null) {
-				Logger.info("probcli startup output: " + line);
-				applyPatterns(patterns, line);
-				endReached = patterns.isEmpty()
-						|| line.contains("starting command loop"); // printed in prob_socketserver.pl
-			}
-		} catch (IOException e) {
-			throw new CliException("Problem while starting ProB. Cannot read from input stream.", e, true);
-		}
-		for (CliPattern<?> p : patterns) {
-			p.notFound();
-		}
-	}
-
-	private void applyPatterns(
-			final Collection<? extends CliPattern<?>> patterns,
-			final String line) {
-		for (Iterator<? extends CliPattern<?>> it = patterns.iterator(); it
-				.hasNext();) {
-			final CliPattern<?> p = it.next();
-			if (p.matchesLine(line)) {
-				it.remove();
-			}
-		}
 	}
 
 	private File getCliPath() throws CliException {
@@ -326,7 +332,7 @@ public final class CliStarter {
 	}
 
 	public void sendUserInterruptReference() {
-		if (userInterruptReference != null) {
+		if (userInterruptReference != -1) {
 			try {
 				final OsSpecificInfo osInfo = getOsInfo(Platform.getOS());
 				final String command = getCliPath() + File.separator
@@ -339,7 +345,7 @@ public final class CliStarter {
 
 				Runtime.getRuntime().exec(
 						new String[] { command,
-								userInterruptReference.toString() });
+								String.valueOf(userInterruptReference) });
 			} catch (CliException e) {
 				Logger.info("getting the os specific info failed with exception: "
 						+ e.getLocalizedMessage());
