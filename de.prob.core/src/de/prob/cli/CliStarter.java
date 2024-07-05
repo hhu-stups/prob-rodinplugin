@@ -206,7 +206,6 @@ public final class CliStarter {
 				Matcher portMatcher = CLI_PORT_PATTERN.matcher(line);
 				if (portMatcher.matches()) {
 					portTemp = Integer.parseInt(portMatcher.group(1));
-					Logger.info("Received port number from CLI: " + portTemp);
 				}
 
 				Matcher userInterruptReferenceMatcher = CLI_USER_INTERRUPT_REFERENCE_PATTERN.matcher(line);
@@ -217,7 +216,6 @@ public final class CliStarter {
 						Logger.info("This ProB build has user interrupt support disabled. Interrupting ProB may not work as expected.");
 					} else {
 						userInterruptReferenceTemp = Long.parseLong(userInterruptReferenceString);
-						Logger.info("Received user interrupt reference from CLI: " + userInterruptReferenceTemp);
 					}
 				}
 
