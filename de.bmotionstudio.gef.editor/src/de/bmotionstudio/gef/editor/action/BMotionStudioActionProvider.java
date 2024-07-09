@@ -4,7 +4,7 @@
  * This software is licenced under EPL 1.0 (http://www.eclipse.org/org/documents/epl-v10.html) 
  * */
 
-package de.bmotionstudio.rodin;
+package de.bmotionstudio.gef.editor.action;
 
 import org.eclipse.jface.action.GroupMarker;
 import org.eclipse.jface.action.IMenuManager;
@@ -20,6 +20,7 @@ import org.eclipse.ui.navigator.ICommonActionExtensionSite;
 import org.eclipse.ui.navigator.ICommonMenuConstants;
 
 import de.bmotionstudio.gef.editor.BMotionEditorPlugin;
+import de.bmotionstudio.gef.editor.internal.BMotionStudioRodinFile;
 
 public class BMotionStudioActionProvider extends CommonActionProvider {
 

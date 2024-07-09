@@ -13,13 +13,13 @@
    <extension
          point="org.eclipse.ui.perspectives">
       <perspective
-            class="de.bmotionstudio.rodin.PerspectiveEditFactory"
+            class="de.bmotionstudio.gef.editor.internal.PerspectiveEditFactory"
             icon="icons/logo_bmotion.png"
             id="de.bmotionstudio.perspective.edit"
             name="BMS Edit">
       </perspective>
       <perspective
-            class="de.bmotionstudio.rodin.PerspectiveRunFactory"
+            class="de.bmotionstudio.gef.editor.internal.PerspectiveRunFactory"
             icon="icons/icon_run.png"
             id="de.bmotionstudio.perspective.run"
             name="BMS Run">
@@ -122,7 +122,7 @@
                   <iterate
                         operator="or">
                      <instanceof
-                           value="de.bmotionstudio.rodin.BMotionStudioRodinFile">
+                           value="de.bmotionstudio.gef.editor.internal.BMotionStudioRodinFile">
                      </instanceof>
                   </iterate>
                </with>
@@ -142,7 +142,7 @@
             name="Start Visualization from File">
       </command>
       <command
-            defaultHandler="de.bmotionstudio.rodin.StartEventBVisualizationHandler"
+            defaultHandler="de.bmotionstudio.gef.editor.handler.StartEventBVisualizationHandler"
             id="de.bmotionstudio.rodin.command.startVisualization"
             name="Start Visualization">
       </command>
@@ -165,9 +165,9 @@
    <extension
          point="org.eclipse.ui.navigator.navigatorContent">
       <navigatorContent
-            contentProvider="de.bmotionstudio.rodin.BMotionStudioContentProvider"
+            contentProvider="de.bmotionstudio.gef.editor.internal.BMotionStudioContentProvider"
             id="de.bmotionstudio.ui.navigatorContent"
-            labelProvider="de.bmotionstudio.rodin.BMotionLabelProvider"
+            labelProvider="de.bmotionstudio.gef.editor.internal.BMotionLabelProvider"
             name="BMotion Studio Navigator Content"
             priority="normal">
          <triggerPoints>
@@ -177,15 +177,15 @@
          </triggerPoints>
          <possibleChildren>
             <instanceof
-                  value="de.bmotionstudio.rodin.BMotionStudioRodinFile">
+                  value="de.bmotionstudio.gef.editor.internal.BMotionStudioRodinFile">
             </instanceof>
          </possibleChildren>
          <actionProvider
-               class="de.bmotionstudio.rodin.BMotionStudioActionProvider"
+               class="de.bmotionstudio.gef.editor.action.BMotionStudioActionProvider"
                id="de.bmotionstudio.ui.navigatorAction"
                priority="normal">
             <enablement>
-               <instanceof value="de.bmotionstudio.rodin.BMotionStudioRodinFile">
+               <instanceof value="de.bmotionstudio.gef.editor.internal.BMotionStudioRodinFile">
                </instanceof>
             </enablement>
          </actionProvider>

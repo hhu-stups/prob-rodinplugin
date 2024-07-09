@@ -4,7 +4,7 @@
  * This software is licenced under EPL 1.0 (http://www.eclipse.org/org/documents/epl-v10.html) 
  * */
 
-package de.bmotionstudio.rodin;
+package de.bmotionstudio.gef.editor.handler;
 
 import org.eclipse.core.commands.IHandler;
 import org.eclipse.core.resources.IFile;
@@ -15,7 +15,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.viewers.IStructuredSelection;
 
-import de.bmotionstudio.gef.editor.handler.StartVisualizationFileHandler;
+import de.bmotionstudio.gef.editor.internal.BMotionStudioRodinFile;
 
 /**
  * @author Lukas Ladenberger
