@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: BMotion Studio Editor Plug-in
+Bundle-Name: BMotion Studio for Rodin
 Bundle-SymbolicName: de.bmotionstudio.gef.editor;singleton:=true
 Bundle-Version: 5.7.0.qualifier
 Bundle-Activator: de.bmotionstudio.gef.editor.BMotionEditorPlugin
@@ -15,6 +15,7 @@ Require-Bundle: de.prob.core;bundle-version="[9.6.0,9.7.0)";visibility:=reexport
  org.eclipse.jface.databinding;bundle-version="[1.12.0,2.0.0)",
  org.eclipse.ui;bundle-version="[3.118.0,4.0.0)",
  org.eclipse.ui.ide;bundle-version="[3.18.0,4.0.0)",
+ org.eclipse.ui.navigator;bundle-version="[3.9.0,4.0.0)",
  org.eclipse.ui.views;bundle-version="[3.10.0,4.0.0)";visibility:=reexport,
  org.eventb.core;bundle-version="[3.5.0,4.0.0)",
  org.eventb.core.ast;bundle-version="[3.5.0,4.0.0)",

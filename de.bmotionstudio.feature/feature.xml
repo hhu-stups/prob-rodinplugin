@@ -4,7 +4,7 @@
       label="ProB for Rodin - BMotion Studio"
       version="3.2.0.qualifier"
       provider-name="HHU Düsseldorf STUPS Group"
-      plugin="de.bmotionstudio.rodin">
+      plugin="de.bmotionstudio.gef.editor">
 
    <description url="https://prob.hhu.de/w/">
 The BMotion Studio interactive visualization tool based on the ProB animator.
@@ -256,14 +256,6 @@ litigation.
          download-size="0"
          install-size="0"
          version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="de.bmotionstudio.rodin"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         fragment="true"
          unpack="false"/>
 
 </feature>

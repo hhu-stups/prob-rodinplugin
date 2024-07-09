@@ -11,6 +11,21 @@
    <extension-point id="de.bmotionstudio.gef.editor.paletteEntry" name="Add a custom Palette Entry" schema="schema/de.bmotionstudio.gef.editor.paletteEntry.exsd"/>
    <extension-point id="de.bmotionstudio.gef.editor.includeObserver" name="Include Observer Extension Point" schema="schema/de.bmotionstudio.gef.editor.includeObserver.exsd"/>
    <extension
+         point="org.eclipse.ui.perspectives">
+      <perspective
+            class="de.bmotionstudio.rodin.PerspectiveEditFactory"
+            icon="icons/logo_bmotion.png"
+            id="de.bmotionstudio.perspective.edit"
+            name="BMS Edit">
+      </perspective>
+      <perspective
+            class="de.bmotionstudio.rodin.PerspectiveRunFactory"
+            icon="icons/icon_run.png"
+            id="de.bmotionstudio.perspective.run"
+            name="BMS Run">
+      </perspective>
+   </extension>
+   <extension
          point="org.eclipse.ui.editors">
       <editor
             class="de.bmotionstudio.gef.editor.BMotionStudioEditor"
@@ -94,6 +109,26 @@
             </command>
          </toolbar>
       </menuContribution>
+      <menuContribution
+            locationURI="popup:fr.systerel.explorer.navigator.view">
+         <command
+               commandId="de.bmotionstudio.rodin.command.startVisualization"
+               icon="icons/icon_run.png"
+               label="Start Visualization"
+               style="push">
+            <visibleWhen>
+               <with
+                     variable="selection">
+                  <iterate
+                        operator="or">
+                     <instanceof
+                           value="de.bmotionstudio.rodin.BMotionStudioRodinFile">
+                     </instanceof>
+                  </iterate>
+               </with>
+            </visibleWhen>
+         </command>
+      </menuContribution>
    </extension>
    <extension
          point="org.eclipse.ui.commands">
@@ -105,6 +140,11 @@
             defaultHandler="de.bmotionstudio.gef.editor.handler.StartVisualizationFileHandler"
             id="de.bmotionstudio.command.startVisualizationFromFile"
             name="Start Visualization from File">
+      </command>
+      <command
+            defaultHandler="de.bmotionstudio.rodin.StartEventBVisualizationHandler"
+            id="de.bmotionstudio.rodin.command.startVisualization"
+            name="Start Visualization">
       </command>
    </extension>
    <extension
@@ -121,6 +161,61 @@
             </with>
          </enabledWhen>
       </handler>
+   </extension>
+   <extension
+         point="org.eclipse.ui.navigator.navigatorContent">
+      <navigatorContent
+            contentProvider="de.bmotionstudio.rodin.BMotionStudioContentProvider"
+            id="de.bmotionstudio.ui.navigatorContent"
+            labelProvider="de.bmotionstudio.rodin.BMotionLabelProvider"
+            name="BMotion Studio Navigator Content"
+            priority="normal">
+         <triggerPoints>
+            <instanceof
+                  value="org.eclipse.core.resources.IProject">
+            </instanceof>
+         </triggerPoints>
+         <possibleChildren>
+            <instanceof
+                  value="de.bmotionstudio.rodin.BMotionStudioRodinFile">
+            </instanceof>
+         </possibleChildren>
+         <actionProvider
+               class="de.bmotionstudio.rodin.BMotionStudioActionProvider"
+               id="de.bmotionstudio.ui.navigatorAction"
+               priority="normal">
+            <enablement>
+               <instanceof value="de.bmotionstudio.rodin.BMotionStudioRodinFile">
+               </instanceof>
+            </enablement>
+         </actionProvider>
+      </navigatorContent>
+   </extension>
+   <extension
+         point="org.eclipse.ui.navigator.viewer">
+      <viewerContentBinding
+            viewerId="fr.systerel.explorer.navigator.view">
+         <includes>
+            <contentExtension
+                  pattern="de.bmotionstudio.ui.navigatorContent">
+            </contentExtension>
+         </includes>
+      </viewerContentBinding>
+      <viewerActionBinding
+            viewerId="fr.systerel.explorer.navigator.view">
+         <includes>
+            <actionExtension
+                  pattern="de.bmotionstudio.ui.navigatorAction">
+            </actionExtension>
+         </includes>
+      </viewerActionBinding>
+   </extension>
+   <extension
+         point="org.rodinp.core.fileAssociations">
+      <fileAssociation
+            content-type-id="de.bmotionstudio.gef.editor.BMotionStudioFile"
+            root-element-type="de.bmotionstudio.gef.editor.BMotionStudioFile">
+      </fileAssociation>
    </extension>
    <extension
          point="de.prob.core.animation">
