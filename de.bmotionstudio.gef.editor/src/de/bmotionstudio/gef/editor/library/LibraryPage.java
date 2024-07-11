@@ -251,18 +251,6 @@ public class LibraryPage extends Page {
 							img));
 				}
 			}
-
-			// TODO: Reimplement me!!!
-			// Visualization vis = this.editor.getVisualization();
-			// if (vis != null) {
-			// for (MachineContentObject obj : vis.getVariableList()
-			// .getCollection()) {
-			// tmpList.add(new LibraryVariableObject(obj.getLabel(),
-			// "variable", BMotionStudioImage
-			// .getImage(BMotionStudioImage.IMG_LOGO_B)));
-			// }
-			// }
-
 		}
 
 		return tmpList;

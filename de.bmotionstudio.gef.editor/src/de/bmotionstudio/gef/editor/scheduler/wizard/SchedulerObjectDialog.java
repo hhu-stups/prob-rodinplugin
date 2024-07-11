@@ -7,8 +7,9 @@
 package de.bmotionstudio.gef.editor.scheduler.wizard;
 
 import org.eclipse.core.databinding.DataBindingContext;
-import org.eclipse.core.databinding.beans.BeansObservables;
+import org.eclipse.core.databinding.beans.typed.BeanProperties;
 import org.eclipse.core.databinding.observable.list.WritableList;
+import org.eclipse.core.databinding.observable.map.IObservableMap;
 import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
 import org.eclipse.jface.databinding.viewers.ObservableMapLabelProvider;
 import org.eclipse.jface.dialogs.Dialog;
@@ -100,10 +101,11 @@ public class SchedulerObjectDialog extends Dialog {
 
 		ObservableListContentProvider contentProvider = new ObservableListContentProvider();
 		tableViewer.setContentProvider(contentProvider);
-		tableViewer.setLabelProvider(new ObservableMapLabelProvider(
-				BeansObservables.observeMaps(
-						contentProvider.getKnownElements(), new String[] {
-								"command", "parameter", "maxrandom" })) {
+		tableViewer.setLabelProvider(new ObservableMapLabelProvider(new IObservableMap[] {
+			BeanProperties.value(AnimationScriptStep.class, "command").observeDetail(contentProvider.getKnownElements()),
+			BeanProperties.value(AnimationScriptStep.class, "parameter").observeDetail(contentProvider.getKnownElements()),
+			BeanProperties.value(AnimationScriptStep.class, "maxrandom").observeDetail(contentProvider.getKnownElements()),
+		}) {
 
 			@Override
 			public Image getColumnImage(final Object element,

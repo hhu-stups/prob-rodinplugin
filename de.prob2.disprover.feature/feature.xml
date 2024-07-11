@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="de.prob2.disprover.feature"
-      label="ProB for Rodin3 - (Dis)Prover"
-      version="3.1.1.qualifier"
-      provider-name="HHU Düsseldorf STUPS Group">
+      label="ProB for Rodin - (Dis)Prover"
+      version="3.2.0.qualifier"
+      provider-name="HHU Düsseldorf STUPS Group"
+      plugin="de.prob.eventb.disprover.ui">
 
-   <description url="http://www.stups.uni-duesseldorf.de/ProB">
-      ProB is an animator and model checker for the B-Method. It allows
+   <description url="https://prob.hhu.de/w/">
+Allows using ProB as a (dis)prover while proving POs.
+
+ProB is an animator and model checker for the B-Method. It allows
 fully automatic animation of many B specifications, and can be
 used to systematically check a specification for errors.
 Part of the research and development was conducted within the
@@ -228,9 +231,8 @@ litigation.
    </license>
 
    <requires>
-      <import plugin="de.prob.core" version="9.5.1" match="equivalent"/>
-      <import plugin="de.prob.eventb.disprover.core" version="2.1.1" match="equivalent"/>
-      <import plugin="de.prob.ui" version="7.5.1" match="equivalent"/>
+      <import plugin="de.prob.core" version="9.6.0" match="equivalent"/>
+      <import plugin="de.prob.ui" version="7.6.0" match="equivalent"/>
       <import plugin="org.eclipse.core.runtime" version="3.2.0" match="compatible"/>
       <import plugin="org.eclipse.osgi" version="3.16.0" match="compatible"/>
       <import plugin="org.eclipse.ui" version="3.118.0" match="compatible"/>

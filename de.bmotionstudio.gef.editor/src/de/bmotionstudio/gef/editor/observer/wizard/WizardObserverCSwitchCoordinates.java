@@ -7,7 +7,7 @@
 package de.bmotionstudio.gef.editor.observer.wizard;
 
 import org.eclipse.core.databinding.DataBindingContext;
-import org.eclipse.core.databinding.beans.BeansObservables;
+import org.eclipse.core.databinding.beans.typed.BeanProperties;
 import org.eclipse.core.databinding.observable.list.WritableList;
 import org.eclipse.core.databinding.observable.map.IObservableMap;
 import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
@@ -41,6 +41,7 @@ import de.bmotionstudio.gef.editor.edit.PredicateEditingSupport;
 import de.bmotionstudio.gef.editor.edit.TextEditingSupport;
 import de.bmotionstudio.gef.editor.model.BControl;
 import de.bmotionstudio.gef.editor.observer.Observer;
+import de.bmotionstudio.gef.editor.observer.ObserverEvalObject;
 import de.bmotionstudio.gef.editor.observer.ObserverWizard;
 import de.bmotionstudio.gef.editor.observer.SwitchChildCoordinates;
 import de.bmotionstudio.gef.editor.observer.ToggleObjectCoordinates;
@@ -168,12 +169,13 @@ public class WizardObserverCSwitchCoordinates extends ObserverWizard {
 
 			ObservableListContentProvider contentProvider = new ObservableListContentProvider();
 			tableViewer.setContentProvider(contentProvider);
-			tableViewer
-					.setLabelProvider(new ObserverLabelProvider(
-							BeansObservables.observeMaps(
-									contentProvider.getKnownElements(),
-									new String[] { "eval", "bcontrol", "x",
-											"y", "animate" })));
+			tableViewer.setLabelProvider(new ObserverLabelProvider(new IObservableMap[] {
+				BeanProperties.value(ObserverEvalObject.class, "eval").observeDetail(contentProvider.getKnownElements()),
+				BeanProperties.value(ToggleObjectCoordinates.class, "bcontrol").observeDetail(contentProvider.getKnownElements()),
+				BeanProperties.value(ToggleObjectCoordinates.class, "x").observeDetail(contentProvider.getKnownElements()),
+				BeanProperties.value(ToggleObjectCoordinates.class, "y").observeDetail(contentProvider.getKnownElements()),
+				// BeanProperties.value(ToggleObjectCoordinates.class, "animate").observeDetail(contentProvider.getKnownElements()),
+			}));
 
 			final WritableList input = new WritableList(
 					((SwitchChildCoordinates) getObserver()).getToggleObjects(),

@@ -7,8 +7,8 @@
 package de.bmotionstudio.gef.editor.observer.wizard;
 
 import org.eclipse.core.databinding.DataBindingContext;
-import org.eclipse.core.databinding.beans.BeansObservables;
-import org.eclipse.jface.databinding.swt.SWTObservables;
+import org.eclipse.core.databinding.beans.typed.BeanProperties;
+import org.eclipse.jface.databinding.swt.typed.WidgetProperties;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Font;
@@ -93,18 +93,17 @@ public class WizardObserverSimpleValueDisplay extends ObserverWizard {
 
 		private void initBindings(DataBindingContext dbc) {
 
-			dbc.bindValue(SWTObservables.observeText(txtPredicate, SWT.Modify),
-					BeansObservables.observeValue(
-							(SimpleValueDisplay) getObserver(), "predicate"));
+			dbc.bindValue(WidgetProperties.text(SWT.Modify).observe(txtPredicate),
+					BeanProperties.value(SimpleValueDisplay.class, "predicate")
+							.observe((SimpleValueDisplay) getObserver()));
 
-			dbc.bindValue(
-					SWTObservables.observeText(txtExpression, SWT.Modify),
-					BeansObservables.observeValue(
-							(SimpleValueDisplay) getObserver(), "eval"));
+			dbc.bindValue(WidgetProperties.text(SWT.Modify).observe(txtExpression),
+					BeanProperties.value(SimpleValueDisplay.class, "eval")
+							.observe((SimpleValueDisplay) getObserver()));
 
-			dbc.bindValue(SWTObservables.observeText(txtReplacementString,
-					SWT.Modify), BeansObservables.observeValue(
-					(SimpleValueDisplay) getObserver(), "replacementString"));
+			dbc.bindValue(WidgetProperties.text(SWT.Modify).observe(txtReplacementString), 
+					BeanProperties.value(SimpleValueDisplay.class, "replacementString")
+							.observe((SimpleValueDisplay) getObserver()));
 
 		}
 

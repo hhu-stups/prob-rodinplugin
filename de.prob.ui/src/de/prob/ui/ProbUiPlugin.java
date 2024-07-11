@@ -27,7 +27,6 @@ public class ProbUiPlugin extends AbstractUIPlugin {
 	public static final String IMG_TIMEOUT = "IMG_TIMEOUT";
 	public static final String IMG_ENABLED = "IMG_ENABLED";
 	public static final String IMG_DOUBLECLICK = "IMG_DOUBLECLICK";
-	public static final String OVERLAY = "OVERLAY";
 	public static final String CHANGE_STAR = "change_star";
 	public static final String IMG_RELOAD = "IMG_RELOAD";
 
@@ -84,9 +83,6 @@ public class ProbUiPlugin extends AbstractUIPlugin {
 				imageDescriptorFromPlugin(PLUGIN_ID, "icons/enabled.png"));
 		reg.put(IMG_DOUBLECLICK,
 				imageDescriptorFromPlugin(PLUGIN_ID, "icons/doubleclick.png"));
-		reg.put(OVERLAY,
-				imageDescriptorFromPlugin(PLUGIN_ID,
-						"icons/splash_overlay_x.png"));
 		reg.put(CHANGE_STAR,
 				imageDescriptorFromPlugin(PLUGIN_ID, "icons/star.png"));
 		reg.put(IMG_RELOAD,

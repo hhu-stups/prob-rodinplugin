@@ -93,7 +93,7 @@
             locationURI="popup:more_commands">
          <command
                commandId="de.prob.eventb.disprover.ui.exportpos"
-               icon="icons/prob_mini_logo.gif"
+               icon="icons/prob.png"
                label="Export POs for ProB (probcli)"
                style="push">
          </command>

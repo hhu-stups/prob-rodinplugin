@@ -22,12 +22,8 @@ public class BMotionStudioImage {
 	private static ImageRegistry imageReg = new ImageRegistry();
 	private static boolean isInit = false;
 
-	public static final String IMG_LOGO_B = "logo_b";
 	public static final String IMG_LOGO_BMOTION = "logo_bmotion";
 	public static final String IMG_LOGO_BMOTION64 = "logo_bmotion64";
-
-	public static final String IMG_ICON_MOTION = "icon_motion";
-	public static final String IMG_ICON_MOTION_WIZ = "icon_motion_wiz";
 
 	public static ImageDescriptor getImageDescriptor(final String path) {
 		return getImageDescriptor(BMotionEditorPlugin.PLUGIN_ID, path);
@@ -62,12 +58,8 @@ public class BMotionStudioImage {
 	}
 
 	private static void initializeImageRegistry() {
-
-		registerImage(IMG_LOGO_B, "icons/logo_b.gif");
 		registerImage(IMG_LOGO_BMOTION, "icons/logo_bmotion.png");
 		registerImage(IMG_LOGO_BMOTION64, "icons/logo_bmotion_64.png");
-		registerImage(IMG_ICON_MOTION, "icons/icon_motion.gif");
-		registerImage(IMG_ICON_MOTION_WIZ, "icons/icon_motion_wiz.gif");
 
 		registerBControlImages();
 

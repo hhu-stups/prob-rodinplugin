@@ -6,9 +6,9 @@
 package de.bmotionstudio.gef.editor.edit;
 
 import org.eclipse.core.databinding.DataBindingContext;
-import org.eclipse.core.databinding.beans.BeansObservables;
+import org.eclipse.core.databinding.beans.typed.BeanProperties;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
-import org.eclipse.jface.databinding.swt.SWTObservables;
+import org.eclipse.jface.databinding.swt.typed.WidgetProperties;
 import org.eclipse.jface.databinding.viewers.ObservableValueEditingSupport;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.TableViewer;
@@ -41,13 +41,13 @@ public class PredicateEditingSupport extends ObservableValueEditingSupport {
 	@Override
 	protected IObservableValue doCreateCellEditorObservable(
 			CellEditor cellEditor) {
-		return SWTObservables.observeText(cellEditor.getControl(), SWT.Modify);
+		return WidgetProperties.text(SWT.Modify).observe(cellEditor.getControl());
 	}
 
 	@Override
 	protected IObservableValue doCreateElementObservable(Object element,
 			ViewerCell cell) {
-		return BeansObservables.observeValue(element, property);
+		return BeanProperties.value(property).observe(element);
 	}
 
 	@Override

@@ -1,8 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.2"?>
 <plugin>
- 
-
+   <extension
+         point="org.eclipse.ui.perspectives">
+      <perspective
+            class="de.prob.ui.PerspectiveFactory"
+            icon="icons/prob.png"
+            id="de.prob.ui.perspective"
+            name="ProB"> 
+      </perspective>
+   </extension>
    <extension
          point="org.eclipse.ui.preferencePages">
       <page
@@ -21,7 +28,7 @@
             visible="true">
          <action
                class="de.prob.ui.eventb.ShowProBConfigurations"
-               icon="icons/new_prob_mini.png"
+               icon="icons/prob.png"
                id="showProBConfigurations"
                label="Show ProB Configurations"
                style="pulldown"
@@ -101,37 +108,6 @@
             name="ProB">
       </page>
    </extension>
-    <!--  
-    <extension
-         point="org.eclipse.ui.actionSets">
-      <actionSet
-            description="Web Action Set"
-            id="de.prob.core.ticket.actionSet"
-            label="Web Action Set"
-            visible="true">
-      <menu
-               id="probMenu"
-               label="ProB">
-            <separator
-                  name="bugReport">
-            </separator>
-         </menu>
-         
-         <action
-               class="de.prob.ui.ticket.OpenBugReportWebsite"
-               id="OpenBugReportWebsite"
-               label="Open Bugreport Website"
-               menubarPath="probMenu/bugReport">
-         </action>
-         <action
-               class="de.prob.ui.ticket.NewBugReportAction"
-               id="NewBugReportAction"
-               label="Submit Bugreport"
-               menubarPath="probMenu/bugReport">
-         </action>
-      </actionSet>
-   </extension>
-   -->
    
    <extension
          point="org.eclipse.ui.commands">
@@ -140,21 +116,6 @@
             id="de.prob.ui.commands.category"
             name="ProB">
       </category>
-      <command
-            categoryId="de.prob.ui.commands.category"
-            id="de.prob.ui.openWebsite"
-            name="Open Website">
-         <commandParameter
-               id="de.prob.ui.openwebsite.url"
-               name="URL"
-               optional="false">
-         </commandParameter>
-      </command>
-      <command
-            categoryId="de.prob.ui.commands.category"
-            id="de.prob.ui.bugreport"
-            name="Submit Bugreport">
-      </command>
       <command
             categoryId="de.prob.ui.commands.category"
             id="de.prob.ui.probconfiguration"
@@ -321,16 +282,6 @@
             name="Checks">
       </command>
       <command
-            categoryId="de.prob.ui.commands.category"
-            id="de.prob.ui.exampleanalyzecommand"
-            name="Example for Analyze Commands">
-      </command>
- <!--     <command
-            id="de.prob.ui.startdmc"
-            name="Start Distributed Modelcheck">
-      </command>
- -->     
-      <command
           id="de.prob.ui.ltl.counterexampleviewmenuhandler"
           name="CounterExampleView Menu Command">
           <commandParameter
@@ -370,18 +321,6 @@
    </extension>
    <extension
          point="org.eclipse.ui.handlers">
-      <handler
-            commandId="de.prob.ui.openWebsite">
-         <class
-               class="de.prob.ui.internal.OpenWebsiteCommand">
-         </class>
-      </handler>
-      <handler
-            commandId="de.prob.ui.bugreport">
-         <class
-               class="de.prob.ui.ticket.SubmitBugreportCommand">
-         </class>
-      </handler>
       <handler
             commandId="de.prob.ui.probconfiguration">
          <class
@@ -678,12 +617,6 @@
          </enabledWhen>
             
       </handler>
-      <handler
-            commandId="de.prob.ui.exampleanalyzecommand">
-         <class
-               class="de.prob.ui.internal.InvariantAnalyzeHandler">
-         </class>
-      </handler>
       <handler commandId="de.prob.ui.ltl.counterexampleviewmenuhandler">
             <class class="de.prob.ui.ltl.handler.CounterExampleViewMenuHandler"/>
             <enabledWhen>
@@ -831,46 +764,9 @@
             </with>
          </enabledWhen>
       </handler>
-<!--      <handler
-            commandId="de.prob.ui.startdmc">
-         <class
-               class="de.prob.ui.eventb.StartDistributedModelcheckHandler">
-         </class>
-         <enabledWhen>
-            <with
-                  variable="selection">
-               <iterate
-                     operator="or">
-                  <instanceof
-                        value="org.eventb.core.IEventBRoot">
-                  </instanceof>
-               </iterate>
-            </with>
-         </enabledWhen>
-      </handler> -->
    </extension>
    <extension
          point="org.eclipse.ui.menus">
-      <menuContribution
-            locationURI="menu:contact">
-         <command
-               commandId="de.prob.ui.openWebsite"
-               label="Open ProB Website"
-               mnemonic="W"
-               style="push">  
-            <parameter
-                  name="de.prob.ui.openwebsite.url"
-                  value="http://www.stups.uni-duesseldorf.de/ProB">
-            </parameter>
-         </command>
-         <command
-               commandId="de.prob.ui.bugreport"
-               label="Open Bugtracker Website"
-               mnemonic="W"
-               style="push">
-         </command>
-      </menuContribution>
-
       <menuContribution
             locationURI="toolbar:de.prob.ui.StateView">
          <command
@@ -1067,38 +963,20 @@
       </with>
             </visibleWhen>
          </command>
-  <!--       <command
-               commandId="de.prob.ui.startdmc"
-               icon="icons/prob.png"
-               label="Start Distributed Modelcheck"
-               style="push">
-            <visibleWhen>
-      <with
-            variable="selection">
-         <iterate
-               operator="or">
-            <instanceof
-                  value="org.eventb.core.IEventBRoot">
-            </instanceof>
-         </iterate>
-      </with>
-            </visibleWhen>
-         </command>
-  -->
          <menu
                commandId="de.prob.ui.navigator.context"
-               icon="icons/new_prob_mini.png"
+               icon="icons/prob.png"
                id="more_commands"
                label="ProB Standalone ...">
             <command
                   commandId="de.prob.ui.newcore.export"
-                  icon="icons/prob_mini_logo.gif"
+                  icon="icons/prob.png"
                   label="Export for use in ProB Standalone"
                   style="push">
             </command>
             <command
                   commandId="de.prob.ui.classic.open"
-                  icon="icons/prob_mini_logo.gif"
+                  icon="icons/prob.png"
                   label="Open in ProB Standalone"
                   style="push">
             </command>
@@ -1194,18 +1072,6 @@
             </command>
          </menu>
       </menuContribution>
-      <!--
-      <menuContribution
-            allPopups="false"
-            locationURI="menu:analyze">
-         <command
-               commandId="de.prob.ui.exampleanalyzecommand"
-               label="Analyze Invariant"
-               mnemonic="I"
-               style="toggle">
-         </command>
-      </menuContribution>
-      -->
       <menuContribution locationURI="menu:de.prob.ui.ltl.CounterExampleView">
          <menu
                label="Show as">

@@ -10,3 +10,4 @@ updatesite/
 **/lib/dependencies/
 de.prob.core/prob/
 build/
+.tycho-consumer-pom.xml

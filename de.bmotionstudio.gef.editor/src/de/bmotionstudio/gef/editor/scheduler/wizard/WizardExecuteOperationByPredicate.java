@@ -7,17 +7,17 @@
 package de.bmotionstudio.gef.editor.scheduler.wizard;
 
 import org.eclipse.core.databinding.DataBindingContext;
-import org.eclipse.core.databinding.beans.BeansObservables;
+import org.eclipse.core.databinding.beans.typed.BeanProperties;
 import org.eclipse.core.databinding.observable.list.WritableList;
 import org.eclipse.core.databinding.observable.map.IObservableMap;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.databinding.observable.value.IValueChangeListener;
 import org.eclipse.core.databinding.observable.value.ValueChangeEvent;
 import org.eclipse.draw2d.ColorConstants;
-import org.eclipse.jface.databinding.swt.SWTObservables;
+import org.eclipse.jface.databinding.swt.typed.WidgetProperties;
 import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
 import org.eclipse.jface.databinding.viewers.ObservableMapLabelProvider;
-import org.eclipse.jface.databinding.viewers.ViewersObservables;
+import org.eclipse.jface.databinding.viewers.typed.ViewerProperties;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.ComboViewer;
@@ -46,6 +46,7 @@ import de.bmotionstudio.gef.editor.eventb.MachineContentObject;
 import de.bmotionstudio.gef.editor.eventb.MachineOperation;
 import de.bmotionstudio.gef.editor.model.BControl;
 import de.bmotionstudio.gef.editor.scheduler.ExecuteOperationByPredicate;
+import de.bmotionstudio.gef.editor.scheduler.PredicateOperation;
 import de.bmotionstudio.gef.editor.scheduler.SchedulerEvent;
 import de.bmotionstudio.gef.editor.scheduler.SchedulerWizard;
 
@@ -173,9 +174,9 @@ public class WizardExecuteOperationByPredicate extends SchedulerWizard {
 
 			ObservableListContentProvider cbOpContentProvider = new ObservableListContentProvider();
 			cbOperation.setContentProvider(cbOpContentProvider);
-			IObservableMap[] attributeMaps = BeansObservables.observeMaps(
-					cbOpContentProvider.getKnownElements(),
-					MachineContentObject.class, new String[] { "label" });
+			IObservableMap[] attributeMaps = {
+				BeanProperties.value(MachineContentObject.class, "label").observeDetail(cbOpContentProvider.getKnownElements()),
+			};
 			cbOperation.setLabelProvider(new ObservableMapLabelProvider(
 					attributeMaps));
 			cbOperation.setInput(new WritableList(EventBHelper
@@ -185,19 +186,16 @@ public class WizardExecuteOperationByPredicate extends SchedulerWizard {
 					new Font(Display.getDefault(), new FontData("Arial", 10,
 							SWT.NONE)));
 
-			final IObservableValue observeSelection = ViewersObservables
-					.observeSingleSelection(cbOperation);
+			IObservableValue observeSelection = ViewerProperties.singleSelection().observe(cbOperation);
 
-			dbc.bindValue(SWTObservables.observeSelection(cbOperation
-					.getCombo()), BeansObservables.observeValue(
-					((ExecuteOperationByPredicate) getScheduler())
-							.getPredicateOperation(), "operationName"), null,
-					null);
+			dbc.bindValue(WidgetProperties.widgetSelection().observe(cbOperation.getCombo()),
+					BeanProperties.value(PredicateOperation.class, "operationName")
+							.observe(((ExecuteOperationByPredicate) getScheduler()).getPredicateOperation()),
+					null, null);
 
-			dbc.bindValue(SWTObservables.observeText(txtPredicate, SWT.Modify),
-					BeansObservables.observeValue(
-							((ExecuteOperationByPredicate) getScheduler())
-									.getPredicateOperation(), "predicate"));
+			dbc.bindValue(WidgetProperties.text(SWT.Modify).observe(txtPredicate),
+					BeanProperties.value(PredicateOperation.class, "predicate")
+							.observe(((ExecuteOperationByPredicate) getScheduler()).getPredicateOperation()));
 
 			observeSelection.addValueChangeListener(new IValueChangeListener() {
 				public void handleValueChange(ValueChangeEvent event) {
@@ -206,15 +204,13 @@ public class WizardExecuteOperationByPredicate extends SchedulerWizard {
 				}
 			});
 
-			dbc.bindValue(SWTObservables.observeSelection(checkboxRandomMode),
-					BeansObservables.observeValue(
-							((ExecuteOperationByPredicate) getScheduler())
-									.getPredicateOperation(), "random"));
+			dbc.bindValue(WidgetProperties.widgetSelection().observe(checkboxRandomMode),
+					BeanProperties.value(PredicateOperation.class, "random")
+							.observe(((ExecuteOperationByPredicate) getScheduler()).getPredicateOperation()));
 
-			dbc.bindValue(SWTObservables.observeText(txtMaxRandomOperations,
-					SWT.Modify), BeansObservables.observeValue(
-					((ExecuteOperationByPredicate) getScheduler())
-							.getPredicateOperation(), "maxrandom"));
+			dbc.bindValue(WidgetProperties.text(SWT.Modify).observe(txtMaxRandomOperations),
+					BeanProperties.value(PredicateOperation.class, "maxrandom")
+							.observe(((ExecuteOperationByPredicate) getScheduler()).getPredicateOperation()));
 
 		}
 

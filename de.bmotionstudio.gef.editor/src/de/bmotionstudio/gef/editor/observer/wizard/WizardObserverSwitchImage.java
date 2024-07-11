@@ -7,7 +7,7 @@
 package de.bmotionstudio.gef.editor.observer.wizard;
 
 import org.eclipse.core.databinding.DataBindingContext;
-import org.eclipse.core.databinding.beans.BeansObservables;
+import org.eclipse.core.databinding.beans.typed.BeanProperties;
 import org.eclipse.core.databinding.observable.list.WritableList;
 import org.eclipse.core.databinding.observable.map.IObservableMap;
 import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
@@ -44,6 +44,7 @@ import de.bmotionstudio.gef.editor.edit.IsExpressionModeEditingSupport;
 import de.bmotionstudio.gef.editor.edit.PredicateEditingSupport;
 import de.bmotionstudio.gef.editor.model.BControl;
 import de.bmotionstudio.gef.editor.observer.Observer;
+import de.bmotionstudio.gef.editor.observer.ObserverEvalObject;
 import de.bmotionstudio.gef.editor.observer.ObserverWizard;
 import de.bmotionstudio.gef.editor.observer.SwitchImage;
 import de.bmotionstudio.gef.editor.observer.ToggleObjectImage;
@@ -144,10 +145,11 @@ public class WizardObserverSwitchImage extends ObserverWizard {
 			ObservableListContentProvider contentProvider = new ObservableListContentProvider();
 			tableViewer.setContentProvider(contentProvider);
 
-			tableViewer.setLabelProvider(new ObserverLabelProvider(
-					BeansObservables.observeMaps(
-							contentProvider.getKnownElements(), new String[] {
-									"eval", "image", "isExpressionMode" })));
+			tableViewer.setLabelProvider(new ObserverLabelProvider(new IObservableMap[] {
+				BeanProperties.value(ObserverEvalObject.class, "eval").observeDetail(contentProvider.getKnownElements()),
+				BeanProperties.value(ToggleObjectImage.class, "image").observeDetail(contentProvider.getKnownElements()),
+				BeanProperties.value(ObserverEvalObject.class, "isExpressionMode").observeDetail(contentProvider.getKnownElements()),
+			}));
 			final WritableList input = new WritableList(
 					((SwitchImage) getObserver()).getToggleObjects(),
 					ToggleObjectImage.class);

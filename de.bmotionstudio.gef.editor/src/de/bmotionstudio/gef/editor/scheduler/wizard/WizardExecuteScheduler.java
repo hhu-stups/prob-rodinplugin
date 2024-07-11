@@ -7,8 +7,9 @@
 package de.bmotionstudio.gef.editor.scheduler.wizard;
 
 import org.eclipse.core.databinding.DataBindingContext;
-import org.eclipse.core.databinding.beans.BeansObservables;
+import org.eclipse.core.databinding.beans.typed.BeanProperties;
 import org.eclipse.core.databinding.observable.list.WritableList;
+import org.eclipse.core.databinding.observable.map.IObservableMap;
 import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
 import org.eclipse.jface.databinding.viewers.ObservableMapLabelProvider;
 import org.eclipse.jface.dialogs.Dialog;
@@ -40,6 +41,7 @@ import de.bmotionstudio.gef.editor.edit.PredicateEditingSupport;
 import de.bmotionstudio.gef.editor.model.BControl;
 import de.bmotionstudio.gef.editor.scheduler.AnimationScriptObject;
 import de.bmotionstudio.gef.editor.scheduler.ExecuteAnimationScript;
+import de.bmotionstudio.gef.editor.scheduler.PredicateOperation;
 import de.bmotionstudio.gef.editor.scheduler.SchedulerEvent;
 import de.bmotionstudio.gef.editor.scheduler.SchedulerWizard;
 import de.bmotionstudio.gef.editor.util.BMotionWizardUtil;
@@ -84,10 +86,9 @@ public class WizardExecuteScheduler extends SchedulerWizard {
 			ObservableListContentProvider contentProvider = new ObservableListContentProvider();
 			tableViewer.setContentProvider(contentProvider);
 
-			tableViewer.setLabelProvider(new ObservableMapLabelProvider(
-					BeansObservables.observeMaps(
-							contentProvider.getKnownElements(),
-							new String[] { "predicate" })) {
+			tableViewer.setLabelProvider(new ObservableMapLabelProvider(new IObservableMap[] {
+				BeanProperties.value(PredicateOperation.class, "predicate").observeDetail(contentProvider.getKnownElements()),
+			}) {
 
 				@Override
 				public String getColumnText(Object element, int columnIndex) {
