@@ -68,13 +68,13 @@ public class ProblemHandler {
 	public static void raisePrologException(final List<String> errors,
 			final boolean onlyWarnings) throws PrologException {
 		final String message = "ProB reported "
-		        + ((onlyWarnings) ? "warnings:\n" :  "errors:\n")
+				+ ((onlyWarnings) ? "warnings:\n" :  "errors:\n")
 				+ String.join("\n", errors);
 		Logger.notifyUser(message);
 		if (! onlyWarnings) {
-		   throw new PrologException(message, onlyWarnings);
-		   // if we throw the exception for warnings then the command will fail
-		   // this will prevent e.g. animating machines with static check warnings
+			throw new PrologException(message, onlyWarnings);
+			// if we throw the exception for warnings then the command will fail
+			// this will prevent e.g. animating machines with static check warnings
 		}
 	}
 
