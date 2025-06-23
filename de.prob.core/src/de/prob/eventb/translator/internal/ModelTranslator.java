@@ -609,8 +609,10 @@ public class ModelTranslator extends AbstractComponentTranslator {
 			final String srcName = src.getRodinFile().getBareName();
 			result = currentName.equals(srcName);
 		} else {
-			throw new TranslationFailedException("Machine " + currentName,
-					"Source of invariant is not a machine");
+		    // Some plugins virtually add new invariants (e.g., FOLLOWED_BY for events)
+			Logger.notifyUser("Source of invariant in " + currentName + " is not a machine. Invariant may be added multiple times.");
+			// TODO: check if this source is local or not
+			result = false; // assume it is local so that it is added in the translation
 		}
 		return result;
 	}
