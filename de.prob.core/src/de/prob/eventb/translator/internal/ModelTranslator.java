@@ -580,16 +580,21 @@ public class ModelTranslator extends AbstractComponentTranslator {
 			if (isDefinedHere(evPredicate)) {
 				final PPredicate predicate = translatePredicate(ff, te,
 						evPredicate);
-				final IInvariant ucp = (IInvariant) evPredicate.getSource(); // comments only attached in unchecked source
-				if (ucp.hasAttribute(EventBAttributes.COMMENT_ATTRIBUTE)) {
-					final String commentString = ucp.getAttributeValue(EventBAttributes.COMMENT_ATTRIBUTE);
-					//System.out.println("Invariant/theorem " + predicate + " has description " + commentString);
-					final TPragmaFreeText desc = new TPragmaFreeText(commentString);
-					ADescriptionPragma descPragma = new ADescriptionPragma(Collections.singletonList(desc));
-					ADescriptionPredicate dpred = new ADescriptionPredicate(descPragma, predicate);
-					list.add(dpred);
-					labelMapping.put(dpred, evPredicate);
-				} else {
+				if (evPredicate.getSource() instanceof IInvariant) {  // test can fail for generated invariants
+                    final IInvariant ucp = (IInvariant) evPredicate.getSource(); // comments only attached in unchecked source
+                    if (ucp.hasAttribute(EventBAttributes.COMMENT_ATTRIBUTE)) {
+                        final String commentString = ucp.getAttributeValue(EventBAttributes.COMMENT_ATTRIBUTE);
+                        //System.out.println("Invariant/theorem " + predicate + " has description " + commentString);
+                        final TPragmaFreeText desc = new TPragmaFreeText(commentString);
+                        ADescriptionPragma descPragma = new ADescriptionPragma(Collections.singletonList(desc));
+                        ADescriptionPredicate dpred = new ADescriptionPredicate(descPragma, predicate);
+                        list.add(dpred);
+                        labelMapping.put(dpred, evPredicate);
+                    } else {
+                        list.add(predicate);
+                        labelMapping.put(predicate, evPredicate);
+                    }
+				} else { // cannot cast source to IInvariant
 					list.add(predicate);
 					labelMapping.put(predicate, evPredicate);
 				}
