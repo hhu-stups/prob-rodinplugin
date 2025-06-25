@@ -581,19 +581,19 @@ public class ModelTranslator extends AbstractComponentTranslator {
 				final PPredicate predicate = translatePredicate(ff, te,
 						evPredicate);
 				if (evPredicate.getSource() instanceof IInvariant) {  // test can fail for generated invariants
-                    final IInvariant ucp = (IInvariant) evPredicate.getSource(); // comments only attached in unchecked source
-                    if (ucp.hasAttribute(EventBAttributes.COMMENT_ATTRIBUTE)) {
-                        final String commentString = ucp.getAttributeValue(EventBAttributes.COMMENT_ATTRIBUTE);
-                        //System.out.println("Invariant/theorem " + predicate + " has description " + commentString);
-                        final TPragmaFreeText desc = new TPragmaFreeText(commentString);
-                        ADescriptionPragma descPragma = new ADescriptionPragma(Collections.singletonList(desc));
-                        ADescriptionPredicate dpred = new ADescriptionPredicate(descPragma, predicate);
-                        list.add(dpred);
-                        labelMapping.put(dpred, evPredicate);
-                    } else {
-                        list.add(predicate);
-                        labelMapping.put(predicate, evPredicate);
-                    }
+					final IInvariant ucp = (IInvariant) evPredicate.getSource(); // comments only attached in unchecked source
+					if (ucp.hasAttribute(EventBAttributes.COMMENT_ATTRIBUTE)) {
+						final String commentString = ucp.getAttributeValue(EventBAttributes.COMMENT_ATTRIBUTE);
+						//System.out.println("Invariant/theorem " + predicate + " has description " + commentString);
+						final TPragmaFreeText desc = new TPragmaFreeText(commentString);
+						ADescriptionPragma descPragma = new ADescriptionPragma(Collections.singletonList(desc));
+						ADescriptionPredicate dpred = new ADescriptionPredicate(descPragma, predicate);
+						list.add(dpred);
+						labelMapping.put(dpred, evPredicate);
+					} else {
+						list.add(predicate);
+						labelMapping.put(predicate, evPredicate);
+					}
 				} else { // cannot cast source to IInvariant
 					list.add(predicate);
 					labelMapping.put(predicate, evPredicate);
@@ -614,7 +614,7 @@ public class ModelTranslator extends AbstractComponentTranslator {
 			final String srcName = src.getRodinFile().getBareName();
 			result = currentName.equals(srcName);
 		} else {
-		    // Some plugins virtually add new invariants (e.g., FOLLOWED_BY for events)
+			// Some plugins virtually add new invariants (e.g., FOLLOWED_BY for events)
 			Logger.notifyUser("Source of invariant in " + currentName + " is not a machine. Invariant may be added multiple times.");
 			// TODO: check if this source is local or not
 			result = false; // assume it is local so that it is added in the translation
