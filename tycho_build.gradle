@@ -51,8 +51,8 @@ try {
 
 
 // Add certain Jar to Library
-def addLibToCP(def project, def libPar) {
-	def filePar = new File(workspacePath + project + "/.classpath")
+def addLibToCP(def projectName, def libPar) {
+	def filePar = new File(workspacePath + projectName + "/.classpath")
 	boolean notYetAdded = true
 	filePar.eachLine {line ->
 		def pattern = ".*${dependencyFolder}${libPar}.*"
@@ -61,29 +61,29 @@ def addLibToCP(def project, def libPar) {
 		}
 	}
 	if (notYetAdded) {
-		File newCP = new File(workspacePath + project + '/.cp')
+		File newCP = new File(workspacePath + projectName + '/.cp')
 		filePar.eachLine {line ->
 			if (line ==~ /.*<\/classpath>.*/) {
 				String entry = '\t<classpathentry exported="true" kind="lib" path="' + dependencyFolder + libPar + '"/>' + '\n</classpath>\n'
 				line = line.replaceAll(/<\/classpath>/, entry)
-				println project + " : " + libPar + " added to classpath"
+				println projectName + " : " + libPar + " added to classpath"
 				newCP << line
 			} else {
 				newCP << line + "\n"
 			}
 		}
 		filePar.delete()
-		newCP.renameTo(workspacePath + project + '/.classpath')
+		newCP.renameTo(workspacePath + projectName + '/.classpath')
 	} else {
-		println project + " : " + libPar + " classpath entry already present"
+		println projectName + " : " + libPar + " classpath entry already present"
 	}
 }
 
 // deletes whole DependenciesLibrary Folder
-def deleteLibFromCP(def project) {
-	def filePar = new File(workspacePath + project + "/.classpath")
+def deleteLibFromCP(def projectName) {
+	def filePar = new File(workspacePath + projectName + "/.classpath")
 	boolean deleteCP = false
-	def newCP = new File(workspacePath + project + '/cp')
+	def newCP = new File(workspacePath + projectName + '/cp')
 	def pattern = ".*${dependencyFolder}[^<].*/>"
 
 	filePar.eachLine {line ->
@@ -101,12 +101,12 @@ def deleteLibFromCP(def project) {
 		}
 	}
 	if (!deleteCP) {
-		println project + " : no dependencies from " + dependencyFolder + " found in classpath file! "
+		println projectName + " : no dependencies from " + dependencyFolder + " found in classpath file! "
 		newCP.delete()
 	} else {
 		filePar.delete()
-		newCP.renameTo(workspacePath + project + '/.classpath')
-		println workspacePath + project + '/.classpath' + "!"
+		newCP.renameTo(workspacePath + projectName + '/.classpath')
+		println workspacePath + projectName + '/.classpath' + "!"
 	}
 }
 
@@ -516,8 +516,8 @@ def moduleStart() {"""
 	<modules>
 """}
 
-def module(String project) {"""\
-		<module>../${project}</module>
+def module(String projectName) {"""\
+		<module>../${projectName}</module>
 """}
 
 def endParent() {"""\
