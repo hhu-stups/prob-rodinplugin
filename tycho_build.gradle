@@ -443,14 +443,6 @@ def artifact(artifactId,versionNumber) {"""
 					<executionEnvironment>\${buildTimeExecutionEnvironment}</executionEnvironment>
 				</configuration>
 			</plugin>
-			<plugin>
-				<groupId>org.eclipse.tycho</groupId>
-				<artifactId>tycho-compiler-plugin</artifactId>
-				<version>\${tycho-version}</version>
-				<configuration>
-					<release>\${targetJavaRelease}</release>
-				</configuration>
-			</plugin>
 		</plugins>
 	</build>
 """}
@@ -468,14 +460,6 @@ def testArtifact(artifactId,versionNumber) {"""
 				<version>\${tycho-version}</version>
 				<configuration>
 					<executionEnvironment>\${buildTimeExecutionEnvironment}</executionEnvironment>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.eclipse.tycho</groupId>
-				<artifactId>tycho-compiler-plugin</artifactId>
-				<version>\${tycho-version}</version>
-				<configuration>
-					<release>\${targetJavaRelease}</release>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -527,7 +511,6 @@ def parentPom(artifactId) {"""\
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<tycho-version>${tychoVersion}</tycho-version>
-		<targetJavaRelease>${targetJavaRelease}</targetJavaRelease>
 		<buildTimeExecutionEnvironment>${buildTimeExecutionEnvironment}</buildTimeExecutionEnvironment>
 	</properties>
 

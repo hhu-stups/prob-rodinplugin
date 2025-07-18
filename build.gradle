@@ -3,10 +3,6 @@ import java.util.concurrent.TimeUnit
 // to trigger a full tycho build please use 'gradle deleteFromClassPath completeInstall'
 
 project.ext {
-	// Java version required at runtime.
-	// Currently Java 11 for compatibility with Rodin 3.6 through 3.8.
-	targetJavaRelease = "11"
-
 	// The newest Bundle-RuntimeExecutionEnvironment required any of the build dependencies (Eclipse and Rodin).
 	// Currently Java 17 since Rodin 3.9.
 	buildTimeExecutionEnvironment = "JavaSE-17"
