@@ -440,7 +440,7 @@ def artifact(artifactId,versionNumber) {"""
 				<artifactId>target-platform-configuration</artifactId>
 				<version>\${tycho-version}</version>
 				<configuration>
-					<executionEnvironment>JavaSE-17</executionEnvironment>
+					<executionEnvironment>\${buildTimeExecutionEnvironment}</executionEnvironment>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -448,7 +448,7 @@ def artifact(artifactId,versionNumber) {"""
 				<artifactId>tycho-compiler-plugin</artifactId>
 				<version>\${tycho-version}</version>
 				<configuration>
-					<release>11</release>
+					<release>\${targetJavaRelease}</release>
 				</configuration>
 			</plugin>
 		</plugins>
@@ -467,7 +467,7 @@ def testArtifact(artifactId,versionNumber) {"""
 				<artifactId>target-platform-configuration</artifactId>
 				<version>\${tycho-version}</version>
 				<configuration>
-					<executionEnvironment>JavaSE-17</executionEnvironment>
+					<executionEnvironment>\${buildTimeExecutionEnvironment}</executionEnvironment>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -519,6 +519,8 @@ def parentPom(artifactId) {"""\
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<tycho-version>${tychoVersion}</tycho-version>
+		<targetJavaRelease>${targetJavaRelease}</targetJavaRelease>
+		<buildTimeExecutionEnvironment>${buildTimeExecutionEnvironment}</buildTimeExecutionEnvironment>
 	</properties>
 
 	<pluginRepositories>
