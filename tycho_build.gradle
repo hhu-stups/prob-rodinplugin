@@ -472,6 +472,14 @@ def testArtifact(artifactId,versionNumber) {"""
 			</plugin>
 			<plugin>
 				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-compiler-plugin</artifactId>
+				<version>\${tycho-version}</version>
+				<configuration>
+					<release>\${targetJavaRelease}</release>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
 				<artifactId>tycho-surefire-plugin</artifactId>
 				<version>\${tycho-version}</version>
 			</plugin>
