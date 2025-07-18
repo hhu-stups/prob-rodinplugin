@@ -207,9 +207,12 @@ subprojects {
 	task setClassPath(dependsOn: 'collectDependencies') {
 		description = "\tAdds all your Dependencies from your local lib folder in each project to it's classpath"
 
+		inputs.property("projectName", project.name)
+
 		doLast {
+			final projectName = inputs.properties["projectName"]
 			def dependencyList = []
-			def depsFolder = new File(workspacePath + project.name + "/" + dependencyFolder)
+			def depsFolder = new File(workspacePath + projectName + "/" + dependencyFolder)
 			if (depsFolder.exists()) {
 				depsFolder.eachFile() {file ->
 					if (!(file.getName() ==~ /.*\.txt/)) {
@@ -217,27 +220,27 @@ subprojects {
 					}
 				}
 
-				if (features.every {it != project.name}) {
-					boolean BundleClassPathPresent = checkForRunTimeLibs(project.name)
+				if (features.every {it != projectName}) {
+					boolean BundleClassPathPresent = checkForRunTimeLibs(projectName)
 					for (int icp = 0; icp < dependencyList.size; icp++) {
 						// Adds Lib to .classPath file
-						addLibToCP(project.name, dependencyList[icp])
+						addLibToCP(projectName, dependencyList[icp])
 
 						if (!BundleClassPathPresent) {
 							// Adds Lib to Manifest File
-							createRunTimeLib(dependencyList[icp], project.name)
+							createRunTimeLib(dependencyList[icp], projectName)
 							BundleClassPathPresent = true
-						} else if (!checkRunTimeLib(dependencyList[icp], project.name)) {
+						} else if (!checkRunTimeLib(dependencyList[icp], projectName)) {
 							// if library not present add it to RunTimeLibrary
-							addRunTimeLib(dependencyList[icp], project.name)
+							addRunTimeLib(dependencyList[icp], projectName)
 						}
 					}
 					// could still be usefull for debugging, that's why it's not deleted
 					/*dependencyList.each {dep ->
-						println project.name + ": " + dep
+						println projectName + ": " + dep
 					}*/
 				}
-				def warningReadMe = new File(workspacePath + project.name + "/" + dependencyFolder + "_README.txt")
+				def warningReadMe = new File(workspacePath + projectName + "/" + dependencyFolder + "_README.txt")
 				warningReadMe.delete()
 				warningReadMe << "Do Not Remove any Jars/Libraries in this Folder!\nThis folder contains all of your dependencies defined in your gradle script.\n"
 				warningReadMe << "Removing or renaming any of these files will result in an Error in your .classpath file\n"
@@ -249,16 +252,19 @@ subprojects {
 	task deleteFromClassPath(){
 		description = "\tDeletes all your Dependencies located in your local lib folder from each project's classpath"
 
+		inputs.property("projectName", project.name)
+
 		doLast {
+			final projectName = inputs.properties["projectName"]
 			boolean depsDelete = false
-			def depsFolder = new File(workspacePath + project.name + '/' + dependencyFolder)
+			def depsFolder = new File(workspacePath + projectName + '/' + dependencyFolder)
 			if (depsFolder.exists()) {
 				depsDelete = true
 			}
 			depsFolder.deleteDir()
 
-			if (features.every {it != project.name} && depsDelete) {
-				deleteLibFromCP(project.name)
+			if (features.every {it != projectName} && depsDelete) {
+				deleteLibFromCP(projectName)
 			}
 		}
 	}
@@ -270,7 +276,10 @@ subprojects {
 	task deploy() {
 		description = "\tGenerating the Tycho Poms. Please remember to add a '.qualifier' to the version numbers!"
 
+		inputs.property("projectName", project.name)
+
 		doLast {
+			final projectName = inputs.properties["projectName"]
 			String versionNumber = 'Version Number Error:\tcheck Manifest for Bundle-Version Number and make sure to add a ".qualifier" to the version numbers!\n'
 			String artifactId = 'Could not find Bundle-SymbolicName in Manifest.file'
 
@@ -281,8 +290,8 @@ subprojects {
 			// Bundle-Version Number
 
 			// Generating Poms for sub projects except features
-			if (features.every {it != project.name}) {
-				def content = new File(workspacePath + "${project.name}/META-INF/MANIFEST.MF").getText("UTF-8")
+			if (features.every {it != projectName}) {
+				def content = new File(workspacePath + "${projectName}/META-INF/MANIFEST.MF").getText("UTF-8")
 
 				def printFileLine = {
 					if (it ==~ /Bundle-Version.+qualifier/) {
@@ -311,7 +320,7 @@ subprojects {
 				def f = new File(workspacePath + artifactId + '/pom.xml')
 				f.delete()
 
-				if (project.name ==~ /.*\.[tT]ests*/) {
+				if (projectName ==~ /.*\.[tT]ests*/) {
 					// Test Cases
 					f << start() + elder() + testArtifact(artifactId, versionNumber) + end()
 				} else {
@@ -319,9 +328,9 @@ subprojects {
 					f << start() + elder() + artifact(artifactId, versionNumber) + end()
 					// old pom.xml files are deleted and replaced by new auto generated Tycho pom.xml files
 				}
-			} else if (features.any {it == project.name}) {
+			} else if (features.any {it == projectName}) {
 				// Features
-				def parsedXml = new XmlParser().parse(workspacePath + "${project.name}/feature.xml")
+				def parsedXml = new XmlParser().parse(workspacePath + "${projectName}/feature.xml")
 
 				artifactId = parsedXml.attribute("id")
 				versionNumber = parsedXml.attribute("version")
