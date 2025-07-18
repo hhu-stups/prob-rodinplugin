@@ -28,8 +28,8 @@ project(':de.prob.core') {
 	repositories {
 		mavenCentral()
 		maven {
-			name "Sonatype snapshots"
-			url "https://oss.sonatype.org/content/repositories/snapshots/"
+			name = "Sonatype snapshots"
+			url = "https://oss.sonatype.org/content/repositories/snapshots/"
 		}
 	}
 
