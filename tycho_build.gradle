@@ -12,6 +12,24 @@
 apply plugin: 'base'
 
 import groovy.io.FileType
+
+// Java and Maven version requirements at build time, depending on the major version of Tycho:
+// Tycho 5: Java 21, Maven 3.9
+// Tycho 4: Java 17, Maven 3.9
+// Tycho 3: Java 17, Maven 3.6.3?
+// Tycho 2: Java 11, Maven 3.6.3
+// Tycho 1: Java 8, Maven 3.0?
+// Tycho 0.25: Java 8
+// Tycho 0.23: Java 7
+// Tycho 0.21: Java 6
+
+// Generally, Tycho can still target Java versions much older than what is required at build time.
+// Tycho 5 can target Java 8 and newer.
+// Tycho 4 and older can target even older Java versions.
+// Since Tycho 3, targeting versions older than Java 11 "is no longer considered first class nor tested".
+// Tycho 1.3 was the first version that could target Java 11.
+// Tycho 1.1 was the first version that could target Java 9.
+
 project.ext.tychoVersion = "4.0.8"
 
 try {
