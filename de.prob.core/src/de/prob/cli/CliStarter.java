@@ -178,7 +178,7 @@ public final class CliStarter {
 	private OsSpecificInfo getOsInfo(final String os)
 			throws CliException {
 		if (os.equals(Platform.OS_WIN32)) {
-			return new OsSpecificInfo("windows", "probcli.exe",
+			return new OsSpecificInfo("windows64", "probcli.exe",
 					"lib\\send_user_interrupt.exe", false);
 		} else {
 			final String subdir;

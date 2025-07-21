@@ -74,6 +74,12 @@ project(":de.bmotionstudio.gef.editor") {
 	}
 }
 
+final platforms = [
+	"macos",
+	"linux64",
+	"windows64",
+]
+
 def download(address,target) {
 	def file = new FileOutputStream(target)
 	def out = new BufferedOutputStream(file)
@@ -87,12 +93,10 @@ task downloadCli {
 		delete file(dir)
 		new File(dir).mkdirs()
 
-		['macos':'macos', 'linux64':'linux64', 'windows64':'windows'].each {
-			def n = it.getKey()
-
-			def targetdir = dir + it.getValue()
-			def targetzip = dir + "probcli_${n}.zip"
-			def url = "https://stups.hhu-hosting.de/downloads/prob/cli/releases/1.15.0/probcli_${n}.zip"
+		platforms.each {platform ->
+			def targetdir = dir + platform
+			def targetzip = dir + "probcli_${platform}.zip"
+			def url = "https://stups.hhu-hosting.de/downloads/prob/cli/releases/1.15.0/probcli_${platform}.zip"
 			download(url, targetzip)
 			FileTree zip = zipTree(targetzip)
 			copy {
