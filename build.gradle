@@ -38,7 +38,7 @@ project(':de.prob.core') {
 		}
 	}
 
-	def parser_version = "2.13.5"
+	def parser_version = "2.15.2"
 
 	dependencies {
 		// Note: After changing/updating dependencies or their versions here,
