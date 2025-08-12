@@ -67,6 +67,7 @@ public class ConnectionCreateCommand extends Command {
 		this.source = source;
 	}
 
+	@Override
 	public boolean canExecute() {
 		// disallow source -> source connections
 		if (source.equals(target)) {
@@ -83,6 +84,7 @@ public class ConnectionCreateCommand extends Command {
 		return true;
 	}
 
+	@Override
 	public void execute() {
 		// create a new connection between source and target
 		connection.setSource(source);
@@ -90,6 +92,7 @@ public class ConnectionCreateCommand extends Command {
 		connection.reconnect();
 	}
 
+	@Override
 	public void redo() {
 		connection.reconnect();
 	}
@@ -109,6 +112,7 @@ public class ConnectionCreateCommand extends Command {
 		this.target = target;
 	}
 
+	@Override
 	public void undo() {
 		connection.disconnect();
 	}

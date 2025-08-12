@@ -29,6 +29,7 @@ public class BringToTopAction extends SelectionAction {
 		setLazyEnablementCalculation(false);
 	}
 
+	@Override
 	protected void init() {
 		setText("Bring to top");
 		setToolTipText("Bring to top");
@@ -59,6 +60,7 @@ public class BringToTopAction extends SelectionAction {
 		return command;
 	}
 
+	@Override
 	public void run() {
 		List<BControl> controlList = new ArrayList<BControl>();
 		List<?> selectedObjects = getSelectedObjects();

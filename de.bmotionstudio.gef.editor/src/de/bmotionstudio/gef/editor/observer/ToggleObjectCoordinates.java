@@ -76,6 +76,7 @@ public class ToggleObjectCoordinates extends ObserverEvalObject implements
 	// firePropertyChange("animate", oldValue, this.animate);
 	// }
 
+	@Override
 	public ToggleObjectCoordinates clone() throws CloneNotSupportedException {
 		return (ToggleObjectCoordinates) super.clone();
 	}

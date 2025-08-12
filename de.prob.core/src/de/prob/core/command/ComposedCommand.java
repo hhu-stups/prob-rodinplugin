@@ -32,6 +32,7 @@ public class ComposedCommand implements IComposableCommand {
 		this.cmds = cmds.toArray(new IComposableCommand[0]);
 	}
 
+	@Override
 	public void processResult(
 			final ISimplifiedROMap<String, PrologTerm> bindings)
 			throws CommandException {
@@ -48,6 +49,7 @@ public class ComposedCommand implements IComposableCommand {
 		cmds[i].processResult(prefixMap);
 	}
 
+	@Override
 	public void writeCommand(final IPrologTermOutput orig)
 			throws CommandException {
 		PrologPrefixVarOutput pto = new PrologPrefixVarOutput(orig);
@@ -120,6 +122,7 @@ public class ComposedCommand implements IComposableCommand {
 			this.map = map;
 		}
 
+		@Override
 		public V get(final String key) {
 			return map.get(prefix == null ? key : prefix + key);
 		}

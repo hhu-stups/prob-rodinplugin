@@ -44,10 +44,12 @@ public class OperationProbType extends ProbDataType {
 		}
 	}
 
+	@Override
 	public int getOperatorPriority() {
 		return results.length == 0 ? 500 : 150;
 	}
 
+	@Override
 	public void prettyprint(final StringBuilder builder) {
 		if (results.length > 0) {
 			printTypeList(builder, results);

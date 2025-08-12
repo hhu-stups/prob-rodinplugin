@@ -46,6 +46,7 @@ public class CheckBooleanPropertyCommand implements IComposableCommand {
 	// IComposableCommand
 	//
 
+	@Override
 	public void processResult(
 			final ISimplifiedROMap<String, PrologTerm> bindings)
 			throws CommandException {
@@ -70,6 +71,7 @@ public class CheckBooleanPropertyCommand implements IComposableCommand {
 		pto.closeTerm();
 	}
 
+	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
 		writeCommand(pto, propertyName, stateId);
 	}

@@ -17,12 +17,14 @@ public class BAttributeOutlineAlpha extends AbstractAttribute {
 		super(value);
 	}
 
+	@Override
 	public PropertyDescriptor preparePropertyDescriptor() {
 		SliderPropertyDescriptor descriptor = new SliderPropertyDescriptor(
 				getID(), getName());
 		return descriptor;
 	}
 
+	@Override
 	public String validateValue(Object value, BControl control) {
 
 		if (!(String.valueOf(value)).trim().matches("\\d*")) {

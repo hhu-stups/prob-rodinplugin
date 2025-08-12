@@ -80,6 +80,7 @@ public class LimitedLogView extends ViewPart implements
 		logger = null;
 	}
 
+	@Override
 	public void newLoggingInfo() {
 		if (viewer != null) {
 			updateLoggingStart();
@@ -95,6 +96,7 @@ public class LimitedLogView extends ViewPart implements
 
 	private void asyncRefresh() {
 		Display.getDefault().asyncExec(new Runnable() {
+			@Override
 			public void run() {
 				viewer.refresh();
 			}
@@ -103,7 +105,7 @@ public class LimitedLogView extends ViewPart implements
 
 	private static class LogContentProvider implements
 			IStructuredContentProvider {
-
+		@Override
 		public Object[] getElements(Object object) {
 			if (object != null && object instanceof LimitedLogger) {
 				LimitedLogger logger = (LimitedLogger) object;
@@ -113,14 +115,17 @@ public class LimitedLogView extends ViewPart implements
 			}
 		}
 
+		@Override
 		public void dispose() {
 		}
 
+		@Override
 		public void inputChanged(Viewer viewer, Object arg1, Object arg2) {
 		}
 	}
 
 	private class LogViewerDoubleClick implements IDoubleClickListener {
+		@Override
 		public void doubleClick(DoubleClickEvent event) {
 			ISelection selection = event.getSelection();
 			if (selection != null && !selection.isEmpty()) {
@@ -134,11 +139,12 @@ public class LimitedLogView extends ViewPart implements
 
 	private class LogLabelProvider extends LabelProvider implements
 			ITableLabelProvider {
-
+		@Override
 		public Image getColumnImage(Object object, int column) {
 			return null;
 		}
 
+		@Override
 		public String getColumnText(Object object, int column) {
 			final String result;
 			if (object != null && object instanceof LogEntry) {

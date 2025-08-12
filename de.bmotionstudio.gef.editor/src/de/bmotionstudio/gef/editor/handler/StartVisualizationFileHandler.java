@@ -41,6 +41,7 @@ public class StartVisualizationFileHandler extends AbstractHandler implements
 	private VisualizationProgressBar dpb;
 	private BMotionStudioEditor activeEditor;
 
+	@Override
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
 
 		fSelection = HandlerUtil.getCurrentSelection(event);

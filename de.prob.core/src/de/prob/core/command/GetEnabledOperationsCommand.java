@@ -40,6 +40,7 @@ public final class GetEnabledOperationsCommand implements IComposableCommand {
 	// IComposableCommand
 	//
 
+	@Override
 	public void processResult(
 			final ISimplifiedROMap<String, PrologTerm> bindings) {
 		enabledOperations = new ArrayList<Operation>();
@@ -52,6 +53,7 @@ public final class GetEnabledOperationsCommand implements IComposableCommand {
 		}
 	}
 
+	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
 		pto.openTerm("computeOperationsForState");
 		pto.printAtomOrNumber(id);

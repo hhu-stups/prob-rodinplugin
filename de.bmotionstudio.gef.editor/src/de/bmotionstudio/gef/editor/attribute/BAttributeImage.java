@@ -20,10 +20,12 @@ public class BAttributeImage extends AbstractAttribute {
 		super(value);
 	}
 
+	@Override
 	public PropertyDescriptor preparePropertyDescriptor() {
 		return new ImagePropertyDescriptor(getID(), getName());
 	}
 
+	@Override
 	public String validateValue(Object value, BControl control) {
 		if (value != null) {
 			String fImage = value.toString();

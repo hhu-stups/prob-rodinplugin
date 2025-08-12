@@ -18,10 +18,12 @@ public abstract class AbstractBoolProvider extends AbstractSourceProvider {
 		this.service = service;
 	}
 
+	@Override
 	public void dispose() {
 
 	}
 
+	@Override
 	public Map<String, String> getCurrentState() {
 		Map<String, String> currentState = new HashMap<String, String>(1);
 		String current = enabled ? ENABLED : DISABLED;
@@ -29,6 +31,7 @@ public abstract class AbstractBoolProvider extends AbstractSourceProvider {
 		return currentState;
 	}
 
+	@Override
 	public String[] getProvidedSourceNames() {
 		return new String[] { service };
 	}

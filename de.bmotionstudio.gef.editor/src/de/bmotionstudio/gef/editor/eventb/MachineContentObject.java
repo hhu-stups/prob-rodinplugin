@@ -28,6 +28,7 @@ public class MachineContentObject extends BindingObject {
 		return label;
 	}
 
+	@Override
 	public String toString() {
 		return this.label;
 	}

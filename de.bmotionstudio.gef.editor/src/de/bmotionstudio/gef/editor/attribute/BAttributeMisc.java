@@ -20,6 +20,7 @@ public class BAttributeMisc extends AbstractAttribute {
 		PropertyDescriptor descriptor = new PropertyDescriptor(getID(),
 				getName());
 		descriptor.setLabelProvider(new LabelProvider() {
+			@Override
 			public String getText(Object element) {
 				return "";
 			}

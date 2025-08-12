@@ -51,6 +51,7 @@ public class AnimationScriptObject extends BindingObject implements Cloneable {
 		return predicate;
 	}
 
+	@Override
 	public AnimationScriptObject clone() throws CloneNotSupportedException {
 		Vector<AnimationScriptStep> tmpVector = new Vector<AnimationScriptStep>();
 		for (AnimationScriptStep p : getSteps()) {

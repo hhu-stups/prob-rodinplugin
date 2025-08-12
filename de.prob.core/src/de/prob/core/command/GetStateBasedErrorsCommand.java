@@ -44,6 +44,7 @@ public class GetStateBasedErrorsCommand implements IComposableCommand {
 	// ComposableCommand
 	//
 
+	@Override
 	public void processResult(
 			final ISimplifiedROMap<String, PrologTerm> bindings)
 			throws CommandException {
@@ -79,6 +80,7 @@ public class GetStateBasedErrorsCommand implements IComposableCommand {
 		this.stateErrors = errors;
 	}
 
+	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
 		pto.openTerm("get_state_errors").printAtomOrNumber(stateId)
 				.printVariable("Errors").closeTerm();

@@ -29,6 +29,7 @@ public class FileDialogCellEditor extends DialogCellEditor {
 	/**
 	 * @see org.eclipse.jface.viewers.DialogCellEditor#openDialogBox(Control)
 	 */
+	@Override
 	protected Object openDialogBox(Control cellEditorWindow) {
 		FileDialog ftDialog = new FileDialog(PlatformUI.getWorkbench()
 				.getActiveWorkbenchWindow().getShell());

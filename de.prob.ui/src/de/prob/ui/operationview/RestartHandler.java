@@ -9,7 +9,7 @@ import de.prob.core.Animator;
 import de.prob.exceptions.ProBException;
 
 public class RestartHandler extends AbstractHandler implements IHandler {
-
+	@Override
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
 		Animator animator = Animator.getAnimator();
 		try {

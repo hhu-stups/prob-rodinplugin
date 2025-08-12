@@ -42,14 +42,17 @@ public class StaticListenerRegistry implements ILifecycleListener,
 		registry.unregisterAnimationListener(listener);
 	}
 
+	@Override
 	public void reset() {
 		registry.reset();
 	}
 
+	@Override
 	public void computedState(final State state) {
 		registry.computedState(state);
 	}
 
+	@Override
 	public void currentStateChanged(final State currentState,
 			final Operation operation) {
 		registry.currentStateChanged(currentState, operation);

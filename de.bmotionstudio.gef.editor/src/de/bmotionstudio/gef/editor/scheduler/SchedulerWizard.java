@@ -35,6 +35,7 @@ public abstract class SchedulerWizard extends BMotionAbstractWizard {
 		return this.event;
 	}
 
+	@Override
 	protected abstract Boolean prepareToFinish();
 
 	@Override

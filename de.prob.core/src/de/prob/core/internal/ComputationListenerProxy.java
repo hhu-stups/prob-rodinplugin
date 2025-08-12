@@ -22,6 +22,7 @@ public class ComputationListenerProxy implements IComputationListener {
 		this.config = config;
 	}
 
+	@Override
 	public void computedState(final State state) {
 		if (instance == null) {
 			instance = init();

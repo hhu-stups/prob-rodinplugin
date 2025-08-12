@@ -33,6 +33,7 @@ public class TrackPart extends BConnectionEditPart {
 														// element
 		installEditPolicy(EditPolicy.CONNECTION_ROLE,
 				new ConnectionEditPolicy() {
+					@Override
 					protected Command getDeleteCommand(GroupRequest request) {
 						return new ConnectionDeleteCommand((Track) getModel());
 					}

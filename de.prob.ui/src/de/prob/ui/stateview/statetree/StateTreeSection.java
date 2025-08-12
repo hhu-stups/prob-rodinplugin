@@ -35,14 +35,17 @@ public class StateTreeSection extends AbstractStateTreeElement {
 		this.isMainSectionOfVariable = isMainSectionOfVariable;
 	}
 
+	@Override
 	public StaticStateElement[] getChildren() {
 		return children.toArray(StateTreeVariable.EMPTY_ARRAY);
 	}
 
+	@Override
 	public String getLabel() {
 		return section;
 	}
 
+	@Override
 	public boolean hasChildren() {
 		return !children.isEmpty();
 	}
@@ -51,6 +54,7 @@ public class StateTreeSection extends AbstractStateTreeElement {
 		return isMainSectionOfVariable;
 	}
 
+	@Override
 	public boolean hasChanged(final State current, final State last) {
 		for (final StateTreeElement child : children) {
 			if (child.hasChanged(current, last))
@@ -59,6 +63,7 @@ public class StateTreeSection extends AbstractStateTreeElement {
 		return false;
 	}
 
+	@Override
 	public StateDependendElement getValue(final State state) {
 		return new StateDependendElement(state, null,
 				hasChildren() ? EStateTreeElementProperty.NONBOOLEAN

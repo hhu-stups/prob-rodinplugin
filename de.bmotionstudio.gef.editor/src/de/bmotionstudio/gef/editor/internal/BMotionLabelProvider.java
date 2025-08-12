@@ -13,11 +13,12 @@ import org.eclipse.swt.graphics.Image;
 import de.bmotionstudio.gef.editor.BMotionStudioImage;
 
 public class BMotionLabelProvider implements ILabelProvider {
-
+	@Override
 	public Image getImage(final Object element) {
 		return BMotionStudioImage.getImage(BMotionStudioImage.IMG_LOGO_BMOTION);
 	}
 
+	@Override
 	public String getText(final Object element) {
 
 		if (element instanceof BMotionStudioRodinFile)
@@ -27,18 +28,22 @@ public class BMotionLabelProvider implements ILabelProvider {
 
 	}
 
+	@Override
 	public void addListener(final ILabelProviderListener listener) {
 
 	}
 
+	@Override
 	public void dispose() {
 
 	}
 
+	@Override
 	public boolean isLabelProperty(final Object element, final String property) {
 		return false;
 	}
 
+	@Override
 	public void removeListener(final ILabelProviderListener listener) {
 
 	}

@@ -16,14 +16,17 @@ public class RemoveObserverCommand extends Command {
 	private BControl control;
 	private Observer observer;
 
+	@Override
 	public void execute() {
 		control.removeObserver(observer.getID());
 	}
 
+	@Override
 	public boolean canExecute() {
 		return true;
 	}
 
+	@Override
 	public void undo() {
 		control.addObserver(observer);
 	}

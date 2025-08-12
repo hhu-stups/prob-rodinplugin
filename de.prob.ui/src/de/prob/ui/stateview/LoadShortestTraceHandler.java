@@ -25,6 +25,7 @@ public class LoadShortestTraceHandler extends AbstractHandler implements
 		animator = Animator.getAnimator();
 	}
 
+	@Override
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
 		String stateId = animator.getCurrentState().getId();
 

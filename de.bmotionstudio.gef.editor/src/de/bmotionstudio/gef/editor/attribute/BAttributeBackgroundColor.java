@@ -18,6 +18,7 @@ public class BAttributeBackgroundColor extends AbstractAttribute {
 		super(value);
 	}
 
+	@Override
 	public PropertyDescriptor preparePropertyDescriptor() {
 		return new ColorPropertyDescriptor(getID(), getName());
 	}

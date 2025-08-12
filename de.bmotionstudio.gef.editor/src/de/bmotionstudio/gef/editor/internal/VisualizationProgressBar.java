@@ -101,6 +101,7 @@ public class VisualizationProgressBar extends ProgressBarDialog {
 			return "Create Visualization";
 		case 4:
 			Display.getDefault().asyncExec(new Runnable() {
+				@Override
 				public void run() {
 					createShell();
 				}
@@ -179,6 +180,7 @@ public class VisualizationProgressBar extends ProgressBarDialog {
 		if (ops.size() > 1) {
 
 			Display.getDefault().asyncExec(new Runnable() {
+				@Override
 				public void run() {
 					dialog = new SelectOperationDialog(getShell(), ops);
 					confirm = dialog.open();
@@ -274,6 +276,7 @@ public class VisualizationProgressBar extends ProgressBarDialog {
 
 	public void openErrorDialog(final String msg) {
 		Display.getDefault().asyncExec(new Runnable() {
+			@Override
 			public void run() {
 				ErrorDialog.openError(getParent(), "Error",
 						"Error creating visualization", new Status(

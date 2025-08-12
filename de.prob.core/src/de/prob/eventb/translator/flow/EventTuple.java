@@ -23,6 +23,7 @@ public class EventTuple implements Comparable<EventTuple> {
 		return "(" + first.toString() + "," + second.toString() + ")";
 	}
 
+	@Override
 	public int compareTo(final EventTuple o) {
 		return this.toString().compareTo(o.toString());
 	}

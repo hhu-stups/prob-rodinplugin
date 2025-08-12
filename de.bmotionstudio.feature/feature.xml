@@ -2,7 +2,7 @@
 <feature
       id="de.bmotionstudio.feature"
       label="ProB for Rodin - BMotion Studio"
-      version="3.2.0.qualifier"
+      version="3.2.1.qualifier"
       provider-name="HHU Düsseldorf STUPS Group"
       plugin="de.bmotionstudio.gef.editor">
 
@@ -233,8 +233,8 @@ litigation.
    </license>
 
    <requires>
-      <import plugin="de.prob.core" version="9.6.0" match="equivalent"/>
-      <import plugin="de.prob.ui" version="7.6.0" match="equivalent"/>
+      <import plugin="de.prob.core" version="9.6.1" match="equivalent"/>
+      <import plugin="de.prob.ui" version="7.6.1" match="equivalent"/>
       <import plugin="org.eclipse.core.databinding" version="1.10.0" match="compatible"/>
       <import plugin="org.eclipse.core.databinding.beans" version="1.7.0" match="compatible"/>
       <import plugin="org.eclipse.core.databinding.property" version="1.7.0" match="compatible"/>

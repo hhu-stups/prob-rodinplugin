@@ -60,6 +60,7 @@ public class CompositeFigure extends AbstractBMotionFigure {
 		}
 	}
 
+	@Override
 	public void paintFigure(Graphics g) {
 		if (getImage() == null)
 			return;
@@ -120,6 +121,7 @@ public class CompositeFigure extends AbstractBMotionFigure {
 	 * 
 	 * @see org.eclipse.draw2d.Figure#getPreferredSize(int, int)
 	 */
+	@Override
 	public Dimension getPreferredSize(int wHint, int hHint) {
 		if (getInsets() == NO_INSETS)
 			return size;

@@ -43,6 +43,7 @@ public class ObserverCallBackObject extends BindingObject implements Cloneable {
 		firePropertyChange("observerID", oldValue, this.observerID);
 	}
 
+	@Override
 	public ObserverCallBackObject clone() throws CloneNotSupportedException {
 		ObserverCallBackObject tmpObj = (ObserverCallBackObject) super.clone();
 		return tmpObj;

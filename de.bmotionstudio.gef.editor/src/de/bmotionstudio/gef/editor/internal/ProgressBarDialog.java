@@ -129,6 +129,7 @@ public abstract class ProgressBarDialog extends Dialog {
 
 		cancelButton = new Button(cancelComposite, SWT.NONE);
 		cancelButton.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				isClosed = true;
 			}
@@ -191,6 +192,7 @@ public abstract class ProgressBarDialog extends Dialog {
 			this.max = max;
 		}
 
+		@Override
 		public void run() {
 			doBefore();
 			for (final int[] i = new int[] { 1 }; i[0] <= max; i[0]++) {
@@ -199,6 +201,7 @@ public abstract class ProgressBarDialog extends Dialog {
 					return;
 				}
 				display.syncExec(new Runnable() {
+					@Override
 					public void run() {
 						if (progressBar.isDisposed()) {
 							return;

@@ -17,6 +17,7 @@ public class BAttributeX extends AbstractAttribute {
 		super(value);
 	}
 
+	@Override
 	public PropertyDescriptor preparePropertyDescriptor() {
 		IntegerPropertyDescriptor descriptor = new IntegerPropertyDescriptor(
 				getID(), getName());

@@ -30,6 +30,7 @@ public class EditorImageRegistry implements IBMotionStudioImageRegistry {
 
 	public static final String IMG_SPLASH = "splash";
 
+	@Override
 	public void registerImages() {
 
 		BMotionStudioImage.registerImage(IMG_ICON_ADD,

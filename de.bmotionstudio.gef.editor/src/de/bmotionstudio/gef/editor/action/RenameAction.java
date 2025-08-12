@@ -32,6 +32,7 @@ public class RenameAction extends SelectionAction {
 		setLazyEnablementCalculation(false);
 	}
 
+	@Override
 	protected void init() {
 		setText("Rename...");
 		setToolTipText("Rename");
@@ -71,6 +72,7 @@ public class RenameAction extends SelectionAction {
 		return null;
 	}
 
+	@Override
 	public void run() {
 		BControl bcontrol = getSelectedBControl();
 		RenameWizard wizard = new RenameWizard(bcontrol.getAttributeValue(

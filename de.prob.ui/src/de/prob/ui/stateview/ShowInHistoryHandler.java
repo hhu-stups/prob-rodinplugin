@@ -30,7 +30,7 @@ import de.prob.ui.stateview.statetree.StaticStateElement;
  * @author plagge
  */
 public class ShowInHistoryHandler extends AbstractHandler implements IHandler {
-
+	@Override
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
 		final ISelection selection = HandlerUtil
 				.getActiveWorkbenchWindow(event).getActivePage().getSelection();

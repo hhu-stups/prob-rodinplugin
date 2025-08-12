@@ -20,10 +20,12 @@ public class ClearMachineCommand implements IComposableCommand {
 		animator.execute(new ClearMachineCommand());
 	}
 
+	@Override
 	public void processResult(
 			final ISimplifiedROMap<String, PrologTerm> bindings)
 			throws CommandException {}
 
+	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
 		pto.openTerm("clear_loaded_machines").closeTerm();
 	}

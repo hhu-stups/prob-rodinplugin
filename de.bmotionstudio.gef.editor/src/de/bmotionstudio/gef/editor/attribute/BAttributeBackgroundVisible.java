@@ -17,6 +17,7 @@ public class BAttributeBackgroundVisible extends AbstractAttribute {
 		super(value);
 	}
 
+	@Override
 	public PropertyDescriptor preparePropertyDescriptor() {
 		return new CheckboxPropertyDescriptor(getID(), getName());
 	}

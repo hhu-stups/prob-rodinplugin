@@ -36,6 +36,7 @@ public class FitImageAction extends SelectionAction {
 		setLazyEnablementCalculation(false);
 	}
 
+	@Override
 	protected void init() {
 		setText("Fit size to image");
 		setToolTipText("Fit size to image");
@@ -74,6 +75,7 @@ public class FitImageAction extends SelectionAction {
 		return command;
 	}
 
+	@Override
 	public void run() {
 
 		List<BControl> modelList = new ArrayList<BControl>();

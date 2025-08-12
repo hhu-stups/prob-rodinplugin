@@ -18,6 +18,7 @@ public class AddCommand extends org.eclipse.gef.commands.Command {
 		super("Add Control");
 	}
 
+	@Override
 	public void execute() {
 		if (index < 0)
 			parent.addChild(child);
@@ -29,6 +30,7 @@ public class AddCommand extends org.eclipse.gef.commands.Command {
 		return parent;
 	}
 
+	@Override
 	public void redo() {
 		if (index < 0)
 			parent.addChild(child);
@@ -48,6 +50,7 @@ public class AddCommand extends org.eclipse.gef.commands.Command {
 		parent = newParent;
 	}
 
+	@Override
 	public void undo() {
 		parent.removeChild(child);
 	}

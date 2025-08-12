@@ -43,6 +43,7 @@ public class EvaluateRawExpressionsCommand implements IComposableCommand {
 		return values;
 	}
 
+	@Override
 	public void processResult(
 			final ISimplifiedROMap<String, PrologTerm> bindings)
 			throws CommandException {
@@ -51,6 +52,7 @@ public class EvaluateRawExpressionsCommand implements IComposableCommand {
 		values = PrologTerm.atomicStrings(prologTerm);
 	}
 
+	@Override
 	public void writeCommand(final IPrologTermOutput pout) {
 		pout.openTerm("evaluate_raw_expressions");
 		pout.printAtomOrNumber(stateId);

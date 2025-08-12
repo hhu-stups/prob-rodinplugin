@@ -14,7 +14,7 @@ import de.bmotionstudio.gef.editor.command.DeleteCommand;
 import de.bmotionstudio.gef.editor.model.BControl;
 
 public class BMSDeletePolicy extends ComponentEditPolicy {
-
+	@Override
 	protected Command createDeleteCommand(GroupRequest deleteRequest) {
 		DeleteCommand command = new DeleteCommand((BControl) getHost()
 				.getModel(), (BControl) getHost().getParent().getModel());

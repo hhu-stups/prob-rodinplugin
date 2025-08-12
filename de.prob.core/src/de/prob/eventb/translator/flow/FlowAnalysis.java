@@ -20,7 +20,7 @@ import org.rodinp.core.RodinDBException;
 
 import de.be4.classicalb.core.parser.analysis.prolog.ASTProlog;
 import de.be4.classicalb.core.parser.analysis.prolog.ClassicalPositionPrinter;
-import de.be4.classicalb.core.parser.analysis.prolog.NodeIdAssignment;
+import de.be4.classicalb.core.parser.analysis.prolog.NodeFileNumbers;
 import de.be4.classicalb.core.parser.node.PPredicate;
 import de.prob.eventb.translator.internal.TranslationVisitor;
 import de.prob.prolog.output.IPrologTermOutput;
@@ -50,7 +50,7 @@ public class FlowAnalysis {
 		}
 		for (Event evt : events) {
 			final ASTProlog prolog = new ASTProlog(pout,
-					new ClassicalPositionPrinter(new NodeIdAssignment()));
+					new ClassicalPositionPrinter(new NodeFileNumbers()));
 			pout.openTerm("nonchanging_guard");
 			pout.printAtom(evt.toString());
 			pout.openList();

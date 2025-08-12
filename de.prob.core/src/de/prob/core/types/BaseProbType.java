@@ -30,10 +30,12 @@ public class BaseProbType extends ProbDataType {
 		this.type = type;
 	}
 
+	@Override
 	public int getOperatorPriority() {
 		return 1000;
 	}
 
+	@Override
 	public void prettyprint(final StringBuilder builder) {
 		builder.append(type);
 	}

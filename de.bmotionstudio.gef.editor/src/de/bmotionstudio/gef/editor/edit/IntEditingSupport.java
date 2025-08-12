@@ -30,6 +30,7 @@ public class IntEditingSupport extends ObservableValueEditingSupport {
 		this.atr = atr;
 		cellEditor = new TextCellEditor((Composite) tv.getControl());
 		cellEditor.getControl().addListener(SWT.Verify, new Listener() {
+			@Override
 			public void handleEvent(Event e) {
 				String string = e.text;
 				char[] chars = new char[string.length()];

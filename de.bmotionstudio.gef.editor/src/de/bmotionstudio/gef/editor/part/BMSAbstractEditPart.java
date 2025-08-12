@@ -81,6 +81,7 @@ public abstract class BMSAbstractEditPart extends AbstractGraphicalEditPart
 			AttributeConstants.ATTRIBUTE_Y, AttributeConstants.ATTRIBUTE_WIDTH,
 			AttributeConstants.ATTRIBUTE_HEIGHT };
 
+	@Override
 	public void activate() {
 		if (!isActive()) {
 			super.activate();
@@ -94,6 +95,7 @@ public abstract class BMSAbstractEditPart extends AbstractGraphicalEditPart
 		}
 	}
 
+	@Override
 	public void deactivate() {
 		if (isActive()) {
 			super.deactivate();
@@ -226,6 +228,7 @@ public abstract class BMSAbstractEditPart extends AbstractGraphicalEditPart
 		}
 	}
 
+	@Override
 	public List<BControl> getModelChildren() {
 		return new ArrayList<BControl>();
 	}
@@ -278,28 +281,34 @@ public abstract class BMSAbstractEditPart extends AbstractGraphicalEditPart
 		return anchor;
 	}
 
+	@Override
 	protected List<?> getModelSourceConnections() {
 		return getCastedModel().getSourceConnections();
 	}
 
+	@Override
 	protected List<?> getModelTargetConnections() {
 		return getCastedModel().getTargetConnections();
 	}
 
+	@Override
 	public ConnectionAnchor getSourceConnectionAnchor(
 			ConnectionEditPart connection) {
 		return getConnectionAnchor();
 	}
 
+	@Override
 	public ConnectionAnchor getSourceConnectionAnchor(Request request) {
 		return getConnectionAnchor();
 	}
 
+	@Override
 	public ConnectionAnchor getTargetConnectionAnchor(
 			ConnectionEditPart connection) {
 		return getConnectionAnchor();
 	}
 
+	@Override
 	public ConnectionAnchor getTargetConnectionAnchor(Request request) {
 		return getConnectionAnchor();
 	}

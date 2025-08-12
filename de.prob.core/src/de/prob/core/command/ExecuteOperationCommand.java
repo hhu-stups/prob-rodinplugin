@@ -58,6 +58,7 @@ public final class ExecuteOperationCommand implements IComposableCommand {
 		a.execute(executeOperationCommand);
 	}
 
+	@Override
 	public void processResult(
 			final ISimplifiedROMap<String, PrologTerm> bindings)
 			throws CommandException {
@@ -73,6 +74,7 @@ public final class ExecuteOperationCommand implements IComposableCommand {
 		}
 	}
 
+	@Override
 	public void writeCommand(final IPrologTermOutput pto) throws CommandException {
 		LimitedLogger.getLogger().log("execute operation", operation.getName(),
 				null);

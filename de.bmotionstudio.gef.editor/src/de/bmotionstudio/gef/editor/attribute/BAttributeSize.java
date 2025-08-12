@@ -25,6 +25,7 @@ public class BAttributeSize extends AbstractAttribute {
 		PropertyDescriptor descriptor = new PropertyDescriptor(getID(),
 				getName());
 		descriptor.setLabelProvider(new LabelProvider() {
+			@Override
 			public String getText(Object element) {
 				Point point = (Point) element;
 				StringBuffer buf = new StringBuffer();

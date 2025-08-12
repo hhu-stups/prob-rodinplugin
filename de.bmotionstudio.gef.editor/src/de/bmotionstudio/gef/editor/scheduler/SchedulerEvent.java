@@ -83,6 +83,7 @@ public abstract class SchedulerEvent extends AbstractExpressionControl
 	 * 
 	 * @return the cloned scheduler event
 	 */
+	@Override
 	public SchedulerEvent clone() throws CloneNotSupportedException {
 		return (SchedulerEvent) super.clone();
 	}

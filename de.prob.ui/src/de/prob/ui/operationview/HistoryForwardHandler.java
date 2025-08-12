@@ -11,7 +11,7 @@ import de.prob.exceptions.ProBException;
 import de.prob.logging.Logger;
 
 public class HistoryForwardHandler extends AbstractHandler implements IHandler {
-
+	@Override
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
 		History history = Animator.getAnimator().getHistory();
 		Logger.assertProB("history != null", history != null);

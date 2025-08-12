@@ -82,6 +82,7 @@ public class WizardExecuteOperationByPredicate extends SchedulerWizard {
 			super(pageName);
 		}
 
+		@Override
 		public void createControl(final Composite parent) {
 
 			final DataBindingContext dbc = new DataBindingContext();
@@ -198,6 +199,7 @@ public class WizardExecuteOperationByPredicate extends SchedulerWizard {
 							.observe(((ExecuteOperationByPredicate) getScheduler()).getPredicateOperation()));
 
 			observeSelection.addValueChangeListener(new IValueChangeListener() {
+				@Override
 				public void handleValueChange(ValueChangeEvent event) {
 					Object sel = event.getObservableValue().getValue();
 					createRenderedOperationContainer((MachineOperation) sel);

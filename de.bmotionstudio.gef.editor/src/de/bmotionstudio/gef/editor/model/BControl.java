@@ -589,6 +589,7 @@ public abstract class BControl implements IAdaptable, Cloneable {
 		getListeners().removePropertyChangeListener(listener);
 	}
 
+	@Override
 	public Object getAdapter(@SuppressWarnings("rawtypes") Class adapter) {
 		if (adapter == IPropertySource.class) {
 			return new BControlPropertySource(this);

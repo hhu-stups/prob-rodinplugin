@@ -80,6 +80,7 @@ public class BConnectionEditPart extends BMSAbstractEditPart implements
 														// element
 		installEditPolicy(EditPolicy.CONNECTION_ROLE,
 				new ConnectionEditPolicy() {
+					@Override
 					protected Command getDeleteCommand(GroupRequest request) {
 						return new ConnectionDeleteCommand(
 								(BConnection) getModel());
@@ -197,6 +198,7 @@ public class BConnectionEditPart extends BMSAbstractEditPart implements
 		/**
 		 * @see AccessibleAnchorProvider#getSourceAnchorLocations()
 		 */
+		@Override
 		public List<Point> getSourceAnchorLocations() {
 			List<Point> list = new ArrayList<Point>();
 			if (getFigure() instanceof Connection) {
@@ -210,6 +212,7 @@ public class BConnectionEditPart extends BMSAbstractEditPart implements
 		/**
 		 * @see AccessibleAnchorProvider#getTargetAnchorLocations()
 		 */
+		@Override
 		public List<Point> getTargetAnchorLocations() {
 			return getSourceAnchorLocations();
 		}
@@ -230,6 +233,7 @@ public class BConnectionEditPart extends BMSAbstractEditPart implements
 	/**
 	 * @see org.eclipse.gef.EditPart#addNotify()
 	 */
+	@Override
 	public void addNotify() {
 		activateFigure();
 		super.addNotify();
@@ -258,6 +262,7 @@ public class BConnectionEditPart extends BMSAbstractEditPart implements
 	 *            the adapter Class
 	 * @return the adapter
 	 */
+	@Override
 	public Object getAdapter(@SuppressWarnings("rawtypes") Class adapter) {
 		if (adapter == AccessibleAnchorProvider.class)
 			return new DefaultAccessibleAnchorProvider();
@@ -277,6 +282,7 @@ public class BConnectionEditPart extends BMSAbstractEditPart implements
 	/**
 	 * @see org.eclipse.gef.EditPart#getDragTracker(Request)
 	 */
+	@Override
 	public DragTracker getDragTracker(Request req) {
 		return new SelectEditPartTracker(this);
 	}
@@ -284,6 +290,7 @@ public class BConnectionEditPart extends BMSAbstractEditPart implements
 	/**
 	 * @see org.eclipse.gef.ConnectionEditPart#getSource()
 	 */
+	@Override
 	public EditPart getSource() {
 		return sourceEditPart;
 	}
@@ -291,6 +298,7 @@ public class BConnectionEditPart extends BMSAbstractEditPart implements
 	/**
 	 * @see org.eclipse.gef.ConnectionEditPart#getTarget()
 	 */
+	@Override
 	public EditPart getTarget() {
 		return targetEditPart;
 	}
@@ -346,6 +354,7 @@ public class BConnectionEditPart extends BMSAbstractEditPart implements
 	 * 
 	 * @see org.eclipse.gef.EditPart#refresh()
 	 */
+	@Override
 	public void refresh() {
 		refreshSourceAnchor();
 		refreshTargetAnchor();
@@ -374,6 +383,7 @@ public class BConnectionEditPart extends BMSAbstractEditPart implements
 	 * 
 	 * @see org.eclipse.gef.EditPart#removeNotify()
 	 */
+	@Override
 	public void removeNotify() {
 		deactivateFigure();
 		super.removeNotify();
@@ -384,6 +394,7 @@ public class BConnectionEditPart extends BMSAbstractEditPart implements
 	 * 
 	 * @see org.eclipse.gef.EditPart#setParent(EditPart)
 	 */
+	@Override
 	public void setParent(EditPart parent) {
 		boolean wasNull = getParent() == null;
 		boolean becomingNull = parent == null;
@@ -400,6 +411,7 @@ public class BConnectionEditPart extends BMSAbstractEditPart implements
 	 * @param editPart
 	 *            EditPart which is the source.
 	 */
+	@Override
 	public void setSource(EditPart editPart) {
 		if (sourceEditPart == editPart)
 			return;
@@ -418,6 +430,7 @@ public class BConnectionEditPart extends BMSAbstractEditPart implements
 	 * @param editPart
 	 *            EditPart which is the target.
 	 */
+	@Override
 	public void setTarget(EditPart editPart) {
 		if (targetEditPart == editPart)
 			return;

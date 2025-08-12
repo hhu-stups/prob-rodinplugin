@@ -61,6 +61,7 @@ public class WizardObserverSwitchImage extends ObserverWizard {
 			super(pageName, getObserver());
 		}
 
+		@Override
 		public void createControl(final Composite parent) {
 
 			super.createControl(parent);
@@ -266,6 +267,7 @@ public class WizardObserverSwitchImage extends ObserverWizard {
 
 		}
 
+		@Override
 		public Color getBackground(final Object element, final int column) {
 			ToggleObjectImage attributeObject = (ToggleObjectImage) element;
 			if (attributeObject.hasError())
@@ -273,10 +275,12 @@ public class WizardObserverSwitchImage extends ObserverWizard {
 			return null;
 		}
 
+		@Override
 		public Color getForeground(final Object element, final int column) {
 			return null;
 		}
 
+		@Override
 		public Font getFont(final Object element, final int column) {
 			// return JFaceResources.getFontRegistry().get(
 			// BMotionStudioConstants.RODIN_FONT_KEY);

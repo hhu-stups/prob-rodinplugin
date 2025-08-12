@@ -122,6 +122,7 @@ public class Switch extends BControl {
 
 	// We have to set the two tracks of the switch, since their are set to
 	// transient
+	@Override
 	protected Object readResolve() {
 
 		super.readResolve();

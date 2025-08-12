@@ -11,7 +11,7 @@ import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IPerspectiveFactory;
 
 public class PerspectiveRunFactory implements IPerspectiveFactory {
-
+	@Override
 	public void createInitialLayout(IPageLayout layout) {
 
 		String editorArea = layout.getEditorArea();

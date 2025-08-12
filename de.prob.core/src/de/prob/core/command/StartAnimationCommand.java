@@ -13,12 +13,14 @@ public class StartAnimationCommand implements IComposableCommand {
 		a.execute(cmd);
 	}
 
+	@Override
 	public void processResult(
 			final ISimplifiedROMap<String, PrologTerm> bindings)
 			throws CommandException {
 		// nothing to do
 	}
 
+	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
 		pto.printAtom("start_animation");
 	}

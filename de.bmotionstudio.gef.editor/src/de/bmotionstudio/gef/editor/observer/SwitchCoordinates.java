@@ -23,6 +23,7 @@ public class SwitchCoordinates extends Observer {
 		toggleObjects = new ArrayList<ToggleObjectCoordinates>();
 	}
 
+	@Override
 	public void check(final Animation animation, final BControl control) {
 
 		boolean set = false;
@@ -109,6 +110,7 @@ public class SwitchCoordinates extends Observer {
 
 	}
 
+	@Override
 	public ObserverWizard getWizard(final BControl bcontrol) {
 		return new WizardObserverSwitchCoordinates(bcontrol, this);
 	}
@@ -121,6 +123,7 @@ public class SwitchCoordinates extends Observer {
 		this.toggleObjects = list;
 	}
 
+	@Override
 	public Observer clone() throws CloneNotSupportedException {
 		SwitchCoordinates clonedObserver = (SwitchCoordinates) super.clone();
 		List<ToggleObjectCoordinates> list = new ArrayList<ToggleObjectCoordinates>();

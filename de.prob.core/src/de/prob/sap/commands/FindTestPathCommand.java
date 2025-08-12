@@ -70,6 +70,7 @@ public class FindTestPathCommand implements IComposableCommand {
 		this(events, endPredicate, 0);
 	}
 
+	@Override
 	public void processResult(
 			final ISimplifiedROMap<String, PrologTerm> bindings)
 			throws CommandException {
@@ -104,6 +105,7 @@ public class FindTestPathCommand implements IComposableCommand {
 		this.trace = trace;
 	}
 
+	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
 		pto.openTerm(COMMAND);
 		pto.openList();

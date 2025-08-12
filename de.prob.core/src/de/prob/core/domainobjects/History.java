@@ -38,6 +38,7 @@ public class History implements Iterable<HistoryItem>, IComputationListener {
 	 * @
 	 */
 
+	@Override
 	public synchronized/* @ pure @ */Iterator<HistoryItem> iterator() {
 		return Collections.unmodifiableList(items).iterator();
 	}
@@ -187,6 +188,7 @@ public class History implements Iterable<HistoryItem>, IComputationListener {
 		return currentPosition;
 	}
 
+	@Override
 	public void computedState(final State state) {
 		if (isEmpty()) {
 			add(state, null);

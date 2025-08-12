@@ -36,6 +36,7 @@ public class TextEditManager extends DirectEditManager {
 	private double cachedZoom = -1.0;
 	private Font scaledFont;
 	private ZoomListener zoomListener = new ZoomListener() {
+		@Override
 		public void zoomChanged(double newZoom) {
 			updateScaledFont(newZoom);
 		}
@@ -48,6 +49,7 @@ public class TextEditManager extends DirectEditManager {
 	/**
 	 * @see org.eclipse.gef.tools.DirectEditManager#bringDown()
 	 */
+	@Override
 	protected void bringDown() {
 		ZoomManager zoomMgr = (ZoomManager) getEditPart().getViewer()
 				.getProperty(ZoomManager.class.toString());
@@ -69,6 +71,7 @@ public class TextEditManager extends DirectEditManager {
 		disposeScaledFont();
 	}
 
+	@Override
 	protected CellEditor createCellEditorOn(Composite composite) {
 		return new TextCellEditor(composite, SWT.NONE);
 	}
@@ -80,6 +83,7 @@ public class TextEditManager extends DirectEditManager {
 		}
 	}
 
+	@Override
 	protected void initCellEditor() {
 		// update text
 		IFigure figure = (IFigure) getEditPart().getFigure();

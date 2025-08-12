@@ -20,6 +20,7 @@ public class SchedulerEventCommand extends Command {
 	private SchedulerEvent clonedNewSchedulerEvent;
 	private BControl control;
 
+	@Override
 	public void execute() {
 
 		try {
@@ -33,10 +34,12 @@ public class SchedulerEventCommand extends Command {
 
 	}
 
+	@Override
 	public boolean canExecute() {
 		return true;
 	}
 
+	@Override
 	public void undo() {
 
 		// Remove completely new Observer
@@ -48,6 +51,7 @@ public class SchedulerEventCommand extends Command {
 
 	}
 
+	@Override
 	public void redo() {
 		control.addEvent(eventID, clonedNewSchedulerEvent);
 	}

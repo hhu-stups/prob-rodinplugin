@@ -55,6 +55,7 @@ public class WizardTableObserver extends ObserverWizard {
 			super(pageName);
 		}
 
+		@Override
 		public void createControl(final Composite parent) {
 
 			final DataBindingContext dbc = new DataBindingContext();
@@ -137,6 +138,7 @@ public class WizardTableObserver extends ObserverWizard {
 			list.setItems(relationList.toArray(new String[relationList.size()]));
 
 			list.addMouseListener(new MouseAdapter() {
+				@Override
 				public void mouseDoubleClick(MouseEvent e) {
 					String[] selection = list.getSelection();
 					if (selection.length > 0)

@@ -55,6 +55,7 @@ public abstract class BindingObject implements Cloneable {
 		return propertyChangeSupport;
 	}
 
+	@Override
 	public BindingObject clone() throws CloneNotSupportedException {
 		BindingObject clone = (BindingObject) super.clone();
 		clone.setPropertyChangeSupport(null);

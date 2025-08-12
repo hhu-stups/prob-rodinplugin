@@ -130,6 +130,7 @@ public class GenerateTestcaseCommand implements IComposableCommand {
 		return predicate;
 	}
 
+	@Override
 	public void processResult(
 			final ISimplifiedROMap<String, PrologTerm> bindings)
 			throws CommandException {
@@ -148,6 +149,7 @@ public class GenerateTestcaseCommand implements IComposableCommand {
 		result = new GlobalTestcaseResult(numberOfTests, uncovered);
 	}
 
+	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
 		pto.openTerm("sap_generate_testcases");
 

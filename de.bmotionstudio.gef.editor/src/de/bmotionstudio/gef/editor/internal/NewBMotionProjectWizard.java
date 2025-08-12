@@ -53,6 +53,7 @@ public class NewBMotionProjectWizard extends Wizard implements INewWizard {
 		addPage(page);
 	}
 
+	@Override
 	public void init(final IWorkbench workbench, final IStructuredSelection sel) {
 		this.selection = sel;
 	}
@@ -67,6 +68,7 @@ public class NewBMotionProjectWizard extends Wizard implements INewWizard {
 		final String projectRoot = page.getProjectRoot();
 
 		final IRunnableWithProgress op = new IRunnableWithProgress() {
+			@Override
 			public void run(final IProgressMonitor monitor)
 					throws InvocationTargetException {
 				try {
@@ -118,7 +120,7 @@ public class NewBMotionProjectWizard extends Wizard implements INewWizard {
 		}
 
 		RodinCore.run(new IWorkspaceRunnable() {
-
+			@Override
 			public void run(final IProgressMonitor pMonitor)
 					throws CoreException {
 

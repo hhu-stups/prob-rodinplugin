@@ -230,6 +230,7 @@ public class NewBMotionProjectWizardPage extends WizardPage {
 		}
 	}
 
+	@Override
 	public void createControl(final Composite parent) {
 		final Composite container = new Composite(parent, SWT.NULL);
 
@@ -242,6 +243,7 @@ public class NewBMotionProjectWizardPage extends WizardPage {
 		setControl(container);
 
 		final ModifyListener listener = new ModifyListener() {
+			@Override
 			public void modifyText(final ModifyEvent e) {
 				validateInput();
 			}
@@ -330,6 +332,7 @@ public class NewBMotionProjectWizardPage extends WizardPage {
 
 		tableViewer
 				.addSelectionChangedListener(new ISelectionChangedListener() {
+					@Override
 					public void selectionChanged(SelectionChangedEvent event) {
 						IStructuredSelection selection = (IStructuredSelection) event
 								.getSelection();
@@ -345,11 +348,12 @@ public class NewBMotionProjectWizardPage extends WizardPage {
 
 	private static class MachineLabelProvider extends LabelProvider implements
 			ITableLabelProvider {
-
+		@Override
 		public Image getColumnImage(final Object element, final int columnIndex) {
 			return null;
 		}
 
+		@Override
 		public String getColumnText(final Object element, final int columnIndex) {
 			if (element instanceof MachineEntry) {
 

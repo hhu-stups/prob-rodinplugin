@@ -119,6 +119,7 @@ public class BMSImageFigure extends AbstractBMotionFigure {
 				}
 
 				Display.getDefault().asyncExec(new Runnable() {
+					@Override
 					public void run() {
 						// Increase the variable holding the frame
 						// number

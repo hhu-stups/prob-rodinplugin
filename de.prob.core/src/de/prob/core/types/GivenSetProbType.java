@@ -23,10 +23,12 @@ public class GivenSetProbType extends ProbDataType {
 		this.name = name;
 	}
 
+	@Override
 	public int getOperatorPriority() {
 		return 1000;
 	}
 
+	@Override
 	public void prettyprint(final StringBuilder builder) {
 		builder.append(name);
 	}

@@ -38,6 +38,7 @@ public class GenerateLocalTestcasesCommand implements IComposableCommand {
 		return command.result;
 	}
 
+	@Override
 	public void processResult(
 			final ISimplifiedROMap<String, PrologTerm> bindings)
 			throws CommandException {
@@ -47,6 +48,7 @@ public class GenerateLocalTestcasesCommand implements IComposableCommand {
 
 	}
 
+	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
 		pto.openTerm("sap_generate_testcases").printAtom(global)
 				.printAtom(local).printNumber(maxNodes).printVariable("SAT")

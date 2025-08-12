@@ -26,6 +26,7 @@ public class SwitchImage extends Observer {
 		toggleObjects = new ArrayList<ToggleObjectImage>();
 	}
 
+	@Override
 	public void check(final Animation animation, final BControl control) {
 
 		boolean set = false;
@@ -79,6 +80,7 @@ public class SwitchImage extends Observer {
 
 	}
 
+	@Override
 	public ObserverWizard getWizard(final BControl bcontrol) {
 		return new WizardObserverSwitchImage(bcontrol, this);
 	}
@@ -91,6 +93,7 @@ public class SwitchImage extends Observer {
 		this.toggleObjects = list;
 	}
 
+	@Override
 	public Observer clone() throws CloneNotSupportedException {
 		SwitchImage clonedObserver = (SwitchImage) super.clone();
 		List<ToggleObjectImage> list = new ArrayList<ToggleObjectImage>();

@@ -74,6 +74,7 @@ public class ImageDialog extends Dialog {
 
 		previewCanvas = new Canvas(preContainer, SWT.BORDER);
 		previewCanvas.addPaintListener(new PaintListener() {
+			@Override
 			public void paintControl(final PaintEvent e) {
 				if (previewImage == null) {
 					e.gc.drawString("No image selected ...", 0, 0);
@@ -91,7 +92,7 @@ public class ImageDialog extends Dialog {
 				| SWT.V_SCROLL);
 		tvLibrary.getTable().setLayoutData(gd);
 		tvLibrary.addSelectionChangedListener(new ISelectionChangedListener() {
-
+			@Override
 			public void selectionChanged(final SelectionChangedEvent event) {
 
 				IStructuredSelection selection = (IStructuredSelection) event
@@ -177,6 +178,7 @@ public class ImageDialog extends Dialog {
 					.getLocation().toString()).replace("file:", "");
 			File dir = new File(basePath + "/images");
 			File[] fileList = dir.listFiles(new FilenameFilter() {
+				@Override
 				public boolean accept(final File dir, final String name) {
 					if (name.toLowerCase().endsWith(".jpg")
 							|| name.toLowerCase().endsWith(".gif")

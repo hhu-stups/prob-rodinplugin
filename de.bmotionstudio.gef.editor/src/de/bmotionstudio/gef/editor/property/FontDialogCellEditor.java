@@ -40,6 +40,7 @@ public class FontDialogCellEditor extends DialogCellEditor {
 	/**
 	 * @see org.eclipse.jface.viewers.DialogCellEditor#openDialogBox(Control)
 	 */
+	@Override
 	protected Object openDialogBox(Control cellEditorWindow) {
 		FontDialog ftDialog = new FontDialog(PlatformUI.getWorkbench()
 				.getActiveWorkbenchWindow().getShell());

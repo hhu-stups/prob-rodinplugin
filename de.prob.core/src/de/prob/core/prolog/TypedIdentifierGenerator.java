@@ -163,6 +163,7 @@ public class TypedIdentifierGenerator {
 			this.type = type;
 		}
 
+		@Override
 		public ProbDataType handle(final CompoundPrologTerm term) {
 			return type;
 		}
@@ -170,24 +171,28 @@ public class TypedIdentifierGenerator {
 	}
 
 	private static class SetHandler implements Handler {
+		@Override
 		public ProbDataType handle(final CompoundPrologTerm term) {
 			return new SetProbType(extractType(term.getArgument(1)));
 		}
 	}
 
 	private static class SeqHandler implements Handler {
+		@Override
 		public ProbDataType handle(final CompoundPrologTerm term) {
 			return new SequenceDataType(extractType(term.getArgument(1)));
 		}
 	}
 
 	private static class GivenSetHandler implements Handler {
+		@Override
 		public ProbDataType handle(final CompoundPrologTerm term) {
 			return new GivenSetProbType(getString(term.getArgument(1)));
 		}
 	}
 
 	private static class CoupleHandler implements Handler {
+		@Override
 		public ProbDataType handle(final CompoundPrologTerm term) {
 			return new CoupleProbType(extractType(term.getArgument(1)),
 					extractType(term.getArgument(2)));
@@ -195,6 +200,7 @@ public class TypedIdentifierGenerator {
 	}
 
 	private static class OperationHandler implements Handler {
+		@Override
 		public ProbDataType handle(final CompoundPrologTerm term) {
 			ProbDataType[] results = createList(term.getArgument(1));
 			ProbDataType[] params = createList(term.getArgument(2));
@@ -203,12 +209,14 @@ public class TypedIdentifierGenerator {
 	}
 
 	private static class FreetypeHandler implements Handler {
+		@Override
 		public ProbDataType handle(final CompoundPrologTerm term) {
 			return new FreetypeProbType(getString(term.getArgument(1)));
 		}
 	}
 
 	private static class RecordHandler implements Handler {
+		@Override
 		public ProbDataType handle(final CompoundPrologTerm term) {
 			if (term.getArgument(1) instanceof ListPrologTerm) {
 				ListPrologTerm list = (ListPrologTerm) term.getArgument(1);

@@ -80,6 +80,7 @@ public class LibraryPage extends Page {
 		previewCanvas = new Canvas(libMainContainer, SWT.BORDER);
 		previewCanvas.setLayout(gl);
 		previewCanvas.addPaintListener(new PaintListener() {
+			@Override
 			public void paintControl(final PaintEvent e) {
 				if (previewImage == null) {
 					e.gc.drawString("No preview...", 0, 0);
@@ -98,7 +99,7 @@ public class LibraryPage extends Page {
 				| SWT.V_SCROLL | SWT.MULTI);
 		tvLibrary.getTable().setLayoutData(gd);
 		tvLibrary.addSelectionChangedListener(new ISelectionChangedListener() {
-
+			@Override
 			public void selectionChanged(final SelectionChangedEvent event) {
 
 				IStructuredSelection selection = (IStructuredSelection) event
@@ -125,6 +126,7 @@ public class LibraryPage extends Page {
 		});
 
 		tvLibrary.getControl().addKeyListener(new KeyAdapter() {
+			@Override
 			public void keyPressed(final KeyEvent event) {
 				if (event.character == SWT.DEL && event.stateMask == 0
 						&& deleteItemAction.isEnabled()) {
@@ -173,7 +175,7 @@ public class LibraryPage extends Page {
 		tvLibrary.addDragSupport(DND.DROP_COPY,
 				new Transfer[] { AttributeTransfer.getInstance() },
 				new DragSourceAdapter() {
-
+					@Override
 					public void dragSetData(final DragSourceEvent event) {
 						LibraryObject object = (LibraryObject) ((StructuredSelection) tvLibrary
 								.getSelection()).getFirstElement();
@@ -187,6 +189,7 @@ public class LibraryPage extends Page {
 						event.data = new AttributeTransferObject(object);
 					}
 
+					@Override
 					public void dragStart(final DragSourceEvent event) {
 					}
 
@@ -228,6 +231,7 @@ public class LibraryPage extends Page {
 					.replace("file:", "");
 			File dir = new File(basePath + "/images");
 			File[] fileList = dir.listFiles(new FilenameFilter() {
+				@Override
 				public boolean accept(final File dir, final String name) {
 					if (name.toLowerCase().endsWith(".jpg")
 							|| name.toLowerCase().endsWith(".gif")

@@ -26,6 +26,7 @@ class VarContentProvider implements ITreeContentProvider {
 	public VarContentProvider() {
 	}
 
+	@Override
 	public Object[] getChildren(final Object parentElement) {
 		StateTreeElement ste = toTreeElement(parentElement);
 		StaticStateElement[] children;
@@ -37,11 +38,13 @@ class VarContentProvider implements ITreeContentProvider {
 		return children;
 	}
 
+	@Override
 	public Object getParent(final Object element) {
 		StateTreeElement ste = toTreeElement(element);
 		return ste != null ? ste.getParent() : null;
 	}
 
+	@Override
 	public boolean hasChildren(final Object element) {
 		StateTreeElement ste = toTreeElement(element);
 		return ste != null && ste.hasChildren();
@@ -57,6 +60,7 @@ class VarContentProvider implements ITreeContentProvider {
 		return ste;
 	}
 
+	@Override
 	public Object[] getElements(final Object inputElement) {
 		final StateTreeElement[] elements;
 		if (inputElement != null && inputElement instanceof StateTreeElement[]) {
@@ -67,10 +71,12 @@ class VarContentProvider implements ITreeContentProvider {
 		return elements;
 	}
 
+	@Override
 	public void dispose() {
 
 	}
 
+	@Override
 	public void inputChanged(final Viewer viewer, final Object oldInput,
 			final Object newInput) {
 	}

@@ -27,6 +27,7 @@ public class RemoveSchedulerEventAction extends WorkbenchPartAction {
 		return true;
 	}
 
+	@Override
 	public void run() {
 		execute(createRemoveSchedulerEventCommand());
 	}

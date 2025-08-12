@@ -172,6 +172,7 @@ public class BMotionStudioEditorPage extends GraphicalEditorWithFlyoutPalette {
 	/**
 	 * @see org.eclipse.ui.IEditorPart#init(IEditorSite, IEditorInput)
 	 **/
+	@Override
 	public void init(IEditorSite iSite, IEditorInput iInput)
 			throws PartInitException {
 		super.init(iSite, iInput);
@@ -183,6 +184,7 @@ public class BMotionStudioEditorPage extends GraphicalEditorWithFlyoutPalette {
 	/**
 	 * @see org.eclipse.gef.ui.parts.GraphicalEditor#initializeGraphicalViewer()
 	 **/
+	@Override
 	protected void initializeGraphicalViewer() {
 
 		super.initializeGraphicalViewer();
@@ -204,12 +206,14 @@ public class BMotionStudioEditorPage extends GraphicalEditorWithFlyoutPalette {
 	@Override
 	protected PaletteViewerProvider createPaletteViewerProvider() {
 		return new PaletteViewerProvider(getEditDomain()) {
+			@Override
 			protected void configurePaletteViewer(PaletteViewer viewer) {
 				super.configurePaletteViewer(viewer);
 				viewer.addDragSourceListener(new TemplateTransferDragSourceListener(
 						viewer));
 			}
 
+			@Override
 			protected void hookPaletteViewer(PaletteViewer viewer) {
 				super.hookPaletteViewer(viewer);
 			}
@@ -219,6 +223,7 @@ public class BMotionStudioEditorPage extends GraphicalEditorWithFlyoutPalette {
 	/**
 	 * @see org.eclipse.ui.IEditorPart#isSaveAsAllowed()
 	 **/
+	@Override
 	public boolean isSaveAsAllowed() {
 		return true;
 	}
@@ -241,6 +246,7 @@ public class BMotionStudioEditorPage extends GraphicalEditorWithFlyoutPalette {
 	/**
 	 * @see org.eclipse.ui.IEditorPart#doSave(IProgressMonitor)
 	 **/
+	@Override
 	public void doSave(IProgressMonitor iMonitor) {
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		try {
@@ -257,6 +263,7 @@ public class BMotionStudioEditorPage extends GraphicalEditorWithFlyoutPalette {
 		}
 	}
 
+	@Override
 	public void dispose() {
 		// remove CommandStackListener
 		getCommandStack().removeCommandStackListener(getCommandStackListener());
@@ -271,6 +278,7 @@ public class BMotionStudioEditorPage extends GraphicalEditorWithFlyoutPalette {
 	/**
 	 * @see org.eclipse.ui.IEditorPart#doSaveAs()
 	 **/
+	@Override
 	public void doSaveAs() {
 		// Nothing to do here, this is never allowed
 		throw new IllegalAccessError("No way to enter this method.");
@@ -344,6 +352,7 @@ public class BMotionStudioEditorPage extends GraphicalEditorWithFlyoutPalette {
 		return isDirty;
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public void createActions() {
 
@@ -480,10 +489,12 @@ public class BMotionStudioEditorPage extends GraphicalEditorWithFlyoutPalette {
 
 	}
 
+	@Override
 	protected Control getGraphicalControl() {
 		return rulerComp;
 	}
 
+	@Override
 	protected void createGraphicalViewer(Composite parent) {
 		rulerComp = new RulerComposite(parent, SWT.NONE);
 		super.createGraphicalViewer(rulerComp);
@@ -494,6 +505,7 @@ public class BMotionStudioEditorPage extends GraphicalEditorWithFlyoutPalette {
 	/**
 	 * @see org.eclipse.gef.ui.parts.GraphicalEditor#configureGraphicalViewer()
 	 **/
+	@Override
 	protected void configureGraphicalViewer() {
 
 		double[] zoomLevels;
@@ -598,6 +610,7 @@ public class BMotionStudioEditorPage extends GraphicalEditorWithFlyoutPalette {
 	 * <code>CommandStack </code>changes.
 	 */
 	private CommandStackListener commandStackListener = new CommandStackListener() {
+		@Override
 		public void commandStackChanged(EventObject event) {
 			setDirty(getCommandStack().isDirty());
 		}
@@ -626,6 +639,7 @@ public class BMotionStudioEditorPage extends GraphicalEditorWithFlyoutPalette {
 	/**
 	 * Returns the palette root.
 	 */
+	@Override
 	protected PaletteRoot getPaletteRoot() {
 		if (palette == null) {
 			palette = new EditorPaletteFactory().createPalette(visualization);
@@ -655,6 +669,7 @@ public class BMotionStudioEditorPage extends GraphicalEditorWithFlyoutPalette {
 			super(new TreeViewer());
 		}
 
+		@Override
 		public void init(IPageSite pageSite) {
 			super.init(pageSite);
 			IActionBars bars = pageSite.getActionBars();
@@ -767,6 +782,7 @@ public class BMotionStudioEditorPage extends GraphicalEditorWithFlyoutPalette {
 			lws.setContents(thumbnail);
 
 			disposeListener = new DisposeListener() {
+				@Override
 				public void widgetDisposed(DisposeEvent e) {
 					if (thumbnail != null) {
 						thumbnail.deactivate();
@@ -776,10 +792,12 @@ public class BMotionStudioEditorPage extends GraphicalEditorWithFlyoutPalette {
 			};
 		}
 
+		@Override
 		public Control getControl() {
 			return sash;
 		}
 
+		@Override
 		public void dispose() {
 			unhookOutlineViewer();
 			gridColor.dispose();

@@ -17,7 +17,7 @@ import de.bmotionstudio.gef.editor.action.RenameAction;
 
 public class InstallActions extends AbstractInstallActions implements
 		IInstallActions {
-
+	@Override
 	public void installActions(final WorkbenchPart part) {
 		installAction(RenameAction.ID, new RenameAction(part));
 		installAction(FitImageAction.ID, new FitImageAction(part));

@@ -23,6 +23,7 @@ public class BMotionRulerProvider extends RulerProvider {
 
 	private BMotionRuler ruler;
 	private PropertyChangeListener rulerListener = new PropertyChangeListener() {
+		@Override
 		public void propertyChange(PropertyChangeEvent evt) {
 			if (evt.getPropertyName().equals(BMotionRuler.PROPERTY_CHILDREN)) {
 				BMotionGuide guide = (BMotionGuide) evt.getNewValue();
@@ -44,6 +45,7 @@ public class BMotionRulerProvider extends RulerProvider {
 		}
 	};
 	private PropertyChangeListener guideListener = new PropertyChangeListener() {
+		@Override
 		public void propertyChange(PropertyChangeEvent evt) {
 			if (evt.getPropertyName().equals(BMotionGuide.PROPERTY_CHILDREN)) {
 				for (int i = 0; i < listeners.size(); i++) {
@@ -70,22 +72,27 @@ public class BMotionRulerProvider extends RulerProvider {
 		}
 	}
 
+	@Override
 	public List<BControl> getAttachedModelObjects(Object guide) {
 		return new ArrayList<BControl>(((BMotionGuide) guide).getParts());
 	}
 
+	@Override
 	public Command getCreateGuideCommand(int position) {
 		return new CreateGuideCommand(ruler, position);
 	}
 
+	@Override
 	public Command getDeleteGuideCommand(Object guide) {
 		return new DeleteGuideCommand((BMotionGuide) guide, ruler);
 	}
 
+	@Override
 	public Command getMoveGuideCommand(Object guide, int pDelta) {
 		return new MoveGuideCommand((BMotionGuide) guide, pDelta);
 	}
 
+	@Override
 	public int[] getGuidePositions() {
 		List<BMotionGuide> guides = getGuides();
 		int[] result = new int[guides.size()];
@@ -95,22 +102,27 @@ public class BMotionRulerProvider extends RulerProvider {
 		return result;
 	}
 
+	@Override
 	public Object getRuler() {
 		return ruler;
 	}
 
+	@Override
 	public int getUnit() {
 		return ruler.getUnit();
 	}
 
+	@Override
 	public void setUnit(int newUnit) {
 		ruler.setUnit(newUnit);
 	}
 
+	@Override
 	public int getGuidePosition(Object guide) {
 		return ((BMotionGuide) guide).getPosition();
 	}
 
+	@Override
 	public List<BMotionGuide> getGuides() {
 		return ruler.getGuides();
 	}

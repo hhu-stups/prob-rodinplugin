@@ -79,6 +79,7 @@ public abstract class BMotionAbstractWizardDialog extends WizardDialog {
 		final Cursor cursor = new Cursor(parent.getDisplay(), SWT.CURSOR_HAND);
 		toolBar.setCursor(cursor);
 		toolBar.addDisposeListener(new DisposeListener() {
+			@Override
 			public void widgetDisposed(DisposeEvent e) {
 				cursor.dispose();
 			}
@@ -87,6 +88,7 @@ public abstract class BMotionAbstractWizardDialog extends WizardDialog {
 		deleteToolItem.setImage(image);
 		deleteToolItem.setToolTipText(deleteToolTip);
 		deleteToolItem.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				deletePressed();
 			}

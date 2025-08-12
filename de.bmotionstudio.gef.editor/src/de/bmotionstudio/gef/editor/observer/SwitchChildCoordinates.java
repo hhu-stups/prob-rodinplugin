@@ -23,6 +23,7 @@ public class SwitchChildCoordinates extends Observer {
 		toggleObjects = new ArrayList<ToggleObjectCoordinates>();
 	}
 
+	@Override
 	public void check(final Animation animation, final BControl control) {
 
 		// Collect evaluate predicate objects in list
@@ -99,6 +100,7 @@ public class SwitchChildCoordinates extends Observer {
 
 	}
 
+	@Override
 	public ObserverWizard getWizard(final BControl bcontrol) {
 		return new WizardObserverCSwitchCoordinates(bcontrol, this);
 	}
@@ -111,6 +113,7 @@ public class SwitchChildCoordinates extends Observer {
 		this.toggleObjects = list;
 	}
 
+	@Override
 	public Observer clone() throws CloneNotSupportedException {
 		SwitchChildCoordinates clonedObserver = (SwitchChildCoordinates) super
 				.clone();

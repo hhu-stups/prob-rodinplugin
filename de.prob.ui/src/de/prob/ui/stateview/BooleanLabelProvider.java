@@ -52,26 +52,32 @@ public class BooleanLabelProvider extends BaseLabelProvider implements
 		return state;
 	}
 
+	@Override
 	public Color getBackground(Object element) {
 		return backgroundColors[toState(element)];
 	}
 
+	@Override
 	public Color getForeground(Object element) {
 		return foregroundColors[toState(element)];
 	}
 
+	@Override
 	public Image getImage(Object element) {
 		return images[toState(element)];
 	}
 
+	@Override
 	public String getText(Object element) {
 		return texts[toState(element)];
 	}
 
+	@Override
 	public Font getFont(Object element) {
 		return fonts[toState(element)];
 	}
 
+	@Override
 	public boolean isVisible(Object element) {
 		return !(hideInactive && toState(element) == INACTIVE);
 	}

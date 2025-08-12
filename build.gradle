@@ -3,6 +3,10 @@ import java.util.concurrent.TimeUnit
 // to trigger a full tycho build please use 'gradle deleteFromClassPath completeInstall'
 
 project.ext {
+	// The newest Bundle-RuntimeExecutionEnvironment required any of the build dependencies (Eclipse and Rodin).
+	// Currently Java 17 since Rodin 3.9.
+	buildTimeExecutionEnvironment = "JavaSE-17"
+
 	targetRepositories = [
 		"https://download.eclipse.org/releases/2023-12/",
 		"https://rodin-b-sharp.sourceforge.net/core-updates/",
@@ -22,18 +26,27 @@ allprojects {
 	}
 }
 
+// When making a release, please check that parserVersion matches what the specified version of probcli expects, to avoid unpredictable/inconsistent behavior!
+def parserVersion = "2.15.2"
+def probcliVersion = "1.15.0"
+def cliDownloadURL
+if (probcliVersion.endsWith("-nightly")) {
+	cliDownloadURL = "https://stups.hhu-hosting.de/downloads/prob/cli/nightly"
+} else {
+	cliDownloadURL = "https://stups.hhu-hosting.de/downloads/prob/cli/releases/${probcliVersion}"
+}
+
 project(':de.prob.core') {
 	apply plugin: "java"
 
+	final snapshotsRepoUrl = "https://central.sonatype.com/repository/maven-snapshots/"
 	repositories {
 		mavenCentral()
 		maven {
-			name "Sonatype snapshots"
-			url "https://oss.sonatype.org/content/repositories/snapshots/"
+			name = "Sonatype snapshots"
+			url = snapshotsRepoUrl
 		}
 	}
-
-	def parser_version = "2.13.3"
 
 	dependencies {
 		// Note: After changing/updating dependencies or their versions here,
@@ -42,13 +55,13 @@ project(':de.prob.core') {
 		// If you updated or removed any dependencies,
 		// you also need to *manually* delete the old dependencies/versions
 		// from the relevant .classpath and META-INF/MANIFEST.MF files.
-		implementation group: "de.hhu.stups", name: "answerparser", version: parser_version
-		implementation group: "de.hhu.stups", name: "bparser", version: parser_version
-		implementation group: "de.hhu.stups", name: "ltlparser", version: parser_version
-		implementation group: "de.hhu.stups", name: "parserbase", version: parser_version
-		implementation group: "de.hhu.stups", name: "prologlib", version: parser_version
-		implementation group: "de.hhu.stups", name: "unicode", version: parser_version
-		implementation group: "de.hhu.stups", name: "theorymapping", version: parser_version
+		implementation group: "de.hhu.stups", name: "answerparser", version: parserVersion
+		implementation group: "de.hhu.stups", name: "bparser", version: parserVersion
+		implementation group: "de.hhu.stups", name: "ltlparser", version: parserVersion
+		implementation group: "de.hhu.stups", name: "parserbase", version: parserVersion
+		implementation group: "de.hhu.stups", name: "prologlib", version: parserVersion
+		implementation group: "de.hhu.stups", name: "unicode", version: parserVersion
+		implementation group: "de.hhu.stups", name: "theorymapping", version: parserVersion
 	}
 }
 
@@ -69,6 +82,12 @@ project(":de.bmotionstudio.gef.editor") {
 	}
 }
 
+final platforms = [
+	"macos",
+	"linux64",
+	"windows64",
+]
+
 def download(address,target) {
 	def file = new FileOutputStream(target)
 	def out = new BufferedOutputStream(file)
@@ -82,12 +101,10 @@ task downloadCli {
 		delete file(dir)
 		new File(dir).mkdirs()
 
-		['macos':'macos', 'linux64':'linux64', 'windows64':'windows'].each {
-			def n = it.getKey()
-
-			def targetdir = dir + it.getValue()
-			def targetzip = dir + "probcli_${n}.zip"
-			def url = "https://stups.hhu-hosting.de/downloads/prob/cli/releases/1.13.1-beta2/probcli_${n}.zip"
+		platforms.each {platform ->
+			def targetdir = dir + platform
+			def targetzip = dir + "probcli_${platform}.zip"
+			def url = "${cliDownloadURL}/probcli_${platform}.zip"
 			download(url, targetzip)
 			FileTree zip = zipTree(targetzip)
 			copy {

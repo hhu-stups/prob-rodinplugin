@@ -14,7 +14,7 @@ import de.prob.core.command.ExecuteRandomStepsCommand;
 import de.prob.exceptions.ProBException;
 
 public class ExecuteRandomHandler extends AbstractHandler implements IHandler {
-
+	@Override
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
 		Shell shell = HandlerUtil.getActiveShell(event);
 		int steps = -1;
@@ -61,6 +61,7 @@ public class ExecuteRandomHandler extends AbstractHandler implements IHandler {
 				"Number of steps:", "1", new IInputValidator() {
 					String errormsg = "Number must be a non-negative Integer.";
 
+					@Override
 					public String isValid(final String newText) {
 						Integer num;
 						try {

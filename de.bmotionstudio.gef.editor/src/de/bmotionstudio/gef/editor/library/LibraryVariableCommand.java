@@ -18,6 +18,7 @@ public class LibraryVariableCommand extends AbstractLibraryCommand {
 
 	private BControl newControl;
 
+	@Override
 	public void execute() {
 
 		attributeName = AttributeConstants.ATTRIBUTE_TEXT;
@@ -56,6 +57,7 @@ public class LibraryVariableCommand extends AbstractLibraryCommand {
 
 	}
 
+	@Override
 	public void undo() {
 		super.undo();
 		getCastedModel().removeChild(newControl);

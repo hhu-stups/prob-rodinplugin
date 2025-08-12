@@ -13,7 +13,7 @@ import org.eclipse.ui.IPerspectiveFactory;
 import de.bmotionstudio.gef.editor.library.LibraryView;
 
 public class PerspectiveEditFactory implements IPerspectiveFactory {
-
+	@Override
 	public void createInitialLayout(final IPageLayout layout) {
 
 		final String editorArea = layout.getEditorArea();

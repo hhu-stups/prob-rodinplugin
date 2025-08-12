@@ -15,6 +15,7 @@ public abstract class AbstractStateTreeElement implements StateTreeElement {
 		this.parent = parent;
 	}
 
+	@Override
 	public StaticStateElement getParent() {
 		return parent;
 	}

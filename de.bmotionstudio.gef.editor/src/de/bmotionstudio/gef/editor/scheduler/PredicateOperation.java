@@ -69,6 +69,7 @@ public class PredicateOperation extends ObserverEvalObject implements Cloneable 
 		return maxrandom;
 	}
 
+	@Override
 	public PredicateOperation clone() throws CloneNotSupportedException {
 		return (PredicateOperation) super.clone();
 	}

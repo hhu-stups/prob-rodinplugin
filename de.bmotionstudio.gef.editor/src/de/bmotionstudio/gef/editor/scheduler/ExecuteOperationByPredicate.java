@@ -31,6 +31,7 @@ public class ExecuteOperationByPredicate extends SchedulerEvent {
 	public void execute(final Animation animation, final BControl control) {
 
 		new Thread(new Runnable() {
+			@Override
 			public void run() {
 
 				try {
@@ -89,6 +90,7 @@ public class ExecuteOperationByPredicate extends SchedulerEvent {
 		return this.predicateOperation;
 	}
 
+	@Override
 	public ExecuteOperationByPredicate clone()
 			throws CloneNotSupportedException {
 		ExecuteOperationByPredicate nse = (ExecuteOperationByPredicate) super

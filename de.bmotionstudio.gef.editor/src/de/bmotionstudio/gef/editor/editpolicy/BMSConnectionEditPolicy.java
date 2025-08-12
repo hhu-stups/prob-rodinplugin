@@ -17,6 +17,7 @@ import de.bmotionstudio.gef.editor.model.BConnection;
 import de.bmotionstudio.gef.editor.model.BControl;
 
 public class BMSConnectionEditPolicy extends GraphicalNodeEditPolicy {
+	@Override
 	protected Command getConnectionCompleteCommand(
 			CreateConnectionRequest request) {
 		ConnectionCreateCommand cmd = null;
@@ -28,6 +29,7 @@ public class BMSConnectionEditPolicy extends GraphicalNodeEditPolicy {
 		return cmd;
 	}
 
+	@Override
 	protected Command getConnectionCreateCommand(CreateConnectionRequest request) {
 		ConnectionCreateCommand cmd = null;
 		Object newObject = request.getNewObject();
@@ -42,6 +44,7 @@ public class BMSConnectionEditPolicy extends GraphicalNodeEditPolicy {
 		return cmd;
 	}
 
+	@Override
 	protected Command getReconnectSourceCommand(ReconnectRequest request) {
 		ConnectionReconnectCommand cmd = null;
 		Object newObject = request.getConnectionEditPart().getModel();
@@ -55,6 +58,7 @@ public class BMSConnectionEditPolicy extends GraphicalNodeEditPolicy {
 		return cmd;
 	}
 
+	@Override
 	protected Command getReconnectTargetCommand(ReconnectRequest request) {
 		ConnectionReconnectCommand cmd = null;
 		Object newObject = request.getConnectionEditPart().getModel();

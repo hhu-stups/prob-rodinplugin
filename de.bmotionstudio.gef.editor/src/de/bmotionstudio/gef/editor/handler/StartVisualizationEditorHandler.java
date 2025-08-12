@@ -28,6 +28,7 @@ public class StartVisualizationEditorHandler extends AbstractHandler implements
 
 	private VisualizationProgressBar dpb;
 
+	@Override
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
 
 		if (BMotionEditorPlugin.getActiveEditor().isDirty()) {

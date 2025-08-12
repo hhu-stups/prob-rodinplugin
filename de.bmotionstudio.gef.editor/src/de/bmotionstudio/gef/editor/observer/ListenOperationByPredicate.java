@@ -40,6 +40,7 @@ public class ListenOperationByPredicate extends Observer {
 		this.list = list;
 	}
 
+	@Override
 	protected Object readResolve() {
 		this.setAttributes = new ArrayList<String>();
 		return super.readResolve();
@@ -189,6 +190,7 @@ public class ListenOperationByPredicate extends Observer {
 	// return false;
 	// }
 
+	@Override
 	public Observer clone() throws CloneNotSupportedException {
 		ListenOperationByPredicate clone = (ListenOperationByPredicate) super
 				.clone();

@@ -18,6 +18,7 @@ public class SetObserverCommand extends Command {
 	private Observer clonedNewObserver;
 	private BControl control;
 
+	@Override
 	public void execute() {
 		// Clone the new observer
 		try {
@@ -29,12 +30,14 @@ public class SetObserverCommand extends Command {
 		control.addObserver(newObserver);
 	}
 
+	@Override
 	public boolean canExecute() {
 		if (newObserver == null || control == null)
 			return false;
 		return true;
 	}
 
+	@Override
 	public void undo() {
 		// If we had an old observer, set the old one
 		if (oldObserver != null) {
@@ -45,6 +48,7 @@ public class SetObserverCommand extends Command {
 		}
 	}
 
+	@Override
 	public void redo() {
 		// Redo method adds the cloned observer, since the observer could be
 		// changed during set and redo action

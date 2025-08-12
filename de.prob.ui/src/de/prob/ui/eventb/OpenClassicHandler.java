@@ -31,6 +31,7 @@ public class OpenClassicHandler extends AbstractHandler implements IHandler {
 	private static final String PROB_STANDALONE_NAME = "ProB Standalone";
 	private static final String PROB2_NAME = "ProB2-UI";
 
+	@Override
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
 		fSelection = HandlerUtil.getCurrentSelection(event);
 
@@ -41,19 +42,19 @@ public class OpenClassicHandler extends AbstractHandler implements IHandler {
 			final IEventBRoot root = getSelection();
 			if (root != null) {
 				if(prob_location.endsWith(".jar")) {
-					//  we can open directly the .bum or .buc files with ProB2; we need to get it from root
+					// we can open directly the .bum or .buc files with ProB2; we need to get it from root
 					// we could also get a platform URI: URI fileURI = URI.createPlatformResourceURI(root.getResource().getFullPath().toString(), true);
 					String bum_buc_path = //ResourcesPlugin.getWorkspace().getRoot().getLocation().toString() + root.getResource().getFullPath().toString();
-							              root.getResource().getRawLocation().toString();
+						root.getResource().getRawLocation().toString();
 					runProB2(prob_location, bum_buc_path);
-				} else {	
+				} else {
 					final File temp = createTempFile();
 					final String tmp = temp.getAbsolutePath();
 					ExportNewCoreHandler.exportToClassic(tmp, root);
 					runProBClassic(prob_location, tmp);
 				}
 			} else {
-			    Logger.notifyUser("You need to select a context or machine to open with " + PROB_STANDALONE_NAME);
+				Logger.notifyUser("You need to select a context or machine to open with " + PROB_STANDALONE_NAME);
 			}
 		}
 		return null;
@@ -66,6 +67,7 @@ public class OpenClassicHandler extends AbstractHandler implements IHandler {
 			this.output = output;
 		}
 
+		@Override
 		public void run() {
 			try {
 				while (true) {
@@ -98,21 +100,21 @@ public class OpenClassicHandler extends AbstractHandler implements IHandler {
 
 		} catch (IOException e) {
 			Logger.notifyUser("You need to specify a correct location for "
-			+ PROB_CLASSIC_NAME + ". See Preferences -> ProB Standalone.\n"
-			+ PROB_CLASSIC_NAME + " location: "+ probBinary + 
-			 "\nModel file: " + modelFile +
-			 "\nError message: "+ e.getLocalizedMessage());
+				+ PROB_CLASSIC_NAME + ". See Preferences -> ProB Standalone.\n"
+				+ PROB_CLASSIC_NAME + " location: "+ probBinary + 
+				"\nModel file: " + modelFile +
+				"\nError message: "+ e.getLocalizedMessage());
 		}
 	}
 
 	private void runProB2(final String probBinary, final String modelFile) {
-	 // call prob2-ui jar file
-	 // from command-line it is: java -jar prob2-ui-1.0.1-SNAPSHOT-all.jar --machine-file  FILE
+		// call prob2-ui jar file
+		// from command-line it is: java -jar prob2-ui-1.0.1-SNAPSHOT-all.jar --machine-file  FILE
 		try {
 			// final String command = "java -jar " + probBinary + " --machine-file " + modelFile;
 			//process = Runtime.getRuntime().exec(command);
 			
-            // get some version info first:
+			// get some version info first:
 			final String[] vcommand = {"java", "-version"};
 			ProcessBuilder vpb = new ProcessBuilder(vcommand).redirectErrorStream(true);
 			Process vprocess = vpb.start();
@@ -120,9 +122,9 @@ public class OpenClassicHandler extends AbstractHandler implements IHandler {
 					new InputStreamReader(vprocess.getInputStream()));
 			new Thread(new ClassicConsole(voutput)).start();
 			vprocess.waitFor(); // this blocks Rodin
-	        if (vprocess.exitValue() != 0) {
+			if (vprocess.exitValue() != 0) {
 				Logger.notifyUser("Failed to start java -version. Exit code: " + vprocess.exitValue());
-	        }
+			}
 			
 			final String[] command = {"java", "-jar", probBinary, "--machine-file", modelFile};
 			System.out.println("Launching ProB2UI using: java -jar " + probBinary);
@@ -137,10 +139,10 @@ public class OpenClassicHandler extends AbstractHandler implements IHandler {
 		} catch (IOException | InterruptedException e) {
 //		} catch (IOException e) {
 			Logger.notifyUser("You need to specify a correct location for "
-			+ PROB2_NAME + ". See Preferences -> ProB Standalone.\n"
-			+ PROB2_NAME + " location: "+ probBinary + 
-			 "\nModel file: " + modelFile +
-			 "\nError message: "+ e.getLocalizedMessage());
+				+ PROB2_NAME + ". See Preferences -> ProB Standalone.\n"
+				+ PROB2_NAME + " location: "+ probBinary + 
+				"\nModel file: " + modelFile +
+				"\nError message: "+ e.getLocalizedMessage());
 		}
 	}
 	

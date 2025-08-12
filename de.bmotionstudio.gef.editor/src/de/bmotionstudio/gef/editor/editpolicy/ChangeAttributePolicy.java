@@ -40,6 +40,7 @@ public class ChangeAttributePolicy extends AbstractEditPolicy {
 		return null;
 	}
 
+	@Override
 	public EditPart getTargetEditPart(Request request) {
 		if ("change attribute" == request.getType())
 			return getHost();

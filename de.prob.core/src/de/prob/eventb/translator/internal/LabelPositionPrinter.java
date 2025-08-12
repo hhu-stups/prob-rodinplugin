@@ -78,6 +78,7 @@ public class LabelPositionPrinter implements PositionPrinter {
 		}
 	}
 
+	@Override
 	public void printPosition(final Node node) {
 		final NodeInfo info = nodeInfos.get(node);
 		if (info == null) {
@@ -103,6 +104,7 @@ public class LabelPositionPrinter implements PositionPrinter {
 		}
 	}
 
+	@Override
 	public void setPrologTermOutput(final IPrologTermOutput pout) {
 		this.pout = pout;
 	}

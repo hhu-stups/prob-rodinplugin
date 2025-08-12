@@ -82,6 +82,7 @@ public class VisualizationPart extends BMSAbstractEditPart {
 
 	}
 
+	@Override
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public Object getAdapter(final Class adapter) {
 		if (adapter == SnapToHelper.class) {

@@ -40,6 +40,7 @@ public class ChangeGuideCommand extends Command {
 
 	}
 
+	@Override
 	public void execute() {
 		// Cache the old values
 		oldGuide = horizontal ? part.getHorizontalGuide() : part
@@ -50,6 +51,7 @@ public class ChangeGuideCommand extends Command {
 		redo();
 	}
 
+	@Override
 	public void redo() {
 		changeGuide(oldGuide, newGuide, newAlign);
 	}
@@ -59,6 +61,7 @@ public class ChangeGuideCommand extends Command {
 		newAlign = alignment;
 	}
 
+	@Override
 	public void undo() {
 		changeGuide(newGuide, oldGuide, oldAlign);
 	}

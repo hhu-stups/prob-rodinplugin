@@ -72,6 +72,7 @@ public class AnimationScriptStep extends BindingObject implements Cloneable {
 		callBackList.remove(callBackObj);
 	}
 
+	@Override
 	public AnimationScriptStep clone() throws CloneNotSupportedException {
 		ArrayList<ObserverCallBackObject> tmpList = new ArrayList<ObserverCallBackObject>();
 		for (ObserverCallBackObject p : getCallBackList()) {

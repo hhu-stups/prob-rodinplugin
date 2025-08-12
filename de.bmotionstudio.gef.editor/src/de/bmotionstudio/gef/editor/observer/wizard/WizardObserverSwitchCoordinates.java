@@ -59,6 +59,7 @@ public class WizardObserverSwitchCoordinates extends ObserverWizard {
 			super(pageName, getObserver());
 		}
 
+		@Override
 		public void createControl(Composite parent) {
 
 			super.createControl(parent);
@@ -279,6 +280,7 @@ public class WizardObserverSwitchCoordinates extends ObserverWizard {
 			return null;
 		}
 
+		@Override
 		public Color getBackground(final Object element, final int column) {
 			ToggleObjectCoordinates attributeObject = (ToggleObjectCoordinates) element;
 			if (attributeObject.hasError())
@@ -286,10 +288,12 @@ public class WizardObserverSwitchCoordinates extends ObserverWizard {
 			return null;
 		}
 
+		@Override
 		public Color getForeground(final Object element, final int column) {
 			return null;
 		}
 
+		@Override
 		public Font getFont(final Object element, final int column) {
 			// return JFaceResources.getFontRegistry().get(
 			// BMotionStudioConstants.RODIN_FONT_KEY);

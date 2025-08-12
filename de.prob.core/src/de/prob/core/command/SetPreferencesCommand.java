@@ -85,12 +85,14 @@ public final class SetPreferencesCommand implements IComposableCommand {
 		return !INVALID_PROPERTIES.contains(key);
 	}
 
+	@Override
 	public void processResult(
 			final ISimplifiedROMap<String, PrologTerm> bindings)
 			throws CommandException {
 		cmds.processResult(bindings);
 	}
 
+	@Override
 	public void writeCommand(final IPrologTermOutput pto) throws CommandException {
 		cmds.writeCommand(pto);
 	}

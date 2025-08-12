@@ -137,9 +137,11 @@ public class FilterManager implements SelectionListener {
 		listeners.remove(listener);
 	}
 
+	@Override
 	public void widgetDefaultSelected(final SelectionEvent e) {
 	}
 
+	@Override
 	public void widgetSelected(final SelectionEvent e) {
 		if (e.getSource() instanceof MenuItem) {
 			MenuItem item = (MenuItem) e.getSource();

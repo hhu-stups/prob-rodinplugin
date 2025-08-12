@@ -28,12 +28,14 @@ public final class SetPreferenceCommand implements IComposableCommand {
 		a.execute(command);
 	}
 
+	@Override
 	public void processResult(
 			final ISimplifiedROMap<String, PrologTerm> bindings)
 			throws CommandException {
 		// no result
 	}
 
+	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
 		pto.openTerm("set_eclipse_preference").printAtom(key).printAtom(value)
 				.closeTerm();

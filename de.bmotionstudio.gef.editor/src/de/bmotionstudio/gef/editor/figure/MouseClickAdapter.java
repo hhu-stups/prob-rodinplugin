@@ -20,11 +20,13 @@ public class MouseClickAdapter extends MouseAdapter {
 		this.control = control;
 	}
 
+	@Override
 	public void mousePressed(MouseEvent e) {
 		control.executeEvent(AttributeConstants.EVENT_MOUSECLICK);
 	}
 
 	// TODO: change mouse cursor!
+	@Override
 	public void mouseEntered(MouseEvent e) {
 		if (control.getEvent(AttributeConstants.EVENT_MOUSECLICK) != null) {
 			if (control.getAttributeValue(AttributeConstants.ATTRIBUTE_ENABLED) != null) {
@@ -37,6 +39,7 @@ public class MouseClickAdapter extends MouseAdapter {
 	}
 
 	// TODO: change mouse cursor!
+	@Override
 	public void mouseExited(MouseEvent e) {
 		if (control.getEvent(AttributeConstants.EVENT_MOUSECLICK) != null) {
 		}

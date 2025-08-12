@@ -24,6 +24,7 @@ public abstract class AbstractLibraryCommand extends Command {
 	protected Object oldAttributeValue;
 	protected Point dropLocation;
 
+	@Override
 	public boolean canExecute() {
 		return true;
 	}
@@ -36,6 +37,7 @@ public abstract class AbstractLibraryCommand extends Command {
 		return this.editPart;
 	}
 
+	@Override
 	public void undo() {
 		if (attributeName != null)
 			getCastedModel()

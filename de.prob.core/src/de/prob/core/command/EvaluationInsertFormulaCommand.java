@@ -90,12 +90,14 @@ public class EvaluationInsertFormulaCommand implements IComposableCommand {
 		this.rawExpression = rawExpression;
 	}
 
+	@Override
 	public void processResult(
 			final ISimplifiedROMap<String, PrologTerm> bindings)
 			throws CommandException {
 		id = bindings.get(VARNAME_ID);
 	}
 
+	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
 		pto.openTerm("evaluation_insert_formula");
 		rawExpression.toTermOutput(pto);

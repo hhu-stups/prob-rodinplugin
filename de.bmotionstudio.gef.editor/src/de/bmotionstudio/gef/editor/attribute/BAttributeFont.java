@@ -16,6 +16,7 @@ public class BAttributeFont extends AbstractAttribute {
 		super(value);
 	}
 
+	@Override
 	public PropertyDescriptor preparePropertyDescriptor() {
 		return new FontPropertyDescriptor(getID(), getName());
 	}

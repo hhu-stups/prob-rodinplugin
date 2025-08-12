@@ -20,6 +20,7 @@ public class TextCellEditorLocator implements CellEditorLocator {
 		setTextField(textField);
 	}
 
+	@Override
 	public void relocate(CellEditor celleditor) {
 		Text text = (Text) celleditor.getControl();
 		Rectangle rect = textField.getClientArea();

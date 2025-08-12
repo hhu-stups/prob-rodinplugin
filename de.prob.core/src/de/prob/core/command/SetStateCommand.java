@@ -25,12 +25,14 @@ public final class SetStateCommand implements IComposableCommand {
 		a.execute(command);
 	}
 
+	@Override
 	public void processResult(
 			final ISimplifiedROMap<String, PrologTerm> bindings)
 			throws CommandException {
 		// no results, do nothing
 	}
 
+	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
 		pto.openTerm("setCurrentState").printAtomOrNumber(stateId).closeTerm();
 	}

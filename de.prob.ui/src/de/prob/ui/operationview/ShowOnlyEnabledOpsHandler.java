@@ -5,7 +5,7 @@ import org.eclipse.ui.handlers.HandlerUtil;
 
 public class ShowOnlyEnabledOpsHandler extends AbstractHandler implements
 		IHandler {
-
+	@Override
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
 		Command command = event.getCommand();
 		boolean showOnlyEnabledStates = !HandlerUtil

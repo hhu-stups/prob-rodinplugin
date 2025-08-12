@@ -28,6 +28,7 @@ public class SetAttribute extends Observer {
 		setAttributes = new ArrayList<String>();
 	}
 
+	@Override
 	protected Object readResolve() {
 		setAttributes = new ArrayList<String>();
 		return super.readResolve();
@@ -121,6 +122,7 @@ public class SetAttribute extends Observer {
 		return setAttributeObjects;
 	}
 
+	@Override
 	public Observer clone() throws CloneNotSupportedException {
 		SetAttribute clonedObserver = (SetAttribute) super.clone();
 		List<SetAttributeObject> list = new ArrayList<SetAttributeObject>();

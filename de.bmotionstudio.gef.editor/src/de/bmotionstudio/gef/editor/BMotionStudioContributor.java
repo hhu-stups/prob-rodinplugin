@@ -92,6 +92,7 @@ public class BMotionStudioContributor extends ActionBarContributor {
 
 	}
 
+	@Override
 	public void setActiveEditor(IEditorPart editor) {
 		if (editor instanceof BMotionStudioEditor) {
 			super.setActiveEditor(((BMotionStudioEditor) editor).getEditPage());

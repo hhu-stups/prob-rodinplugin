@@ -41,6 +41,7 @@ public class EvaluationGetTopLevelCommand implements IComposableCommand {
 		this.animator = animator;
 	}
 
+	@Override
 	public void processResult(
 			final ISimplifiedROMap<String, PrologTerm> bindings)
 			throws CommandException {
@@ -71,6 +72,7 @@ public class EvaluationGetTopLevelCommand implements IComposableCommand {
 		return top;
 	}
 
+	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
 		pto.openTerm("evaluation_get_top_level");
 		pto.printVariable(FIRST_EXPANSION_VARNAME);

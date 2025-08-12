@@ -14,7 +14,7 @@ import de.prob.ui.errorview.ShownErrors.ShownStateError;
  * 
  */
 public class ErrorContentProvider implements ITreeContentProvider {
-
+	@Override
 	public Object[] getChildren(Object parent) {
 		ShownStateError[] errors;
 		if (parent != null && parent instanceof ErrorEvent) {
@@ -27,6 +27,7 @@ public class ErrorContentProvider implements ITreeContentProvider {
 		return errors;
 	}
 
+	@Override
 	public Object getParent(Object arg) {
 		if (arg != null) {
 			if (arg instanceof ShownStateError) {
@@ -39,11 +40,13 @@ public class ErrorContentProvider implements ITreeContentProvider {
 		return null;
 	}
 
+	@Override
 	public boolean hasChildren(Object parent) {
 		// empty nodes are not even created
 		return parent != null && parent instanceof ErrorEvent;
 	}
 
+	@Override
 	public Object[] getElements(Object object) {
 		ErrorEvent[] events;
 		if (object != null && object instanceof ShownErrors) {
@@ -55,9 +58,11 @@ public class ErrorContentProvider implements ITreeContentProvider {
 		return events;
 	}
 
+	@Override
 	public void dispose() {
 	}
 
+	@Override
 	public void inputChanged(Viewer arg0, Object arg1, Object arg2) {
 	}
 

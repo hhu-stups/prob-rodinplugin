@@ -75,6 +75,7 @@ public class TextFigure extends AbstractBMotionFigure {
 	}
 
 	// TODO: CHECK STACK OVERFLOW ERROR!!!!
+	@Override
 	public Font getFont() {
 		return textFlow.getFont();
 	}

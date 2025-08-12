@@ -27,6 +27,7 @@ public class RemoveObserverAction extends WorkbenchPartAction {
 		return true;
 	}
 
+	@Override
 	public void run() {
 		execute(createRemoveObserverCommand());
 	}

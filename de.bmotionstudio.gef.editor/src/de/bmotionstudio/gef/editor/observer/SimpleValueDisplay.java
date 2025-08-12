@@ -21,6 +21,7 @@ public class SimpleValueDisplay extends Observer {
 	private transient String orgString;
 	private transient boolean isOrgStringSet = false;
 
+	@Override
 	public void check(final Animation animation, final BControl bcontrol) {
 
 		// First evaluate predicate (predicate field)
@@ -56,6 +57,7 @@ public class SimpleValueDisplay extends Observer {
 
 	}
 
+	@Override
 	public ObserverWizard getWizard(final BControl bcontrol) {
 		return new WizardObserverSimpleValueDisplay(bcontrol, this);
 	}
@@ -92,6 +94,7 @@ public class SimpleValueDisplay extends Observer {
 		return replacementString;
 	}
 
+	@Override
 	public Observer clone() throws CloneNotSupportedException {
 		SimpleValueDisplay clonedObserver = (SimpleValueDisplay) super.clone();
 		clonedObserver.isOrgStringSet = false;

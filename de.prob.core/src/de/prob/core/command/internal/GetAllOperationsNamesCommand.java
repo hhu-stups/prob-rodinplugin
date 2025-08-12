@@ -16,12 +16,14 @@ public class GetAllOperationsNamesCommand implements IComposableCommand {
 		return term;
 	}
 
+	@Override
 	public void processResult(
 			final ISimplifiedROMap<String, PrologTerm> bindings)
 			throws CommandException {
 		term = (ListPrologTerm) bindings.get(NAMES_VARIABLE);
 	}
 
+	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
 		pto.openTerm("getAllOperations").printVariable(NAMES_VARIABLE)
 				.closeTerm();

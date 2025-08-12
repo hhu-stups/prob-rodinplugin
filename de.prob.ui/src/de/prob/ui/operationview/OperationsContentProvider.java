@@ -26,13 +26,16 @@ class OperationsContentProvider implements IStructuredContentProvider {
 		this.allOperations = allOperations;
 	}
 
+	@Override
 	public void dispose() {
 	}
 
+	@Override
 	public void inputChanged(final Viewer viewer, final Object oldInput,
 			final Object newInput) {
 	}
 
+	@Override
 	public Object[] getElements(final Object inputElement) {
 
 		List<Object> mergedOperations = new ArrayList<Object>();

@@ -42,6 +42,7 @@ public class WizardColumnObserver extends ObserverWizard {
 			super(pageName);
 		}
 
+		@Override
 		public void createControl(final Composite parent) {
 
 			final DataBindingContext dbc = new DataBindingContext();

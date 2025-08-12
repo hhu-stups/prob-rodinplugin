@@ -35,6 +35,7 @@ public class Filter {
 		return pattern;
 	}
 
+	@Override
 	public String toString() {
 		StringBuilder stringBuilder = new StringBuilder(name);
 		stringBuilder.append(" pattern:");

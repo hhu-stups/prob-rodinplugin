@@ -67,6 +67,7 @@ public abstract class AbstractAttribute implements IPropertySource, Cloneable {
 			propertyDescriptor = preparePropertyDescriptor();
 			if (propertyDescriptor != null) {
 				propertyDescriptor.setValidator(new ICellEditorValidator() {
+					@Override
 					public String isValid(Object value) {
 						return validateValue(value, control);
 					}
@@ -100,10 +101,12 @@ public abstract class AbstractAttribute implements IPropertySource, Cloneable {
 		return group;
 	}
 
+	@Override
 	public Object getEditableValue() {
 		return this;
 	}
 
+	@Override
 	public IPropertyDescriptor[] getPropertyDescriptors() {
 		ArrayList<IPropertyDescriptor> descriptor = new ArrayList<IPropertyDescriptor>();
 		for (AbstractAttribute atr : getChildren().values()) {
@@ -112,6 +115,7 @@ public abstract class AbstractAttribute implements IPropertySource, Cloneable {
 		return descriptor.toArray(new IPropertyDescriptor[0]);
 	}
 
+	@Override
 	public Object getPropertyValue(Object attrID) {
 		AbstractAttribute atr = getChildren().get(attrID);
 		if (atr.hasChildren()) {
@@ -121,13 +125,16 @@ public abstract class AbstractAttribute implements IPropertySource, Cloneable {
 		}
 	}
 
+	@Override
 	public boolean isPropertySet(Object id) {
 		return false;
 	}
 
+	@Override
 	public void resetPropertyValue(Object id) {
 	}
 
+	@Override
 	public void setPropertyValue(Object id, Object value) {
 		AbstractAttribute atr = children.get(id);
 		atr.setValue(value);

@@ -51,12 +51,14 @@ public final class GetCurrentStateIdCommand implements IComposableCommand {
 		return currentID;
 	}
 
+	@Override
 	public void processResult(
 			final ISimplifiedROMap<String, PrologTerm> bindings)
 			throws CommandException {
 		currentID = getStateID(bindings.get("ID"));
 	}
 
+	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
 		pto.openTerm("getCurrentStateID").printVariable("ID").closeTerm();
 	}

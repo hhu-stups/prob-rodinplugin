@@ -22,6 +22,7 @@ public class LibraryImageCommand extends AbstractLibraryCommand {
 
 	private BControl newImageControl;
 
+	@Override
 	public void execute() {
 
 		attributeName = AttributeConstants.ATTRIBUTE_IMAGE;
@@ -75,6 +76,7 @@ public class LibraryImageCommand extends AbstractLibraryCommand {
 
 	}
 
+	@Override
 	public void undo() {
 		super.undo();
 		getCastedModel().removeChild(newImageControl);

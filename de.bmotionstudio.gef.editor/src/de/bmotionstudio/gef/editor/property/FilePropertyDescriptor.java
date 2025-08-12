@@ -27,6 +27,7 @@ public class FilePropertyDescriptor extends PropertyDescriptor {
 	/**
 	 * @see org.eclipse.ui.views.properties.IPropertyDescriptor#createPropertyEditor(Composite)
 	 */
+	@Override
 	public CellEditor createPropertyEditor(Composite parent) {
 		CellEditor editor = new FileDialogCellEditor(parent);
 		if (getValidator() != null)

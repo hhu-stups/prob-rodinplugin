@@ -21,6 +21,7 @@ public class LifeCycleListenerProxy implements ILifecycleListener {
 		this.config = config;
 	}
 
+	@Override
 	public void reset() {
 		if (instance == null) {
 			instance = init();

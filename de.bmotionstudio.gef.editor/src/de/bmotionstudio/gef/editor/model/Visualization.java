@@ -249,6 +249,7 @@ public class Visualization extends BControl {
 		return snapToGeometry;
 	}
 
+	@Override
 	public Object getAdapter(@SuppressWarnings("rawtypes") Class adapter) {
 		return null;
 	}

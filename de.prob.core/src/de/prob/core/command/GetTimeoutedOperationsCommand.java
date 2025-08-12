@@ -18,6 +18,7 @@ public class GetTimeoutedOperationsCommand implements IComposableCommand {
 		this.state = state;
 	}
 
+	@Override
 	public void processResult(
 			final ISimplifiedROMap<String, PrologTerm> bindings)
 			throws CommandException {
@@ -32,6 +33,7 @@ public class GetTimeoutedOperationsCommand implements IComposableCommand {
 		}
 	}
 
+	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
 		pto.openTerm("op_timeout_occurred").printAtomOrNumber(state)
 				.printVariable(TIMEOUT_VARIABLE).closeTerm();

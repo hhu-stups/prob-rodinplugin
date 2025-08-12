@@ -26,10 +26,12 @@ public class FreetypeProbType extends ProbDataType {
 		this.identifier = identifier;
 	}
 
+	@Override
 	public int getOperatorPriority() {
 		return 500;
 	}
 
+	@Override
 	public void prettyprint(final StringBuilder builder) {
 		//		builder.append("freetype(");
 		builder.append(identifier);

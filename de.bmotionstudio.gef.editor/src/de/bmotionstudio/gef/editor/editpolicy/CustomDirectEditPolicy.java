@@ -19,6 +19,7 @@ public class CustomDirectEditPolicy extends DirectEditPolicy {
 	/**
 	 * @see CustomDirectEditPolicy#getDirectEditCommand(DirectEditRequest)
 	 */
+	@Override
 	protected Command getDirectEditCommand(DirectEditRequest edit) {
 		String labelText = (String) edit.getCellEditor().getValue();
 		BMSAbstractEditPart label = (BMSAbstractEditPart) getHost();
@@ -31,6 +32,7 @@ public class CustomDirectEditPolicy extends DirectEditPolicy {
 	/**
 	 * @see CustomDirectEditPolicy#showCurrentEditValue(DirectEditRequest)
 	 */
+	@Override
 	protected void showCurrentEditValue(DirectEditRequest request) {
 		// String value = (String) request.getCellEditor().getValue();
 		getHostFigure().getUpdateManager().performUpdate();

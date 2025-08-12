@@ -60,6 +60,7 @@ public class EventBAnimatorPart implements LanguageDependendAnimationPart {
 		this.root = root;
 	}
 
+	@Override
 	public void parseExpression(final IPrologTermOutput pto,
 			final String expression1, final boolean wrap)
 			throws ProBParseException {
@@ -75,6 +76,7 @@ public class EventBAnimatorPart implements LanguageDependendAnimationPart {
 		toPrologTerm(pto, expr, wrap, EXPR_WRAPPER);
 	}
 
+	@Override
 	public void parsePredicate(final IPrologTermOutput pto,
 			final String predicate1, final boolean wrap)
 			throws ProBParseException {
@@ -150,10 +152,12 @@ public class EventBAnimatorPart implements LanguageDependendAnimationPart {
 			throw new ProBParseException(parseResult.getProblems().toString());
 	}
 
+	@Override
 	public void reload(final Animator animator) throws ProBException {
 		LoadEventBModelCommand.load(animator, root);
 	}
 
+	@Override
 	public void parseTransitionPredicate(final IPrologTermOutput pto,
 			final String transPredicate, final boolean wrap)
 			throws ProBParseException, UnsupportedOperationException {

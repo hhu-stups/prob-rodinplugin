@@ -30,6 +30,7 @@ public class StateTreeExpression extends AbstractStateTreeElement {
 
 	}
 
+	@Override
 	public StaticStateElement[] getChildren() {
 		checkForChildren();
 		return children.toArray(StateTreeElement.EMPTY_ARRAY);
@@ -54,6 +55,7 @@ public class StateTreeExpression extends AbstractStateTreeElement {
 		}
 	}
 
+	@Override
 	public String getLabel() {
 		try {
 			return staticElement.getLabel();
@@ -63,11 +65,13 @@ public class StateTreeExpression extends AbstractStateTreeElement {
 		}
 	}
 
+	@Override
 	public boolean hasChildren() {
 		checkForChildren();
 		return !children.isEmpty();
 	}
 
+	@Override
 	public boolean hasChanged(final State current, final State last) {
 		final String curval, lastval;
 		try {
@@ -91,6 +95,7 @@ public class StateTreeExpression extends AbstractStateTreeElement {
 		return staticElement;
 	}
 
+	@Override
 	public StateDependendElement getValue(final State state) {
 		StateDependendElement sd;
 		try {

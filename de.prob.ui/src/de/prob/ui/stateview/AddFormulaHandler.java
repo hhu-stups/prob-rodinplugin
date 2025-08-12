@@ -23,9 +23,10 @@ import de.prob.parserbase.ProBParserBaseAdapter;
 import de.prob.prolog.term.PrologTerm;
 
 public class AddFormulaHandler extends AbstractHandler implements IHandler {
-
+	@Override
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
 		final Runnable runnable = new Runnable() {
+			@Override
 			public void run() {
 				Shell shell = HandlerUtil.getActiveShell(event);
 				final String title = StateViewStrings.dialogTitleEnterNewFormula;
@@ -86,6 +87,7 @@ public class AddFormulaHandler extends AbstractHandler implements IHandler {
 			this.parser = parser;
 		}
 
+		@Override
 		public String isValid(final String input) {
 			String error = null;
 			if (input.trim().length() == 0) {

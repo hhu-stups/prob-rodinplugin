@@ -23,6 +23,7 @@ public class AnimationListenerProxy implements IAnimationListener {
 		this.config = config;
 	}
 
+	@Override
 	public void currentStateChanged(final State currentState,
 			final Operation operation) {
 		if (instance == null) {

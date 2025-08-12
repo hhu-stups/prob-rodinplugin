@@ -17,6 +17,7 @@ public class BAttributeID extends AbstractAttribute {
 		super(value);
 	}
 
+	@Override
 	public PropertyDescriptor preparePropertyDescriptor() {
 		TextPropertyDescriptor descriptor = new TextPropertyDescriptor(getID(),
 				getName());

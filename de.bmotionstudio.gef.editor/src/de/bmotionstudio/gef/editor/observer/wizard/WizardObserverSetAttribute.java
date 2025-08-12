@@ -75,6 +75,7 @@ public class WizardObserverSetAttribute extends ObserverWizard {
 			super(pageName, getObserver());
 		}
 
+		@Override
 		public void createControl(Composite parent) {
 
 			super.createControl(parent);
@@ -251,6 +252,7 @@ public class WizardObserverSetAttribute extends ObserverWizard {
 					cellEditor
 							.setContentProvider(new ObservableListContentProvider());
 					cellEditor.setLabelProvider(new LabelProvider() {
+						@Override
 						public String getText(Object element) {
 							return getBControl().getAttributes()
 									.get(element.toString()).getName();
@@ -273,12 +275,14 @@ public class WizardObserverSetAttribute extends ObserverWizard {
 
 								String oldValue;
 
+								@Override
 								public void focusGained(FocusEvent e) {
 									oldValue = ((CCombo) cellEditor
 											.getControl()).getText();
 
 								}
 
+								@Override
 								public void focusLost(FocusEvent e) {
 
 									if (!oldValue.equals(((CCombo) cellEditor
@@ -403,6 +407,7 @@ public class WizardObserverSetAttribute extends ObserverWizard {
 			return super.getColumnText(element, columnIndex);
 		}
 
+		@Override
 		public Color getBackground(final Object element, final int column) {
 			SetAttributeObject attributeObject = (SetAttributeObject) element;
 			if (attributeObject.hasError())
@@ -410,10 +415,12 @@ public class WizardObserverSetAttribute extends ObserverWizard {
 			return null;
 		}
 
+		@Override
 		public Color getForeground(final Object element, final int column) {
 			return null;
 		}
 
+		@Override
 		public Font getFont(final Object element, final int column) {
 			// return JFaceResources.getFontRegistry().get(
 			// BMotionStudioConstants.RODIN_FONT_KEY);

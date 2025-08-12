@@ -52,6 +52,7 @@ public class StartAnimationHandler extends AbstractHandler implements IHandler {
 			}
 		}
 
+		@Override
 		public void resourceChanged(final IResourceChangeEvent event) {
 			if (path != null) {
 				final IResourceDelta delta = event.getDelta();
@@ -66,6 +67,7 @@ public class StartAnimationHandler extends AbstractHandler implements IHandler {
 	private ISelection fSelection;
 	private ModificationListener listener;
 
+	@Override
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
 
 		fSelection = HandlerUtil.getCurrentSelection(event);

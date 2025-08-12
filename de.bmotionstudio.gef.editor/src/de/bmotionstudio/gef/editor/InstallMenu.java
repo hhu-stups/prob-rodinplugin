@@ -21,7 +21,7 @@ import de.bmotionstudio.gef.editor.action.FitImageAction;
 import de.bmotionstudio.gef.editor.action.RenameAction;
 
 public class InstallMenu implements IInstallMenu {
-
+	@Override
 	public void installMenu(IMenuManager menu, ActionRegistry regitry) {
 
 		IAction action;
@@ -48,6 +48,7 @@ public class InstallMenu implements IInstallMenu {
 
 	}
 
+	@Override
 	public void installBar(IActionBars bars, ActionRegistry regitry) {
 		// bars.setGlobalActionHandler(ActionFactory.RENAME.getId(), regitry
 		// .getAction(ActionFactory.RENAME.getId()));

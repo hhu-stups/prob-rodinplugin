@@ -25,6 +25,7 @@ public class MoveGuideCommand extends Command {
 		pDelta = positionDelta;
 	}
 
+	@Override
 	public void execute() {
 
 		guide.setPosition(guide.getPosition() + pDelta);
@@ -43,6 +44,7 @@ public class MoveGuideCommand extends Command {
 
 	}
 
+	@Override
 	public void undo() {
 		guide.setPosition(guide.getPosition() - pDelta);
 		Iterator<BControl> iter = guide.getParts().iterator();

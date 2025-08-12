@@ -12,6 +12,7 @@ public class ImageRegistry implements IBMotionStudioImageRegistry {
 	public static final String IMG_RADIOBUTTON_CHECKED = "img_radiobutton_checked";
 	public static final String IMG_RADIOBUTTON_UNCHECKED = "img_radiobutton_unchecked";
 
+	@Override
 	public void registerImages() {
 
 		BMotionStudioImage.registerImage(IMG_RADIOBUTTON_CHECKED,

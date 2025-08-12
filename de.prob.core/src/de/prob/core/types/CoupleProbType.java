@@ -27,10 +27,12 @@ public class CoupleProbType extends ProbDataType {
 		this.right = right;
 	}
 
+	@Override
 	public int getOperatorPriority() {
 		return 190;
 	}
 
+	@Override
 	public void prettyprint(final StringBuilder builder) {
 		printWithParenthesis(builder, left, getOperatorPriority());
 		builder.append('*');

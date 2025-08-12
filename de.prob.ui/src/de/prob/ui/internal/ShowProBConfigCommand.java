@@ -14,7 +14,7 @@ import org.eventb.core.IEventBRoot;
 import de.prob.ui.eventb.AnimationPreferencesDialog;
 
 public class ShowProBConfigCommand extends AbstractHandler implements IHandler {
-
+	@Override
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
 
 		IEventBRoot selectedObject = null;

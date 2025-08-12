@@ -124,6 +124,7 @@ public class GetMachineObjectsCommand implements IComposableCommand {
 		return term;
 	}
 
+	@Override
 	public void processResult(
 			final ISimplifiedROMap<String, PrologTerm> bindings)
 			throws CommandException {
@@ -139,6 +140,7 @@ public class GetMachineObjectsCommand implements IComposableCommand {
 				constants, variables, operations);
 	}
 
+	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
 		pto.openTerm("get_machine_objects").printVariable("Sections")
 				.printVariable("SetElements").printVariable("Constants")

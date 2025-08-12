@@ -28,6 +28,7 @@ public class PasteAction extends SelectionAction {
 		setLazyEnablementCalculation(true);
 	}
 
+	@Override
 	protected void init() {
 		super.init();
 		ISharedImages sharedImages = PlatformUI.getWorkbench()

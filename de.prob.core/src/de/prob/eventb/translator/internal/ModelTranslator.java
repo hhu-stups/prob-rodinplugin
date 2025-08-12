@@ -1,5 +1,5 @@
 /**
- * (c) 2009-2024 Lehrstuhl fuer Softwaretechnik und Programmiersprachen, Heinrich
+ * (c) 2009-2025 Lehrstuhl fuer Softwaretechnik und Programmiersprachen, Heinrich
  * Heine Universitaet Duesseldorf This software is licenced under EPL 1.0
  * (http://www.eclipse.org/org/documents/epl-v10.html)
  * */
@@ -8,12 +8,12 @@ package de.prob.eventb.translator.internal;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eventb.core.EventBAttributes;
-import org.eventb.core.ICommentedElement;
 import org.eventb.core.IConvergenceElement.Convergence;
 import org.eventb.core.ILabeledElement;
 import org.eventb.core.IMachineRoot;
@@ -21,9 +21,9 @@ import org.eventb.core.IPOSequent;
 import org.eventb.core.IPOSource;
 import org.eventb.core.IPSRoot;
 import org.eventb.core.IPSStatus;
-import org.eventb.core.IPredicateElement;
 import org.eventb.core.ISCAction;
 import org.eventb.core.IEvent;
+import org.eventb.core.IGuard;
 import org.eventb.core.IInvariant;
 import org.eventb.core.ISCEvent;
 import org.eventb.core.ISCGuard;
@@ -38,7 +38,9 @@ import org.eventb.core.ISCVariable;
 import org.eventb.core.ISCVariant;
 import org.eventb.core.ISCWitness;
 import org.eventb.core.ITraceableElement;
+import org.eventb.core.IVariable;
 import org.eventb.core.IVariant;
+import org.eventb.core.IWitness;
 import org.eventb.core.ast.Assignment;
 import org.eventb.core.ast.FormulaFactory;
 import org.eventb.core.ast.ITypeEnvironment;
@@ -53,6 +55,8 @@ import org.rodinp.core.RodinDBException;
 import de.be4.classicalb.core.parser.node.AAnticipatedEventstatus;
 import de.be4.classicalb.core.parser.node.AConvergentEventstatus;
 import de.be4.classicalb.core.parser.node.ADescriptionEvent;
+import de.be4.classicalb.core.parser.node.ADescriptionExpression;
+import de.be4.classicalb.core.parser.node.ADescriptionPragma;
 import de.be4.classicalb.core.parser.node.ADescriptionPredicate;
 import de.be4.classicalb.core.parser.node.AEvent;
 import de.be4.classicalb.core.parser.node.AEventBModelParseUnit;
@@ -364,13 +368,14 @@ public class ModelTranslator extends AbstractComponentTranslator {
 			//	System.out.println("Description 1 of " + revent.getLabel() + ": " + ((ICommentedElement) ucevent).getComment());
 			//}
 			if (ucevent.hasAttribute(EventBAttributes.COMMENT_ATTRIBUTE)) {
+				// The event has a comment attached to it, we convert it to a description pragma
+				// these descriptions are treated like template strings (containing ${Expr}) by ProB
+				// to generate descriptions for transitions
 				final String commentString = ucevent.getAttributeValue(EventBAttributes.COMMENT_ATTRIBUTE);
-				System.out.println("Event " + revent.getLabel() + " has description " + commentString);
-				final ADescriptionEvent devent = new ADescriptionEvent();
-				devent.setEvent(event);
+				// System.out.println("Event " + revent.getLabel() + " has description " + commentString);
 				final TPragmaFreeText desc = new TPragmaFreeText(commentString);
-				devent.setContent(desc);
-				eventsList.add(devent); // we add the event with a description node around it; requires new probcli
+				ADescriptionPragma descPragma = new ADescriptionPragma(Collections.singletonList(desc));
+				eventsList.add(new ADescriptionEvent(descPragma, event));
 			} else {
 				eventsList.add(event);
 			}
@@ -433,10 +438,27 @@ public class ModelTranslator extends AbstractComponentTranslator {
 		final ISCGuard[] guards = revent.getSCGuards();
 		for (final ISCGuard guard : guards) {
 			final PPredicate predicate = translatePredicate(ff, localEnv, guard);
+			final IGuard ucg = (IGuard) guard.getSource(); // comments only attached in unchecked source
+			ADescriptionPredicate descpredicate = null;
+			if (ucg.hasAttribute(EventBAttributes.COMMENT_ATTRIBUTE)) {
+				// The guard has a comment attached to it, we convert it to a description pragma:
+				final String commentString = ucg.getAttributeValue(EventBAttributes.COMMENT_ATTRIBUTE);
+				final TPragmaFreeText desc = new TPragmaFreeText(commentString);
+				ADescriptionPragma descPragma = new ADescriptionPragma(Collections.singletonList(desc));
+				descpredicate = new ADescriptionPredicate(descPragma,predicate);
+			}
 			if (guard.isTheorem()) {
-				theoremsList.add(predicate);
+				if (descpredicate==null) {
+					theoremsList.add(predicate);
+				} else {
+					theoremsList.add(descpredicate);
+				}
 			} else {
-				guardsList.add(predicate);
+				if (descpredicate==null) {
+					guardsList.add(predicate);
+				} else {
+					guardsList.add(descpredicate);
+				}
 			}
 			labelMapping.put(predicate, guard);
 		}
@@ -454,7 +476,18 @@ public class ModelTranslator extends AbstractComponentTranslator {
 						variable.getIdentifierString());
 				final AIdentifierExpression id = new AIdentifierExpression(
 						Arrays.asList(new TIdentifierLiteral[] { literal }));
-				list.add(id);
+				
+				final IVariable ucv = (IVariable) variable.getSource(); // comments only attached in unchecked source
+				if (ucv.hasAttribute(EventBAttributes.COMMENT_ATTRIBUTE)) {
+					// The variable has a comment attached to it, we convert it to a description pragma:
+					final String commentString = ucv.getAttributeValue(EventBAttributes.COMMENT_ATTRIBUTE);
+					final TPragmaFreeText desc = new TPragmaFreeText(commentString);
+					ADescriptionPragma descPragma = new ADescriptionPragma(Collections.singletonList(desc));
+					final ADescriptionExpression descid = new ADescriptionExpression(descPragma,id);
+					list.add(descid);
+				} else {
+					list.add(id);
+				}
 			}
 		}
 		variablesModelClause.setIdentifiers(list);
@@ -471,8 +504,18 @@ public class ModelTranslator extends AbstractComponentTranslator {
 					witness);
 			final TIdentifierLiteral label = new TIdentifierLiteral(
 					witness.getLabel());
-			witnessList.add(new AWitness(label, predicate));
-			labelMapping.put(predicate, witness);
+			final IWitness ucw = (IWitness) witness.getSource(); // comments only attached in unchecked 			
+			if (ucw.hasAttribute(EventBAttributes.COMMENT_ATTRIBUTE)) {
+				final String commentString = ucw.getAttributeValue(EventBAttributes.COMMENT_ATTRIBUTE);
+				final TPragmaFreeText desc = new TPragmaFreeText(commentString);
+				ADescriptionPragma descPragma = new ADescriptionPragma(Collections.singletonList(desc));
+				ADescriptionPredicate dpred = new ADescriptionPredicate(descPragma, predicate);
+				witnessList.add(new AWitness(label, dpred));
+				labelMapping.put(dpred, witness);
+			} else {
+				witnessList.add(new AWitness(label, predicate));
+				labelMapping.put(predicate, witness);
+			}
 		}
 		return witnessList;
 	}
@@ -537,15 +580,21 @@ public class ModelTranslator extends AbstractComponentTranslator {
 			if (isDefinedHere(evPredicate)) {
 				final PPredicate predicate = translatePredicate(ff, te,
 						evPredicate);
-				final IInvariant ucp = (IInvariant) evPredicate.getSource(); // comments only attached in unchecked source
-				if (ucp.hasAttribute(EventBAttributes.COMMENT_ATTRIBUTE)) {
-					final String commentString = ucp.getAttributeValue(EventBAttributes.COMMENT_ATTRIBUTE);
-					//System.out.println("Invariant/theorem " + predicate + " has description " + commentString);
-					final TPragmaFreeText desc = new TPragmaFreeText(commentString);
-					final ADescriptionPredicate dpred = new ADescriptionPredicate(desc,predicate);
-					list.add(dpred);
-					labelMapping.put(dpred, evPredicate);
-				} else {
+				if (evPredicate.getSource() instanceof IInvariant) {  // test can fail for generated invariants
+					final IInvariant ucp = (IInvariant) evPredicate.getSource(); // comments only attached in unchecked source
+					if (ucp.hasAttribute(EventBAttributes.COMMENT_ATTRIBUTE)) {
+						final String commentString = ucp.getAttributeValue(EventBAttributes.COMMENT_ATTRIBUTE);
+						//System.out.println("Invariant/theorem " + predicate + " has description " + commentString);
+						final TPragmaFreeText desc = new TPragmaFreeText(commentString);
+						ADescriptionPragma descPragma = new ADescriptionPragma(Collections.singletonList(desc));
+						ADescriptionPredicate dpred = new ADescriptionPredicate(descPragma, predicate);
+						list.add(dpred);
+						labelMapping.put(dpred, evPredicate);
+					} else {
+						list.add(predicate);
+						labelMapping.put(predicate, evPredicate);
+					}
+				} else { // cannot cast source to IInvariant
 					list.add(predicate);
 					labelMapping.put(predicate, evPredicate);
 				}
@@ -565,8 +614,10 @@ public class ModelTranslator extends AbstractComponentTranslator {
 			final String srcName = src.getRodinFile().getBareName();
 			result = currentName.equals(srcName);
 		} else {
-			throw new TranslationFailedException("Machine " + currentName,
-					"Source of invariant is not a machine");
+			// Some plugins virtually add new invariants (e.g., FOLLOWED_BY for events)
+			Logger.notifyUser("Source of invariant in " + currentName + " is not a machine. Invariant may be added multiple times.");
+			// TODO: check if this source is local or not
+			result = false; // assume it is local so that it is added in the translation
 		}
 		return result;
 	}

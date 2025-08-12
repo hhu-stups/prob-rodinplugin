@@ -19,6 +19,7 @@ public class GetOperationParameterNames implements IComposableCommand {
 		this.name = name;
 	}
 
+	@Override
 	public void processResult(
 			final ISimplifiedROMap<String, PrologTerm> bindings)
 			throws CommandException {
@@ -26,6 +27,7 @@ public class GetOperationParameterNames implements IComposableCommand {
 				.get(PARAMETER_NAMES_VARIABLE));
 	}
 
+	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
 		pto.openTerm("getOperationParameterNames");
 		pto.printAtom(name);

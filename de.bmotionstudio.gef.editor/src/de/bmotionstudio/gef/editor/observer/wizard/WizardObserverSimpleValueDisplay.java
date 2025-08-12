@@ -43,6 +43,7 @@ public class WizardObserverSimpleValueDisplay extends ObserverWizard {
 			super(pageName, getObserver());
 		}
 
+		@Override
 		public void createControl(final Composite parent) {
 
 			super.createControl(parent);

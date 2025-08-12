@@ -16,11 +16,12 @@ import de.prob.ui.errorview.ShownErrors.ShownStateError;
  */
 public class ErrorLabelProvider extends BaseLabelProvider implements
 		ITableLabelProvider {
-
+	@Override
 	public Image getColumnImage(Object object, int column) {
 		return null;
 	}
 
+	@Override
 	public String getColumnText(Object object, int column) {
 		final String text;
 		if (column == 0) {

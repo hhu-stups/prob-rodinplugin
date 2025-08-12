@@ -58,6 +58,7 @@ public final class GetFullTraceCommand implements IComposableCommand {
 		return trace;
 	}
 
+	@Override
 	public void processResult(
 			final ISimplifiedROMap<String, PrologTerm> bindings)
 			throws CommandException {
@@ -68,6 +69,7 @@ public final class GetFullTraceCommand implements IComposableCommand {
 		trace = new TraceResult(operations, states);
 	}
 
+	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
 		pto.openTerm("find_shortest_trace_to_current_state2");
 		pto.printVariable(ACTIONS_VARIABLE);

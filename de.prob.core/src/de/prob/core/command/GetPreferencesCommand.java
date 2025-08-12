@@ -54,6 +54,7 @@ public final class GetPreferencesCommand implements IComposableCommand {
 		return new ProBPreference(compoundTerm);
 	}
 
+	@Override
 	public void processResult(
 			final ISimplifiedROMap<String, PrologTerm> bindings)
 			throws CommandException {
@@ -66,6 +67,7 @@ public final class GetPreferencesCommand implements IComposableCommand {
 		}
 	}
 
+	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
 		pto.openTerm("list_eclipse_preferences").printVariable(PREFS_VARIABLE)
 				.closeTerm();

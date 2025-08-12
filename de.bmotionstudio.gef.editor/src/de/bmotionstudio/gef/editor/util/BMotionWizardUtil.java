@@ -58,6 +58,7 @@ public class BMotionWizardUtil {
 		manager.add(new BMotionWizardAddItemAction(tableViewer, itemClass));
 
 		tableViewer.getTable().addListener(SWT.MouseDown, new Listener() {
+			@Override
 			public void handleEvent(Event event) {
 				tableViewer.setData("editElement", false);
 			}
@@ -65,7 +66,7 @@ public class BMotionWizardUtil {
 
 		tableViewer.getTable().addListener(SWT.MouseDoubleClick,
 				new Listener() {
-
+					@Override
 					public void handleEvent(Event event) {
 
 						tableViewer.setData("editElement", true);

@@ -252,6 +252,7 @@ public class ShapeFigure extends AbstractBMotionFigure {
 	/**
 	 * @see IFigure#validate()
 	 */
+	@Override
 	public void validate() {
 
 		super.validate();
@@ -337,6 +338,7 @@ public class ShapeFigure extends AbstractBMotionFigure {
 	/**
 	 * @see Figure#primTranslate(int, int)
 	 */
+	@Override
 	public void primTranslate(int dx, int dy) {
 		super.primTranslate(dx, dy);
 		switch (shape) {

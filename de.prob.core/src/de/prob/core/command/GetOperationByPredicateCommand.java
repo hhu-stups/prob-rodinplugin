@@ -115,6 +115,7 @@ public final class GetOperationByPredicateCommand implements IComposableCommand 
 	 * 
 	 * @see de.prob.core.command.IComposableCommand#writeCommand(de.prob.prolog.output.IPrologTermOutput)
 	 */
+	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
 		pto.openTerm("execute_custom_operations").printAtomOrNumber(stateId)
 				.printAtom(name);
@@ -132,6 +133,7 @@ public final class GetOperationByPredicateCommand implements IComposableCommand 
 	 * 
 	 * @see de.prob.core.command.IComposableCommand#writeCommand(de.prob.prolog.output.IPrologTermOutput)
 	 */
+	@Override
 	public void processResult(
 			final ISimplifiedROMap<String, PrologTerm> bindings)
 			throws CommandException {

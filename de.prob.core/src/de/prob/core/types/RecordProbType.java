@@ -43,10 +43,12 @@ public class RecordProbType extends ProbDataType {
 		throw new IllegalStateException("no null field found");
 	}
 
+	@Override
 	public int getOperatorPriority() {
 		return 500;
 	}
 
+	@Override
 	public void prettyprint(final StringBuilder builder) {
 		builder.append("struct(");
 		boolean first = true;

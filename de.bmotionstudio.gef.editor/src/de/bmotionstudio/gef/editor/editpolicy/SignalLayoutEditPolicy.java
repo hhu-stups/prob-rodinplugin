@@ -224,6 +224,7 @@ public class SignalLayoutEditPolicy extends FlowLayoutEditPolicy {
 	/**
 	 * @see org.eclipse.gef.editpolicies.LayoutEditPolicy#createChildEditPolicy(org.eclipse.gef.EditPart)
 	 */
+	@Override
 	protected EditPolicy createChildEditPolicy(EditPart child) {
 		BMSResizableEditPolicy policy = new BMSResizableEditPolicy();
 		policy.setResizeDirections(PositionConstants.EAST

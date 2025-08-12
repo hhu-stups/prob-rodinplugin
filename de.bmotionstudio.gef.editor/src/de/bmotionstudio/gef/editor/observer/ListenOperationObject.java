@@ -19,6 +19,7 @@ public class ListenOperationObject extends BindingObject implements Cloneable {
 		this.predicate = "";
 	}
 
+	@Override
 	public ListenOperationObject clone() throws CloneNotSupportedException {
 		return (ListenOperationObject) super.clone();
 	}

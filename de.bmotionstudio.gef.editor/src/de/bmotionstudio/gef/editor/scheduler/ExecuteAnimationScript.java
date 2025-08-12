@@ -101,6 +101,7 @@ public class ExecuteAnimationScript extends SchedulerEvent {
 		return new WizardExecuteScheduler(bcontrol, this);
 	}
 
+	@Override
 	public ExecuteAnimationScript clone() throws CloneNotSupportedException {
 		ExecuteAnimationScript nse = (ExecuteAnimationScript) super.clone();
 		List<AnimationScriptObject> list = new ArrayList<AnimationScriptObject>();

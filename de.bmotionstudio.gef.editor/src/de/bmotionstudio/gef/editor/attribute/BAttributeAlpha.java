@@ -17,6 +17,7 @@ public class BAttributeAlpha extends AbstractAttribute {
 		super(value);
 	}
 
+	@Override
 	public PropertyDescriptor preparePropertyDescriptor() {
 		SliderPropertyDescriptor descriptor = new SliderPropertyDescriptor(
 				getID(), getName());

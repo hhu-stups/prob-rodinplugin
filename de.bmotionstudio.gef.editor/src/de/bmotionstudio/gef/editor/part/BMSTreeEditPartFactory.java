@@ -17,7 +17,7 @@ import de.bmotionstudio.gef.editor.model.BControl;
 import de.bmotionstudio.gef.editor.model.Visualization;
 
 public class BMSTreeEditPartFactory implements EditPartFactory {
-
+	@Override
 	public EditPart createEditPart(EditPart context, Object model) {
 
 		BMSAbstractTreeEditPart part = null;

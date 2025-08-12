@@ -64,6 +64,7 @@ public class LibraryView extends PageBookView {
 		return null;
 	}
 
+	@Override
 	public void partBroughtToTop(IWorkbenchPart part) {
 		partActivated(part);
 	}

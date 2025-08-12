@@ -16,6 +16,7 @@ public class IntegerPropertyDescriptor extends PropertyDescriptor {
 		super(id, displayName);
 	}
 
+	@Override
 	public CellEditor createPropertyEditor(Composite parent) {
 		CellEditor editor = new IntegerCellEditor(parent);
 		if (getValidator() != null) {

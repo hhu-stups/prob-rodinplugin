@@ -14,7 +14,7 @@ import de.prob.exceptions.ProBException;
 
 public class ShowParameterDialogHandler extends AbstractHandler implements
 		IHandler {
-
+	@Override
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
 
 		List<Operation> s = OperationTableViewer.getInstance()

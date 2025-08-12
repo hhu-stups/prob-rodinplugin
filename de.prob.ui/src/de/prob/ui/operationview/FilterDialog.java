@@ -161,10 +161,12 @@ public class FilterDialog extends Dialog implements SelectionListener {
 		return filters;
 	}
 
+	@Override
 	public void widgetDefaultSelected(final SelectionEvent e) {
 
 	}
 
+	@Override
 	public void widgetSelected(final SelectionEvent e) {
 		if (e.getSource() == buttonNew) {
 			// InputDialog inputDialog = new InputDialog(dialog, "Add New
@@ -313,18 +315,21 @@ public class FilterDialog extends Dialog implements SelectionListener {
 			buttonOk.setEnabled(false);
 
 			buttonCancel.addListener(SWT.Selection, new Listener() {
+				@Override
 				public void handleEvent(final Event event) {
 					pattern = null;
 					shell.dispose();
 				}
 			});
 			buttonOk.addListener(SWT.Selection, new Listener() {
+				@Override
 				public void handleEvent(final Event event) {
 					name = textName.getText();
 					shell.dispose();
 				}
 			});
 			textPattern.addListener(SWT.Modify, new Listener() {
+				@Override
 				public void handleEvent(final Event event) {
 					if (textPattern.getText().length() == 0) {
 						pattern = null;

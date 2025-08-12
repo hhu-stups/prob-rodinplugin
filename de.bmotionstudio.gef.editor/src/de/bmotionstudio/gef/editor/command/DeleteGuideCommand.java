@@ -27,10 +27,12 @@ public class DeleteGuideCommand extends Command {
 		this.parent = parent;
 	}
 
+	@Override
 	public boolean canUndo() {
 		return true;
 	}
 
+	@Override
 	public void execute() {
 		oldParts = new HashMap<BControl, Integer>(guide.getMap());
 		Iterator<BControl> iter = oldParts.keySet().iterator();
@@ -40,6 +42,7 @@ public class DeleteGuideCommand extends Command {
 		parent.removeGuide(guide);
 	}
 
+	@Override
 	public void undo() {
 		parent.addGuide(guide);
 		Iterator<BControl> iter = oldParts.keySet().iterator();

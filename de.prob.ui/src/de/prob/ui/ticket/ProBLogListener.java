@@ -18,6 +18,7 @@ public final class ProBLogListener implements ILogListener {
 	public ProBLogListener() {
 	}
 
+	@Override
 	public void logging(final IStatus status, final String plugin) {
 		if (display == null || display.isDisposed()) {
 			return;
@@ -25,6 +26,7 @@ public final class ProBLogListener implements ILogListener {
 
 		if (status.getSeverity() == IStatus.ERROR || status.getSeverity() == IStatus.WARNING) {
 			display.asyncExec(new Runnable() {
+				@Override
 				public void run() {
 					String title = (status.getSeverity() == IStatus.ERROR) ? "An Error occured"
 							: "Warning";

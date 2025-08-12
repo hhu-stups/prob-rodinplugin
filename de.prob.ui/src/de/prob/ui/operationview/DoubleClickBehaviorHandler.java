@@ -9,7 +9,7 @@ import org.eclipse.ui.handlers.RadioState;
 
 public class DoubleClickBehaviorHandler extends AbstractHandler implements
 		IHandler {
-
+	@Override
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
 		if (HandlerUtil.matchesRadioState(event))
 			return null; // we are already in the updated state - do nothing

@@ -27,6 +27,7 @@ public class RenameWizard extends Wizard {
 			setDescription("Rename a control");
 		}
 
+		@Override
 		public void createControl(final Composite parent) {
 
 			Composite composite = new Composite(parent, SWT.NONE);

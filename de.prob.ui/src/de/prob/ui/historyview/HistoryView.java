@@ -150,6 +150,7 @@ public class HistoryView extends StateBasedViewPart {
 
 	public void addColumns(final Collection<StaticStateElement> elements) {
 		final Runnable update = new Runnable() {
+			@Override
 			public void run() {
 				final Composite parent = tableViewer.getTable().getParent();
 				final TableColumnLayout layout = (TableColumnLayout) parent
@@ -296,14 +297,16 @@ public class HistoryView extends StateBasedViewPart {
 
 	private static class HistContentProvider implements
 			IStructuredContentProvider {
-
+		@Override
 		public Object[] getElements(final Object data) {
 			return data == null ? new HistViewItem[0] : (HistViewItem[]) data;
 		}
 
+		@Override
 		public void dispose() {
 		}
 
+		@Override
 		public void inputChanged(final Viewer arg0, final Object arg1,
 				final Object arg2) {
 		}
@@ -313,6 +316,7 @@ public class HistoryView extends StateBasedViewPart {
 			IDoubleClickListener {
 		private static final String EXCEPTION_MSG = "exception raised while trying to jump to state";
 
+		@Override
 		public void doubleClick(final DoubleClickEvent event) {
 			IStructuredSelection sel = (IStructuredSelection) event
 					.getSelection();

@@ -32,7 +32,7 @@ import de.bmotionstudio.gef.editor.observer.Observer;
 
 public class BControlTreeEditPart extends BMSAbstractTreeEditPart implements
 		PropertyChangeListener, IObserverListener {
-
+	@Override
 	public void propertyChange(final PropertyChangeEvent evt) {
 		if (evt.getPropertyName().equals(
 				BControlPropertyConstants.PROPERTY_ADD_CHILD)
@@ -85,6 +85,7 @@ public class BControlTreeEditPart extends BMSAbstractTreeEditPart implements
 
 	}
 
+	@Override
 	public void activate() {
 		if (!isActive()) {
 			super.activate();
@@ -93,6 +94,7 @@ public class BControlTreeEditPart extends BMSAbstractTreeEditPart implements
 		}
 	}
 
+	@Override
 	public void deactivate() {
 		if (isActive()) {
 			super.deactivate();

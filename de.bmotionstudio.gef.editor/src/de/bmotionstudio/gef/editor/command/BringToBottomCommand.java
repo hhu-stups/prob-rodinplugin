@@ -11,6 +11,7 @@ import de.bmotionstudio.gef.editor.model.BControlPropertyConstants;
 
 public class BringToBottomCommand extends AbstractBringToCommand {
 
+	@Override
 	public void execute() {
 		for (BControl control : getControlList()) {
 			BControl parent = control.getParent();
@@ -23,6 +24,7 @@ public class BringToBottomCommand extends AbstractBringToCommand {
 		}
 	}
 
+	@Override
 	public void undo() {
 		for (BControl control : getControlList()) {
 			BControl parent = control.getParent();

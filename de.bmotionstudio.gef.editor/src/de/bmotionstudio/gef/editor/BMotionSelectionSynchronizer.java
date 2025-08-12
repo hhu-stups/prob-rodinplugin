@@ -15,7 +15,7 @@ import org.eclipse.gef.ui.parts.TreeViewer;
 import de.bmotionstudio.gef.editor.model.BControl;
 
 public class BMotionSelectionSynchronizer extends SelectionSynchronizer {
-
+	@Override
 	protected EditPart convert(EditPartViewer viewer, EditPart part) {
 		EditPart p = super.convert(viewer, part);
 		if (viewer instanceof ScrollingGraphicalViewer

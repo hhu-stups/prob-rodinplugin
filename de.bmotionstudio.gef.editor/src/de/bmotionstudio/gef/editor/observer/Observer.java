@@ -57,6 +57,7 @@ public abstract class Observer extends AbstractExpressionControl implements
 	 * 
 	 * @return the cloned observer
 	 */
+	@Override
 	public Observer clone() throws CloneNotSupportedException {
 		return (Observer) super.clone();
 	}

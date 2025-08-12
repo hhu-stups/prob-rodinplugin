@@ -29,7 +29,7 @@ import de.prob.eventb.translator.TranslatorFactory;
 import de.prob.logging.Logger;
 
 public class ExportNewCoreHandler extends AbstractHandler implements IHandler {
-
+	@Override
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
 		final IEventBRoot root = getSelectedEventBRoot(event);
 		if (root != null) {

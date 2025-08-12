@@ -34,18 +34,22 @@ public class StateTreeExpressionSection extends AbstractStateTreeElement {
 		}
 	}
 
+	@Override
 	public StaticStateElement[] getChildren() {
 		return children.toArray(StateTreeElement.EMPTY_ARRAY);
 	}
 
+	@Override
 	public String getLabel() {
 		return label;
 	}
 
+	@Override
 	public boolean hasChildren() {
 		return !children.isEmpty();
 	}
 
+	@Override
 	public boolean hasChanged(State current, State last) {
 		return false;
 	}
@@ -56,6 +60,7 @@ public class StateTreeExpressionSection extends AbstractStateTreeElement {
 		this.children.add(child);
 	}
 
+	@Override
 	public StateDependendElement getValue(final State state) {
 		return new StateDependendElement(state, null,
 				EStateTreeElementProperty.NONBOOLEAN);

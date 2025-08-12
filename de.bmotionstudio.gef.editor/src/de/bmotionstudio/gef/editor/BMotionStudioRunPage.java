@@ -55,6 +55,7 @@ public class BMotionStudioRunPage extends GraphicalEditor {
 		return super.getAdapter(type);
 	}
 
+	@Override
 	public void selectionChanged(IWorkbenchPart part, ISelection selection) {
 		// ignore selection changed.
 	}
@@ -118,6 +119,7 @@ public class BMotionStudioRunPage extends GraphicalEditor {
 	/**
 	 * @see org.eclipse.gef.ui.parts.GraphicalEditor#configureGraphicalViewer()
 	 **/
+	@Override
 	protected void configureGraphicalViewer() {
 
 		double[] zoomLevels;
@@ -187,6 +189,7 @@ public class BMotionStudioRunPage extends GraphicalEditor {
 	/**
 	 * The run page editor should be never dirty!
 	 */
+	@Override
 	public boolean isDirty() {
 		return false;
 	}

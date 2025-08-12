@@ -88,6 +88,7 @@ class CounterExample implements ICounterExample {
 		doubleCheckFailed = b;
 	}
 
+	@Override
 	public boolean doubleCheckFailed() {
 		return doubleCheckFailed;
 	}

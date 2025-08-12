@@ -85,6 +85,7 @@ public class BCompositePart extends BMSAbstractEditPart {
 		return ((BControl) getModel()).getChildrenArray();
 	}
 
+	@Override
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public Object getAdapter(Class adapter) {
 		if (adapter == SnapToHelper.class) {

@@ -6,6 +6,8 @@
 
 package de.prob.ui.eventb;
 
+import de.prob.logging.Logger;
+
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.preference.PreferencePage;
@@ -95,16 +97,6 @@ public class ClassicPreferences extends PreferencePage implements
 		gridData2.horizontalSpan = 3;
 		versionRemark.setLayoutData(gridData2);
 
-		// Link link = new Link(pageComponent, SWT.BORDER);
-		// link
-		// .setText("This a very simple <A href=\"/downloads.php\">link</A> widget.");
-		// link.setSize(140, 40);
-		// link.addListener(SWT.Selection, new Listener() {
-		// public void handleEvent(final Event event) {
-		// System.out.println("Selection: " + event.text);
-		// }
-		// });
-
 		return pageComponent;
 	}
 
@@ -114,11 +106,12 @@ public class ClassicPreferences extends PreferencePage implements
 		try {
 			prefNode.flush();
 		} catch (BackingStoreException e) {
-			e.printStackTrace();
+			Logger.notifyUser("Failed to save ProB Standalone preferences", e);
 		}
 		return super.performOk();
 	}
 
+	@Override
 	public void init(final IWorkbench workbench) {
 		prefNode = Platform.getPreferencesService().getRootNode().node(
 				InstanceScope.SCOPE).node("prob_classic_preferences");

@@ -22,12 +22,14 @@ public class ReorderPartCommand extends Command {
 		this.newIndex = newIndex;
 	}
 
+	@Override
 	public void execute() {
 		oldIndex = parent.getChildrenArray().indexOf(child);
 		parent.removeChild(child);
 		parent.addChild(child, newIndex);
 	}
 
+	@Override
 	public void undo() {
 		parent.removeChild(child);
 		parent.addChild(child, oldIndex);

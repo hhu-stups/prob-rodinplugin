@@ -16,14 +16,17 @@ public class RemoveSchedulerEventCommand extends Command {
 	private BControl control;
 	private SchedulerEvent schedulerEvent;
 
+	@Override
 	public void execute() {
 		control.removeEvent(schedulerEvent.getEventID());
 	}
 
+	@Override
 	public boolean canExecute() {
 		return true;
 	}
 
+	@Override
 	public void undo() {
 		control.addEvent(schedulerEvent.getEventID(), schedulerEvent);
 	}

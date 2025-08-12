@@ -17,7 +17,7 @@ import org.eclipse.jface.viewers.Viewer;
 
 
 public class BMotionStudioContentProvider implements ITreeContentProvider {
-
+	@Override
 	public Object[] getChildren(final Object parentElement) {
 
 		List<Object> res = new ArrayList<Object>();
@@ -49,24 +49,29 @@ public class BMotionStudioContentProvider implements ITreeContentProvider {
 
 	}
 
+	@Override
 	public Object getParent(final Object element) {
 		// do nothing
 		return null;
 	}
 
+	@Override
 	public boolean hasChildren(final Object element) {
 		return false;
 	}
 
+	@Override
 	public Object[] getElements(final Object inputElement) {
 		return getChildren(inputElement);
 	}
 
+	@Override
 	public void dispose() {
 		// do nothing
 
 	}
 
+	@Override
 	public void inputChanged(final Viewer viewer, final Object oldInput,
 			final Object newInput) {
 		// do nothing

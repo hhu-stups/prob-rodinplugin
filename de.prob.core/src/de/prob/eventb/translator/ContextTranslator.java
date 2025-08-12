@@ -1,5 +1,5 @@
 /** 
- * (c) 2009 Lehrstuhl fuer Softwaretechnik und Programmiersprachen, 
+ * (c) 2009-2024 Lehrstuhl fuer Softwaretechnik und Programmiersprachen, 
  * Heinrich Heine Universitaet Duesseldorf
  * This software is licenced under EPL 1.0 (http://www.eclipse.org/org/documents/epl-v10.html) 
  * */
@@ -8,6 +8,7 @@ package de.prob.eventb.translator;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -17,6 +18,7 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eventb.core.EventBAttributes;
 import org.eventb.core.IAxiom;
+import org.eventb.core.ICarrierSet;
 import org.eventb.core.IContextRoot;
 import org.eventb.core.IEventBRoot;
 import org.eventb.core.IExtendsContext;
@@ -27,6 +29,7 @@ import org.eventb.core.IPSRoot;
 import org.eventb.core.IPSStatus;
 import org.eventb.core.ISCAxiom;
 import org.eventb.core.ISCCarrierSet;
+import org.eventb.core.IConstant;
 import org.eventb.core.ISCConstant;
 import org.eventb.core.ISCContext;
 import org.eventb.core.ISCContextRoot;
@@ -47,7 +50,10 @@ import de.be4.classicalb.core.parser.node.AAbstractConstantsContextClause;
 import de.be4.classicalb.core.parser.node.AAxiomsContextClause;
 import de.be4.classicalb.core.parser.node.AConstantsContextClause;
 import de.be4.classicalb.core.parser.node.ADeferredSetSet;
+import de.be4.classicalb.core.parser.node.ADescriptionExpression;
+import de.be4.classicalb.core.parser.node.ADescriptionPragma;
 import de.be4.classicalb.core.parser.node.ADescriptionPredicate;
+import de.be4.classicalb.core.parser.node.ADescriptionSet;
 import de.be4.classicalb.core.parser.node.AEventBContextParseUnit;
 import de.be4.classicalb.core.parser.node.AExtendsContextClause;
 import de.be4.classicalb.core.parser.node.AIdentifierExpression;
@@ -312,7 +318,18 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 		for (final ISCCarrierSet carrierSet : carrierSets) {
 			final ADeferredSetSet deferredSet = new ADeferredSetSet(Arrays
 					.asList(new TIdentifierLiteral[] { new TIdentifierLiteral(carrierSet.getIdentifierString()) }));
-			setList.add(deferredSet);
+
+			final ICarrierSet ucs = (ICarrierSet) carrierSet.getSource(); // comments only attached in unchecked source
+			if (ucs.hasAttribute(EventBAttributes.COMMENT_ATTRIBUTE)) {
+				// The carrier set has a comment attached to it, we convert it to a description pragma:
+				final String commentString = ucs.getAttributeValue(EventBAttributes.COMMENT_ATTRIBUTE);
+				final TPragmaFreeText desc = new TPragmaFreeText(commentString);
+				ADescriptionPragma descPragma = new ADescriptionPragma(Collections.singletonList(desc));
+				final ADescriptionSet descid = new ADescriptionSet(descPragma,deferredSet);
+				setList.add(descid);
+			} else {
+				setList.add(deferredSet);
+			}
 		}
 		return new ASetsContextClause(setList);
 	}
@@ -339,12 +356,27 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 				// the attribute did not exist
 			}
 
-			if (isAbstractConstant) {
-				abstractConstants.add(new AIdentifierExpression(Arrays
-						.asList(new TIdentifierLiteral[] { new TIdentifierLiteral(constant.getIdentifierString()) })));
+			final AIdentifierExpression cstid = new AIdentifierExpression(Arrays
+				.asList(new TIdentifierLiteral[] { new TIdentifierLiteral(constant.getIdentifierString()) }));
+
+			final IConstant ucc = (IConstant) constant.getSource(); // comments only attached in unchecked source
+			if (ucc.hasAttribute(EventBAttributes.COMMENT_ATTRIBUTE)) {
+				// The constant has a comment attached to it, we convert it to a description pragma:
+				final String commentString = ucc.getAttributeValue(EventBAttributes.COMMENT_ATTRIBUTE);
+				final TPragmaFreeText desc = new TPragmaFreeText(commentString);
+				ADescriptionPragma descPragma = new ADescriptionPragma(Collections.singletonList(desc));
+				final ADescriptionExpression descid = new ADescriptionExpression(descPragma,cstid);
+				if (isAbstractConstant) {
+					abstractConstants.add(descid);
+				} else {
+					concreteConstants.add(descid);
+				}
 			} else {
-				concreteConstants.add(new AIdentifierExpression(Arrays
-						.asList(new TIdentifierLiteral[] { new TIdentifierLiteral(constant.getIdentifierString()) })));
+				if (isAbstractConstant) {
+					abstractConstants.add(cstid);
+				} else {
+					concreteConstants.add(cstid);
+				}
 			}
 		}
 
@@ -379,10 +411,11 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 				final PPredicate predicate = translatePredicate(ff, te, element);
 				final IAxiom uca = (IAxiom) element.getSource(); // comments only attached in unchecked source
 				if (uca.hasAttribute(EventBAttributes.COMMENT_ATTRIBUTE)) {
+					// The axiom has a comment attached to it, we convert it to a description pragma:
 					final String commentString = uca.getAttributeValue(EventBAttributes.COMMENT_ATTRIBUTE);
-					//System.out.println("Axiom/theorem " + element + " has description " + commentString);
 					final TPragmaFreeText desc = new TPragmaFreeText(commentString);
-					final ADescriptionPredicate dpred = new ADescriptionPredicate(desc,predicate);
+					ADescriptionPragma descPragma = new ADescriptionPragma(Collections.singletonList(desc));
+					ADescriptionPredicate dpred = new ADescriptionPredicate(descPragma, predicate);
 					list.add(dpred);
 					labelMapping.put(dpred, element);
 				} else {

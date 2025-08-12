@@ -1,5 +1,5 @@
 /** 
- * (c) 2009 Lehrstuhl fuer Softwaretechnik und Programmiersprachen, 
+ * (c) 2009-2025 Lehrstuhl fuer Softwaretechnik und Programmiersprachen, 
  * Heinrich Heine Universitaet Duesseldorf
  * This software is licenced under EPL 1.0 (http://www.eclipse.org/org/documents/epl-v10.html) 
  * */
@@ -61,14 +61,21 @@ public class ProblemHandler {
 	 * 
 	 * @param errors
 	 *            The List of Error Messages from ProB
+	 * @param onlyWarnings
+	 *            A boolean which is true if only warnings occured
 	 * @throws PrologException
 	 */
 	public static void raisePrologException(final List<String> errors,
 			final boolean onlyWarnings) throws PrologException {
-		final String message = "ProB reported errors:\n"
+		final String message = "ProB reported "
+				+ ((onlyWarnings) ? "warnings:\n" :  "errors:\n")
 				+ String.join("\n", errors);
 		Logger.notifyUser(message);
-		throw new PrologException(message, onlyWarnings);
+		if (! onlyWarnings) {
+			throw new PrologException(message, onlyWarnings);
+			// if we throw the exception for warnings then the command will fail
+			// this will prevent e.g. animating machines with static check warnings
+		}
 	}
 
 	/**

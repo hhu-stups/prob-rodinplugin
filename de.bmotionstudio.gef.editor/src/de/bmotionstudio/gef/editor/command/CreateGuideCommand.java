@@ -23,10 +23,12 @@ public class CreateGuideCommand extends Command {
 		this.position = position;
 	}
 
+	@Override
 	public boolean canUndo() {
 		return true;
 	}
 
+	@Override
 	public void execute() {
 		if (guide == null)
 			guide = new BMotionGuide(!parent.isHorizontal());
@@ -34,6 +36,7 @@ public class CreateGuideCommand extends Command {
 		parent.addGuide(guide);
 	}
 
+	@Override
 	public void undo() {
 		parent.removeGuide(guide);
 	}

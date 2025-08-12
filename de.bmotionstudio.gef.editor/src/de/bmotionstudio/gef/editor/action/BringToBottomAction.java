@@ -29,6 +29,7 @@ public class BringToBottomAction extends SelectionAction {
 		setLazyEnablementCalculation(false);
 	}
 
+	@Override
 	protected void init() {
 		setText("Bring to bottom");
 		setToolTipText("Bring to bottom");
@@ -60,6 +61,7 @@ public class BringToBottomAction extends SelectionAction {
 		return command;
 	}
 
+	@Override
 	public void run() {
 
 		List<BControl> modelList = new ArrayList<BControl>();

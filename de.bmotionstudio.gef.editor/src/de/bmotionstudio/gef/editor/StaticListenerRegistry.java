@@ -46,18 +46,21 @@ public class StaticListenerRegistry implements ILifecycleListener,
 		animationListeners.remove(listener);
 	}
 
+	@Override
 	public void reset() {
 		for (final ILifecycleListener listener : lifeCycleListeners) {
 			listener.reset();
 		}
 	}
 
+	@Override
 	public void computedState(final State state) {
 		for (final IComputationListener listener : computationListeners) {
 			listener.computedState(state);
 		}
 	}
 
+	@Override
 	public void currentStateChanged(final State currentState,
 			final Operation operation) {
 		for (final IAnimationListener listener : animationListeners) {

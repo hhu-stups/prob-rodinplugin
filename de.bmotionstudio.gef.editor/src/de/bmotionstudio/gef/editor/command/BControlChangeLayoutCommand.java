@@ -16,14 +16,17 @@ public class BControlChangeLayoutCommand extends AbstractLayoutCommand {
 	private Rectangle newLayout;
 	private Rectangle oldLayout;
 
+	@Override
 	public void execute() {
 		control.setLayout(newLayout);
 	}
 
+	@Override
 	public void setConstraint(Rectangle rect) {
 		newLayout = rect;
 	}
 
+	@Override
 	public void setModel(Object model) {
 		control = (BControl) model;
 		oldLayout = control.getLayout();

@@ -17,6 +17,7 @@ public class SetAttributeObject extends ObserverEvalObject implements Cloneable 
 		super(type, eval);
 	}
 
+	@Override
 	public SetAttributeObject clone() throws CloneNotSupportedException {
 		return (SetAttributeObject) super.clone();
 	}

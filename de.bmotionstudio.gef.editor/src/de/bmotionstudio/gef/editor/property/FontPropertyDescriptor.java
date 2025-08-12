@@ -44,6 +44,7 @@ public class FontPropertyDescriptor extends PropertyDescriptor {
 	/**
 	 * @see org.eclipse.ui.views.properties.IPropertyDescriptor#createPropertyEditor(Composite)
 	 */
+	@Override
 	public CellEditor createPropertyEditor(Composite parent) {
 		CellEditor editor = new FontDialogCellEditor(parent);
 		if (getValidator() != null)

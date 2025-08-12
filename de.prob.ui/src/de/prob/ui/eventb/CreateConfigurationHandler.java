@@ -13,7 +13,7 @@ import de.prob.ui.PerspectiveFactory;
 
 public class CreateConfigurationHandler extends AbstractHandler implements
 		IHandler {
-
+	@Override
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
 
 		ISelection fSelection = HandlerUtil.getCurrentSelection(event);

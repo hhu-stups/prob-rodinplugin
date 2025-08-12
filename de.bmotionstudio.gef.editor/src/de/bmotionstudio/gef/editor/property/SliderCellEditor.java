@@ -47,12 +47,14 @@ public class SliderCellEditor extends CellEditor {
 	 * Internal class for laying out the dialog.
 	 */
 	private class SliderSampleCellLayout extends Layout {
+		@Override
 		public void layout(Composite editor, boolean force) {
 			Rectangle bounds = editor.getClientArea();
 			slider.setBounds(30, 0, bounds.width - 30, bounds.height);
 			countLabel.setBounds(5, 1, 25, bounds.height);
 		}
 
+		@Override
 		public Point computeSize(Composite editor, int wHint, int hHint,
 				boolean force) {
 			if (wHint != SWT.DEFAULT && hHint != SWT.DEFAULT) {
@@ -125,6 +127,7 @@ public class SliderCellEditor extends CellEditor {
 		return result;
 	}
 
+	@Override
 	protected Control createControl(Composite parent) {
 		Font font = parent.getFont();
 		Color bg = parent.getBackground();
@@ -143,6 +146,7 @@ public class SliderCellEditor extends CellEditor {
 
 		slider.addFocusListener(getButtonFocusListener());
 		slider.addListener(SWT.Selection, new Listener() {
+			@Override
 			public void handleEvent(Event event) {
 				slider.removeFocusListener(getButtonFocusListener());
 
@@ -163,6 +167,7 @@ public class SliderCellEditor extends CellEditor {
 		});
 
 		slider.addListener(SWT.MouseUp, new Listener() {
+			@Override
 			public void handleEvent(Event event) {
 				fireApplyEditorValue();
 			}
@@ -177,6 +182,7 @@ public class SliderCellEditor extends CellEditor {
 	 * Override in order to remove the button's focus listener if
 	 * the celleditor is deactivating.
 	 */
+	@Override
 	public void deactivate() {
 		if (slider != null && !slider.isDisposed()) {
 			slider.removeFocusListener(getButtonFocusListener());
@@ -185,6 +191,7 @@ public class SliderCellEditor extends CellEditor {
 		super.deactivate();
 	}
 
+	@Override
 	protected Object doGetValue() {
 		return value;
 	}
@@ -192,6 +199,7 @@ public class SliderCellEditor extends CellEditor {
 	/**
 	 * The focus is set to the cell editor's button.
 	 */
+	@Override
 	protected void doSetFocus() {
 		slider.setFocus(); // add a FocusListener to the button
 		slider.addFocusListener(getButtonFocusListener());
@@ -205,10 +213,12 @@ public class SliderCellEditor extends CellEditor {
 	private FocusListener getButtonFocusListener() {
 		if (buttonFocusListener == null) {
 			buttonFocusListener = new FocusListener() {
+				@Override
 				public void focusGained(FocusEvent e) {
 					// Do nothing
 				}
 
+				@Override
 				public void focusLost(FocusEvent e) {
 					SliderCellEditor.this.focusLost();
 				}
@@ -218,6 +228,7 @@ public class SliderCellEditor extends CellEditor {
 		return buttonFocusListener;
 	}
 
+	@Override
 	protected void doSetValue(Object value) {
 		this.value = value;
 		updateContents(value);

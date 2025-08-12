@@ -70,7 +70,7 @@ public class StateErrorView extends StateBasedViewPart {
 	}
 
 	private class ErrorSelection implements ISelectionChangedListener {
-
+		@Override
 		public void selectionChanged(final SelectionChangedEvent event) {
 			IStructuredSelection selection = (IStructuredSelection) event
 					.getSelection();

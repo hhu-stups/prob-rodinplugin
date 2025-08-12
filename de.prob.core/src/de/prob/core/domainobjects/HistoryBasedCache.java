@@ -24,11 +24,13 @@ public class HistoryBasedCache<T> implements HistoryListener {
 		}
 	}
 
+	@Override
 	public void stateEntersHistory(final State state, final int position) {
 		final Integer counter = stateCounter.get(state);
 		stateCounter.put(state, counter == null ? 1 : counter + 1);
 	}
 
+	@Override
 	public void stateLeavesHistory(final State state, final int position) {
 		final Integer counter = stateCounter.get(state);
 		if (counter != null) {

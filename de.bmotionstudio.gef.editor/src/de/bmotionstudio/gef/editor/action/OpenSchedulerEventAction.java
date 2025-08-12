@@ -34,6 +34,7 @@ public class OpenSchedulerEventAction extends SelectionAction {
 		setLazyEnablementCalculation(true);
 	}
 
+	@Override
 	protected void init() {
 		setEnabled(false);
 	}
@@ -43,6 +44,7 @@ public class OpenSchedulerEventAction extends SelectionAction {
 		return true;
 	}
 
+	@Override
 	public void run() {
 
 		BControl bcontrol = getControl();

@@ -63,6 +63,7 @@ public class ExecuteOperationByPredicateMulti extends SchedulerEvent {
 		return operationList;
 	}
 
+	@Override
 	public ExecuteOperationByPredicateMulti clone()
 			throws CloneNotSupportedException {
 		ExecuteOperationByPredicateMulti nse = (ExecuteOperationByPredicateMulti) super

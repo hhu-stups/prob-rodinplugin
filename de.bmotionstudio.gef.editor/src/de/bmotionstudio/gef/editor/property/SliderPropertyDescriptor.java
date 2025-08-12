@@ -16,6 +16,7 @@ public class SliderPropertyDescriptor extends PropertyDescriptor {
 		super(id, displayName);
 	}
 
+	@Override
 	public CellEditor createPropertyEditor(Composite parent) {
 		CellEditor editor = new SliderCellEditor(parent);
 		if (getValidator() != null) {

@@ -62,6 +62,7 @@ public class ObserverEvalObject extends BindingObject implements Cloneable {
 		return eval;
 	}
 
+	@Override
 	public ObserverEvalObject clone() throws CloneNotSupportedException {
 		return (ObserverEvalObject) super.clone();
 	}

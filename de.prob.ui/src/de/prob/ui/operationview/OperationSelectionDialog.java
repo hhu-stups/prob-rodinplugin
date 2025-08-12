@@ -188,10 +188,11 @@ public class OperationSelectionDialog extends TrayDialog {
 		btSwitchOperation = new Button(gpOperations, SWT.PUSH);
 		btSwitchOperation.setText("Show/Hide equal columns");
 		btSwitchOperation.addSelectionListener(new SelectionListener() {
-
+			@Override
 			public void widgetDefaultSelected(final SelectionEvent e) {
 			}
 
+			@Override
 			public void widgetSelected(final SelectionEvent e) {
 				hideSameArguments();
 			}
@@ -434,7 +435,7 @@ public class OperationSelectionDialog extends TrayDialog {
 		tbvOps.setLabelProvider(new OperationsLabelProvider());
 		tbvOps.setInput(opList);
 		tbvOps.addDoubleClickListener(new IDoubleClickListener() {
-
+			@Override
 			public void doubleClick(final DoubleClickEvent event) {
 				okPressed();
 			}
@@ -455,13 +456,14 @@ public class OperationSelectionDialog extends TrayDialog {
 			column.getColumn().setResizable(true);
 			column.getColumn().pack();
 			column.getColumn().addSelectionListener(new SelectionListener() {
-
+				@Override
 				public void widgetDefaultSelected(final SelectionEvent e) {
 					hiddenColumns.set(index, !hiddenColumns.get(index));
 					tbViewer.refresh();
 					packTableColumns(tbViewer);
 				}
 
+				@Override
 				public void widgetSelected(final SelectionEvent e) {
 				}
 			});
@@ -494,10 +496,12 @@ public class OperationSelectionDialog extends TrayDialog {
 
 	private class OperationsLabelProvider extends LabelProvider implements
 			ITableLabelProvider {
+		@Override
 		public Image getColumnImage(final Object element, final int columnIndex) {
 			return null;
 		}
 
+		@Override
 		public String getColumnText(final Object element, final int columnIndex) {
 			if (hiddenColumns.get(columnIndex))
 				return "-";
@@ -542,14 +546,16 @@ public class OperationSelectionDialog extends TrayDialog {
 
 	private static class OperationsContentProvider implements
 			IStructuredContentProvider {
-
+		@Override
 		public void dispose() {
 		}
 
+		@Override
 		public void inputChanged(final Viewer viewer, final Object oldInput,
 				final Object newInput) {
 		}
 
+		@Override
 		@SuppressWarnings("unchecked")
 		public Object[] getElements(final Object inputElement) {
 			final Collection<Operation> operations = (List<Operation>) inputElement;
@@ -569,7 +575,7 @@ public class OperationSelectionDialog extends TrayDialog {
 
 	private class ArgRepLabelProvider extends LabelProvider implements
 			ITableLabelProvider {
-
+		@Override
 		public Image getColumnImage(final Object element, final int columnIndex) {
 			if (columnIndex == 0) {
 				if (hiddenArguments.contains(element))
@@ -584,6 +590,7 @@ public class OperationSelectionDialog extends TrayDialog {
 
 		}
 
+		@Override
 		public String getColumnText(final Object element, final int columnIndex) {
 			if (columnIndex == 1) {
 				int index = arguments.indexOf(element);
@@ -601,14 +608,16 @@ public class OperationSelectionDialog extends TrayDialog {
 	 * method.
 	 */
 	private class ArgRepContentProvider implements IStructuredContentProvider {
-
+		@Override
 		public void dispose() {
 		}
 
+		@Override
 		public void inputChanged(final Viewer viewer, final Object oldInput,
 				final Object newInput) {
 		}
 
+		@Override
 		@SuppressWarnings("unchecked")
 		public Object[] getElements(final Object inputElement) {
 			List<Operation> operations = (List<Operation>) inputElement;

@@ -18,6 +18,7 @@ public class FileInputValidator implements IInputValidator {
 		this.prj = (IEventBProject) prj.getAdapter(IEventBProject.class);
 	}
 
+	@Override
 	public String isValid(final String newText) {
 		if (newText.equals("")) {
 			return "Name must not be empty.";

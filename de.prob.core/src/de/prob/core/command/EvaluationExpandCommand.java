@@ -30,6 +30,7 @@ public class EvaluationExpandCommand implements IComposableCommand {
 		this.evaluationElement = evaluationElement;
 	}
 
+	@Override
 	public void processResult(
 			final ISimplifiedROMap<String, PrologTerm> bindings)
 			throws CommandException {
@@ -37,6 +38,7 @@ public class EvaluationExpandCommand implements IComposableCommand {
 		children = (ListPrologTerm) bindings.get(CHILDREN_VARNAME);
 	}
 
+	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
 		pto.openTerm("evaluation_expand_formula");
 		evaluationElement.toTermOutput(pto);

@@ -29,6 +29,7 @@ public class ToggleObjectImage extends ObserverEvalObject implements Cloneable {
 		firePropertyChange("image", oldValue, this.image);
 	}
 
+	@Override
 	public ToggleObjectImage clone() throws CloneNotSupportedException {
 		return (ToggleObjectImage) super.clone();
 	}

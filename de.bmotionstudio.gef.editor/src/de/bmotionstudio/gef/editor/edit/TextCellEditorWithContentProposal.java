@@ -42,12 +42,13 @@ public class TextCellEditorWithContentProposal extends TextCellEditor {
 		// correctly
 		contentProposalAdapter
 				.addContentProposalListener(new IContentProposalListener2() {
-
+					@Override
 					public void proposalPopupClosed(
 							ContentProposalAdapter adapter) {
 						popupOpen = false;
 					}
 
+					@Override
 					public void proposalPopupOpened(
 							ContentProposalAdapter adapter) {
 						popupOpen = true;
@@ -64,6 +65,7 @@ public class TextCellEditorWithContentProposal extends TextCellEditor {
 		return contentProposalAdapter;
 	}
 
+	@Override
 	protected void focusLost() {
 		if (!popupOpen) {
 			// Focus lost deactivates the cell editor.
@@ -73,6 +75,7 @@ public class TextCellEditorWithContentProposal extends TextCellEditor {
 		}
 	}
 
+	@Override
 	protected boolean dependsOnExternalFocusListener() {
 		// Always return false;
 		// Otherwise, the ColumnViewerEditor will install an additional focus

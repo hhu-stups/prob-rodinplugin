@@ -20,6 +20,7 @@ public class BMotionFileInputValidator implements IInputValidator {
 		this.prj = prj;
 	}
 
+	@Override
 	public String isValid(String newText) {
 		IRodinFile rodinFile = prj.getRodinFile(newText + "."
 				+ BMotionEditorPlugin.FILEEXT_STUDIO);

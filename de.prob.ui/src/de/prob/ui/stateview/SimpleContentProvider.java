@@ -20,10 +20,11 @@ import de.prob.ui.stateview.LabelViewer.ISimpleContentProvider;
  */
 public abstract class SimpleContentProvider implements
 		LabelViewer.ISimpleContentProvider {
-
+	@Override
 	public void dispose() {
 	}
 
+	@Override
 	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 	}
 

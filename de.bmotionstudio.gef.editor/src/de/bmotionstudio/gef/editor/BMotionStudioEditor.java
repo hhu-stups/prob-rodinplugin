@@ -89,6 +89,7 @@ public class BMotionStudioEditor extends MultiPageEditorPart implements
 		fireRunPageRemovedListener();
 		if (runPage != null) {
 			Display.getDefault().asyncExec(new Runnable() {
+				@Override
 				public void run() {
 					removePage(1);
 				}
@@ -245,6 +246,7 @@ public class BMotionStudioEditor extends MultiPageEditorPart implements
 		return this.runPage;
 	}
 
+	@Override
 	public void reset() {
 		removeRunPage();
 	}

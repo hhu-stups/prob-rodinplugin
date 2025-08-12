@@ -28,10 +28,12 @@ public abstract class SetLikeProbType extends ProbDataType {
 		this.innerType = innerType;
 	}
 
+	@Override
 	public int getOperatorPriority() {
 		return 500;
 	}
 
+	@Override
 	public void prettyprint(final StringBuilder builder) {
 		builder.append(variant);
 		builder.append('(');

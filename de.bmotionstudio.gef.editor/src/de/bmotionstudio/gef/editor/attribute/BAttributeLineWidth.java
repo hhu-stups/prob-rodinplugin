@@ -7,6 +7,7 @@ import de.bmotionstudio.gef.editor.property.IntegerPropertyDescriptor;
 
 public class BAttributeLineWidth extends AbstractAttribute {
 
+	@Override
 	public PropertyDescriptor preparePropertyDescriptor() {
 		IntegerPropertyDescriptor descriptor = new IntegerPropertyDescriptor(
 				getID(), getName());

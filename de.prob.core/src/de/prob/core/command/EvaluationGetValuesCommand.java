@@ -155,6 +155,7 @@ public class EvaluationGetValuesCommand implements IComposableCommand {
 		this.elements = new ArrayList<EvaluationElement>(elements);
 	}
 
+	@Override
 	public void processResult(
 			final ISimplifiedROMap<String, PrologTerm> bindings)
 			throws CommandException {
@@ -209,6 +210,7 @@ public class EvaluationGetValuesCommand implements IComposableCommand {
 		return results;
 	}
 
+	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
 		pto.openTerm(COMMAND_NAME);
 		pto.openList();

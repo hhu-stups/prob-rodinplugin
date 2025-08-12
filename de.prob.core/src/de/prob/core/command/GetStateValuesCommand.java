@@ -31,6 +31,7 @@ public final class GetStateValuesCommand implements IComposableCommand {
 		return result;
 	}
 
+	@Override
 	public void processResult(
 			final ISimplifiedROMap<String, PrologTerm> bindings)
 			throws CommandException {
@@ -62,6 +63,7 @@ public final class GetStateValuesCommand implements IComposableCommand {
 		result = variables;
 	}
 
+	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
 		pto.openTerm("getStateValues").printAtomOrNumber(stateId)
 				.printVariable("Bindings").closeTerm();
