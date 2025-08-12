@@ -433,18 +433,6 @@ def artifact(artifactId,versionNumber) {"""
 	<artifactId>${artifactId}</artifactId>
 	<version>${versionNumber}</version>
 	<packaging>eclipse-plugin</packaging>
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.eclipse.tycho</groupId>
-				<artifactId>target-platform-configuration</artifactId>
-				<version>\${tycho-version}</version>
-				<configuration>
-					<executionEnvironment>\${buildTimeExecutionEnvironment}</executionEnvironment>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
 """}
 
 def testArtifact(artifactId,versionNumber) {"""
@@ -454,14 +442,6 @@ def testArtifact(artifactId,versionNumber) {"""
 	<packaging>eclipse-test-plugin</packaging>
 	<build>
 		<plugins>
-			<plugin>
-				<groupId>org.eclipse.tycho</groupId>
-				<artifactId>target-platform-configuration</artifactId>
-				<version>\${tycho-version}</version>
-				<configuration>
-					<executionEnvironment>\${buildTimeExecutionEnvironment}</executionEnvironment>
-				</configuration>
-			</plugin>
 			<plugin>
 				<groupId>org.eclipse.tycho</groupId>
 				<artifactId>tycho-surefire-plugin</artifactId>
@@ -536,6 +516,14 @@ def endRepos() {"""
 	</repositories>
 	<build>
 		<plugins>
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>target-platform-configuration</artifactId>
+				<version>\${tycho-version}</version>
+				<configuration>
+					<executionEnvironment>\${buildTimeExecutionEnvironment}</executionEnvironment>
+				</configuration>
+			</plugin>
 			<plugin>
 				<!-- enable tycho build extension -->
 				<groupId>org.eclipse.tycho</groupId>
