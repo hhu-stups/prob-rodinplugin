@@ -30,7 +30,10 @@ import groovy.io.FileType
 // Tycho 1.3 was the first version that could target Java 11.
 // Tycho 1.1 was the first version that could target Java 9.
 
-project.ext.tychoVersion = "4.0.13"
+// Tycho 4.0.11 and later currently have issues with SourceForge's HTTP redirect chains,
+// so temporarily stay on Tycho 4.0.10 until that's fixed in Tycho.
+// https://github.com/eclipse-tycho/tycho/issues/5250
+project.ext.tychoVersion = "4.0.10"
 
 try {
 	workspacePath = workspacePath
