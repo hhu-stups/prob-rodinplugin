@@ -411,15 +411,15 @@ task createPoms(dependsOn: [createParent, createRepository, subprojects.deploy])
 
 
 task install(dependsOn: [createPoms], type: Exec) {
-	description = "\tExecutes a 'mvn install' of the parent pom.xml and auto-generates Tycho Poms"
-	commandLine 'mvn', 'install', '-f', workspacePath + parentID + '/pom.xml'
+	description = "\tExecutes a 'mvn verify' of the parent pom.xml and auto-generates Tycho Poms"
+	commandLine 'mvn', 'verify', '-f', workspacePath + parentID + '/pom.xml'
 }
 
 task prepareMaven(dependsOn: [subprojects.collectDependencies, createPoms])
 
 task completeInstall(dependsOn: [prepareMaven], type: Exec) {
-	description = "\tCopies dependencies into dependencyFolder of each subproject and executes a 'mvn install' of the parent pom.xml and auto-generates Tycho Poms"
-	commandLine 'mvn', 'install', '-f', workspacePath + parentID + '/pom.xml'
+	description = "\tCopies dependencies into dependencyFolder of each subproject and executes a 'mvn verify' of the parent pom.xml and auto-generates Tycho Poms"
+	commandLine 'mvn', 'verify', '-f', workspacePath + parentID + '/pom.xml'
 }
 
 

@@ -38,7 +38,7 @@ After cloning the repository, run these commands in the repository root:
 
 ```sh
 $ ./gradlew prepareMaven
-$ mvn -f de.prob.parent/pom.xml install
+$ mvn -f de.prob.parent/pom.xml verify
 ```
 
 Adding the -U flag to force re-loading dependencies does not (seem to) work.
