@@ -11,8 +11,6 @@
 
 apply plugin: 'base'
 
-import groovy.io.FileType
-
 // Java and Maven version requirements at build time, depending on the major version of Tycho:
 // Tycho 5: Java 21, Maven 3.9
 // Tycho 4: Java 17, Maven 3.9
