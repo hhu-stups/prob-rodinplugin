@@ -588,7 +588,3 @@ def feature(artifactId, versionNumber) {"""\
 </project>
 """}
 // end of feature pom
-
-// Build Script can be executed via gradle install
-// For a complete classPath Refresh please execute 'gradle deleteFromClassPath setClassPath'
-// Pom Generation can be executed via gradle deploy
