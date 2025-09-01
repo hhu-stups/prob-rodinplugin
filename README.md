@@ -28,8 +28,8 @@ To build the Prolog binaries you require a [SICStus 4](https://sicstus.sics.se/)
 
 ### Requirements
 
-* Java 11 or later
-* Maven 3 or later (Maven 3.9 recommended)
+* Java 21 or later (at runtime, the plugin is still compatible with Java 11)
+* Maven 3.9 or later
 * Gradle (will be downloaded automatically by the Gradle wrapper)
 
 ### Building without Eclipse
