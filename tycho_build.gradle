@@ -4,8 +4,6 @@
 	Executing the Build Script and download Dependencies can be executed via 'gradle completeInstall'
 	For a complete classPath Refresh please execute 'gradle deleteFromClassPath setClassPath'
 	Pom Generation can be executed via gradle deploy
-
-	If you have a product definition please add a buildProduct = true to your main build.gradle script
 */
 
 
