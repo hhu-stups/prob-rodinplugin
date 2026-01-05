@@ -259,21 +259,18 @@ public class TranslationVisitor implements ISimpleVisitor {
 	}
 
 	private PPredicate recurseOR(final List<PPredicate> list) {
-		final PPredicate right = list.size() == 2 ? list.get(1)
-				: recurseOR(list.subList(1, list.size()));
-		return new ADisjunctPredicate(list.get(0), right);
+		final PPredicate left = list.size() == 2 ? list.get(0) : recurseOR(list.subList(0, list.size()-1));
+		return new ADisjunctPredicate(left, list.get(list.size()-1));
 	}
 
 	private PPredicate recurseAND(final List<PPredicate> list) {
-		final PPredicate right = list.size() == 2 ? list.get(1)
-				: recurseAND(list.subList(1, list.size()));
-		return new AConjunctPredicate(list.get(0), right);
+		final PPredicate left = list.size() == 2 ? list.get(0) : recurseAND(list.subList(0, list.size()-1));
+		return new AConjunctPredicate(left, list.get(list.size()-1));
 	}
 
 	private PPredicate recurseEQV(final List<PPredicate> list) {
-		final PPredicate right = list.size() == 2 ? list.get(1)
-				: recurseEQV(list.subList(1, list.size()));
-		return new AEquivalencePredicate(list.get(0), right);
+		final PPredicate left = list.size() == 2 ? list.get(0) : recurseEQV(list.subList(0, list.size()-1));
+		return new AEquivalencePredicate(left, list.get(list.size()-1));
 	}
 
 	@Override
