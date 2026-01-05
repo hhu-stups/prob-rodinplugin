@@ -6,6 +6,7 @@
 
 package de.prob.eventb.translator.internal;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -498,9 +499,11 @@ public class TranslationVisitor implements ISimpleVisitor {
 
 	@Override
 	public void visitIntegerLiteral(final IntegerLiteral expression) {
-		final String value = expression.getValue().toString();
-		pushExpression(expression, new AIntegerExpression(new TIntegerLiteral(
-				value)));
+		final BigInteger value = expression.getValue();
+		PExpression intExpr = (value.signum() == -1)
+				? new AUnaryMinusExpression(new AIntegerExpression(new TIntegerLiteral(value.abs().toString())))
+				: new AIntegerExpression(new TIntegerLiteral(value.toString()));
+		pushExpression(expression, intExpr);
 	}
 
 	@Override
