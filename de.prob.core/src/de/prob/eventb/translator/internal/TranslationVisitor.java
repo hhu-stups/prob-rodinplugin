@@ -69,6 +69,16 @@ public class TranslationVisitor implements ISimpleVisitor {
 	private final LookupStack<PSubstitution> substitutions = new LookupStack<PSubstitution>();
 	private final LookupStack<String> boundVariables = new LookupStack<String>();
 
+	private final boolean addTyping;
+
+	public TranslationVisitor() {
+		this(true);
+	}
+
+	public TranslationVisitor(final boolean addTyping) {
+		this.addTyping = addTyping;
+	}
+
 	@Override
 	public void visitAssociativeExpression(
 			final AssociativeExpression expression) {
@@ -610,6 +620,8 @@ public class TranslationVisitor implements ISimpleVisitor {
 	 */
 	private PPredicate addTypesToPredicate(PPredicate predicate,
 			BoundIdentDecl[] decls) {
+		if (!addTyping)
+			return predicate;
 		for (int i = decls.length; i > 0; i--) {
 			final BoundIdentDecl decl = decls[i - 1];
 			final Type type = decl.getType();

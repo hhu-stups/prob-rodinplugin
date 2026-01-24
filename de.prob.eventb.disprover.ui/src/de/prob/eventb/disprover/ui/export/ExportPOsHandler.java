@@ -48,6 +48,10 @@ public class ExportPOsHandler extends AbstractHandler implements IHandler {
 
 	@Override
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
+		return execute(event, true);
+	}
+
+	Object execute(final ExecutionEvent event, final boolean addTypes) {
 		final IEventBRoot root = getSelectedEventBRoot(event);
 		if (root != null) {
 			final Preferences prefs = Platform.getPreferencesService()
@@ -56,7 +60,7 @@ public class ExportPOsHandler extends AbstractHandler implements IHandler {
 			final Shell shell = HandlerUtil.getActiveShell(event);
 			final String fileName = askForExportFile(prefs, shell, root);
 			if (fileName != null) {
-				exportPOs(shell, fileName, root);
+				exportPOs(shell, fileName, root, addTypes);
 			}
 		}
 		return null;
@@ -105,7 +109,7 @@ public class ExportPOsHandler extends AbstractHandler implements IHandler {
 	}
 
 	public static void exportPOs(final Shell shell, final String filename,
-			final IEventBRoot root) {
+			final IEventBRoot root, boolean addTypes) {
 		final boolean isSafeToWrite = isSafeToWrite(filename);
 
 		if (isSafeToWrite) {
@@ -116,12 +120,12 @@ public class ExportPOsHandler extends AbstractHandler implements IHandler {
 					IContextRoot croot = (IContextRoot) root;
 					IPORoot poRoot = croot.getSCContextRoot().getPORoot();
 					IPSRoot psRoot = croot.getSCContextRoot().getPSRoot();
-					exportPOs(fw, poRoot, psRoot);
+					exportPOs(fw, poRoot, psRoot, addTypes);
 				} else if (root instanceof IMachineRoot) {
 					IMachineRoot croot = (IMachineRoot) root;
 					IPORoot poRoot = croot.getSCMachineRoot().getPORoot();
 					IPSRoot psRoot = croot.getSCMachineRoot().getPSRoot();
-					exportPOs(fw, poRoot, psRoot);
+					exportPOs(fw, poRoot, psRoot, addTypes);
 				} else {
 					throw new IllegalArgumentException(
 							"Not a Context or Machine root.");
@@ -146,11 +150,11 @@ public class ExportPOsHandler extends AbstractHandler implements IHandler {
 		}
 	}
 
-	private static void exportPOs(PrintWriter fw, IPORoot poRoot, IPSRoot psRoot)
+	private static void exportPOs(PrintWriter fw, IPORoot poRoot, IPSRoot psRoot, boolean addTypes)
 			throws RodinDBException {
 		PrologTermOutput pto = new PrologTermOutput(fw, false);
 		ASTProlog modelAst = new ASTProlog(pto, null);
-		TranslationVisitor tVisitor = new TranslationVisitor();
+		TranslationVisitor tVisitor = new TranslationVisitor(addTypes);
 
 		Date date = new Date();
 		pto.openTerm("generated");
@@ -175,7 +179,7 @@ public class ExportPOsHandler extends AbstractHandler implements IHandler {
 			AEventBContextParseUnit disproverContext = DisproverContextCreator
 					.createDisproverContext(proverSequent);
 
-			// disprover_po(Name,Context,Goal,Hyps,SelectedHyps)
+			// disprover_po(Label,Context,Goal,AllHyps,SelectedHyps,RodinStatus)
 			pto.openTerm("disprover_po");
 
 			pto.printAtom(ipoSequent.getElementName());
