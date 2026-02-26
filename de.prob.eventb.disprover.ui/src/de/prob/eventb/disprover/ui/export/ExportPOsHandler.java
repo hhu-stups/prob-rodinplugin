@@ -140,8 +140,8 @@ public class ExportPOsHandler extends AbstractHandler implements IHandler {
 				MessageDialog
 						.openError(
 								shell,
-								"A RodinDBException Occured",
-								"A RodinDBException occured while fetching sequents. Exported POs might be incomplete.");
+								"A RodinDBException Occurred",
+								"A RodinDBException occurred while fetching sequents. Exported POs might be incomplete.");
 			} finally {
 				if (fw != null) {
 					fw.close();
