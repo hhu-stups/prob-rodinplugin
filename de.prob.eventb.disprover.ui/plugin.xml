@@ -108,7 +108,7 @@
          <command
                commandId="de.prob.eventb.disprover.ui.exportpos_seqprover"
                icon="icons/prob.png"
-               label="Export POs for ProB Sequent Prover (.pl)"
+               label="Export POs for ProB Sequent Prover (.probpo)"
                style="push">
          </command>
       </menuContribution>

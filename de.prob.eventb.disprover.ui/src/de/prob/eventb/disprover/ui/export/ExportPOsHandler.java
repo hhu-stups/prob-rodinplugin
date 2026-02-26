@@ -79,16 +79,15 @@ public class ExportPOsHandler extends AbstractHandler implements IHandler {
 		return root;
 	}
 
-	private String askForExportFile(final Preferences prefs, final Shell shell,
-			final IEventBRoot root) {
+	private String askForExportFile(final Preferences prefs, final Shell shell, final IEventBRoot root) {
 		final String path = prefs.get("dir", System.getProperty("user.home"));
 
 		final FileDialog dialog = new FileDialog(shell, SWT.SAVE);
-		dialog.setFilterExtensions(new String[] { "*.pl" });
+		dialog.setFilterExtensions(new String[] { "*.probpo" });
 
 		dialog.setFilterPath(path);
-		final String subext = (root instanceof IMachineRoot) ? "_mch" : "_ctx";
-		dialog.setFileName(root.getComponentName() + subext + ".pl");
+		final String subtext = (root instanceof IMachineRoot) ? "_mch" : "_ctx";
+		dialog.setFileName(root.getComponentName() + subtext + ".probpo");
 		String result = dialog.open();
 		if (result != null) {
 			final String newPath = dialog.getFilterPath();
@@ -101,8 +100,8 @@ public class ExportPOsHandler extends AbstractHandler implements IHandler {
 					// ignore it (annoying, but not critical)
 				}
 			}
-			if (!result.endsWith(".pl")) {
-				result += ".pl";
+			if (!result.endsWith(".probpo")) {
+				result += ".probpo";
 			}
 		}
 		return result;
