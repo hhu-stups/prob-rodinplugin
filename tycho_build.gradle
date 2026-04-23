@@ -1,3 +1,5 @@
+import groovy.xml.XmlParser
+
 /*
 	Build Script can be executed via 'gradle install'
 	Build Script Dependencies can be downloaded via 'gradle collectDepenencies'
@@ -5,7 +7,6 @@
 	For a complete classPath Refresh please execute 'gradle deleteFromClassPath setClassPath'
 	Pom Generation can be executed via gradle deploy
 */
-
 
 apply plugin: 'base'
 
