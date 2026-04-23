@@ -55,13 +55,13 @@ project(':de.prob.core') {
 		// If you updated or removed any dependencies,
 		// you also need to *manually* delete the old dependencies/versions
 		// from the relevant .classpath and META-INF/MANIFEST.MF files.
-		implementation group: "de.hhu.stups", name: "answerparser", version: parserVersion
-		implementation group: "de.hhu.stups", name: "bparser", version: parserVersion
-		implementation group: "de.hhu.stups", name: "ltlparser", version: parserVersion
-		implementation group: "de.hhu.stups", name: "parserbase", version: parserVersion
-		implementation group: "de.hhu.stups", name: "prologlib", version: parserVersion
-		implementation group: "de.hhu.stups", name: "unicode", version: parserVersion
-		implementation group: "de.hhu.stups", name: "theorymapping", version: parserVersion
+		implementation("de.hhu.stups:answerparser:${parserVersion}")
+		implementation("de.hhu.stups:bparser:${parserVersion}")
+		implementation("de.hhu.stups:ltlparser:${parserVersion}")
+		implementation("de.hhu.stups:parserbase:${parserVersion}")
+		implementation("de.hhu.stups:prologlib:${parserVersion}")
+		implementation("de.hhu.stups:unicode:${parserVersion}")
+		implementation("de.hhu.stups:theorymapping:${parserVersion}")
 	}
 }
 
@@ -73,12 +73,12 @@ project(":de.bmotionstudio.gef.editor") {
 	}
 
 	dependencies {
-		implementation group: "com.thoughtworks.xstream", name: "xstream", version: "1.4.20"
+		implementation("com.thoughtworks.xstream:xstream:1.4.20")
 		// Current versions of XStream depend on MXParser, but not any specific version of it.
 		// To avoid the version number changing unexpectedly and breaking the MANIFEST.MF classpath entries,
 		// hardcode a specific MXParser version here.
 		// It *should* be safe to update this when a new version is released.
-		implementation group: "io.github.x-stream", name: "mxparser", version: "1.2.2"
+		implementation("io.github.x-stream:mxparser:1.2.2")
 	}
 }
 
