@@ -132,6 +132,14 @@ The steps may differ slightly in other IntelliJ versions.
 
 1. Open the "Project Structure" window and go to the page "Project Settings" > "Modules".
 	For every module (in the left tree), select the "Sources" tab, and set the "Language level" to 11.
+	
+#### Installing a locally built version of the Plugin in Rodin
+
+1. Choose "Install New Software" in Rodin
+2. Click the Add... button to add a new repository
+3. Enter file:/.../prob_rodin_plugin/de.prob.repository/target/repository/ where /.../prob_rodin_plugin is the path to this repository on your computer
+4. Select the ProB components and click Next and then Finish
+5. Note: sometimes you may have to click on "Manage...", select your local repository/update site and click "Reload" to see changes.
 
 #### Known issues
 
