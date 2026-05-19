@@ -1,5 +1,5 @@
 /**
- * (c) 2009 Lehrstuhl fuer Softwaretechnik und Programmiersprachen, Heinrich
+ * (c) 2009-2026 Lehrstuhl fuer Softwaretechnik und Programmiersprachen, Heinrich
  * Heine Universitaet Duesseldorf This software is licenced under EPL 1.0
  * (http://www.eclipse.org/org/documents/epl-v10.html)
  * */
@@ -23,5 +23,7 @@ public final class CheckTimeoutStatusCommand extends
 		return CheckBooleanPropertyCommand.isPropertyTrue(a, PROPERTY_NAME,
 				stateId);
 	}
+	// checks if time_out or virtual_time_out occurred for computing operations or for invariant
+	// state_property2(timeout_occurred,StateId) :- inv_timeout_occurred(StateId) ; timeout_occurred(StateId).
 
 }
