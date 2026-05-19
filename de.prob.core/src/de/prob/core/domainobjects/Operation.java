@@ -21,9 +21,11 @@ import de.prob.unicode.UnicodeTranslator;
 public final class Operation {
 	private static final String INTERNAL_NAME_INITIALISE_MACHINE = "$initialise_machine";
 	private static final String INTERNAL_NAME_SETUP_CONSTANTS = "$setup_constants";
+	private static final String INTERNAL_NAME_PARTIAL_SETUP_CONSTANTS = "$partial_setup_constants";
 
 	public static enum EventType {
-		SETUP_CONTEXT("SETUP_CONTEXT"), INITIALISATION("INITIALISATION"), NORMAL_EVENT(
+		SETUP_CONTEXT("SETUP_CONTEXT"), PARTIAL_SETUP_CONTEXT("PARTIAL_SETUP_CONTEXT"),
+		INITIALISATION("INITIALISATION"), NORMAL_EVENT(
 				null);
 		private final String displayName;
 
@@ -42,6 +44,9 @@ public final class Operation {
 		}
 		if (displayname.equals("INITIALISATION")) {
 			return INTERNAL_NAME_INITIALISE_MACHINE;
+		}
+		if (displayname.equals("PARTIAL_SETUP_CONTEXT")) {
+			return INTERNAL_NAME_PARTIAL_SETUP_CONSTANTS;
 		}
 		return displayname;
 	}
@@ -115,6 +120,8 @@ public final class Operation {
 				EventType.SETUP_CONTEXT);
 		specialEvents.put(INTERNAL_NAME_INITIALISE_MACHINE,
 				EventType.INITIALISATION);
+		specialEvents.put(INTERNAL_NAME_PARTIAL_SETUP_CONSTANTS,
+				EventType.PARTIAL_SETUP_CONTEXT);
 		return Collections.unmodifiableMap(specialEvents);
 	}
 
