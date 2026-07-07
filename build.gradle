@@ -4,12 +4,12 @@ import java.util.concurrent.TimeUnit
 
 project.ext {
 	// The newest Bundle-RuntimeExecutionEnvironment required any of the build dependencies (Eclipse and Rodin).
-	// Currently Java 17 since Rodin 3.9.
-	buildTimeExecutionEnvironment = "JavaSE-17"
+	// Currently Java 21 since Rodin 3.10.
+	buildTimeExecutionEnvironment = "JavaSE-21"
 
 	targetRepositories = [
-		"https://download.eclipse.org/releases/2023-12/",
-		"https://rodin-b-sharp.sourceforge.net/core-updates/",
+		"https://download.eclipse.org/releases/2025-12/", // Eclipse 4.38
+		"https://rodin-b-sharp.sourceforge.net/core-updates/3.10/",
 		"https://rodin-b-sharp.sourceforge.net/updates",
 	]
 
