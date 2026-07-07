@@ -55,6 +55,12 @@ To test your build of the plugin, you need to configure this repository in Rodin
 * Make sure that the "ProB local" repository is checked
 
 Once the repository is configured, use Help > Check for Updates to update the ProB plugin to your locally built version.
+If you rebuild the plugin *while Rodin is running*,
+the rebuilt version might not be detected until you reload the local repository:
+
+* Open the Rodin preferences and go to Install/Update > Available Software Sites
+* Select the "ProB local" repository
+* Click on "Reload"
 
 Note that if you have both "ProB nightly" and "ProB local" enabled, Rodin will prefer whichever one was built more recently.
 To ensure that only your local build is used, you can temporarily uncheck "ProB nightly".
@@ -132,14 +138,6 @@ The steps may differ slightly in other IntelliJ versions.
 
 1. Open the "Project Structure" window and go to the page "Project Settings" > "Modules".
 	For every module (in the left tree), select the "Sources" tab, and set the "Language level" to 11.
-	
-#### Installing a locally built version of the Plugin in Rodin
-
-1. Choose "Install New Software" in Rodin
-2. Click the Add... button to add a new repository
-3. Enter file:/.../prob_rodin_plugin/de.prob.repository/target/repository/ where /.../prob_rodin_plugin is the path to this repository on your computer
-4. Select the ProB components and click Next and then Finish
-5. Note: sometimes you may have to click on "Manage...", select your local repository/update site and click "Reload" to see changes.
 
 #### Known issues
 
