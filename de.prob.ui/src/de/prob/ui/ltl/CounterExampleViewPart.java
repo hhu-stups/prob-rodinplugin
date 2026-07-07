@@ -116,6 +116,7 @@ public final class CounterExampleViewPart extends StateBasedViewPart {
 								HandlerUtil.updateRadioState(command,
 										viewType.name());
 							} catch (ExecutionException e) {
+								throw new RuntimeException(e);
 							}
 						}
 				}
