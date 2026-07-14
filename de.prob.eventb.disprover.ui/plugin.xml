@@ -99,16 +99,19 @@
       <menuContribution
             allPopups="false"
             locationURI="popup:more_commands">
+<!-- This exports the POs without types; but the new export also works
+     and it is probably less confusing or readers to have a single export
          <command
                commandId="de.prob.eventb.disprover.ui.exportpos"
                icon="icons/prob.png"
                label="Export POs for ProB (probcli)"
                style="push">
          </command>
+ -->
          <command
                commandId="de.prob.eventb.disprover.ui.exportpos_seqprover"
                icon="icons/prob.png"
-               label="Export POs for ProB Sequent Prover (.probpo)"
+               label="Export POs for probcli disprover and ProB Sequent Prover (.probpo)"
                style="push">
          </command>
       </menuContribution>
