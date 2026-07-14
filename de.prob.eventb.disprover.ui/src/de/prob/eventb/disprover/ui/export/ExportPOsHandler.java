@@ -87,7 +87,11 @@ public class ExportPOsHandler extends AbstractHandler implements IHandler {
 
 		dialog.setFilterPath(path);
 		final String subtext = (root instanceof IMachineRoot) ? "_mch" : "_ctx";
-		dialog.setFileName(root.getComponentName() + subtext + ".probpo");
+		if (Platform.OS_MACOSX.equals( Platform.getOS() )) {
+		     dialog.setFileName(root.getComponentName() + subtext);
+		} else {
+		     dialog.setFileName(root.getComponentName() + subtext + ".probpo");
+		}
 		String result = dialog.open();
 		if (result != null) {
 			final String newPath = dialog.getFilterPath();
