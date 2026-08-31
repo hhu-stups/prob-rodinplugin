@@ -136,12 +136,10 @@ def addRunTimeLib(String libPar, String projectPar) {
 		if (line ==~ /.*Bundle-ClassPath:.*\.jar.*/) {
 			def libsInLine = line.replaceAll(/[\ \t]*Bundle-ClassPath:[\ \t]*/, '')
 			line = line.replaceFirst(/[^\ \t]*\.jar[\ \,]*/, libPath + ",\n " + libsInLine) // /[^\ \t]*.\.jar[\ \,]*/
-		} else {
-			if (line ==~ /.*Bundle-ClassPath: \.[\ \t]*/) {
-				line = line + ",\n " + libPath
-			} else if (line ==~ /.*Bundle-ClassPath: \.\,[\ \t]*/) {
-				line = line + "\n " + libPath + ","
-			}
+		} else if (line ==~ /.*Bundle-ClassPath: \.[\ \t]*/) {
+			line = line + ",\n " + libPath
+		} else if (line ==~ /.*Bundle-ClassPath: \.\,[\ \t]*/) {
+			line = line + "\n " + libPath + ","
 		}
 
 		newMf << line + "\n"
