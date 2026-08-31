@@ -71,15 +71,14 @@ def addLibToCP(def projectName, def libPar) {
 	def filePar = new File(workspacePath + projectName + "/.classpath")
 	boolean notYetAdded = true
 	filePar.eachLine {line ->
-		def pattern = ".*${libPath}.*"
-		if (line ==~ /${pattern}/) {
+		if (line.contains(libPath)) {
 			notYetAdded = false
 		}
 	}
 	if (notYetAdded) {
 		File newCP = new File("${filePar}.temp")
 		filePar.eachLine {line ->
-			if (line ==~ /.*<\/classpath>.*/) {
+			if (line.contains("</classpath>")) {
 				String entry = '\t<classpathentry exported="true" kind="lib" path="' + libPath + '"/>' + '\n</classpath>\n'
 				line = line.replaceAll(/<\/classpath>/, entry)
 				println projectName + " : " + libPar + " added to classpath"
@@ -100,17 +99,15 @@ def deleteLibFromCP(def projectName) {
 	def filePar = new File(workspacePath + projectName + "/.classpath")
 	boolean deleteCP = false
 	def newCP = new File("${filePar}.temp")
-	def pattern = ".*${dependencyFolder}[^<].*/>"
 
 	filePar.eachLine {line ->
 		if (line ==~ /\n(\ |\t)*/) {
 			// delete empty lines
 			line = line.replaceAll(/\n(\ |\t)*/, '')
 		}
-		if (line ==~ /${pattern}/) {
+		if (line ==~ /.*${dependencyFolder}[^<].*\/>/) {
 			deleteCP = true
-			def pattern2 = '(\\ |\\t)*<classpathentry exported="true" kind="lib" path="' + dependencyFolder + "[^<].*"+'"/>(\\ |\\t)*'
-			line = line.replaceAll(/${pattern2}/, '')
+			line = line.replaceAll(/(\ |\t)*<classpathentry exported="true" kind="lib" path="${dependencyFolder}[^<].*"\/>(\ |\t)*/, '')
 			newCP << line
 		} else {
 			newCP << line+"\n"
@@ -160,7 +157,7 @@ def boolean checkForRunTimeLibs(String projectPar) {
 	boolean returnBool = false
 	def mf = new File(projectPar + "/META-INF/MANIFEST.MF")
 	mf.eachLine {line ->
-		if (line ==~ /.*Bundle-ClassPath:.*/) {
+		if (line.contains("Bundle-ClassPath:")) {
 			returnBool = true
 		}
 	}
@@ -178,7 +175,7 @@ def boolean checkRunTimeLib(String libPar, String projectPar){
 	boolean returnBool = false
 	boolean changed = false
 	mf.eachLine {line ->
-		if (line ==~ /.*${libPar}.*/) {
+		if (line.contains(libPar)) {
 			if (!(line ==~ /.*(\ |\t)*${libPath}(\ |\t)*.*/)){
 				// if lib is already referenced
 				// reference lib from dependencyFolder
@@ -232,7 +229,7 @@ subprojects {
 			def depsFolder = new File(workspacePath + projectName + "/" + dependencyFolder)
 			if (depsFolder.exists()) {
 				depsFolder.eachFile() {file ->
-					if (!(file.getName() ==~ /.*\.txt/)) {
+					if (!file.getName().endsWith(".txt")) {
 						dependencyList << file.getName()
 					}
 				}
