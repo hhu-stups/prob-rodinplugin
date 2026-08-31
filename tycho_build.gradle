@@ -254,7 +254,7 @@ subprojects {
 						println projectName + ": " + dep
 					}*/
 				}
-				def warningReadMe = new File(workspacePath + projectName + "/" + dependencyFolder + "_README.txt")
+				def warningReadMe = new File("${depsFolder}_README.txt")
 				warningReadMe.delete()
 				warningReadMe << "Do Not Remove any Jars/Libraries in this Folder!\nThis folder contains all of your dependencies defined in your gradle script.\n"
 				warningReadMe << "Removing or renaming any of these files will result in an Error in your .classpath file\n"
@@ -366,10 +366,11 @@ clean {
 // define Parent
 task createParent() {
 	doLast {
-		new File(workspacePath + "${parentID}").mkdir()
+		def parentDir = new File(workspacePath + parentID)
+		parentDir.mkdir()
 		String versionNumber = '1.0.0.qualifier'
 
-		def f = new File(workspacePath + parentID + '/pom.xml')
+		def f = new File("${parentDir}/pom.xml")
 		f.delete()
 		f << parentPom(parentID)
 		for (int i = 0; i < targetRepositories.size(); i++) {
@@ -386,7 +387,7 @@ task createParent() {
 }
 
 task deleteParent(type: Delete) {
-	delete(workspacePath + "${parentID}")
+	delete(workspacePath + parentID)
 }
 clean.dependsOn(deleteParent)
 
