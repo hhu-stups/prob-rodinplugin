@@ -307,7 +307,7 @@ subprojects {
 			if (features.every {it != projectName}) {
 				def content = new File(workspacePath + "${projectName}/META-INF/MANIFEST.MF").getText("UTF-8")
 
-				def printFileLine = {
+				content.eachLine {
 					if (it ==~ /Bundle-Version.+qualifier/) {
 						versionNumber = it.substring(16) // possibile error: cuts off first 16 chars
 
@@ -328,8 +328,6 @@ subprojects {
 						artifactId = artifactId.replace("singleton:=true", '')
 					}
 				}
-
-				content.eachLine(printFileLine)
 
 				def f = new File(workspacePath + artifactId + '/pom.xml')
 				f.delete()
