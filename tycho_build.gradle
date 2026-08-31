@@ -368,7 +368,6 @@ task createParent() {
 	doLast {
 		def parentDir = new File(workspacePath + parentID)
 		parentDir.mkdir()
-		String versionNumber = '1.0.0.qualifier'
 
 		def f = new File("${parentDir}/pom.xml")
 		f.delete()
