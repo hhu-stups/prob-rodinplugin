@@ -152,8 +152,9 @@ def addRunTimeLib(String libPar, String projectPar) {
 
 // Creates a Bundle-ClassPath Section in the Manifest file
 def createRunTimeLib(String libPar, String projectPar) {
+	def libPath = dependencyFolder + libPar
 	def mf = new File(projectPar + "/META-INF/MANIFEST.MF")
-	mf << "Bundle-ClassPath: lib/dependencies/" + libPar
+	mf << "Bundle-ClassPath: " + libPath
 }
 
 // checks for a Bundle-ClassPath section in the Manifest file
