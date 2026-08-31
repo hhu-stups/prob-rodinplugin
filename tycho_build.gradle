@@ -76,7 +76,7 @@ def addLibToCP(def projectName, def libPar) {
 		}
 	}
 	if (notYetAdded) {
-		File newCP = new File(workspacePath + projectName + '/.cp')
+		File newCP = new File("${filePar}.temp")
 		filePar.eachLine {line ->
 			if (line ==~ /.*<\/classpath>.*/) {
 				String entry = '\t<classpathentry exported="true" kind="lib" path="' + dependencyFolder + libPar + '"/>' + '\n</classpath>\n'
@@ -98,7 +98,7 @@ def addLibToCP(def projectName, def libPar) {
 def deleteLibFromCP(def projectName) {
 	def filePar = new File(workspacePath + projectName + "/.classpath")
 	boolean deleteCP = false
-	def newCP = new File(workspacePath + projectName + '/cp')
+	def newCP = new File("${filePar}.temp")
 	def pattern = ".*${dependencyFolder}[^<].*/>"
 
 	filePar.eachLine {line ->
@@ -128,7 +128,7 @@ def deleteLibFromCP(def projectName) {
 // Adds a Library to the current Bundle-ClassPath of the Manifest file
 def addRunTimeLib(String libPar, String projectPar) {
 	def mf = new File(projectPar + "/META-INF/MANIFEST.MF")
-	def newMf = new File(projectPar + "/MF")
+	def newMf = new File("${mf}.temp")
 	newMf.delete()
 	mf.eachLine {line ->
 		if (line ==~ /.*Bundle-ClassPath:.*\.jar.*/) {
@@ -171,7 +171,7 @@ def boolean checkForRunTimeLibs(String projectPar) {
 def boolean checkRunTimeLib(String libPar, String projectPar){
 	// checks if lib is in RunTimeLibrary present and changes reference if necessary
 	def mf = new File(projectPar + "/META-INF/MANIFEST.MF")
-	def newMf = new File(projectPar + "/MF")
+	def newMf = new File("${mf}.temp")
 	newMf.delete()
 	boolean returnBool = false
 	boolean changed = false
