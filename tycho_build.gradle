@@ -88,7 +88,7 @@ def addLibToCP(def projectName, def libPar) {
 			}
 		}
 		filePar.delete()
-		newCP.renameTo(workspacePath + projectName + '/.classpath')
+		newCP.renameTo(filePar)
 	} else {
 		println projectName + " : " + libPar + " classpath entry already present"
 	}
@@ -120,8 +120,8 @@ def deleteLibFromCP(def projectName) {
 		newCP.delete()
 	} else {
 		filePar.delete()
-		newCP.renameTo(workspacePath + projectName + '/.classpath')
-		println workspacePath + projectName + '/.classpath' + "!"
+		newCP.renameTo(filePar)
+		println "${filePar}!"
 	}
 }
 
@@ -145,7 +145,7 @@ def addRunTimeLib(String libPar, String projectPar) {
 		newMf << line + "\n"
 	}
 	mf.delete()
-	newMf.renameTo(projectPar + "/META-INF/MANIFEST.MF")
+	newMf.renameTo(mf)
 }
 
 // Creates a Bundle-ClassPath Section in the Manifest file
@@ -192,7 +192,7 @@ def boolean checkRunTimeLib(String libPar, String projectPar){
 	}
 	if (changed) {
 		mf.delete()
-		newMf.renameTo(projectPar + "/META-INF/MANIFEST.MF")
+		newMf.renameTo(mf)
 	} else {
 		newMf.delete()
 	}
