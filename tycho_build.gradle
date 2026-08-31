@@ -305,9 +305,8 @@ subprojects {
 
 			// Generating Poms for sub projects except features
 			if (features.every {it != projectName}) {
-				def content = new File(workspacePath + "${projectName}/META-INF/MANIFEST.MF").getText("UTF-8")
-
-				content.eachLine {
+				def manifest = new File(workspacePath + projectName + "/META-INF/MANIFEST.MF")
+				manifest.eachLine {
 					if (it ==~ /Bundle-Version.+qualifier/) {
 						versionNumber = it.substring(16) // possibile error: cuts off first 16 chars
 
