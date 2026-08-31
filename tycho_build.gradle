@@ -67,10 +67,11 @@ try {
 
 // Add certain Jar to Library
 def addLibToCP(def projectName, def libPar) {
+	def libPath = dependencyFolder + libPar
 	def filePar = new File(workspacePath + projectName + "/.classpath")
 	boolean notYetAdded = true
 	filePar.eachLine {line ->
-		def pattern = ".*${dependencyFolder}${libPar}.*"
+		def pattern = ".*${libPath}.*"
 		if (line ==~ /${pattern}/) {
 			notYetAdded = false
 		}
@@ -79,7 +80,7 @@ def addLibToCP(def projectName, def libPar) {
 		File newCP = new File("${filePar}.temp")
 		filePar.eachLine {line ->
 			if (line ==~ /.*<\/classpath>.*/) {
-				String entry = '\t<classpathentry exported="true" kind="lib" path="' + dependencyFolder + libPar + '"/>' + '\n</classpath>\n'
+				String entry = '\t<classpathentry exported="true" kind="lib" path="' + libPath + '"/>' + '\n</classpath>\n'
 				line = line.replaceAll(/<\/classpath>/, entry)
 				println projectName + " : " + libPar + " added to classpath"
 				newCP << line
@@ -127,18 +128,19 @@ def deleteLibFromCP(def projectName) {
 
 // Adds a Library to the current Bundle-ClassPath of the Manifest file
 def addRunTimeLib(String libPar, String projectPar) {
+	def libPath = dependencyFolder + libPar
 	def mf = new File(projectPar + "/META-INF/MANIFEST.MF")
 	def newMf = new File("${mf}.temp")
 	newMf.delete()
 	mf.eachLine {line ->
 		if (line ==~ /.*Bundle-ClassPath:.*\.jar.*/) {
 			def libsInLine = line.replaceAll(/[\ \t]*Bundle-ClassPath:[\ \t]*/, '')
-			line = line.replaceFirst(/[^\ \t]*\.jar[\ \,]*/, dependencyFolder + libPar + ",\n " + libsInLine) // /[^\ \t]*.\.jar[\ \,]*/
+			line = line.replaceFirst(/[^\ \t]*\.jar[\ \,]*/, libPath + ",\n " + libsInLine) // /[^\ \t]*.\.jar[\ \,]*/
 		} else {
 			if (line ==~ /.*Bundle-ClassPath: \.[\ \t]*/) {
-				line = line + ",\n " + dependencyFolder + libPar
+				line = line + ",\n " + libPath
 			} else if (line ==~ /.*Bundle-ClassPath: \.\,[\ \t]*/) {
-				line = line + "\n " + dependencyFolder + libPar + ","
+				line = line + "\n " + libPath + ","
 			}
 		}
 
@@ -170,6 +172,7 @@ def boolean checkForRunTimeLibs(String projectPar) {
 // if lib is present but is referenced from another folder than dependencyFolder the library from dependencyFolder will be referenced
 def boolean checkRunTimeLib(String libPar, String projectPar){
 	// checks if lib is in RunTimeLibrary present and changes reference if necessary
+	def libPath = dependencyFolder + libPar
 	def mf = new File(projectPar + "/META-INF/MANIFEST.MF")
 	def newMf = new File("${mf}.temp")
 	newMf.delete()
@@ -177,10 +180,10 @@ def boolean checkRunTimeLib(String libPar, String projectPar){
 	boolean changed = false
 	mf.eachLine {line ->
 		if (line ==~ /.*${libPar}.*/) {
-			if (!(line ==~ /.*(\ |\t)*${dependencyFolder}${libPar}(\ |\t)*.*/)){
+			if (!(line ==~ /.*(\ |\t)*${libPath}(\ |\t)*.*/)){
 				// if lib is already referenced
 				// reference lib from dependencyFolder
-				line = line.replaceFirst( /[^\ \t]*${libPar}/, dependencyFolder+libPar )
+				line = line.replaceFirst(/[^\ \t]*${libPar}/, libPath)
 				changed = true
 				println line
 				println "yolo  ${libPar}\n"
