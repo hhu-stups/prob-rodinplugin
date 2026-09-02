@@ -160,10 +160,10 @@ subprojects {
 	// apply plugin: 'eclipse'
 
 	ext {
-		pomFile = new File(project.name + "/pom.xml")
-		projectDependencyFolder = new File(project.name + "/" + dependencyFolder)
-		classpathFile = new File(project.name + "/.classpath")
-		manifestFile = new File(project.name + "/META-INF/MANIFEST.MF")
+		pomFile = file("pom.xml")
+		projectDependencyFolder = file(dependencyFolder)
+		classpathFile = file(".classpath")
+		manifestFile = file("META-INF/MANIFEST.MF")
 	}
 
 	try {
@@ -173,18 +173,18 @@ subprojects {
 	}
 
 	if (isFeature) {
-		project.ext.featureXmlFile = new File(project.name + "/feature.xml")
+		project.ext.featureXmlFile = file("feature.xml")
 	}
 
 	task deleteArtifacts(type: Delete) {
-		delete 'target', 'pom.xml', dependencyFolder
+		delete 'target', 'pom.xml', projectDependencyFolder
 	}
 
 	// Copy Dependencies into subprojects DependencyFolder
 	task collectDependencies(type: Copy) {
 		from configurations.runtimeClasspath
 
-		into "${dependencyFolder}"
+		into projectDependencyFolder
 	}
 
 	task setClassPath(dependsOn: 'collectDependencies') {
