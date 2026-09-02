@@ -42,17 +42,6 @@ try {
 }
 
 try {
-	features = features
-} catch (MissingPropertyException e) {
-	project.ext.features = []
-	for (int i = 0; i < subprojects.name.size(); i++){
-		if (subprojects.name[i] ==~ /.*\.[fF]eature/) {
-			features.add(subprojects.name[i])
-		}
-	}
-}
-
-try {
 	repositoryName = repositoryName
 } catch (MissingPropertyException e) {
 	project.ext.repositoryName = groupID + ".repository"
@@ -182,6 +171,12 @@ subprojects {
 		manifestFile = new File(workspacePath + project.name + "/META-INF/MANIFEST.MF")
 	}
 
+	try {
+		project.isFeature
+	} catch (MissingPropertyException e) {
+		project.ext.isFeature = project.name ==~ /.*\.[fF]eature/
+	}
+
 	task deleteArtifacts(type: Delete) {
 		delete 'target', 'pom.xml', dependencyFolder
 	}
@@ -196,17 +191,16 @@ subprojects {
 	task setClassPath(dependsOn: 'collectDependencies') {
 		description = "\tAdds all your Dependencies from your local lib folder in each project to it's classpath"
 
-		inputs.property("projectName", project.name)
+		inputs.property("isFeature", project.isFeature)
 
 		doLast {
-			final projectName = inputs.properties["projectName"]
 			def dependencyList = []
 			if (projectDependencyFolder.exists()) {
 				projectDependencyFolder.eachFile() {file ->
 					dependencyList << file.getName()
 				}
 
-				if (features.every {it != projectName}) {
+				if (!inputs.properties["isFeature"]) {
 					boolean BundleClassPathPresent = checkForRunTimeLibs(manifestFile)
 					for (int icp = 0; icp < dependencyList.size; icp++) {
 						def dependencyPath = dependencyFolder + dependencyList[icp]
@@ -230,17 +224,16 @@ subprojects {
 	task deleteFromClassPath(){
 		description = "\tDeletes all your Dependencies located in your local lib folder from each project's classpath"
 
-		inputs.property("projectName", project.name)
+		inputs.property("isFeature", project.isFeature)
 
 		doLast {
-			final projectName = inputs.properties["projectName"]
 			boolean depsDelete = false
 			if (projectDependencyFolder.exists()) {
 				depsDelete = true
 			}
 			projectDependencyFolder.deleteDir()
 
-			if (features.every {it != projectName} && depsDelete) {
+			if (!inputs.properties["isFeature"] && depsDelete) {
 				deleteLibFromCP(classpathFile, dependencyFolder)
 			}
 		}
@@ -254,6 +247,7 @@ subprojects {
 		description = "\tGenerating the Tycho Poms. Please remember to add a '.qualifier' to the version numbers!"
 
 		inputs.property("projectName", project.name)
+		inputs.property("isFeature", project.isFeature)
 
 		doLast {
 			final projectName = inputs.properties["projectName"]
@@ -267,7 +261,7 @@ subprojects {
 			// Bundle-Version Number
 
 			// Generating Poms for sub projects except features
-			if (features.every {it != projectName}) {
+			if (!inputs.properties["isFeature"]) {
 				manifestFile.eachLine {
 					if (it ==~ /Bundle-Version.+qualifier/) {
 						versionNumber = it.substring(16) // possibile error: cuts off first 16 chars
@@ -301,7 +295,7 @@ subprojects {
 					f << start() + elder() + artifact(artifactId, versionNumber) + end()
 					// old pom.xml files are deleted and replaced by new auto generated Tycho pom.xml files
 				}
-			} else if (features.any {it == projectName}) {
+			} else {
 				// Features
 				def parsedXml = new XmlParser().parse(workspacePath + "${projectName}/feature.xml")
 
