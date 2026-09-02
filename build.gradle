@@ -27,8 +27,8 @@ allprojects {
 }
 
 // When making a release, please check that parserVersion matches what the specified version of probcli expects, to avoid unpredictable/inconsistent behavior!
-def parserVersion = "2.16.0"
-def probcliVersion = "1.16.0-nightly"
+def parserVersion = "2.16.1"
+def probcliVersion = "1.16.1"
 def cliDownloadURL
 if (probcliVersion.endsWith("-nightly")) {
 	cliDownloadURL = "https://stups.hhu-hosting.de/downloads/prob/cli/nightly"
