@@ -203,7 +203,7 @@ subprojects {
 
 				if (features.every {it != projectName}) {
 					def classpathFile = new File(workspacePath + projectName + "/.classpath")
-					def manifestFile = new File(projectName + "/META-INF/MANIFEST.MF")
+					def manifestFile = new File(workspacePath + projectName + "/META-INF/MANIFEST.MF")
 					boolean BundleClassPathPresent = checkForRunTimeLibs(manifestFile)
 					for (int icp = 0; icp < dependencyList.size; icp++) {
 						def dependencyPath = dependencyFolder + dependencyList[icp]
