@@ -165,35 +165,14 @@ def boolean checkForRunTimeLibs(String projectPar) {
 }
 
 // checks if lib is already present in Manifest file
-// if lib is present but is referenced from another folder than dependencyFolder the library from dependencyFolder will be referenced
 def boolean checkRunTimeLib(String libPar, String projectPar){
-	// checks if lib is in RunTimeLibrary present and changes reference if necessary
 	def libPath = dependencyFolder + libPar
 	def mf = new File(projectPar + "/META-INF/MANIFEST.MF")
-	def newMf = new File("${mf}.temp")
-	newMf.delete()
 	boolean returnBool = false
-	boolean changed = false
 	mf.eachLine {line ->
-		if (line.contains(libPar)) {
-			if (!(line ==~ /.*(\ |\t)*${libPath}(\ |\t)*.*/)){
-				// if lib is already referenced
-				// reference lib from dependencyFolder
-				line = line.replaceFirst(/[^\ \t]*${libPar}/, libPath)
-				changed = true
-				println line
-				println "yolo  ${libPar}\n"
-			}
+		if (line.contains(libPath)) {
 			returnBool = true
 		}
-
-		newMf << line + "\n"
-	}
-	if (changed) {
-		mf.delete()
-		newMf.renameTo(mf)
-	} else {
-		newMf.delete()
 	}
 	return returnBool
 }
