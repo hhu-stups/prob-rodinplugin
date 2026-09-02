@@ -221,10 +221,6 @@ subprojects {
 							addRunTimeLib(manifestFile, dependencyPath)
 						}
 					}
-					// could still be usefull for debugging, that's why it's not deleted
-					/*dependencyList.each {dep ->
-						println projectName + ": " + dep
-					}*/
 				}
 				def warningReadMe = new File("${depsFolder}_README.txt")
 				warningReadMe.delete()
