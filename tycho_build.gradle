@@ -30,12 +30,6 @@ apply plugin: 'base'
 project.ext.tychoVersion = "5.0.2"
 
 try {
-	workspacePath = workspacePath
-} catch (MissingPropertyException e) {
-	project.ext.workspacePath = ""
-}
-
-try {
 	dependencyFolder = dependencyFolder
 } catch (MissingPropertyException e) {
 	project.ext.dependencyFolder = "lib/dependencies/" // Folder in each subproject where
@@ -166,10 +160,10 @@ subprojects {
 	// apply plugin: 'eclipse'
 
 	ext {
-		pomFile = new File(workspacePath + project.name + "/pom.xml")
-		projectDependencyFolder = new File(workspacePath + project.name + "/" + dependencyFolder)
-		classpathFile = new File(workspacePath + project.name + "/.classpath")
-		manifestFile = new File(workspacePath + project.name + "/META-INF/MANIFEST.MF")
+		pomFile = new File(project.name + "/pom.xml")
+		projectDependencyFolder = new File(project.name + "/" + dependencyFolder)
+		classpathFile = new File(project.name + "/.classpath")
+		manifestFile = new File(project.name + "/META-INF/MANIFEST.MF")
 	}
 
 	try {
@@ -179,7 +173,7 @@ subprojects {
 	}
 
 	if (isFeature) {
-		project.ext.featureXmlFile = new File(workspacePath + project.name + "/feature.xml")
+		project.ext.featureXmlFile = new File(project.name + "/feature.xml")
 	}
 
 	task deleteArtifacts(type: Delete) {
@@ -330,7 +324,7 @@ clean {
 // define Parent
 task createParent() {
 	doLast {
-		def parentDir = new File(workspacePath + parentID)
+		def parentDir = new File(parentID)
 		parentDir.mkdir()
 
 		def f = new File("${parentDir}/pom.xml")
@@ -350,22 +344,22 @@ task createParent() {
 }
 
 task deleteParent(type: Delete) {
-	delete(workspacePath + parentID)
+	delete(parentID)
 }
 clean.dependsOn(deleteParent)
 
 // define Repository
 task createRepository() {
 	doLast{
-		def pom = new File(workspacePath + repositoryName + '/pom.xml')
+		def pom = new File(repositoryName + '/pom.xml')
 		pom.delete()
 		pom << reposi()
 	}
 }
 
 task deleteRepository(type: Delete) {
-	delete(workspacePath + repositoryName + "/pom.xml")
-	delete(workspacePath + repositoryName + "/target")
+	delete(repositoryName + "/pom.xml")
+	delete(repositoryName + "/target")
 }
 clean.dependsOn(deleteRepository)
 
@@ -374,14 +368,14 @@ task createPoms(dependsOn: [createParent, createRepository, subprojects.deploy])
 
 task install(dependsOn: [createPoms], type: Exec) {
 	description = "\tExecutes a 'mvn verify' of the parent pom.xml and auto-generates Tycho Poms"
-	commandLine 'mvn', 'verify', '-f', workspacePath + parentID + '/pom.xml'
+	commandLine 'mvn', 'verify', '-f', parentID + '/pom.xml'
 }
 
 task prepareMaven(dependsOn: [subprojects.collectDependencies, createPoms])
 
 task completeInstall(dependsOn: [prepareMaven], type: Exec) {
 	description = "\tCopies dependencies into dependencyFolder of each subproject and executes a 'mvn verify' of the parent pom.xml and auto-generates Tycho Poms"
-	commandLine 'mvn', 'verify', '-f', workspacePath + parentID + '/pom.xml'
+	commandLine 'mvn', 'verify', '-f', parentID + '/pom.xml'
 }
 
 
