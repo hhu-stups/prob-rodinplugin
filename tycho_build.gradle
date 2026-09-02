@@ -166,6 +166,7 @@ subprojects {
 	// apply plugin: 'eclipse'
 
 	ext {
+		pomFile = new File(workspacePath + project.name + "/pom.xml")
 		projectDependencyFolder = new File(workspacePath + project.name + "/" + dependencyFolder)
 		classpathFile = new File(workspacePath + project.name + "/.classpath")
 		manifestFile = new File(workspacePath + project.name + "/META-INF/MANIFEST.MF")
@@ -175,6 +176,10 @@ subprojects {
 		project.isFeature
 	} catch (MissingPropertyException e) {
 		project.ext.isFeature = project.name ==~ /.*\.[fF]eature/
+	}
+
+	if (isFeature) {
+		project.ext.featureXmlFile = new File(workspacePath + project.name + "/feature.xml")
 	}
 
 	task deleteArtifacts(type: Delete) {
@@ -288,20 +293,19 @@ subprojects {
 					throw new GradleException("The Bundle-SymbolicName declared in the MANIFEST.MF (${artifactId}) must match the Gradle subproject name (${projectName})")
 				}
 
-				def f = new File(workspacePath + projectName + '/pom.xml')
-				f.delete()
+				pomFile.delete()
 
 				if (projectName ==~ /.*\.[tT]ests*/) {
 					// Test Cases
-					f << start() + elder() + testArtifact(projectName, versionNumber) + end()
+					pomFile << start() + elder() + testArtifact(projectName, versionNumber) + end()
 				} else {
 					// Normal Plugin
-					f << start() + elder() + artifact(projectName, versionNumber) + end()
+					pomFile << start() + elder() + artifact(projectName, versionNumber) + end()
 					// old pom.xml files are deleted and replaced by new auto generated Tycho pom.xml files
 				}
 			} else {
 				// Features
-				def parsedXml = new XmlParser().parse(workspacePath + "${projectName}/feature.xml")
+				def parsedXml = new XmlParser().parse(featureXmlFile)
 
 				artifactId = parsedXml.attribute("id")
 				if (artifactId != projectName) {
@@ -311,9 +315,8 @@ subprojects {
 				versionNumber = parsedXml.attribute("version")
 				versionNumber = versionNumber.replace(".qualifier", "-SNAPSHOT")
 
-				def f = new File(workspacePath + projectName + '/pom.xml')
-				f.delete()
-				f << feature(projectName, versionNumber)
+				pomFile.delete()
+				pomFile << feature(projectName, versionNumber)
 			}
 		}
 	}
