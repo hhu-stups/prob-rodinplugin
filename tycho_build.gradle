@@ -204,18 +204,21 @@ subprojects {
 				}
 
 				if (features.every {it != projectName}) {
-					boolean BundleClassPathPresent = checkForRunTimeLibs(new File(projectName + "/META-INF/MANIFEST.MF"))
+					def classpathFile = new File(workspacePath + projectName + "/.classpath")
+					def manifestFile = new File(projectName + "/META-INF/MANIFEST.MF")
+					boolean BundleClassPathPresent = checkForRunTimeLibs(manifestFile)
 					for (int icp = 0; icp < dependencyList.size; icp++) {
+						def dependencyPath = dependencyFolder + dependencyList[icp]
 						// Adds Lib to .classPath file
-						addLibToCP(new File(workspacePath + projectName + "/.classpath"), dependencyFolder + dependencyList[icp])
+						addLibToCP(classpathFile, dependencyPath)
 
 						if (!BundleClassPathPresent) {
 							// Adds Lib to Manifest File
-							createRunTimeLib(new File(projectName + "/META-INF/MANIFEST.MF"), dependencyFolder + dependencyList[icp])
+							createRunTimeLib(manifestFile, dependencyPath)
 							BundleClassPathPresent = true
-						} else if (!checkRunTimeLib(new File(projectName + "/META-INF/MANIFEST.MF"), dependencyFolder + dependencyList[icp])) {
+						} else if (!checkRunTimeLib(manifestFile, dependencyPath)) {
 							// if library not present add it to RunTimeLibrary
-							addRunTimeLib(new File(projectName + "/META-INF/MANIFEST.MF"), dependencyFolder + dependencyList[icp])
+							addRunTimeLib(manifestFile, dependencyPath)
 						}
 					}
 					// could still be usefull for debugging, that's why it's not deleted
