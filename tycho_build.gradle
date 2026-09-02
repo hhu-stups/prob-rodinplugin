@@ -161,6 +161,7 @@ subprojects {
 
 	ext {
 		pomFile = file("pom.xml")
+		dependencyFolder = project.parent.dependencyFolder
 		projectDependencyFolder = file(dependencyFolder)
 		classpathFile = file(".classpath")
 		manifestFile = file("META-INF/MANIFEST.MF")
