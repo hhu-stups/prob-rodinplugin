@@ -66,9 +66,7 @@ try {
 
 
 // Add certain Jar to Library
-def addLibToCP(def projectName, def libPar) {
-	def libPath = dependencyFolder + libPar
-	def filePar = new File(workspacePath + projectName + "/.classpath")
+def addLibToCP(File filePar, String libPath) {
 	boolean notYetAdded = true
 	filePar.eachLine {line ->
 		if (line.contains(libPath)) {
@@ -81,7 +79,7 @@ def addLibToCP(def projectName, def libPar) {
 			if (line.contains("</classpath>")) {
 				String entry = '\t<classpathentry exported="true" kind="lib" path="' + libPath + '"/>' + '\n</classpath>\n'
 				line = line.replaceAll(/<\/classpath>/, entry)
-				println projectName + " : " + libPar + " added to classpath"
+				println "${filePar}: ${libPath} added to classpath"
 				newCP << line
 			} else {
 				newCP << line + "\n"
@@ -90,13 +88,12 @@ def addLibToCP(def projectName, def libPar) {
 		filePar.delete()
 		newCP.renameTo(filePar)
 	} else {
-		println projectName + " : " + libPar + " classpath entry already present"
+		println "${filePar}: ${libPath} classpath entry already present"
 	}
 }
 
 // deletes whole DependenciesLibrary Folder
-def deleteLibFromCP(def projectName) {
-	def filePar = new File(workspacePath + projectName + "/.classpath")
+def deleteLibFromCP(File filePar, String dependencyFolder) {
 	boolean deleteCP = false
 	def newCP = new File("${filePar}.temp")
 
@@ -114,7 +111,7 @@ def deleteLibFromCP(def projectName) {
 		}
 	}
 	if (!deleteCP) {
-		println projectName + " : no dependencies from " + dependencyFolder + " found in classpath file! "
+		println "${filePar}: no dependencies from ${dependencyFolder} found in classpath file! "
 		newCP.delete()
 	} else {
 		filePar.delete()
@@ -124,9 +121,7 @@ def deleteLibFromCP(def projectName) {
 }
 
 // Adds a Library to the current Bundle-ClassPath of the Manifest file
-def addRunTimeLib(String libPar, String projectPar) {
-	def libPath = dependencyFolder + libPar
-	def mf = new File(projectPar + "/META-INF/MANIFEST.MF")
+def addRunTimeLib(File mf, String libPath) {
 	def newMf = new File("${mf}.temp")
 	newMf.delete()
 	mf.eachLine {line ->
@@ -146,16 +141,13 @@ def addRunTimeLib(String libPar, String projectPar) {
 }
 
 // Creates a Bundle-ClassPath Section in the Manifest file
-def createRunTimeLib(String libPar, String projectPar) {
-	def libPath = dependencyFolder + libPar
-	def mf = new File(projectPar + "/META-INF/MANIFEST.MF")
+def createRunTimeLib(File mf, String libPath) {
 	mf << "Bundle-ClassPath: " + libPath
 }
 
 // checks for a Bundle-ClassPath section in the Manifest file
-def boolean checkForRunTimeLibs(String projectPar) {
+def boolean checkForRunTimeLibs(File mf) {
 	boolean returnBool = false
-	def mf = new File(projectPar + "/META-INF/MANIFEST.MF")
 	mf.eachLine {line ->
 		if (line.contains("Bundle-ClassPath:")) {
 			returnBool = true
@@ -165,9 +157,7 @@ def boolean checkForRunTimeLibs(String projectPar) {
 }
 
 // checks if lib is already present in Manifest file
-def boolean checkRunTimeLib(String libPar, String projectPar){
-	def libPath = dependencyFolder + libPar
-	def mf = new File(projectPar + "/META-INF/MANIFEST.MF")
+def boolean checkRunTimeLib(File mf, String libPath) {
 	boolean returnBool = false
 	mf.eachLine {line ->
 		if (line.contains(libPath)) {
@@ -214,18 +204,18 @@ subprojects {
 				}
 
 				if (features.every {it != projectName}) {
-					boolean BundleClassPathPresent = checkForRunTimeLibs(projectName)
+					boolean BundleClassPathPresent = checkForRunTimeLibs(new File(projectName + "/META-INF/MANIFEST.MF"))
 					for (int icp = 0; icp < dependencyList.size; icp++) {
 						// Adds Lib to .classPath file
-						addLibToCP(projectName, dependencyList[icp])
+						addLibToCP(new File(workspacePath + projectName + "/.classpath"), dependencyFolder + dependencyList[icp])
 
 						if (!BundleClassPathPresent) {
 							// Adds Lib to Manifest File
-							createRunTimeLib(dependencyList[icp], projectName)
+							createRunTimeLib(new File(projectName + "/META-INF/MANIFEST.MF"), dependencyFolder + dependencyList[icp])
 							BundleClassPathPresent = true
-						} else if (!checkRunTimeLib(dependencyList[icp], projectName)) {
+						} else if (!checkRunTimeLib(new File(projectName + "/META-INF/MANIFEST.MF"), dependencyFolder + dependencyList[icp])) {
 							// if library not present add it to RunTimeLibrary
-							addRunTimeLib(dependencyList[icp], projectName)
+							addRunTimeLib(new File(projectName + "/META-INF/MANIFEST.MF"), dependencyFolder + dependencyList[icp])
 						}
 					}
 					// could still be usefull for debugging, that's why it's not deleted
@@ -257,7 +247,7 @@ subprojects {
 			depsFolder.deleteDir()
 
 			if (features.every {it != projectName} && depsDelete) {
-				deleteLibFromCP(projectName)
+				deleteLibFromCP(new File(workspacePath + projectName + "/.classpath"), dependencyFolder)
 			}
 		}
 	}
