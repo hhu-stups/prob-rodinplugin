@@ -176,6 +176,12 @@ subprojects {
 	apply plugin: 'java'
 	// apply plugin: 'eclipse'
 
+	ext {
+		projectDependencyFolder = new File(workspacePath + project.name + "/" + dependencyFolder)
+		classpathFile = new File(workspacePath + project.name + "/.classpath")
+		manifestFile = new File(workspacePath + project.name + "/META-INF/MANIFEST.MF")
+	}
+
 	task deleteArtifacts(type: Delete) {
 		delete 'target', 'pom.xml', dependencyFolder
 	}
@@ -195,15 +201,12 @@ subprojects {
 		doLast {
 			final projectName = inputs.properties["projectName"]
 			def dependencyList = []
-			def depsFolder = new File(workspacePath + projectName + "/" + dependencyFolder)
-			if (depsFolder.exists()) {
-				depsFolder.eachFile() {file ->
+			if (projectDependencyFolder.exists()) {
+				projectDependencyFolder.eachFile() {file ->
 					dependencyList << file.getName()
 				}
 
 				if (features.every {it != projectName}) {
-					def classpathFile = new File(workspacePath + projectName + "/.classpath")
-					def manifestFile = new File(workspacePath + projectName + "/META-INF/MANIFEST.MF")
 					boolean BundleClassPathPresent = checkForRunTimeLibs(manifestFile)
 					for (int icp = 0; icp < dependencyList.size; icp++) {
 						def dependencyPath = dependencyFolder + dependencyList[icp]
@@ -232,14 +235,13 @@ subprojects {
 		doLast {
 			final projectName = inputs.properties["projectName"]
 			boolean depsDelete = false
-			def depsFolder = new File(workspacePath + projectName + '/' + dependencyFolder)
-			if (depsFolder.exists()) {
+			if (projectDependencyFolder.exists()) {
 				depsDelete = true
 			}
-			depsFolder.deleteDir()
+			projectDependencyFolder.deleteDir()
 
 			if (features.every {it != projectName} && depsDelete) {
-				deleteLibFromCP(new File(workspacePath + projectName + "/.classpath"), dependencyFolder)
+				deleteLibFromCP(classpathFile, dependencyFolder)
 			}
 		}
 	}
@@ -266,8 +268,7 @@ subprojects {
 
 			// Generating Poms for sub projects except features
 			if (features.every {it != projectName}) {
-				def manifest = new File(workspacePath + projectName + "/META-INF/MANIFEST.MF")
-				manifest.eachLine {
+				manifestFile.eachLine {
 					if (it ==~ /Bundle-Version.+qualifier/) {
 						versionNumber = it.substring(16) // possibile error: cuts off first 16 chars
 
