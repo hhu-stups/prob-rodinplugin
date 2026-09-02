@@ -284,15 +284,19 @@ subprojects {
 					}
 				}
 
-				def f = new File(workspacePath + artifactId + '/pom.xml')
+				if (artifactId != projectName) {
+					throw new GradleException("The Bundle-SymbolicName declared in the MANIFEST.MF (${artifactId}) must match the Gradle subproject name (${projectName})")
+				}
+
+				def f = new File(workspacePath + projectName + '/pom.xml')
 				f.delete()
 
 				if (projectName ==~ /.*\.[tT]ests*/) {
 					// Test Cases
-					f << start() + elder() + testArtifact(artifactId, versionNumber) + end()
+					f << start() + elder() + testArtifact(projectName, versionNumber) + end()
 				} else {
 					// Normal Plugin
-					f << start() + elder() + artifact(artifactId, versionNumber) + end()
+					f << start() + elder() + artifact(projectName, versionNumber) + end()
 					// old pom.xml files are deleted and replaced by new auto generated Tycho pom.xml files
 				}
 			} else {
@@ -300,12 +304,16 @@ subprojects {
 				def parsedXml = new XmlParser().parse(workspacePath + "${projectName}/feature.xml")
 
 				artifactId = parsedXml.attribute("id")
+				if (artifactId != projectName) {
+					throw new GradleException("The id declared in the feature.xml (${artifactId}) must match the Gradle subproject name (${projectName})")
+				}
+
 				versionNumber = parsedXml.attribute("version")
 				versionNumber = versionNumber.replace(".qualifier", "-SNAPSHOT")
 
-				def f = new File(workspacePath + artifactId + '/pom.xml')
+				def f = new File(workspacePath + projectName + '/pom.xml')
 				f.delete()
-				f << feature(artifactId, versionNumber)
+				f << feature(projectName, versionNumber)
 			}
 		}
 	}
