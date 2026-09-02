@@ -62,7 +62,7 @@ def addLibToCP(File filePar, String libPath) {
 			if (line.contains("</classpath>")) {
 				String entry = '\t<classpathentry exported="true" kind="lib" path="' + libPath + '"/>' + '\n</classpath>\n'
 				line = line.replaceAll(/<\/classpath>/, entry)
-				println "${filePar}: ${libPath} added to classpath"
+				println "${libPath} added to classpath"
 				newCP << line
 			} else {
 				newCP << line + "\n"
@@ -71,7 +71,7 @@ def addLibToCP(File filePar, String libPath) {
 		filePar.delete()
 		newCP.renameTo(filePar)
 	} else {
-		println "${filePar}: ${libPath} classpath entry already present"
+		println "${libPath} classpath entry already present"
 	}
 }
 
@@ -94,12 +94,12 @@ def deleteLibFromCP(File filePar, String dependencyFolder) {
 		}
 	}
 	if (!deleteCP) {
-		println "${filePar}: no dependencies from ${dependencyFolder} found in classpath file! "
+		println "no dependencies from ${dependencyFolder} found in classpath file!"
 		newCP.delete()
 	} else {
 		filePar.delete()
 		newCP.renameTo(filePar)
-		println "${filePar}!"
+		println "all ${dependencyFolder} entries deleted from classpath file"
 	}
 }
 
