@@ -1,9 +1,7 @@
 package de.prob.ui.ltl;
 
 import org.eclipse.core.commands.Command;
-import org.eclipse.core.commands.ExecutionException;
-import org.eclipse.core.commands.ParameterizedCommand;
-import org.eclipse.jface.action.MenuManager;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabFolder2Adapter;
@@ -15,8 +13,8 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.handlers.HandlerUtil;
-import org.eclipse.ui.menus.CommandContributionItem;
+import org.eclipse.ui.commands.ICommandService;
+import org.eclipse.ui.handlers.RadioState;
 import org.eclipse.ui.services.ISourceProviderService;
 
 import de.prob.core.domainobjects.Operation;
@@ -41,7 +39,6 @@ public final class CounterExampleViewPart extends StateBasedViewPart {
 	};
 
 	private CTabFolder tabFolder;
-	private ViewType viewType = ViewType.INTERACTIVE;
 
 	public static CounterExampleViewPart showDefault() {
 		final IWorkbenchPage workbenchPage = PlatformUI.getWorkbench()
@@ -78,7 +75,6 @@ public final class CounterExampleViewPart extends StateBasedViewPart {
 	}
 
 	public void addCounterExample(final CounterExample counterExample) {
-		initializeMenuSetting();
 		updateCounterExampleLoadedProvider(true);
 
 		final Runnable runnable = new Runnable() {
@@ -91,36 +87,6 @@ public final class CounterExampleViewPart extends StateBasedViewPart {
 		};
 
 		Display.getDefault().asyncExec(runnable);
-	}
-
-	private void initializeMenuSetting() {
-		if (tabFolder.getItemCount() == 0) {
-			MenuManager manager = (MenuManager) getViewSite().getActionBars()
-					.getMenuManager();
-
-			if (manager.getSize() > 0) {
-				if (manager.getItems()[0] instanceof MenuManager) {
-					manager = (MenuManager) manager.getItems()[0];
-
-					if (manager.getSize() > 0)
-						if (manager.getItems()[0] instanceof CommandContributionItem) {
-							CommandContributionItem item = (CommandContributionItem) manager
-									.getItems()[0];
-
-							ParameterizedCommand parameterizedCommand = item
-									.getCommand();
-
-							Command command = parameterizedCommand.getCommand();
-
-							try {
-								HandlerUtil.updateRadioState(command,
-										viewType.name());
-							} catch (ExecutionException e) {
-							}
-						}
-				}
-			}
-		}
 	}
 
 	public void zoomInCounterExample() {
@@ -144,8 +110,7 @@ public final class CounterExampleViewPart extends StateBasedViewPart {
 		}
 	}
 
-	public void setViewType(ViewType viewType) {
-		this.viewType = viewType;
+	public void setViewType(CounterExampleViewPart.ViewType viewType) {
 		for (CTabItem tabItem : tabFolder.getItems()) {
 			final CounterExampleTab tab = getTab(tabItem);
 			tab.updateTopControl(viewType);
@@ -197,6 +162,17 @@ public final class CounterExampleViewPart extends StateBasedViewPart {
 				counterExample);
 		final CTabItem tabItem = ceTab.getTabitem();
 		tabItem.setData(DATA_KEY, ceTab);
+
+		CounterExampleViewPart.ViewType viewType;
+		try {
+			ICommandService commandService = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getService(ICommandService.class);
+			Command viewTypeCommand = commandService.getCommand("de.prob.ui.ltl.counterexampleviewmenuhandler");
+			Object viewTypeState = viewTypeCommand.getState(RadioState.STATE_ID).getValue();
+			viewType = CounterExampleViewPart.ViewType.valueOf((String)viewTypeState);
+		} catch (RuntimeException exc) {
+			Logger.log(IStatus.ERROR, "Failed to restore LTL counter-example view mode - defaulting to interactive view", exc);
+			viewType = CounterExampleViewPart.ViewType.INTERACTIVE;
+		}
 		ceTab.updateTopControl(viewType);
 
 		return tabItem;

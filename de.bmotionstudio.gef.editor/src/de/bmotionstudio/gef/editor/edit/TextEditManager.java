@@ -7,7 +7,7 @@
 package de.bmotionstudio.gef.editor.edit;
 
 import org.eclipse.draw2d.IFigure;
-import org.eclipse.gef.editparts.ZoomListener;
+import org.eclipse.draw2d.zoom.ZoomListener;
 import org.eclipse.gef.editparts.ZoomManager;
 import org.eclipse.gef.tools.CellEditorLocator;
 import org.eclipse.gef.tools.DirectEditManager;

@@ -6,6 +6,7 @@
 
 package de.prob.eventb.translator.internal;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -67,6 +68,16 @@ public class TranslationVisitor implements ISimpleVisitor {
 	private final LookupStack<PExpression> expressions = new LookupStack<PExpression>();
 	private final LookupStack<PSubstitution> substitutions = new LookupStack<PSubstitution>();
 	private final LookupStack<String> boundVariables = new LookupStack<String>();
+
+	private final boolean addTyping;
+
+	public TranslationVisitor() {
+		this(true);
+	}
+
+	public TranslationVisitor(final boolean addTyping) {
+		this.addTyping = addTyping;
+	}
 
 	@Override
 	public void visitAssociativeExpression(
@@ -258,21 +269,18 @@ public class TranslationVisitor implements ISimpleVisitor {
 	}
 
 	private PPredicate recurseOR(final List<PPredicate> list) {
-		final PPredicate right = list.size() == 2 ? list.get(1)
-				: recurseOR(list.subList(1, list.size()));
-		return new ADisjunctPredicate(list.get(0), right);
+		final PPredicate left = list.size() == 2 ? list.get(0) : recurseOR(list.subList(0, list.size()-1));
+		return new ADisjunctPredicate(left, list.get(list.size()-1));
 	}
 
 	private PPredicate recurseAND(final List<PPredicate> list) {
-		final PPredicate right = list.size() == 2 ? list.get(1)
-				: recurseAND(list.subList(1, list.size()));
-		return new AConjunctPredicate(list.get(0), right);
+		final PPredicate left = list.size() == 2 ? list.get(0) : recurseAND(list.subList(0, list.size()-1));
+		return new AConjunctPredicate(left, list.get(list.size()-1));
 	}
 
 	private PPredicate recurseEQV(final List<PPredicate> list) {
-		final PPredicate right = list.size() == 2 ? list.get(1)
-				: recurseEQV(list.subList(1, list.size()));
-		return new AEquivalencePredicate(list.get(0), right);
+		final PPredicate left = list.size() == 2 ? list.get(0) : recurseEQV(list.subList(0, list.size()-1));
+		return new AEquivalencePredicate(left, list.get(list.size()-1));
 	}
 
 	@Override
@@ -498,9 +506,11 @@ public class TranslationVisitor implements ISimpleVisitor {
 
 	@Override
 	public void visitIntegerLiteral(final IntegerLiteral expression) {
-		final String value = expression.getValue().toString();
-		pushExpression(expression, new AIntegerExpression(new TIntegerLiteral(
-				value)));
+		final BigInteger value = expression.getValue();
+		PExpression intExpr = (value.signum() == -1)
+				? new AUnaryMinusExpression(new AIntegerExpression(new TIntegerLiteral(value.abs().toString())))
+				: new AIntegerExpression(new TIntegerLiteral(value.toString()));
+		pushExpression(expression, intExpr);
 	}
 
 	@Override
@@ -610,6 +620,8 @@ public class TranslationVisitor implements ISimpleVisitor {
 	 */
 	private PPredicate addTypesToPredicate(PPredicate predicate,
 			BoundIdentDecl[] decls) {
+		if (!addTyping)
+			return predicate;
 		for (int i = decls.length; i > 0; i--) {
 			final BoundIdentDecl decl = decls[i - 1];
 			final Type type = decl.getType();

@@ -18,8 +18,6 @@ import org.rodinp.core.IRodinFile;
 
 import de.prob.core.translator.TranslationFailedException;
 import de.prob.eventb.translator.ContextTranslator;
-import de.prob.eventb.translator.flow.FlowAnalysis;
-import de.prob.logging.Logger;
 import de.prob.prolog.output.IPrologTermOutput;
 
 public final class EventBMachineTranslator extends EventBTranslator {
@@ -123,18 +121,6 @@ public final class EventBMachineTranslator extends EventBTranslator {
 		if (!processed.contains(name)) {
 			processed.add(name);
 			translatorMap.add(ContextTranslator.create(context, ff, te));
-		}
-	}
-
-	@Override
-	protected void printFlowInformation(final IPrologTermOutput pout) {
-		try {
-			FlowAnalysis flowAnalysis = new FlowAnalysis(this.machine);
-			flowAnalysis.printGraph(pout);
-		} catch (Exception e) {
-			final String message = "Error while constructing Flow Information: "
-					+ e.getLocalizedMessage();
-			Logger.notifyUser(message, e);
 		}
 	}
 }

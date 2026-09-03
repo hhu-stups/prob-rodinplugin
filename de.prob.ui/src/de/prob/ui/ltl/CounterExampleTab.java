@@ -29,7 +29,6 @@ import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.custom.StackLayout;
-import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.printing.PrintDialog;
 import org.eclipse.swt.printing.Printer;
 import org.eclipse.swt.printing.PrinterData;
@@ -57,9 +56,11 @@ public class CounterExampleTab {
 	private final CounterExample counterExample;
 
 	private final CTabItem tabItem;
+	private final Composite composite;
 	private final StackLayout layout;
 
 	// Table view
+	private final Composite tableViewerLayoutWrapper;
 	private final TableViewer tableViewer;
 
 	// Tree view
@@ -83,18 +84,18 @@ public class CounterExampleTab {
 		final Composite sashForm = new SashForm(tabFolder, SWT.HORIZONTAL);
 		tabItem.setControl(sashForm);
 
-		final Composite composite = new Composite(sashForm, SWT.None);
+		composite = new Composite(sashForm, SWT.None);
 
 		layout = new StackLayout();
 		composite.setLayout(layout);
 
-		final Composite tableView = new Composite(composite, SWT.None);
-		tableViewer = createTableViewer(tableView, counterExample);
+		tableViewerLayoutWrapper = new Composite(composite, SWT.None);
+		TableColumnLayout tableViewerLayout = new TableColumnLayout();
+		tableViewerLayoutWrapper.setLayout(tableViewerLayout);
+		tableViewer = createTableViewer(tableViewerLayoutWrapper, tableViewerLayout, counterExample);
 		// createPopupMenu(tableViewer.getTable(), tableViewer);
 
-		final Composite treeView = new Composite(composite, SWT.None);
-		treeView.setLayout(new FillLayout());
-		treeViewer = createTreeViewer(treeView, counterExample);
+		treeViewer = createTreeViewer(composite, counterExample);
 		// createPopupMenu(treeViewer.getTree(), treeViewer);
 
 		rootEditPart = new ScalableRootEditPart();
@@ -117,15 +118,13 @@ public class CounterExampleTab {
 		return tabItem;
 	}
 
-	private TableViewer createTableViewer(Composite parent,
+	private TableViewer createTableViewer(Composite parent, TableColumnLayout layout,
 			final CounterExample counterExample) {
 		final CounterExampleTableViewer tableViewer = new CounterExampleTableViewer(
 				parent, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
 		tableViewer.getTable().setHeaderVisible(true);
 		tableViewer.getTable().setLinesVisible(true);
 
-		final TableColumnLayout layout = new TableColumnLayout();
-		parent.setLayout(layout);
 		createEventColumn(tableViewer, layout);
 
 		final Collection<CounterExampleProposition> propositions = counterExample
@@ -246,7 +245,7 @@ public class CounterExampleTab {
 		final Control topControl;
 		switch (viewType) {
 		case TABLE:
-			topControl = tableViewer.getControl();
+			topControl = tableViewerLayoutWrapper;
 			break;
 		case TREE:
 			topControl = treeViewer.getControl();
@@ -260,13 +259,7 @@ public class CounterExampleTab {
 		}
 
 		layout.topControl = topControl;
-		if (layout.topControl != null) {
-			final Composite parent = layout.topControl.getParent();
-			if (parent != null) {
-				parent.layout();
-			}
-		}
-
+		composite.layout();
 	}
 
 	public CounterExample getCounterExample() {

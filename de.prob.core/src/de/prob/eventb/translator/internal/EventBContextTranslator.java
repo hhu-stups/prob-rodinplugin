@@ -82,9 +82,4 @@ public final class EventBContextTranslator extends EventBTranslator {
 			}
 		}
 	}
-
-	@Override
-	protected void printFlowInformation(final IPrologTermOutput pout) {
-	}
-
 }

@@ -289,7 +289,7 @@
               name="org.eclipse.ui.commands.radiostateparameter">
           </commandParameter>
           <state
-              class="org.eclipse.ui.handlers.RadioState"
+              class="org.eclipse.ui.handlers.RadioState:INTERACTIVE"
               id="org.eclipse.ui.commands.radioState">
           </state>
       </command>

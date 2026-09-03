@@ -102,9 +102,6 @@ public abstract class EventBTranslator implements ITranslator {
 			pout.printAtom(proof.discharged.toString());
 			pout.closeTerm();
 		}
-
-		if (System.getProperty("flow") != null)
-			printFlowInformation(pout);
 	}
 
 	private void printPragmaContents(
@@ -124,8 +121,6 @@ public abstract class EventBTranslator implements ITranslator {
 			pragma.output(pout);
 		}
 	}
-
-	protected abstract void printFlowInformation(final IPrologTermOutput pout);
 
 	private ASTProlog createAstVisitor(
 			final Collection<? extends AbstractComponentTranslator> refinementChainTranslators,

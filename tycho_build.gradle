@@ -1,17 +1,14 @@
+import groovy.xml.XmlParser
+
 /*
 	Build Script can be executed via 'gradle install'
 	Build Script Dependencies can be downloaded via 'gradle collectDepenencies'
 	Executing the Build Script and download Dependencies can be executed via 'gradle completeInstall'
 	For a complete classPath Refresh please execute 'gradle deleteFromClassPath setClassPath'
 	Pom Generation can be executed via gradle deploy
-
-	If you have a product definition please add a buildProduct = true to your main build.gradle script
 */
 
-
 apply plugin: 'base'
-
-import groovy.io.FileType
 
 // Java and Maven version requirements at build time, depending on the major version of Tycho:
 // Tycho 5: Java 21, Maven 3.9
@@ -30,29 +27,12 @@ import groovy.io.FileType
 // Tycho 1.3 was the first version that could target Java 11.
 // Tycho 1.1 was the first version that could target Java 9.
 
-project.ext.tychoVersion = "4.0.13"
-
-try {
-	workspacePath = workspacePath
-} catch (MissingPropertyException e) {
-	project.ext.workspacePath = ""
-}
+project.ext.tychoVersion = "5.0.2"
 
 try {
 	dependencyFolder = dependencyFolder
 } catch (MissingPropertyException e) {
 	project.ext.dependencyFolder = "lib/dependencies/" // Folder in each subproject where
-}
-
-try {
-	features = features
-} catch (MissingPropertyException e) {
-	project.ext.features = []
-	for (int i = 0; i < subprojects.name.size(); i++){
-		if (subprojects.name[i] ==~ /.*\.[fF]eature/) {
-			features.add(subprojects.name[i])
-		}
-	}
 }
 
 try {
@@ -69,100 +49,90 @@ try {
 
 
 // Add certain Jar to Library
-def addLibToCP(def projectName, def libPar) {
-	def filePar = new File(workspacePath + projectName + "/.classpath")
+def addLibToCP(File filePar, String libPath) {
 	boolean notYetAdded = true
 	filePar.eachLine {line ->
-		def pattern = ".*${dependencyFolder}${libPar}.*"
-		if (line ==~ /${pattern}/) {
+		if (line.contains(libPath)) {
 			notYetAdded = false
 		}
 	}
 	if (notYetAdded) {
-		File newCP = new File(workspacePath + projectName + '/.cp')
+		File newCP = new File("${filePar}.temp")
 		filePar.eachLine {line ->
-			if (line ==~ /.*<\/classpath>.*/) {
-				String entry = '\t<classpathentry exported="true" kind="lib" path="' + dependencyFolder + libPar + '"/>' + '\n</classpath>\n'
+			if (line.contains("</classpath>")) {
+				String entry = '\t<classpathentry exported="true" kind="lib" path="' + libPath + '"/>' + '\n</classpath>\n'
 				line = line.replaceAll(/<\/classpath>/, entry)
-				println projectName + " : " + libPar + " added to classpath"
+				println "${libPath} added to classpath"
 				newCP << line
 			} else {
 				newCP << line + "\n"
 			}
 		}
 		filePar.delete()
-		newCP.renameTo(workspacePath + projectName + '/.classpath')
+		newCP.renameTo(filePar)
 	} else {
-		println projectName + " : " + libPar + " classpath entry already present"
+		println "${libPath} classpath entry already present"
 	}
 }
 
 // deletes whole DependenciesLibrary Folder
-def deleteLibFromCP(def projectName) {
-	def filePar = new File(workspacePath + projectName + "/.classpath")
+def deleteLibFromCP(File filePar, String dependencyFolder) {
 	boolean deleteCP = false
-	def newCP = new File(workspacePath + projectName + '/cp')
-	def pattern = ".*${dependencyFolder}[^<].*/>"
+	def newCP = new File("${filePar}.temp")
 
 	filePar.eachLine {line ->
 		if (line ==~ /\n(\ |\t)*/) {
 			// delete empty lines
 			line = line.replaceAll(/\n(\ |\t)*/, '')
 		}
-		if (line ==~ /${pattern}/) {
+		if (line ==~ /.*${dependencyFolder}[^<].*\/>/) {
 			deleteCP = true
-			def pattern2 = '(\\ |\\t)*<classpathentry exported="true" kind="lib" path="' + dependencyFolder + "[^<].*"+'"/>(\\ |\\t)*'
-			line = line.replaceAll(/${pattern2}/, '')
+			line = line.replaceAll(/(\ |\t)*<classpathentry exported="true" kind="lib" path="${dependencyFolder}[^<].*"\/>(\ |\t)*/, '')
 			newCP << line
 		} else {
 			newCP << line+"\n"
 		}
 	}
 	if (!deleteCP) {
-		println projectName + " : no dependencies from " + dependencyFolder + " found in classpath file! "
+		println "no dependencies from ${dependencyFolder} found in classpath file!"
 		newCP.delete()
 	} else {
 		filePar.delete()
-		newCP.renameTo(workspacePath + projectName + '/.classpath')
-		println workspacePath + projectName + '/.classpath' + "!"
+		newCP.renameTo(filePar)
+		println "all ${dependencyFolder} entries deleted from classpath file"
 	}
 }
 
 // Adds a Library to the current Bundle-ClassPath of the Manifest file
-def addRunTimeLib(String libPar, String projectPar) {
-	def mf = new File(projectPar + "/META-INF/MANIFEST.MF")
-	def newMf = new File(projectPar + "/MF")
+def addRunTimeLib(File mf, String libPath) {
+	def newMf = new File("${mf}.temp")
 	newMf.delete()
 	mf.eachLine {line ->
 		if (line ==~ /.*Bundle-ClassPath:.*\.jar.*/) {
 			def libsInLine = line.replaceAll(/[\ \t]*Bundle-ClassPath:[\ \t]*/, '')
-			line = line.replaceFirst(/[^\ \t]*\.jar[\ \,]*/, dependencyFolder + libPar + ",\n " + libsInLine) // /[^\ \t]*.\.jar[\ \,]*/
-		} else {
-			if (line ==~ /.*Bundle-ClassPath: \.[\ \t]*/) {
-				line = line + ",\n " + dependencyFolder + libPar
-			} else if (line ==~ /.*Bundle-ClassPath: \.\,[\ \t]*/) {
-				line = line + "\n " + dependencyFolder + libPar + ","
-			}
+			line = line.replaceFirst(/[^\ \t]*\.jar[\ \,]*/, libPath + ",\n " + libsInLine) // /[^\ \t]*.\.jar[\ \,]*/
+		} else if (line ==~ /.*Bundle-ClassPath: \.[\ \t]*/) {
+			line = line + ",\n " + libPath
+		} else if (line ==~ /.*Bundle-ClassPath: \.\,[\ \t]*/) {
+			line = line + "\n " + libPath + ","
 		}
 
 		newMf << line + "\n"
 	}
 	mf.delete()
-	newMf.renameTo(projectPar + "/META-INF/MANIFEST.MF")
+	newMf.renameTo(mf)
 }
 
 // Creates a Bundle-ClassPath Section in the Manifest file
-def createRunTimeLib(String libPar, String projectPar) {
-	def mf = new File(projectPar + "/META-INF/MANIFEST.MF")
-	mf << "Bundle-ClassPath: lib/dependencies/" + libPar
+def createRunTimeLib(File mf, String libPath) {
+	mf << "Bundle-ClassPath: " + libPath
 }
 
 // checks for a Bundle-ClassPath section in the Manifest file
-def boolean checkForRunTimeLibs(String projectPar) {
+def boolean checkForRunTimeLibs(File mf) {
 	boolean returnBool = false
-	def mf = new File(projectPar + "/META-INF/MANIFEST.MF")
 	mf.eachLine {line ->
-		if (line ==~ /.*Bundle-ClassPath:.*/) {
+		if (line.contains("Bundle-ClassPath:")) {
 			returnBool = true
 		}
 	}
@@ -170,34 +140,12 @@ def boolean checkForRunTimeLibs(String projectPar) {
 }
 
 // checks if lib is already present in Manifest file
-// if lib is present but is referenced from another folder than dependencyFolder the library from dependencyFolder will be referenced
-def boolean checkRunTimeLib(String libPar, String projectPar){
-	// checks if lib is in RunTimeLibrary present and changes reference if necessary
-	def mf = new File(projectPar + "/META-INF/MANIFEST.MF")
-	def newMf = new File(projectPar + "/MF")
-	newMf.delete()
+def boolean checkRunTimeLib(File mf, String libPath) {
 	boolean returnBool = false
-	boolean changed = false
 	mf.eachLine {line ->
-		if (line ==~ /.*${libPar}.*/) {
-			if (!(line ==~ /.*(\ |\t)*${dependencyFolder}${libPar}(\ |\t)*.*/)){
-				// if lib is already referenced
-				// reference lib from dependencyFolder
-				line = line.replaceFirst( /[^\ \t]*${libPar}/, dependencyFolder+libPar )
-				changed = true
-				println line
-				println "yolo  ${libPar}\n"
-			}
+		if (line.contains(libPath)) {
 			returnBool = true
 		}
-
-		newMf << line + "\n"
-	}
-	if (changed) {
-		mf.delete()
-		newMf.renameTo(projectPar + "/META-INF/MANIFEST.MF")
-	} else {
-		newMf.delete()
 	}
 	return returnBool
 }
@@ -211,58 +159,64 @@ subprojects {
 	apply plugin: 'java'
 	// apply plugin: 'eclipse'
 
+	ext {
+		pomFile = file("pom.xml")
+		dependencyFolder = project.parent.dependencyFolder
+		projectDependencyFolder = file(dependencyFolder)
+		classpathFile = file(".classpath")
+		manifestFile = file("META-INF/MANIFEST.MF")
+	}
+
+	try {
+		project.isFeature
+	} catch (MissingPropertyException e) {
+		project.ext.isFeature = project.name ==~ /.*\.[fF]eature/
+	}
+
+	if (isFeature) {
+		project.ext.featureXmlFile = file("feature.xml")
+	}
+
 	task deleteArtifacts(type: Delete) {
-		delete 'target', 'pom.xml', dependencyFolder
+		delete 'target', 'pom.xml', projectDependencyFolder
 	}
 
 	// Copy Dependencies into subprojects DependencyFolder
 	task collectDependencies(type: Copy) {
 		from configurations.runtimeClasspath
 
-		into "${dependencyFolder}"
+		into projectDependencyFolder
 	}
 
 	task setClassPath(dependsOn: 'collectDependencies') {
 		description = "\tAdds all your Dependencies from your local lib folder in each project to it's classpath"
 
-		inputs.property("projectName", project.name)
+		inputs.property("isFeature", project.isFeature)
 
 		doLast {
-			final projectName = inputs.properties["projectName"]
 			def dependencyList = []
-			def depsFolder = new File(workspacePath + projectName + "/" + dependencyFolder)
-			if (depsFolder.exists()) {
-				depsFolder.eachFile() {file ->
-					if (!(file.getName() ==~ /.*\.txt/)) {
-						dependencyList << file.getName()
-					}
+			if (projectDependencyFolder.exists()) {
+				projectDependencyFolder.eachFile() {file ->
+					dependencyList << file.getName()
 				}
 
-				if (features.every {it != projectName}) {
-					boolean BundleClassPathPresent = checkForRunTimeLibs(projectName)
+				if (!inputs.properties["isFeature"]) {
+					boolean BundleClassPathPresent = checkForRunTimeLibs(manifestFile)
 					for (int icp = 0; icp < dependencyList.size; icp++) {
+						def dependencyPath = dependencyFolder + dependencyList[icp]
 						// Adds Lib to .classPath file
-						addLibToCP(projectName, dependencyList[icp])
+						addLibToCP(classpathFile, dependencyPath)
 
 						if (!BundleClassPathPresent) {
 							// Adds Lib to Manifest File
-							createRunTimeLib(dependencyList[icp], projectName)
+							createRunTimeLib(manifestFile, dependencyPath)
 							BundleClassPathPresent = true
-						} else if (!checkRunTimeLib(dependencyList[icp], projectName)) {
+						} else if (!checkRunTimeLib(manifestFile, dependencyPath)) {
 							// if library not present add it to RunTimeLibrary
-							addRunTimeLib(dependencyList[icp], projectName)
+							addRunTimeLib(manifestFile, dependencyPath)
 						}
 					}
-					// could still be usefull for debugging, that's why it's not deleted
-					/*dependencyList.each {dep ->
-						println projectName + ": " + dep
-					}*/
 				}
-				def warningReadMe = new File(workspacePath + projectName + "/" + dependencyFolder + "_README.txt")
-				warningReadMe.delete()
-				warningReadMe << "Do Not Remove any Jars/Libraries in this Folder!\nThis folder contains all of your dependencies defined in your gradle script.\n"
-				warningReadMe << "Removing or renaming any of these files will result in an Error in your .classpath file\n"
-				warningReadMe << "If any error concerning missing dependencies should occur please run 'gradle deleteFromClassPath setClassPath' in your workspace folder from your shell."
 			}
 		}
 	}
@@ -270,19 +224,17 @@ subprojects {
 	task deleteFromClassPath(){
 		description = "\tDeletes all your Dependencies located in your local lib folder from each project's classpath"
 
-		inputs.property("projectName", project.name)
+		inputs.property("isFeature", project.isFeature)
 
 		doLast {
-			final projectName = inputs.properties["projectName"]
 			boolean depsDelete = false
-			def depsFolder = new File(workspacePath + projectName + '/' + dependencyFolder)
-			if (depsFolder.exists()) {
+			if (projectDependencyFolder.exists()) {
 				depsDelete = true
 			}
-			depsFolder.deleteDir()
+			projectDependencyFolder.deleteDir()
 
-			if (features.every {it != projectName} && depsDelete) {
-				deleteLibFromCP(projectName)
+			if (!inputs.properties["isFeature"] && depsDelete) {
+				deleteLibFromCP(classpathFile, dependencyFolder)
 			}
 		}
 	}
@@ -295,6 +247,7 @@ subprojects {
 		description = "\tGenerating the Tycho Poms. Please remember to add a '.qualifier' to the version numbers!"
 
 		inputs.property("projectName", project.name)
+		inputs.property("isFeature", project.isFeature)
 
 		doLast {
 			final projectName = inputs.properties["projectName"]
@@ -308,10 +261,8 @@ subprojects {
 			// Bundle-Version Number
 
 			// Generating Poms for sub projects except features
-			if (features.every {it != projectName}) {
-				def content = new File(workspacePath + "${projectName}/META-INF/MANIFEST.MF").getText("UTF-8")
-
-				def printFileLine = {
+			if (!inputs.properties["isFeature"]) {
+				manifestFile.eachLine {
 					if (it ==~ /Bundle-Version.+qualifier/) {
 						versionNumber = it.substring(16) // possibile error: cuts off first 16 chars
 
@@ -333,30 +284,34 @@ subprojects {
 					}
 				}
 
-				content.eachLine(printFileLine)
+				if (artifactId != projectName) {
+					throw new GradleException("The Bundle-SymbolicName declared in the MANIFEST.MF (${artifactId}) must match the Gradle subproject name (${projectName})")
+				}
 
-				def f = new File(workspacePath + artifactId + '/pom.xml')
-				f.delete()
+				pomFile.delete()
 
 				if (projectName ==~ /.*\.[tT]ests*/) {
 					// Test Cases
-					f << start() + elder() + testArtifact(artifactId, versionNumber) + end()
+					pomFile << start() + elder() + testArtifact(projectName, versionNumber) + end()
 				} else {
 					// Normal Plugin
-					f << start() + elder() + artifact(artifactId, versionNumber) + end()
+					pomFile << start() + elder() + artifact(projectName, versionNumber) + end()
 					// old pom.xml files are deleted and replaced by new auto generated Tycho pom.xml files
 				}
-			} else if (features.any {it == projectName}) {
+			} else {
 				// Features
-				def parsedXml = new XmlParser().parse(workspacePath + "${projectName}/feature.xml")
+				def parsedXml = new XmlParser().parse(featureXmlFile)
 
 				artifactId = parsedXml.attribute("id")
+				if (artifactId != projectName) {
+					throw new GradleException("The id declared in the feature.xml (${artifactId}) must match the Gradle subproject name (${projectName})")
+				}
+
 				versionNumber = parsedXml.attribute("version")
 				versionNumber = versionNumber.replace(".qualifier", "-SNAPSHOT")
 
-				def f = new File(workspacePath + artifactId + '/pom.xml')
-				f.delete()
-				f << feature(artifactId, versionNumber)
+				pomFile.delete()
+				pomFile << feature(projectName, versionNumber)
 			}
 		}
 	}
@@ -370,10 +325,10 @@ clean {
 // define Parent
 task createParent() {
 	doLast {
-		new File(workspacePath + "${parentID}").mkdir()
-		String versionNumber = '1.0.0.qualifier'
+		def parentDir = new File(parentID)
+		parentDir.mkdir()
 
-		def f = new File(workspacePath + parentID + '/pom.xml')
+		def f = new File("${parentDir}/pom.xml")
 		f.delete()
 		f << parentPom(parentID)
 		for (int i = 0; i < targetRepositories.size(); i++) {
@@ -390,22 +345,22 @@ task createParent() {
 }
 
 task deleteParent(type: Delete) {
-	delete(workspacePath + "${parentID}")
+	delete(parentID)
 }
 clean.dependsOn(deleteParent)
 
 // define Repository
 task createRepository() {
 	doLast{
-		def pom = new File(workspacePath + repositoryName + '/pom.xml')
+		def pom = new File(repositoryName + '/pom.xml')
 		pom.delete()
 		pom << reposi()
 	}
 }
 
 task deleteRepository(type: Delete) {
-	delete(workspacePath + repositoryName + "/pom.xml")
-	delete(workspacePath + repositoryName + "/target")
+	delete(repositoryName + "/pom.xml")
+	delete(repositoryName + "/target")
 }
 clean.dependsOn(deleteRepository)
 
@@ -413,15 +368,15 @@ task createPoms(dependsOn: [createParent, createRepository, subprojects.deploy])
 
 
 task install(dependsOn: [createPoms], type: Exec) {
-	description = "\tExecutes a 'mvn install' of the parent pom.xml and auto-generates Tycho Poms"
-	commandLine 'mvn', 'install', '-f', workspacePath + parentID + '/pom.xml'
+	description = "\tExecutes a 'mvn verify' of the parent pom.xml and auto-generates Tycho Poms"
+	commandLine 'mvn', 'verify', '-f', parentID + '/pom.xml'
 }
 
 task prepareMaven(dependsOn: [subprojects.collectDependencies, createPoms])
 
 task completeInstall(dependsOn: [prepareMaven], type: Exec) {
-	description = "\tCopies dependencies into dependencyFolder of each subproject and executes a 'mvn install' of the parent pom.xml and auto-generates Tycho Poms"
-	commandLine 'mvn', 'install', '-f', workspacePath + parentID + '/pom.xml'
+	description = "\tCopies dependencies into dependencyFolder of each subproject and executes a 'mvn verify' of the parent pom.xml and auto-generates Tycho Poms"
+	commandLine 'mvn', 'verify', '-f', parentID + '/pom.xml'
 }
 
 
@@ -590,7 +545,3 @@ def feature(artifactId, versionNumber) {"""\
 </project>
 """}
 // end of feature pom
-
-// Build Script can be executed via gradle install
-// For a complete classPath Refresh please execute 'gradle deleteFromClassPath setClassPath'
-// Pom Generation can be executed via gradle deploy

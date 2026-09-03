@@ -29,6 +29,7 @@ public final class ExploreStateCommand implements IComposableCommand {
 	private final GetEnabledOperationsCommand getOpsCmd;
 	private final GetStateValuesCommand getValuesCmd;
 	private final CheckBooleanPropertyCommand checkInitialisedCmd;
+	private final CheckConstantsSetupStatusCommand checkConstantsSetup;
 	private final CheckBooleanPropertyCommand checkInvCmd;
 	private final CheckBooleanPropertyCommand checkMaxOpCmd;
 	private final CheckBooleanPropertyCommand checkTimeoutCmd;
@@ -44,6 +45,7 @@ public final class ExploreStateCommand implements IComposableCommand {
 		getOpsCmd = new GetEnabledOperationsCommand(stateId);
 		getValuesCmd = new GetStateValuesCommand(stateId);
 		checkInitialisedCmd = new CheckInitialisationStatusCommand(stateId);
+		checkConstantsSetup = new CheckConstantsSetupStatusCommand(stateId);
 		checkInvCmd = new CheckInvariantStatusCommand(stateId);
 		checkMaxOpCmd = new CheckMaxOperationReachedStatusCommand(stateId);
 		checkTimeoutCmd = new CheckTimeoutStatusCommand(stateId);
@@ -51,7 +53,7 @@ public final class ExploreStateCommand implements IComposableCommand {
 		getStateErrCmd = new GetStateBasedErrorsCommand(stateId);
 		unsatPropsCommand = new QuickDescribeUnsatPropertiesCommand();
 		this.allCommands = new ComposedCommand(getOpsCmd, getValuesCmd,
-				checkInitialisedCmd, checkInvCmd, checkMaxOpCmd,
+				checkInitialisedCmd, checkConstantsSetup, checkInvCmd, checkMaxOpCmd,
 				checkTimeoutCmd, checkTimeoutOpsCmd, getStateErrCmd,
 				unsatPropsCommand);
 	}
@@ -73,7 +75,8 @@ public final class ExploreStateCommand implements IComposableCommand {
 			throws CommandException {
 		allCommands.processResult(bindings);
 
-		final boolean initialised = checkInitialisedCmd.getResult();
+		final boolean initialised = checkInitialisedCmd.getResult(); // checks state_property(initialised,CurStateID,R)
+		final boolean constants_setup = checkConstantsSetup.getResult();
 		final boolean invariantOk = checkInvCmd.getResult();
 		final boolean timeoutOccured = checkTimeoutCmd.getResult();
 		final boolean maxOperationsReached = checkMaxOpCmd.getResult();
@@ -86,13 +89,15 @@ public final class ExploreStateCommand implements IComposableCommand {
 
 		// only show error message on SETUP_CONSTANTS and
 		// PARTIALLY_SETUP_CONSTANTS
-		if (unsatPropertiesExist) {
+		if (!constants_setup && unsatPropertiesExist) {
 			Logger.notifyUser("ProB could not find valid constants wich satisfy the properties.\n"
 					+ unsatPropsCommand.getUnsatPropertiesDescription());
-
+		} else if (!constants_setup && enabledOperations.isEmpty()
+				&& !timeoutOccured) {
+			Logger.notifyUser("ProB could not find valid constants. This might be caused by the animation settings (e.g., integer range or deferred set size) or by an inconsistency in the axioms.");
 		} else if (!initialised && enabledOperations.isEmpty()
 				&& !timeoutOccured) {
-			Logger.notifyUser("ProB could not find valid constants/variables. This might be caused by the animation settings (e.g., Integer range or deferred set size) or by an inconsistency in the axioms.");
+			Logger.notifyUser("ProB could not find valid initial values for the variables. This might be caused by the animation settings (e.g., integer range or deferred set size) or by an inconsistency in the INITIALISATION.");
 		}
 
 		Set<String> timeouts = new HashSet<String>(

@@ -1,5 +1,5 @@
 /**
- * (c) 2009-2025 Lehrstuhl fuer Softwaretechnik und Programmiersprachen, Heinrich
+ * (c) 2009-2026 Lehrstuhl fuer Softwaretechnik und Programmiersprachen, Heinrich
  * Heine Universitaet Duesseldorf This software is licenced under EPL 1.0
  * (http://www.eclipse.org/org/documents/epl-v10.html)
  * */
@@ -245,7 +245,7 @@ public class ModelTranslator extends AbstractComponentTranslator {
 		}
 
 		if (!bugs.isEmpty()) {
-			String message = "Translation incomplete due to a Bug in Rodin. This does not affect correctness of the Animation/Model Checking but can decrease its performance. Skipped discharged information about: "
+			String message = "Translation incomplete due to an issue with the Rodin database (try Project -> Clean...). This does not affect correctness of the Animation/Model Checking but can decrease its performance. Skipped discharged information about: "
 					+ String.join(",", bugs);
 			Logger.notifyUser(message);
 		}

@@ -95,9 +95,14 @@ public final class LoadEventBModelCommand {
 			if (commandResult.isTimeoutOccured() && context) {
 				final String message;
 				int solsFound = explore.getState().getEnabledOperations().size();
-				if (solsFound > 0) {
-					message = "A timeout occured when finding constants after finding " + solsFound + " solution(s)."
-							+ " Typically this means, that your axioms are too complicated for automatic solving. "
+				if (solsFound > 2) { // TODO: check either virtual_time_out occurred or value of MAX_INITIALISATIONS preference
+					message = "A timeout or virtual timeout occured when finding constants after " + solsFound + " solution(s)."
+							+ " Typically this means, that some constants haven an unbounded, infinite domain. "
+							+ "You might create an animation refinement using the context menu to bound the number of solutions and help ProB finding all solutions.";
+				} else if (solsFound > 0) {
+					message = "A timeout occured when finding constants after " + solsFound + " solution(s)."
+							+ " Typically this means that your axioms are too complicated for automatic solving. "
+				// TODO: also check if this was a virtual time-out or a regular time-out; in this case it is unbounded constants
 							+ "You might create an animation refinement using the context menu to help ProB finding all solutions.";
 				} else {
 					message = "A timeout occured when finding constants."

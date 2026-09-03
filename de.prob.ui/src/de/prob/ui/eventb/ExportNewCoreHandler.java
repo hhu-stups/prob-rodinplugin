@@ -67,7 +67,11 @@ public class ExportNewCoreHandler extends AbstractHandler implements IHandler {
 
 		dialog.setFilterPath(path);
 		final String subext = (root instanceof IMachineRoot) ? "_mch" : "_ctx";
-		dialog.setFileName(root.getComponentName() + subext + ".eventb");
+		if (Platform.OS_MACOSX.equals( Platform.getOS() )) {
+			dialog.setFileName(root.getComponentName() + subext);
+		} else {
+			dialog.setFileName(root.getComponentName() + subext + ".eventb");
+		}
 		String result = dialog.open();
 		if (result != null) {
 			final String newPath = dialog.getFilterPath();
