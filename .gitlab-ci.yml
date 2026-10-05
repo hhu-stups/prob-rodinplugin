@@ -1,6 +1,9 @@
 build:
   stage: build
-  image: maven:3-eclipse-temurin-21
+  # Stay on Maven 3.9 for now,
+  # because Tycho 5 is currently incompatible with Maven 3.10:
+  # https://github.com/eclipse-tycho/tycho/issues/6399
+  image: maven:3.9-eclipse-temurin-21
   variables:
     GRADLE_USER_HOME: "$CI_PROJECT_DIR/.gradle"
   before_script:
