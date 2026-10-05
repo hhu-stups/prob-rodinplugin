@@ -4,9 +4,8 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @author htson
@@ -31,11 +30,9 @@ public abstract class AbstractTests {
 	 */
 	protected static void assertSameStrings(String msg,
 			Collection<String> actual, String... expected) {
-		assertEquals(msg + ": Incorrect number of elements\n", expected.length,
-				actual.size());
+		assertEquals(expected.length, actual.size(), msg + ": Incorrect number of elements\n");
 		for (String exp : expected) {
-			assertTrue(msg + ": Expected element " + exp + " not found",
-					actual.contains(exp));
+			assertTrue(actual.contains(exp), msg + ": Expected element " + exp + " not found");
 		}
 	}
 
@@ -53,8 +50,7 @@ public abstract class AbstractTests {
 	 */
 	protected static void assertSameStrings(String msg, String[] actual,
 			String... expected) {
-		assertEquals(msg + ": Incorrect number of strings\n", expected.length,
-				actual.length);
+		assertEquals(expected.length, actual.length, msg + ": Incorrect number of strings\n");
 		for (int i = 0; i < expected.length; i++) {
 			assertEquals(msg, expected[i], actual[i]);
 		}
@@ -74,10 +70,9 @@ public abstract class AbstractTests {
 	 */
 	protected static void assertSameObjects(String msg, Object[] expected,
 			Object[] actual) {
-		assertEquals(msg + ": Incorrect number of objects\n", expected.length,
-				actual.length);
+		assertEquals(expected.length, actual.length, msg + ": Incorrect number of objects\n");
 		for (int i = 0; i < expected.length; i++) {
-			assertEquals(msg, expected[i], actual[i]);
+			assertEquals(expected[i], actual[i], msg);
 		}
 	}
 
@@ -101,7 +96,7 @@ public abstract class AbstractTests {
 		Set<? extends Object> actualKeySet = actual.keySet();
 		assertSameSet(msg, expectedKeySet, actualKeySet);
 		for (Object key : expectedKeySet) {
-			assertEquals(msg, expected.get(key), actual.get(key));
+			assertEquals(expected.get(key), actual.get(key), msg);
 		}
 	}
 
@@ -116,11 +111,9 @@ public abstract class AbstractTests {
 	 */
 	protected void assertSameSet(String msg, Set<? extends Object> expected,
 			Set<? extends Object> actual) {
-		assertEquals(msg + ": The number of elements must be the same",
-				expected.size(), actual.size());
+		assertEquals(expected.size(), actual.size(), msg + ": The number of elements must be the same");
 		for (Object elm : expected) {
-			assertTrue(msg + ": expected element " + elm + " not found",
-					actual.contains(elm));
+			assertTrue(actual.contains(elm), msg + ": expected element " + elm + " not found");
 		}
 	}
 

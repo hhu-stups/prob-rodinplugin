@@ -1,11 +1,7 @@
 package de.prob.core.domainobjects.ltl.tests;
 
-import static org.junit.Assert.assertTrue;
-
 import java.util.Arrays;
 import java.util.List;
-
-import org.junit.Test;
 
 import de.prob.core.domainobjects.ltl.CounterExample;
 import de.prob.core.domainobjects.ltl.CounterExampleGlobally;
@@ -13,6 +9,10 @@ import de.prob.core.domainobjects.ltl.CounterExamplePredicate;
 import de.prob.core.domainobjects.ltl.CounterExampleProposition;
 import de.prob.core.domainobjects.ltl.CounterExampleUnaryOperator;
 import de.prob.core.domainobjects.ltl.CounterExampleValueType;
+
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Unit test for a "globally" operator.

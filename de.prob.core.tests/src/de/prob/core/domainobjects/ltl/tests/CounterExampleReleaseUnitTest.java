@@ -1,10 +1,10 @@
 package de.prob.core.domainobjects.ltl.tests;
 
-import org.junit.Test;
-
 import de.prob.core.domainobjects.ltl.CounterExampleBinaryOperator;
 import de.prob.core.domainobjects.ltl.CounterExampleProposition;
 import de.prob.core.domainobjects.ltl.CounterExampleRelease;
+
+import org.junit.jupiter.api.Test;
 
 /**
  * Unit test for a "release" operator.
