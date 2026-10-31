@@ -7,12 +7,13 @@
 package de.prob.core.internal;
 
 import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 import de.prob.cli.CliException;
 import de.prob.cli.CliStarter;
@@ -41,7 +42,8 @@ public class ServerConnection {
 		try {
 			socket = new Socket(InetAddress.getByName(null), port);
 			inputStream = new BufferedInputStream(socket.getInputStream());
-			outputStream = new PrintStream(socket.getOutputStream());
+			outputStream = new PrintStream(socket.getOutputStream(), false,
+					StandardCharsets.UTF_8);
 		} catch (final IOException e) {
 			if (socket != null) {
 				try {
@@ -83,6 +85,13 @@ public class ServerConnection {
 		outputStream.println(commandString);
 
 		outputStream.flush();
+		// PrintStream never throws IOExceptions, so check for write errors
+		if (outputStream.checkError()) {
+			shutdown();
+			ProblemHandler.raiseCliException(
+					"Lost the connection to probcli while sending a command - it might have crashed."
+							+ " ProB will be restarted for the next command; you may have to reload the model.");
+		}
 	}
 
 	private String getAnswer() throws ProBException {
@@ -102,7 +111,10 @@ public class ServerConnection {
 	}
 
 	protected String readAnswer() throws IOException {
-		final StringBuilder result = new StringBuilder();
+		// collect the raw bytes and decode them once at the end: decoding each
+		// chunk separately would garble multi-byte UTF-8 characters (e.g. Event-B
+		// symbols) that are split between two reads
+		final ByteArrayOutputStream result = new ByteArrayOutputStream();
 		final byte[] buffer = new byte[1024];
 		boolean done = false;
 
@@ -123,18 +135,17 @@ public class ServerConnection {
 					count--; // remove end of transmission marker
 				}
 
-				// trim white spaces and append
-				// instead of removing the last byte trim is used, because on
-				// windows prob uses \r\n as new line.
-				String s = new String(buffer, 0, count, Charset
-						.defaultCharset().name());
-				result.append(s.replace("\r", "").replace("\n", ""));
+				result.write(buffer, 0, count);
 			} else {
 				done = true;
 			}
 		}
 
-		return result.length() > 0 ? result.toString() : null;
+		// probcli opens the socket with encoding(utf8)
+		// remove new lines: on windows prob uses \r\n as new line
+		final String answer = new String(result.toByteArray(),
+				StandardCharsets.UTF_8).replace("\r", "").replace("\n", "");
+		return answer.length() > 0 ? answer : null;
 	}
 
 	public void startup(final File file) throws CliException {
