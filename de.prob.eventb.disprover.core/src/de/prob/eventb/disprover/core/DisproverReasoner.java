@@ -122,7 +122,9 @@ public class DisproverReasoner implements IReasoner {
 		ICounterExample counterExample = DisproverCommand.disprove(
 				Animator.getAuxAnimator(), evbProject, allHypotheses,
 				selectedHypotheses, goal, timeoutFactor, context, pm);
-		Logger.info("Disprover: Result: " + counterExample.toString());
+		// counterExample is null if the ProB command failed;
+		// createDisproverResult turns that into a reasoner failure
+		Logger.info("Disprover: Result: " + counterExample);
 
 		return counterExample;
 	}
