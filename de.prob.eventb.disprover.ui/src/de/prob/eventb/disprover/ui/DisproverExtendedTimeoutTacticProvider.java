@@ -30,7 +30,7 @@ public class DisproverExtendedTimeoutTacticProvider extends
 
 		@Override
 		public String getTacticID() {
-			return "de.prob.eventb.disprover.ui.disproverTactic";
+			return "de.prob.eventb.disprover.ui.disproverExtendedTimeoutTactic";
 		}
 
 		@Override
