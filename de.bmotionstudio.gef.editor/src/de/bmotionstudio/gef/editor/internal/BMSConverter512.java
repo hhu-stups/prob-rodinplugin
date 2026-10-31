@@ -60,24 +60,20 @@ public class BMSConverter512 {
 
 	private IFile file;
 
-	public BMSConverter512(IFile file) {
+	/**
+	 * Converts <code>file</code> from the BMotion Studio 5.1.2 format to the
+	 * current format, overwriting it.
+	 * 
+	 * @throws TransformerException
+	 *             also if no XML transformer is available
+	 */
+	public BMSConverter512(IFile file) throws CoreException, IOException,
+			ParserConfigurationException, SAXException, TransformerException {
 		this.file = file;
 		try {
 			convert();
-		} catch (TransformerConfigurationException e) {
-			e.printStackTrace();
-		} catch (CoreException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (ParserConfigurationException e) {
-			e.printStackTrace();
-		} catch (SAXException e) {
-			e.printStackTrace();
-		} catch (TransformerException e) {
-			e.printStackTrace();
 		} catch (TransformerFactoryConfigurationError e) {
-			e.printStackTrace();
+			throw new TransformerException(e.getMessage(), e);
 		}
 	}
 
