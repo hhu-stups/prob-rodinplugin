@@ -124,7 +124,8 @@ public class BMSConverter512 {
 
 		byteArrayInputStream = new ByteArrayInputStream(str.getBytes());
 
-		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+		DocumentBuilderFactory dbFactory = BMotionEditorPlugin
+				.createSecureDocumentBuilderFactory();
 		DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 		Document doc = dBuilder.parse(byteArrayInputStream);
 

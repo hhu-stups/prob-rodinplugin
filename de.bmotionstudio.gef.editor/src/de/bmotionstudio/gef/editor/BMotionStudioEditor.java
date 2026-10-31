@@ -139,8 +139,8 @@ public class BMotionStudioEditor extends MultiPageEditorPart implements
 
 			// -------------------------------------------------------
 
-			DocumentBuilderFactory dbFactory = DocumentBuilderFactory
-					.newInstance();
+			DocumentBuilderFactory dbFactory = BMotionEditorPlugin
+					.createSecureDocumentBuilderFactory();
 			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 			Document doc = dBuilder.parse(file.getContents());
 			NodeList nList = doc.getElementsByTagName("version");
