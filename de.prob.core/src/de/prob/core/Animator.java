@@ -19,6 +19,7 @@ import de.prob.core.internal.Activator;
 import de.prob.core.internal.AnimatorImpl;
 import de.prob.core.internal.ServerConnection;
 import de.prob.exceptions.ProBException;
+import de.prob.logging.Logger;
 
 import org.osgi.service.prefs.Preferences;
 
@@ -102,7 +103,8 @@ public final class Animator {
 
 	private final synchronized void killImplementation() {
 		if (implementation != null) {
-			final History history = animator.getHistory();
+			// use this animator's history (this may be the aux animator)
+			final History history = implementation.getHistoryImpl();
 			StaticListenerRegistry.unregisterComputationListener(history);
 			implementation.shutdownImplementation();
 			implementation = null;
@@ -171,6 +173,7 @@ public final class Animator {
 
 	public final synchronized void execute(final IComposableCommand command)
 			throws ProBException {
+		restartIfConnectionLost();
 		LimitedLogger.getLogger().log("execute command", command, null);
 		getImplementation().execute(command);
 		LimitedLogger.getLogger().log("command executed", command, null);
@@ -196,6 +199,23 @@ public final class Animator {
 	 */
 	public synchronized boolean isRunning() {
 		return (implementation != null);
+	}
+
+	/**
+	 * If probcli crashed (or could not be started), start a new instance so
+	 * that the animator becomes usable again without restarting Rodin. The
+	 * loaded model is lost in that case, so the main animator announces a
+	 * reset to the UI.
+	 */
+	private synchronized void restartIfConnectionLost() {
+		if (implementation != null && implementation.isConnectionLost()) {
+			Logger.info("Connection to probcli lost, starting a new instance");
+			killImplementation();
+			createNewImplementation(null);
+			if (this == animator) {
+				announceReset();
+			}
+		}
 	}
 
 	private synchronized AnimatorImpl getImplementation() {

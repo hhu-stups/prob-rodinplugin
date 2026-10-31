@@ -43,7 +43,7 @@ public class AnimatorImpl {
 
 	private final History history = new History();
 
-	private ServerConnection connector;
+	private volatile ServerConnection connector;
 
 	private MachineDescription description;
 
@@ -109,37 +109,75 @@ public class AnimatorImpl {
 		return this.description != null;
 	}
 
+	/**
+	 * @return true if probcli could not be started or the connection to it
+	 *         was lost (e.g. because it crashed)
+	 */
+	public boolean isConnectionLost() {
+		final ServerConnection c = connector;
+		return c == null || c.isShutdown();
+	}
+
 	public void execute(final IComposableCommand command) throws ProBException {
 		checkConnector(command.getClass().getName());
 
 		final GetErrorsCommand getErrors = new GetErrorsCommand();
 		final ComposedCommand cmds = new ComposedCommand(command, getErrors);
 		SimplifiedROMap<String, PrologTerm> bindings = null;
-		List<String> errors = null;
+		ProBException failure = null;
 		try {
 			bindings = sendCommand(cmds);
 			cmds.processResult(bindings);
-			errors = getErrors.getErrors();
+		} catch (ProBException e) {
+			failure = e;
 		} catch (RuntimeException e) {
-			Logger.notifyUser(e.getLocalizedMessage(), e);
-		} finally {
-			if (errors == null) {
-				if (bindings == null) {
-					// the exception occurred while sending the commands
-					// launch another query to get errors
-					bindings = sendCommand(getErrors);
-					getErrors.processResult(bindings);
-				} else {
-					// we cannot call getErrors.processResult directly because
-					// the wrapping ComposedCommand may have mapped the bindings
-					cmds.reprocessResult(getErrors, bindings);
-				}
-				errors = getErrors.getErrors();
-			}
-			if (errors != null && !errors.isEmpty()) {
-				ProblemHandler.raisePrologException(errors,
-						getErrors.onlyWarningsOccurred());
-			}
+			// a bug while processing the result must not make the command
+			// look successful (its result would be missing)
+			final String message = "Processing the result of "
+					+ command.getClass().getSimpleName() + " failed: " + e;
+			Logger.notifyUser(message, e);
+			failure = new CommandException(message, e);
+		}
+
+		final List<String> errors = retrieveErrors(getErrors, cmds, bindings,
+				failure);
+		if (errors != null && !errors.isEmpty()) {
+			ProblemHandler.raisePrologException(errors,
+					getErrors.onlyWarningsOccurred());
+		}
+		if (failure != null) {
+			throw failure;
+		}
+	}
+
+	private List<String> retrieveErrors(final GetErrorsCommand getErrors,
+			final ComposedCommand cmds,
+			final SimplifiedROMap<String, PrologTerm> bindings,
+			final ProBException failure) throws CommandException {
+		if (failure == null) {
+			// cmds.processResult has also processed getErrors
+			return getErrors.getErrors();
+		}
+		if (bindings != null) {
+			// we cannot call getErrors.processResult directly because
+			// the wrapping ComposedCommand may have mapped the bindings
+			cmds.reprocessResult(getErrors, bindings);
+			return getErrors.getErrors();
+		}
+		if (isConnectionLost()) {
+			// probcli is gone, asking it for errors would only hide the
+			// original failure
+			return null;
+		}
+		// the exception occurred while sending the commands
+		// launch another query to get errors
+		try {
+			getErrors.processResult(sendCommand(getErrors));
+			return getErrors.getErrors();
+		} catch (ProBException e) {
+			Logger.info("Could not retrieve errors from ProB: "
+					+ e.getMessage());
+			return null;
 		}
 	}
 

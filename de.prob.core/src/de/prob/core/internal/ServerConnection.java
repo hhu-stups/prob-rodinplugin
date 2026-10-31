@@ -94,7 +94,8 @@ public class ServerConnection {
 						"ProB binary returned nothing - it might have crashed");
 		} catch (final IOException e) {
 			shutdown();
-			String message = "Exception while reading from socket";
+			String message = "Lost the connection to probcli - it might have crashed."
+					+ " ProB will be restarted for the next command; you may have to reload the model.";
 			ProblemHandler.handleCliException(message, e);
 		}
 		return input;
@@ -165,6 +166,14 @@ public class ServerConnection {
 			cli = null;
 			shutdown = true;
 		}
+	}
+
+	/**
+	 * @return true if probcli is not running, e.g. because it was never
+	 *         started, it was shut down, or the connection to it was lost
+	 */
+	public boolean isShutdown() {
+		return shutdown;
 	}
 
 	private void checkState() throws CliException {
