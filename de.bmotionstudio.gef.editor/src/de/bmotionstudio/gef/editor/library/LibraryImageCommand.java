@@ -54,6 +54,8 @@ public class LibraryImageCommand extends AbstractLibraryCommand {
 				if (new File(myPath).exists() && imagePath.length() > 0) {
 					img = new Image(Display.getCurrent(), myPath);
 					imageBounds = img.getBounds();
+					// Only needed to read the bounds
+					img.dispose();
 				}
 			}
 

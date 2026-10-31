@@ -81,8 +81,7 @@ public final class GetOperationByPredicateCommand2 implements
 			final String stateId, final String name, final String predicate)
 			throws ProBException, BCompoundException {
 
-		List<Operation> operations = getOperations(a, stateId, name, predicate,
-				1);
+		List<Operation> operations = getOperations(a, stateId, name, predicate, 1);
 
 		return operations == null ? null : operations.get(0);
 	}

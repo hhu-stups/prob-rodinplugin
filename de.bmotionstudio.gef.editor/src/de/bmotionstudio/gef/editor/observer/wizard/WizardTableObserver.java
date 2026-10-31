@@ -16,8 +16,6 @@ import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -31,6 +29,7 @@ import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Text;
 import org.eventb.core.ast.PowerSetType;
 
+import de.bmotionstudio.gef.editor.BMotionStudioSWTConstants;
 import de.bmotionstudio.gef.editor.eventb.EventBHelper;
 import de.bmotionstudio.gef.editor.eventb.MachineContentObject;
 import de.bmotionstudio.gef.editor.model.BControl;
@@ -91,8 +90,7 @@ public class WizardTableObserver extends ObserverWizard {
 
 			txtPredicate = new Text(conLeft, SWT.BORDER);
 			txtPredicate.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-			txtPredicate.setFont(new Font(Display.getDefault(), new FontData(
-					"Arial", 10, SWT.NONE)));
+			txtPredicate.setFont(BMotionStudioSWTConstants.fontArial10);
 
 			lb = new Label(conLeft, SWT.NONE);
 			lb.setText("Expression:");

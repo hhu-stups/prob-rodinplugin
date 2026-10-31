@@ -43,7 +43,6 @@ import org.eclipse.swt.widgets.Sash;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
-import org.eclipse.ui.plugin.AbstractUIPlugin;
 
 import de.prob.core.Animator;
 import de.prob.core.command.GetOperationNamesCommand;
@@ -63,8 +62,6 @@ import de.prob.ui.ProbUiPlugin;
  */
 public class OperationSelectionDialog extends TrayDialog {
 
-	private static final String IMG_CHECKED = "icons/checked.gif";
-	private static final String IMG_UNCHECKED = "icons/unchecked.gif";
 	private static final int MIN_ARGUMENT_LENGTH = 20;
 
 	private String shellTitle = "";
@@ -578,13 +575,13 @@ public class OperationSelectionDialog extends TrayDialog {
 		@Override
 		public Image getColumnImage(final Object element, final int columnIndex) {
 			if (columnIndex == 0) {
+				// shared registry images; must not be disposed
 				if (hiddenArguments.contains(element))
-					return AbstractUIPlugin.imageDescriptorFromPlugin(
-							ProbUiPlugin.PLUGIN_ID, IMG_CHECKED).createImage();
+					return ProbUiPlugin.getDefault().getImageRegistry()
+							.get(ProbUiPlugin.IMG_CHECKED);
 				else
-					return AbstractUIPlugin.imageDescriptorFromPlugin(
-							ProbUiPlugin.PLUGIN_ID, IMG_UNCHECKED)
-							.createImage();
+					return ProbUiPlugin.getDefault().getImageRegistry()
+							.get(ProbUiPlugin.IMG_UNCHECKED);
 			} else
 				return null;
 

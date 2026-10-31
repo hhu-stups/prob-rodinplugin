@@ -86,14 +86,14 @@ public class CompositeFigure extends AbstractBMotionFigure {
 	/**
 	 * Sets the Image that this ImageFigure displays.
 	 * <p>
-	 * IMPORTANT: Note that it is the client's responsibility to dispose the
-	 * given image.
+	 * IMPORTANT: The figure takes ownership of the given image: the previous
+	 * image is disposed when replaced, the current one on deactivation.
 	 * 
 	 * @param image
 	 *            The Image to be displayed. It can be <code>null</code>.
 	 */
 	public void setImage(Image image) {
-		if (layerImage != null)
+		if (layerImage != null && layerImage != image)
 			layerImage.dispose();
 		layerImage = image;
 		if (layerImage != null) {

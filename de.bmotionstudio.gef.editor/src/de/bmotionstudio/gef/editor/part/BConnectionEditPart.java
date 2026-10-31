@@ -66,8 +66,10 @@ public class BConnectionEditPart extends BMSAbstractEditPart implements
 	@Override
 	public void deactivate() {
 		super.deactivate();
-		if (isActive())
+		if (foregroundColor != null) {
 			foregroundColor.dispose();
+			foregroundColor = null;
+		}
 	}
 
 	@Override

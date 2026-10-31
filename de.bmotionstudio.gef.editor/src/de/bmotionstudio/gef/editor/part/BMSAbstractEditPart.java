@@ -52,7 +52,8 @@ public abstract class BMSAbstractEditPart extends AbstractGraphicalEditPart
 		implements PropertyChangeListener, IObserverListener, IAdaptable,
 		NodeEditPart {
 
-	private final Cursor cursorHover = new Cursor(Display.getCurrent(),
+	// Shared system cursor, owned by the display (must not be disposed)
+	private final Cursor cursorHover = Display.getDefault().getSystemCursor(
 			SWT.CURSOR_HAND);
 
 	protected ConnectionAnchor anchor;

@@ -19,7 +19,6 @@ import org.eclipse.jface.preference.PreferenceLabelProvider;
 import org.eclipse.jface.preference.PreferenceManager;
 import org.eclipse.jface.preference.PreferenceNode;
 import org.eclipse.jface.preference.PreferencePage;
-import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.JFaceColors;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.ViewerComparator;
@@ -42,7 +41,6 @@ import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eventb.core.IEventBRoot;
 import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
@@ -53,6 +51,7 @@ import de.prob.core.Animator;
 import de.prob.core.command.LoadEventBModelCommand;
 import de.prob.exceptions.ProBException;
 import de.prob.logging.Logger;
+import de.prob.ui.ProbUiPlugin;
 
 /**
  * A dialog similar to the <code>LaunchConfigurationsDialog</code> for managing
@@ -238,11 +237,11 @@ public class AnimationPreferencesDialog extends PreferenceDialog {
 		Label titleImageLabel = new Label(newTitleArea, SWT.NONE);
 		titleImageLabel.setAlignment(SWT.RIGHT);
 		titleImageLabel.setBackground(bgColor);
-		ImageDescriptor imageDescriptor = AbstractUIPlugin
-				.imageDescriptorFromPlugin(pluginId,
-						"icons/prob_animation_dialog.png");
-		if (imageDescriptor != null) {
-			titleImageLabel.setImage(imageDescriptor.createImage());
+		// shared registry image; must not be disposed
+		Image titleImage = ProbUiPlugin.getDefault().getImageRegistry()
+				.get(ProbUiPlugin.IMG_ANIMATION_DIALOG);
+		if (titleImage != null) {
+			titleImageLabel.setImage(titleImage);
 		}
 		titleImageLabel.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
@@ -503,8 +502,9 @@ public class AnimationPreferencesDialog extends PreferenceDialog {
 	private static class ProBLabelProvider extends PreferenceLabelProvider {
 		@Override
 		public Image getImage(final Object element) {
-			return AbstractUIPlugin.imageDescriptorFromPlugin(pluginId,
-					"icons/prob.png").createImage();
+			// shared registry image; must not be disposed
+			return ProbUiPlugin.getDefault().getImageRegistry()
+					.get(ProbUiPlugin.IMG_PROB);
 		}
 	}
 

@@ -18,6 +18,7 @@ public class TextfieldFigure extends AbstractBMotionFigure {
 
 	private Label lb;
 	private Color foregroundColor;
+	private Color borderColor;
 
 	public TextfieldFigure() {
 		GridLayout fl = new GridLayout();
@@ -25,8 +26,8 @@ public class TextfieldFigure extends AbstractBMotionFigure {
 		fl.marginWidth = 3;
 		setLayoutManager(fl);
 		foregroundColor = new Color(Display.getDefault(), 171, 173, 179);
-		setBorder(new LineBorder(
-				new Color(Display.getDefault(), 226, 227, 234), 1));
+		borderColor = new Color(Display.getDefault(), 226, 227, 234);
+		setBorder(new LineBorder(borderColor, 1));
 		this.lb = new Label();
 		add(lb);
 		setOpaque(true);
@@ -53,6 +54,8 @@ public class TextfieldFigure extends AbstractBMotionFigure {
 	public void deactivateFigure() {
 		if (foregroundColor != null)
 			foregroundColor.dispose();
+		if (borderColor != null)
+			borderColor.dispose();
 	}
 
 }

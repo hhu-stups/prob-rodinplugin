@@ -409,7 +409,13 @@ public class ShapeFigure extends AbstractBMotionFigure {
 		repaint();
 	}
 
+	/**
+	 * Sets the fill image. The figure takes ownership of the given image and
+	 * disposes the previous one (and the given one on deactivation).
+	 */
 	public void setImage(Image img) {
+		if (this.img != null && this.img != img && !this.img.isDisposed())
+			this.img.dispose();
 		this.img = img;
 		repaint();
 	}

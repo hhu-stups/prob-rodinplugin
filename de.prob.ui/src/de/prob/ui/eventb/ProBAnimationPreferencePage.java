@@ -25,11 +25,11 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.ui.dialogs.ContainerSelectionDialog;
 import org.eclipse.ui.dialogs.ElementListSelectionDialog;
-import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
 
 import de.prob.ui.ProBGeneralPreferences;
+import de.prob.ui.ProbUiPlugin;
 
 /**
  * Provides an extension to <code>ProBGeneralPreferences</code> with an own
@@ -215,14 +215,13 @@ public class ProBAnimationPreferencePage extends ProBGeneralPreferences {
 
 		@Override
 		public Image getImage(final Object element) {
+			// shared registry images; must not be disposed
 			if (((IResource) element).getFileExtension().equals("bum")) {
-				return AbstractUIPlugin.imageDescriptorFromPlugin(
-						AnimationPreferencesDialog.pluginId,
-						"icons/mch_obj.gif").createImage();
+				return ProbUiPlugin.getDefault().getImageRegistry()
+						.get(ProbUiPlugin.IMG_MACHINE);
 			} else if (((IResource) element).getFileExtension().equals("buc")) {
-				return AbstractUIPlugin.imageDescriptorFromPlugin(
-						AnimationPreferencesDialog.pluginId,
-						"icons/ctx_obj.gif").createImage();
+				return ProbUiPlugin.getDefault().getImageRegistry()
+						.get(ProbUiPlugin.IMG_CONTEXT);
 			}
 			return null;
 		}

@@ -718,6 +718,12 @@ public class BMotionStudioEditorPage extends GraphicalEditorWithFlyoutPalette {
 					&& !getGraphicalViewer().getControl().isDisposed())
 				getGraphicalViewer().getControl().removeDisposeListener(
 						disposeListener);
+			// The dispose listener is removed above, so deactivate the
+			// thumbnail here (unregisters it from the viewport)
+			if (thumbnail != null) {
+				thumbnail.deactivate();
+				thumbnail = null;
+			}
 		}
 
 		@Override

@@ -23,6 +23,8 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Image;
@@ -46,6 +48,7 @@ public class ImageDialog extends Dialog {
 
 	private TableViewer tvLibrary;
 	private Image previewImage;
+	private Image noImageIcon;
 	private Composite preContainer;
 	private Canvas previewCanvas;
 	private final ImageDialogCellEditor imageDialogCellEditor;
@@ -83,6 +86,15 @@ public class ImageDialog extends Dialog {
 				}
 			}
 		});
+		previewCanvas.addDisposeListener(new DisposeListener() {
+			@Override
+			public void widgetDisposed(final DisposeEvent e) {
+				if (previewImage != null) {
+					previewImage.dispose();
+					previewImage = null;
+				}
+			}
+		});
 
 		final Composite libContainer = new Composite(container, SWT.NONE);
 		libContainer.setLayoutData(gd);
@@ -91,6 +103,15 @@ public class ImageDialog extends Dialog {
 		tvLibrary = new TableViewer(libContainer, SWT.FULL_SELECTION
 				| SWT.V_SCROLL);
 		tvLibrary.getTable().setLayoutData(gd);
+		tvLibrary.getTable().addDisposeListener(new DisposeListener() {
+			@Override
+			public void widgetDisposed(final DisposeEvent e) {
+				if (noImageIcon != null) {
+					noImageIcon.dispose();
+					noImageIcon = null;
+				}
+			}
+		});
 		tvLibrary.addSelectionChangedListener(new ISelectionChangedListener() {
 			@Override
 			public void selectionChanged(final SelectionChangedEvent event) {
@@ -166,10 +187,11 @@ public class ImageDialog extends Dialog {
 	private List<LibraryObject> getLibraryObjects() {
 
 		List<LibraryObject> tmpList = new ArrayList<LibraryObject>();
-		tmpList.add(new LibraryObject("noimage", "", BMotionStudioImage
-				.getImageDescriptor("org.eclipse.ui",
-						"$nl$/icons/full/etool16/delete_edit.gif")
-				.createImage()));
+		if (noImageIcon == null)
+			noImageIcon = BMotionStudioImage.getImageDescriptor(
+					"org.eclipse.ui",
+					"$nl$/icons/full/etool16/delete_edit.gif").createImage();
+		tmpList.add(new LibraryObject("noimage", "", noImageIcon));
 
 		if (BMotionEditorPlugin.getActiveEditor() != null) {
 

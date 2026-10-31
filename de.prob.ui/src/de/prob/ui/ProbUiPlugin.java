@@ -29,6 +29,12 @@ public class ProbUiPlugin extends AbstractUIPlugin {
 	public static final String IMG_DOUBLECLICK = "IMG_DOUBLECLICK";
 	public static final String CHANGE_STAR = "change_star";
 	public static final String IMG_RELOAD = "IMG_RELOAD";
+	public static final String IMG_CHECKED = "IMG_CHECKED";
+	public static final String IMG_UNCHECKED = "IMG_UNCHECKED";
+	public static final String IMG_MACHINE = "IMG_MACHINE";
+	public static final String IMG_CONTEXT = "IMG_CONTEXT";
+	public static final String IMG_PROB = "IMG_PROB";
+	public static final String IMG_ANIMATION_DIALOG = "IMG_ANIMATION_DIALOG";
 
 	private static ProbUiPlugin plugin;
 
@@ -87,6 +93,18 @@ public class ProbUiPlugin extends AbstractUIPlugin {
 				imageDescriptorFromPlugin(PLUGIN_ID, "icons/star.png"));
 		reg.put(IMG_RELOAD,
 				imageDescriptorFromPlugin(PLUGIN_ID, "icons/refresh.gif"));
+		reg.put(IMG_CHECKED,
+				imageDescriptorFromPlugin(PLUGIN_ID, "icons/checked.gif"));
+		reg.put(IMG_UNCHECKED,
+				imageDescriptorFromPlugin(PLUGIN_ID, "icons/unchecked.gif"));
+		reg.put(IMG_MACHINE,
+				imageDescriptorFromPlugin(PLUGIN_ID, "icons/mch_obj.gif"));
+		reg.put(IMG_CONTEXT,
+				imageDescriptorFromPlugin(PLUGIN_ID, "icons/ctx_obj.gif"));
+		reg.put(IMG_PROB,
+				imageDescriptorFromPlugin(PLUGIN_ID, "icons/prob.png"));
+		reg.put(IMG_ANIMATION_DIALOG, imageDescriptorFromPlugin(PLUGIN_ID,
+				"icons/prob_animation_dialog.png"));
 	}
 
 }

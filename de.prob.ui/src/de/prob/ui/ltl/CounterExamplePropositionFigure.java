@@ -29,7 +29,6 @@ import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.widgets.Display;
 
 import de.prob.core.command.LtlCheckingCommand.PathType;
 import de.prob.core.domainobjects.Operation;
@@ -48,12 +47,12 @@ public abstract class CounterExamplePropositionFigure extends Figure implements
 	protected final CounterExampleProposition model;
 
 	protected final Color foregroundColor = ColorConstants.lightBlue;
-	protected final Color backgroundColor = new Color(null, 255, 255, 206);
+	// shared registry resources; must not be disposed
+	protected final Color backgroundColor = CounterExampleResources
+			.getBackgroundColor();
 
-	protected final Font normalFont = new Font(Display.getDefault(), "Arial",
-			10, SWT.NORMAL);
-	protected final Font boldFont = new Font(Display.getDefault(), "Arial", 10,
-			SWT.BOLD);
+	protected final Font normalFont = CounterExampleResources.getNormalFont();
+	protected final Font boldFont = CounterExampleResources.getBoldFont();
 
 	protected final int size = 50;
 

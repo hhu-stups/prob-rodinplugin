@@ -20,15 +20,13 @@ class OperationsLabelProvider extends LabelProvider implements
 		ITableLabelProvider {
 	private final OperationTableViewer operationTableViewer;
 
+	// shared images owned by the plugin's image registry; must not be disposed
 	private final Image imgDisabled = ProbUiPlugin.getDefault()
-			.getImageRegistry().getDescriptor(ProbUiPlugin.IMG_DISABLED)
-			.createImage();
+			.getImageRegistry().get(ProbUiPlugin.IMG_DISABLED);
 	private final Image imgTimeout = ProbUiPlugin.getDefault()
-			.getImageRegistry().getDescriptor(ProbUiPlugin.IMG_TIMEOUT)
-			.createImage();
+			.getImageRegistry().get(ProbUiPlugin.IMG_TIMEOUT);
 	private final Image imgEnabled = ProbUiPlugin.getDefault()
-			.getImageRegistry().getDescriptor(ProbUiPlugin.IMG_ENABLED)
-			.createImage();
+			.getImageRegistry().get(ProbUiPlugin.IMG_ENABLED);
 
 	/**
 	 * @param operationTableViewer
