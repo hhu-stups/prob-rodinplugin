@@ -33,6 +33,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.XStreamException;
 import com.thoughtworks.xstream.mapper.MapperWrapper;
 
 import de.bmotionstudio.gef.editor.internal.BMSConverter512;
@@ -135,6 +136,7 @@ public class BMotionStudioEditor extends MultiPageEditorPart implements
 
 		IFile file = ((IFileEditorInput) iInput).getFile();
 
+		Object loaded;
 		try {
 
 			// -------------------------------------------------------
@@ -142,7 +144,10 @@ public class BMotionStudioEditor extends MultiPageEditorPart implements
 			DocumentBuilderFactory dbFactory = BMotionEditorPlugin
 					.createSecureDocumentBuilderFactory();
 			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-			Document doc = dBuilder.parse(file.getContents());
+			Document doc;
+			try (InputStream in = file.getContents()) {
+				doc = dBuilder.parse(in);
+			}
 			NodeList nList = doc.getElementsByTagName("version");
 			if (nList.item(0) != null) {
 				Element versionElement = (Element) nList.item(0);
@@ -155,8 +160,6 @@ public class BMotionStudioEditor extends MultiPageEditorPart implements
 			}
 
 			// -------------------------------------------------------
-
-			InputStream inputStream = file.getContents();
 
 			XStream xstream = new XStream() {
 				@Override
@@ -177,20 +180,23 @@ public class BMotionStudioEditor extends MultiPageEditorPart implements
 
 			BMotionEditorPlugin.setAliases(xstream);
 
-			visualization = (Visualization) xstream.fromXML(inputStream);
-			visualization.setProjectFile(((IFileEditorInput) getEditorInput())
-					.getFile());
-			// initLanguage(visualization);
+			try (InputStream inputStream = file.getContents()) {
+				loaded = xstream.fromXML(inputStream);
+			}
 
-		} catch (SAXException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (CoreException e) {
-			e.printStackTrace();
-		} catch (ParserConfigurationException e) {
-			e.printStackTrace();
+		} catch (SAXException | IOException | CoreException
+				| ParserConfigurationException | XStreamException e) {
+			throw new PartInitException("Could not open BMotion Studio file "
+					+ file.getFullPath() + ": " + e.getMessage(), e);
 		}
+
+		if (!(loaded instanceof Visualization)) {
+			throw new PartInitException("The file " + file.getFullPath()
+					+ " does not contain a BMotion Studio visualization.");
+		}
+		visualization = (Visualization) loaded;
+		visualization.setProjectFile(file);
+		// initLanguage(visualization);
 
 	}
 
@@ -252,7 +258,10 @@ public class BMotionStudioEditor extends MultiPageEditorPart implements
 	}
 
 	private void unregister() {
-		getVisualization().setIsRunning(false);
+		// visualization is null if init failed
+		if (visualization != null) {
+			visualization.setIsRunning(false);
+		}
 		StaticListenerRegistry.unregisterListener(this);
 		if (animation != null) {
 			animation.unregister();
