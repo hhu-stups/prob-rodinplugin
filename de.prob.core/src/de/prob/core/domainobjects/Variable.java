@@ -103,7 +103,8 @@ public final class Variable {
 
 	@Override
 	public int hashCode() {
-		return super.hashCode();
+		// must be consistent with equals
+		return Objects.hash(identifier, value);
 	}
 
 }
