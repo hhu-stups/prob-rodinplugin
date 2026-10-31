@@ -90,10 +90,13 @@ public class EvaluationGetValuesCommand implements IComposableCommand {
 				}
 
 				result = new ArrayList<EvaluationStateElement>(elements.size());
+				// the cache now contains the newly computed values, too
 				for (final EvaluationElement sElement : elements) {
-					result.add(cache.get(sElement));
+					final EvaluationStateElement value = cache.get(sElement);
+					if (value != null) {
+						result.add(value);
+					}
 				}
-				result.addAll(computed);
 			}
 		}
 		return result;
@@ -112,8 +115,10 @@ public class EvaluationGetValuesCommand implements IComposableCommand {
 				if (result == null) {
 					Collection<EvaluationStateElement> values = getValuesForExpressionsUncached(
 							state, Collections.singleton(element));
-					result = values.iterator().next();
-					cache.put(element, result);
+					if (!values.isEmpty()) {
+						result = values.iterator().next();
+						cache.put(element, result);
+					}
 				}
 			}
 		}
