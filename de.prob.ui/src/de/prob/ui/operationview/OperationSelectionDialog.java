@@ -93,6 +93,10 @@ public class OperationSelectionDialog extends TrayDialog {
 	protected void okPressed() {
 		IStructuredSelection sel = (IStructuredSelection) tbvOps.getSelection();
 		OperationEntry entry = (OperationEntry) sel.getFirstElement();
+		if (entry == null) {
+			// nothing selected yet, keep the dialog open
+			return;
+		}
 		lastSelectedOperation = entry.getOperation();
 		super.okPressed();
 	}

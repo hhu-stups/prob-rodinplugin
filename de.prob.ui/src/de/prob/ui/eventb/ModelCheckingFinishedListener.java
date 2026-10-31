@@ -45,7 +45,11 @@ public class ModelCheckingFinishedListener extends JobChangeAdapter {
 		Job job = event.getJob();
 		if (job instanceof ModelCheckingJob) {
 			ModelCheckingJob ccJob = (ModelCheckingJob) job;
-			showResult(ccJob.getModelCheckingResult());
+			final Result result = ccJob.getModelCheckingResult();
+			// null if the job failed; the user has already been informed
+			if (result != null) {
+				showResult(result);
+			}
 		} else {
 			Logger.notifyUser("The job has a wrong type. Expected ModelCheckingJob but got " + job.getClass());
 		}
@@ -59,6 +63,7 @@ public class ModelCheckingFinishedListener extends JobChangeAdapter {
 		} catch (ProBException e) {
 			e.notifyUserOnce();
 			// No way to recover from this, but the User has been informed
+			return;
 		}
 		displayResult(status);
 	}

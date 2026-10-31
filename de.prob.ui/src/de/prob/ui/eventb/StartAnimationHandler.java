@@ -19,6 +19,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.PlatformUI;
@@ -75,6 +76,12 @@ public class StartAnimationHandler extends AbstractHandler implements IHandler {
 		// Get the Selection
 		final IEventBRoot rootElement = getRootElement();
 		final IFile resource = extractResource(rootElement);
+		if (resource == null) {
+			// e.g. several elements or no Event-B component selected
+			MessageDialog.openInformation(HandlerUtil.getActiveShell(event),
+					"ProB", "Please select a single machine or context to animate.");
+			return null;
+		}
 
 		ArrayList<String> errors = new ArrayList<String>();
 		boolean realError = checkErrorMarkers(resource, errors);
@@ -101,21 +108,18 @@ public class StartAnimationHandler extends AbstractHandler implements IHandler {
 		} else {
 		     Animator.getAnimator().resetRodinProjectHasErrorsOrWarnings();
 		}
-		;
 
-		if (resource != null) {
-			LimitedLogger.getLogger().log("user started animation",
-					rootElement.getElementName(), null);
-			registerModificationListener(resource);
-			PerspectiveFactory.openPerspective();
+		LimitedLogger.getLogger().log("user started animation",
+				rootElement.getElementName(), null);
+		registerModificationListener(resource);
+		PerspectiveFactory.openPerspective();
 
-			final Animator animator = Animator.getAnimator();
-			try {
-				LoadEventBModelCommand.load(animator, rootElement);
-			} catch (ProBException e) {
-				e.notifyUserOnce();
-				throw new ExecutionException("Loading the machine failed", e);
-			}
+		final Animator animator = Animator.getAnimator();
+		try {
+			LoadEventBModelCommand.load(animator, rootElement);
+		} catch (ProBException e) {
+			e.notifyUserOnce();
+			throw new ExecutionException("Loading the machine failed", e);
 		}
 		return null;
 	}
@@ -133,7 +137,8 @@ public class StartAnimationHandler extends AbstractHandler implements IHandler {
 						+ iMarker
 								.getAttribute(IMarker.MESSAGE, "unknown Error"));
 				result = result
-						|| (Integer) iMarker.getAttribute(IMarker.SEVERITY) == IMarker.SEVERITY_ERROR;
+						|| iMarker.getAttribute(IMarker.SEVERITY,
+								IMarker.SEVERITY_INFO) == IMarker.SEVERITY_ERROR;
 			}
 
 		} catch (CoreException e1) {

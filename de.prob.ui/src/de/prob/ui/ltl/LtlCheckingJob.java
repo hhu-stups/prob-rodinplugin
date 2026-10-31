@@ -41,8 +41,11 @@ public final class LtlCheckingJob extends Job {
 	protected IStatus run(final IProgressMonitor monitor) {
 		anErrorOccurred = false;
 
-		if (!setSymmetry())
+		if (!setSymmetry()) {
+			// no result; tell the finished listener not to show one
+			anErrorOccurred = true;
 			return Status.CANCEL_STATUS;
+		}
 		monitor.beginTask("Checking LTL Formula", IProgressMonitor.UNKNOWN);
 
 		while (!abort) {

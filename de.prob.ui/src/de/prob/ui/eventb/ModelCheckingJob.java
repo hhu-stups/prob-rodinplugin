@@ -37,8 +37,13 @@ public class ModelCheckingJob extends Job {
 		this.symmetryOption = symmetryOption;
 	}
 
+	/**
+	 * @return the last result or <code>null</code> if model checking failed
+	 *         before the first result (the user has been informed)
+	 */
 	public Result getModelCheckingResult() {
-		return modelCheckingResult.getResult();
+		return modelCheckingResult == null ? null : modelCheckingResult
+				.getResult();
 	}
 
 	@Override
