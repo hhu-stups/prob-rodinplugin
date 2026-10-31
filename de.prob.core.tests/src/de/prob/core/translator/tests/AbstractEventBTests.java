@@ -501,8 +501,8 @@ public abstract class AbstractEventBTests extends AbstractTests {
 	protected void testExtendsClause(String message, IExtendsContext extendCtx,
 			String expected) {
 		try {
-			assertEquals(message + ": Incorrect EXTENDS clause", expected,
-					extendCtx.getAbstractContextName());
+			assertEquals(expected, extendCtx.getAbstractContextName(),
+					message + ": Incorrect EXTENDS clause");
 		} catch (RodinDBException e) {
 			e.printStackTrace();
 			fail("There should be no exception");
@@ -550,8 +550,8 @@ public abstract class AbstractEventBTests extends AbstractTests {
 	protected void testCarrierSet(String message, ICarrierSet set,
 			String expected) {
 		try {
-			assertEquals(message + ": Incorrect carrier set", expected,
-					set.getIdentifierString());
+			assertEquals(expected, set.getIdentifierString(),
+					message + ": Incorrect carrier set");
 		} catch (RodinDBException e) {
 			e.printStackTrace();
 			fail("There should be no exception");
@@ -597,8 +597,8 @@ public abstract class AbstractEventBTests extends AbstractTests {
 	 */
 	protected void testConstant(String message, IConstant cst, String expected) {
 		try {
-			assertEquals(message + ": Incorrect constant", expected,
-					cst.getIdentifierString());
+			assertEquals(expected, cst.getIdentifierString(),
+					message + ": Incorrect constant");
 		} catch (RodinDBException e) {
 			e.printStackTrace();
 			fail("There should be no exception");
@@ -647,9 +647,10 @@ public abstract class AbstractEventBTests extends AbstractTests {
 	 */
 	protected void testAxiom(String message, IAxiom axiom, String expected) {
 		try {
-			assertEquals(message + ": Incorrect axiom", expected,
+			assertEquals(expected,
 					axiom.getLabel() + ":" + axiom.getPredicateString() + ":"
-							+ axiom.isTheorem());
+							+ axiom.isTheorem(),
+					message + ": Incorrect axiom");
 		} catch (RodinDBException e) {
 			e.printStackTrace();
 			fail("There should be no exception");
@@ -698,8 +699,8 @@ public abstract class AbstractEventBTests extends AbstractTests {
 			IRefinesMachine refinesClause, String expected) {
 		try {
 			assertNotNull(refinesClause, message + ": REFINES clause must not be null");
-			assertEquals(message + ": Incorrect REFINES clause", expected,
-					refinesClause.getAbstractMachineName());
+			assertEquals(expected, refinesClause.getAbstractMachineName(),
+					message + ": Incorrect REFINES clause");
 		} catch (RodinDBException e) {
 			e.printStackTrace();
 			fail("There should be no exception");
@@ -747,8 +748,8 @@ public abstract class AbstractEventBTests extends AbstractTests {
 	protected void testSeesClause(String message, ISeesContext seesClause,
 			String expected) {
 		try {
-			assertEquals(message + ": Incorrect SEES clause", expected,
-					seesClause.getSeenContextName());
+			assertEquals(expected, seesClause.getSeenContextName(),
+					message + ": Incorrect SEES clause");
 		} catch (RodinDBException e) {
 			e.printStackTrace();
 			fail("There should be no exception");
@@ -830,8 +831,8 @@ public abstract class AbstractEventBTests extends AbstractTests {
 	 */
 	protected void testVariable(String message, IVariable var, String expected) {
 		try {
-			assertEquals(message + ": Incorrect variable", expected,
-					var.getIdentifierString());
+			assertEquals(expected, var.getIdentifierString(),
+					message + ": Incorrect variable");
 		} catch (RodinDBException e) {
 			e.printStackTrace();
 			fail("There should be no exception");
@@ -881,11 +882,10 @@ public abstract class AbstractEventBTests extends AbstractTests {
 	 */
 	protected void testInvariant(String message, IInvariant inv, String expected) {
 		try {
-			assertEquals(
-					message + ": Incorrect invariant",
-					expected,
+			assertEquals(expected,
 					inv.getLabel() + ":" + inv.getPredicateString() + ":"
-							+ inv.isTheorem());
+							+ inv.isTheorem(),
+					message + ": Incorrect invariant");
 		} catch (RodinDBException e) {
 			e.printStackTrace();
 			fail("There should be no exception");
@@ -936,11 +936,10 @@ public abstract class AbstractEventBTests extends AbstractTests {
 	protected void testEvent(String message, IEvent evt, String expected) {
 		try {
 			assertNotNull(evt, message + ": The event must not be null");
-			assertEquals(
-					message + ": Incorrect event",
-					expected,
+			assertEquals(expected,
 					evt.getLabel() + ":" + evt.getConvergence() + ":"
-							+ evt.isExtended());
+							+ evt.isExtended(),
+					message + ": Incorrect event");
 		} catch (CoreException e) {
 			e.printStackTrace();
 			fail("There should be no exception");
@@ -988,8 +987,8 @@ public abstract class AbstractEventBTests extends AbstractTests {
 	protected void testRefinesClause(String message,
 			IRefinesEvent refinesEvent, String expected) {
 		try {
-			assertEquals(message + "Incorrect REFINES clause", expected,
-					refinesEvent.getAbstractEventLabel());
+			assertEquals(expected, refinesEvent.getAbstractEventLabel(),
+					message + "Incorrect REFINES clause");
 		} catch (RodinDBException e) {
 			e.printStackTrace();
 			fail("There should be no exception");
@@ -1035,8 +1034,8 @@ public abstract class AbstractEventBTests extends AbstractTests {
 	 */
 	protected void testParameter(String message, IParameter par, String expected) {
 		try {
-			assertEquals(message + ": Incorrect parameter", expected,
-					par.getIdentifierString());
+			assertEquals(expected, par.getIdentifierString(),
+					message + ": Incorrect parameter");
 		} catch (RodinDBException e) {
 			e.printStackTrace();
 			fail("There should be no exception");
@@ -1085,11 +1084,10 @@ public abstract class AbstractEventBTests extends AbstractTests {
 	 */
 	protected void testGuard(String message, IGuard grd, String expected) {
 		try {
-			assertEquals(
-					message + ": Incorrect guard",
-					expected,
+			assertEquals(expected,
 					grd.getLabel() + ":" + grd.getPredicateString() + ":"
-							+ grd.isTheorem());
+							+ grd.isTheorem(),
+					message + ": Incorrect guard");
 		} catch (RodinDBException e) {
 			e.printStackTrace();
 			fail("There should be no exception");
@@ -1137,8 +1135,8 @@ public abstract class AbstractEventBTests extends AbstractTests {
 	 */
 	protected void testWitness(String message, IWitness wit, String expected) {
 		try {
-			assertEquals(message + ": Incorrect witness", expected,
-					wit.getLabel() + ":" + wit.getPredicateString());
+			assertEquals(expected, wit.getLabel() + ":" + wit.getPredicateString(),
+					message + ": Incorrect witness");
 		} catch (RodinDBException e) {
 			e.printStackTrace();
 			fail("There should be no exception");
@@ -1186,8 +1184,8 @@ public abstract class AbstractEventBTests extends AbstractTests {
 	 */
 	protected void testAction(String message, IAction act, String expected) {
 		try {
-			assertEquals(message + ": Incorrect action", expected,
-					act.getLabel() + ":" + act.getAssignmentString());
+			assertEquals(expected, act.getLabel() + ":" + act.getAssignmentString(),
+					message + ": Incorrect action");
 		} catch (RodinDBException e) {
 			e.printStackTrace();
 			fail("There should be no exception");

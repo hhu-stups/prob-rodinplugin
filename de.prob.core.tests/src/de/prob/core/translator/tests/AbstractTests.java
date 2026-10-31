@@ -52,7 +52,7 @@ public abstract class AbstractTests {
 			String... expected) {
 		assertEquals(expected.length, actual.length, msg + ": Incorrect number of strings\n");
 		for (int i = 0; i < expected.length; i++) {
-			assertEquals(msg, expected[i], actual[i]);
+			assertEquals(expected[i], actual[i], msg);
 		}
 	}
 
