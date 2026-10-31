@@ -265,12 +265,12 @@ public class BMSConverter512 {
 									.convertAnother(c, BMotionGuide.class));
 						} else if ("horizontalGuide".equals(reader
 								.getNodeName())) {
-							c.setVerticalGuide((BMotionGuide) context
+							c.setHorizontalGuide((BMotionGuide) context
 									.convertAnother(c, BMotionGuide.class));
 						} else if ("sourceConnections".equals(reader
 								.getNodeName())) {
-							c.setHorizontalGuide((BMotionGuide) context
-									.convertAnother(c, BMotionGuide.class));
+							c.setSourceConnections((List<BConnection>) context
+									.convertAnother(c, List.class));
 						} else if ("targetConnections".equals(reader
 								.getNodeName())) {
 							c.setTargetConnections((List<BConnection>) context
