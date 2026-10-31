@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.swt.widgets.Display;
 
@@ -30,11 +31,15 @@ public class Animation implements IAnimationListener {
 
 	private Animator animator;
 
-	private final Map<String, Operation> currentStateOperations;
+	// The state is set by the ProB thread (currentStateChanged) and read by the
+	// UI thread (observers), so it is published via volatile fields and the
+	// operations map is replaced, never modified
+	private volatile Map<String, Operation> currentStateOperations;
 
-	private final Map<String, EvaluationElement> cachedEvalElements = new HashMap<String, EvaluationElement>();
+	// filled by observers on the UI thread, read on the ProB thread
+	private final Map<String, EvaluationElement> cachedEvalElements = new ConcurrentHashMap<String, EvaluationElement>();
 
-	private State currentState;
+	private volatile State currentState;
 
 	private Visualization visualization;
 
@@ -49,11 +54,12 @@ public class Animation implements IAnimationListener {
 	}
 
 	private void setNewState(State state) {
-		currentState = state;
-		currentStateOperations.clear();
+		final Map<String, Operation> operations = new HashMap<String, Operation>();
 		for (Operation op : state.getEnabledOperations()) {
-			this.currentStateOperations.put(op.getName(), op);
+			operations.put(op.getName(), op);
 		}
+		currentStateOperations = operations;
+		currentState = state;
 	}
 
 	@Override
@@ -83,7 +89,8 @@ public class Animation implements IAnimationListener {
 	private void updateCachedExpressions(State currentState) {
 		try {
 			EvaluationGetValuesCommand.getValuesForExpressionsCached(
-					currentState, cachedEvalElements.values());
+					currentState, new ArrayList<EvaluationElement>(
+							cachedEvalElements.values()));
 		} catch (ProBException e) {
 			// TODO Log this
 		}
@@ -148,14 +155,14 @@ public class Animation implements IAnimationListener {
 	public EvaluationElement getCachedEvalElement(String expressionStr,
 			boolean isPredicate) throws UnsupportedOperationException,
 			ProBException, ProBParseException {
-		final EvaluationElement evalElement;
-		if (cachedEvalElements.containsKey(expressionStr)) {
-			evalElement = cachedEvalElements.get(expressionStr);
-		} else {
+		EvaluationElement evalElement = cachedEvalElements.get(expressionStr);
+		if (evalElement == null) {
 			// TODO: exception handling ...
 			evalElement = createPredicateExpressionElement(expressionStr,
 					isPredicate);
-			cachedEvalElements.put(expressionStr, evalElement);
+			if (evalElement != null) {
+				cachedEvalElements.put(expressionStr, evalElement);
+			}
 		}
 		return evalElement;
 	}

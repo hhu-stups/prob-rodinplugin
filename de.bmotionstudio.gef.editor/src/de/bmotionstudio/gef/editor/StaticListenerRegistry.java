@@ -6,8 +6,8 @@
 
 package de.bmotionstudio.gef.editor;
 
-import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 import de.prob.core.IAnimationListener;
 import de.prob.core.IComputationListener;
@@ -18,9 +18,12 @@ import de.prob.core.domainobjects.State;
 public class StaticListenerRegistry implements ILifecycleListener,
 		IComputationListener, IAnimationListener {
 
-	private static final Set<ILifecycleListener> lifeCycleListeners = new HashSet<ILifecycleListener>();
-	private static final Set<IComputationListener> computationListeners = new HashSet<IComputationListener>();
-	private static final Set<IAnimationListener> animationListeners = new HashSet<IAnimationListener>();
+	// copy-on-write: editors unregister themselves while a reset is being sent
+	// (reset -> removeRunPage -> unregister), and editors register from the UI
+	// thread while ProB threads send events
+	private static final Set<ILifecycleListener> lifeCycleListeners = new CopyOnWriteArraySet<ILifecycleListener>();
+	private static final Set<IComputationListener> computationListeners = new CopyOnWriteArraySet<IComputationListener>();
+	private static final Set<IAnimationListener> animationListeners = new CopyOnWriteArraySet<IAnimationListener>();
 
 	public static void registerListener(final ILifecycleListener listener) {
 		lifeCycleListeners.add(listener);

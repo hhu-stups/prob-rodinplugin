@@ -3,8 +3,8 @@
  */
 package de.prob.core;
 
-import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 import de.prob.core.domainobjects.Operation;
 import de.prob.core.domainobjects.State;
@@ -17,9 +17,11 @@ import de.prob.logging.Logger;
 public class ListenerRegistry implements ILifecycleListener,
 		IComputationListener, IAnimationListener {
 
-	private final Set<ILifecycleListener> lifeCycleListeners = new HashSet<ILifecycleListener>();
-	private final Set<IComputationListener> computationListeners = new HashSet<IComputationListener>();
-	private final Set<IAnimationListener> animationListeners = new HashSet<IAnimationListener>();
+	// copy-on-write: listeners may be (un)registered from other threads or by
+	// a listener while an event is being sent
+	private final Set<ILifecycleListener> lifeCycleListeners = new CopyOnWriteArraySet<ILifecycleListener>();
+	private final Set<IComputationListener> computationListeners = new CopyOnWriteArraySet<IComputationListener>();
+	private final Set<IAnimationListener> animationListeners = new CopyOnWriteArraySet<IAnimationListener>();
 
 	public void registerLifecycleListener(final ILifecycleListener listener) {
 		lifeCycleListeners.add(listener);

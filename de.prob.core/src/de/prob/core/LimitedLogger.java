@@ -140,7 +140,9 @@ public class LimitedLogger {
 	}
 
 	public void registerListener(final LogListener listener) {
-		synchronized (listener) {
+		// lock the listener collection (not the parameter), the notification
+		// thread iterates over it while holding the same lock
+		synchronized (this.listener) {
 			this.listener.add(listener);
 			if (notificationThread == null) {
 				notificationThread = new NotificationThread(this);
@@ -151,9 +153,9 @@ public class LimitedLogger {
 	}
 
 	public void unregisterListener(final LogListener listener) {
-		synchronized (listener) {
+		synchronized (this.listener) {
 			this.listener.remove(listener);
-			if (this.listener.isEmpty()) {
+			if (this.listener.isEmpty() && notificationThread != null) {
 				notificationThread.stopNotification();
 				notificationThread = null;
 			}
@@ -179,8 +181,8 @@ public class LimitedLogger {
 
 	private static class NotificationThread extends Thread {
 		private final LimitedLogger logger;
-		private final static long lastNotification = 0;
-		private boolean stopped = false;
+		private long lastNotification = 0;
+		private volatile boolean stopped = false;
 
 		public NotificationThread(final LimitedLogger logger) {
 			super("LimitedLoggerNotification");
@@ -222,6 +224,7 @@ public class LimitedLogger {
 						for (LogListener l : logger.listener) {
 							l.newLoggingInfo();
 						}
+						lastNotification = current;
 					}
 				}
 			}
