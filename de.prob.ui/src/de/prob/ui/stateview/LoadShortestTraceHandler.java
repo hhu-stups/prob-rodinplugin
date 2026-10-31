@@ -18,7 +18,6 @@ import de.prob.exceptions.ProBException;
 public class LoadShortestTraceHandler extends AbstractHandler implements
 		IHandler {
 
-	private List<String> states;
 	private final Animator animator;
 
 	public LoadShortestTraceHandler() {
@@ -37,7 +36,11 @@ public class LoadShortestTraceHandler extends AbstractHandler implements
 			return null;
 		}
 
-		loadTrace();
+		final List<String> states = loadTrace();
+		if (states == null) {
+			// We cannot recover from this, but the user has been informed
+			return null;
+		}
 
 		try {
 			animator.getHistory().gotoPos(0);
@@ -66,18 +69,18 @@ public class LoadShortestTraceHandler extends AbstractHandler implements
 	}
 
 	/**
-	 * load the trace to state <code>stateId</code> from <code>animator</code>
-	 * and set <code>states</code> and <code>operations</code>
+	 * load the trace to the current state from <code>animator</code>
+	 * 
+	 * @return the state ids of the trace or <code>null</code> if loading
+	 *         failed (the user has been informed)
 	 */
-	private void loadTrace() {
+	private List<String> loadTrace() {
 		try {
-			states = GetFullTraceCommand.getTrace(animator).getStates();
+			return GetFullTraceCommand.getTrace(animator).getStates();
 		} catch (ProBException e) {
-			e.notify();
-			// We cannot recover from this, but the user has been informed
-			return;
+			e.notifyUserOnce();
+			return null;
 		}
-
 	}
 
 	/**
