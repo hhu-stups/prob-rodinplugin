@@ -168,8 +168,8 @@ public class StateViewPart extends StateBasedViewPart {
 					for (final StaticStateElement element : elements) {
 						if (!first) {
 							sb.append(", ");
-							first = false;
 						}
+						first = false;
 						sb.append(element.getLabel());
 					}
 					event.data = sb.toString();
