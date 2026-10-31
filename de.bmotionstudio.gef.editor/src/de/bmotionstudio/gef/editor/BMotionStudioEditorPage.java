@@ -271,6 +271,9 @@ public class BMotionStudioEditorPage extends GraphicalEditorWithFlyoutPalette {
 		// remove PropertyChangeListener from graphical viewer
 		getGraphicalViewer().removePropertyChangeListener(viewerListener);
 
+		// the grid color belongs to the editor, not to the outline page
+		gridColor.dispose();
+
 		// important: always call super implementation of dispose
 		super.dispose();
 	}
@@ -800,7 +803,6 @@ public class BMotionStudioEditorPage extends GraphicalEditorWithFlyoutPalette {
 		@Override
 		public void dispose() {
 			unhookOutlineViewer();
-			gridColor.dispose();
 			super.dispose();
 		}
 
