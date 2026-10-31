@@ -140,7 +140,14 @@ public class ServerConnection {
 	public void startup(final File file) throws CliException {
 		if (shutdown) {
 			startcli(file);
-			establishConnection(cli.getPort());
+			try {
+				establishConnection(cli.getPort());
+			} catch (CliException | RuntimeException e) {
+				// don't leave the probcli process running
+				cli.shutdown();
+				cli = null;
+				throw e;
+			}
 			shutdown = false;
 		} else {
 			// This should never happen
