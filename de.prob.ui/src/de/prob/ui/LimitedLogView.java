@@ -98,7 +98,8 @@ public class LimitedLogView extends ViewPart implements
 		Display.getDefault().asyncExec(new Runnable() {
 			@Override
 			public void run() {
-				viewer.refresh();
+				if (!viewer.getControl().isDisposed())
+					viewer.refresh();
 			}
 		});
 	}

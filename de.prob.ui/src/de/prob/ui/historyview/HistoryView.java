@@ -152,6 +152,9 @@ public class HistoryView extends StateBasedViewPart {
 		final Runnable update = new Runnable() {
 			@Override
 			public void run() {
+				if (tableViewer == null
+						|| tableViewer.getControl().isDisposed())
+					return;
 				final Composite parent = tableViewer.getTable().getParent();
 				final TableColumnLayout layout = (TableColumnLayout) parent
 						.getLayout();
@@ -340,7 +343,9 @@ public class HistoryView extends StateBasedViewPart {
 		final Runnable runnable = new Runnable() {
 			@Override
 			public void run() {
-				tableViewer.refresh();
+				if (tableViewer != null
+						&& !tableViewer.getControl().isDisposed())
+					tableViewer.refresh();
 			}
 		};
 		Display.getDefault().asyncExec(runnable);

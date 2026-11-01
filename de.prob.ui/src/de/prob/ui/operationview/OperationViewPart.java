@@ -80,7 +80,12 @@ public class OperationViewPart extends StateBasedViewPart implements
 		Display.getDefault().asyncExec(new Runnable() {
 			@Override
 			public void run() {
-				OperationTableViewer.getInstance().refresh();
+				// null if the operations table has been disposed
+				final OperationTableViewer opViewer = OperationTableViewer
+						.getInstance();
+				if (opViewer != null
+						&& !opViewer.getViewer().getControl().isDisposed())
+					opViewer.refresh();
 			}
 		});
 	}

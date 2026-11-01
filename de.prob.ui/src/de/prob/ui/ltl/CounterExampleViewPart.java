@@ -80,6 +80,8 @@ public final class CounterExampleViewPart extends StateBasedViewPart {
 		final Runnable runnable = new Runnable() {
 			@Override
 			public void run() {
+				if (tabFolder == null || tabFolder.isDisposed())
+					return;
 				final CTabItem tabItem = createTabItem(counterExample);
 				tabFolder.setSelection(tabItem);
 				tabFolder.update();

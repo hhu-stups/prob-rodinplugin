@@ -126,6 +126,9 @@ public abstract class StateBasedViewPart extends ViewPart implements
 		final Runnable runnable = new Runnable() {
 			@Override
 			public void run() {
+				// the view may have been closed in the meantime
+				if (isPartDisposed())
+					return;
 				createStateControl();
 				stateChanged(currentState, operation);
 			}
@@ -141,11 +144,21 @@ public abstract class StateBasedViewPart extends ViewPart implements
 		final Runnable runnable = new Runnable() {
 			@Override
 			public void run() {
+				if (isPartDisposed())
+					return;
 				createNoStateMessage();
 				stateReset();
 			}
 		};
 		Display.getDefault().asyncExec(runnable);
+	}
+
+	/**
+	 * @return true if the view's controls are gone (e.g. the view was closed
+	 *         after an update had been scheduled with asyncExec)
+	 */
+	protected boolean isPartDisposed() {
+		return parent == null || parent.isDisposed();
 	}
 
 	@Override

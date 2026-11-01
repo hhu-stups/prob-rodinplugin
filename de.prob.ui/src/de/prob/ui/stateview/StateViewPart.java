@@ -479,7 +479,9 @@ public class StateViewPart extends StateBasedViewPart {
 		final Runnable refresh = new Runnable() {
 			@Override
 			public void run() {
-				treeViewer.refresh();
+				if (treeViewer != null
+						&& !treeViewer.getControl().isDisposed())
+					treeViewer.refresh();
 			}
 		};
 		Display.getDefault().asyncExec(refresh);
