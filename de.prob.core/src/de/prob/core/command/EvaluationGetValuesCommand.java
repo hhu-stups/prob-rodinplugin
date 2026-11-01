@@ -35,6 +35,8 @@ import de.prob.unicode.UnicodeTranslator;
  */
 public class EvaluationGetValuesCommand implements IComposableCommand {
 	private static final String COMMAND_NAME = "evaluation_get_values";
+	// same result format, but supports the option "unlimited"
+	private static final String UNLIMITED_COMMAND_NAME = "prob2_evaluate_bvisual2_formulas";
 	private static final String VALUE_VARNAME = "Values";
 	private static final String TRUE = UnicodeTranslator.toUnicode("true");
 	private static final String FALSE = UnicodeTranslator.toUnicode("false");
@@ -125,6 +127,23 @@ public class EvaluationGetValuesCommand implements IComposableCommand {
 		return result;
 	}
 
+	/**
+	 * Asks ProB for the value of the element without truncating long values
+	 * (normal values are cut after a few hundred characters). The result is
+	 * not cached.
+	 * 
+	 * @return the result or <code>null</code> if ProB did not return one
+	 */
+	public static EvaluationResult getFullValue(final State state,
+			final EvaluationElement element) throws ProBException {
+		if (state == null)
+			return null;
+		final EvaluationGetValuesCommand cmd = new EvaluationGetValuesCommand(
+				state.getId(), Collections.singleton(element), true);
+		Animator.getAnimator().execute(cmd);
+		return cmd.getResult().get(element);
+	}
+
 	@SuppressWarnings("unchecked")
 	private static Map<EvaluationElement, EvaluationStateElement> getCache(
 			final State state) {
@@ -151,13 +170,25 @@ public class EvaluationGetValuesCommand implements IComposableCommand {
 
 	private final String stateId;
 	private final Collection<EvaluationElement> elements;
+	private final boolean unlimited;
 
 	private Map<EvaluationElement, EvaluationResult> result;
 
 	public EvaluationGetValuesCommand(final String stateId,
 			final Collection<EvaluationElement> elements) {
+		this(stateId, elements, false);
+	}
+
+	/**
+	 * @param unlimited
+	 *            if true, ProB does not truncate long values
+	 */
+	public EvaluationGetValuesCommand(final String stateId,
+			final Collection<EvaluationElement> elements,
+			final boolean unlimited) {
 		this.stateId = stateId;
 		this.elements = new ArrayList<EvaluationElement>(elements);
+		this.unlimited = unlimited;
 	}
 
 	@Override
@@ -217,13 +248,18 @@ public class EvaluationGetValuesCommand implements IComposableCommand {
 
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
-		pto.openTerm(COMMAND_NAME);
+		pto.openTerm(unlimited ? UNLIMITED_COMMAND_NAME : COMMAND_NAME);
 		pto.openList();
 		for (final EvaluationElement element : elements) {
 			element.getId().toTermOutput(pto);
 		}
 		pto.closeList();
 		pto.printAtomOrNumber(stateId);
+		if (unlimited) {
+			pto.openList();
+			pto.printAtom("unlimited");
+			pto.closeList();
+		}
 		pto.printVariable(VALUE_VARNAME);
 		pto.closeTerm();
 	}

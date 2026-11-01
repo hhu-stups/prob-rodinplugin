@@ -127,6 +127,11 @@
             name="ShowInHistory">
       </command>
       <command
+            description="Show the full value of a state item in a dialog"
+            id="de.prob.ui.command.showFullValue"
+            name="Show Full Value">
+      </command>
+      <command
             categoryId="de.prob.ui.commands.category"
             id="de.prob.ui.ltl_modelchecking"
             name="LTL Modelchecking">
@@ -332,6 +337,31 @@
          <class
                class="de.prob.ui.stateview.ShowInHistoryHandler">
          </class>
+      </handler>
+      <handler
+            class="de.prob.ui.stateview.ShowFullValueHandler"
+            commandId="de.prob.ui.command.showFullValue">
+         <enabledWhen>
+            <with
+                  variable="selection">
+               <and>
+                  <count
+                        value="1">
+                  </count>
+                  <iterate
+                        operator="or">
+                     <or>
+                        <instanceof
+                              value="de.prob.ui.stateview.statetree.StateTreeVariable">
+                        </instanceof>
+                        <instanceof
+                              value="de.prob.ui.stateview.statetree.StateTreeExpression">
+                        </instanceof>
+                     </or>
+                  </iterate>
+               </and>
+            </with>
+         </enabledWhen>
       </handler>
       <handler
             commandId="de.prob.ui.ltl_modelchecking">
@@ -793,6 +823,11 @@
          <command
                commandId="de.prob.ui.command.showInHistory"
                label="Show item in history"
+               style="push">
+         </command>
+         <command
+               commandId="de.prob.ui.command.showFullValue"
+               label="Show Full Value ..."
                style="push">
          </command>
       </menuContribution>
