@@ -60,6 +60,13 @@ public class EventBAnimatorPart implements LanguageDependendAnimationPart {
 		this.root = root;
 	}
 
+	/**
+	 * @return the machine or context this part belongs to
+	 */
+	public IEventBRoot getRoot() {
+		return root;
+	}
+
 	@Override
 	public void parseExpression(final IPrologTermOutput pto,
 			final String expression1, final boolean wrap)

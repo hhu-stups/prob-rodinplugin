@@ -12,11 +12,9 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.ui.IWorkbenchActionConstants;
-import org.eclipse.ui.services.ISourceProviderService;
 
 import de.prob.core.domainobjects.*;
 import de.prob.ui.StateBasedViewPart;
-import de.prob.ui.services.ModelLoadedProvider;
 
 /**
  * This class defines the view that shows the currently available operations.
@@ -33,7 +31,6 @@ public class OperationViewPart extends StateBasedViewPart implements
 		OperationTableViewer.create(pageComposite, SWT.BORDER | SWT.H_SCROLL
 				| SWT.V_SCROLL | SWT.FULL_SELECTION | SWT.SINGLE);
 		hookContextMenu();
-		updateModelLoadedProvider();
 		return pageComposite;
 	}
 
@@ -88,13 +85,5 @@ public class OperationViewPart extends StateBasedViewPart implements
 					opViewer.refresh();
 			}
 		});
-	}
-
-	private void updateModelLoadedProvider() {
-		ISourceProviderService service = (ISourceProviderService) this
-				.getSite().getService(ISourceProviderService.class);
-		ModelLoadedProvider sourceProvider = (ModelLoadedProvider) service
-				.getSourceProvider(ModelLoadedProvider.SERVICE);
-		sourceProvider.setEnabled(true);
 	}
 }

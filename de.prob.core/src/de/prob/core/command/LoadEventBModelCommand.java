@@ -112,9 +112,19 @@ public final class LoadEventBModelCommand {
 				Logger.notifyUser(message);
 			}
 		} catch (CommandException ex) {
-			Logger.notifyUser("Event-B Model or Context could not be loaded due to an exception: " 
-			                  + ex.getMessage() + "\nTry cleaning the Rodin project (Project -> Clean).",
+			// ProB has (at least partially) dropped the previous model, so
+			// the views must not keep showing it as animated. Remember the
+			// new model, so that a restart tries to load it again.
+			animator.setMachineDescription(null);
+			animator.setLanguageDependendPart(ldp);
+			animator.announceReset();
+			final CommandException failure = new CommandException(
+					"Event-B Model or Context could not be loaded due to an exception: "
+							+ ex.getMessage()
+							+ "\nTry cleaning the Rodin project (Project -> Clean).",
 					ex);
+			Logger.notifyUser(failure.getMessage(), ex);
+			throw failure;
 		}
 
 	}

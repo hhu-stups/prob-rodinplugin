@@ -43,7 +43,8 @@ public final class Animator {
 	private volatile boolean rodinProjectHasErrorsOrWarnings;
 	private final Map<Object, Object> dataStore = new HashMap<Object, Object>();
 
-	private AnimatorImpl implementation;
+	// volatile: read without the lock by isMachineLoaded()
+	private volatile AnimatorImpl implementation;
 
 	// ------------------ Container Lifecycle
 
@@ -289,8 +290,15 @@ public final class Animator {
 		return getImplementation().getMachineDescription();
 	}
 
+	/**
+	 * Does not start probcli and does not wait for a running command, so it
+	 * can be called from the UI thread.
+	 * 
+	 * @return true if a model has been loaded successfully
+	 */
 	public boolean isMachineLoaded() {
-		return getImplementation().isMachineLoaded();
+		final AnimatorImpl impl = implementation;
+		return impl != null && impl.isMachineLoaded();
 	}
 
 	public LanguageDependendAnimationPart getLanguageDependendPart() {

@@ -22,9 +22,7 @@ import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.handlers.HandlerUtil;
-import org.eclipse.ui.services.ISourceProviderService;
 import org.eventb.core.IContextRoot;
 import org.eventb.core.IEventBRoot;
 import org.eventb.core.IMachineRoot;
@@ -37,7 +35,6 @@ import de.prob.core.command.LoadEventBModelCommand;
 import de.prob.exceptions.ProBException;
 import de.prob.logging.Logger;
 import de.prob.ui.PerspectiveFactory;
-import de.prob.ui.services.ContextLoadedProvider;
 
 public class StartAnimationHandler extends AbstractHandler implements IHandler {
 
@@ -164,14 +161,6 @@ public class StartAnimationHandler extends AbstractHandler implements IHandler {
 		return root;
 	}
 
-	private void updateContextLoadedProvider(boolean isContext) {
-		ISourceProviderService service = (ISourceProviderService) PlatformUI
-				.getWorkbench().getService(ISourceProviderService.class);
-		ContextLoadedProvider sourceProvider = (ContextLoadedProvider) service
-				.getSourceProvider(ContextLoadedProvider.SERVICE);
-		sourceProvider.setEnabled(isContext);
-	}
-
 	private IFile extractResource(final IEventBRoot rootElement) {
 		IFile resource = null;
 		if (rootElement == null) {
@@ -179,11 +168,9 @@ public class StartAnimationHandler extends AbstractHandler implements IHandler {
 		} else if (rootElement instanceof IMachineRoot) {
 			resource = ((IMachineRoot) rootElement).getSCMachineRoot()
 					.getResource();
-			updateContextLoadedProvider(false);
 		} else if (rootElement instanceof IContextRoot) {
 			resource = ((IContextRoot) rootElement).getSCContextRoot()
 					.getResource();
-			updateContextLoadedProvider(true);
 		}
 		return resource;
 	}

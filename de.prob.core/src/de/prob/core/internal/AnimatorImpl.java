@@ -45,7 +45,7 @@ public class AnimatorImpl {
 
 	private volatile ServerConnection connector;
 
-	private MachineDescription description;
+	private volatile MachineDescription description;
 
 	private final File file;
 
