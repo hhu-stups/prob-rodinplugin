@@ -344,7 +344,9 @@ public abstract class BControl implements IAdaptable, Cloneable {
 
 	public void setLayout(Rectangle newLayout) {
 		Rectangle oldLayout = getLayout();
-		layout = newLayout;
+		// keep our own copy, the caller (e.g. an undoable command) may hold
+		// on to newLayout
+		layout = newLayout.getCopy();
 		setAttributeValue(AttributeConstants.ATTRIBUTE_X, newLayout.x, false);
 		setAttributeValue(AttributeConstants.ATTRIBUTE_Y, newLayout.y, false);
 		setAttributeValue(AttributeConstants.ATTRIBUTE_WIDTH, newLayout.width,
@@ -391,7 +393,9 @@ public abstract class BControl implements IAdaptable, Cloneable {
 			// TODO: return error message
 		}
 
-		return layout;
+		// return a copy, so that callers (e.g. commands remembering the old
+		// layout for undo) are not affected by later layout changes
+		return layout == null ? null : layout.getCopy();
 
 	}
 
