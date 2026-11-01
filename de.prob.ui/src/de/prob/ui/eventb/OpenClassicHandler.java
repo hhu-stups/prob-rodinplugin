@@ -57,8 +57,11 @@ public class OpenClassicHandler extends AbstractHandler implements IHandler {
 						return null;
 					}
 					final String tmp = temp.getAbsolutePath();
-					ExportNewCoreHandler.exportToClassic(tmp, root);
-					runProBClassic(prob_location, tmp);
+					// the temporary file was just created by us, so don't ask
+					// whether to overwrite it
+					if (ExportNewCoreHandler.writeClassicFile(tmp, root)) {
+						runProBClassic(prob_location, tmp);
+					}
 				}
 			} else {
 				Logger.notifyUser("You need to select a context or machine to open with " + PROB_STANDALONE_NAME);

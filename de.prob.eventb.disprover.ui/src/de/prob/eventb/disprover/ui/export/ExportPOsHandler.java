@@ -237,8 +237,9 @@ public class ExportPOsHandler extends AbstractHandler implements IHandler {
 
 	private static boolean isSafeToWrite(final String filename) {
 		if (new File(filename).exists()) {
-			final MessageDialog dialog = new MessageDialog(null, "File exists",
-					null, "The file exists. Do you want to overwrite it?",
+			final MessageDialog dialog = new MessageDialog(null,
+					"File exists", null, "The export file\n\n" + filename
+							+ "\n\nalready exists. Do you want to overwrite it?",
 					MessageDialog.QUESTION, new String[] { "Yes", "No" }, 0);
 			return dialog.open() == 0;
 		} else
