@@ -204,8 +204,13 @@ public class ModelCheckingFinishedListener extends JobChangeAdapter {
 				+ "Model Checking finished, all states visited.\n";
 	}
 
-	private void replayErrorTrace() throws ProBException {
-		ReplayTraceCommand.replay(animator);
+	private void replayErrorTrace() {
+		try {
+			ReplayTraceCommand.replay(animator);
+		} catch (ProBException e) {
+			// still show what the model checker found
+			e.notifyUserOnce();
+		}
 	}
 
 	private void displayResult(final MultiStatus info) {
