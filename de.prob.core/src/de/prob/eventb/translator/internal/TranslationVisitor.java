@@ -10,7 +10,9 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.eventb.core.ast.Assignment;
 import org.eventb.core.ast.AssociativeExpression;
@@ -535,12 +537,13 @@ public class TranslationVisitor implements ISimpleVisitor {
 		// subtrees representing the identifiers
 		final int originalBoundSize = boundVariables.size();
 		final BoundIdentDecl[] decls = expression.getBoundIdentDecls();
-		final List<PExpression> list = getSubExpressions(decls);
+		final String[] names = declareBoundIdentifiers(decls, expression);
+		final List<PExpression> list = createIdentifierExpressions(names);
 		final PPredicate pr = getPredicate(expression.getPredicate());
 		final PExpression ex = getExpression(expression.getExpression());
 		boundVariables.shrinkToSize(originalBoundSize);
 
-		final PPredicate pred = addTypesToPredicate(pr, decls);
+		final PPredicate pred = addTypesToPredicate(pr, decls, names);
 
 		final PExpression result;
 		switch (expression.getTag()) {
@@ -565,7 +568,8 @@ public class TranslationVisitor implements ISimpleVisitor {
 		// subtrees representing the identifiers
 		int originalBoundSize = boundVariables.size();
 		final BoundIdentDecl[] decls = predicate.getBoundIdentDecls();
-		final List<PExpression> list = getSubExpressions(decls);
+		final String[] names = declareBoundIdentifiers(decls, predicate);
+		final List<PExpression> list = createIdentifierExpressions(names);
 		// Recursively analyze the predicate (important, bounds are already set)
 		final PPredicate pred = getPredicate(predicate.getPredicate());
 		boundVariables.shrinkToSize(originalBoundSize);
@@ -574,17 +578,17 @@ public class TranslationVisitor implements ISimpleVisitor {
 		switch (predicate.getTag()) {
 		case Formula.EXISTS:
 			result = new AExistsPredicate(list,
-					addTypesToPredicate(pred, decls));
+					addTypesToPredicate(pred, decls, names));
 			break;
 		case Formula.FORALL:
 			final PPredicate left;
 			final PPredicate right;
 			if (pred instanceof AImplicationPredicate) {
 				final AImplicationPredicate i = (AImplicationPredicate) pred;
-				left = addTypesToPredicate(i.getLeft(), decls);
+				left = addTypesToPredicate(i.getLeft(), decls, names);
 				right = i.getRight();
 			} else {
-				left = addTypesToPredicate(null, decls);
+				left = addTypesToPredicate(null, decls, names);
 				right = pred;
 			}
 			final PPredicate impl = new AImplicationPredicate(
@@ -595,6 +599,52 @@ public class TranslationVisitor implements ISimpleVisitor {
 			throw new AssertionError(UNCOVERED_PREDICATE);
 		}
 		predicates.push(result);
+	}
+
+	/**
+	 * Pushes the names of the identifiers declared by a quantifier onto the
+	 * stack of bound variables. Rodin refers to bound identifiers by index,
+	 * so a declared name may coincide with a free identifier of the
+	 * quantified formula (e.g. after substituting an event parameter x into
+	 * a PO containing "∀x·..."). Using the name as it is would capture the
+	 * free identifier in ProB. Like Rodin's pretty printer, such names are
+	 * changed to x0, x1, ...; names of enclosing bound identifiers are
+	 * avoided as well.
+	 * 
+	 * @return the names to use, in the order of decls
+	 */
+	private String[] declareBoundIdentifiers(final BoundIdentDecl[] decls,
+			final Formula<?> quantified) {
+		final Set<String> used = new HashSet<String>();
+		for (final FreeIdentifier id : quantified.getFreeIdentifiers()) {
+			used.add(id.getName());
+		}
+		used.addAll(boundVariables.elements);
+		final String[] names = new String[decls.length];
+		for (int i = 0; i < decls.length; i++) {
+			names[i] = freshName(decls[i].getName(), used);
+			used.add(names[i]);
+			boundVariables.push(names[i]);
+		}
+		return names;
+	}
+
+	private static String freshName(final String name, final Set<String> used) {
+		if (!used.contains(name))
+			return name;
+		for (int i = 0;; i++) {
+			final String candidate = name + i;
+			if (!used.contains(candidate))
+				return candidate;
+		}
+	}
+
+	private List<PExpression> createIdentifierExpressions(final String[] names) {
+		final List<PExpression> list = new ArrayList<PExpression>(names.length);
+		for (final String name : names) {
+			list.add(createIdentifierExpression(name));
+		}
+		return list;
 	}
 
 	/**
@@ -615,11 +665,14 @@ public class TranslationVisitor implements ISimpleVisitor {
 	 *            predicate is used.
 	 * @param decls
 	 *            a list of declarations, never <code>null</code>
+	 * @param names
+	 *            the names used for the declared identifiers, see
+	 *            {@link #declareBoundIdentifiers(BoundIdentDecl[], Formula)}
 	 * @return the original predicate plus type information, <code>null</code>
 	 *         if no original predicate is given and decls is empty
 	 */
 	private PPredicate addTypesToPredicate(PPredicate predicate,
-			BoundIdentDecl[] decls) {
+			BoundIdentDecl[] decls, String[] names) {
 		if (!addTyping)
 			return predicate;
 		for (int i = decls.length; i > 0; i--) {
@@ -628,8 +681,7 @@ public class TranslationVisitor implements ISimpleVisitor {
 			// I've encountered null types. Maybe that was a bug but just to be
 			// sure (in most cases, missing type information won't hurt):
 			if (type != null) {
-				final PExpression expr = createIdentifierExpression(decl
-						.getName());
+				final PExpression expr = createIdentifierExpression(names[i - 1]);
 				// construct "expr:type"
 				final PPredicate member = new AMemberPredicate(expr,
 						translateType(type));
