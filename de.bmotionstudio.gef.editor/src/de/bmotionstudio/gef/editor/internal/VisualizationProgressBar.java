@@ -47,8 +47,9 @@ public class VisualizationProgressBar extends ProgressBarDialog {
 	private IFile f;
 	private Visualization visualization;
 	private Animation animation;
-	private int confirm = -1;
-	private SelectOperationDialog dialog;
+	// written by the UI thread, read by the worker thread
+	private volatile int confirm = -1;
+	private volatile SelectOperationDialog dialog;
 	private BMotionStudioEditor activeEditor;
 
 	public VisualizationProgressBar(Shell parent, Animator animator,
@@ -150,6 +151,12 @@ public class VisualizationProgressBar extends ProgressBarDialog {
 	}
 
 	@Override
+	protected void processFailed(RuntimeException e) {
+		openErrorDialog(e.getMessage() == null ? e.toString() : e
+				.getMessage());
+	}
+
+	@Override
 	protected void cleanUp() {
 		if (animation != null)
 			animation.unregister();
@@ -175,6 +182,13 @@ public class VisualizationProgressBar extends ProgressBarDialog {
 
 	private void setupOperation(String opName) throws InterruptedException {
 
+		if (animation.getState() == null) {
+			// e.g. ProB failed to load the model (already reported)
+			openErrorDialog("ProB did not provide a state for the model; see the error log for details.");
+			setClose(true);
+			return;
+		}
+
 		final List<Operation> ops = animation.getState().getEnabledOperations();
 
 		if (ops.size() > 1) {
@@ -193,6 +207,11 @@ public class VisualizationProgressBar extends ProgressBarDialog {
 				} catch (InterruptedException e) {
 					openErrorDialog(e.getMessage());
 					setClose(true);
+				}
+
+				if (isClosed) {
+					// cancelled or failed, don't wait for the dialog forever
+					break;
 				}
 
 				if (confirm == Window.OK) {
@@ -226,7 +245,9 @@ public class VisualizationProgressBar extends ProgressBarDialog {
 				}
 		}
 
-		visualization.setIsRunning(true);
+		if (!isClosed) {
+			visualization.setIsRunning(true);
+		}
 
 	}
 
