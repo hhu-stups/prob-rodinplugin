@@ -52,8 +52,10 @@ public class StartAnimationHandler extends AbstractHandler implements IHandler {
 
 		@Override
 		public void resourceChanged(final IResourceChangeEvent event) {
-			if (path != null) {
-				final IResourceDelta delta = event.getDelta();
+			final IResourceDelta delta = event.getDelta();
+			// PRE_CLOSE and PRE_DELETE events have no delta; closing or
+			// deleting the project is reported by the following POST_CHANGE
+			if (path != null && delta != null) {
 				IResourceDelta member = delta.findMember(path);
 				if (member != null) {
 					Animator.getAnimator().setDirty();
@@ -181,7 +183,8 @@ public class StartAnimationHandler extends AbstractHandler implements IHandler {
 					listener);
 		}
 		listener = new ModificationListener(resource);
-		ResourcesPlugin.getWorkspace().addResourceChangeListener(listener);
+		ResourcesPlugin.getWorkspace().addResourceChangeListener(listener,
+				IResourceChangeEvent.POST_CHANGE);
 	}
 
 	public void selectionChanged(final IAction action,
