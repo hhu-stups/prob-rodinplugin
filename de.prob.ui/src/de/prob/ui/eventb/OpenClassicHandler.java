@@ -7,7 +7,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.ArrayDeque;
 import java.util.Arrays;
+import java.util.Deque;
 import java.util.List;
 
 import org.eclipse.core.commands.AbstractHandler;
@@ -71,10 +73,22 @@ public class OpenClassicHandler extends AbstractHandler implements IHandler {
 	}
 
 	private static final class ClassicConsole implements Runnable {
-		private final BufferedReader output;
+		// number of output lines shown to the user if the program fails
+		private static final int LINES_TO_SHOW = 15;
 
-		private ClassicConsole(final BufferedReader output) {
+		private final Process process;
+		private final BufferedReader output;
+		private final String name;
+		private final boolean reportFailure;
+		private final Deque<String> lastLines = new ArrayDeque<String>();
+
+		private ClassicConsole(final Process process,
+				final BufferedReader output, final String name,
+				final boolean reportFailure) {
+			this.process = process;
 			this.output = output;
+			this.name = name;
+			this.reportFailure = reportFailure;
 		}
 
 		@Override
@@ -85,8 +99,11 @@ public class OpenClassicHandler extends AbstractHandler implements IHandler {
 					if (line == null) {
 						break;
 					}
-					System.out.println(PROB_STANDALONE_NAME + ": " + line);
-					LimitedLogger.getLogger().log(line,PROB_STANDALONE_NAME,null);
+					System.out.println(name + ": " + line);
+					LimitedLogger.getLogger().log(line,name,null);
+					lastLines.addLast(line);
+					if (lastLines.size() > LINES_TO_SHOW)
+						lastLines.removeFirst();
 				}
 			} catch (IOException e) {
 			} finally {
@@ -95,19 +112,52 @@ public class OpenClassicHandler extends AbstractHandler implements IHandler {
 				} catch (IOException e1) {
 				}
 			}
+			if (reportFailure) {
+				reportExitStatus();
+			}
+		}
 
+		private void reportExitStatus() {
+			final int exitCode;
+			try {
+				exitCode = process.waitFor();
+			} catch (InterruptedException e) {
+				Thread.currentThread().interrupt();
+				return;
+			}
+			if (exitCode != 0) {
+				final StringBuilder sb = new StringBuilder();
+				sb.append(name).append(" terminated with exit code ")
+						.append(exitCode).append(".\n");
+				if (lastLines.isEmpty()) {
+					sb.append("It did not produce any output.\n");
+				} else {
+					sb.append("Its last output was:\n\n");
+					for (String line : lastLines) {
+						sb.append(line).append('\n');
+					}
+				}
+				sb.append("\nPlease check the location in Preferences -> ")
+						.append(PROB_STANDALONE_NAME)
+						.append(". The full output is in the ProB performance log.");
+				Logger.notifyUser(sb.toString());
+			}
 		}
 	}
 
 	/**
 	 * Copies the output of the process to the log in a background thread that
 	 * does not keep Rodin from exiting
+	 * 
+	 * @param reportFailure
+	 *            tell the user if the process ends with an error
 	 */
-	private static void startConsole(final Process process, final String name) {
+	private static void startConsole(final Process process, final String name,
+			final boolean reportFailure) {
 		final BufferedReader output = new BufferedReader(
 				new InputStreamReader(process.getInputStream()));
-		final Thread thread = new Thread(new ClassicConsole(output), name
-				+ " output");
+		final Thread thread = new Thread(new ClassicConsole(process, output,
+				name, reportFailure), name + " output");
 		thread.setDaemon(true);
 		thread.start();
 	}
@@ -128,7 +178,7 @@ public class OpenClassicHandler extends AbstractHandler implements IHandler {
 			}
 			// merge stderr, otherwise it is never read and may block the process
 			final Process process = pb.redirectErrorStream(true).start();
-			startConsole(process, PROB_CLASSIC_NAME);
+			startConsole(process, PROB_CLASSIC_NAME, true);
 
 		} catch (IOException e) {
 			Logger.notifyUser("You need to specify a correct location for "
@@ -161,7 +211,8 @@ public class OpenClassicHandler extends AbstractHandler implements IHandler {
 			final String[] vcommand = {"java", "-version"};
 			ProcessBuilder vpb = new ProcessBuilder(vcommand).redirectErrorStream(true);
 			Process vprocess = vpb.start();
-			startConsole(vprocess, "java -version");
+			// failures are reported below
+			startConsole(vprocess, "java -version", false);
 			vprocess.waitFor();
 			if (vprocess.exitValue() != 0) {
 				Logger.notifyUser("Failed to start java -version. Exit code: " + vprocess.exitValue());
@@ -172,7 +223,7 @@ public class OpenClassicHandler extends AbstractHandler implements IHandler {
 			LimitedLogger.getLogger().log("Launching ProB2UI using: java -jar " + probBinary + " --machine-file " + modelFile,"ProB2UI",null);
 			ProcessBuilder pb = new ProcessBuilder(command).redirectErrorStream(true);
 			Process process = pb.start();
-			startConsole(process, PROB2_NAME);
+			startConsole(process, PROB2_NAME, true);
 			
 		} catch (IOException e) {
 			notifyLaunchFailed(probBinary, modelFile, e);
