@@ -159,7 +159,8 @@ public class DisproverPreferences extends PreferencePage implements
 		new Label(pageComponent, SWT.NONE)
 				.setText("Check (Hypotheses ^ Goal) in addition to (Hypotheses ^ not Goal) to identify contradiction in hypotheses:");
 		checkDoubleEval = new Button(pageComponent, SWT.CHECK);
-		checkDoubleEval.setSelection(prefNode.getBoolean("doubleeval", false));
+		// default must match the one used in DisproverCommand
+		checkDoubleEval.setSelection(prefNode.getBoolean("doubleeval", true));
 
 		new Label(pageComponent, SWT.NONE)
 				.setText("Export Goal and selected Hypotheses to B file (/tmp/ProB_Rodin_PO_SelectedHyps.mch):");

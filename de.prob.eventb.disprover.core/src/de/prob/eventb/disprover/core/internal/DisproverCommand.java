@@ -89,6 +89,7 @@ public class DisproverCommand implements IComposableCommand {
 						.getBoolean("smt", false)));
 		final SetPreferenceCommand setCSEPred = new SetPreferenceCommand(
 				"CSE_PRED", Boolean.toString(prefNode.getBoolean("cse", false)));
+		// default must match the one shown in DisproverPreferences
 		final SetPreferenceCommand setDoubleEval = new SetPreferenceCommand(
 				"DOUBLE_EVALUATION", Boolean.toString(prefNode.getBoolean(
 						"doubleeval", true)));
