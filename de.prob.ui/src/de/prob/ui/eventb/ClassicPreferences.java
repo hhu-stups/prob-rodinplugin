@@ -46,9 +46,12 @@ public class ClassicPreferences extends PreferencePage implements
 		public void widgetSelected(final SelectionEvent e) {
 			super.widgetSelected(e);
 			FileDialog dialog = new FileDialog(shell, SWT.OPEN);
-			String open = dialog.open();
-			open = open.replaceAll(" ", "\\\\ ");
-			text.setText(open);
+			final String open = dialog.open();
+			// null if the dialog was cancelled; the path is stored as chosen,
+			// spaces are handled when ProB is started
+			if (open != null) {
+				text.setText(open);
+			}
 		}
 
 	}

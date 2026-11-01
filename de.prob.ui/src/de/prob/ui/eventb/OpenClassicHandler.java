@@ -42,7 +42,7 @@ public class OpenClassicHandler extends AbstractHandler implements IHandler {
 
 		final String prob_location = getBinaryLocation();
 		if (prob_location == null) {
-			Logger.notifyUser("You need to specify a location for" + PROB_STANDALONE_NAME +". See Preferences -> ProB Standalone.");
+			Logger.notifyUser("You need to specify a location for " + PROB_STANDALONE_NAME +". See Preferences -> ProB Standalone.");
 		} else {
 			final IEventBRoot root = getSelection();
 			if (root != null) {
@@ -245,7 +245,21 @@ public class OpenClassicHandler extends AbstractHandler implements IHandler {
 		Preferences preferences = Platform.getPreferencesService()
 				.getRootNode().node(InstanceScope.SCOPE)
 				.node("prob_classic_preferences");
-		return preferences.get("location", null);
+		final String location = preferences.get("location", null);
+		if (location == null || location.trim().isEmpty())
+			return null;
+		return unescapeSpaces(location.trim());
+	}
+
+	/**
+	 * Older versions of the preference page stored spaces in the location
+	 * as "\ "; those mean a plain space in a file name
+	 */
+	static String unescapeSpaces(final String location) {
+		final String unescaped = location.replace("\\ ", " ");
+		// only if this names an existing file, a lone backslash could be
+		// part of a Windows path
+		return new File(unescaped).exists() ? unescaped : location;
 	}
 
 	private File createTempFile() {
