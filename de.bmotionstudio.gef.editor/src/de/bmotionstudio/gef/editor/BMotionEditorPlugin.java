@@ -241,7 +241,7 @@ public class BMotionEditorPlugin extends AbstractUIPlugin {
 	}
 
 	public static void setAliases(XStream xstream) {
-		xstream.registerConverter(new BControlListConverter());
+		xstream.registerConverter(new BControlListConverter(xstream.getMapper()));
 		xstream.alias("control", BControl.class);
 		xstream.alias("visualization", Visualization.class);
 		xstream.alias("guide", BMotionGuide.class);
