@@ -22,9 +22,11 @@ public class DisproverExtendedTimeoutTacticProvider extends
 			IPredicateApplication {
 		@Override
 		public ITactic getTactic(String[] inputs, String globalInput) {
-			IReasonerInput reasonerInput = new DisproverReasonerInput();
+			final int factor = 10;
+			// the factor is also stored in the input, for replaying the proof
+			IReasonerInput reasonerInput = new DisproverReasonerInput(factor);
 			return BasicTactics.reasonerTac(
-					Disprover.createExtendedTimeoutDisproverReasoner(10),
+					Disprover.createExtendedTimeoutDisproverReasoner(factor),
 					reasonerInput);
 		}
 

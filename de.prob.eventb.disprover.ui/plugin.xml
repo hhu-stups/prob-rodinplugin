@@ -68,7 +68,7 @@
       <page
             category="probpreferences"
             class="de.prob.eventb.disprover.ui.DisproverPreferences"
-            id="de.prob.ui.probclassic"
+            id="de.prob.eventb.disprover.ui.preferences"
             name="ProB (Dis-)Prover">
       </page>
    </extension>

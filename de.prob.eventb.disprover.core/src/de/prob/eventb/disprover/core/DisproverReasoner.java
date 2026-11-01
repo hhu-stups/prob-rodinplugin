@@ -38,6 +38,8 @@ public class DisproverReasoner implements IReasoner {
 
 	private static final String DISPROVER_REASONER_NAME = "de.prob.eventb.disprover.core.disproverReasoner";
 
+	private static final String TIMEOUT_FACTOR_KEY = "timeoutFactor";
+
 	private final int timeoutFactor;
 
 	public DisproverReasoner() {
@@ -58,8 +60,12 @@ public class DisproverReasoner implements IReasoner {
 			final IReasonerInput input, final IProofMonitor pm) {
 		try {
 			DisproverReasonerInput disproverInput = (DisproverReasonerInput) input;
+			// when replaying a proof, this reasoner has been created by Rodin
+			// with factor 1 and only the stored input knows the factor used
+			final int factor = Math.max(timeoutFactor,
+					disproverInput.getTimeoutFactor());
 			ICounterExample ce = evaluateSequent(sequent, disproverInput,
-					timeoutFactor, pm);
+					factor, pm);
 			return createDisproverResult(ce, sequent, input);
 		} catch (RodinDBException e) {
 			Logger.log(IStatus.WARNING, e.getMessage(), e);
@@ -215,12 +221,29 @@ public class DisproverReasoner implements IReasoner {
 	@Override
 	public IReasonerInput deserializeInput(final IReasonerInputReader reader)
 			throws SerializeException {
-		return new DisproverReasonerInput();
+		String factor;
+		try {
+			factor = reader.getString(TIMEOUT_FACTOR_KEY);
+		} catch (SerializeException e) {
+			factor = null; // proofs stored before the factor was serialized
+		}
+		if (factor == null)
+			return new DisproverReasonerInput();
+		try {
+			return new DisproverReasonerInput(Integer.parseInt(factor));
+		} catch (NumberFormatException e) {
+			throw new SerializeException(new IllegalStateException(
+					"Invalid disprover timeout factor: " + factor, e));
+		}
 	}
 
 	@Override
 	public void serializeInput(final IReasonerInput input,
 			final IReasonerInputWriter writer) throws SerializeException {
+		final int factor = ((DisproverReasonerInput) input).getTimeoutFactor();
+		// keep proofs with the default timeout as they were
+		if (factor != 1)
+			writer.putString(TIMEOUT_FACTOR_KEY, Integer.toString(factor));
 	}
 
 }

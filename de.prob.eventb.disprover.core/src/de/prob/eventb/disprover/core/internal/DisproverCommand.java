@@ -45,14 +45,22 @@ public class DisproverCommand implements IComposableCommand {
 
 	private static final String RESULT = "Result";
 
+	/**
+	 * ProB may solve several constraints with the given timeout (e.g. for the
+	 * selected and for all hypotheses), so give it some more time before
+	 * giving up on it
+	 */
+	private static final int TIMEOUT_MULTIPLIER = 5;
+	private static final long DEADLINE_MARGIN_MS = 30000;
+
 	private CounterExample counterExample;
 	private final Set<Predicate> allHypotheses;
 	private final Set<Predicate> selectedHypotheses;
 	private final Predicate goal;
 	private final int timeout;
 	private final Boolean exportPO;
-
-	private static ComposedCommand composed;
+	// set by the job thread, read by the prover thread
+	private volatile boolean interrupted = false;
 
 	public DisproverCommand(Set<Predicate> allHypotheses,
 			Set<Predicate> selectedHypotheses, Predicate goal, int timeout,
@@ -98,12 +106,13 @@ public class DisproverCommand implements IComposableCommand {
 
 		StartAnimationCommand start = new StartAnimationCommand();
 
+		final int timeout = timeoutFactor * prefNode.getInt("timeout", 1000);
 		DisproverCommand disprove = new DisproverCommand(allHypotheses,
-				selectedHypotheses, goal, 
-				timeoutFactor * prefNode.getInt("timeout", 1000),
+				selectedHypotheses, goal, timeout,
 				prefNode.getBoolean("exportpo", false));
 
-		composed = new ComposedCommand(clear, setPrefs, setCLPFD, setCHR,
+		// local: the auto prover and an interactive call may run concurrently
+		final ComposedCommand composed = new ComposedCommand(clear, setPrefs, setCLPFD, setCHR,
 				setSMT, setCSE, setCSEPred, setDoubleEval, load, start,
 				disprove);
 
@@ -111,16 +120,29 @@ public class DisproverCommand implements IComposableCommand {
 		job.setUser(true);
 		job.schedule();
 
+		// the job may first have to wait for another command on the animator
+		final long deadline = System.currentTimeMillis() + (long) timeout
+				* TIMEOUT_MULTIPLIER + DEADLINE_MARGIN_MS;
 		while (job.getResult() == null && 
 		       (pm == null || !pm.isCanceled())) { // treat case IProofMonitor is null; done by Rodin 3.5RC at startup
+			if (System.currentTimeMillis() > deadline) {
+				// ProB does not answer, e.g. it hangs while loading;
+				// cancelling sends it a user interrupt
+				job.cancel();
+				return new CounterExample(false, true, false);
+			}
 			Thread.sleep(200);
 		}
 
 		if (pm != null && pm.isCanceled()) {
-			job.cancel();
-			throw new InterruptedException();
+			job.cancel(); // also interrupts ProB
+			throw new InterruptedException("ProB: cancelled");
 		}
 
+		if (disprove.interrupted) {
+			// e.g. after the deadline of a previous call was exceeded
+			throw new InterruptedException("ProB: interrupted");
+		}
 		return disprove.getResult();
 
 	}
@@ -182,7 +204,10 @@ public class DisproverCommand implements IComposableCommand {
 			counterExample = new CounterExample(false, true, false);
 		}
 		if ("interrupted".equals(term.getFunctor())) {
-			throw new CommandException("Interrupted");
+			// cancelled by the user or after the deadline: not an error to
+			// report in a dialog
+			interrupted = true;
+			return;
 		}
 		if ("no_solution_found".equals(term.getFunctor())) {
 			PrologTerm reason = term.getArgument(1);

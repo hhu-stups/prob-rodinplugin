@@ -208,7 +208,9 @@ public class ExportPOsHandler extends AbstractHandler implements IHandler {
 
 			// The result: true = proven in rodin, unknown else
 			IPSStatus status = psRoot.getStatus(ipoSequent.getElementName());
-			if (status.getConfidence() == IConfidence.DISCHARGED_MAX) {
+			// a broken proof no longer fits the (changed) PO
+			if (!status.isBroken()
+					&& status.getConfidence() == IConfidence.DISCHARGED_MAX) {
 				pto.printAtom("true");
 			} else {
 				pto.printAtom("unknown");
