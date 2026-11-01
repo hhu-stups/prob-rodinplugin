@@ -34,17 +34,15 @@ public class PasteCommand extends Command {
 		cHelper = (CopyPasteHelper) Clipboard.getDefault().getContents();
 		if (cHelper == null)
 			return false;
-		ArrayList<BControl> myList = cHelper.getList();
-		if (myList.isEmpty())
+		// nothing to paste into, e.g. only controls that cannot have
+		// children are selected
+		if (parentControls.isEmpty())
 			return false;
-		Iterator<?> it = myList.iterator();
-		while (it.hasNext()) {
-			BControl node = (BControl) it.next();
-			if (isPastableControl(node)) {
-				mappingControl.put(node, null);
-			}
+		for (BControl node : cHelper.getList()) {
+			if (isPastableControl(node))
+				return true;
 		}
-		return true;
+		return false;
 	}
 
 	public boolean addElement(BControl control) {
@@ -63,6 +61,11 @@ public class PasteCommand extends Command {
 
 		if (!canExecute())
 			return;
+
+		for (BControl node : cHelper.getList()) {
+			if (isPastableControl(node))
+				mappingControl.put(node, null);
+		}
 
 		try {
 
@@ -138,7 +141,7 @@ public class PasteCommand extends Command {
 		Iterator<BControl> it = mappingControl.values().iterator();
 		while (it.hasNext()) {
 			BControl control = it.next();
-			if (isPastableControl(control)) {
+			if (control != null && isPastableControl(control)) {
 				control.getParent().addChild(control);
 			}
 		}
@@ -153,7 +156,12 @@ public class PasteCommand extends Command {
 
 	@Override
 	public boolean canUndo() {
-		return !(mappingControl.isEmpty());
+		// only if something has been pasted
+		for (BControl clone : mappingControl.values()) {
+			if (clone != null)
+				return true;
+		}
+		return false;
 	}
 
 	@Override
@@ -162,7 +170,7 @@ public class PasteCommand extends Command {
 		Iterator<BControl> it = mappingControl.values().iterator();
 		while (it.hasNext()) {
 			BControl bcontrol = it.next();
-			if (isPastableControl(bcontrol)) {
+			if (bcontrol != null && isPastableControl(bcontrol)) {
 				bcontrol.getParent().removeChild(bcontrol);
 			}
 		}
