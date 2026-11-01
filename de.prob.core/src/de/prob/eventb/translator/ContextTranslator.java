@@ -189,7 +189,7 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 			IPSRoot proofStatus = origin.getPSRoot();
 			IPSStatus[] statuses = proofStatus.getStatuses();
 
-			for (IPSStatus status : statuses) {
+			nextStatus: for (IPSStatus status : statuses) {
 				final int confidence = status.getConfidence();
 				boolean broken = status.isBroken();
 
@@ -210,8 +210,10 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 
 					IRodinElement srcElement = source.getSource();
 					if (!srcElement.exists() || !(srcElement instanceof ILabeledElement)) {
+						// skip the whole PO, a status with incomplete sources
+						// could mark the wrong (or no) element as proven
 						bugs.add(status.getElementName());
-						break;
+						continue nextStatus;
 					}
 
 					ILabeledElement le = (ILabeledElement) srcElement;

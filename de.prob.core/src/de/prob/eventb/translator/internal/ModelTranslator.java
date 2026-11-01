@@ -186,7 +186,7 @@ public class ModelTranslator extends AbstractComponentTranslator {
 			IPSRoot proofStatus = machine.getPSRoot();
 			IPSStatus[] statuses = proofStatus.getStatuses();
 
-			for (IPSStatus status : statuses) {
+			nextStatus: for (IPSStatus status : statuses) {
 				final int confidence = status.getConfidence();
 				boolean broken = status.isBroken();
 
@@ -210,8 +210,10 @@ public class ModelTranslator extends AbstractComponentTranslator {
 					IRodinElement srcElement = source.getSource();
 					if (!srcElement.exists()
 							|| (!(srcElement instanceof ILabeledElement) && !(srcElement instanceof IVariant))) {
+						// skip the whole PO, a status with incomplete sources
+						// could mark the wrong (or no) element as proven
 						bugs.add(status.getElementName());
-						break;
+						continue nextStatus;
 					}
 
 					if (srcElement instanceof ILabeledElement) {
@@ -605,21 +607,30 @@ public class ModelTranslator extends AbstractComponentTranslator {
 
 	private boolean isDefinedHere(final ITraceableElement element)
 			throws CoreException, TranslationFailedException {
-		final IRodinElement parentsource = element.getSource().getParent();
-		final boolean result;
+		final IMachineRoot src = getMachineRoot(element.getSource());
 		final String currentName = machine.getComponentName();
-
-		if (parentsource instanceof IMachineRoot) {
-			final IMachineRoot src = (IMachineRoot) parentsource;
-			final String srcName = src.getRodinFile().getBareName();
-			result = currentName.equals(srcName);
-		} else {
-			// Some plugins virtually add new invariants (e.g., FOLLOWED_BY for events)
-			Logger.notifyUser("Source of invariant in " + currentName + " is not a machine. Invariant may be added multiple times.");
-			// TODO: check if this source is local or not
-			result = false; // assume it is local so that it is added in the translation
+		if (src != null) {
+			return currentName.equals(src.getRodinFile().getBareName());
 		}
-		return result;
+		// Some plugins virtually add new invariants (e.g., FOLLOWED_BY for
+		// events) whose source is not part of a machine. Translate them here,
+		// otherwise ProB would not check them at all.
+		Logger.info("Source of invariant " + element + " in " + currentName
+				+ " is not part of a machine. The invariant is translated as part of "
+				+ currentName + " and may be added multiple times.");
+		return true;
+	}
+
+	/**
+	 * @return the machine containing <code>element</code> (or element itself),
+	 *         <code>null</code> if there is none
+	 */
+	private static IMachineRoot getMachineRoot(final IRodinElement element) {
+		for (IRodinElement e = element; e != null; e = e.getParent()) {
+			if (e instanceof IMachineRoot)
+				return (IMachineRoot) e;
+		}
+		return null;
 	}
 
 	@Override
