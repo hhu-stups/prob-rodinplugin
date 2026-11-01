@@ -32,8 +32,12 @@ import de.prob.ui.stateview.statetree.StaticStateElement;
 public class ShowInHistoryHandler extends AbstractHandler implements IHandler {
 	@Override
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
-		final ISelection selection = HandlerUtil
-				.getActiveWorkbenchWindow(event).getActivePage().getSelection();
+		// the selection of the tree the context menu belongs to; the page
+		// selection may not yet reflect the right-clicked row
+		ISelection selection = HandlerUtil.getActiveMenuSelection(event);
+		if (selection == null)
+			selection = HandlerUtil.getActiveWorkbenchWindow(event)
+					.getActivePage().getSelection();
 		if (selection != null && selection instanceof IStructuredSelection) {
 			final IStructuredSelection sel = (IStructuredSelection) selection;
 			final Collection<StaticStateElement> sses = new ArrayList<StaticStateElement>();

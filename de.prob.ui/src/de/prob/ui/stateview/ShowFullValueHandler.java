@@ -45,7 +45,11 @@ public class ShowFullValueHandler extends AbstractHandler {
 	@Override
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
 		final Shell shell = HandlerUtil.getActiveShell(event);
-		final ISelection selection = HandlerUtil.getCurrentSelection(event);
+		// the selection of the tree the context menu belongs to; the
+		// workbench selection may not yet reflect the right-clicked row
+		ISelection selection = HandlerUtil.getActiveMenuSelection(event);
+		if (selection == null)
+			selection = HandlerUtil.getCurrentSelection(event);
 		if (!(selection instanceof IStructuredSelection))
 			return null;
 		final Object element = ((IStructuredSelection) selection)

@@ -342,8 +342,10 @@
             class="de.prob.ui.stateview.ShowFullValueHandler"
             commandId="de.prob.ui.command.showFullValue">
          <enabledWhen>
+            <!-- the selection of the viewer whose context menu is shown;
+                 "selection" lags behind the right-click -->
             <with
-                  variable="selection">
+                  variable="activeMenuSelection">
                <and>
                   <count
                         value="1">
