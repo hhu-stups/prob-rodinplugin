@@ -6,6 +6,9 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -49,6 +52,10 @@ public class OpenClassicHandler extends AbstractHandler implements IHandler {
 					runProB2(prob_location, bum_buc_path);
 				} else {
 					final File temp = createTempFile();
+					if (temp == null) {
+						// already reported
+						return null;
+					}
 					final String tmp = temp.getAbsolutePath();
 					ExportNewCoreHandler.exportToClassic(tmp, root);
 					runProBClassic(prob_location, tmp);
@@ -89,14 +96,36 @@ public class OpenClassicHandler extends AbstractHandler implements IHandler {
 		}
 	}
 
+	/**
+	 * Copies the output of the process to the log in a background thread that
+	 * does not keep Rodin from exiting
+	 */
+	private static void startConsole(final Process process, final String name) {
+		final BufferedReader output = new BufferedReader(
+				new InputStreamReader(process.getInputStream()));
+		final Thread thread = new Thread(new ClassicConsole(output), name
+				+ " output");
+		thread.setDaemon(true);
+		thread.start();
+	}
+
 	private void runProBClassic(final String probBinary, final String modelFile) {
-		Process process = null;
 		try {
-			final String command = probBinary + " " + modelFile;
-			process = Runtime.getRuntime().exec(command);
-			final BufferedReader output = new BufferedReader(
-					new InputStreamReader(process.getInputStream()));
-			new Thread(new ClassicConsole(output)).start();
+			final ProcessBuilder pb;
+			if (new File(probBinary).isFile()) {
+				// pass paths as single arguments, they may contain spaces
+				pb = new ProcessBuilder(probBinary, modelFile);
+			} else {
+				// not a plain file, the location may contain a command with
+				// arguments; split it at white space like before
+				final List<String> command = new ArrayList<String>(
+						Arrays.asList(probBinary.trim().split("\\s+")));
+				command.add(modelFile);
+				pb = new ProcessBuilder(command);
+			}
+			// merge stderr, otherwise it is never read and may block the process
+			final Process process = pb.redirectErrorStream(true).start();
+			startConsole(process, PROB_CLASSIC_NAME);
 
 		} catch (IOException e) {
 			Logger.notifyUser("You need to specify a correct location for "
@@ -110,18 +139,27 @@ public class OpenClassicHandler extends AbstractHandler implements IHandler {
 	private void runProB2(final String probBinary, final String modelFile) {
 		// call prob2-ui jar file
 		// from command-line it is: java -jar prob2-ui-1.0.1-SNAPSHOT-all.jar --machine-file  FILE
+		// waiting for "java -version" must not block the UI thread, so launch
+		// in the background
+		final Thread launcher = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				launchProB2(probBinary, modelFile);
+			}
+		}, PROB2_NAME + " launcher");
+		launcher.setDaemon(true);
+		launcher.start();
+	}
+
+	private static void launchProB2(final String probBinary,
+			final String modelFile) {
 		try {
-			// final String command = "java -jar " + probBinary + " --machine-file " + modelFile;
-			//process = Runtime.getRuntime().exec(command);
-			
 			// get some version info first:
 			final String[] vcommand = {"java", "-version"};
 			ProcessBuilder vpb = new ProcessBuilder(vcommand).redirectErrorStream(true);
 			Process vprocess = vpb.start();
-			final BufferedReader voutput = new BufferedReader(
-					new InputStreamReader(vprocess.getInputStream()));
-			new Thread(new ClassicConsole(voutput)).start();
-			vprocess.waitFor(); // this blocks Rodin
+			startConsole(vprocess, "java -version");
+			vprocess.waitFor();
 			if (vprocess.exitValue() != 0) {
 				Logger.notifyUser("Failed to start java -version. Exit code: " + vprocess.exitValue());
 			}
@@ -131,19 +169,22 @@ public class OpenClassicHandler extends AbstractHandler implements IHandler {
 			LimitedLogger.getLogger().log("Launching ProB2UI using: java -jar " + probBinary + " --machine-file " + modelFile,"ProB2UI",null);
 			ProcessBuilder pb = new ProcessBuilder(command).redirectErrorStream(true);
 			Process process = pb.start();
+			startConsole(process, PROB2_NAME);
 			
-			final BufferedReader output = new BufferedReader(
-					new InputStreamReader(process.getInputStream()));
-			new Thread(new ClassicConsole(output)).start();
-			
-		} catch (IOException | InterruptedException e) {
-//		} catch (IOException e) {
-			Logger.notifyUser("You need to specify a correct location for "
-				+ PROB2_NAME + ". See Preferences -> ProB Standalone.\n"
-				+ PROB2_NAME + " location: "+ probBinary + 
-				"\nModel file: " + modelFile +
-				"\nError message: "+ e.getLocalizedMessage());
+		} catch (IOException e) {
+			notifyLaunchFailed(probBinary, modelFile, e);
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
 		}
+	}
+
+	private static void notifyLaunchFailed(final String probBinary,
+			final String modelFile, final Exception e) {
+		Logger.notifyUser("You need to specify a correct location for "
+			+ PROB2_NAME + ". See Preferences -> ProB Standalone.\n"
+			+ PROB2_NAME + " location: "+ probBinary + 
+			"\nModel file: " + modelFile +
+			"\nError message: "+ e.getLocalizedMessage());
 	}
 	
 	private String getBinaryLocation() {
