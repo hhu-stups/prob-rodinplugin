@@ -96,6 +96,7 @@ public class BMSUtil {
 		// expression results
 		String result = expressionString;
 		if (!hasError) {
+			final Map<String, String> values = new HashMap<String, String>();
 			for (EvaluationStateElement stateElement : resultList) {
 				final EvaluationElement evalElement = stateElement.getElement();
 				final String text;
@@ -106,7 +107,25 @@ public class BMSUtil {
 					text = stateElement.getText();
 				}
 				final String subExpression = evaluationKeys.get(evalElement);
-				result = result.replace(subExpression, text);
+				if (subExpression != null && text != null)
+					values.put(subExpression, text);
+			}
+			if (hasSubExpressions) {
+				// Replace each $...$ at its own position, so that a value
+				// is never substituted into another one or into a longer
+				// sub-expression containing the same text
+				final StringBuffer sb = new StringBuffer();
+				final Matcher m = PATTERN.matcher(expressionString);
+				while (m.find()) {
+					final String text = values.get(m.group());
+					m.appendReplacement(sb,
+							Matcher.quoteReplacement(text != null ? text : m
+									.group()));
+				}
+				m.appendTail(sb);
+				result = sb.toString();
+			} else if (values.containsKey(expressionString)) {
+				result = values.get(expressionString);
 			}
 		} else {
 			// if (obj != null)
@@ -158,28 +177,36 @@ public class BMSUtil {
 		Pattern cPattern = Pattern.compile("(\\w+)");
 		Matcher cMatcher = cPattern.matcher(expressionString);
 
+		// Replace whole identifiers at their own position only, so that
+		// e.g. control "x" does not change "x2" or "max", and a substituted
+		// value is never searched again
+		final StringBuffer sb = new StringBuffer();
 		while (cMatcher.find()) {
 
 			String controlID = cMatcher.group(1);
+			String replacement = null;
 
 			if (controlID.equals("this")) {
 
-				expressionString = expressionString.replace(controlID, control
-						.getAttributeValue(AttributeConstants.ATTRIBUTE_CUSTOM)
-						.toString());
+				replacement = control.getAttributeValue(
+						AttributeConstants.ATTRIBUTE_CUSTOM).toString();
 
 			} else if (allControlIDs.contains(controlID)) {
 
-				expressionString = expressionString.replace(controlID, control
-						.getVisualization().getBControl(controlID)
-						.getValueOfData());
+				replacement = control.getVisualization()
+						.getBControl(controlID).getValueOfData();
 
 			} else {
 				// TODO: Return error if no control exists
 			}
-		}
 
-		return expressionString;
+			cMatcher.appendReplacement(sb, Matcher
+					.quoteReplacement(replacement != null ? replacement
+							: controlID));
+		}
+		cMatcher.appendTail(sb);
+
+		return sb.toString();
 
 	}
 
