@@ -8,8 +8,10 @@ package de.prob.ui.operationview;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
 
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.jface.dialogs.TrayDialog;
@@ -68,6 +70,9 @@ public class OperationSelectionDialog extends TrayDialog {
 	private final Animator animator;
 	private final List<String> arguments = new ArrayList<String>();
 	private List<Operation> enabledOperations = null;
+	// labels of the operations without parameters (non-deterministic
+	// choices), computed on first use
+	private Map<Operation, String> choiceLabels = null;
 
 	private final List<Boolean> hiddenColumns = new ArrayList<Boolean>();
 	private final List<Object> hiddenArguments = new ArrayList<Object>();
@@ -308,6 +313,7 @@ public class OperationSelectionDialog extends TrayDialog {
 	 */
 	private void setEnabledOperations(final List<Operation> al) {
 		enabledOperations = al;
+		choiceLabels = null;
 	}
 
 	/**
@@ -315,6 +321,34 @@ public class OperationSelectionDialog extends TrayDialog {
 	 * 
 	 * @return
 	 */
+	/**
+	 * Describes an operation without parameters by the variables it changes
+	 */
+	private String getChoiceLabel(final Operation op) {
+		if (choiceLabels == null) {
+			final List<Operation> ops = getEnabledOperations();
+			final Map<Operation, String> descriptions = NondeterministicChoices
+					.describe(animator, ops, 40, 150);
+			final List<Operation> choices = new ArrayList<Operation>();
+			final List<String> labels = new ArrayList<String>();
+			for (Operation o : ops) {
+				if (NondeterministicChoices.isWithoutParameters(o)) {
+					choices.add(o);
+					final String d = descriptions.get(o);
+					labels.add(d != null ? d : "Non-deterministic choice");
+				}
+			}
+			// truncated descriptions may coincide; number those
+			NondeterministicChoices.makeUnique(labels);
+			choiceLabels = new HashMap<Operation, String>();
+			for (int i = 0; i < choices.size(); i++) {
+				choiceLabels.put(choices.get(i), labels.get(i));
+			}
+		}
+		final String label = choiceLabels.get(op);
+		return label != null ? label : "Non-deterministic choice";
+	}
+
 	private List<Operation> getEnabledOperations() {
 		if (enabledOperations == null) {
 			enabledOperations = animator.getCurrentState()
@@ -516,8 +550,7 @@ public class OperationSelectionDialog extends TrayDialog {
 					else
 						return argument;
 				} else
-				    // TODO: obtain non-deterministically assigned variables and display them
-					return "Non-deterministic choice #" + entry.getPosition();
+					return getChoiceLabel(entry.getOperation());
 			}
 		}
 
