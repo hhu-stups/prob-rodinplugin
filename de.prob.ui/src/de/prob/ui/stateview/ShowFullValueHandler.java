@@ -16,9 +16,17 @@ import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ControlAdapter;
+import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.RowLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.handlers.HandlerUtil;
@@ -35,8 +43,9 @@ import de.prob.ui.stateview.statetree.StaticStateElement;
 
 /**
  * Shows the complete value of the selected variable or formula of the state
- * view in the current state. The view itself shows long values in one line
- * and ProB truncates long formula values.
+ * view in the current or previous state, in one line or nested over several
+ * lines. The view itself shows long values in one line and ProB truncates
+ * long formula values.
  */
 public class ShowFullValueHandler extends AbstractHandler {
 
@@ -58,24 +67,29 @@ public class ShowFullValueHandler extends AbstractHandler {
 			return null;
 		final StaticStateElement sse = (StaticStateElement) element;
 
-		final State state = Animator.getAnimator().getCurrentState();
+		final Animator animator = Animator.getAnimator();
+		final State state = animator.getCurrentState();
 		if (state == null) {
 			MessageDialog.openInformation(shell, "ProB",
 					"There is no current state.");
 			return null;
 		}
+		// the state before the last operation, as in the state view's
+		// "Previous State" column; null in the first state
+		final State previous = animator.getHistory().getState(-1);
 
-		final String value;
+		final String value, previousValue;
 		try {
 			value = getFullValue(sse, state);
+			previousValue = previous == null ? null : getFullValue(sse,
+					previous);
 		} catch (ProBException e) {
 			e.notifyUserOnce();
 			return null;
 		}
 
-		new FullValueDialog(shell, sse.getLabel(),
-				value != null ? value : "(no value in the current state)")
-				.open();
+		new FullValueDialog(shell, sse.getLabel(), value, previous != null,
+				previousValue).open();
 		return null;
 	}
 
@@ -100,12 +114,21 @@ public class ShowFullValueHandler extends AbstractHandler {
 	private static class FullValueDialog extends Dialog {
 		private final String label;
 		private final String value;
+		private final boolean hasPrevious;
+		private final String previousValue;
+
+		private Text text;
+		private Button previousButton;
+		private Button nestedButton;
 
 		FullValueDialog(final Shell parent, final String label,
-				final String value) {
+				final String value, final boolean hasPrevious,
+				final String previousValue) {
 			super(parent);
 			this.label = label;
 			this.value = value;
+			this.hasPrevious = hasPrevious;
+			this.previousValue = previousValue;
 		}
 
 		@Override
@@ -122,16 +145,111 @@ public class ShowFullValueHandler extends AbstractHandler {
 		@Override
 		protected Control createDialogArea(final Composite parent) {
 			final Composite area = (Composite) super.createDialogArea(parent);
-			final Text text = new Text(area, SWT.MULTI | SWT.WRAP
-					| SWT.V_SCROLL | SWT.READ_ONLY | SWT.BORDER);
+
+			final SelectionAdapter update = new SelectionAdapter() {
+				@Override
+				public void widgetSelected(final SelectionEvent e) {
+					// radio buttons also report being deselected
+					if (((Button) e.widget).getSelection())
+						updateText();
+				}
+			};
+
+			final Composite stateRow = createRadioRow(area, "State:");
+			final Button currentButton = createRadio(stateRow, "Current",
+					update);
+			currentButton.setSelection(true);
+			previousButton = createRadio(stateRow, previousLabel(), update);
+			previousButton.setEnabled(hasPrevious);
+
+			final Composite layoutRow = createRadioRow(area, "Layout:");
+			createRadio(layoutRow, "One line", update).setSelection(true);
+			nestedButton = createRadio(layoutRow, "Nested", update);
+
+			text = new Text(area, SWT.MULTI | SWT.WRAP | SWT.V_SCROLL
+					| SWT.READ_ONLY | SWT.BORDER);
 			text.setFont(JFaceResources.getFontRegistry().get(RODIN_FONT_KEY));
-			text.setText(value);
 			final GridData layoutData = new GridData(SWT.FILL, SWT.FILL, true,
 					true);
 			layoutData.widthHint = 600;
 			layoutData.heightHint = 300;
 			text.setLayoutData(layoutData);
+			text.addControlListener(new ControlAdapter() {
+				@Override
+				public void controlResized(final ControlEvent e) {
+					// the nested layout depends on the width
+					if (nestedButton.getSelection())
+						updateText();
+				}
+			});
+			updateText();
 			return area;
+		}
+
+		private String previousLabel() {
+			if (!hasPrevious)
+				return "Previous (none)";
+			return equal(value, previousValue) ? "Previous (unchanged)"
+					: "Previous";
+		}
+
+		private static boolean equal(final String a, final String b) {
+			return a == null ? b == null : a.equals(b);
+		}
+
+		private static Composite createRadioRow(final Composite parent,
+				final String title) {
+			// each row is its own composite, so its radio buttons form a
+			// separate group
+			final Composite row = new Composite(parent, SWT.NONE);
+			final RowLayout layout = new RowLayout(SWT.HORIZONTAL);
+			layout.center = true;
+			layout.marginLeft = 0;
+			row.setLayout(layout);
+			new Label(row, SWT.NONE).setText(title);
+			return row;
+		}
+
+		private static Button createRadio(final Composite row,
+				final String title, final SelectionAdapter listener) {
+			final Button button = new Button(row, SWT.RADIO);
+			button.setText(title);
+			button.addSelectionListener(listener);
+			return button;
+		}
+
+		private void updateText() {
+			final boolean showPrevious = previousButton.getSelection();
+			final String shown = showPrevious ? previousValue : value;
+			String result;
+			if (shown == null) {
+				result = showPrevious ? "(no value in the previous state)"
+						: "(no value in the current state)";
+			} else if (nestedButton.getSelection()) {
+				result = ValuePrettyPrinter.prettyPrint(shown,
+						charactersPerLine());
+			} else {
+				result = shown;
+			}
+			text.setText(result);
+		}
+
+		/**
+		 * @return how many characters fit into a line of the text field
+		 */
+		private int charactersPerLine() {
+			final GC gc = new GC(text);
+			final double charWidth;
+			try {
+				charWidth = gc.getFontMetrics().getAverageCharacterWidth();
+			} finally {
+				gc.dispose();
+			}
+			int width = text.getClientArea().width;
+			if (width <= 0)
+				width = 600; // not laid out yet, the width hint
+			// some margin for the scroll bar and wider symbols
+			return Math.max(20, (int) (width / Math.max(1, charWidth)) - 4);
 		}
 
 		@Override
