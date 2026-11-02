@@ -55,8 +55,8 @@ import de.prob.unicode.UnicodeTranslator;
 /**
  * A console to evaluate predicates and expressions in the current state of
  * the animation. Enter evaluates the input, Shift+Enter starts a new line,
- * Up/Down browse the previous inputs and Ctrl+Space completes the identifiers
- * of the model.
+ * Up/Down browse the previous inputs and Tab or Ctrl+Space complete the
+ * identifiers of the model.
  */
 public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 
@@ -115,7 +115,7 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 		output.setLayoutData(outputData);
 		output.setText("Evaluate predicates and expressions in the current animation state.\n"
 				      + "Enter: evaluate, Shift+Enter: new line,\n"
-				      + "Up/Down: previous inputs, Ctrl+Space: complete identifiers.\n");
+				      + "Up/Down: previous inputs, Tab/Ctrl+Space: complete identifiers.\n");
 		output.setStyleRange(new StyleRange(0, output.getCharCount(),
 				getColor(SWT.COLOR_DARK_GRAY), null));
 
@@ -146,6 +146,10 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 						e.doit = false;
 						submit();
 					}
+				} else if (e.keyCode == SWT.TAB
+						&& (e.stateMask & SWT.MODIFIER_MASK) == 0) {
+					e.doit = false;
+					complete();
 				} else if (e.keyCode == SWT.ARROW_UP
 						&& input.getCaretLineNumber() == 0) {
 					// in a longer input, Up/Down move between its lines
@@ -156,6 +160,15 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 					e.doit = false;
 					browseHistory(1);
 				}
+			}
+		});
+		// Tab completes instead of moving the focus to the next control
+		input.addListener(SWT.Traverse, new Listener() {
+			@Override
+			public void handleEvent(final Event e) {
+				if (e.detail == SWT.TRAVERSE_TAB_NEXT
+						&& (e.stateMask & SWT.MODIFIER_MASK) == 0)
+					e.doit = false;
 			}
 		});
 		installContentProposals();
@@ -263,6 +276,31 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 		if (enabled) {
 			input.addModifyListener(mathSymbolsListener);
 		}
+	}
+
+	/**
+	 * Tab completion: a unique identifier is completed directly, otherwise
+	 * the common prefix of the candidates is inserted and if there is none
+	 * the proposal popup opens.
+	 */
+	private void complete() {
+		final IContentProposal[] proposals = new IdentifierProposals()
+				.getProposals(input.getText(), input.getCaretPosition());
+		if (proposals.length == 0)
+			return;
+		String common = proposals[0].getContent();
+		for (IContentProposal proposal : proposals) {
+			final String content = proposal.getContent();
+			int i = 0;
+			while (i < common.length() && i < content.length()
+					&& common.charAt(i) == content.charAt(i))
+				i++;
+			common = common.substring(0, i);
+		}
+		if (!common.isEmpty())
+			input.insert(common);
+		else if (proposalAdapter != null)
+			proposalAdapter.openProposalPopup();
 	}
 
 	private void installContentProposals() {
