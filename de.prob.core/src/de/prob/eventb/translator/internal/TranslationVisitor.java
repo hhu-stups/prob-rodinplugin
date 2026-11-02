@@ -965,7 +965,7 @@ public class TranslationVisitor implements ISimpleVisitor {
 		if (stack.size() != 1) {
 			throw new AssertionError(
 					"Exactly one element on the stack expected, but were "
-							+ predicates.size());
+							+ stack.size());
 
 		}
 	}
