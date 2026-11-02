@@ -8,12 +8,15 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.ui.IPartListener2;
+import org.eclipse.ui.IWorkbenchPartReference;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.services.ISourceProviderService;
 
 import de.prob.core.Animator;
 import de.prob.core.IAnimationListener;
 import de.prob.core.ILifecycleListener;
+import de.prob.core.domainobjects.HistoryItem;
 import de.prob.core.domainobjects.Operation;
 import de.prob.core.domainobjects.State;
 import de.prob.ui.services.HistoryActiveProvider;
@@ -35,6 +38,23 @@ public abstract class StateBasedViewPart extends ViewPart implements
 	private Composite parent;
 	private Control noStateMessage;
 	private Control stateView;
+
+	// lays the view out again when it becomes visible: it stayed empty
+	// when BMotion Studio loaded the machine while switching perspectives
+	private final IPartListener2 visibilityListener = new IPartListener2() {
+		@Override
+		public void partVisible(final IWorkbenchPartReference partRef) {
+			if (partRef.getPart(false) != StateBasedViewPart.this
+					|| isPartDisposed())
+				return;
+			// no ProB calls if the state is already shown, the animator may
+			// be busy (e.g. model checking)
+			if (stateView != null || !showCurrentState()) {
+				parent.layout(true, true);
+				parent.redraw();
+			}
+		}
+	};
 
 	abstract protected Control createStatePartControl(Composite parent);
 
@@ -65,17 +85,28 @@ public abstract class StateBasedViewPart extends ViewPart implements
 		this.parent = parent;
 		StaticListenerRegistry.registerListener((ILifecycleListener) this);
 		StaticListenerRegistry.registerListener((IAnimationListener) this);
-		final Animator animator = Animator.getAnimator();
-		if (animator.isMachineLoaded()) {
-			createStateControl();
-			final State state = animator.getCurrentState();
-			final Operation op = animator.getHistory().getCurrent()
-					.getOperation();
-			stateChanged(state, op);
-		} else {
+		getSite().getPage().addPartListener(visibilityListener);
+		if (!showCurrentState()) {
 			createNoStateMessage();
 			reset();
 		}
+	}
+
+	/**
+	 * Shows the current state of the animator, if any.
+	 * 
+	 * @return false if no machine is loaded or it has no state yet (an event
+	 *         follows when it has one)
+	 */
+	private boolean showCurrentState() {
+		final Animator animator = Animator.getAnimator();
+		final HistoryItem current = animator.getHistory().getCurrent();
+		if (!animator.isMachineLoaded() || current == null)
+			return false;
+		createStateControl();
+		stateChanged(current.getState(), current.getOperation());
+		parent.layout(true, true);
+		return true;
 	}
 
 	private void createNoStateMessage() {
@@ -84,7 +115,7 @@ public abstract class StateBasedViewPart extends ViewPart implements
 			Label message = new Label(parent, SWT.NONE);
 			message.setText("no machine available");
 			noStateMessage = message;
-			parent.layout();
+			parent.layout(true, true);
 		}
 	}
 
@@ -92,7 +123,7 @@ public abstract class StateBasedViewPart extends ViewPart implements
 		if (stateView == null) {
 			disposeNoStateMessage();
 			stateView = createStatePartControl(parent);
-			parent.layout();
+			parent.layout(true, true);
 		}
 	}
 
@@ -163,6 +194,7 @@ public abstract class StateBasedViewPart extends ViewPart implements
 
 	@Override
 	public void dispose() {
+		getSite().getPage().removePartListener(visibilityListener);
 		super.dispose();
 		StaticListenerRegistry.unregisterListener((ILifecycleListener) this);
 		StaticListenerRegistry.unregisterListener((IAnimationListener) this);
