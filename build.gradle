@@ -89,10 +89,12 @@ final platforms = [
 ]
 
 def download(address,target) {
-	def file = new FileOutputStream(target)
-	def out = new BufferedOutputStream(file)
-	out << new URL(address).openStream()
-	out.close()
+	// both streams are closed, also if the download fails
+	URI.create(address).toURL().openStream().withCloseable {input ->
+		new File(target).withOutputStream {out ->
+			out << input
+		}
+	}
 }
 
 task downloadCli {
