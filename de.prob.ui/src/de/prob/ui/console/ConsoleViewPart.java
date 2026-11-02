@@ -1,6 +1,7 @@
 package de.prob.ui.console;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -56,7 +57,7 @@ import de.prob.unicode.UnicodeTranslator;
  * A console to evaluate predicates and expressions in the current state of
  * the animation. Enter evaluates the input, Shift+Enter starts a new line,
  * Up/Down browse the previous inputs and Tab or Ctrl+Space complete the
- * identifiers of the model.
+ * identifiers of the model and the keywords of Event-B.
  */
 public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 
@@ -115,7 +116,7 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 		output.setLayoutData(outputData);
 		output.setText("Evaluate predicates and expressions in the current animation state.\n"
 				      + "Enter: evaluate, Shift+Enter: new line,\n"
-				      + "Up/Down: previous inputs, Tab/Ctrl+Space: complete identifiers.\n");
+				      + "Up/Down: previous inputs, Tab/Ctrl+Space: complete identifiers and keywords.\n");
 		output.setStyleRange(new StyleRange(0, output.getCharCount(),
 				getColor(SWT.COLOR_DARK_GRAY), null));
 
@@ -463,6 +464,13 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 	 */
 	private static final class IdentifierProposals implements
 			IContentProposalProvider {
+		// the keywords of Event-B's ASCII syntax
+		private static final List<String> KEYWORDS = Arrays.asList("BOOL",
+				"FALSE", "INT", "INTER", "NAT", "NAT1", "POW", "POW1", "TRUE",
+				"UNION", "bool", "card", "dom", "finite", "id", "inter", "max",
+				"min", "mod", "not", "oftype", "or", "partition", "pred",
+				"prj1", "prj2", "ran", "succ", "union");
+
 		@Override
 		public IContentProposal[] getProposals(final String contents,
 				final int position) {
@@ -472,15 +480,15 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 				start--;
 			final String prefix = contents.substring(start, position);
 
+			final Set<String> identifiers = new TreeSet<String>(KEYWORDS);
 			final Animator animator = Animator.getAnimator();
 			// getMachineDescription() would start probcli if none is running
-			if (!animator.isMachineLoaded())
-				return new IContentProposal[0];
-			final MachineDescription md = animator.getMachineDescription();
-			if (md == null)
-				return new IContentProposal[0];
-			final Set<String> identifiers = new TreeSet<String>(
-					md.getIdentifiers());
+			if (animator.isMachineLoaded()) {
+				final MachineDescription md = animator
+						.getMachineDescription();
+				if (md != null)
+					identifiers.addAll(md.getIdentifiers());
+			}
 			final List<IContentProposal> proposals = new ArrayList<IContentProposal>();
 			for (String identifier : identifiers) {
 				if (identifier.startsWith(prefix)) {
