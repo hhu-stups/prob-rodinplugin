@@ -12,7 +12,8 @@ import de.prob.prolog.term.PrologTerm;
 
 /**
  * Like {@link DisproverCommand}, but passes additional options to ProB's
- * cbc_disprove/6, e.g. <code>[wd_prover_timeout(50),no_constraint_solving]</code>
+ * cbc_disprove/6, e.g.
+ * <code>[disprover_option(wd_prover_timeout(50)),disprover_option(no_constraint_solving)]</code>
  * for the WD prover. The result is processed like the one of the normal
  * disprover.
  */

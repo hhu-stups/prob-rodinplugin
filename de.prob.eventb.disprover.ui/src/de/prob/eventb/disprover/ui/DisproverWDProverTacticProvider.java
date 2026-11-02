@@ -18,7 +18,8 @@ import de.prob.eventb.disprover.core.DisproverReasonerInput;
 
 /**
  * "Use ProB WD Prover": calls the disprover with the options
- * <code>[wd_prover_timeout(T),no_constraint_solving]</code>, where T is taken
+ * <code>[disprover_option(wd_prover_timeout(T)),disprover_option(no_constraint_solving)]</code>,
+ * where T is taken
  * from the preferences.
  */
 public class DisproverWDProverTacticProvider extends DefaultTacticProvider {

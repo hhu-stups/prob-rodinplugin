@@ -85,7 +85,8 @@ public class DisproverCommand implements IComposableCommand {
 	/**
 	 * @param options
 	 *            additional options for cbc_disprove/6, e.g.
-	 *            <code>wd_prover_timeout(50)</code>; <code>null</code> for the
+	 *            <code>disprover_option(wd_prover_timeout(50))</code>;
+	 *            <code>null</code> for the
 	 *            normal disprover
 	 */
 	public static ICounterExample disprove(Animator animator,

@@ -151,10 +151,17 @@ public class DisproverReasoner implements IReasoner {
 		if (!input.isWdProver())
 			return null;
 		final List<PrologTerm> options = new ArrayList<PrologTerm>();
-		options.add(new CompoundPrologTerm("wd_prover_timeout",
-				new IntegerPrologTerm(input.getWdProverTimeout())));
-		options.add(new CompoundPrologTerm("no_constraint_solving"));
+		options.add(disproverOption(new CompoundPrologTerm(
+				"wd_prover_timeout", new IntegerPrologTerm(input
+						.getWdProverTimeout()))));
+		options.add(disproverOption(new CompoundPrologTerm(
+				"no_constraint_solving")));
 		return options;
+	}
+
+	/** ProB expects each option of cbc_disprove/6 as disprover_option(Option) */
+	private static PrologTerm disproverOption(final PrologTerm option) {
+		return new CompoundPrologTerm("disprover_option", option);
 	}
 
 	@SuppressWarnings("unused")
