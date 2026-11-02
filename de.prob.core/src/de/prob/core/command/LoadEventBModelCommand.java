@@ -143,7 +143,9 @@ public final class LoadEventBModelCommand {
 			try {
 				boolean foundObsoletePreference = false;
 				for (String prefname : preferences.keys()) {
-					if (!probPrefNames.contains(prefname)) {
+					// read-only preferences were stored by older versions
+					if (!probPrefNames.contains(prefname)
+							|| ProBPreference.isReadOnly(prefname)) {
 						// preference does not exists anymore
 						preferences.remove(prefname);
 						foundObsoletePreference = true;

@@ -6,6 +6,11 @@
 
 package de.prob.core.domainobjects;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+
 import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 
@@ -16,6 +21,12 @@ public final class ProBPreference {
 	public final String description;
 	public final String category;
 	public final String defaultValue;
+
+	// information about probcli itself; probcli rejects setting them
+	private static final Set<String> READ_ONLY = Collections
+			.unmodifiableSet(new HashSet<String>(Arrays.asList(
+					"prob_version_info", "prob_revision_info",
+					"prob_lastchangedate_info")));
 
 	private final static int NAME = 1;
 	private final static int TYPE = 2;
@@ -31,6 +42,14 @@ public final class ProBPreference {
 		final PrologTerm defaultTerm = term.getArgument(DEFAULT);
 		defaultValue = defaultTerm.isAtom() ? PrologTerm
 				.atomicString(defaultTerm) : defaultTerm.toString();
+	}
+
+	/**
+	 * @return true if probcli does not allow to set the preference; it must
+	 *         not be stored or sent to probcli
+	 */
+	public static boolean isReadOnly(final String name) {
+		return READ_ONLY.contains(name);
 	}
 
 	@Override

@@ -111,6 +111,8 @@ public class ProBGeneralPreferences extends FieldEditorPreferencePage implements
 	protected void createFieldEditors() {
 		final Composite parent = getFieldEditorParent();
 		for (ProBPreference p : probPrefs) {
+			if (ProBPreference.isReadOnly(p.name))
+				continue;
 			final FieldEditor editor = createEditor(p, parent);
 			addField(editor);
 		}
@@ -203,7 +205,8 @@ public class ProBGeneralPreferences extends FieldEditorPreferencePage implements
 
 		public void save() {
 			for (ProBPreference p : probPrefs) {
-				eclipsePrefs.put(p.name, store.getString(p.name));
+				if (!ProBPreference.isReadOnly(p.name))
+					eclipsePrefs.put(p.name, store.getString(p.name));
 			}
 		}
 

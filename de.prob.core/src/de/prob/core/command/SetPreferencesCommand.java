@@ -19,6 +19,7 @@ import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
 
 import de.prob.core.Animator;
+import de.prob.core.domainobjects.ProBPreference;
 import de.prob.exceptions.ProBException;
 import de.prob.logging.Logger;
 import de.prob.parser.ISimplifiedROMap;
@@ -82,7 +83,9 @@ public final class SetPreferencesCommand implements IComposableCommand {
 	}
 
 	private boolean validCommand(final String key) {
-		return !INVALID_PROPERTIES.contains(key);
+		// read-only preferences may have been stored by older versions
+		return !INVALID_PROPERTIES.contains(key)
+				&& !ProBPreference.isReadOnly(key);
 	}
 
 	@Override
