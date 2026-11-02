@@ -52,8 +52,9 @@ import de.prob.unicode.UnicodeTranslator;
 
 /**
  * A console to evaluate predicates and expressions in the current state of
- * the animation. Enter evaluates the input, Up/Down browse the previous inputs
- * and Ctrl+Space completes the identifiers of the model.
+ * the animation. Enter evaluates the input, Shift+Enter starts a new line,
+ * Up/Down browse the previous inputs and Ctrl+Space completes the identifiers
+ * of the model.
  */
 public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 
@@ -65,6 +66,7 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 	private static final String MATH_SYMBOLS_SETTING = "console.mathSymbols";
 	// older output is removed, a StyledText becomes slow with huge contents
 	private static final int MAX_OUTPUT_LENGTH = 500000;
+	private static final int INPUT_ROWS = 2;
 
 	private final ConsoleEvaluator evaluator = new ConsoleEvaluator();
 	private final List<String> history = new ArrayList<String>();
@@ -93,17 +95,23 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 		output.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2,
 				1));
 		output.setText("Evaluate predicates and expressions in the current state of the animation.\n"
-				+ "Enter: evaluate, Up/Down: previous inputs, Ctrl+Space: complete identifiers.\n");
+				+ "Enter: evaluate, Shift+Enter: new line, Up/Down: previous inputs, Ctrl+Space: complete identifiers.\n");
 		output.setStyleRange(new StyleRange(0, output.getCharCount(),
 				getColor(SWT.COLOR_DARK_GRAY), null));
 
 		final Label prompt = new Label(parent, SWT.NONE);
 		prompt.setText(PROMPT.trim());
 		prompt.setFont(getConsoleFont());
+		prompt.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false,
+				false));
 
-		input = new Text(parent, SWT.SINGLE | SWT.BORDER);
+		input = new Text(parent, SWT.MULTI | SWT.WRAP | SWT.V_SCROLL
+				| SWT.BORDER);
 		input.setFont(getConsoleFont());
-		input.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		final GridData inputData = new GridData(SWT.FILL, SWT.CENTER, true,
+				false);
+		inputData.heightHint = INPUT_ROWS * input.getLineHeight();
+		input.setLayoutData(inputData);
 		// before creating the proposal adapter, so that this listener sees
 		// whether its popup is open (Enter then selects a proposal)
 		input.addListener(SWT.KeyDown, new Listener() {
@@ -113,12 +121,18 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 						&& proposalAdapter.isProposalPopupOpen())
 					return;
 				if (e.keyCode == SWT.CR || e.keyCode == SWT.KEYPAD_CR) {
-					e.doit = false;
-					submit();
-				} else if (e.keyCode == SWT.ARROW_UP) {
+					// Shift+Enter inserts a line break
+					if ((e.stateMask & SWT.SHIFT) == 0) {
+						e.doit = false;
+						submit();
+					}
+				} else if (e.keyCode == SWT.ARROW_UP
+						&& input.getCaretLineNumber() == 0) {
+					// in a longer input, Up/Down move between its lines
 					e.doit = false;
 					browseHistory(-1);
-				} else if (e.keyCode == SWT.ARROW_DOWN) {
+				} else if (e.keyCode == SWT.ARROW_DOWN
+						&& input.getCaretLineNumber() == input.getLineCount() - 1) {
 					e.doit = false;
 					browseHistory(1);
 				}
