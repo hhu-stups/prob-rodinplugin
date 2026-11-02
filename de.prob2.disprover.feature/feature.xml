@@ -233,7 +233,7 @@ litigation.
    <requires>
       <import plugin="de.prob.core" version="9.6.3" match="equivalent"/>
       <import plugin="de.prob.ui" version="7.6.3" match="equivalent"/>
-      <import plugin="org.eclipse.core.runtime" version="3.2.0" match="compatible"/>
+      <import plugin="org.eclipse.core.runtime" version="3.20.0" match="compatible"/>
       <import plugin="org.eclipse.osgi" version="3.16.0" match="compatible"/>
       <import plugin="org.eclipse.ui" version="3.118.0" match="compatible"/>
       <import plugin="org.eventb.core" version="3.5.0" match="compatible"/>
