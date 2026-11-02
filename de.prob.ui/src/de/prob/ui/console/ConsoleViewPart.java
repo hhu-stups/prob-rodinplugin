@@ -10,18 +10,23 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.bindings.keys.KeyStroke;
 import org.eclipse.jface.bindings.keys.ParseException;
+import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.fieldassist.ContentProposal;
 import org.eclipse.jface.fieldassist.ContentProposalAdapter;
 import org.eclipse.jface.fieldassist.IContentProposal;
 import org.eclipse.jface.fieldassist.IContentProposalProvider;
 import org.eclipse.jface.fieldassist.TextContentAdapter;
+import org.eclipse.jface.resource.FontRegistry;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -33,11 +38,13 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
+import org.rodinp.keyboard.ui.RodinKeyboardUIPlugin;
 
 import de.prob.core.Animator;
 import de.prob.core.ILifecycleListener;
 import de.prob.core.domainobjects.MachineDescription;
 import de.prob.exceptions.ProBException;
+import de.prob.ui.ProbUiPlugin;
 import de.prob.ui.StaticListenerRegistry;
 import de.prob.ui.console.ConsoleEvaluator.Kind;
 import de.prob.ui.console.ConsoleEvaluator.Result;
@@ -53,6 +60,9 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 	public static final String VIEW_ID = "de.prob.ui.ConsoleView";
 
 	private static final String PROMPT = "> ";
+	// the font of the Rodin editors, which contains the mathematical symbols
+	private static final String RODIN_FONT_KEY = "org.rodinp.keyboard.textFont";
+	private static final String MATH_SYMBOLS_SETTING = "console.mathSymbols";
 	// older output is removed, a StyledText becomes slow with huge contents
 	private static final int MAX_OUTPUT_LENGTH = 500000;
 
@@ -66,6 +76,9 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 	private StyledText output;
 	private Text input;
 	private ContentProposalAdapter proposalAdapter;
+	// translates ASCII into mathematical symbols while typing, as in the Rodin
+	// editors; null if the Rodin keyboard is not available
+	private ModifyListener mathSymbolsListener;
 
 	@Override
 	public void createPartControl(final Composite parent) {
@@ -76,7 +89,7 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 
 		output = new StyledText(parent, SWT.MULTI | SWT.READ_ONLY
 				| SWT.V_SCROLL | SWT.H_SCROLL);
-		output.setFont(JFaceResources.getTextFont());
+		output.setFont(getConsoleFont());
 		output.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2,
 				1));
 		output.setText("Evaluate predicates and expressions in the current state of the animation.\n"
@@ -86,10 +99,10 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 
 		final Label prompt = new Label(parent, SWT.NONE);
 		prompt.setText(PROMPT.trim());
-		prompt.setFont(JFaceResources.getTextFont());
+		prompt.setFont(getConsoleFont());
 
 		input = new Text(parent, SWT.SINGLE | SWT.BORDER);
-		input.setFont(JFaceResources.getTextFont());
+		input.setFont(getConsoleFont());
 		input.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		// before creating the proposal adapter, so that this listener sees
 		// whether its popup is open (Enter then selects a proposal)
@@ -123,6 +136,7 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 		clear.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages()
 				.getImageDescriptor(ISharedImages.IMG_ETOOL_CLEAR));
 		getViewSite().getActionBars().getToolBarManager().add(clear);
+		installMathSymbols();
 
 		StaticListenerRegistry.registerListener((ILifecycleListener) this);
 	}
@@ -164,6 +178,55 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 	private void focusInput() {
 		if (input.isEnabled()) {
 			input.setFocus();
+		}
+	}
+
+	private static Font getConsoleFont() {
+		final FontRegistry fonts = JFaceResources.getFontRegistry();
+		return fonts.hasValueFor(RODIN_FONT_KEY) ? fonts.get(RODIN_FONT_KEY)
+				: JFaceResources.getTextFont();
+	}
+
+	/**
+	 * Adds the toolbar toggle for translating ASCII into mathematical symbols
+	 * while typing (e.g. ":" into the element-of symbol)
+	 */
+	private void installMathSymbols() {
+		try {
+			final RodinKeyboardUIPlugin keyboard = RodinKeyboardUIPlugin
+					.getDefault();
+			if (keyboard == null)
+				return;
+			mathSymbolsListener = keyboard.createRodinModifyListener();
+		} catch (LinkageError e) {
+			// the Rodin keyboard is an optional dependency, or an old version
+			// without this method: no translation
+			return;
+		}
+		final IDialogSettings settings = ProbUiPlugin.getDefault()
+				.getDialogSettings();
+		final boolean enabled = settings.get(MATH_SYMBOLS_SETTING) == null
+				|| settings.getBoolean(MATH_SYMBOLS_SETTING);
+
+		final Action toggle = new Action("\u2200", IAction.AS_CHECK_BOX) {
+			@Override
+			public void run() {
+				setMathSymbols(isChecked());
+				settings.put(MATH_SYMBOLS_SETTING, isChecked());
+				focusInput();
+			}
+		};
+		toggle.setToolTipText("Type Mathematical Symbols (translate ASCII as in the Rodin editors)");
+		toggle.setChecked(enabled);
+		setMathSymbols(enabled);
+		getViewSite().getActionBars().getToolBarManager().add(toggle);
+	}
+
+	private void setMathSymbols(final boolean enabled) {
+		// removing a listener that has not been added does nothing
+		input.removeModifyListener(mathSymbolsListener);
+		if (enabled) {
+			input.addModifyListener(mathSymbolsListener);
 		}
 	}
 
