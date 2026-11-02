@@ -49,6 +49,13 @@ public class ExecuteRandomStepsCommand {
 				}
 				monitor.worked(1);
 			}
+			try {
+				// e.g. the UI thread may wait for the animator
+				animator.letWaitingCommandsRun();
+			} catch (InterruptedException e) {
+				Thread.currentThread().interrupt();
+				break;
+			}
 			State currentState = animator.getCurrentState();
 			List<Operation> ops = currentState.getEnabledOperations();
 			if (ops.isEmpty()) {

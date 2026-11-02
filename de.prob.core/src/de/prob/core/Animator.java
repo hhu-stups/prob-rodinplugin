@@ -10,6 +10,7 @@ import java.io.File;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import de.prob.core.command.IComposableCommand;
 import de.prob.core.domainobjects.History;
@@ -40,6 +41,10 @@ public final class Animator {
 	private static Animator animator = new Animator();
 	private static Animator auxanimator = null;
 	private static final Object AUX_LOCK = new Object();
+
+	// threads waiting in execute() for the animator lock
+	private final AtomicInteger waitingCommands = new AtomicInteger();
+	private static final long MAX_YIELD_MS = 5000;
 
 	private volatile boolean dirty;
 	private volatile boolean rodinProjectHasErrorsOrWarnings;
@@ -195,12 +200,43 @@ public final class Animator {
 
 	// ------------------ Delegates
 
-	public final synchronized void execute(final IComposableCommand command)
+	public final void execute(final IComposableCommand command)
 			throws ProBException {
-		restartIfConnectionLost();
-		LimitedLogger.getLogger().log("execute command", command, null);
-		getImplementation().execute(command);
-		LimitedLogger.getLogger().log("command executed", command, null);
+		waitingCommands.incrementAndGet();
+		boolean waiting = true;
+		try {
+			synchronized (this) {
+				waitingCommands.decrementAndGet();
+				waiting = false;
+				restartIfConnectionLost();
+				LimitedLogger.getLogger().log("execute command", command, null);
+				getImplementation().execute(command);
+				LimitedLogger.getLogger().log("command executed", command, null);
+			}
+		} finally {
+			if (waiting) {
+				waitingCommands.decrementAndGet();
+			}
+		}
+	}
+
+	/**
+	 * To be called between the steps of a long-running loop of commands (e.g.
+	 * model checking in chunks). Java monitors are not fair: without this, the
+	 * loop would take the lock again right away and a command of another
+	 * thread, e.g. the UI thread repainting a view, could wait until the whole
+	 * loop is finished. Meanwhile the UI, including the progress dialog with
+	 * its cancel button, would not be painted.
+	 * 
+	 * Must not be called while holding the animator lock.
+	 */
+	public void letWaitingCommandsRun() throws InterruptedException {
+		// the waiting threads decrement the counter when they got the lock
+		final long deadline = System.currentTimeMillis() + MAX_YIELD_MS;
+		while (waitingCommands.get() > 0
+				&& System.currentTimeMillis() < deadline) {
+			Thread.sleep(5);
+		}
 	}
 
 	/**
@@ -322,7 +358,8 @@ public final class Animator {
 	}
 
 	public MachineDescription getMachineDescription() {
-		return getImplementation().getMachineDescription();
+		// called from the UI thread, must not wait for a running command
+		return currentImplementation().getMachineDescription();
 	}
 
 	/**

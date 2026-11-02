@@ -98,12 +98,14 @@ public class AnimatorImpl {
 		return true;
 	}
 
-	public synchronized void setMachineDescription(
+	// not synchronized: the field is volatile, and the lock is held while
+	// waiting for probcli
+	public void setMachineDescription(
 			final MachineDescription machineDescription) {
 		this.description = machineDescription;
 	}
 
-	public synchronized MachineDescription getMachineDescription() {
+	public MachineDescription getMachineDescription() {
 		return this.description;
 	}
 
