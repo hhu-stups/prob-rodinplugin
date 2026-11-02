@@ -22,11 +22,13 @@ import org.eclipse.jface.fieldassist.TextContentAdapter;
 import org.eclipse.jface.resource.FontRegistry;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -66,7 +68,7 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 	private static final String MATH_SYMBOLS_SETTING = "console.mathSymbols";
 	// older output is removed, a StyledText becomes slow with huge contents
 	private static final int MAX_OUTPUT_LENGTH = 500000;
-	private static final int INPUT_ROWS = 2;
+	private static final int INPUT_ROWS = 3;
 
 	private final ConsoleEvaluator evaluator = new ConsoleEvaluator();
 	private final List<String> history = new ArrayList<String>();
@@ -83,7 +85,18 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 	private ModifyListener mathSymbolsListener;
 
 	@Override
-	public void createPartControl(final Composite parent) {
+	public void createPartControl(final Composite viewParent) {
+		// Eclipse does not let a view limit how small it is made, so when
+		// there is no room for the minimal output and the input the console
+		// scrolls instead of clipping the input
+		viewParent.setLayout(new FillLayout());
+		final ScrolledComposite scroller = new ScrolledComposite(viewParent,
+				SWT.V_SCROLL);
+		scroller.setExpandHorizontal(true);
+		scroller.setExpandVertical(true);
+		final Composite parent = new Composite(scroller, SWT.NONE);
+		scroller.setContent(parent);
+
 		final GridLayout layout = new GridLayout(2, false);
 		layout.marginWidth = 0;
 		layout.marginHeight = 0;
@@ -92,10 +105,17 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 		output = new StyledText(parent, SWT.MULTI | SWT.READ_ONLY
 				| SWT.V_SCROLL | SWT.H_SCROLL);
 		output.setFont(getConsoleFont());
-		output.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2,
-				1));
-		output.setText("Evaluate predicates and expressions in the current state of the animation.\n"
-				+ "Enter: evaluate, Shift+Enter: new line, Up/Down: previous inputs, Ctrl+Space: complete identifiers.\n");
+		final GridData outputData = new GridData(SWT.FILL, SWT.FILL, true,
+				true, 2, 2);
+		// at least two lines of output stays visible above the input
+		outputData.minimumHeight = output.getLineHeight();
+		// the preferred size of the console is its minimal size, the output
+		// still grows with the view
+		outputData.heightHint = outputData.minimumHeight;
+		output.setLayoutData(outputData);
+		output.setText("Evaluate predicates and expressions in the current animation state.\n"
+				      + "Enter: evaluate, Shift+Enter: new line,\n"
+				      + "Up/Down: previous inputs, Ctrl+Space: complete identifiers.\n");
 		output.setStyleRange(new StyleRange(0, output.getCharCount(),
 				getColor(SWT.COLOR_DARK_GRAY), null));
 
@@ -140,6 +160,7 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 		});
 		installContentProposals();
 		redirectFocusToInput(parent, prompt);
+		scroller.setMinHeight(parent.computeSize(SWT.DEFAULT, SWT.DEFAULT).y);
 
 		final Action clear = new Action("Clear Console") {
 			@Override
