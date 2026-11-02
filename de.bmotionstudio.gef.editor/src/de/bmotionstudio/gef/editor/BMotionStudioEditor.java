@@ -18,12 +18,15 @@ import javax.xml.transform.TransformerException;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.WorkbenchException;
@@ -256,18 +259,38 @@ public class BMotionStudioEditor extends MultiPageEditorPart implements
 
 	@Override
 	protected void pageChange(int newPageIndex) {
+		super.pageChange(newPageIndex);
 		String newPageString = getPageText(newPageIndex);
-		if (newPageString.equals("Run")) {
-			switchPerspective("de.bmotionstudio.perspective.run");
-		} else {
-			switchPerspective("de.bmotionstudio.perspective.edit");
-		}
+		final String perspective = newPageString.equals("Run")
+				? "de.bmotionstudio.perspective.run"
+				: "de.bmotionstudio.perspective.edit";
+		// Not immediately: pageChange is also called while the editor is
+		// created, e.g. when Rodin restores it at startup in the middle of
+		// creating the workbench window. Switching the perspective then left
+		// the views of the run perspective (State, History) empty.
+		Display.getDefault().asyncExec(new Runnable() {
+			@Override
+			public void run() {
+				final Composite container = getContainer();
+				if (container == null || container.isDisposed()
+						|| getActivePage() != newPageIndex)
+					return; // closed or another page selected meanwhile
+				switchPerspective(perspective);
+			}
+		});
 	}
 
 	private void switchPerspective(String id) {
 		IWorkbench workbench = PlatformUI.getWorkbench();
+		final IWorkbenchWindow window = workbench.getActiveWorkbenchWindow();
+		if (window == null)
+			return; // e.g. another shell is active
+		final IWorkbenchPage page = window.getActivePage();
+		if (page != null && page.getPerspective() != null
+				&& id.equals(page.getPerspective().getId()))
+			return;
 		try {
-			workbench.showPerspective(id, workbench.getActiveWorkbenchWindow());
+			workbench.showPerspective(id, window);
 		} catch (WorkbenchException e) {
 			Logger.notifyUser(
 					"An error occured while trying to switch the perspective.",

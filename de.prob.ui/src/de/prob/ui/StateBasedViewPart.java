@@ -8,8 +8,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.ui.IPartListener2;
-import org.eclipse.ui.IWorkbenchPartReference;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.services.ISourceProviderService;
 
@@ -38,23 +36,6 @@ public abstract class StateBasedViewPart extends ViewPart implements
 	private Composite parent;
 	private Control noStateMessage;
 	private Control stateView;
-
-	// lays the view out again when it becomes visible: it stayed empty
-	// when BMotion Studio loaded the machine while switching perspectives
-	private final IPartListener2 visibilityListener = new IPartListener2() {
-		@Override
-		public void partVisible(final IWorkbenchPartReference partRef) {
-			if (partRef.getPart(false) != StateBasedViewPart.this
-					|| isPartDisposed())
-				return;
-			// no ProB calls if the state is already shown, the animator may
-			// be busy (e.g. model checking)
-			if (stateView != null || !showCurrentState()) {
-				parent.layout(true, true);
-				parent.redraw();
-			}
-		}
-	};
 
 	abstract protected Control createStatePartControl(Composite parent);
 
@@ -85,7 +66,6 @@ public abstract class StateBasedViewPart extends ViewPart implements
 		this.parent = parent;
 		StaticListenerRegistry.registerListener((ILifecycleListener) this);
 		StaticListenerRegistry.registerListener((IAnimationListener) this);
-		getSite().getPage().addPartListener(visibilityListener);
 		if (!showCurrentState()) {
 			createNoStateMessage();
 			reset();
@@ -100,12 +80,14 @@ public abstract class StateBasedViewPart extends ViewPart implements
 	 */
 	private boolean showCurrentState() {
 		final Animator animator = Animator.getAnimator();
+		// checked first: getHistory() would start probcli if none is running
+		if (!animator.isMachineLoaded())
+			return false;
 		final HistoryItem current = animator.getHistory().getCurrent();
-		if (!animator.isMachineLoaded() || current == null)
+		if (current == null)
 			return false;
 		createStateControl();
 		stateChanged(current.getState(), current.getOperation());
-		parent.layout(true, true);
 		return true;
 	}
 
@@ -115,7 +97,7 @@ public abstract class StateBasedViewPart extends ViewPart implements
 			Label message = new Label(parent, SWT.NONE);
 			message.setText("no machine available");
 			noStateMessage = message;
-			parent.layout(true, true);
+			parent.layout();
 		}
 	}
 
@@ -123,7 +105,7 @@ public abstract class StateBasedViewPart extends ViewPart implements
 		if (stateView == null) {
 			disposeNoStateMessage();
 			stateView = createStatePartControl(parent);
-			parent.layout(true, true);
+			parent.layout();
 		}
 	}
 
@@ -194,7 +176,6 @@ public abstract class StateBasedViewPart extends ViewPart implements
 
 	@Override
 	public void dispose() {
-		getSite().getPage().removePartListener(visibilityListener);
 		super.dispose();
 		StaticListenerRegistry.unregisterListener((ILifecycleListener) this);
 		StaticListenerRegistry.unregisterListener((IAnimationListener) this);
