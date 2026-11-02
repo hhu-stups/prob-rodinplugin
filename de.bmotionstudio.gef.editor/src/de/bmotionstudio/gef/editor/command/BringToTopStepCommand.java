@@ -13,6 +13,7 @@ public class BringToTopStepCommand extends AbstractBringToCommand {
 
 	@Override
 	public void execute() {
+		saveOrder();
 		for (BControl control : getControlList()) {
 			BControl parent = control.getParent();
 			Integer oldIndex = parent.getChildrenArray().indexOf(control);
@@ -24,18 +25,6 @@ public class BringToTopStepCommand extends AbstractBringToCommand {
 						BControlPropertyConstants.PROPERTY_ADD_CHILD, null,
 						null);
 			}
-		}
-	}
-
-	@Override
-	public void undo() {
-		for (BControl control : getControlList()) {
-			BControl parent = control.getParent();
-			parent.getChildrenArray().remove(control);
-			parent.getChildrenArray().add(getOldIndexMap().get(control),
-					control);
-			parent.getListeners().firePropertyChange(
-					BControlPropertyConstants.PROPERTY_ADD_CHILD, null, null);
 		}
 	}
 

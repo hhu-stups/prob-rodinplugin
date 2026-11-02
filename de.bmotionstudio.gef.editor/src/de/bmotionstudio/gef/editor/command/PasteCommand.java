@@ -8,8 +8,8 @@ package de.bmotionstudio.gef.editor.command;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.ui.actions.Clipboard;
@@ -25,7 +25,9 @@ public class PasteCommand extends Command {
 
 	// List with mapping original BControl ==> cloned BControl
 	private HashMap<BControl, BControl> mappingControl = new HashMap<BControl, BControl>();
-	private HashMap<BConnection, BConnection> mappingConnection = new HashMap<BConnection, BConnection>();
+	// the pasted clones, for all selected parents
+	private final List<BControl> pastedControls = new ArrayList<BControl>();
+	private final List<BConnection> pastedConnections = new ArrayList<BConnection>();
 
 	private List<BControl> parentControls = new ArrayList<BControl>();
 
@@ -62,53 +64,55 @@ public class PasteCommand extends Command {
 		if (!canExecute())
 			return;
 
-		for (BControl node : cHelper.getList()) {
-			if (isPastableControl(node))
-				mappingControl.put(node, null);
-		}
-
 		try {
 
 			for (BControl parent : parentControls) {
 
-				// Copy/Paste controls
-				Iterator<BControl> it = mappingControl.keySet().iterator();
-				while (it.hasNext()) {
-					BControl control = (BControl) it.next();
-					control.setParent(parent);
-					BControl clone = (BControl) control.clone();
+				// may be another editor than the one the controls were
+				// copied from
+				final Visualization visualization = parent.getVisualization();
+				// original ==> clone, including the children of the pasted
+				// controls
+				final Map<BControl, BControl> cloned = new HashMap<BControl, BControl>();
+				final List<BControl> pastedHere = new ArrayList<BControl>();
+
+				// Copy/Paste controls; the originals are not changed, they
+				// may be pasted again
+				for (BControl control : cHelper.getList()) {
+					if (!isPastableControl(control))
+						continue;
+					BControl clone = control.clone(visualization, cloned);
 					clone.setParent(parent);
-					int x = Integer.valueOf(Integer.valueOf(clone
-							.getAttributeValue(AttributeConstants.ATTRIBUTE_X)
-							.toString()));
-					int y = Integer.valueOf(Integer.valueOf(clone
-							.getAttributeValue(AttributeConstants.ATTRIBUTE_Y)
-							.toString()));
+					int x = Integer.valueOf(clone.getAttributeValue(
+							AttributeConstants.ATTRIBUTE_X).toString());
+					int y = Integer.valueOf(clone.getAttributeValue(
+							AttributeConstants.ATTRIBUTE_Y).toString());
 					clone.setAttributeValue(AttributeConstants.ATTRIBUTE_X, x
 							+ cHelper.getDistance());
 					clone.setAttributeValue(AttributeConstants.ATTRIBUTE_Y, y
 							+ cHelper.getDistance());
+					cloned.put(control, clone);
+					pastedHere.add(clone);
 					mappingControl.put(control, clone);
 					cHelper.setDistance(cHelper.getDistance() + 10);
 				}
-				
-				// Copy/Paste connections
-				HashMap<BControl, BControl> helpMap = new HashMap<BControl, BControl>();
-				helpMap.putAll(cHelper.getAlreadyClonedMap());
-				helpMap.putAll(mappingControl);
-				Iterator<BControl> it2 = helpMap.keySet().iterator();
-				while (it2.hasNext()) {
-					BControl control = it2.next();
-					// Clone connections
-					for (BConnection c : control.getSourceConnections())
-						copyPasteConnection(c, helpMap);
-					for (BConnection c : control.getTargetConnections())
-						copyPasteConnection(c, helpMap);
-				}
+				pastedControls.addAll(pastedHere);
 
-				redo();
+				// Copy/Paste connections
+				final Map<BConnection, BConnection> connections = new HashMap<BConnection, BConnection>();
+				for (BControl original : cloned.keySet()) {
+					for (BConnection c : original.getSourceConnections())
+						copyPasteConnection(c, cloned, visualization,
+								connections);
+					for (BConnection c : original.getTargetConnections())
+						copyPasteConnection(c, cloned, visualization,
+								connections);
+				}
+				pastedConnections.addAll(connections.values());
 
 			}
+
+			redo();
 
 		} catch (CloneNotSupportedException e) {
 			e.printStackTrace();
@@ -117,38 +121,36 @@ public class PasteCommand extends Command {
 	}
 
 	private void copyPasteConnection(BConnection c,
-			HashMap<BControl, BControl> controlMap)
+			Map<BControl, BControl> controlMap, Visualization visualization,
+			Map<BConnection, BConnection> connections)
 			throws CloneNotSupportedException {
-		BConnection newConnection = mappingConnection.get(c);
-		if (newConnection == null) {
-			newConnection = (BConnection) c.clone();
-			newConnection.disconnect();
-			mappingConnection.put(c, newConnection);
-		}
-		BControl t = controlMap.get(newConnection.getTarget());
-		if (t == null)
-			t = newConnection.getTarget();
-		BControl s = controlMap.get(newConnection.getSource());
+		if (connections.containsKey(c))
+			return;
+		// a connection to a control that has not been copied stays attached
+		// to that control, unless it belongs to another visualization
+		BControl s = controlMap.get(c.getSource());
 		if (s == null)
-			s = newConnection.getSource();
-		newConnection.setTarget(t);
+			s = c.getSource();
+		BControl t = controlMap.get(c.getTarget());
+		if (t == null)
+			t = c.getTarget();
+		if (s.getVisualization() != visualization
+				|| t.getVisualization() != visualization)
+			return;
+		BConnection newConnection = (BConnection) c.clone(visualization, null);
 		newConnection.setSource(s);
+		newConnection.setTarget(t);
+		connections.put(c, newConnection);
 	}
 
 	@Override
 	public void redo() {
 
-		Iterator<BControl> it = mappingControl.values().iterator();
-		while (it.hasNext()) {
-			BControl control = it.next();
-			if (control != null && isPastableControl(control)) {
-				control.getParent().addChild(control);
-			}
+		for (BControl control : pastedControls) {
+			control.getParent().addChild(control);
 		}
 
-		Iterator<BConnection> it2 = mappingConnection.values().iterator();
-		while (it2.hasNext()) {
-			BConnection connection = it2.next();
+		for (BConnection connection : pastedConnections) {
 			connection.reconnect();
 		}
 
@@ -157,28 +159,18 @@ public class PasteCommand extends Command {
 	@Override
 	public boolean canUndo() {
 		// only if something has been pasted
-		for (BControl clone : mappingControl.values()) {
-			if (clone != null)
-				return true;
-		}
-		return false;
+		return !pastedControls.isEmpty();
 	}
 
 	@Override
 	public void undo() {
 
-		Iterator<BControl> it = mappingControl.values().iterator();
-		while (it.hasNext()) {
-			BControl bcontrol = it.next();
-			if (bcontrol != null && isPastableControl(bcontrol)) {
-				bcontrol.getParent().removeChild(bcontrol);
-			}
+		for (BConnection connection : pastedConnections) {
+			connection.disconnect();
 		}
 
-		Iterator<BConnection> it2 = mappingConnection.values().iterator();
-		while (it2.hasNext()) {
-			BConnection connection = it2.next();
-			connection.disconnect();
+		for (BControl control : pastedControls) {
+			control.getParent().removeChild(control);
 		}
 
 	}

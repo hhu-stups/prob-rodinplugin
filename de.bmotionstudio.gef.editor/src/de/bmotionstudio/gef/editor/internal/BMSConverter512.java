@@ -82,11 +82,12 @@ public class BMSConverter512 {
 			TransformerConfigurationException, TransformerException,
 			TransformerFactoryConfigurationError {
 
-		InputStream inputStream = file.getContents();
-
 		ByteArrayInputStream byteArrayInputStream = null;
 
-		String str = inputStreamToString(inputStream);
+		String str;
+		try (InputStream inputStream = file.getContents()) {
+			str = inputStreamToString(inputStream);
+		}
 
 		str = str.replace("de.bmotionstudio.gef.basic",
 				"de.bmotionstudio.gef.editor");

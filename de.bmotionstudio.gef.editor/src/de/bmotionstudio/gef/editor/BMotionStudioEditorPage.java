@@ -109,6 +109,7 @@ import de.bmotionstudio.gef.editor.part.BMSAbstractEditPart;
 import de.bmotionstudio.gef.editor.part.BMSAbstractTreeEditPart;
 import de.bmotionstudio.gef.editor.part.BMSEditPartFactory;
 import de.bmotionstudio.gef.editor.part.BMSTreeEditPartFactory;
+import de.prob.logging.Logger;
 
 public class BMotionStudioEditorPage extends GraphicalEditorWithFlyoutPalette {
 
@@ -225,7 +226,8 @@ public class BMotionStudioEditorPage extends GraphicalEditorWithFlyoutPalette {
 	 **/
 	@Override
 	public boolean isSaveAsAllowed() {
-		return true;
+		// not implemented, see doSaveAs()
+		return false;
 	}
 
 	/**
@@ -241,6 +243,7 @@ public class BMotionStudioEditorPage extends GraphicalEditorWithFlyoutPalette {
 		XStream xstream = new XStream();
 		BMotionEditorPlugin.setAliases(xstream);
 		xstream.toXML(visualization, writer);
+		writer.flush();
 	}
 
 	/**
@@ -257,10 +260,21 @@ public class BMotionStudioEditorPage extends GraphicalEditorWithFlyoutPalette {
 					false, iMonitor);
 			getCommandStack().markSaveLocation();
 		} catch (CoreException ce) {
-			ce.printStackTrace();
+			saveFailed(iMonitor, ce);
 		} catch (IOException ioe) {
-			ioe.printStackTrace();
+			saveFailed(iMonitor, ioe);
+		} catch (RuntimeException re) {
+			// e.g. XStream cannot serialize a value
+			saveFailed(iMonitor, re);
 		}
+	}
+
+	private void saveFailed(final IProgressMonitor monitor, final Exception e) {
+		// the editor stays dirty, e.g. when closing it with "Save"
+		if (monitor != null)
+			monitor.setCanceled(true);
+		Logger.notifyUser("The visualization could not be saved: "
+				+ (e.getMessage() != null ? e.getMessage() : e.toString()), e);
 	}
 
 	@Override

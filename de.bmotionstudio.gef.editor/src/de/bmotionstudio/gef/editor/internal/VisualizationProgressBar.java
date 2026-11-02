@@ -7,6 +7,7 @@
 package de.bmotionstudio.gef.editor.internal;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Locale;
 
@@ -146,7 +147,9 @@ public class VisualizationProgressBar extends ProgressBarDialog {
 			}
 		};
 		BMotionEditorPlugin.setAliases(xstream);
-		visualization = (Visualization) xstream.fromXML(f.getContents());
+		try (InputStream in = f.getContents()) {
+			visualization = (Visualization) xstream.fromXML(in);
+		}
 		visualization.setProjectFile(f);
 	}
 

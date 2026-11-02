@@ -13,24 +13,13 @@ public class BringToTopCommand extends AbstractBringToCommand {
 
 	@Override
 	public void execute() {
+		saveOrder();
 		for (BControl control : getControlList()) {
 			BControl parent = control.getParent();
 			Integer oldIndex = parent.getChildrenArray().indexOf(control);
 			getOldIndexMap().put(control, oldIndex);
 			parent.getChildrenArray().remove(control);
 			parent.getChildrenArray().add(parent.getChildrenArray().size(),
-					control);
-			parent.getListeners().firePropertyChange(
-					BControlPropertyConstants.PROPERTY_ADD_CHILD, null, null);
-		}
-	}
-
-	@Override
-	public void undo() {
-		for (BControl control : getControlList()) {
-			BControl parent = control.getParent();
-			parent.getChildrenArray().remove(control);
-			parent.getChildrenArray().add(getOldIndexMap().get(control),
 					control);
 			parent.getListeners().firePropertyChange(
 					BControlPropertyConstants.PROPERTY_ADD_CHILD, null, null);

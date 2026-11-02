@@ -45,6 +45,8 @@ import de.prob.logging.Logger;
 public class BMotionStudioEditor extends MultiPageEditorPart implements
 		ILifecycleListener {
 
+	public static final String ID = "de.bmotionstudio.gef.editor.BMotionStudioEditor";
+
 	private BMotionStudioEditorPage editPage;
 
 	private BMotionStudioRunPage runPage;
@@ -72,10 +74,20 @@ public class BMotionStudioEditor extends MultiPageEditorPart implements
 
 	public void createRunPage(Visualization visualization, Animation animation) {
 		StaticListenerRegistry.registerListener(this);
-		this.animation = animation;
 
-		if (runPage != null)
-			runPage.dispose();
+		// a restart: stop the previous run, otherwise its animation keeps
+		// evaluating the observers of the old controls on every state change
+		// and its page stays open
+		if (this.animation != null && this.animation != animation) {
+			this.animation.unregister();
+			this.animation.getVisualization().setIsRunning(false);
+		}
+		this.animation = animation;
+		if (runPage != null) {
+			fireRunPageRemovedListener();
+			removeRunPageTab(runPage);
+			runPage = null;
+		}
 
 		runPage = new BMotionStudioRunPage(visualization);
 		try {
@@ -89,15 +101,32 @@ public class BMotionStudioEditor extends MultiPageEditorPart implements
 
 	public void removeRunPage() {
 		fireRunPageRemovedListener();
-		if (runPage != null) {
+		final BMotionStudioRunPage page = runPage;
+		runPage = null;
+		if (page != null) {
 			Display.getDefault().asyncExec(new Runnable() {
 				@Override
 				public void run() {
-					removePage(1);
+					removeRunPageTab(page);
 				}
 			});
 		}
 		unregister();
+	}
+
+	/**
+	 * Removes the tab of the given run page (which disposes it), if it is
+	 * still open; the index of the tab may have changed in the meantime
+	 */
+	private void removeRunPageTab(final BMotionStudioRunPage page) {
+		if (getContainer() == null || getContainer().isDisposed())
+			return; // editor closed
+		for (int i = 0; i < getPageCount(); i++) {
+			if (getEditor(i) == page) {
+				removePage(i);
+				return;
+			}
+		}
 	}
 
 	private void fireRunPageCreatedListener() {

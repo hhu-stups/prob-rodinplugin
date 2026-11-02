@@ -55,6 +55,16 @@ public class TrackNodePart extends BMSAbstractEditPart {
 	}
 
 	@Override
+	public void deactivate() {
+		super.deactivate();
+		// the color belongs to this part, not to the figure
+		if (foregroundColor != null) {
+			foregroundColor.dispose();
+			foregroundColor = null;
+		}
+	}
+
+	@Override
 	protected void prepareEditPolicies() {
 		installEditPolicy(EditPolicy.COMPONENT_ROLE, new BMSDeletePolicy());
 		installEditPolicy(EditPolicy.GRAPHICAL_NODE_ROLE, new TrackEditPolicy());

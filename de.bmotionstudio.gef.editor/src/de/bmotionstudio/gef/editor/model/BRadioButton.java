@@ -63,8 +63,8 @@ public class BRadioButton extends BControl {
 		String btgroupid = getAttributeValue(
 				AttributeConstants.ATTRIBUTE_BUTTONGROUP).toString();
 		if (!btgroupid.trim().equals("")) {
-			Collection<BControl> btGroup = ButtonGroupHelper
-					.getButtonGroup(btgroupid);
+			Collection<BControl> btGroup = ButtonGroupHelper.getButtonGroup(
+					getVisualization(), btgroupid);
 			return getValueFromButtonGroup(btGroup);
 		} else {
 			return getAttributeValue(AttributeConstants.ATTRIBUTE_VALUE)

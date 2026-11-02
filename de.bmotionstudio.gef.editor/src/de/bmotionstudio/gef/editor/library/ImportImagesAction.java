@@ -68,22 +68,24 @@ public class ImportImagesAction extends AbstractLibraryAction {
 				File inputFile = new File(folderPath + File.separator
 						+ fileName);
 				IFile newFile = folder.getFile(fileName);
-				FileInputStream fileInputStream = new FileInputStream(inputFile);
-				
-				if (!newFile.exists()) {
-					newFile.create(fileInputStream, true,
-							monitor);
-				} else {
-					// The file already exists; asks for confirmation
-					MessageBox mb = new MessageBox(fd.getParent(),
-							SWT.ICON_WARNING | SWT.YES | SWT.NO);
-					mb.setMessage(fileName
-							+ " already exists. Do you want to replace it?");
-					// If they click Yes, we're done and we drop out. If
-					// they click No, we redisplay the File Dialog
-					if (mb.open() == SWT.YES)
-						newFile.setContents(fileInputStream, true, false,
+				// closed here also if the user does not replace the file
+				try (FileInputStream fileInputStream = new FileInputStream(
+						inputFile)) {
+					if (!newFile.exists()) {
+						newFile.create(fileInputStream, true,
 								monitor);
+					} else {
+						// The file already exists; asks for confirmation
+						MessageBox mb = new MessageBox(fd.getParent(),
+								SWT.ICON_WARNING | SWT.YES | SWT.NO);
+						mb.setMessage(fileName
+								+ " already exists. Do you want to replace it?");
+						// If they click Yes, we're done and we drop out. If
+						// they click No, we redisplay the File Dialog
+						if (mb.open() == SWT.YES)
+							newFile.setContents(fileInputStream, true, false,
+									monitor);
+					}
 				}
 
 			}

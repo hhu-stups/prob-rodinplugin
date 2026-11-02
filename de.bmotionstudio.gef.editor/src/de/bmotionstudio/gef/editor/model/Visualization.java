@@ -13,7 +13,6 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.draw2d.PositionConstants;
 
 import de.bmotionstudio.gef.editor.Animation;
-import de.bmotionstudio.gef.editor.ButtonGroupHelper;
 
 public class Visualization extends BControl {
 
@@ -49,7 +48,6 @@ public class Visualization extends BControl {
 		this.isRunning = false;
 		this.snapToGeometry = true;
 		createRulers();
-		ButtonGroupHelper.reset();
 	}
 
 	@Override
@@ -57,7 +55,6 @@ public class Visualization extends BControl {
 		super.readResolve();
 		this.isRunning = false;
 		createRulers();
-		ButtonGroupHelper.reset();
 		setVisualization(this);
 		init();
 		initChildren(getChildrenArray());

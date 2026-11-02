@@ -50,7 +50,8 @@ public class BRadioButtonPart extends BMSAbstractEditPart {
 						AttributeConstants.ATTRIBUTE_BUTTONGROUP).toString();
 				if (!btgroupid.trim().equals("")) {
 					Collection<BControl> btGroup = ButtonGroupHelper
-							.getButtonGroup(btgroupid);
+							.getButtonGroup(control.getVisualization(),
+									btgroupid);
 					for (BControl c : btGroup) {
 						c.setAttributeValue(
 								AttributeConstants.ATTRIBUTE_CHECKED, false);
@@ -124,14 +125,6 @@ public class BRadioButtonPart extends BMSAbstractEditPart {
 		if (aID.equals(AttributeConstants.ATTRIBUTE_TEXT_COLOR)) {
 			RGB rgbText = (RGB) value;
 			((RadioButtonFigure) figure).setTextColor(rgbText);
-		}
-
-		if (aID.equals(AttributeConstants.ATTRIBUTE_BUTTONGROUP)) {
-			String btgroup = value.toString();
-			if (!btgroup.trim().equals("")) {
-				ButtonGroupHelper.addToButtonGroup(btgroup,
-						(BControl) getModel());
-			}
 		}
 
 		if (aID.equals(AttributeConstants.ATTRIBUTE_ENABLED))

@@ -25,7 +25,6 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
-import org.eclipse.gef.ui.actions.Clipboard;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.views.properties.IPropertySource;
 
@@ -44,7 +43,6 @@ import de.bmotionstudio.gef.editor.attribute.BAttributeVisible;
 import de.bmotionstudio.gef.editor.attribute.BAttributeWidth;
 import de.bmotionstudio.gef.editor.attribute.BAttributeX;
 import de.bmotionstudio.gef.editor.attribute.BAttributeY;
-import de.bmotionstudio.gef.editor.command.CopyPasteHelper;
 import de.bmotionstudio.gef.editor.internal.BControlPropertySource;
 import de.bmotionstudio.gef.editor.observer.Observer;
 import de.bmotionstudio.gef.editor.scheduler.SchedulerEvent;
@@ -677,6 +675,23 @@ public abstract class BControl implements IAdaptable, Cloneable {
 
 	@Override
 	public BControl clone() throws CloneNotSupportedException {
+		return clone(getVisualization(), null);
+	}
+
+	/**
+	 * Clones this control and its children for the given visualization (e.g.
+	 * when pasting into another editor). The clones get new IDs of that
+	 * visualization. This control is not changed.
+	 * 
+	 * @param targetVisualization
+	 *            the visualization the clone will belong to
+	 * @param clonedChildren
+	 *            if not <code>null</code>, the mapping original child ==&gt;
+	 *            cloned child is added to it (e.g. to copy connections)
+	 */
+	public BControl clone(final Visualization targetVisualization,
+			final Map<BControl, BControl> clonedChildren)
+			throws CloneNotSupportedException {
 
 		BControl clonedControl = (BControl) super.clone();
 
@@ -684,6 +699,7 @@ public abstract class BControl implements IAdaptable, Cloneable {
 		clonedControl.sourceConnections = new ArrayList<BConnection>();
 		clonedControl.targetConnections = new ArrayList<BConnection>();
 
+		clonedControl.setVisualization(targetVisualization);
 		clonedControl.setParent(getParent());
 
 		// Clone attributes
@@ -694,18 +710,17 @@ public abstract class BControl implements IAdaptable, Cloneable {
 		}
 		clonedControl.setAttributes(newProperties);
 		clonedControl.setAttributeValue(AttributeConstants.ATTRIBUTE_ID,
-				getVisualization().getMaxIDString(type));
+				targetVisualization.getMaxIDString(type));
 
 		// Clone children
 		clonedControl.setChildrenArray(new BControlList());
 		Iterator<BControl> it = getChildrenArray().iterator();
 		while (it.hasNext()) {
 			BControl next = (BControl) it.next();
-			BControl childClone = next.clone();
-			CopyPasteHelper cHelper = (CopyPasteHelper) Clipboard.getDefault()
-					.getContents();
-			if (cHelper != null)
-				cHelper.getAlreadyClonedMap().put(next, childClone);
+			BControl childClone = next.clone(targetVisualization,
+					clonedChildren);
+			if (clonedChildren != null)
+				clonedChildren.put(next, childClone);
 			clonedControl.addChild(childClone);
 		}
 
