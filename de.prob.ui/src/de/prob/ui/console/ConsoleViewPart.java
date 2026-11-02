@@ -1,0 +1,323 @@
+package de.prob.ui.console;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.bindings.keys.KeyStroke;
+import org.eclipse.jface.bindings.keys.ParseException;
+import org.eclipse.jface.fieldassist.ContentProposal;
+import org.eclipse.jface.fieldassist.ContentProposalAdapter;
+import org.eclipse.jface.fieldassist.IContentProposal;
+import org.eclipse.jface.fieldassist.IContentProposalProvider;
+import org.eclipse.jface.fieldassist.TextContentAdapter;
+import org.eclipse.jface.resource.JFaceResources;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.StyleRange;
+import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.ISharedImages;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.part.ViewPart;
+
+import de.prob.core.Animator;
+import de.prob.core.ILifecycleListener;
+import de.prob.core.domainobjects.MachineDescription;
+import de.prob.exceptions.ProBException;
+import de.prob.ui.StaticListenerRegistry;
+import de.prob.ui.console.ConsoleEvaluator.Kind;
+import de.prob.ui.console.ConsoleEvaluator.Result;
+import de.prob.unicode.UnicodeTranslator;
+
+/**
+ * A console to evaluate predicates and expressions in the current state of
+ * the animation. Enter evaluates the input, Up/Down browse the previous inputs
+ * and Ctrl+Space completes the identifiers of the model.
+ */
+public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
+
+	public static final String VIEW_ID = "de.prob.ui.ConsoleView";
+
+	private static final String PROMPT = "> ";
+	// older output is removed, a StyledText becomes slow with huge contents
+	private static final int MAX_OUTPUT_LENGTH = 500000;
+
+	private final ConsoleEvaluator evaluator = new ConsoleEvaluator();
+	private final List<String> history = new ArrayList<String>();
+	// position in the history while browsing it with Up/Down
+	private int historyIndex = 0;
+	// the input being evaluated, null if none
+	private Job runningJob;
+
+	private StyledText output;
+	private Text input;
+	private ContentProposalAdapter proposalAdapter;
+
+	@Override
+	public void createPartControl(final Composite parent) {
+		final GridLayout layout = new GridLayout(2, false);
+		layout.marginWidth = 0;
+		layout.marginHeight = 0;
+		parent.setLayout(layout);
+
+		output = new StyledText(parent, SWT.MULTI | SWT.READ_ONLY
+				| SWT.V_SCROLL | SWT.H_SCROLL);
+		output.setFont(JFaceResources.getTextFont());
+		output.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2,
+				1));
+		output.setText("Evaluate predicates and expressions in the current state of the animation.\n"
+				+ "Enter: evaluate, Up/Down: previous inputs, Ctrl+Space: complete identifiers.\n");
+		output.setStyleRange(new StyleRange(0, output.getCharCount(),
+				getColor(SWT.COLOR_DARK_GRAY), null));
+
+		final Label prompt = new Label(parent, SWT.NONE);
+		prompt.setText(PROMPT.trim());
+		prompt.setFont(JFaceResources.getTextFont());
+
+		input = new Text(parent, SWT.SINGLE | SWT.BORDER);
+		input.setFont(JFaceResources.getTextFont());
+		input.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		// before creating the proposal adapter, so that this listener sees
+		// whether its popup is open (Enter then selects a proposal)
+		input.addListener(SWT.KeyDown, new Listener() {
+			@Override
+			public void handleEvent(final Event e) {
+				if (proposalAdapter != null
+						&& proposalAdapter.isProposalPopupOpen())
+					return;
+				if (e.keyCode == SWT.CR || e.keyCode == SWT.KEYPAD_CR) {
+					e.doit = false;
+					submit();
+				} else if (e.keyCode == SWT.ARROW_UP) {
+					e.doit = false;
+					browseHistory(-1);
+				} else if (e.keyCode == SWT.ARROW_DOWN) {
+					e.doit = false;
+					browseHistory(1);
+				}
+			}
+		});
+		installContentProposals();
+
+		final Action clear = new Action("Clear Console") {
+			@Override
+			public void run() {
+				output.setText("");
+			}
+		};
+		clear.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages()
+				.getImageDescriptor(ISharedImages.IMG_ETOOL_CLEAR));
+		getViewSite().getActionBars().getToolBarManager().add(clear);
+
+		StaticListenerRegistry.registerListener((ILifecycleListener) this);
+	}
+
+	private void installContentProposals() {
+		try {
+			proposalAdapter = new ContentProposalAdapter(input,
+					new TextContentAdapter(), new IdentifierProposals(),
+					KeyStroke.getInstance("Ctrl+Space"), null);
+			proposalAdapter
+					.setProposalAcceptanceStyle(ContentProposalAdapter.PROPOSAL_INSERT);
+		} catch (ParseException e) {
+			// cannot happen for a constant key stroke; no completion then
+		}
+	}
+
+	private void submit() {
+		final String text = input.getText();
+		if (text.trim().isEmpty() || runningJob != null)
+			return;
+		if (history.isEmpty() || !history.get(history.size() - 1).equals(text))
+			history.add(text);
+		historyIndex = history.size();
+		input.setText("");
+		evaluate(text);
+	}
+
+	private void browseHistory(final int direction) {
+		if (history.isEmpty())
+			return;
+		historyIndex = Math.max(0,
+				Math.min(history.size(), historyIndex + direction));
+		input.setText(historyIndex < history.size() ? history.get(historyIndex)
+				: "");
+		input.setSelection(input.getText().length());
+	}
+
+	private void evaluate(final String text) {
+		setContentDescription("Evaluating " + text + " ...");
+		input.setEnabled(false);
+		final Job job = new Job("Evaluating " + text) {
+			@Override
+			protected IStatus run(final IProgressMonitor monitor) {
+				Result result;
+				try {
+					result = evaluator.evaluate(text);
+				} catch (ProBException e) {
+					result = new Result(Kind.ERROR, monitor.isCanceled() ? "Cancelled."
+							: e.getMessage());
+				} catch (RuntimeException e) {
+					// e.g. an unexpected answer of ProB
+					result = new Result(Kind.ERROR, e.toString());
+				}
+				showResult(this, text, result);
+				return Status.OK_STATUS;
+			}
+
+			@Override
+			protected void canceling() {
+				// ProB may need long for some formulas
+				Animator.getAnimator().sendUserInterruptSignal();
+			}
+		};
+		runningJob = job;
+		job.schedule();
+	}
+
+	private void showResult(final Job job, final String text,
+			final Result result) {
+		asyncExecIfAlive(new Runnable() {
+			@Override
+			public void run() {
+				if (runningJob == job)
+					runningJob = null;
+				setContentDescription("");
+				input.setEnabled(true);
+				input.setFocus();
+				append(PROMPT + UnicodeTranslator.toUnicode(text) + "\n",
+						null, SWT.BOLD);
+				append(result.getText() + "\n", getResultColor(result
+						.getKind()), SWT.NORMAL);
+			}
+		});
+	}
+
+	private Color getResultColor(final Kind kind) {
+		switch (kind) {
+		case TRUE:
+			return getColor(SWT.COLOR_DARK_GREEN);
+		case FALSE:
+		case ERROR:
+			return getColor(SWT.COLOR_RED);
+		case NOT_AVAILABLE:
+			return getColor(SWT.COLOR_DARK_GRAY);
+		default:
+			return null;
+		}
+	}
+
+	private Color getColor(final int systemColor) {
+		// system colors must not be disposed
+		return output.getDisplay().getSystemColor(systemColor);
+	}
+
+	private void append(final String text, final Color color, final int style) {
+		final int start = output.getCharCount();
+		output.append(text);
+		final StyleRange range = new StyleRange(start, text.length(), color,
+				null, style);
+		output.setStyleRange(range);
+		if (output.getCharCount() > MAX_OUTPUT_LENGTH) {
+			output.replaceTextRange(0, output.getCharCount()
+					- MAX_OUTPUT_LENGTH, "");
+		}
+		output.setTopIndex(output.getLineCount() - 1);
+	}
+
+	private void asyncExecIfAlive(final Runnable runnable) {
+		final Display display = Display.getDefault();
+		if (display.isDisposed())
+			return;
+		display.asyncExec(new Runnable() {
+			@Override
+			public void run() {
+				if (output != null && !output.isDisposed())
+					runnable.run();
+			}
+		});
+	}
+
+	/**
+	 * A new model has been loaded (called from any thread)
+	 */
+	@Override
+	public void reset() {
+		evaluator.reset();
+		asyncExecIfAlive(new Runnable() {
+			@Override
+			public void run() {
+				append("--- New model loaded ---\n",
+						getColor(SWT.COLOR_DARK_GRAY), SWT.ITALIC);
+			}
+		});
+	}
+
+	@Override
+	public void setFocus() {
+		input.setFocus();
+	}
+
+	@Override
+	public void dispose() {
+		StaticListenerRegistry.unregisterListener((ILifecycleListener) this);
+		if (runningJob != null)
+			runningJob.cancel();
+		super.dispose();
+	}
+
+	/**
+	 * Proposes the identifiers of the model that start with the word before
+	 * the cursor
+	 */
+	private static final class IdentifierProposals implements
+			IContentProposalProvider {
+		@Override
+		public IContentProposal[] getProposals(final String contents,
+				final int position) {
+			int start = position;
+			while (start > 0
+					&& isIdentifierChar(contents.charAt(start - 1)))
+				start--;
+			final String prefix = contents.substring(start, position);
+
+			final Animator animator = Animator.getAnimator();
+			// getMachineDescription() would start probcli if none is running
+			if (!animator.isMachineLoaded())
+				return new IContentProposal[0];
+			final MachineDescription md = animator.getMachineDescription();
+			if (md == null)
+				return new IContentProposal[0];
+			final Set<String> identifiers = new TreeSet<String>(
+					md.getIdentifiers());
+			final List<IContentProposal> proposals = new ArrayList<IContentProposal>();
+			for (String identifier : identifiers) {
+				if (identifier.startsWith(prefix)) {
+					// the prefix has already been typed
+					proposals.add(new ContentProposal(identifier
+							.substring(prefix.length()), identifier, null));
+				}
+			}
+			return proposals.toArray(new IContentProposal[proposals.size()]);
+		}
+
+		private static boolean isIdentifierChar(final char c) {
+			return Character.isLetterOrDigit(c) || c == '_';
+		}
+	}
+
+}

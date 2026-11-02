@@ -85,6 +85,14 @@
             name="LTL Counter-Example"
             restorable="true">
       </view>
+      <view
+            allowMultiple="false"
+            category="de.hhu.stups.prob"
+            class="de.prob.ui.console.ConsoleViewPart"
+            id="de.prob.ui.ConsoleView"
+            name="ProB Console"
+            restorable="true">
+      </view>
    </extension>
    <extension
          point="de.prob.core.animation">
