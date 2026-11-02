@@ -10,10 +10,12 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.PreferenceDialog;
 import org.eclipse.jface.preference.PreferenceLabelProvider;
 import org.eclipse.jface.preference.PreferenceManager;
@@ -34,7 +36,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
@@ -110,10 +111,22 @@ public class AnimationPreferencesDialog extends PreferenceDialog {
 	/**
 	 * Get the configuration that was selected last when the dialog closed.
 	 * 
-	 * @return
+	 * @return the configuration or <code>null</code> if no configuration (but
+	 *         e.g. the "ProB Configurations" parent node) is selected
 	 */
 	public Preferences getSelectedConfiguration() {
-		return getConfigurationStorage().node(getSelectedNodePreference());
+		final String id = getSelectedNodePreference();
+		if (id == null || proBParentNodeId.equals(id))
+			return null;
+		try {
+			// node() would create a new, empty configuration
+			if (!getConfigurationStorage().nodeExists(id))
+				return null;
+		} catch (BackingStoreException e) {
+			notifyBackingStoreError(readingErrorMessage, e);
+			return null;
+		}
+		return getConfigurationStorage().node(id);
 	}
 
 	/**
@@ -277,9 +290,9 @@ public class AnimationPreferencesDialog extends PreferenceDialog {
 			// Duplicate keys
 			if (duplicate) {
 				try {
-					for (String s : getSelectedConfiguration().keys()) {
-						newPreferences.put(s,
-								getSelectedConfiguration().get(s, null));
+					final Preferences original = getSelectedConfiguration();
+					for (String s : original.keys()) {
+						newPreferences.put(s, original.get(s, null));
 					}
 				} catch (BackingStoreException e) {
 					notifyBackingStoreError(readingErrorMessage, e);
@@ -316,13 +329,13 @@ public class AnimationPreferencesDialog extends PreferenceDialog {
 	 * Creates a duplicate of the selected configuration
 	 */
 	private void duplicatePreference() {
-		String name;
-		if (getSelectedConfiguration() == null) {
-			name = default_configuration_name;
-			addPreference(name, false);
+		final Preferences selected = getSelectedConfiguration();
+		if (selected == null) {
+			addPreference(default_configuration_name, false);
 		} else {
-			name = getSelectedConfiguration().get("title", null);
-			addPreference(name, true);
+			addPreference(
+					selected.get(nodeTitleKey, default_configuration_name),
+					true);
 		}
 	}
 
@@ -516,7 +529,8 @@ public class AnimationPreferencesDialog extends PreferenceDialog {
 	 *            adding a new configuration
 	 */
 	public static void openAndAnimate(final IEventBRoot currentSelection) {
-		Shell shell = new Shell();
+		final Shell shell = PlatformUI.getWorkbench().getModalDialogShellProvider()
+				.getShell();
 		AnimationPreferencesDialog dialog = new AnimationPreferencesDialog(
 				shell, new PreferenceManager());
 
@@ -529,9 +543,12 @@ public class AnimationPreferencesDialog extends PreferenceDialog {
 
 			Preferences selConfig = dialog.getSelectedConfiguration();
 
-			// cancel if no configuration page was selected
-			if (selConfig == null)
+			// e.g. the "ProB Configurations" parent node was selected
+			if (selConfig == null) {
+				MessageDialog.openInformation(shell, shellTitle,
+						"Please select a configuration to animate.");
 				return;
+			}
 
 			// get project and machine
 			String projectName = selConfig.get("project", "");
@@ -539,7 +556,9 @@ public class AnimationPreferencesDialog extends PreferenceDialog {
 
 			/* get the machine-file that has to be animated */
 			IInternalElement animateElement = null;
-			if (!projectName.equals("")
+			// getProject() throws an exception for invalid names, e.g. ""
+			if (ResourcesPlugin.getWorkspace()
+					.validateName(projectName, IResource.PROJECT).isOK()
 					&& ResourcesPlugin.getWorkspace().getRoot()
 							.getProject(projectName).exists()) {
 				if (!machineName.equals("")
@@ -553,20 +572,13 @@ public class AnimationPreferencesDialog extends PreferenceDialog {
 				}
 			}
 
-			/* if machine cannot be found, show error message and throw error */
+			/* if machine cannot be found, show error message */
 			if (animateElement == null) {
-				MessageBox messageBox = new MessageBox(shell, SWT.ICON_ERROR
-						| SWT.OK);
-				messageBox.setText("Error");
-				messageBox.setMessage("Cannot animate machine: Project '"
-						+ projectName + "' or machine '" + machineName
-						+ "' do not exist.");
-				messageBox.open();
-
-				throw new UnsupportedOperationException(
+				MessageDialog.openError(shell, "Error",
 						"Cannot animate machine: Project '" + projectName
 								+ "' or machine '" + machineName
 								+ "' do not exist.");
+				return;
 			}
 
 			/*

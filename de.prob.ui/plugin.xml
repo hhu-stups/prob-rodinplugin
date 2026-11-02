@@ -245,7 +245,8 @@
       <command
             id="de.prob.ui.history.toggleShowParameters"
             name="Show event parameters">
-         <state class="org.eclipse.jface.commands.ToggleState"
+         <!-- parameters are shown by default -->
+         <state class="org.eclipse.ui.handlers.RegistryToggleState:true"
             id="de.prob.ui.history.showParametersState" />
       </command>
       <command
@@ -608,12 +609,28 @@
          <class
                class="de.prob.ui.operationview.ShowParameterDialogHandler">
          </class>
+         <enabledWhen>
+            <with
+                  variable="de.prob.core.model_loaded">
+               <equals
+                     value="enabled">
+               </equals>
+            </with>
+         </enabledWhen>
       </handler>
             <handler
             commandId="de.prob.ui.show_custom_precondition_dialog">
          <class
                class="de.prob.ui.operationview.CustomPreconditionDialogHandler">
          </class>
+         <enabledWhen>
+            <with
+                  variable="de.prob.core.model_loaded">
+               <equals
+                     value="enabled">
+               </equals>
+            </with>
+         </enabledWhen>
       </handler>
       <handler
             commandId="de.prob.ui.deadlock_check">

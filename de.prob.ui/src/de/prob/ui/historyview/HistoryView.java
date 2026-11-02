@@ -212,6 +212,8 @@ public class HistoryView extends StateBasedViewPart {
 		final ColumnWeightData weightData = setMinimumSize ? new ColumnWeightData(
 				1, 100) : new ColumnWeightData(1);
 		layout.setColumnData(column, weightData);
+		labelProvider.setShowParameters(ToggleShowParametersHandler
+				.isShowParameters(getSite()));
 		labelProviders.add(labelProvider);
 	}
 

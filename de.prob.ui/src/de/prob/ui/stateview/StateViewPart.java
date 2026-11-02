@@ -9,7 +9,6 @@ package de.prob.ui.stateview;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -236,7 +235,8 @@ public class StateViewPart extends StateBasedViewPart {
 				topEvaluationElements = new ArrayList<EvaluationElement>(Arrays.asList(tops));
 			} catch (ProBException e) {
 				e.notifyUserOnce();
-				topEvaluationElements = Collections.emptyList();
+				// mutable: user-defined formulas are added later
+				topEvaluationElements = new ArrayList<EvaluationElement>();
 			}
 			shownState = new ShownState();
 			final MachineDescription md = Animator.getAnimator().getMachineDescription();
@@ -500,8 +500,15 @@ public class StateViewPart extends StateBasedViewPart {
 	}
 
 	public void addUserDefinedExpression(final EvaluationElement userDefinedElement) {
-		this.expressionSection.addChild(userDefinedElement);
-		this.topEvaluationElements.add(userDefinedElement);
+		if (shownState == null) {
+			// no state shown yet; the top-level elements retrieved from ProB
+			// may already contain the new formula
+			initShownState();
+		}
+		if (!topEvaluationElements.contains(userDefinedElement)) {
+			this.expressionSection.addChild(userDefinedElement);
+			this.topEvaluationElements.add(userDefinedElement);
+		}
 		refreshTreeView();
 	}
 }

@@ -43,6 +43,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Sash;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 
@@ -231,7 +232,9 @@ public class OperationSelectionDialog extends TrayDialog {
 		if (list.get(0) != null) {
 			shellTitle = list.get(0).getName();
 		}
-		OperationSelectionDialog osd = new OperationSelectionDialog(new Shell());
+		OperationSelectionDialog osd = new OperationSelectionDialog(
+				PlatformUI.getWorkbench().getModalDialogShellProvider()
+						.getShell());
 		osd.setTitle(shellTitle);
 		osd.setEnabledOperations(list);
 		if (osd.open() == TitleAreaDialog.OK)

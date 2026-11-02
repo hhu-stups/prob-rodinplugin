@@ -60,7 +60,7 @@ public class LtlCheckingFinishedListener extends JobChangeAdapter {
 		switch (modelCheckingResult.getStatus()) {
 		case incomplete:
 			title = LtlStrings.ltlResultIncompleteTitle;
-			message = LtlStrings.ltlResultIncompleteTitle;
+			message = LtlStrings.ltlResultIncompleteMessage;
 			displayType = MessageDialog.WARNING;
 			break;
 		case ok:

@@ -4,6 +4,10 @@ import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.IHandler;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.swt.widgets.Shell;
@@ -25,7 +29,7 @@ public class ExecuteRandomHandler extends AbstractHandler implements IHandler {
 			// ignore, we will open Dialog
 		}
 
-		if (steps < 0) {
+		if (steps < 1) {
 			try {
 				steps = askForValue(shell);
 			} catch (NumberFormatException e) {
@@ -41,25 +45,33 @@ public class ExecuteRandomHandler extends AbstractHandler implements IHandler {
 	}
 
 	public void animate(final int steps) {
-		/*
-		 * make sure no other operation can be executed during random animation.
-		 * The refresh() method will initialize the opTable again.
-		 */
-		// opTable.dispose();
-		// opTable = null;
-		try {
-			final Animator animator = Animator.getAnimator();
-			ExecuteRandomStepsCommand.executeOperation(animator, steps);
-		} catch (ProBException e) {
-			// We cannot recover from this, but the user has been informed
-			return;
-		}
+		// in the background: many steps would block the UI, and the user can
+		// cancel the job in the Progress view
+		final Job job = new Job("Random Animation") {
+			@Override
+			protected IStatus run(final IProgressMonitor monitor) {
+				try {
+					final Animator animator = Animator.getAnimator();
+					ExecuteRandomStepsCommand.executeOperation(animator, steps,
+							monitor);
+				} catch (ProBException e) {
+					// We cannot recover from this, but the user has been
+					// informed
+				} finally {
+					monitor.done();
+				}
+				return monitor.isCanceled() ? Status.CANCEL_STATUS
+						: Status.OK_STATUS;
+			}
+		};
+		job.setUser(steps > 1);
+		job.schedule();
 	}
 
 	private int askForValue(final Shell shell) {
 		InputDialog inputDialog = new InputDialog(shell, "Random Animation",
 				"Number of steps:", "1", new IInputValidator() {
-					String errormsg = "Number must be a non-negative Integer.";
+					String errormsg = "Number must be a positive Integer.";
 
 					@Override
 					public String isValid(final String newText) {
@@ -69,7 +81,7 @@ public class ExecuteRandomHandler extends AbstractHandler implements IHandler {
 						} catch (NumberFormatException e) {
 							return errormsg;
 						}
-						if (num < 0) {
+						if (num < 1) {
 							return errormsg;
 						}
 						return null;
