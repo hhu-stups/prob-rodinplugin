@@ -181,11 +181,18 @@ subprojects {
 		delete 'target', 'pom.xml', projectDependencyFolder
 	}
 
-	// Copy Dependencies into subprojects DependencyFolder
-	task collectDependencies(type: Copy) {
+	// Copy Dependencies into subprojects DependencyFolder.
+	// Sync instead of Copy: jars of previous dependency versions are removed,
+	// otherwise they would all be packed into the plug-in (build.properties
+	// includes the whole lib/ folder).
+	task collectDependencies(type: Sync) {
 		from configurations.runtimeClasspath
 
 		into projectDependencyFolder
+
+		preserve {
+			include '_README.txt'
+		}
 	}
 
 	task setClassPath(dependsOn: 'collectDependencies') {
