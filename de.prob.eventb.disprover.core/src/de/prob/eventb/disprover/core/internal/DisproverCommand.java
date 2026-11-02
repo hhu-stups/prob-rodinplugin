@@ -1,5 +1,6 @@
 package de.prob.eventb.disprover.core.internal;
 
+import java.util.List;
 import java.util.Set;
 
 import org.eclipse.core.runtime.Platform;
@@ -62,7 +63,7 @@ public class DisproverCommand implements IComposableCommand {
 	// set by the job thread, read by the prover thread
 	private volatile boolean interrupted = false;
 
-	public DisproverCommand(Set<Predicate> allHypotheses,
+	protected DisproverCommand(Set<Predicate> allHypotheses,
 			Set<Predicate> selectedHypotheses, Predicate goal, int timeout,
 			Boolean exportPO) {
 		this.allHypotheses = allHypotheses;
@@ -77,6 +78,21 @@ public class DisproverCommand implements IComposableCommand {
 			Set<Predicate> selectedHypotheses, Predicate goal, int timeoutFactor,
 			AEventBContextParseUnit context, IProofMonitor pm)
 			throws InterruptedException {
+		return disprove(animator, project, allHypotheses, selectedHypotheses,
+				goal, timeoutFactor, context, pm, null);
+	}
+
+	/**
+	 * @param options
+	 *            additional options for cbc_disprove/6, e.g.
+	 *            <code>wd_prover_timeout(50)</code>; <code>null</code> for the
+	 *            normal disprover
+	 */
+	public static ICounterExample disprove(Animator animator,
+			IEventBProject project, Set<Predicate> allHypotheses,
+			Set<Predicate> selectedHypotheses, Predicate goal, int timeoutFactor,
+			AEventBContextParseUnit context, IProofMonitor pm,
+			List<PrologTerm> options) throws InterruptedException {
 		Preferences prefNode = Platform.getPreferencesService().getRootNode()
 				.node(InstanceScope.SCOPE).node("prob_disprover_preferences");
 
@@ -107,9 +123,11 @@ public class DisproverCommand implements IComposableCommand {
 		StartAnimationCommand start = new StartAnimationCommand();
 
 		final int timeout = timeoutFactor * prefNode.getInt("timeout", 1000);
-		DisproverCommand disprove = new DisproverCommand(allHypotheses,
-				selectedHypotheses, goal, timeout,
-				prefNode.getBoolean("exportpo", false));
+		final boolean exportPO = prefNode.getBoolean("exportpo", false);
+		final DisproverCommand disprove = options == null ? new DisproverCommand(
+				allHypotheses, selectedHypotheses, goal, timeout, exportPO)
+				: new DisproverCommandWithOptions(allHypotheses,
+						selectedHypotheses, goal, timeout, exportPO, options);
 
 		// local: the auto prover and an interactive call may run concurrently
 		final ComposedCommand composed = new ComposedCommand(clear, setPrefs, setCLPFD, setCHR,
@@ -167,21 +185,27 @@ public class DisproverCommand implements IComposableCommand {
 		}
 		pto.closeList();
 		pto.printNumber(timeout);
-		if (this.exportPO) {
-			pto.openList();
-		    pto.openTerm("disprover_option");
-		    pto.openTerm("export_po_as_machine");// Note: other valid options : wd_prover_timeout(T), unsat_core,...
-			pto.printAtom("/tmp/ProB_Rodin_PO_SelectedHyps.mch");  
-			             // TO DO: provide user preference path; TO DO: we could runProBClassic(prob_location, tmp);
-		    pto.closeTerm();
-		    pto.closeTerm();
-			pto.closeList();
-		} else {
-			pto.emptyList(); // do not submit extra options because we set the
-							 // preference above; we could transmit additional valid_disprover_option
-		}
+		pto.openList();
+		writeOptions(pto);
+		pto.closeList();
 		pto.printVariable(RESULT);
 		pto.closeTerm();
+	}
+
+	/**
+	 * Writes the elements of the options list of cbc_disprove/6. The
+	 * preferences are set with separate commands, so by default only the
+	 * export option is written.
+	 */
+	protected void writeOptions(final IPrologTermOutput pto) {
+		if (this.exportPO) {
+			pto.openTerm("disprover_option");
+			pto.openTerm("export_po_as_machine");// Note: other valid options : wd_prover_timeout(T), unsat_core,...
+			pto.printAtom("/tmp/ProB_Rodin_PO_SelectedHyps.mch");
+			// TO DO: provide user preference path; TO DO: we could runProBClassic(prob_location, tmp);
+			pto.closeTerm();
+			pto.closeTerm();
+		}
 	}
 
 	private void translatePredicate(final IPrologTermOutput pto, Predicate pred) {

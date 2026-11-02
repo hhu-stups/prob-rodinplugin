@@ -47,8 +47,14 @@ public class DisproverPreferences extends PreferencePage implements
 
 	}
 
+	public static final String PREFERENCE_NODE = "prob_disprover_preferences";
+	/** time-out for "Use ProB WD Prover", option wd_prover_timeout(T) */
+	public static final String WD_PROVER_TIMEOUT_KEY = "wdtimeout";
+	public static final int DEFAULT_WD_PROVER_TIMEOUT = 50;
+
 	private Preferences prefNode;
 	private Text timeoutTextField;
+	private Text wdTimeoutTextField;
 	private Button checkCLPFD;
 	private Button checkCHR;
 	private Button checkCSE;
@@ -104,6 +110,28 @@ public class DisproverPreferences extends PreferencePage implements
 		GridData gridData2 = new GridData();
 		gridData2.horizontalSpan = 2;
 		timeoutRemark.setLayoutData(gridData2);
+
+		new Label(pageComponent, SWT.NONE).setText("WD prover time-out:");
+		wdTimeoutTextField = new Text(pageComponent, SWT.NONE);
+		wdTimeoutTextField.setText(Integer.toString(getWdProverTimeout()));
+		wdTimeoutTextField.addVerifyListener(new VerifyListener() {
+			@Override
+			public void verifyText(VerifyEvent e) {
+				for (int i = 0; i < e.text.length(); i++) {
+					if (!Character.isDigit(e.text.charAt(i))) {
+						e.doit = false;
+					}
+				}
+			}
+		});
+
+		Label wdTimeoutRemark = new Label(pageComponent, SWT.WRAP);
+		wdTimeoutRemark
+				.setText("Note: The WD prover time-out is used by \"Use ProB WD Prover\", which does not use constraint solving.");
+		// layout data must not be shared between controls
+		GridData wdGridData = new GridData();
+		wdGridData.horizontalSpan = 2;
+		wdTimeoutRemark.setLayoutData(wdGridData);
 
 		new Label(pageComponent, SWT.NONE).setText("Use CLP(FD) Solver:");
 		checkCLPFD = new Button(pageComponent, SWT.CHECK);
@@ -173,6 +201,12 @@ public class DisproverPreferences extends PreferencePage implements
 	@Override
 	public boolean performOk() {
 		prefNode.put("timeout", timeoutTextField.getText());
+		final String wdTimeout = wdTimeoutTextField.getText().trim();
+		if (wdTimeout.isEmpty()) {
+			prefNode.remove(WD_PROVER_TIMEOUT_KEY); // back to the default
+		} else {
+			prefNode.put(WD_PROVER_TIMEOUT_KEY, wdTimeout);
+		}
 		prefNode.putBoolean("clpfd", checkCLPFD.getSelection());
 		prefNode.putBoolean("chr", checkCHR.getSelection());
 		prefNode.putBoolean("cse", checkCSE.getSelection());
@@ -189,8 +223,30 @@ public class DisproverPreferences extends PreferencePage implements
 
 	@Override
 	public void init(final IWorkbench workbench) {
-		prefNode = Platform.getPreferencesService().getRootNode()
-				.node(InstanceScope.SCOPE).node("prob_disprover_preferences");
+		prefNode = getPreferenceNode();
+	}
+
+	private static Preferences getPreferenceNode() {
+		return Platform.getPreferencesService().getRootNode()
+				.node(InstanceScope.SCOPE).node(PREFERENCE_NODE);
+	}
+
+	/**
+	 * @return the time-out for ProB's WD prover from the preferences
+	 */
+	public static int getWdProverTimeout() {
+		final String value = getPreferenceNode().get(WD_PROVER_TIMEOUT_KEY,
+				null);
+		if (value != null) {
+			try {
+				final int timeout = Integer.parseInt(value.trim());
+				if (timeout >= 0)
+					return timeout;
+			} catch (NumberFormatException e) {
+				// use the default
+			}
+		}
+		return DEFAULT_WD_PROVER_TIMEOUT;
 	}
 
 }

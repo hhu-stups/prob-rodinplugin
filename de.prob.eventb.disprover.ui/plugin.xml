@@ -42,6 +42,17 @@
             target="global"
             tooltip="%tactic.disprover.extended_timeout.tooltip">
       </tactic>
+      <tactic
+            dropdown="de.prob.eventb.disprover.ui.dropdown"
+            icon="icons/disprover-all.png"
+            id="de.prob.eventb.disprover.ui.disproverWDProverTactic"
+            interrupt="true"
+            name="%tactic.disprover.wd_prover.name"
+            priority="10"
+            tacticProvider="de.prob.eventb.disprover.ui.DisproverWDProverTacticProvider"
+            target="global"
+            tooltip="%tactic.disprover.wd_prover.tooltip">
+      </tactic>
    <!--      <tactic
             dropdown="de.prob.eventb.disprover.ui.DisproverDropdown"
             icon="icons/disprover-config.png"

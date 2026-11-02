@@ -1,6 +1,8 @@
 package de.prob.eventb.disprover.core;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import de.be4.classicalb.core.parser.analysis.prolog.ASTProlog;
@@ -12,6 +14,9 @@ import de.prob.eventb.disprover.core.translation.DisproverContextCreator;
 import de.prob.eventb.translator.internal.TranslationVisitor;
 import de.prob.logging.Logger;
 import de.prob.prolog.output.PrologTermStringOutput;
+import de.prob.prolog.term.CompoundPrologTerm;
+import de.prob.prolog.term.IntegerPrologTerm;
+import de.prob.prolog.term.PrologTerm;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eventb.core.IEventBProject;
@@ -39,6 +44,7 @@ public class DisproverReasoner implements IReasoner {
 	private static final String DISPROVER_REASONER_NAME = "de.prob.eventb.disprover.core.disproverReasoner";
 
 	private static final String TIMEOUT_FACTOR_KEY = "timeoutFactor";
+	private static final String WD_PROVER_TIMEOUT_KEY = "wdProverTimeout";
 
 	private final int timeoutFactor;
 
@@ -66,7 +72,7 @@ public class DisproverReasoner implements IReasoner {
 					disproverInput.getTimeoutFactor());
 			ICounterExample ce = evaluateSequent(sequent, disproverInput,
 					factor, pm);
-			return createDisproverResult(ce, sequent, input);
+			return createDisproverResult(ce, sequent, disproverInput);
 		} catch (RodinDBException e) {
 			Logger.log(IStatus.WARNING, e.getMessage(), e);
 			return ProverFactory.reasonerFailure(this, input, e.getMessage());
@@ -127,12 +133,28 @@ public class DisproverReasoner implements IReasoner {
 		}
 		ICounterExample counterExample = DisproverCommand.disprove(
 				Animator.getAuxAnimator(), evbProject, allHypotheses,
-				selectedHypotheses, goal, timeoutFactor, context, pm);
+				selectedHypotheses, goal, timeoutFactor, context, pm,
+				getOptions(disproverInput));
 		// counterExample is null if the ProB command failed;
 		// createDisproverResult turns that into a reasoner failure
 		Logger.info("Disprover: Result: " + counterExample);
 
 		return counterExample;
+	}
+
+	/**
+	 * @return the additional options for cbc_disprove/6, or <code>null</code>
+	 *         for the normal disprover
+	 */
+	private static List<PrologTerm> getOptions(
+			final DisproverReasonerInput input) {
+		if (!input.isWdProver())
+			return null;
+		final List<PrologTerm> options = new ArrayList<PrologTerm>();
+		options.add(new CompoundPrologTerm("wd_prover_timeout",
+				new IntegerPrologTerm(input.getWdProverTimeout())));
+		options.add(new CompoundPrologTerm("no_constraint_solving"));
+		return options;
 	}
 
 	@SuppressWarnings("unused")
@@ -150,7 +172,10 @@ public class DisproverReasoner implements IReasoner {
 	 */
 	private IReasonerOutput createDisproverResult(
 			final ICounterExample counterExample, final IProverSequent sequent,
-			final IReasonerInput input) {
+			final DisproverReasonerInput input) {
+
+		// shown in the proof tree
+		final String prover = input.isWdProver() ? "ProB WD prover" : "ProB";
 
 		Predicate goal = sequent.goal();
 
@@ -165,13 +190,13 @@ public class DisproverReasoner implements IReasoner {
 
 		if (counterExample == null) {
 			return ProverFactory.reasonerFailure(this, input,
-					"ProB: Error occurred.");
+					prover + ": Error occurred.");
 		}
 
 		if (counterExample.timeoutOccured()) {
 			System.out.println(sequent.toString() + ": Timeout occured.");
 			return ProverFactory.reasonerFailure(this, input,
-					"ProB: Timeout occurred.");
+					prover + ": Timeout occurred.");
 		}
 
 		if (!counterExample.counterExampleFound() && counterExample.isProof()
@@ -179,7 +204,7 @@ public class DisproverReasoner implements IReasoner {
 			System.out.println(sequent.toString() + ": Proof.");
 			return ProverFactory.makeProofRule(this, input, sequent.goal(),
 					usedHyps, IConfidence.DISCHARGED_MAX,
-					"ProB (no enumeration / all cases checked)");
+					prover + " (no enumeration / all cases checked)");
 		}
 
 		if (!counterExample.counterExampleFound() && counterExample.isProof()
@@ -187,7 +212,15 @@ public class DisproverReasoner implements IReasoner {
 			System.out.println(sequent.toString() + ": Proof.");
 			return ProverFactory.makeProofRule(this, input, sequent.goal(),
 					usedHyps, IConfidence.DISCHARGED_MAX,
-					"ProB (contradiction in hypotheses)");
+					prover + " (contradiction in hypotheses)");
+		}
+
+		if (!counterExample.counterExampleFound() && input.isWdProver()) {
+			// no constraint solving: no counter-examples are searched
+			final String reason = counterExample.getReason();
+			return ProverFactory.reasonerFailure(this, input, prover
+					+ ": Not proven"
+					+ (reason == null ? "." : " (" + reason + ")."));
 		}
 
 		if (!counterExample.counterExampleFound()) {
@@ -221,29 +254,46 @@ public class DisproverReasoner implements IReasoner {
 	@Override
 	public IReasonerInput deserializeInput(final IReasonerInputReader reader)
 			throws SerializeException {
-		String factor;
+		// missing in proofs stored before these values were serialized, and
+		// for the default values
+		final int factor = readInt(reader, TIMEOUT_FACTOR_KEY, 1);
+		final int wdProverTimeout = readInt(reader, WD_PROVER_TIMEOUT_KEY,
+				DisproverReasonerInput.NO_WD_PROVER);
+		return new DisproverReasonerInput(factor, wdProverTimeout);
+	}
+
+	private static int readInt(final IReasonerInputReader reader,
+			final String key, final int defaultValue)
+			throws SerializeException {
+		String value;
 		try {
-			factor = reader.getString(TIMEOUT_FACTOR_KEY);
+			value = reader.getString(key);
 		} catch (SerializeException e) {
-			factor = null; // proofs stored before the factor was serialized
+			value = null; // not stored
 		}
-		if (factor == null)
-			return new DisproverReasonerInput();
+		if (value == null)
+			return defaultValue;
 		try {
-			return new DisproverReasonerInput(Integer.parseInt(factor));
+			return Integer.parseInt(value);
 		} catch (NumberFormatException e) {
 			throw new SerializeException(new IllegalStateException(
-					"Invalid disprover timeout factor: " + factor, e));
+					"Invalid value for disprover input " + key + ": " + value,
+					e));
 		}
 	}
 
 	@Override
 	public void serializeInput(final IReasonerInput input,
 			final IReasonerInputWriter writer) throws SerializeException {
-		final int factor = ((DisproverReasonerInput) input).getTimeoutFactor();
+		final DisproverReasonerInput disproverInput = (DisproverReasonerInput) input;
+		final int factor = disproverInput.getTimeoutFactor();
 		// keep proofs with the default timeout as they were
 		if (factor != 1)
 			writer.putString(TIMEOUT_FACTOR_KEY, Integer.toString(factor));
+		// so that a proof of the WD prover is replayed with the WD prover
+		if (disproverInput.isWdProver())
+			writer.putString(WD_PROVER_TIMEOUT_KEY,
+					Integer.toString(disproverInput.getWdProverTimeout()));
 	}
 
 }
