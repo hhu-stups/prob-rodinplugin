@@ -120,8 +120,9 @@ public class ConsoleEvaluator implements ILifecycleListener {
 			try {
 				return parser.parseExpression(formula, false);
 			} catch (ProBParseException expressionError) {
-				// the message for the predicate is usually more helpful
-				throw predicateError;
+				// expressions are entered more often than predicates, so the
+				// message for the expression is usually the relevant one
+				throw expressionError;
 			}
 		}
 	}
