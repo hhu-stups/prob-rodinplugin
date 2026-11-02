@@ -857,6 +857,19 @@
                label="Show Full Value ..."
                style="push">
          </command>
+         <separator
+               name="de.prob.ui.stateview.consoleSeparator"
+               visible="true">
+         </separator>
+         <command
+               commandId="org.eclipse.ui.views.showView"
+               label="Open ProB Console"
+               style="push">
+            <parameter
+                  name="org.eclipse.ui.views.showView.viewId"
+                  value="de.prob.ui.ConsoleView">
+            </parameter>
+         </command>
       </menuContribution>
       <menuContribution
             locationURI="toolbar:de.prob.ui.HistoryView">
