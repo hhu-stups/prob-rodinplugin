@@ -211,7 +211,9 @@ public class DisproverReasoner implements IReasoner {
 			System.out.println(sequent.toString() + ": Proof.");
 			return ProverFactory.makeProofRule(this, input, sequent.goal(),
 					usedHyps, IConfidence.DISCHARGED_MAX,
-					prover + " (no enumeration / all cases checked)");
+					// the suffix only makes sense for the constraint solver
+					input.isWdProver() ? prover
+							: prover + " (no enumeration / all cases checked)");
 		}
 
 		if (!counterExample.counterExampleFound() && counterExample.isProof()
