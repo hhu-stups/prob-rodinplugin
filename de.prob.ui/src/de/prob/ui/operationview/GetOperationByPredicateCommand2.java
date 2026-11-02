@@ -18,6 +18,7 @@ import de.be4.classicalb.core.parser.exceptions.BCompoundException;
 import de.prob.core.Animator;
 import de.prob.core.ProblemHandler;
 import de.prob.core.command.CommandException;
+import de.prob.core.command.GetOperationByPredicateCommand;
 import de.prob.core.command.IComposableCommand;
 import de.prob.core.domainobjects.Operation;
 import de.prob.core.domainobjects.eval.PredicateEvalElement;
@@ -40,6 +41,7 @@ public final class GetOperationByPredicateCommand2 implements
 		IComposableCommand {
 
 	private static final String NEW_STATE_ID_VARIABLE = "NewStateID";
+	private static final String ERRORS_VARIABLE = "Errors";
 	private final PredicateEvalElement evalElement;
 	private final String stateId;
 	private final String name;
@@ -135,7 +137,7 @@ public final class GetOperationByPredicateCommand2 implements
 		evalElement.getPrologAst().apply(prolog);
 		pto.printNumber(nrOfSolutions);
 		pto.printVariable(NEW_STATE_ID_VARIABLE);
-		pto.printVariable("Errors").closeTerm();
+		pto.printVariable(ERRORS_VARIABLE).closeTerm();
 	}
 
 	/**
@@ -149,6 +151,14 @@ public final class GetOperationByPredicateCommand2 implements
 	public void processResult(
 			final ISimplifiedROMap<String, PrologTerm> bindings)
 			throws CommandException {
+
+		final String errors = GetOperationByPredicateCommand
+				.describeErrors(bindings.get(ERRORS_VARIABLE));
+		if (errors != null) {
+			// e.g. a type error in the predicate entered by the user
+			ProblemHandler.raiseCommandException("ProB could not use the predicate for event "
+					+ name + ":\n" + errors);
+		}
 
 		ListPrologTerm list = (ListPrologTerm) bindings
 				.get(NEW_STATE_ID_VARIABLE);

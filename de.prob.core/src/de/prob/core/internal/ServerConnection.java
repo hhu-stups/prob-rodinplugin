@@ -30,7 +30,9 @@ public class ServerConnection {
 	private BufferedInputStream inputStream = null;
 	private PrintStream outputStream = null;
 
-	private CliStarter cli = null;
+	// volatile: sendUserInterruptSignal is called without the lock, e.g.
+	// while shutdown sets it to null
+	private volatile CliStarter cli = null;
 
 	private volatile boolean shutdown = true;
 
@@ -201,8 +203,9 @@ public class ServerConnection {
 	}
 
 	public void sendUserInterruptSignal() {
-		if (cli != null) {
-			cli.sendUserInterruptReference();
+		final CliStarter c = cli;
+		if (c != null) {
+			c.sendUserInterruptReference();
 		}
 	}
 }

@@ -40,6 +40,7 @@ public class EvaluationGetValuesCommand implements IComposableCommand {
 	private static final String VALUE_VARNAME = "Values";
 	private static final String TRUE = UnicodeTranslator.toUnicode("true");
 	private static final String FALSE = UnicodeTranslator.toUnicode("false");
+	private static final Object CACHE_LOCK = new Object();
 	private static final String CACHE_KEY = EvaluationGetValuesCommand.class
 			.getName() + ".valuecache";
 
@@ -149,11 +150,15 @@ public class EvaluationGetValuesCommand implements IComposableCommand {
 			final State state) {
 		Map<EvaluationElement, EvaluationStateElement> cache;
 		final Animator animator = Animator.getAnimator();
-		synchronized (animator) {
+		// not the animator lock, which a running command may hold for long
+		synchronized (CACHE_LOCK) {
 			HistoryBasedCache<Map<EvaluationElement, EvaluationStateElement>> hcache = (HistoryBasedCache<Map<EvaluationElement, EvaluationStateElement>>) animator
 					.getData(CACHE_KEY);
-			if (hcache == null) {
-				History history = animator.getHistory();
+			final History history = animator.getHistory();
+			if (hcache == null || !hcache.belongsTo(history)) {
+				// none yet, or probcli has been restarted with a new history
+				if (hcache != null)
+					hcache.getHistory().removeListener(hcache);
 				hcache = new HistoryBasedCache<Map<EvaluationElement, EvaluationStateElement>>(
 						history);
 				history.addListener(hcache);

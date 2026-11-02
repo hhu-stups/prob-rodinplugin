@@ -8,11 +8,13 @@ package de.prob.logging;
 
 import org.eclipse.core.runtime.ILogListener;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 
 import de.prob.cli.CliException;
 import de.prob.core.internal.Activator;
 import de.prob.exceptions.ProBAssertionFailed;
+import org.osgi.framework.Bundle;
 import de.prob.parser.BindingGenerator;
 
 /**
@@ -131,6 +133,18 @@ public final class Logger {
 	}
 
 	private static void log(final IStatus status) {
-		Activator.getDefault().getLog().log(status);
+		final Activator plugin = Activator.getRunningInstance();
+		if (plugin != null) {
+			plugin.getLog().log(status);
+			return;
+		}
+		// the plug-in has been stopped (e.g. a job finishing during
+		// shutdown) or not started yet: log on behalf of its bundle
+		final Bundle bundle = Platform.getBundle(Activator.PLUGIN_ID);
+		if (bundle != null) {
+			Platform.getLog(bundle).log(status);
+		} else {
+			System.err.println(status);
+		}
 	}
 }

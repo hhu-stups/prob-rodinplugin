@@ -40,7 +40,10 @@ public class History implements Iterable<HistoryItem>, IComputationListener {
 
 	@Override
 	public synchronized/* @ pure @ */Iterator<HistoryItem> iterator() {
-		return Collections.unmodifiableList(items).iterator();
+		// a copy: the caller iterates without holding the lock, while e.g. a
+		// background job may add items
+		return Collections.unmodifiableList(
+				new ArrayList<HistoryItem>(items)).iterator();
 	}
 
 	public synchronized void add(final State s, final Operation o) {
@@ -214,13 +217,13 @@ public class History implements Iterable<HistoryItem>, IComputationListener {
 	}
 
 	@Override
-	public void computedState(final State state) {
+	public synchronized void computedState(final State state) {
 		if (isEmpty()) {
 			add(state, null);
 		}
 	}
 
-	public HistoryItem[] getAllItems() {
+	public synchronized HistoryItem[] getAllItems() {
 		return items.toArray(EMPTY_ITEM_ARRAY);
 	}
 

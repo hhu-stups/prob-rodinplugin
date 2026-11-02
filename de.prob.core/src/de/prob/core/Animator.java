@@ -7,6 +7,7 @@
 package de.prob.core;
 
 import java.io.File;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -38,10 +39,13 @@ public final class Animator {
 
 	private static Animator animator = new Animator();
 	private static Animator auxanimator = null;
+	private static final Object AUX_LOCK = new Object();
 
 	private volatile boolean dirty;
 	private volatile boolean rodinProjectHasErrorsOrWarnings;
-	private final Map<Object, Object> dataStore = new HashMap<Object, Object>();
+	// own lock: must be usable while a (long) command holds the animator lock
+	private final Map<Object, Object> dataStore = Collections
+			.synchronizedMap(new HashMap<Object, Object>());
 
 	// volatile: read without the lock by isMachineLoaded()
 	private volatile AnimatorImpl implementation;
@@ -64,10 +68,29 @@ public final class Animator {
 	}
 
 	public final static Animator getAuxAnimator() {
-		if (auxanimator == null) {
-			auxanimator = new Animator();
+		// may be called concurrently, e.g. by the auto prover and an
+		// interactive disprover call; each instance starts its own probcli
+		synchronized (AUX_LOCK) {
+			if (auxanimator == null) {
+				auxanimator = new Animator();
+			}
+			return auxanimator;
 		}
-		return auxanimator;
+	}
+
+	/**
+	 * Stops the probcli instance of the auxiliary animator, if one has been
+	 * started (e.g. when the plug-in is stopped)
+	 */
+	public final static void shutdownAuxAnimator() {
+		final Animator aux;
+		synchronized (AUX_LOCK) {
+			aux = auxanimator;
+		}
+		if (aux != null) {
+			aux.sendUserInterruptSignal();
+			aux.shutdown();
+		}
 	}
 
 
@@ -183,22 +206,22 @@ public final class Animator {
 	/**
 	 * @return The model's current state
 	 */
-	public final synchronized State getCurrentState() {
-		return getImplementation().getCurrentStateImpl();
+	public final State getCurrentState() {
+		return currentImplementation().getCurrentStateImpl();
 	}
 
 	/**
 	 * @return The animation history, i.e. a trace from the root state to the
 	 *         current state
 	 */
-	public final synchronized History getHistory() {
-		return getImplementation().getHistoryImpl();
+	public final History getHistory() {
+		return currentImplementation().getHistoryImpl();
 	}
 
 	/**
 	 * @return true, iff there is an animation running
 	 */
-	public synchronized boolean isRunning() {
+	public boolean isRunning() {
 		return (implementation != null);
 	}
 
@@ -224,6 +247,18 @@ public final class Animator {
 			createNewImplementation(null);
 		}
 		return implementation;
+	}
+
+	/**
+	 * Like {@link #getImplementation()}, but does not wait for a running
+	 * command (which holds the lock, maybe for minutes during model checking)
+	 * if there is an implementation. Used by getters called from the UI
+	 * thread; the history and the implementation are thread-safe on their
+	 * own.
+	 */
+	private AnimatorImpl currentImplementation() {
+		final AnimatorImpl impl = implementation;
+		return impl != null ? impl : getImplementation();
 	}
 
 	// just for testing
@@ -302,7 +337,7 @@ public final class Animator {
 	}
 
 	public LanguageDependendAnimationPart getLanguageDependendPart() {
-		return getImplementation().getLangdep();
+		return currentImplementation().getLangdep();
 	}
 
 	public void setLanguageDependendPart(
@@ -318,7 +353,7 @@ public final class Animator {
 	 * @param key
 	 * @param data
 	 */
-	public synchronized void setData(final Object key, final Object data) {
+	public void setData(final Object key, final Object data) {
 		dataStore.put(key, data);
 	}
 
@@ -332,13 +367,14 @@ public final class Animator {
 	 * @param key
 	 * @return
 	 */
-	public synchronized Object getData(final Object key) {
+	public Object getData(final Object key) {
 		return dataStore.get(key);
 	}
 
 	// if synchronized this will produce a deadlock. Ignore findbugs here
 	public  void sendUserInterruptSignal() {
-		if (implementation != null) implementation.sendUserInterruptSignal();
+		final AnimatorImpl impl = implementation;
+		if (impl != null) impl.sendUserInterruptSignal();
 	}
 	
 

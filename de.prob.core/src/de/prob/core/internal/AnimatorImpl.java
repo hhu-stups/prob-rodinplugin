@@ -22,6 +22,7 @@ import de.prob.core.domainobjects.HistoryItem;
 import de.prob.core.domainobjects.MachineDescription;
 import de.prob.core.domainobjects.State;
 import de.prob.core.sablecc.node.ACallBackResult;
+import de.prob.core.sablecc.node.AInterruptedResult;
 import de.prob.core.sablecc.node.AProgressResult;
 import de.prob.core.sablecc.node.AYesResult;
 import de.prob.core.sablecc.node.PResult;
@@ -49,7 +50,8 @@ public class AnimatorImpl {
 
 	private final File file;
 
-	private LanguageDependendAnimationPart langdep;
+	// read without lock, e.g. from the UI thread
+	private volatile LanguageDependendAnimationPart langdep;
 
 	public AnimatorImpl(final ServerConnection serverConnection, final File file) {
 		this.file = file;
@@ -200,6 +202,11 @@ public class AnimatorImpl {
 			assert !(topnode instanceof AProgressResult);
 			assert !(topnode instanceof ACallBackResult);
 
+			if (topnode instanceof AInterruptedResult) {
+				// the user cancelled the command (see ProBCommandJob), not an
+				// error to report; CommandExceptions count as already handled
+				throw new CommandException("The command was interrupted.");
+			}
 			if (!(topnode instanceof AYesResult)) {
 				String queryForMessage = query;
 				if (queryForMessage.length() > 400) {
@@ -224,8 +231,9 @@ public class AnimatorImpl {
 	}
 
 	public void sendUserInterruptSignal() {
-		if (connector != null) {
-			connector.sendUserInterruptSignal();
+		final ServerConnection c = connector;
+		if (c != null) {
+			c.sendUserInterruptSignal();
 		}
 	}
 }

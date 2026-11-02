@@ -9,6 +9,8 @@ package de.prob.core.command;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.runtime.IStatus;
+
 import de.be4.classicalb.core.parser.analysis.prolog.ASTProlog;
 import de.be4.classicalb.core.parser.exceptions.BCompoundException;
 import de.prob.core.Animator;
@@ -16,6 +18,7 @@ import de.prob.core.ProblemHandler;
 import de.prob.core.domainobjects.Operation;
 import de.prob.core.domainobjects.eval.PredicateEvalElement;
 import de.prob.exceptions.ProBException;
+import de.prob.logging.Logger;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.CompoundPrologTerm;
@@ -32,6 +35,7 @@ import de.prob.prolog.term.PrologTerm;
 public final class GetOperationByPredicateCommand implements IComposableCommand {
 
 	private static final String NEW_STATE_ID_VARIABLE = "NewStateID";
+	private static final String ERRORS_VARIABLE = "Errors";
 	private final PredicateEvalElement evalElement;
 	private final String stateId;
 	private final String name;
@@ -123,7 +127,7 @@ public final class GetOperationByPredicateCommand implements IComposableCommand 
 		evalElement.getPrologAst().apply(prolog);
 		pto.printNumber(nrOfSolutions);
 		pto.printVariable(NEW_STATE_ID_VARIABLE);
-		pto.printVariable("Errors").closeTerm();
+		pto.printVariable(ERRORS_VARIABLE).closeTerm();
 	}
 
 	/**
@@ -137,6 +141,17 @@ public final class GetOperationByPredicateCommand implements IComposableCommand 
 	public void processResult(
 			final ISimplifiedROMap<String, PrologTerm> bindings)
 			throws CommandException {
+
+		final String errors = describeErrors(bindings.get(ERRORS_VARIABLE));
+		if (errors != null) {
+			// e.g. a type error in the predicate; without this check it would
+			// look as if no event satisfied the predicate. Only logged, the
+			// callers (e.g. BMotion observers) run this on every state change
+			final String message = "ProB could not use the predicate for event "
+					+ name + ":\n" + errors;
+			Logger.log(IStatus.WARNING, message, null);
+			throw new CommandException(message);
+		}
 
 		ListPrologTerm list = (ListPrologTerm) bindings
 				.get(NEW_STATE_ID_VARIABLE);
@@ -156,6 +171,21 @@ public final class GetOperationByPredicateCommand implements IComposableCommand 
 
 	private List<Operation> getOperation() {
 		return operation;
+	}
+
+	/**
+	 * @return the errors ProB reported for execute_custom_operations, one per
+	 *         line, or <code>null</code> if there are none
+	 */
+	public static String describeErrors(final PrologTerm errors) {
+		if (!(errors instanceof ListPrologTerm)
+				|| ((ListPrologTerm) errors).isEmpty())
+			return null;
+		final List<String> lines = new ArrayList<String>();
+		for (PrologTerm e : (ListPrologTerm) errors) {
+			lines.add(e.isAtom() ? e.getFunctor() : e.toString());
+		}
+		return String.join("\n", lines);
 	}
 
 }
