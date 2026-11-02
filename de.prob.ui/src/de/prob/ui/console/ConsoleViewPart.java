@@ -112,6 +112,7 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 			}
 		});
 		installContentProposals();
+		redirectFocusToInput(parent, prompt);
 
 		final Action clear = new Action("Clear Console") {
 			@Override
@@ -124,6 +125,46 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 		getViewSite().getActionBars().getToolBarManager().add(clear);
 
 		StaticListenerRegistry.registerListener((ILifecycleListener) this);
+	}
+
+	/**
+	 * Clicking into the console, or typing while the output has the focus,
+	 * goes to the input line. Text in the output can still be selected and
+	 * copied.
+	 */
+	private void redirectFocusToInput(final Composite parent,
+			final Label prompt) {
+		final Listener focusInput = new Listener() {
+			@Override
+			public void handleEvent(final Event e) {
+				// not after selecting text with the mouse
+				if (e.widget != output || output.getSelectionCount() == 0)
+					focusInput();
+			}
+		};
+		output.addListener(SWT.MouseUp, focusInput);
+		prompt.addListener(SWT.MouseUp, focusInput);
+		parent.addListener(SWT.MouseUp, focusInput);
+
+		output.addListener(SWT.KeyDown, new Listener() {
+			@Override
+			public void handleEvent(final Event e) {
+				// keep shortcuts like Ctrl+C or Ctrl+A for the output
+				final boolean shortcut = (e.stateMask & (SWT.MOD1 | SWT.MOD3 | SWT.MOD4)) != 0;
+				if (!shortcut && e.character >= ' ' && e.character != SWT.DEL
+						&& input.isEnabled()) {
+					e.doit = false;
+					focusInput();
+					input.insert(String.valueOf(e.character));
+				}
+			}
+		});
+	}
+
+	private void focusInput() {
+		if (input.isEnabled()) {
+			input.setFocus();
+		}
 	}
 
 	private void installContentProposals() {
