@@ -76,6 +76,14 @@ public class ConsoleEvaluator implements ILifecycleListener {
 	 */
 	private final Map<String, EvaluationElement> elements = new ConcurrentHashMap<String, EvaluationElement>();
 
+	// set from the UI thread
+	private volatile boolean showSolveTime = true;
+
+	/** whether results of the constraint solver include its solve time */
+	public void setShowSolveTime(final boolean showSolveTime) {
+		this.showSolveTime = showSolveTime;
+	}
+
 	/**
 	 * A new model has been loaded: the inserted formulas are no longer valid
 	 */
@@ -149,7 +157,7 @@ public class ConsoleEvaluator implements ILifecycleListener {
 	 * Lets the constraint solver find values for the free identifiers, the
 	 * identifiers of the model have their values in the current state
 	 */
-	private static Result solve(final Animator animator, final State state,
+	private Result solve(final Animator animator, final State state,
 			final OpenFormula formula) throws ProBException {
 		final CbcSolveCommand cmd = CbcSolveCommand.solve(animator,
 				state.getId(), formula.getSolverPredicate());
@@ -190,7 +198,9 @@ public class ConsoleEvaluator implements ILifecycleListener {
 		}
 	}
 
-	private static String time(final CbcSolveCommand cmd) {
+	private String time(final CbcSolveCommand cmd) {
+		if (!showSolveTime)
+			return "";
 		return "\n  (solved in " + cmd.getMilliseconds() + " ms)";
 	}
 

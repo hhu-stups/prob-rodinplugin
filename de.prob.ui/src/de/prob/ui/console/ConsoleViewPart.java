@@ -67,6 +67,7 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 	// the font of the Rodin editors, which contains the mathematical symbols
 	private static final String RODIN_FONT_KEY = "org.rodinp.keyboard.textFont";
 	private static final String MATH_SYMBOLS_SETTING = "console.mathSymbols";
+	private static final String SOLVE_TIME_SETTING = "console.showSolveTime";
 	// older output is removed, a StyledText becomes slow with huge contents
 	private static final int MAX_OUTPUT_LENGTH = 500000;
 	private static final int INPUT_ROWS = 3;
@@ -186,6 +187,7 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 				.getImageDescriptor(ISharedImages.IMG_ETOOL_CLEAR));
 		getViewSite().getActionBars().getToolBarManager().add(clear);
 		installMathSymbols();
+		installSolveTimeToggle();
 
 		StaticListenerRegistry.registerListener((ILifecycleListener) this);
 	}
@@ -240,6 +242,27 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 	 * Adds the toolbar toggle for translating ASCII into mathematical symbols
 	 * while typing (e.g. ":" into the element-of symbol)
 	 */
+	/** toolbar toggle: show how long the constraint solver took */
+	private void installSolveTimeToggle() {
+		final IDialogSettings settings = ProbUiPlugin.getDefault()
+				.getDialogSettings();
+		final boolean enabled = settings.get(SOLVE_TIME_SETTING) == null
+				|| settings.getBoolean(SOLVE_TIME_SETTING);
+
+		final Action toggle = new Action("ms", IAction.AS_CHECK_BOX) {
+			@Override
+			public void run() {
+				evaluator.setShowSolveTime(isChecked());
+				settings.put(SOLVE_TIME_SETTING, isChecked());
+				focusInput();
+			}
+		};
+		toggle.setToolTipText("Show Solve Time (for formulas with free identifiers)");
+		toggle.setChecked(enabled);
+		evaluator.setShowSolveTime(enabled);
+		getViewSite().getActionBars().getToolBarManager().add(toggle);
+	}
+
 	private void installMathSymbols() {
 		try {
 			final RodinKeyboardUIPlugin keyboard = RodinKeyboardUIPlugin
