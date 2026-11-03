@@ -458,6 +458,9 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 				+ "  :x               close the console\n"
 				+ "  :type F          the type of the predicate or expression F, and the\n"
 				+ "                   inferred types of its free identifiers\n"
+				+ "  :state           the current state: values, status, enabled events\n"
+				+ "  :prefs [TEXT]    ProB's preferences (only those whose name contains\n"
+				+ "                   TEXT), with the default value if it was changed\n"
 				+ "  :SOLVER PRED     solve PRED (or an expression) with another solver, also\n"
 				+ "                   without free identifiers; SOLVER is one of\n"
 				+ "                   " + ConsoleEvaluator.solverCommands() + "\n"
@@ -638,13 +641,16 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 				names.add(":help");
 				names.add(":x");
 				names.add(":type");
+				names.add(":state");
+				names.add(":prefs");
 				names.addAll(Arrays.asList(ConsoleEvaluator.solverCommands()
 						.split(", ")));
 				for (String command : names) {
 					final String name = command.substring(1);
 					// a solver command is followed by the predicate
 					final String space = name.equals("help")
-							|| name.equals("x") ? "" : " ";
+							|| name.equals("x") || name.equals("state") ? ""
+							: " ";
 					if (name.startsWith(prefix))
 						commands.add(new ContentProposal(name.substring(prefix
 								.length()) + space, marker + name, null));

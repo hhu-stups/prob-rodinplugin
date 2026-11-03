@@ -1,20 +1,29 @@
 package de.prob.ui.console;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 
 import de.prob.core.Animator;
 import de.prob.core.ILifecycleListener;
 import de.prob.core.LanguageDependendAnimationPart;
 import de.prob.core.command.CbcSolveCommand;
+import de.prob.core.command.GetCurrentPreferencesCommand;
+import de.prob.core.command.GetPreferencesCommand;
 import de.prob.core.command.EvaluationGetValuesCommand;
 import de.prob.core.command.EvaluationGetValuesCommand.EvaluationResult;
 import de.prob.core.command.EvaluationInsertFormulaCommand;
 import de.prob.core.domainobjects.EvaluationElement;
+import de.prob.core.domainobjects.Operation;
+import de.prob.core.domainobjects.ProBPreference;
 import de.prob.core.domainobjects.State;
+import de.prob.core.domainobjects.Variable;
 import de.prob.core.langdep.EventBAnimatorPart;
 import de.prob.core.langdep.EventBAnimatorPart.OpenFormula;
 import de.prob.exceptions.ProBException;
@@ -120,11 +129,17 @@ public class ConsoleEvaluator implements ILifecycleListener {
 		final Animator animator = Animator.getAnimator();
 		if (!animator.isMachineLoaded())
 			return new Result(Kind.NOT_AVAILABLE, "No model is being animated.");
-		if (isTypeCommand(formula))
-			return describeType(animator, formula);
+		final String typeArgument = commandArgument(formula, "type");
+		if (typeArgument != null)
+			return describeType(animator, typeArgument);
+		final String prefsArgument = commandArgument(formula, "prefs");
+		if (prefsArgument != null)
+			return describePreferences(animator, prefsArgument);
 		final State state = animator.getCurrentState();
 		if (state == null)
 			return new Result(Kind.NOT_AVAILABLE, "There is no current state.");
+		if (commandArgument(formula, "state") != null)
+			return describeState(state);
 		if (isSolverCommand(formula))
 			return solveWith(animator, state, formula);
 
@@ -181,20 +196,90 @@ public class ConsoleEvaluator implements ILifecycleListener {
 		}
 	}
 
-	/** ":type F", also if ':' has become '\u2208' */
-	private static boolean isTypeCommand(final String formula) {
-		if (!isSolverCommand(formula))
-			return false;
-		final String command = formula.substring(1);
-		return command.startsWith("type")
-				&& (command.length() == 4 || Character.isWhitespace(command
-						.charAt(4)));
+	/**
+	 * @return the argument of the command, e.g. "F" for ":type F" (also if
+	 *         ':' has become '\u2208'), "" if there is none, null if the
+	 *         input is not this command
+	 */
+	private static String commandArgument(final String input,
+			final String command) {
+		if (!isSolverCommand(input))
+			return null;
+		final String rest = input.substring(1);
+		if (!rest.startsWith(command))
+			return null;
+		final String argument = rest.substring(command.length());
+		if (!argument.isEmpty() && !Character.isWhitespace(argument.charAt(0)))
+			return null; // another command, e.g. ":types"
+		return argument.trim();
+	}
+
+	/**
+	 * ":state": the current state as known to the plug-in, without asking
+	 * ProB
+	 */
+	private static Result describeState(final State state) {
+		final StringBuilder sb = new StringBuilder("State ").append(
+				state.getId()).append(": ");
+		sb.append(state.isInitialized() ? "initialised" : "not initialised");
+		if (state.isInvariantViolated())
+			sb.append(", INVARIANT VIOLATED");
+		if (state.isTimeoutOccured())
+			sb.append(", time-out occurred");
+		if (state.isMaxOperationReached())
+			sb.append(", maximum number of events reached");
+		if (state.hasStateBasedErrors())
+			sb.append(", ").append(state.getStateBasedErrors().size())
+					.append(" error(s), see the Event Error View");
+		for (Map.Entry<String, Variable> entry : new TreeMap<String, Variable>(
+				state.getValues()).entrySet()) {
+			final String value = entry.getValue().getValue();
+			sb.append("\n  ").append(entry.getKey()).append(" = ")
+					.append(value == null ? "?" : value);
+		}
+		final Set<String> events = new TreeSet<String>();
+		for (Operation operation : state.getEnabledOperations())
+			events.add(operation.getName());
+		sb.append("\nEnabled events: ").append(
+				events.isEmpty() ? "none" : String.join(", ", events));
+		return new Result(Kind.VALUE, sb.toString());
+	}
+
+	/**
+	 * ":prefs [TEXT]": the current values of ProB's preferences, only those
+	 * whose name contains TEXT (ignoring case) if given
+	 */
+	private static Result describePreferences(final Animator animator,
+			final String filter) throws ProBException {
+		final Map<String, String> values = GetCurrentPreferencesCommand
+				.getCurrentPreferences(animator);
+		final Map<String, String> defaults = new HashMap<String, String>();
+		for (ProBPreference pref : GetPreferencesCommand
+				.getPreferences(animator))
+			defaults.put(pref.name, pref.defaultValue);
+		final String lowerFilter = filter.toLowerCase(Locale.ROOT);
+		final StringBuilder sb = new StringBuilder();
+		int count = 0;
+		for (Map.Entry<String, String> entry : values.entrySet()) {
+			final String name = entry.getKey();
+			if (!name.toLowerCase(Locale.ROOT).contains(lowerFilter))
+				continue;
+			count++;
+			sb.append("\n  ").append(name).append(" = ")
+					.append(entry.getValue());
+			final String defaultValue = defaults.get(name);
+			if (defaultValue != null
+					&& !defaultValue.equals(entry.getValue()))
+				sb.append("   (default: ").append(defaultValue).append(')');
+		}
+		return new Result(Kind.VALUE, count + " preference(s)"
+				+ (filter.isEmpty() ? "" : " containing \"" + filter + "\"")
+				+ sb);
 	}
 
 	/** ":type F": the type of F, computed by Rodin's type checker */
 	private static Result describeType(final Animator animator,
-			final String input) {
-		final String formula = input.substring(1 + "type".length()).trim();
+			final String formula) {
 		if (formula.isEmpty())
 			return new Result(Kind.ERROR, "Usage: :type FORMULA");
 		final LanguageDependendAnimationPart ldp = animator
@@ -230,7 +315,8 @@ public class ConsoleEvaluator implements ILifecycleListener {
 		final String solver = SOLVERS.get(name.toLowerCase(Locale.ROOT));
 		if (solver == null)
 			return new Result(Kind.ERROR, "Unknown command :" + name
-					+ ", available: :help, :x, :type, " + solverCommands());
+					+ ", available: :help, :x, :type, :state, :prefs, "
+					+ solverCommands());
 		final String formula = command.substring(end).trim();
 		if (formula.isEmpty())
 			return new Result(Kind.ERROR, "Usage: :" + name + " PRED");
