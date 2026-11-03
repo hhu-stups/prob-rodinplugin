@@ -120,14 +120,17 @@ public class EventBAnimatorPart implements LanguageDependendAnimationPart {
 	 */
 	public static final class OpenFormula {
 		private final boolean predicate;
+		private final boolean usesModelIdentifiers;
 		private final List<String> freeIdentifiers;
 		private final String resultIdentifier;
 		private final PrologTerm solverPredicate;
 
 		OpenFormula(final boolean predicate,
+				final boolean usesModelIdentifiers,
 				final List<String> freeIdentifiers,
 				final String resultIdentifier, final PrologTerm solverPredicate) {
 			this.predicate = predicate;
+			this.usesModelIdentifiers = usesModelIdentifiers;
 			this.freeIdentifiers = Collections
 					.unmodifiableList(freeIdentifiers);
 			this.resultIdentifier = resultIdentifier;
@@ -137,6 +140,11 @@ public class EventBAnimatorPart implements LanguageDependendAnimationPart {
 		/** @return true for a predicate, false for an expression */
 		public boolean isPredicate() {
 			return predicate;
+		}
+
+		/** @return true if the formula uses constants or variables */
+		public boolean usesModelIdentifiers() {
+			return usesModelIdentifiers;
 		}
 
 		/**
@@ -181,7 +189,8 @@ public class EventBAnimatorPart implements LanguageDependendAnimationPart {
 		if (!predicateResult.hasProblem()) {
 			final Predicate pred = predicateResult.getParsedPredicate();
 			final List<String> free = typeCheckOpen(pred, typeEnv, formula);
-			return new OpenFormula(true, free, null, toPrologTerm(pred));
+			return new OpenFormula(true, usesModelIdentifiers(pred, typeEnv),
+					free, null, toPrologTerm(pred));
 		}
 
 		final IParseResult expressionResult = ff
@@ -195,7 +204,16 @@ public class EventBAnimatorPart implements LanguageDependendAnimationPart {
 				ff.makeFreeIdentifier(result, null), expr, null);
 		final List<String> free = typeCheckOpen(equality, typeEnv, formula);
 		free.remove(result);
-		return new OpenFormula(false, free, result, toPrologTerm(equality));
+		return new OpenFormula(false, usesModelIdentifiers(expr, typeEnv),
+				free, result, toPrologTerm(equality));
+	}
+
+	private static boolean usesModelIdentifiers(final Formula<?> formula,
+			final ITypeEnvironment typeEnvironment) {
+		for (FreeIdentifier id : formula.getFreeIdentifiers())
+			if (typeEnvironment.contains(id.getName()))
+				return true;
+		return false;
 	}
 
 	/**

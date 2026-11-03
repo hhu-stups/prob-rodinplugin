@@ -37,7 +37,9 @@ import de.prob.unicode.UnicodeTranslator;
  * the current state of the animator, using the same commands as the formulas
  * of the State view. Identifiers that do not belong to the model are treated
  * as existentially quantified: ProB's constraint solver searches values for
- * them.
+ * them. The other formulas are evaluated by the solver too (an expression E
+ * as CONSOLE_RESULT = E), unless they need values of a state that is not
+ * initialised.
  * 
  * Must not be called from the UI thread: it waits for ProB.
  */
@@ -143,24 +145,28 @@ public class ConsoleEvaluator implements ILifecycleListener {
 		if (isSolverCommand(formula))
 			return solveWith(animator, state, formula);
 
+		final LanguageDependendAnimationPart ldp = animator
+				.getLanguageDependendPart();
+		if (ldp == null)
+			return new Result(Kind.NOT_AVAILABLE,
+					"Formulas cannot be parsed for this model.");
+		// decided each time: whether an expression goes to the solver
+		// depends on the state
+		if (ldp instanceof EventBAnimatorPart) {
+			final OpenFormula open;
+			try {
+				open = ((EventBAnimatorPart) ldp).parseOpenFormula(formula);
+			} catch (ProBParseException e) {
+				return new Result(Kind.ERROR, e.getMessage());
+			}
+			if (!open.getFreeIdentifiers().isEmpty()
+					|| useSolver(open, state))
+				return solve(animator, state, open,
+						CbcSolveCommand.DEFAULT_SOLVER);
+		}
+
 		EvaluationElement element = elements.get(formula);
 		if (element == null) {
-			final LanguageDependendAnimationPart ldp = animator
-					.getLanguageDependendPart();
-			if (ldp == null)
-				return new Result(Kind.NOT_AVAILABLE,
-						"Formulas cannot be parsed for this model.");
-			if (ldp instanceof EventBAnimatorPart) {
-				final OpenFormula open;
-				try {
-					open = ((EventBAnimatorPart) ldp).parseOpenFormula(formula);
-				} catch (ProBParseException e) {
-					return new Result(Kind.ERROR, e.getMessage());
-				}
-				if (!open.getFreeIdentifiers().isEmpty())
-					return solve(animator, state, open,
-							CbcSolveCommand.DEFAULT_SOLVER);
-			}
 			final PrologTerm parsed;
 			try {
 				parsed = parse(new ProBParserBaseAdapter(ldp), formula);
@@ -385,7 +391,9 @@ public class ConsoleEvaluator implements ILifecycleListener {
 					sb.toString());
 		case NO_SOLUTION:
 			return formula.isPredicate() ? new Result(Kind.FALSE,
-					"FALSE (no solution exists)" + time(cmd)) : new Result(
+					(formula.getFreeIdentifiers().isEmpty() ? "FALSE"
+							: "FALSE (no solution exists)") + time(cmd))
+					: new Result(
 					Kind.ERROR, "The expression has no value." + time(cmd));
 		case UNKNOWN:
 			return new Result(Kind.UNKNOWN, "UNKNOWN: no solution found"
@@ -401,6 +409,17 @@ public class ConsoleEvaluator implements ILifecycleListener {
 			return "";
 		return "\n  (solved by " + cmd.getSolver() + " in "
 				+ cmd.getMilliseconds() + " ms)";
+	}
+
+	/**
+	 * Formulas without free identifiers are also evaluated by the solver (an
+	 * expression E as CONSOLE_RESULT = E), except if they use identifiers of
+	 * the model in a state that is not initialised: the solver would then
+	 * choose values for them
+	 */
+	private static boolean useSolver(final OpenFormula formula,
+			final State state) {
+		return state.isInitialized() || !formula.usesModelIdentifiers();
 	}
 
 	private static String valueOf(final Map<String, String> solution,

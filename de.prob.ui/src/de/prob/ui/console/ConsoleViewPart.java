@@ -566,6 +566,8 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 				+ "  Identifiers that are not part of the model are treated as existentially\n"
 				+ "  quantified: ProB's constraint solver searches values for them and shows\n"
 				+ "  them (e.g. x : 1..10 & x*x = 49). Their types must be inferable.\n"
+				+ "  All formulas are evaluated with the solver (except in states that are\n"
+				+ "  not initialised, if they use constants or variables).\n"
 				+ "  UNKNOWN means that the solver found no solution, but could not show\n"
 				+ "  that none exists (e.g. after a time-out).\n"
 				+ "\n"
