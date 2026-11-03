@@ -48,8 +48,10 @@ public final class GetCurrentPreferencesCommand implements IComposableCommand {
 		values = Collections.unmodifiableMap(result);
 	}
 
+	// like the default values in ProBPreference; atomicString only accepts
+	// atoms, not numbers
 	private static String toString(final PrologTerm value) {
-		return value.isAtomic() ? PrologTerm.atomicString(value) : value
+		return value.isAtom() ? PrologTerm.atomicString(value) : value
 				.toString();
 	}
 
