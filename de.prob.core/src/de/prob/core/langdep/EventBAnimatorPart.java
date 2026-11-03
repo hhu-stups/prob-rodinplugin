@@ -7,9 +7,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.eclipse.core.runtime.CoreException;
@@ -32,6 +35,8 @@ import org.eventb.core.ast.ITypeCheckResult;
 import org.eventb.core.ast.ITypeEnvironment;
 import org.eventb.core.ast.ITypeEnvironmentBuilder;
 import org.eventb.core.ast.Predicate;
+import org.eventb.core.ast.ProblemKind;
+import org.eventb.core.ast.SourceLocation;
 import org.eventb.core.ast.Type;
 import org.rodinp.core.IRodinFile;
 import org.rodinp.core.RodinDBException;
@@ -84,7 +89,7 @@ public class EventBAnimatorPart implements LanguageDependendAnimationPart {
 
 		checkParseResult(parseResult);
 		final Expression ee = parseResult.getParsedExpression();
-		typeCheck(ff, ee);
+		typeCheck(ff, ee, expression);
 		final PExpression expr = TranslationVisitor.translateExpression(ee);
 		toPrologTerm(pto, expr, wrap, EXPR_WRAPPER);
 	}
@@ -100,7 +105,7 @@ public class EventBAnimatorPart implements LanguageDependendAnimationPart {
 
 		checkParseResult(parseResult);
 		final Predicate pp = parseResult.getParsedPredicate();
-		typeCheck(ff, pp);
+		typeCheck(ff, pp, predicate);
 		final PPredicate apred = TranslationVisitor.translatePredicate(pp);
 		toPrologTerm(pto, apred, wrap, PRED_WRAPPER);
 	}
@@ -175,7 +180,7 @@ public class EventBAnimatorPart implements LanguageDependendAnimationPart {
 		final IParseResult predicateResult = ff.parsePredicate(formula, null);
 		if (!predicateResult.hasProblem()) {
 			final Predicate pred = predicateResult.getParsedPredicate();
-			final List<String> free = typeCheckOpen(pred, typeEnv);
+			final List<String> free = typeCheckOpen(pred, typeEnv, formula);
 			return new OpenFormula(true, free, null, toPrologTerm(pred));
 		}
 
@@ -188,7 +193,7 @@ public class EventBAnimatorPart implements LanguageDependendAnimationPart {
 		final String result = freshName(expr, typeEnv);
 		final Predicate equality = ff.makeRelationalPredicate(Formula.EQUAL,
 				ff.makeFreeIdentifier(result, null), expr, null);
-		final List<String> free = typeCheckOpen(equality, typeEnv);
+		final List<String> free = typeCheckOpen(equality, typeEnv, formula);
 		free.remove(result);
 		return new OpenFormula(false, free, result, toPrologTerm(equality));
 	}
@@ -215,10 +220,8 @@ public class EventBAnimatorPart implements LanguageDependendAnimationPart {
 			parsed = expressionResult.getParsedExpression();
 		}
 		final ITypeCheckResult tcr = parsed.typeCheck(typeEnv);
-		if (tcr.hasProblem()) {
-			final ASTProblem problem = tcr.getProblems().iterator().next();
-			throw new ProBParseException(problem.toString());
-		}
+		if (tcr.hasProblem())
+			throw typeError(tcr, formula);
 		final StringBuilder sb = new StringBuilder();
 		sb.append(parsed instanceof Expression ? ((Expression) parsed)
 				.getType().toString() : "predicate");
@@ -235,14 +238,57 @@ public class EventBAnimatorPart implements LanguageDependendAnimationPart {
 	 * @return the identifiers that are not in the type environment, sorted
 	 */
 	private List<String> typeCheckOpen(final Formula<?> formula,
-			final ITypeEnvironment typeEnvironment) throws ProBParseException {
+			final ITypeEnvironment typeEnvironment, final String text)
+			throws ProBParseException {
 		final ITypeCheckResult tcr = formula.typeCheck(typeEnvironment);
-		if (tcr.hasProblem()) {
-			final ASTProblem problem = tcr.getProblems().iterator().next();
-			throw new ProBParseException(problem.toString());
-		}
+		if (tcr.hasProblem())
+			throw typeError(tcr, text);
 		return new ArrayList<String>(new TreeSet<String>(tcr
 				.getInferredEnvironment().getNames()));
+	}
+
+	/**
+	 * @param text
+	 *            the parsed text, the problems refer to positions in it
+	 * @return an exception for the type check problems; Rodin's message for
+	 *         an unknown type does not say which identifier is concerned
+	 */
+	private static ProBParseException typeError(final ITypeCheckResult tcr,
+			final String text) {
+		// the identifiers in the order they occur in the text
+		final Map<Integer, String> unknownByPosition = new TreeMap<Integer, String>();
+		ASTProblem other = null;
+		for (ASTProblem problem : tcr.getProblems()) {
+			final String snippet = snippet(problem, text);
+			if (problem.getMessage() == ProblemKind.TypeUnknown
+					&& snippet != null)
+				unknownByPosition.put(problem.getSourceLocation().getStart(),
+						snippet);
+			else if (other == null)
+				other = problem;
+		}
+		final Set<String> unknown = new LinkedHashSet<String>(
+				unknownByPosition.values());
+		if (!unknown.isEmpty())
+			return new ProBParseException("Cannot infer the type of "
+					+ String.join(", ", unknown)
+					+ " (add a typing predicate such as x \u2208 \u2124)");
+		if (other == null) // only problems without a location
+			other = tcr.getProblems().get(0);
+		final String snippet = snippet(other, text);
+		return new ProBParseException(snippet == null
+				|| snippet.equals(text.trim()) ? other.toString() : other
+				+ " in: " + snippet);
+	}
+
+	/** @return the part of the text the problem refers to, if known */
+	private static String snippet(final ASTProblem problem, final String text) {
+		final SourceLocation location = problem.getSourceLocation();
+		if (location == null || location.getStart() < 0
+				|| location.getEnd() >= text.length()
+				|| location.getStart() > location.getEnd())
+			return null;
+		return text.substring(location.getStart(), location.getEnd() + 1);
 	}
 
 	private static String freshName(final Expression expr,
@@ -283,19 +329,17 @@ public class EventBAnimatorPart implements LanguageDependendAnimationPart {
 		}
 	}
 
-	private void typeCheck(final FormulaFactory ff, final Formula<?> pp)
-			throws ProBParseException {
-		typeCheck(pp, getTypeEnvironment(ff));
+	private void typeCheck(final FormulaFactory ff, final Formula<?> pp,
+			final String text) throws ProBParseException {
+		typeCheck(pp, getTypeEnvironment(ff), text);
 	}
 
 	private void typeCheck(final Formula<?> pp,
-			final ITypeEnvironment typeEnvironment) throws ProBParseException {
+			final ITypeEnvironment typeEnvironment, final String text)
+			throws ProBParseException {
 		final ITypeCheckResult tcr = pp.typeCheck(typeEnvironment);
-		if (tcr.hasProblem()) {
-			final List<ASTProblem> problems = tcr.getProblems();
-			final ASTProblem problem = problems.iterator().next();
-			throw new ProBParseException(problem.toString());
-		}
+		if (tcr.hasProblem())
+			throw typeError(tcr, text);
 		final ITypeEnvironment inferred = tcr.getInferredEnvironment();
 		if (!inferred.isEmpty()) {
 			final Set<String> names = inferred.getNames();
@@ -394,7 +438,7 @@ public class EventBAnimatorPart implements LanguageDependendAnimationPart {
 		addEventParameters(event, ff, typeEnv, new ArrayList<String>());
 		final ISCMachineRoot machine = ((IMachineRoot) root).getSCMachineRoot();
 		addPostStateVariables(machine, ff, typeEnv, new ArrayList<String>());
-		typeCheck(predicate, typeEnv);
+		typeCheck(predicate, typeEnv, utf8String);
 		return predicate;
 	}
 

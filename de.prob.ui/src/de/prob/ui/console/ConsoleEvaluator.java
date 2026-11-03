@@ -120,6 +120,8 @@ public class ConsoleEvaluator implements ILifecycleListener {
 		final Animator animator = Animator.getAnimator();
 		if (!animator.isMachineLoaded())
 			return new Result(Kind.NOT_AVAILABLE, "No model is being animated.");
+		if (isTypeCommand(formula))
+			return describeType(animator, formula);
 		final State state = animator.getCurrentState();
 		if (state == null)
 			return new Result(Kind.NOT_AVAILABLE, "There is no current state.");
@@ -179,6 +181,35 @@ public class ConsoleEvaluator implements ILifecycleListener {
 		}
 	}
 
+	/** ":type F", also if ':' has become '\u2208' */
+	private static boolean isTypeCommand(final String formula) {
+		if (!isSolverCommand(formula))
+			return false;
+		final String command = formula.substring(1);
+		return command.startsWith("type")
+				&& (command.length() == 4 || Character.isWhitespace(command
+						.charAt(4)));
+	}
+
+	/** ":type F": the type of F, computed by Rodin's type checker */
+	private static Result describeType(final Animator animator,
+			final String input) {
+		final String formula = input.substring(1 + "type".length()).trim();
+		if (formula.isEmpty())
+			return new Result(Kind.ERROR, "Usage: :type FORMULA");
+		final LanguageDependendAnimationPart ldp = animator
+				.getLanguageDependendPart();
+		if (!(ldp instanceof EventBAnimatorPart))
+			return new Result(Kind.NOT_AVAILABLE,
+					"Types are only available for Event-B models.");
+		try {
+			return new Result(Kind.VALUE,
+					((EventBAnimatorPart) ldp).describeType(formula));
+		} catch (ProBParseException e) {
+			return new Result(Kind.ERROR, e.getMessage());
+		}
+	}
+
 	private static boolean isSolverCommand(final String formula) {
 		// with "Type Mathematical Symbols", ':' may have become '\u2208'
 		return formula.startsWith(":") || formula.startsWith("\u2208");
@@ -199,7 +230,7 @@ public class ConsoleEvaluator implements ILifecycleListener {
 		final String solver = SOLVERS.get(name.toLowerCase(Locale.ROOT));
 		if (solver == null)
 			return new Result(Kind.ERROR, "Unknown command :" + name
-					+ ", available: " + solverCommands());
+					+ ", available: :help, :x, :type, " + solverCommands());
 		final String formula = command.substring(end).trim();
 		if (formula.isEmpty())
 			return new Result(Kind.ERROR, "Usage: :" + name + " PRED");
