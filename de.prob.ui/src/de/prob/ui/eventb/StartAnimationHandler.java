@@ -15,6 +15,7 @@ import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.Adapters;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
@@ -22,6 +23,7 @@ import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.eventb.core.IContextRoot;
 import org.eventb.core.IEventBRoot;
@@ -65,15 +67,16 @@ public class StartAnimationHandler extends AbstractHandler implements IHandler {
 	}
 
 	private ISelection fSelection;
-	private ModificationListener listener;
+	// shared by the handlers of the explorer and of the editors (see
+	// StartEditorAnimationHandler): only the animated model is watched
+	private static ModificationListener listener;
 
 	@Override
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
 
 		fSelection = HandlerUtil.getCurrentSelection(event);
 
-		// Get the Selection
-		final IEventBRoot rootElement = getRootElement();
+		final IEventBRoot rootElement = findRootElement(event);
 		final IFile resource = extractResource(rootElement);
 		if (resource == null) {
 			// e.g. several elements or no Event-B component selected
@@ -161,6 +164,30 @@ public class StartAnimationHandler extends AbstractHandler implements IHandler {
 			}
 		}
 		return root;
+	}
+
+	/**
+	 * @return the machine or context to animate, null if there is none
+	 */
+	protected IEventBRoot findRootElement(final ExecutionEvent event) {
+		return getRootElement();
+	}
+
+	/**
+	 * @return the machine or context of the active editor, null if there is
+	 *         none
+	 */
+	protected static IEventBRoot getEditorRootElement(
+			final ExecutionEvent event) {
+		final IEditorInput input = HandlerUtil.getActiveEditorInput(event);
+		final IFile file = input == null ? null : Adapters.adapt(input,
+				IFile.class);
+		if (file == null)
+			return null;
+		final IRodinFile rodinFile = RodinCore.valueOf(file);
+		if (rodinFile == null || !(rodinFile.getRoot() instanceof IEventBRoot))
+			return null;
+		return (IEventBRoot) rodinFile.getRoot();
 	}
 
 	private IFile extractResource(final IEventBRoot rootElement) {

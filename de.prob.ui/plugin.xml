@@ -220,6 +220,10 @@
             name="Event-B Animate / Model Check">
       </command>
       <command
+            id="de.prob.ui.starteditoranimation"
+            name="Event-B Animate / Model Check Edited Model">
+      </command>
+      <command
             id="de.prob.ui.navigator.context"
             name="Project Explorer Context Menu">
       </command>
@@ -537,6 +541,15 @@
             </enabledWhen>
       </handler>
       <handler
+            class="de.prob.ui.eventb.StartEditorAnimationHandler"
+            commandId="de.prob.ui.starteditoranimation">
+         <enabledWhen>
+            <reference
+                  definitionId="de.prob.ui.eventbEditorActive">
+            </reference>
+         </enabledWhen>
+      </handler>
+      <handler
             commandId="de.prob.ui.create_config">
          <class
                class="de.prob.ui.eventb.CreateConfigurationHandler">
@@ -823,7 +836,110 @@
       </handler>
    </extension>
    <extension
+         point="org.eclipse.core.expressions.definitions">
+      <!-- the active editor shows an Event-B machine or context: Camille or
+           Rodin's own editors -->
+      <definition
+            id="de.prob.ui.eventbEditorActive">
+         <!-- by id: needs no plug-in activation, unlike adapting the input -->
+         <with
+               variable="activeEditorId">
+            <or>
+               <equals
+                     value="org.eventb.texteditor.ui.texteditor">
+               </equals>
+               <equals
+                     value="org.eventb.ui.editors.machine">
+               </equals>
+               <equals
+                     value="org.eventb.ui.editors.context">
+               </equals>
+            </or>
+         </with>
+      </definition>
+   </extension>
+   <extension
          point="org.eclipse.ui.menus">
+      <!-- toolbars of Rodin's editors for machines and contexts (top right,
+           next to the tabs); their editing pages have no right-click menu -->
+      <menuContribution
+            locationURI="toolbar:org.eventb.ui.editors.machine">
+         <command
+               commandId="de.prob.ui.starteditoranimation"
+               icon="icons/prob.png"
+               style="push"
+               tooltip="Start Animation / Model Checking with ProB">
+         </command>
+      </menuContribution>
+      <menuContribution
+            locationURI="toolbar:org.eventb.ui.editors.context">
+         <command
+               commandId="de.prob.ui.starteditoranimation"
+               icon="icons/prob.png"
+               style="push"
+               tooltip="Start Animation / Model Checking with ProB">
+         </command>
+      </menuContribution>
+      <!-- right-click menus of the editors for machines and contexts:
+           Camille (registered as #texteditor.context.menu) and the
+           tree pages of Rodin's editors (registered with the editor ids) -->
+      <menuContribution
+            locationURI="popup:#texteditor.context.menu?after=additions">
+         <separator
+               name="de.prob.ui.editorSeparator"
+               visible="true">
+         </separator>
+         <command
+               commandId="de.prob.ui.starteditoranimation"
+               icon="icons/prob.png"
+               label="Start Animation / Model Checking"
+               style="push">
+            <visibleWhen
+                  checkEnabled="false">
+               <reference
+                     definitionId="de.prob.ui.eventbEditorActive">
+               </reference>
+            </visibleWhen>
+         </command>
+      </menuContribution>
+      <menuContribution
+            locationURI="popup:org.eventb.ui.editors.machine?after=additions">
+         <separator
+               name="de.prob.ui.editorSeparator"
+               visible="true">
+         </separator>
+         <command
+               commandId="de.prob.ui.starteditoranimation"
+               icon="icons/prob.png"
+               label="Start Animation / Model Checking"
+               style="push">
+            <visibleWhen
+                  checkEnabled="false">
+               <reference
+                     definitionId="de.prob.ui.eventbEditorActive">
+               </reference>
+            </visibleWhen>
+         </command>
+      </menuContribution>
+      <menuContribution
+            locationURI="popup:org.eventb.ui.editors.context?after=additions">
+         <separator
+               name="de.prob.ui.editorSeparator"
+               visible="true">
+         </separator>
+         <command
+               commandId="de.prob.ui.starteditoranimation"
+               icon="icons/prob.png"
+               label="Start Animation / Model Checking"
+               style="push">
+            <visibleWhen
+                  checkEnabled="false">
+               <reference
+                     definitionId="de.prob.ui.eventbEditorActive">
+               </reference>
+            </visibleWhen>
+         </command>
+      </menuContribution>
       <menuContribution
             locationURI="toolbar:de.prob.ui.StateView">
          <command
