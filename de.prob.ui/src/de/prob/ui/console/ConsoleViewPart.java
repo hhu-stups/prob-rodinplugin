@@ -26,6 +26,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
@@ -279,7 +280,17 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 					.getDefault();
 			if (keyboard == null)
 				return;
-			mathSymbolsListener = keyboard.createRodinModifyListener();
+			final ModifyListener rodinListener = keyboard
+					.createRodinModifyListener();
+			// not in console commands like ":kodkod", ':' would become '\u2208'
+			// (their formulas are translated when they are parsed)
+			mathSymbolsListener = new ModifyListener() {
+				@Override
+				public void modifyText(final ModifyEvent e) {
+					if (!isCommand(input.getText()))
+						rodinListener.modifyText(e);
+				}
+			};
 		} catch (LinkageError e) {
 			// the Rodin keyboard is an optional dependency, or an old version
 			// without this method: no translation
@@ -357,12 +368,46 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 			history.add(text);
 		historyIndex = history.size();
 		input.setText("");
-		if (isHelpCommand(text.trim())) {
+		if (isCloseCommand(text.trim())) {
+			// not while the key event of the input is being handled: closing
+			// disposes the input
+			final ConsoleViewPart view = this;
+			input.getDisplay().asyncExec(new Runnable() {
+				@Override
+				public void run() {
+					if (!input.isDisposed())
+						getSite().getPage().hideView(view);
+				}
+			});
+		} else if (isHelpCommand(text.trim())) {
 			append(PROMPT + text + "\n", null, SWT.BOLD);
 			showHelp();
 		} else {
 			evaluate(text);
 		}
+	}
+
+	/** console commands start with ':', e.g. ":help" or ":kodkod PRED" */
+	private static boolean isCommand(final String text) {
+		return text.stripLeading().startsWith(":");
+	}
+
+	/** the input as shown in the output, with mathematical symbols */
+	private static String echo(final String text) {
+		if (!isCommand(text))
+			return UnicodeTranslator.toUnicode(text);
+		// keep the command, e.g. ":kodkod", ':' would become '\u2208'
+		final String command = text.stripLeading();
+		int end = 0;
+		while (end < command.length()
+				&& !Character.isWhitespace(command.charAt(end)))
+			end++;
+		return command.substring(0, end)
+				+ UnicodeTranslator.toUnicode(command.substring(end));
+	}
+
+	private static boolean isCloseCommand(final String text) {
+		return text.equals(":x") || text.equals("\u2208x");
 	}
 
 	private static boolean isHelpCommand(final String text) {
@@ -395,6 +440,7 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 				+ "\n"
 				+ "Commands\n"
 				+ "  :help or :?      show this help\n"
+				+ "  :x               close the console\n"
 				+ "  :SOLVER PRED     solve PRED (or an expression) with another solver, also\n"
 				+ "                   without free identifiers; SOLVER is one of\n"
 				+ "                   " + ConsoleEvaluator.solverCommands() + "\n"
@@ -403,7 +449,8 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 				+ "Toolbar\n"
 				+ "  Clear            remove the output\n"
 				+ "  \u2200                translate ASCII into mathematical symbols while typing,\n"
-				+ "                   as in the Rodin editors (e.g. : becomes \u2208)\n"
+				+ "                   as in the Rodin editors (e.g. : becomes \u2208), except in\n"
+				+ "                   commands, i.e. inputs starting with :\n"
 				+ "  ms               show how long the solver took\n"
 				+ "  ?                show this help\n";
 		append(help, getColor(SWT.COLOR_DARK_GRAY), SWT.NORMAL);
@@ -459,7 +506,7 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 				setContentDescription("");
 				input.setEnabled(true);
 				input.setFocus();
-				append(PROMPT + UnicodeTranslator.toUnicode(text) + "\n",
+				append(PROMPT + echo(text) + "\n",
 						null, SWT.BOLD);
 				append(result.getText() + "\n", getResultColor(result
 						.getKind()), SWT.NORMAL);
@@ -564,21 +611,25 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 				start--;
 			final String prefix = contents.substring(start, position);
 
-			// a command at the start, e.g. ":kod" or ":he"
-			if (start == 1
-					&& (contents.charAt(0) == ':' || contents.charAt(0) == '\u2208')) {
+			// a command at the start, e.g. ":kod" or ":he"; '\u2208' if ':' was
+			// translated (also after leading white space)
+			final String beforeWord = contents.substring(0, start);
+			final String marker = beforeWord.trim();
+			if (marker.equals(":") || marker.equals("\u2208")) {
 				final List<IContentProposal> commands = new ArrayList<IContentProposal>();
 				final List<String> names = new ArrayList<String>();
 				names.add(":help");
+				names.add(":x");
 				names.addAll(Arrays.asList(ConsoleEvaluator.solverCommands()
 						.split(", ")));
 				for (String command : names) {
 					final String name = command.substring(1);
 					// a solver command is followed by the predicate
-					final String space = name.equals("help") ? "" : " ";
+					final String space = name.equals("help")
+							|| name.equals("x") ? "" : " ";
 					if (name.startsWith(prefix))
 						commands.add(new ContentProposal(name.substring(prefix
-								.length()) + space, command, null));
+								.length()) + space, marker + name, null));
 				}
 				return commands.toArray(new IContentProposal[commands.size()]);
 			}
