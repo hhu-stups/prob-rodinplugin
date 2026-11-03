@@ -20,8 +20,10 @@ import org.eclipse.jface.fieldassist.ContentProposalAdapter;
 import org.eclipse.jface.fieldassist.IContentProposal;
 import org.eclipse.jface.fieldassist.IContentProposalProvider;
 import org.eclipse.jface.fieldassist.TextContentAdapter;
+import org.eclipse.jface.resource.FontDescriptor;
 import org.eclipse.jface.resource.FontRegistry;
 import org.eclipse.jface.resource.JFaceResources;
+import org.eclipse.jface.resource.LocalResourceManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.custom.StyleRange;
@@ -30,10 +32,12 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
@@ -66,7 +70,12 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 
 	private static final String PROMPT = "> ";
 	// the font of the Rodin editors, which contains the mathematical symbols
-	private static final String RODIN_FONT_KEY = "org.rodinp.keyboard.textFont";
+	private static final String RODIN_FONT_KEY = "org.rodinp.keyboard.ui.textFont";
+	private static final String MATH_FONT_NAME = "Brave Sans Mono";
+	// Rodin's symbols for <<-> <->> <<->> <+ are characters of the private
+	// use area that only Brave Sans Mono contains
+	private static final char FIRST_MATH_FONT_CHAR = '\uE100';
+	private static final char LAST_MATH_FONT_CHAR = '\uE103';
 	private static final String MATH_SYMBOLS_SETTING = "console.mathSymbols";
 	private static final String SOLVE_TIME_SETTING = "console.showSolveTime";
 	// older output is removed, a StyledText becomes slow with huge contents
@@ -111,6 +120,7 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 		output = new StyledText(parent, SWT.MULTI | SWT.READ_ONLY
 				| SWT.V_SCROLL | SWT.H_SCROLL);
 		output.setFont(getConsoleFont());
+		mathFont = createMathFont(output);
 		final GridData outputData = new GridData(SWT.FILL, SWT.FILL, true,
 				true, 2, 2);
 		// at least two lines of output stays visible above the input
@@ -246,10 +256,46 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 		}
 	}
 
+	/** Brave Sans Mono for the symbols only it contains, null if missing */
+	private Font mathFont;
+
 	private static Font getConsoleFont() {
+		ensureMathFontIsLoaded();
 		final FontRegistry fonts = JFaceResources.getFontRegistry();
 		return fonts.hasValueFor(RODIN_FONT_KEY) ? fonts.get(RODIN_FONT_KEY)
 				: JFaceResources.getTextFont();
+	}
+
+	/**
+	 * Rodin loads Brave Sans Mono from its keyboard plug-in only when it is
+	 * needed (e.g. by an Event-B editor)
+	 */
+	private static void ensureMathFontIsLoaded() {
+		try {
+			final RodinKeyboardUIPlugin keyboard = RodinKeyboardUIPlugin
+					.getDefault();
+			if (keyboard != null)
+				keyboard.ensureMathFontIsAvailable();
+		} catch (LinkageError e) {
+			// optional dependency, or a version without this method
+		}
+	}
+
+	/**
+	 * @return Brave Sans Mono in the size of the console font, disposed with
+	 *         the control; null if the font is not available
+	 */
+	private static Font createMathFont(final Control control) {
+		final Display display = control.getDisplay();
+		if (display.getFontList(MATH_FONT_NAME, true).length == 0)
+			return null;
+		final FontData[] consoleFont = control.getFont().getFontData();
+		final int height = consoleFont.length > 0 ? consoleFont[0].getHeight()
+				: 10;
+		final LocalResourceManager resources = new LocalResourceManager(
+				JFaceResources.getResources(), control);
+		return resources.create(FontDescriptor.createFrom(MATH_FONT_NAME,
+				height, SWT.NORMAL));
 	}
 
 	/**
@@ -561,6 +607,17 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 		final StyleRange range = new StyleRange(start, text.length(), color,
 				null, style);
 		output.setStyleRange(range);
+		if (mathFont != null) {
+			for (int i = 0; i < text.length(); i++) {
+				final char c = text.charAt(i);
+				if (c >= FIRST_MATH_FONT_CHAR && c <= LAST_MATH_FONT_CHAR) {
+					final StyleRange symbol = new StyleRange(start + i, 1,
+							color, null);
+					symbol.font = mathFont;
+					output.setStyleRange(symbol);
+				}
+			}
+		}
 		if (output.getCharCount() > MAX_OUTPUT_LENGTH) {
 			output.replaceTextRange(0, output.getCharCount()
 					- MAX_OUTPUT_LENGTH, "");
