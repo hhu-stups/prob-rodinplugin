@@ -152,6 +152,8 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 				if (proposalAdapter != null
 						&& proposalAdapter.isProposalPopupOpen())
 					return;
+				if (handleFontSizeKey(e))
+					return;
 				if (e.keyCode == SWT.CR || e.keyCode == SWT.KEYPAD_CR) {
 					// Shift+Enter inserts a line break
 					if ((e.stateMask & SWT.SHIFT) == 0) {
@@ -235,6 +237,8 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 		output.addListener(SWT.KeyDown, new Listener() {
 			@Override
 			public void handleEvent(final Event e) {
+				if (handleFontSizeKey(e))
+					return;
 				// keep shortcuts like Ctrl+C or Ctrl+A for the output
 				final boolean shortcut = (e.stateMask & (SWT.MOD1 | SWT.MOD3 | SWT.MOD4)) != 0;
 				if (!shortcut && e.character >= ' ' && e.character != SWT.DEL
@@ -297,16 +301,39 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 				changeFontSize(1);
 			}
 		};
-		larger.setToolTipText("Increase Font Size");
+		larger.setToolTipText("Increase Font Size (Ctrl+=)");
 		final Action smaller = new Action("\u2212") {
 			@Override
 			public void run() {
 				changeFontSize(-1);
 			}
 		};
-		smaller.setToolTipText("Decrease Font Size");
+		smaller.setToolTipText("Decrease Font Size (Ctrl+-)");
 		getViewSite().getActionBars().getToolBarManager().add(larger);
 		getViewSite().getActionBars().getToolBarManager().add(smaller);
+	}
+
+	/**
+	 * Ctrl+= (or Ctrl++) and Ctrl+- change the font size; on macOS also with
+	 * Cmd, like zooming in Eclipse's editors
+	 * 
+	 * @return true if the key was handled
+	 */
+	private boolean handleFontSizeKey(final Event e) {
+		if ((e.stateMask & (SWT.CTRL | SWT.MOD1)) == 0
+				|| (e.stateMask & SWT.ALT) != 0)
+			return false;
+		final int change;
+		if (e.keyCode == '=' || e.keyCode == '+' || e.character == '+'
+				|| e.keyCode == SWT.KEYPAD_ADD)
+			change = 1;
+		else if (e.keyCode == '-' || e.keyCode == SWT.KEYPAD_SUBTRACT)
+			change = -1;
+		else
+			return false;
+		e.doit = false;
+		changeFontSize(change);
+		return true;
 	}
 
 	private void changeFontSize(final int change) {
@@ -515,7 +542,9 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 			history.add(text);
 		historyIndex = history.size();
 		input.setText("");
-		if (isCloseCommand(text.trim())) {
+		if (isClearCommand(text.trim())) {
+			output.setText("");
+		} else if (isCloseCommand(text.trim())) {
 			// not while the key event of the input is being handled: closing
 			// disposes the input
 			final ConsoleViewPart view = this;
@@ -557,6 +586,10 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 				+ UnicodeTranslator.toUnicode(command.substring(end));
 	}
 
+	private static boolean isClearCommand(final String text) {
+		return text.equals(":clear") || text.equals("\u2208clear");
+	}
+
 	private static boolean isCloseCommand(final String text) {
 		return text.equals(":x") || text.equals("\u2208x");
 	}
@@ -594,6 +627,7 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 				{ "help", ":help [COMMAND]",
 						"show this help, or only the help for one command\n(e.g. :help type); :? is short for :help" },
 				{ "x", ":x", "close the console" },
+				{ "clear", ":clear", "remove the output (like the Clear button)" },
 				{ "type", ":type F",
 						"the type of the predicate or expression F, and the\ninferred types of its free identifiers" },
 				{ "state", ":state",
@@ -666,6 +700,7 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 				+ "                   solver commands: a unique completion is inserted, otherwise\n"
 				+ "                   the common prefix, otherwise the list of proposals opens\n"
 				+ "  Ctrl+Space       open the list of proposals\n"
+				+ "  Ctrl+= / Ctrl+-  larger / smaller font (on macOS also with Cmd)\n"
 				+ "  Typing in the output area continues in the input; the output can be selected\n"
 				+ "  and copied. A long evaluation can be cancelled in the Progress view.\n"
 				+ "\n"
@@ -678,6 +713,7 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 				+ "                   as in the Rodin editors (e.g. : becomes \u2208), except in\n"
 				+ "                   commands, i.e. inputs starting with :\n"
 				+ "  ms               show how long the solver took\n"
+				+ "  + / \u2212            larger / smaller font (also Ctrl+= / Ctrl+-)\n"
 				+ "  ?                show this help\n";
 		append(help, getColor(SWT.COLOR_DARK_GRAY), SWT.NORMAL);
 	}
@@ -857,6 +893,7 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 				final List<String> names = new ArrayList<String>();
 				names.add(":help");
 				names.add(":x");
+				names.add(":clear");
 				names.add(":type");
 				names.add(":state");
 				names.add(":prefs");
@@ -866,7 +903,8 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 					final String name = command.substring(1);
 					// a solver command is followed by the predicate
 					final String space = name.equals("help")
-							|| name.equals("x") || name.equals("state") ? ""
+							|| name.equals("x") || name.equals("state")
+							|| name.equals("clear") ? ""
 							: " ";
 					if (name.startsWith(prefix))
 						commands.add(new ContentProposal(name.substring(prefix
