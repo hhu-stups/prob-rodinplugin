@@ -194,6 +194,42 @@ public class EventBAnimatorPart implements LanguageDependendAnimationPart {
 	}
 
 	/**
+	 * Describes the type of a predicate or expression (parsed as in
+	 * {@link #parseOpenFormula(String)}): "predicate" or the type of the
+	 * expression, followed by the inferred types of the identifiers that do
+	 * not belong to the model, one per line (e.g. "  x : \u2124").
+	 */
+	public String describeType(final String text) throws ProBParseException {
+		final String formula = UnicodeTranslator.toUnicode(text);
+		final FormulaFactory ff = root.getFormulaFactory();
+		final ITypeEnvironment typeEnv = getTypeEnvironment(ff);
+
+		final Formula<?> parsed;
+		final IParseResult predicateResult = ff.parsePredicate(formula, null);
+		if (!predicateResult.hasProblem()) {
+			parsed = predicateResult.getParsedPredicate();
+		} else {
+			final IParseResult expressionResult = ff.parseExpression(formula,
+					null);
+			checkParseResult(expressionResult);
+			parsed = expressionResult.getParsedExpression();
+		}
+		final ITypeCheckResult tcr = parsed.typeCheck(typeEnv);
+		if (tcr.hasProblem()) {
+			final ASTProblem problem = tcr.getProblems().iterator().next();
+			throw new ProBParseException(problem.toString());
+		}
+		final StringBuilder sb = new StringBuilder();
+		sb.append(parsed instanceof Expression ? ((Expression) parsed)
+				.getType().toString() : "predicate");
+		final ITypeEnvironment inferred = tcr.getInferredEnvironment();
+		for (String name : new TreeSet<String>(inferred.getNames()))
+			sb.append("\n  ").append(name).append(" : ")
+					.append(inferred.getType(name));
+		return sb.toString();
+	}
+
+	/**
 	 * Type checks the formula in the type environment of the model.
 	 * 
 	 * @return the identifiers that are not in the type environment, sorted

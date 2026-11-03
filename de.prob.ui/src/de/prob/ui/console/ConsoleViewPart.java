@@ -441,6 +441,8 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 				+ "Commands\n"
 				+ "  :help or :?      show this help\n"
 				+ "  :x               close the console\n"
+				+ "  :type F          the type of the predicate or expression F, and the\n"
+				+ "                   inferred types of its free identifiers\n"
 				+ "  :SOLVER PRED     solve PRED (or an expression) with another solver, also\n"
 				+ "                   without free identifiers; SOLVER is one of\n"
 				+ "                   " + ConsoleEvaluator.solverCommands() + "\n"
@@ -620,6 +622,7 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 				final List<String> names = new ArrayList<String>();
 				names.add(":help");
 				names.add(":x");
+				names.add(":type");
 				names.addAll(Arrays.asList(ConsoleEvaluator.solverCommands()
 						.split(", ")));
 				for (String command : names) {
