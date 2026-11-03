@@ -115,10 +115,8 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 		// still grows with the view
 		outputData.heightHint = outputData.minimumHeight;
 		output.setLayoutData(outputData);
-		output.setText("Evaluate predicates and expressions in the current animation state.\n"
-				      + "Enter: evaluate, Shift+Enter: new line,\n"
-				      + "Up/Down: previous inputs, Tab/Ctrl+Space: complete identifiers and keywords.\n"
-				      + "Identifiers not in the model are solved for; other solvers: :kodkod PRED, :cdclt PRED, :sat PRED, :z3 PRED, ...\n");
+		output.setText("Evaluate formulas in current animation state.\n"
+				      + "Help: the ? button or :help\n");
 		output.setStyleRange(new StyleRange(0, output.getCharCount(),
 				getColor(SWT.COLOR_DARK_GRAY), null));
 
@@ -189,6 +187,17 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 		getViewSite().getActionBars().getToolBarManager().add(clear);
 		installMathSymbols();
 		installSolveTimeToggle();
+
+		final Action help = new Action("Console Help") {
+			@Override
+			public void run() {
+				showHelp();
+				focusInput();
+			}
+		};
+		help.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages()
+				.getImageDescriptor(ISharedImages.IMG_LCL_LINKTO_HELP));
+		getViewSite().getActionBars().getToolBarManager().add(help);
 
 		StaticListenerRegistry.registerListener((ILifecycleListener) this);
 	}
@@ -348,7 +357,56 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 			history.add(text);
 		historyIndex = history.size();
 		input.setText("");
-		evaluate(text);
+		if (isHelpCommand(text.trim())) {
+			append(PROMPT + text + "\n", null, SWT.BOLD);
+			showHelp();
+		} else {
+			evaluate(text);
+		}
+	}
+
+	private static boolean isHelpCommand(final String text) {
+		// with "Type Mathematical Symbols", ':' may have become '\u2208'
+		return text.equals(":help") || text.equals("\u2208help")
+				|| text.equals(":?") || text.equals("\u2208?");
+	}
+
+	private void showHelp() {
+		final String help = "ProB Console\n"
+				+ "Evaluates predicates and expressions in the current state of the animation:\n"
+				+ "  a predicate gives TRUE or FALSE, an expression its value.\n"
+				+ "  Identifiers that are not part of the model are treated as existentially\n"
+				+ "  quantified: ProB's constraint solver searches values for them and shows\n"
+				+ "  them (e.g. x : 1..10 & x*x = 49). Their types must be inferable.\n"
+				+ "  UNKNOWN means that the solver found no solution, but could not show\n"
+				+ "  that none exists (e.g. after a time-out).\n"
+				+ "\n"
+				+ "Keys\n"
+				+ "  Enter            evaluate the input\n"
+				+ "  Shift+Enter      start a new line in the input\n"
+				+ "  Up / Down        previous / next input (in the first / last line of the input,\n"
+				+ "                   otherwise they move between the lines of the input)\n"
+				+ "  Tab              complete identifiers of the model, Event-B keywords and\n"
+				+ "                   solver commands: a unique completion is inserted, otherwise\n"
+				+ "                   the common prefix, otherwise the list of proposals opens\n"
+				+ "  Ctrl+Space       open the list of proposals\n"
+				+ "  Typing in the output area continues in the input; the output can be selected\n"
+				+ "  and copied. A long evaluation can be cancelled in the Progress view.\n"
+				+ "\n"
+				+ "Commands\n"
+				+ "  :help or :?      show this help\n"
+				+ "  :SOLVER PRED     solve PRED (or an expression) with another solver, also\n"
+				+ "                   without free identifiers; SOLVER is one of\n"
+				+ "                   " + ConsoleEvaluator.solverCommands() + "\n"
+				+ "                   (not all solvers are available in every ProB build)\n"
+				+ "\n"
+				+ "Toolbar\n"
+				+ "  Clear            remove the output\n"
+				+ "  \u2200                translate ASCII into mathematical symbols while typing,\n"
+				+ "                   as in the Rodin editors (e.g. : becomes \u2208)\n"
+				+ "  ms               show how long the solver took\n"
+				+ "  ?                show this help\n";
+		append(help, getColor(SWT.COLOR_DARK_GRAY), SWT.NORMAL);
 	}
 
 	private void browseHistory(final int direction) {
@@ -506,16 +564,21 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 				start--;
 			final String prefix = contents.substring(start, position);
 
-			// a solver command at the start, e.g. ":kod"
+			// a command at the start, e.g. ":kod" or ":he"
 			if (start == 1
 					&& (contents.charAt(0) == ':' || contents.charAt(0) == '\u2208')) {
 				final List<IContentProposal> commands = new ArrayList<IContentProposal>();
-				for (String command : ConsoleEvaluator.solverCommands()
-						.split(", ")) {
+				final List<String> names = new ArrayList<String>();
+				names.add(":help");
+				names.addAll(Arrays.asList(ConsoleEvaluator.solverCommands()
+						.split(", ")));
+				for (String command : names) {
 					final String name = command.substring(1);
+					// a solver command is followed by the predicate
+					final String space = name.equals("help") ? "" : " ";
 					if (name.startsWith(prefix))
 						commands.add(new ContentProposal(name.substring(prefix
-								.length()) + " ", command, null));
+								.length()) + space, command, null));
 				}
 				return commands.toArray(new IContentProposal[commands.size()]);
 			}
