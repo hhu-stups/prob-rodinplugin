@@ -117,7 +117,8 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 		output.setLayoutData(outputData);
 		output.setText("Evaluate predicates and expressions in the current animation state.\n"
 				      + "Enter: evaluate, Shift+Enter: new line,\n"
-				      + "Up/Down: previous inputs, Tab/Ctrl+Space: complete identifiers and keywords.\n");
+				      + "Up/Down: previous inputs, Tab/Ctrl+Space: complete identifiers and keywords.\n"
+				      + "Identifiers not in the model are solved for; other solvers: :kodkod PRED, :cdclt PRED, :sat PRED, :z3 PRED, ...\n");
 		output.setStyleRange(new StyleRange(0, output.getCharCount(),
 				getColor(SWT.COLOR_DARK_GRAY), null));
 
@@ -505,6 +506,19 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 				start--;
 			final String prefix = contents.substring(start, position);
 
+			// a solver command at the start, e.g. ":kod"
+			if (start == 1
+					&& (contents.charAt(0) == ':' || contents.charAt(0) == '\u2208')) {
+				final List<IContentProposal> commands = new ArrayList<IContentProposal>();
+				for (String command : ConsoleEvaluator.solverCommands()
+						.split(", ")) {
+					final String name = command.substring(1);
+					if (name.startsWith(prefix))
+						commands.add(new ContentProposal(name.substring(prefix
+								.length()) + " ", command, null));
+				}
+				return commands.toArray(new IContentProposal[commands.size()]);
+			}
 			final Set<String> identifiers = new TreeSet<String>(KEYWORDS);
 			final Animator animator = Animator.getAnimator();
 			// getMachineDescription() would start probcli if none is running

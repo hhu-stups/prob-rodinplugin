@@ -32,7 +32,8 @@ public final class CbcSolveCommand implements IComposableCommand {
 		ERROR
 	}
 
-	private static final String SOLVER = "PROB";
+	/** ProB's own constraint solver */
+	public static final String DEFAULT_SOLVER = "PROB";
 	// the pretty-printed values are truncated after this number of characters
 	private static final int TRUNCATE = 50000;
 
@@ -40,6 +41,7 @@ public final class CbcSolveCommand implements IComposableCommand {
 	private static final String RESULT = "Result";
 	private static final String MILLISECONDS = "Milliseconds";
 
+	private final String solver;
 	private final String stateId;
 	private final PrologTerm predicate;
 
@@ -56,14 +58,26 @@ public final class CbcSolveCommand implements IComposableCommand {
 	 *            <code>bpred</code> wrapper)
 	 */
 	public CbcSolveCommand(final String stateId, final PrologTerm predicate) {
+		this(DEFAULT_SOLVER, stateId, predicate);
+	}
+
+	/**
+	 * @param solver
+	 *            the solver as named by ProB, e.g. PROB, KODKOD, CDCLT, SAT
+	 *            or Z3
+	 */
+	public CbcSolveCommand(final String solver, final String stateId,
+			final PrologTerm predicate) {
+		this.solver = solver;
 		this.stateId = stateId;
 		this.predicate = predicate;
 	}
 
 	public static CbcSolveCommand solve(final Animator animator,
-			final String stateId, final PrologTerm predicate)
-			throws ProBException {
-		final CbcSolveCommand command = new CbcSolveCommand(stateId, predicate);
+			final String solver, final String stateId,
+			final PrologTerm predicate) throws ProBException {
+		final CbcSolveCommand command = new CbcSolveCommand(solver, stateId,
+				predicate);
 		animator.execute(command);
 		return command;
 	}
@@ -71,7 +85,7 @@ public final class CbcSolveCommand implements IComposableCommand {
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
 		pto.openTerm("cbc_timed_solve_with_opts");
-		pto.printAtom(SOLVER);
+		pto.printAtom(solver);
 		pto.openList();
 		pto.openTerm("solve_in_visited_state");
 		pto.printAtomOrNumber(stateId);
@@ -154,6 +168,10 @@ public final class CbcSolveCommand implements IComposableCommand {
 	 */
 	public Map<String, String> getSolution() {
 		return solution;
+	}
+
+	public String getSolver() {
+		return solver;
 	}
 
 	public long getMilliseconds() {
