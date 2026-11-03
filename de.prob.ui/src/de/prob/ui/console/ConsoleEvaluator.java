@@ -334,6 +334,11 @@ public class ConsoleEvaluator implements ILifecycleListener {
 		return solve(animator, state, open, solver);
 	}
 
+	/** @return true for the name of a solver command, e.g. "kodkod" */
+	public static boolean isSolverName(final String name) {
+		return SOLVERS.containsKey(name.toLowerCase(Locale.ROOT));
+	}
+
 	/** @return the console commands of the solvers, e.g. ":kodkod" */
 	public static String solverCommands() {
 		final StringBuilder sb = new StringBuilder();

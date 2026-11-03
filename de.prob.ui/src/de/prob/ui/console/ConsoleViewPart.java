@@ -440,9 +440,13 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 						getSite().getPage().hideView(view);
 				}
 			});
-		} else if (isHelpCommand(text.trim())) {
+		} else if (helpArgument(text.trim()) != null) {
 			append(PROMPT + text + "\n", null, SWT.BOLD);
-			showHelp();
+			final String command = helpArgument(text.trim());
+			if (command.isEmpty())
+				showHelp();
+			else
+				showHelp(command);
 		} else {
 			evaluate(text);
 		}
@@ -471,10 +475,88 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 		return text.equals(":x") || text.equals("\u2208x");
 	}
 
-	private static boolean isHelpCommand(final String text) {
+	/**
+	 * @return for ":help" or ":?" the command to explain, e.g. "type" for
+	 *         ":help type" or ":help :type", "" for all; null if the input
+	 *         is not a help command
+	 */
+	private static String helpArgument(final String text) {
 		// with "Type Mathematical Symbols", ':' may have become '\u2208'
-		return text.equals(":help") || text.equals("\u2208help")
-				|| text.equals(":?") || text.equals("\u2208?");
+		if (!text.startsWith(":") && !text.startsWith("\u2208"))
+			return null;
+		final String rest = text.substring(1);
+		final String argument;
+		if (rest.startsWith("help"))
+			argument = rest.substring("help".length());
+		else if (rest.startsWith("?"))
+			argument = rest.substring(1);
+		else
+			return null;
+		if (!argument.isEmpty() && !Character.isWhitespace(argument.charAt(0)))
+			return null; // e.g. ":helper"
+		final String command = argument.trim();
+		return command.startsWith(":") || command.startsWith("\u2208") ? command
+				.substring(1) : command;
+	}
+
+	/**
+	 * The console commands for the help: name, usage and description (lines
+	 * separated by \n); the solver commands share the entry "SOLVER"
+	 */
+	private static String[][] commandHelp() {
+		return new String[][] {
+				{ "help", ":help [COMMAND]",
+						"show this help, or only the help for one command\n(e.g. :help type); :? is short for :help" },
+				{ "x", ":x", "close the console" },
+				{ "type", ":type F",
+						"the type of the predicate or expression F, and the\ninferred types of its free identifiers" },
+				{ "state", ":state",
+						"the current state: values, status, enabled events" },
+				{ "prefs", ":prefs [TEXT]",
+						"ProB's preferences (only those whose name contains\nTEXT), with the default value if it was changed" },
+				{ "SOLVER", ":SOLVER PRED",
+						"solve PRED (or an expression) with another solver, also\nwithout free identifiers; SOLVER is one of\n"
+								+ ConsoleEvaluator.solverCommands()
+								+ "\n(not all solvers are available in every ProB build)" } };
+	}
+
+	/** @return the entry formatted like the other lines of the help */
+	private static String formatCommandHelp(final String[] entry) {
+		final String indent = "                   ";
+		final StringBuilder sb = new StringBuilder("  ").append(entry[1]);
+		while (sb.length() < indent.length())
+			sb.append(' ');
+		if (sb.length() > indent.length())
+			sb.append("\n").append(indent);
+		sb.append(entry[2].replace("\n", "\n" + indent)).append('\n');
+		return sb.toString();
+	}
+
+	private static String allCommandHelp() {
+		final StringBuilder sb = new StringBuilder();
+		for (String[] entry : commandHelp())
+			sb.append(formatCommandHelp(entry));
+		return sb.toString();
+	}
+
+	/** ":help COMMAND": the help for one command */
+	private void showHelp(final String command) {
+		final boolean solver = ConsoleEvaluator.isSolverName(command);
+		for (String[] entry : commandHelp()) {
+			if (entry[0].equals(command)
+					|| (solver && entry[0].equals("SOLVER"))) {
+				append(formatCommandHelp(entry),
+						getColor(SWT.COLOR_DARK_GRAY), SWT.NORMAL);
+				return;
+			}
+		}
+		final StringBuilder names = new StringBuilder();
+		for (String[] entry : commandHelp())
+			if (!entry[0].equals("SOLVER"))
+				names.append(" :").append(entry[0]);
+		append("No help for :" + command + ". Commands:" + names
+				+ " and the solvers " + ConsoleEvaluator.solverCommands()
+				+ "\n", getColor(SWT.COLOR_RED), SWT.NORMAL);
 	}
 
 	private void showHelp() {
@@ -500,17 +582,7 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 				+ "  and copied. A long evaluation can be cancelled in the Progress view.\n"
 				+ "\n"
 				+ "Commands\n"
-				+ "  :help or :?      show this help\n"
-				+ "  :x               close the console\n"
-				+ "  :type F          the type of the predicate or expression F, and the\n"
-				+ "                   inferred types of its free identifiers\n"
-				+ "  :state           the current state: values, status, enabled events\n"
-				+ "  :prefs [TEXT]    ProB's preferences (only those whose name contains\n"
-				+ "                   TEXT), with the default value if it was changed\n"
-				+ "  :SOLVER PRED     solve PRED (or an expression) with another solver, also\n"
-				+ "                   without free identifiers; SOLVER is one of\n"
-				+ "                   " + ConsoleEvaluator.solverCommands() + "\n"
-				+ "                   (not all solvers are available in every ProB build)\n"
+				+ allCommandHelp()
 				+ "\n"
 				+ "Toolbar\n"
 				+ "  Clear            remove the output\n"
