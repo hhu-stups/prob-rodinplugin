@@ -86,6 +86,9 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 	// translates ASCII into mathematical symbols while typing, as in the Rodin
 	// editors; null if the Rodin keyboard is not available
 	private ModifyListener mathSymbolsListener;
+	private boolean mathSymbolsEnabled;
+	// whether mathSymbolsListener is registered at the input
+	private boolean mathSymbolsListenerAdded;
 
 	@Override
 	public void createPartControl(final Composite viewParent) {
@@ -280,17 +283,7 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 					.getDefault();
 			if (keyboard == null)
 				return;
-			final ModifyListener rodinListener = keyboard
-					.createRodinModifyListener();
-			// not in console commands like ":kodkod", ':' would become '\u2208'
-			// (their formulas are translated when they are parsed)
-			mathSymbolsListener = new ModifyListener() {
-				@Override
-				public void modifyText(final ModifyEvent e) {
-					if (!isCommand(input.getText()))
-						rodinListener.modifyText(e);
-				}
-			};
+			mathSymbolsListener = keyboard.createRodinModifyListener();
 		} catch (LinkageError e) {
 			// the Rodin keyboard is an optional dependency, or an old version
 			// without this method: no translation
@@ -311,15 +304,37 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 		};
 		toggle.setToolTipText("Type Mathematical Symbols (translate ASCII as in the Rodin editors)");
 		toggle.setChecked(enabled);
+		// Not in console commands like ":kodkod", ':' would become '\u2208'
+		// (their formulas are translated when they are parsed). Rodin's
+		// listener must not be wrapped: it removes and re-adds itself while
+		// translating, a wrapped one was then added once more on each change.
+		// So it is added and removed as needed by a listener that comes
+		// first, and is thus called before it.
+		input.addModifyListener(new ModifyListener() {
+			@Override
+			public void modifyText(final ModifyEvent e) {
+				updateMathSymbolsListener();
+			}
+		});
 		setMathSymbols(enabled);
 		getViewSite().getActionBars().getToolBarManager().add(toggle);
 	}
 
 	private void setMathSymbols(final boolean enabled) {
-		// removing a listener that has not been added does nothing
-		input.removeModifyListener(mathSymbolsListener);
-		if (enabled) {
+		mathSymbolsEnabled = enabled;
+		updateMathSymbolsListener();
+	}
+
+	/** Rodin's listener is added iff enabled and the input is no command */
+	private void updateMathSymbolsListener() {
+		final boolean wanted = mathSymbolsEnabled
+				&& !isCommand(input.getText());
+		if (wanted && !mathSymbolsListenerAdded) {
 			input.addModifyListener(mathSymbolsListener);
+			mathSymbolsListenerAdded = true;
+		} else if (!wanted && mathSymbolsListenerAdded) {
+			input.removeModifyListener(mathSymbolsListener);
+			mathSymbolsListenerAdded = false;
 		}
 	}
 
