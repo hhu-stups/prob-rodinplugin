@@ -7,20 +7,26 @@ import java.util.concurrent.ConcurrentHashMap;
 import de.prob.core.Animator;
 import de.prob.core.ILifecycleListener;
 import de.prob.core.LanguageDependendAnimationPart;
+import de.prob.core.command.CbcSolveCommand;
 import de.prob.core.command.EvaluationGetValuesCommand;
 import de.prob.core.command.EvaluationGetValuesCommand.EvaluationResult;
 import de.prob.core.command.EvaluationInsertFormulaCommand;
 import de.prob.core.domainobjects.EvaluationElement;
 import de.prob.core.domainobjects.State;
+import de.prob.core.langdep.EventBAnimatorPart;
+import de.prob.core.langdep.EventBAnimatorPart.OpenFormula;
 import de.prob.exceptions.ProBException;
 import de.prob.parserbase.ProBParseException;
 import de.prob.parserbase.ProBParserBaseAdapter;
 import de.prob.prolog.term.PrologTerm;
+import de.prob.unicode.UnicodeTranslator;
 
 /**
  * Evaluates the predicates and expressions entered in the ProB console in
  * the current state of the animator, using the same commands as the formulas
- * of the State view. Free identifiers are not supported yet.
+ * of the State view. Identifiers that do not belong to the model are treated
+ * as existentially quantified: ProB's constraint solver searches values for
+ * them.
  * 
  * Must not be called from the UI thread: it waits for ProB.
  */
@@ -35,6 +41,8 @@ public class ConsoleEvaluator implements ILifecycleListener {
 		VALUE,
 		/** not evaluated, e.g. no model loaded or not initialised */
 		NOT_AVAILABLE,
+		/** the solver found neither a solution nor that there is none */
+		UNKNOWN,
 		/** e.g. a syntax error or a well-definedness error */
 		ERROR
 	}
@@ -92,6 +100,16 @@ public class ConsoleEvaluator implements ILifecycleListener {
 			if (ldp == null)
 				return new Result(Kind.NOT_AVAILABLE,
 						"Formulas cannot be parsed for this model.");
+			if (ldp instanceof EventBAnimatorPart) {
+				final OpenFormula open;
+				try {
+					open = ((EventBAnimatorPart) ldp).parseOpenFormula(formula);
+				} catch (ProBParseException e) {
+					return new Result(Kind.ERROR, e.getMessage());
+				}
+				if (!open.getFreeIdentifiers().isEmpty())
+					return solve(animator, state, open);
+			}
 			final PrologTerm parsed;
 			try {
 				parsed = parse(new ProBParserBaseAdapter(ldp), formula);
@@ -125,6 +143,65 @@ public class ConsoleEvaluator implements ILifecycleListener {
 				throw expressionError;
 			}
 		}
+	}
+
+	/**
+	 * Lets the constraint solver find values for the free identifiers, the
+	 * identifiers of the model have their values in the current state
+	 */
+	private static Result solve(final Animator animator, final State state,
+			final OpenFormula formula) throws ProBException {
+		final CbcSolveCommand cmd = CbcSolveCommand.solve(animator,
+				state.getId(), formula.getSolverPredicate());
+		switch (cmd.getOutcome()) {
+		case SOLUTION:
+			final Map<String, String> solution = cmd.getSolution();
+			final StringBuilder sb = new StringBuilder();
+			if (formula.isPredicate()) {
+				sb.append("TRUE");
+			} else {
+				sb.append(valueOf(solution, formula.getResultIdentifier()));
+			}
+			// predicate: one identifier per line; expression: the values the
+			// result was computed for. The solution also contains the
+			// identifiers of the model, they are not shown.
+			boolean first = true;
+			for (String id : formula.getFreeIdentifiers()) {
+				if (formula.isPredicate())
+					sb.append("\n  ");
+				else
+					sb.append(first ? "\n  for " : ", ");
+				first = false;
+				sb.append(id).append(" = ").append(valueOf(solution, id));
+			}
+			sb.append(time(cmd));
+			return new Result(formula.isPredicate() ? Kind.TRUE : Kind.VALUE,
+					sb.toString());
+		case NO_SOLUTION:
+			return formula.isPredicate() ? new Result(Kind.FALSE,
+					"FALSE (no solution exists)" + time(cmd)) : new Result(
+					Kind.ERROR, "The expression has no value." + time(cmd));
+		case UNKNOWN:
+			return new Result(Kind.UNKNOWN, "UNKNOWN: no solution found"
+					+ reason(cmd) + time(cmd));
+		default:
+			return new Result(Kind.ERROR, "ProB could not solve the formula"
+					+ reason(cmd) + time(cmd));
+		}
+	}
+
+	private static String time(final CbcSolveCommand cmd) {
+		return "\n  (solved in " + cmd.getMilliseconds() + " ms)";
+	}
+
+	private static String valueOf(final Map<String, String> solution,
+			final String id) {
+		final String value = solution.get(id);
+		return value == null ? "?" : UnicodeTranslator.toUnicode(value);
+	}
+
+	private static String reason(final CbcSolveCommand cmd) {
+		return cmd.getReason() == null ? "." : " (" + cmd.getReason() + ").";
 	}
 
 	private static Result toResult(final EvaluationResult result) {

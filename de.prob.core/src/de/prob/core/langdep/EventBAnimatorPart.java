@@ -5,9 +5,12 @@ package de.prob.core.langdep;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eventb.core.IContextRoot;
@@ -23,6 +26,7 @@ import org.eventb.core.ast.ASTProblem;
 import org.eventb.core.ast.Expression;
 import org.eventb.core.ast.Formula;
 import org.eventb.core.ast.FormulaFactory;
+import org.eventb.core.ast.FreeIdentifier;
 import org.eventb.core.ast.IParseResult;
 import org.eventb.core.ast.ITypeCheckResult;
 import org.eventb.core.ast.ITypeEnvironment;
@@ -43,6 +47,8 @@ import de.prob.eventb.translator.internal.TranslationVisitor;
 import de.prob.exceptions.ProBException;
 import de.prob.parserbase.ProBParseException;
 import de.prob.prolog.output.IPrologTermOutput;
+import de.prob.prolog.output.StructuredPrologOutput;
+import de.prob.prolog.term.PrologTerm;
 import de.prob.unicode.UnicodeTranslator;
 
 /**
@@ -97,6 +103,135 @@ public class EventBAnimatorPart implements LanguageDependendAnimationPart {
 		typeCheck(ff, pp);
 		final PPredicate apred = TranslationVisitor.translatePredicate(pp);
 		toPrologTerm(pto, apred, wrap, PRED_WRAPPER);
+	}
+
+	/** the identifier for the value of an expression, see {@link OpenFormula} */
+	public static final String RESULT_IDENTIFIER = "CONSOLE_RESULT";
+
+	/**
+	 * A predicate or expression that may contain free identifiers, i.e.
+	 * identifiers that are not part of the model (see
+	 * {@link EventBAnimatorPart#parseOpenFormula(String)}).
+	 */
+	public static final class OpenFormula {
+		private final boolean predicate;
+		private final List<String> freeIdentifiers;
+		private final String resultIdentifier;
+		private final PrologTerm solverPredicate;
+
+		OpenFormula(final boolean predicate,
+				final List<String> freeIdentifiers,
+				final String resultIdentifier, final PrologTerm solverPredicate) {
+			this.predicate = predicate;
+			this.freeIdentifiers = Collections
+					.unmodifiableList(freeIdentifiers);
+			this.resultIdentifier = resultIdentifier;
+			this.solverPredicate = solverPredicate;
+		}
+
+		/** @return true for a predicate, false for an expression */
+		public boolean isPredicate() {
+			return predicate;
+		}
+
+		/**
+		 * @return the identifiers of the formula that do not belong to the
+		 *         model, sorted (without the {@link #getResultIdentifier()})
+		 */
+		public List<String> getFreeIdentifiers() {
+			return freeIdentifiers;
+		}
+
+		/**
+		 * @return the identifier that stands for the value of the
+		 *         expression, null for a predicate
+		 */
+		public String getResultIdentifier() {
+			return resultIdentifier;
+		}
+
+		/**
+		 * @return the predicate to solve, unwrapped: the predicate itself or,
+		 *         for an expression E, <code>R = E</code> with the
+		 *         {@link #getResultIdentifier()} R
+		 */
+		public PrologTerm getSolverPredicate() {
+			return solverPredicate;
+		}
+	}
+
+	/**
+	 * Parses a predicate or, if it is not one, an expression, like
+	 * {@link #parsePredicate(IPrologTermOutput, String, boolean)} but
+	 * identifiers that do not belong to the model are allowed (their types
+	 * must be inferable).
+	 */
+	public OpenFormula parseOpenFormula(final String text)
+			throws ProBParseException {
+		final String formula = UnicodeTranslator.toUnicode(text);
+		final FormulaFactory ff = root.getFormulaFactory();
+		final ITypeEnvironment typeEnv = getTypeEnvironment(ff);
+
+		final IParseResult predicateResult = ff.parsePredicate(formula, null);
+		if (!predicateResult.hasProblem()) {
+			final Predicate pred = predicateResult.getParsedPredicate();
+			final List<String> free = typeCheckOpen(pred, typeEnv);
+			return new OpenFormula(true, free, null, toPrologTerm(pred));
+		}
+
+		final IParseResult expressionResult = ff
+				.parseExpression(formula, null);
+		// expressions are entered more often than predicates, so the
+		// message for the expression is usually the relevant one
+		checkParseResult(expressionResult);
+		final Expression expr = expressionResult.getParsedExpression();
+		final String result = freshName(expr, typeEnv);
+		final Predicate equality = ff.makeRelationalPredicate(Formula.EQUAL,
+				ff.makeFreeIdentifier(result, null), expr, null);
+		final List<String> free = typeCheckOpen(equality, typeEnv);
+		free.remove(result);
+		return new OpenFormula(false, free, result, toPrologTerm(equality));
+	}
+
+	/**
+	 * Type checks the formula in the type environment of the model.
+	 * 
+	 * @return the identifiers that are not in the type environment, sorted
+	 */
+	private List<String> typeCheckOpen(final Formula<?> formula,
+			final ITypeEnvironment typeEnvironment) throws ProBParseException {
+		final ITypeCheckResult tcr = formula.typeCheck(typeEnvironment);
+		if (tcr.hasProblem()) {
+			final ASTProblem problem = tcr.getProblems().iterator().next();
+			throw new ProBParseException(problem.toString());
+		}
+		return new ArrayList<String>(new TreeSet<String>(tcr
+				.getInferredEnvironment().getNames()));
+	}
+
+	private static String freshName(final Expression expr,
+			final ITypeEnvironment typeEnvironment) {
+		final Set<String> used = new HashSet<String>();
+		for (FreeIdentifier id : expr.getFreeIdentifiers())
+			used.add(id.getName());
+		String name = RESULT_IDENTIFIER;
+		for (int i = 1; used.contains(name)
+				|| typeEnvironment.contains(name); i++)
+			name = RESULT_IDENTIFIER + i;
+		return name;
+	}
+
+	private static PrologTerm toPrologTerm(final Predicate predicate) {
+		final StructuredPrologOutput out = new StructuredPrologOutput();
+		predicate(out, predicate);
+		out.fullstop();
+		return out.getSentences().get(0);
+	}
+
+	private static void predicate(final IPrologTermOutput pto,
+			final Predicate predicate) {
+		final PPredicate apred = TranslationVisitor.translatePredicate(predicate);
+		apred.apply(new ASTProlog(pto, null));
 	}
 
 	private void toPrologTerm(final IPrologTermOutput pto,

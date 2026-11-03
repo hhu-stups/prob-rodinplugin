@@ -394,6 +394,8 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 			return getColor(SWT.COLOR_RED);
 		case NOT_AVAILABLE:
 			return getColor(SWT.COLOR_DARK_GRAY);
+		case UNKNOWN:
+			return getColor(SWT.COLOR_DARK_YELLOW);
 		default:
 			return null;
 		}
