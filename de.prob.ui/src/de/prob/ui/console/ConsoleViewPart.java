@@ -78,6 +78,9 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 	private static final char LAST_MATH_FONT_CHAR = '\uE103';
 	private static final String MATH_SYMBOLS_SETTING = "console.mathSymbols";
 	private static final String SOLVE_TIME_SETTING = "console.showSolveTime";
+	private static final String FONT_SIZE_SETTING = "console.fontSizeDelta";
+	private static final int MIN_FONT_SIZE = 6;
+	private static final int MAX_FONT_SIZE = 72;
 	// older output is removed, a StyledText becomes slow with huge contents
 	private static final int MAX_OUTPUT_LENGTH = 500000;
 	private static final int INPUT_ROWS = 3;
@@ -105,11 +108,11 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 		// there is no room for the minimal output and the input the console
 		// scrolls instead of clipping the input
 		viewParent.setLayout(new FillLayout());
-		final ScrolledComposite scroller = new ScrolledComposite(viewParent,
-				SWT.V_SCROLL);
+		scroller = new ScrolledComposite(viewParent, SWT.V_SCROLL);
 		scroller.setExpandHorizontal(true);
 		scroller.setExpandVertical(true);
 		final Composite parent = new Composite(scroller, SWT.NONE);
+		content = parent;
 		scroller.setContent(parent);
 
 		final GridLayout layout = new GridLayout(2, false);
@@ -119,34 +122,28 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 
 		output = new StyledText(parent, SWT.MULTI | SWT.READ_ONLY
 				| SWT.V_SCROLL | SWT.H_SCROLL);
-		output.setFont(getConsoleFont());
-		mathFont = createMathFont(output);
-		final GridData outputData = new GridData(SWT.FILL, SWT.FILL, true,
-				true, 2, 2);
-		// at least two lines of output stays visible above the input
-		outputData.minimumHeight = output.getLineHeight();
-		// the preferred size of the console is its minimal size, the output
-		// still grows with the view
-		outputData.heightHint = outputData.minimumHeight;
+		fonts = new LocalResourceManager(JFaceResources.getResources(), output);
+		outputData = new GridData(SWT.FILL, SWT.FILL, true, true, 2, 2);
 		output.setLayoutData(outputData);
 		output.setText("Evaluate formulas in current animation state.\n"
 				      + "Help: the ? button or :help\n");
 		output.setStyleRange(new StyleRange(0, output.getCharCount(),
 				getColor(SWT.COLOR_DARK_GRAY), null));
 
-		final Label prompt = new Label(parent, SWT.NONE);
+		prompt = new Label(parent, SWT.NONE);
 		prompt.setText(PROMPT.trim());
-		prompt.setFont(getConsoleFont());
 		prompt.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false,
 				false));
 
 		input = new Text(parent, SWT.MULTI | SWT.WRAP | SWT.V_SCROLL
 				| SWT.BORDER);
-		input.setFont(getConsoleFont());
-		final GridData inputData = new GridData(SWT.FILL, SWT.CENTER, true,
-				false);
-		inputData.heightHint = INPUT_ROWS * input.getLineHeight();
+		inputData = new GridData(SWT.FILL, SWT.CENTER, true, false);
 		input.setLayoutData(inputData);
+		final IDialogSettings settings = ProbUiPlugin.getDefault()
+				.getDialogSettings();
+		fontSizeDelta = settings.get(FONT_SIZE_SETTING) == null ? 0
+				: settings.getInt(FONT_SIZE_SETTING);
+		applyFontSize();
 		// before creating the proposal adapter, so that this listener sees
 		// whether its popup is open (Enter then selects a proposal)
 		input.addListener(SWT.KeyDown, new Listener() {
@@ -188,7 +185,6 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 		});
 		installContentProposals();
 		redirectFocusToInput(parent, prompt);
-		scroller.setMinHeight(parent.computeSize(SWT.DEFAULT, SWT.DEFAULT).y);
 
 		final Action clear = new Action("Clear Console") {
 			@Override
@@ -201,6 +197,7 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 		getViewSite().getActionBars().getToolBarManager().add(clear);
 		installMathSymbols();
 		installSolveTimeToggle();
+		installFontSizeButtons();
 
 		final Action help = new Action("Console Help") {
 			@Override
@@ -258,6 +255,17 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 
 	/** Brave Sans Mono for the symbols only it contains, null if missing */
 	private Font mathFont;
+	private FontDescriptor mathFontDescriptor;
+	private FontDescriptor consoleFontDescriptor;
+	// the fonts in the size chosen with + and -, disposed with the output
+	private LocalResourceManager fonts;
+	// added to the size of the Rodin font
+	private int fontSizeDelta;
+	private Label prompt;
+	private GridData outputData;
+	private GridData inputData;
+	private ScrolledComposite scroller;
+	private Composite content;
 
 	private static Font getConsoleFont() {
 		ensureMathFontIsLoaded();
@@ -281,21 +289,99 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 		}
 	}
 
+	/** toolbar buttons + and - for the size of the console font */
+	private void installFontSizeButtons() {
+		final Action larger = new Action("+") {
+			@Override
+			public void run() {
+				changeFontSize(1);
+			}
+		};
+		larger.setToolTipText("Increase Font Size");
+		final Action smaller = new Action("\u2212") {
+			@Override
+			public void run() {
+				changeFontSize(-1);
+			}
+		};
+		smaller.setToolTipText("Decrease Font Size");
+		getViewSite().getActionBars().getToolBarManager().add(larger);
+		getViewSite().getActionBars().getToolBarManager().add(smaller);
+	}
+
+	private void changeFontSize(final int change) {
+		final int base = getHeight(getConsoleFont());
+		final int height = Math.max(MIN_FONT_SIZE, Math.min(MAX_FONT_SIZE,
+				base + fontSizeDelta + change));
+		fontSizeDelta = height - base;
+		ProbUiPlugin.getDefault().getDialogSettings()
+				.put(FONT_SIZE_SETTING, fontSizeDelta);
+		applyFontSize();
+		focusInput();
+	}
+
+	private static int getHeight(final Font font) {
+		final FontData[] data = font.getFontData();
+		return data.length > 0 ? data[0].getHeight() : 10;
+	}
+
 	/**
-	 * @return Brave Sans Mono in the size of the console font, disposed with
-	 *         the control; null if the font is not available
+	 * Sets the fonts of the console: the Rodin font with the chosen size, and
+	 * Brave Sans Mono in the same size for the symbols only it contains (if
+	 * available). The sizes of the output and the input follow.
 	 */
-	private static Font createMathFont(final Control control) {
-		final Display display = control.getDisplay();
-		if (display.getFontList(MATH_FONT_NAME, true).length == 0)
-			return null;
-		final FontData[] consoleFont = control.getFont().getFontData();
-		final int height = consoleFont.length > 0 ? consoleFont[0].getHeight()
-				: 10;
-		final LocalResourceManager resources = new LocalResourceManager(
-				JFaceResources.getResources(), control);
-		return resources.create(FontDescriptor.createFrom(MATH_FONT_NAME,
-				height, SWT.NORMAL));
+	private void applyFontSize() {
+		final Font base = getConsoleFont();
+		final int height = Math.max(MIN_FONT_SIZE,
+				Math.min(MAX_FONT_SIZE, getHeight(base) + fontSizeDelta));
+		final FontDescriptor oldConsole = consoleFontDescriptor;
+		final FontDescriptor oldMath = mathFontDescriptor;
+
+		consoleFontDescriptor = FontDescriptor.createFrom(base).setHeight(
+				height);
+		final Font consoleFont = fonts.create(consoleFontDescriptor);
+		output.setFont(consoleFont);
+		prompt.setFont(consoleFont);
+		input.setFont(consoleFont);
+		if (output.getDisplay().getFontList(MATH_FONT_NAME, true).length > 0) {
+			mathFontDescriptor = FontDescriptor.createFrom(MATH_FONT_NAME,
+					height, SWT.NORMAL);
+			mathFont = fonts.create(mathFontDescriptor);
+		} else {
+			mathFontDescriptor = null;
+			mathFont = null;
+		}
+		restyleMathSymbols();
+
+		// at least one line of output stays visible above the input; the
+		// preferred size of the console is its minimal size, the output
+		// still grows with the view
+		outputData.minimumHeight = output.getLineHeight();
+		outputData.heightHint = outputData.minimumHeight;
+		inputData.heightHint = INPUT_ROWS * input.getLineHeight();
+		content.layout(true, true);
+		scroller.setMinHeight(content.computeSize(SWT.DEFAULT, SWT.DEFAULT).y);
+
+		// only now: the output used them until restyleMathSymbols
+		if (oldConsole != null)
+			fonts.destroy(oldConsole);
+		if (oldMath != null)
+			fonts.destroy(oldMath);
+	}
+
+	/** the symbols already in the output get the current math font */
+	private void restyleMathSymbols() {
+		final String text = output.getText();
+		for (int i = 0; i < text.length(); i++) {
+			final char c = text.charAt(i);
+			if (c >= FIRST_MATH_FONT_CHAR && c <= LAST_MATH_FONT_CHAR) {
+				final StyleRange old = output.getStyleRangeAtOffset(i);
+				final StyleRange symbol = new StyleRange(i, 1,
+						old == null ? null : old.foreground, null);
+				symbol.font = mathFont;
+				output.setStyleRange(symbol);
+			}
+		}
 	}
 
 	/**
