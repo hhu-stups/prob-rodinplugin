@@ -286,7 +286,7 @@ public class TableViewPart extends ViewPart implements ILifecycleListener {
 
 	/**
 	 * Shows the value of an expression as a table (ProB's Expression Table),
-	 * e.g. for the State view's "Show Table".
+	 * e.g. for the State view's "Show Value as Table".
 	 */
 	public void showExpressionTable(final String expression) {
 		expressionField.setText(expression);

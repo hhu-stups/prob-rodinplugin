@@ -103,8 +103,13 @@ public class GraphViewPart extends ViewPart implements ILifecycleListener {
 			Arrays.asList("state_space", "state_space_sfdp", "current_state",
 					"history"));
 
+	/** ProB's command for the value of an expression as a graph */
+	public static final String EXPRESSION_GRAPH = "expr_as_graph";
+	/** ProB's command for the state space projected onto an expression */
+	public static final String EXPRESSION_PROJECTION = "transition_diagram";
+
 	// shown when Enter is pressed and the current graph needs no formula
-	private static final String DEFAULT_FORMULA_GRAPH = "transition_diagram";
+	private static final String DEFAULT_FORMULA_GRAPH = EXPRESSION_PROJECTION;
 
 	// the ProB preference with the path of GraphViz's dot program
 	private static final String DOT_PREFERENCE = "DOT";
@@ -327,6 +332,24 @@ public class GraphViewPart extends ViewPart implements ILifecycleListener {
 		if (browser == null || browser.isDisposed())
 			return;
 		loadCommands(shown == null ? null : shown.getCommand());
+	}
+
+	/**
+	 * Shows a graph for a formula, e.g. for the State view's "Show as Graph".
+	 * 
+	 * @param command
+	 *            ProB's command, e.g. {@link #EXPRESSION_GRAPH}
+	 */
+	public void showFormulaGraph(final String command, final String formula) {
+		if (menus == null)
+			return; // no browser
+		formulaField.setText(formula);
+		final CommandInfo info = menus.find(command);
+		if (info != null)
+			showGraph(info);
+		else
+			// the view was just opened and is still getting the graphs
+			loadCommands(command);
 	}
 
 	/** computes a graph in the background and shows it */

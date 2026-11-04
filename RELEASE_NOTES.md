@@ -35,6 +35,7 @@ A new view that shows the graphs ProB can compute. Open it from the State view's
   - the event enable and dependence graphs
   - the variable read/write graph
 - **Going to a state:** in graphs of states (e.g. State Space), double-click a state to make it the current state, reached by the shortest trace from the root.
+- **From the State view:** the right-click menu of a variable or formula has two new entries. "Show Value as Graph" draws its value, e.g. a relation, as a graph. "Project State Space onto Value" merges the states that have the same value.
 - **Graphs for a formula:** graphs whose names end in "…" use the expression or predicate in the field above the graph, e.g. State Space Expression Projection… (states merged by the value of an expression), Expression as Graph… and Formula Tree…. Enter recomputes the graph. The field translates ASCII to symbols and completes identifiers with Tab or Ctrl+Space.
 - **Navigation:** the mouse wheel zooms and dragging moves the graph. The + / − / Fit buttons zoom in, zoom out, or fit the whole graph into the view.
 - **Refresh** recomputes the graph, e.g. after animating or model checking. Computations run in the background. The red Stop button interrupts ProB or, once ProB has written the graph, GraphViz.
@@ -47,7 +48,7 @@ A new view that shows the graphs ProB can compute. Open it from the State view's
 A new view that shows the tables ProB can compute, e.g. machine statistics, operation and variable coverage, min/max values, read/write matrices and well-definedness proof obligations. Open it from the State view's right-click menu ("Open ProB Table") or via Window › Show View › ProB › ProB Table.
 - **Menus:** the tables are offered in toolbar drop-down menus, one per group: Machine, Coverage, Formulas, Well-Definedness, Trace, Debug. Unavailable tables appear greyed out, with the reason.
 - **Tables for an expression:** tables whose names end in "…", e.g. Expression Table…, Expression Coverage… and Find Value…, use the expression in the field above the table. Enter recomputes the table. The field translates ASCII to symbols and completes identifiers with Tab or Ctrl+Space.
-- **From the State view:** "Show Table" in the right-click menu of a variable or formula shows its value as an Expression Table, e.g. a relation with one row per pair.
+- **From the State view:** "Show Value as Table" in the right-click menu of a variable or formula shows its value as an Expression Table, e.g. a relation with one row per pair.
 - **Working with tables:** click a column header to sort (numbers sort numerically). Ctrl/Cmd+C copies the selected rows, or all, tab-separated with headers, ready for a spreadsheet.
 - **Refresh** recomputes the table in the current state, e.g. after animating or model checking. Computations run in the background, and the red Stop button interrupts them.
 - **Not yet offered:** the VisB and MC/DC tables.

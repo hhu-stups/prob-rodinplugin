@@ -158,7 +158,17 @@
       <command
             description="Show the value of a state item as a table in the ProB Table view"
             id="de.prob.ui.command.showTable"
-            name="Show Table">
+            name="Show Value as Table">
+      </command>
+      <command
+            description="Show the value of a state item as a graph in the ProB Graph view"
+            id="de.prob.ui.command.showValueGraph"
+            name="Show Value as Graph">
+      </command>
+      <command
+            description="Project the state space onto the value of a state item in the ProB Graph view"
+            id="de.prob.ui.command.showProjection"
+            name="Project State Space onto Value">
       </command>
       <command
             categoryId="de.prob.ui.commands.category"
@@ -402,6 +412,60 @@
       <handler
             class="de.prob.ui.stateview.ShowTableHandler"
             commandId="de.prob.ui.command.showTable">
+         <enabledWhen>
+            <!-- the selection of the viewer whose context menu is shown;
+                 "selection" lags behind the right-click -->
+            <with
+                  variable="activeMenuSelection">
+               <and>
+                  <count
+                        value="1">
+                  </count>
+                  <iterate
+                        operator="or">
+                     <or>
+                        <instanceof
+                              value="de.prob.ui.stateview.statetree.StateTreeVariable">
+                        </instanceof>
+                        <instanceof
+                              value="de.prob.ui.stateview.statetree.StateTreeExpression">
+                        </instanceof>
+                     </or>
+                  </iterate>
+               </and>
+            </with>
+         </enabledWhen>
+      </handler>
+      <handler
+            class="de.prob.ui.stateview.ShowGraphHandler$Value"
+            commandId="de.prob.ui.command.showValueGraph">
+         <enabledWhen>
+            <!-- the selection of the viewer whose context menu is shown;
+                 "selection" lags behind the right-click -->
+            <with
+                  variable="activeMenuSelection">
+               <and>
+                  <count
+                        value="1">
+                  </count>
+                  <iterate
+                        operator="or">
+                     <or>
+                        <instanceof
+                              value="de.prob.ui.stateview.statetree.StateTreeVariable">
+                        </instanceof>
+                        <instanceof
+                              value="de.prob.ui.stateview.statetree.StateTreeExpression">
+                        </instanceof>
+                     </or>
+                  </iterate>
+               </and>
+            </with>
+         </enabledWhen>
+      </handler>
+      <handler
+            class="de.prob.ui.stateview.ShowGraphHandler$Projection"
+            commandId="de.prob.ui.command.showProjection">
          <enabledWhen>
             <!-- the selection of the viewer whose context menu is shown;
                  "selection" lags behind the right-click -->
@@ -1023,7 +1087,17 @@
          </command>
          <command
                commandId="de.prob.ui.command.showTable"
-               label="Show Table"
+               label="Show Value as Table"
+               style="push">
+         </command>
+         <command
+               commandId="de.prob.ui.command.showValueGraph"
+               label="Show Value as Graph"
+               style="push">
+         </command>
+         <command
+               commandId="de.prob.ui.command.showProjection"
+               label="Project State Space onto Value"
                style="push">
          </command>
          <separator
