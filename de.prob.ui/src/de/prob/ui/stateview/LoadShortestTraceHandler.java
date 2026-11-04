@@ -26,27 +26,36 @@ public class LoadShortestTraceHandler extends AbstractHandler implements
 
 	@Override
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
-		String stateId = animator.getCurrentState().getId();
+		loadShortestTraceTo(animator, animator.getCurrentState().getId());
+		return null;
+	}
 
+	/**
+	 * Makes the given state of the state space the current state, with the
+	 * shortest trace from the root as history (e.g. after a double-click in
+	 * the ProB Graph view)
+	 */
+	public static void loadShortestTraceTo(final Animator animator,
+			final String stateId) {
 		// set core state
 		try {
 			SetStateCommand.setState(animator, stateId);
 		} catch (ProBException e) {
 			// We cannot recover from this, but the user has been informed
-			return null;
+			return;
 		}
 
-		final List<String> states = loadTrace();
+		final List<String> states = loadTrace(animator);
 		if (states == null) {
 			// We cannot recover from this, but the user has been informed
-			return null;
+			return;
 		}
 
 		try {
 			animator.getHistory().gotoPos(0);
 		} catch (ProBException e) {
 			// We cannot recover from this, but the user has been informed
-			return null;
+			return;
 		}
 		State state = animator.getCurrentState();
 
@@ -65,7 +74,6 @@ public class LoadShortestTraceHandler extends AbstractHandler implements
 		} catch (ProBException e) {
 			e.notifyUserOnce();
 		}
-		return null;
 	}
 
 	/**
@@ -74,7 +82,7 @@ public class LoadShortestTraceHandler extends AbstractHandler implements
 	 * @return the state ids of the trace or <code>null</code> if loading
 	 *         failed (the user has been informed)
 	 */
-	private List<String> loadTrace() {
+	private static List<String> loadTrace(final Animator animator) {
 		try {
 			return GetFullTraceCommand.getTrace(animator).getStates();
 		} catch (ProBException e) {
@@ -92,7 +100,7 @@ public class LoadShortestTraceHandler extends AbstractHandler implements
 	 * @param operations
 	 * @return
 	 */
-	private Operation getOperationByDstId(final String dstId,
+	private static Operation getOperationByDstId(final String dstId,
 			final List<Operation> operations) {
 
 		for (Operation op : operations) {

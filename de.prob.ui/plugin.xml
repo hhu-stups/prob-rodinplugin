@@ -93,6 +93,14 @@
             name="ProB Console"
             restorable="true">
       </view>
+      <view
+            allowMultiple="false"
+            category="de.hhu.stups.prob"
+            class="de.prob.ui.graph.GraphViewPart"
+            id="de.prob.ui.GraphView"
+            name="ProB Graph"
+            restorable="true">
+      </view>
    </extension>
    <extension
          point="de.prob.core.animation">
@@ -984,6 +992,15 @@
             <parameter
                   name="org.eclipse.ui.views.showView.viewId"
                   value="de.prob.ui.ConsoleView">
+            </parameter>
+         </command>
+         <command
+               commandId="org.eclipse.ui.views.showView"
+               label="Open ProB Graph"
+               style="push">
+            <parameter
+                  name="org.eclipse.ui.views.showView.viewId"
+                  value="de.prob.ui.GraphView">
             </parameter>
          </command>
       </menuContribution>
