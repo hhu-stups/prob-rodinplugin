@@ -436,6 +436,36 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 		getViewSite().getActionBars().getToolBarManager().add(toggle);
 	}
 
+	/**
+	 * Translates ASCII to mathematical symbols while typing in a text field
+	 * of another view, if the console does so (the ∀ toggle) and Rodin's
+	 * keyboard is available.
+	 */
+	public static void installMathSymbols(final Text text) {
+		final IDialogSettings settings = ProbUiPlugin.getDefault()
+				.getDialogSettings();
+		if (settings.get(MATH_SYMBOLS_SETTING) != null
+				&& !settings.getBoolean(MATH_SYMBOLS_SETTING))
+			return;
+		try {
+			final RodinKeyboardUIPlugin keyboard = RodinKeyboardUIPlugin
+					.getDefault();
+			if (keyboard != null)
+				text.addModifyListener(keyboard.createRodinModifyListener());
+		} catch (LinkageError e) {
+			// no Rodin keyboard: no translation
+		}
+		text.setFont(getConsoleFont());
+	}
+
+	/**
+	 * @return completion of the model's identifiers and Event-B keywords,
+	 *         e.g. for a text field of another view
+	 */
+	public static IContentProposalProvider createIdentifierProposals() {
+		return new IdentifierProposals();
+	}
+
 	private void installMathSymbols() {
 		try {
 			final RodinKeyboardUIPlugin keyboard = RodinKeyboardUIPlugin

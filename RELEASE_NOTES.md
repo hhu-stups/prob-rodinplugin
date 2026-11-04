@@ -22,6 +22,18 @@ A new view for evaluating formulas in the current state of the animation. Open i
   - The + / − buttons, or Ctrl+= / Ctrl+-, change the font size.
   - Type errors name the identifiers whose type can't be inferred.
 
+### ProB Graph
+A new view that shows graphs of the state space. Open it from the State view's right-click menu ("Open ProB Graph") or via Window › Show View › ProB › ProB Graph.
+- **State Space:** all states and transitions explored so far. Double-click a state to make it the current state, reached by the shortest trace from the root.
+- **Signature Merge:** states merged by the events enabled in them.
+- **Transition Diagram:** states merged by the value of an expression. Enter the expression in the field above the graph, e.g. a variable or `card(s)`, and press Enter. The field translates ASCII to symbols and completes identifiers with Ctrl+Space.
+- **Navigation:** the mouse wheel zooms and dragging moves the graph. The + / − / Fit buttons zoom in, zoom out, or fit the whole graph into the view.
+- **Refresh** recomputes the graph, e.g. after animating or model checking. Computations run in the background and can be cancelled.
+- **Requirements:**
+  - GraphViz must be installed.
+  - Its `dot` program is looked up first via ProB's DOT preference, then on the PATH and in the usual install locations (Homebrew, `/usr/local/bin`, `/usr/bin`, `C:/Program Files/Graphviz/bin`).
+  - The view needs Eclipse's embedded browser.
+
 ### Start animation from the editors
 - **Camille:** "Start Animation / Model Checking" in the right-click menu of the Camille text editor.
 - **Rodin's editors:** a ProB toolbar button in the machine and context editors.
@@ -90,4 +102,5 @@ When you right-click an enabled event, each non-deterministic choice is now labe
 
 ## Notes
 - **Free identifiers:** in the console, they need inferable types. Add a typing predicate such as `x : INT` if needed.
+- **Large state spaces:** GraphViz can get slow with thousands of states, so it is stopped after 120 seconds. The Signature Merge or a Transition Diagram give smaller graphs.
 - **ProB version for the WD prover:** "Use ProB WD Prover" needs a probcli that supports the `no_constraint_solving` disprover option.

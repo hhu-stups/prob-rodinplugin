@@ -22,10 +22,19 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTError;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.browser.BrowserFunction;
+import org.eclipse.jface.bindings.keys.KeyStroke;
+import org.eclipse.jface.bindings.keys.ParseException;
+import org.eclipse.jface.fieldassist.ContentProposalAdapter;
+import org.eclipse.jface.fieldassist.TextContentAdapter;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.part.ViewPart;
 
 import de.prob.core.Animator;
@@ -34,14 +43,18 @@ import de.prob.core.command.GetCurrentPreferencesCommand;
 import de.prob.core.command.WriteDotCommand;
 import de.prob.core.command.WriteDotCommand.Graph;
 import de.prob.exceptions.ProBException;
+import de.prob.parserbase.ProBParseException;
+import de.prob.prolog.term.PrologTerm;
 import de.prob.ui.StaticListenerRegistry;
+import de.prob.ui.console.ConsoleViewPart;
 import de.prob.ui.stateview.LoadShortestTraceHandler;
 
 /**
  * Shows graphs of the state space computed by ProB (prototype): ProB writes a
  * GraphViz dot file, GraphViz's dot program lays it out as SVG, and an
  * embedded browser shows it with zoom and pan. Double-clicking a state of the
- * state space makes it the current state.
+ * state space makes it the current state. The transition diagram merges the
+ * states by the value of an expression entered above the graph.
  */
 public class GraphViewPart extends ViewPart implements ILifecycleListener {
 
@@ -57,6 +70,7 @@ public class GraphViewPart extends ViewPart implements ILifecycleListener {
 	private static final long DOT_TIMEOUT_SECONDS = 120;
 
 	private Browser browser;
+	private Text expressionField;
 	private String template;
 	private Graph graph = Graph.STATE_SPACE;
 	private Job runningJob;
@@ -64,12 +78,20 @@ public class GraphViewPart extends ViewPart implements ILifecycleListener {
 
 	@Override
 	public void createPartControl(final Composite parent) {
-		parent.setLayout(new FillLayout());
+		final GridLayout layout = new GridLayout(1, false);
+		layout.marginWidth = 0;
+		layout.marginHeight = 0;
+		layout.verticalSpacing = 2;
+		parent.setLayout(layout);
+		createExpressionField(parent);
+		final Composite browserArea = new Composite(parent, SWT.NONE);
+		browserArea.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		browserArea.setLayout(new FillLayout());
 		try {
-			browser = new Browser(parent, SWT.NONE);
+			browser = new Browser(browserArea, SWT.NONE);
 		} catch (SWTError e) {
 			// e.g. no WebKitGTK on Linux
-			final Label label = new Label(parent, SWT.WRAP);
+			final Label label = new Label(browserArea, SWT.WRAP);
 			label.setText("The ProB Graph view needs an embedded web browser, which is not available: "
 					+ e.getMessage());
 			return;
@@ -87,6 +109,49 @@ public class GraphViewPart extends ViewPart implements ILifecycleListener {
 				+ "Mouse wheel: zoom, drag: move, double-click on a state: go to that state.");
 		createActions();
 		StaticListenerRegistry.registerListener((ILifecycleListener) this);
+	}
+
+	/** the expression of the transition diagram; Enter shows the diagram */
+	private void createExpressionField(final Composite parent) {
+		final Composite row = new Composite(parent, SWT.NONE);
+		row.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+		final GridLayout layout = new GridLayout(2, false);
+		layout.marginHeight = 2;
+		row.setLayout(layout);
+		final Label label = new Label(row, SWT.NONE);
+		label.setText("Transition Diagram for:");
+		expressionField = new Text(row, SWT.SINGLE | SWT.BORDER);
+		expressionField.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true,
+				false));
+		expressionField
+				.setMessage("an expression, e.g. a variable or card(s); Enter shows the diagram");
+		expressionField
+				.setToolTipText("States with the same value of the expression are merged into one node."
+						+ "\nEnter: show the diagram, Ctrl+Space: complete identifiers");
+		expressionField.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetDefaultSelected(final SelectionEvent e) {
+				selectGraph(Graph.TRANSITION_DIAGRAM);
+			}
+		});
+		ConsoleViewPart.installMathSymbols(expressionField);
+		try {
+			new ContentProposalAdapter(expressionField,
+					new TextContentAdapter(),
+					ConsoleViewPart.createIdentifierProposals(),
+					KeyStroke.getInstance("Ctrl+Space"), null)
+					.setProposalAcceptanceStyle(ContentProposalAdapter.PROPOSAL_INSERT);
+		} catch (ParseException e) {
+			// cannot happen for a constant key stroke; no completion then
+		}
+	}
+
+	/** chooses a graph (also in the toolbar) and shows it */
+	private void selectGraph(final Graph g) {
+		for (int i = 0; i < graphActions.size(); i++)
+			graphActions.get(i).setChecked(Graph.values()[i] == g);
+		graph = g;
+		refresh();
 	}
 
 	private void createActions() {
@@ -164,17 +229,37 @@ public class GraphViewPart extends ViewPart implements ILifecycleListener {
 			showMessage("No model is being animated.");
 			return;
 		}
+		final Graph shown = graph;
+		PrologTerm expression = null;
+		String title = shown.getLabel();
+		if (shown == Graph.TRANSITION_DIAGRAM) {
+			final String text = expressionField.getText().trim();
+			if (text.isEmpty()) {
+				showMessage("Enter an expression above the graph, e.g. a variable, and press Enter."
+						+ " States with the same value of the expression are merged.");
+				expressionField.setFocus();
+				return;
+			}
+			try {
+				expression = WriteDotCommand.parseExpression(animator, text);
+			} catch (ProBParseException e) {
+				showError("The expression has an error: " + e.getMessage());
+				expressionField.setFocus();
+				return;
+			}
+			title += " for " + text;
+		}
 		if (runningJob != null)
 			runningJob.cancel();
-		final Graph shown = graph;
-		showMessage("Computing the " + shown.getLabel() + " ...");
-		final Job job = new Job("ProB Graph: " + shown.getLabel()) {
+		final PrologTerm parsed = expression;
+		showMessage("Computing the " + title + " ...");
+		final Job job = new Job("ProB Graph: " + title) {
 			@Override
 			protected IStatus run(final IProgressMonitor monitor) {
 				String content;
 				boolean isSvg = false;
 				try {
-					content = computeSvg(animator, shown, monitor);
+					content = computeSvg(animator, shown, parsed, monitor);
 					isSvg = true;
 				} catch (GraphException e) {
 					content = e.getMessage();
@@ -204,7 +289,8 @@ public class GraphViewPart extends ViewPart implements ILifecycleListener {
 
 	/** @return the SVG of the graph, laid out by GraphViz */
 	private static String computeSvg(final Animator animator,
-			final Graph graph, final IProgressMonitor monitor)
+			final Graph graph, final PrologTerm expression,
+			final IProgressMonitor monitor)
 			throws GraphException {
 		File dotFile = null;
 		File svgFile = null;
@@ -212,7 +298,7 @@ public class GraphViewPart extends ViewPart implements ILifecycleListener {
 			dotFile = File.createTempFile("prob_graph", ".dot");
 			svgFile = File.createTempFile("prob_graph", ".svg");
 			try {
-				WriteDotCommand.writeDot(animator, graph, dotFile);
+				WriteDotCommand.writeDot(animator, graph, expression, dotFile);
 			} catch (ProBException e) {
 				throw new GraphException("ProB could not compute the graph: "
 						+ e.getMessage());
