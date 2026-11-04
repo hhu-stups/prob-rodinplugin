@@ -381,113 +381,46 @@
          <class
                class="de.prob.ui.stateview.ShowInHistoryHandler">
          </class>
+         <enabledWhen>
+            <reference
+                  definitionId="de.prob.ui.stateview.valuesSelected">
+            </reference>
+         </enabledWhen>
       </handler>
       <handler
             class="de.prob.ui.stateview.ShowFullValueHandler"
             commandId="de.prob.ui.command.showFullValue">
          <enabledWhen>
-            <!-- the selection of the viewer whose context menu is shown;
-                 "selection" lags behind the right-click -->
-            <with
-                  variable="activeMenuSelection">
-               <and>
-                  <count
-                        value="1">
-                  </count>
-                  <iterate
-                        operator="or">
-                     <or>
-                        <instanceof
-                              value="de.prob.ui.stateview.statetree.StateTreeVariable">
-                        </instanceof>
-                        <instanceof
-                              value="de.prob.ui.stateview.statetree.StateTreeExpression">
-                        </instanceof>
-                     </or>
-                  </iterate>
-               </and>
-            </with>
+            <reference
+                  definitionId="de.prob.ui.stateview.oneValueSelected">
+            </reference>
          </enabledWhen>
       </handler>
       <handler
             class="de.prob.ui.stateview.ShowTableHandler"
             commandId="de.prob.ui.command.showTable">
          <enabledWhen>
-            <!-- the selection of the viewer whose context menu is shown;
-                 "selection" lags behind the right-click -->
-            <with
-                  variable="activeMenuSelection">
-               <and>
-                  <count
-                        value="1">
-                  </count>
-                  <iterate
-                        operator="or">
-                     <or>
-                        <instanceof
-                              value="de.prob.ui.stateview.statetree.StateTreeVariable">
-                        </instanceof>
-                        <instanceof
-                              value="de.prob.ui.stateview.statetree.StateTreeExpression">
-                        </instanceof>
-                     </or>
-                  </iterate>
-               </and>
-            </with>
+            <reference
+                  definitionId="de.prob.ui.stateview.oneValueSelected">
+            </reference>
          </enabledWhen>
       </handler>
       <handler
             class="de.prob.ui.stateview.ShowGraphHandler$Value"
             commandId="de.prob.ui.command.showValueGraph">
          <enabledWhen>
-            <!-- the selection of the viewer whose context menu is shown;
-                 "selection" lags behind the right-click -->
-            <with
-                  variable="activeMenuSelection">
-               <and>
-                  <count
-                        value="1">
-                  </count>
-                  <iterate
-                        operator="or">
-                     <or>
-                        <instanceof
-                              value="de.prob.ui.stateview.statetree.StateTreeVariable">
-                        </instanceof>
-                        <instanceof
-                              value="de.prob.ui.stateview.statetree.StateTreeExpression">
-                        </instanceof>
-                     </or>
-                  </iterate>
-               </and>
-            </with>
+            <reference
+                  definitionId="de.prob.ui.stateview.oneValueSelected">
+            </reference>
          </enabledWhen>
       </handler>
       <handler
             class="de.prob.ui.stateview.ShowGraphHandler$Projection"
             commandId="de.prob.ui.command.showProjection">
          <enabledWhen>
-            <!-- the selection of the viewer whose context menu is shown;
-                 "selection" lags behind the right-click -->
-            <with
-                  variable="activeMenuSelection">
-               <and>
-                  <count
-                        value="1">
-                  </count>
-                  <iterate
-                        operator="or">
-                     <or>
-                        <instanceof
-                              value="de.prob.ui.stateview.statetree.StateTreeVariable">
-                        </instanceof>
-                        <instanceof
-                              value="de.prob.ui.stateview.statetree.StateTreeExpression">
-                        </instanceof>
-                     </or>
-                  </iterate>
-               </and>
-            </with>
+            <reference
+                  definitionId="de.prob.ui.stateview.oneValueSelected">
+            </reference>
          </enabledWhen>
       </handler>
       <handler
@@ -949,6 +882,46 @@
    </extension>
    <extension
          point="org.eclipse.core.expressions.definitions">
+      <!-- the State view's right-click menu: entries for values are disabled
+           for the section titles (Variables, Constants, Formulas, ...).
+           activeMenuSelection is the selection of the viewer whose context
+           menu is shown; "selection" lags behind the right-click -->
+      <definition
+            id="de.prob.ui.stateview.valuesSelected">
+         <with
+               variable="activeMenuSelection">
+            <and>
+               <count
+                     value="+">
+               </count>
+               <iterate
+                     operator="and">
+                  <or>
+                     <instanceof
+                           value="de.prob.ui.stateview.statetree.StateTreeVariable">
+                     </instanceof>
+                     <instanceof
+                           value="de.prob.ui.stateview.statetree.StateTreeExpression">
+                     </instanceof>
+                  </or>
+               </iterate>
+            </and>
+         </with>
+      </definition>
+      <definition
+            id="de.prob.ui.stateview.oneValueSelected">
+         <and>
+            <with
+                  variable="activeMenuSelection">
+               <count
+                     value="1">
+               </count>
+            </with>
+            <reference
+                  definitionId="de.prob.ui.stateview.valuesSelected">
+            </reference>
+         </and>
+      </definition>
       <!-- the active editor shows an Event-B machine or context: Camille or
            Rodin's own editors -->
       <definition
