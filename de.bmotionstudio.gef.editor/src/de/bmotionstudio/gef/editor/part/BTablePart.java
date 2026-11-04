@@ -113,7 +113,7 @@ public class BTablePart extends BMSAbstractEditPart {
 				cmd.execute();
 				Integer numberOfRows = Integer.valueOf(model.getAttributeValue(
 						AttributeConstants.ATTRIBUTE_ROWS).toString());
-				refreshRows(bTableColumn, numberOfRows);
+				refreshRows(model, bTableColumn, numberOfRows);
 			}
 
 			refreshEditLayout(figure, model);
@@ -131,7 +131,7 @@ public class BTablePart extends BMSAbstractEditPart {
 
 			List<BControl> columnChildren = model.getChildrenArray();
 			for (BControl column : columnChildren) {
-				refreshRows(column, numberOfRows);
+				refreshRows(model, column, numberOfRows);
 			}
 			
 			refreshEditLayout(figure, model);
@@ -140,7 +140,7 @@ public class BTablePart extends BMSAbstractEditPart {
 
 	}
 
-	private void refreshRows(BControl column, int numberOfRows) {
+	private void refreshRows(BControl table, BControl column, int numberOfRows) {
 		Integer numberOfCurrentRows = column.getChildrenArray().size();
 		if (numberOfRows < numberOfCurrentRows) {
 			for (int i = numberOfCurrentRows - 1; i >= numberOfRows; i--) {
@@ -148,11 +148,24 @@ public class BTablePart extends BMSAbstractEditPart {
 			}
 		}
 		for (int i = numberOfCurrentRows; i < numberOfRows; i++) {
-			CreateCommand cmd = new CreateCommand(new BTableCell(
-					column.getVisualization()), column);
+			BTableCell cell = new BTableCell(column.getVisualization());
+			// New rows take the table's cell style (background, text and
+			// line colour) instead of the hard-coded white/black defaults
+			copyAttribute(table, cell,
+					AttributeConstants.ATTRIBUTE_BACKGROUND_COLOR);
+			copyAttribute(table, cell, AttributeConstants.ATTRIBUTE_TEXT_COLOR);
+			copyAttribute(table, cell,
+					AttributeConstants.ATTRIBUTE_FOREGROUND_COLOR);
+			CreateCommand cmd = new CreateCommand(cell, column);
 			cmd.setLayout(new Rectangle(0, 0, column.getDimension().width, 20));
 			cmd.execute();
 		}
+	}
+
+	private void copyAttribute(BControl from, BControl to, String attributeID) {
+		Object value = from.getAttributeValue(attributeID);
+		if (value != null)
+			to.setAttributeValue(attributeID, value, false);
 	}
 
 	@Override
