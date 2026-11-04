@@ -12,7 +12,7 @@ import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 
 /**
- * Lets ProB compute a table (see {@link GetTableCommandsCommand}), using
+ * Lets ProB compute a table (see {@link GetCommandsCommand}), using
  * <code>call_table_command_in_state/4</code>. The first row of a table are
  * the column headers.
  */
@@ -28,7 +28,7 @@ public final class CallTableCommand implements IComposableCommand {
 	/**
 	 * @param formulas
 	 *            the parsed expressions (raw ASTs) the command needs, see
-	 *            {@link WriteDotCommand#parseExpression(Animator, String)}
+	 *            {@link CommandFormulas}
 	 */
 	public CallTableCommand(final String stateId, final String command,
 			final List<PrologTerm> formulas) {
@@ -68,7 +68,7 @@ public final class CallTableCommand implements IComposableCommand {
 		for (PrologTerm row : elements(bindings.get(TABLE_VARIABLE))) {
 			final List<String> cells = new ArrayList<String>();
 			for (PrologTerm cell : elements(row))
-				cells.add(GetTableCommandsCommand.text(cell));
+				cells.add(GetCommandsCommand.text(cell));
 			result.add(Collections.unmodifiableList(cells));
 		}
 		rows = Collections.unmodifiableList(result);

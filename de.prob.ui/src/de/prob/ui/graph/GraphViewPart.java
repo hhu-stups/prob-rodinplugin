@@ -7,7 +7,13 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -15,7 +21,6 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.swt.SWT;
@@ -31,30 +36,75 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.ISharedImages;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 
 import de.prob.core.Animator;
 import de.prob.core.ILifecycleListener;
+import de.prob.core.command.CallDotCommand;
+import de.prob.core.command.CommandFormulas;
+import de.prob.core.command.GetCommandsCommand;
+import de.prob.core.command.GetCommandsCommand.Category;
+import de.prob.core.command.GetCommandsCommand.CommandInfo;
 import de.prob.core.command.GetCurrentPreferencesCommand;
-import de.prob.core.command.WriteDotCommand;
-import de.prob.core.command.WriteDotCommand.Graph;
+import de.prob.core.domainobjects.State;
 import de.prob.exceptions.ProBException;
 import de.prob.parserbase.ProBParseException;
 import de.prob.prolog.term.PrologTerm;
+import de.prob.ui.CommandMenus;
 import de.prob.ui.StaticListenerRegistry;
 import de.prob.ui.console.ConsoleViewPart;
 import de.prob.ui.stateview.LoadShortestTraceHandler;
 
 /**
- * Shows graphs of the state space computed by ProB (prototype): ProB writes a
- * GraphViz dot file, GraphViz's dot program lays it out as SVG, and an
- * embedded browser shows it with zoom and pan. Double-clicking a state of the
- * state space makes it the current state. The transition diagram merges the
- * states by the value of an expression entered above the graph.
+ * Shows the graphs that ProB can compute in the current state, e.g. the state
+ * space or a formula as a tree. The graphs are offered in one toolbar
+ * drop-down menu per group. ProB writes a GraphViz dot file, GraphViz lays it
+ * out as SVG, and an embedded browser shows it with zoom and pan.
+ * Double-clicking a state of the state space makes it the current state.
+ * Graphs that need a formula take it from the field above the graph.
  */
 public class GraphViewPart extends ViewPart implements ILifecycleListener {
 
 	public static final String VIEW_ID = "de.prob.ui.GraphView";
+
+	// the menus' names for ProB's groups, in this order; others follow,
+	// named after the group
+	private static final Map<String, String> GROUP_LABELS = new LinkedHashMap<String, String>();
+	static {
+		GROUP_LABELS.put("state_space_visualisation", "State Space");
+		GROUP_LABELS.put("state_visualisation", "State");
+		GROUP_LABELS.put("formula_visualisation", "Formula");
+		GROUP_LABELS.put("trace_visualisation", "Trace");
+		GROUP_LABELS.put("data_flow_info", "Data Flow");
+		GROUP_LABELS.put("machine_info", "Machine");
+		GROUP_LABELS.put("debug_info", "Debug");
+	}
+
+	// groups of ProB that are not offered; edit to show them
+	private static final Set<String> HIDDEN_GROUPS = new HashSet<String>(
+			Arrays.asList("debug_info"));
+	// commands of ProB that are not offered, as they do not apply to Event-B
+	// models in Rodin; edit to show them
+	private static final Set<String> HIDDEN_COMMANDS = new HashSet<String>(
+			Arrays.asList(//
+					"definitions", // B and Z only
+					"operations", // classical B only
+					"custom_graph", // needs DEFINITIONS of a B machine
+					"goal", // needs a GOAL definition
+					"last_mcts_tree", // needs GAME_OVER, ... definitions
+					"rule_dependency_graph", // rules machines only
+					"proof_tree_graph" // sequent prover only
+			));
+
+	// graphs whose nodes are states, named by their ids
+	private static final Set<String> STATE_GRAPHS = new HashSet<String>(
+			Arrays.asList("state_space", "state_space_sfdp", "current_state",
+					"history"));
+
+	// shown when Enter is pressed and the current graph needs no formula
+	private static final String DEFAULT_FORMULA_GRAPH = "transition_diagram";
 
 	// the ProB preference with the path of GraphViz's dot program
 	private static final String DOT_PREFERENCE = "DOT";
@@ -65,14 +115,16 @@ public class GraphViewPart extends ViewPart implements ILifecycleListener {
 			"C:/Program Files/Graphviz/bin/dot.exe" };
 	private static final long DOT_TIMEOUT_SECONDS = 120;
 
-	private static final String COMPLETION_HINT = "Tab or Ctrl+Space in the expression field completes identifiers.";
+	private static final String COMPLETION_HINT = "Tab or Ctrl+Space in the formula field completes identifiers.";
 
 	private Browser browser;
-	private Text expressionField;
+	private Text formulaField;
 	private String template;
-	private Graph graph = Graph.STATE_SPACE;
 	private Job runningJob;
-	private final List<Action> graphActions = new ArrayList<Action>();
+	private Action stop;
+	// the menus with the graphs from ProB
+	private CommandMenus menus;
+	private CommandInfo shown;
 
 	@Override
 	public void createPartControl(final Composite parent) {
@@ -81,7 +133,7 @@ public class GraphViewPart extends ViewPart implements ILifecycleListener {
 		layout.marginHeight = 0;
 		layout.verticalSpacing = 2;
 		parent.setLayout(layout);
-		createExpressionField(parent);
+		createFormulaField(parent);
 		final Composite browserArea = new Composite(parent, SWT.NONE);
 		browserArea.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		browserArea.setLayout(new FillLayout());
@@ -103,67 +155,54 @@ public class GraphViewPart extends ViewPart implements ILifecycleListener {
 				return null;
 			}
 		};
-		showMessage("Choose a graph in the toolbar, e.g. State Space, to show it.\n"
-				+ "Mouse wheel: zoom, drag: move, double-click on a state: go to that state.\n"
-				+ COMPLETION_HINT);
 		createActions();
 		StaticListenerRegistry.registerListener((ILifecycleListener) this);
+		loadCommands(null);
 	}
 
-	/** the expression of the transition diagram; Enter shows the diagram */
-	private void createExpressionField(final Composite parent) {
+	/** the formula for graphs that need one; Enter shows the graph again */
+	private void createFormulaField(final Composite parent) {
 		final Composite row = new Composite(parent, SWT.NONE);
 		row.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 		final GridLayout layout = new GridLayout(2, false);
 		layout.marginHeight = 2;
 		row.setLayout(layout);
 		final Label label = new Label(row, SWT.NONE);
-		label.setText("Transition Diagram for:");
-		expressionField = new Text(row, SWT.SINGLE | SWT.BORDER);
-		expressionField.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true,
+		label.setText("Formula:");
+		formulaField = new Text(row, SWT.SINGLE | SWT.BORDER);
+		formulaField.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true,
 				false));
-		expressionField
-				.setMessage("an expression, e.g. a variable or card(s); Enter shows the diagram");
-		expressionField
-				.setToolTipText("States with the same value of the expression are merged into one node."
-						+ "\nEnter: show the diagram, Tab or Ctrl+Space: complete identifiers");
-		expressionField.addSelectionListener(new SelectionAdapter() {
+		formulaField
+				.setMessage("for the graphs ending in \"...\", e.g. State Space Expression Projection...");
+		formulaField
+				.setToolTipText("The expression or predicate for the graphs that need one (their names end in \"...\")."
+						+ "\nEnter: show that graph again, or the State Space Expression Projection"
+						+ "\nTab or Ctrl+Space: complete identifiers");
+		formulaField.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetDefaultSelected(final SelectionEvent e) {
-				selectGraph(Graph.TRANSITION_DIAGRAM);
+				if (shown != null && shown.getFormulaArguments() > 0)
+					showGraph(shown);
+				else if (menus != null)
+					showGraph(menus.find(DEFAULT_FORMULA_GRAPH));
 			}
 		});
-		ConsoleViewPart.installMathSymbols(expressionField);
-		ConsoleViewPart.installCompletion(expressionField);
-	}
-
-	/** chooses a graph (also in the toolbar) and shows it */
-	private void selectGraph(final Graph g) {
-		for (int i = 0; i < graphActions.size(); i++)
-			graphActions.get(i).setChecked(Graph.values()[i] == g);
-		graph = g;
-		refresh();
+		ConsoleViewPart.installMathSymbols(formulaField);
+		ConsoleViewPart.installCompletion(formulaField);
 	}
 
 	private void createActions() {
 		final IToolBarManager toolBar = getViewSite().getActionBars()
 				.getToolBarManager();
-		for (final Graph g : Graph.values()) {
-			final Action action = new Action(g.getLabel(),
-					IAction.AS_RADIO_BUTTON) {
-				@Override
-				public void run() {
-					if (isChecked()) {
-						graph = g;
-						refresh();
+		menus = new CommandMenus(getViewSite(), "de.prob.ui.graph", "graphs",
+				GROUP_LABELS, HIDDEN_GROUPS, HIDDEN_COMMANDS,
+				new CommandMenus.Handler() {
+					@Override
+					public void run(final CommandInfo command) {
+						showGraph(command);
 					}
-				}
-			};
-			action.setToolTipText("Show the " + g.getLabel());
-			action.setChecked(g == graph);
-			graphActions.add(action);
-			toolBar.add(action);
-		}
+				});
+		menus.addTo(toolBar);
 		toolBar.add(new Separator());
 		final Action refresh = new Action("Refresh") {
 			@Override
@@ -173,6 +212,25 @@ public class GraphViewPart extends ViewPart implements ILifecycleListener {
 		};
 		refresh.setToolTipText("Compute the graph again (e.g. after animating or model checking)");
 		toolBar.add(refresh);
+		stop = new Action("Stop") {
+			@Override
+			public void run() {
+				if (runningJob == null)
+					return;
+				runningJob.cancel();
+				setRunningJob(null);
+				showMessage("Stopped. Choose a graph or press Refresh to compute it again.");
+			}
+		};
+		stop.setToolTipText("Stop computing the graph: interrupts ProB, or GraphViz if ProB has finished");
+		final ISharedImages images = PlatformUI.getWorkbench()
+				.getSharedImages();
+		stop.setImageDescriptor(images
+				.getImageDescriptor(ISharedImages.IMG_ELCL_STOP));
+		stop.setDisabledImageDescriptor(images
+				.getImageDescriptor(ISharedImages.IMG_ELCL_STOP_DISABLED));
+		stop.setEnabled(false);
+		toolBar.add(stop);
 		toolBar.add(new Separator());
 		toolBar.add(new Action("+") {
 			{
@@ -211,54 +269,142 @@ public class GraphViewPart extends ViewPart implements ILifecycleListener {
 			browser.execute(script);
 	}
 
-	/** computes the chosen graph in the background and shows it */
+	private static String currentStateId(final Animator animator) {
+		final State state = animator.getCurrentState();
+		return state == null ? "root" : state.getId();
+	}
+
+	/**
+	 * gets the available graphs from ProB in the background, then shows the
+	 * graph with the given command (if not <code>null</code>)
+	 */
+	private void loadCommands(final String then) {
+		final Animator animator = Animator.getAnimator();
+		if (!animator.isMachineLoaded()) {
+			menus.setCommands(Collections.<CommandInfo> emptyList());
+			showMessage("No model is being animated.");
+			return;
+		}
+		final String stateId = currentStateId(animator);
+		final Job job = new Job("ProB Graph: available graphs") {
+			@Override
+			protected IStatus run(final IProgressMonitor monitor) {
+				List<CommandInfo> result;
+				String error = null;
+				try {
+					result = GetCommandsCommand.getCommands(animator,
+							Category.DOT, stateId);
+				} catch (ProBException e) {
+					result = Collections.emptyList();
+					error = "ProB could not list its graphs: "
+							+ e.getMessage();
+				}
+				final List<CommandInfo> loaded = result;
+				final String loadError = error;
+				asyncExec(new Runnable() {
+					@Override
+					public void run() {
+						menus.setCommands(loaded);
+						if (loadError != null)
+							showError(loadError);
+						else if (then != null)
+							showGraph(menus.find(then));
+						else if (shown == null)
+							showMessage("Choose a graph in the toolbar menus, e.g. State Space \u203a State Space.\n"
+									+ "Mouse wheel: zoom, drag: move, double-click on a state: go to that state.\n"
+									+ COMPLETION_HINT);
+					}
+				});
+				return Status.OK_STATUS;
+			}
+		};
+		job.setSystem(true);
+		job.schedule();
+	}
+
+	/** gets the graphs again, as they depend on the state, and the graph */
 	private void refresh() {
 		if (browser == null || browser.isDisposed())
 			return;
+		loadCommands(shown == null ? null : shown.getCommand());
+	}
+
+	/** computes a graph in the background and shows it */
+	private void showGraph(final CommandInfo command) {
+		if (browser == null || browser.isDisposed())
+			return;
+		if (command == null) {
+			showError("This graph is not available.");
+			return;
+		}
 		final Animator animator = Animator.getAnimator();
 		if (!animator.isMachineLoaded()) {
 			showMessage("No model is being animated.");
 			return;
 		}
-		final Graph shown = graph;
-		PrologTerm expression = null;
-		String title = shown.getLabel();
-		if (shown == Graph.TRANSITION_DIAGRAM) {
-			final String text = expressionField.getText().trim();
+		shown = command;
+		if (!command.isAvailable()) {
+			showError(command.getName() + " is not available: "
+					+ command.getUnavailableReason());
+			return;
+		}
+		final List<PrologTerm> formulas = new ArrayList<PrologTerm>();
+		String title = command.getName();
+		if (command.getFormulaArguments() > 0) {
+			final String text = formulaField.getText().trim();
 			if (text.isEmpty()) {
-				showMessage("Enter an expression above the graph, e.g. a variable, and press Enter."
-						+ " States with the same value of the expression are merged.\n"
+				showMessage(command.getName()
+						+ " needs a formula: enter it above the graph and press Enter.\n"
 						+ COMPLETION_HINT);
-				expressionField.setFocus();
+				formulaField.setFocus();
 				return;
 			}
 			try {
-				expression = WriteDotCommand.parseExpression(animator, text);
+				formulas.add(CommandFormulas.parseFormula(animator, text));
 			} catch (ProBParseException e) {
-				showError("The expression has an error: " + e.getMessage());
-				expressionField.setFocus();
+				showError("The formula has an error: " + e.getMessage());
+				formulaField.setFocus();
 				return;
 			}
-			title += " for " + text;
+			title = title.replaceFirst("\\.\\.\\.$", "") + " for " + text;
 		}
 		if (runningJob != null)
 			runningJob.cancel();
-		final PrologTerm parsed = expression;
-		showMessage("Computing the " + title + " ...");
+		final String stateId = currentStateId(animator);
+		final boolean clickable = STATE_GRAPHS.contains(command.getCommand());
+		final String shownTitle = title;
+		showMessage("ProB is computing " + title
+				+ " ...\nThe red Stop button interrupts it.");
 		final Job job = new Job("ProB Graph: " + title) {
 			@Override
 			protected IStatus run(final IProgressMonitor monitor) {
+				final Job self = this;
+				final Runnable layingOut = new Runnable() {
+					@Override
+					public void run() {
+						asyncExec(new Runnable() {
+							@Override
+							public void run() {
+								if (runningJob == self)
+									showMessage("GraphViz is laying out "
+											+ shownTitle
+											+ " ...\nThe red Stop button interrupts it.");
+							}
+						});
+					}
+				};
 				String content;
 				boolean isSvg = false;
 				try {
-					content = computeSvg(animator, shown, parsed, monitor);
+					content = computeSvg(animator, stateId, command, formulas,
+							layingOut, monitor);
 					isSvg = true;
 				} catch (GraphException e) {
 					content = e.getMessage();
 				}
 				if (monitor.isCanceled())
 					return Status.CANCEL_STATUS;
-				show(this, content, isSvg, shown == Graph.STATE_SPACE);
+				show(this, content, isSvg, clickable);
 				return Status.OK_STATUS;
 			}
 
@@ -267,8 +413,28 @@ public class GraphViewPart extends ViewPart implements ILifecycleListener {
 				Animator.getAnimator().sendUserInterruptSignal();
 			}
 		};
-		runningJob = job;
+		setRunningJob(job);
 		job.schedule();
+	}
+
+	/** the job computing the graph; the Stop button is enabled while there is one */
+	private void setRunningJob(final Job job) {
+		runningJob = job;
+		if (stop != null)
+			stop.setEnabled(job != null);
+	}
+
+	private void asyncExec(final Runnable runnable) {
+		final Display display = Display.getDefault();
+		if (display.isDisposed())
+			return;
+		display.asyncExec(new Runnable() {
+			@Override
+			public void run() {
+				if (browser != null && !browser.isDisposed())
+					runnable.run();
+			}
+		});
 	}
 
 	private static final class GraphException extends Exception {
@@ -281,23 +447,25 @@ public class GraphViewPart extends ViewPart implements ILifecycleListener {
 
 	/** @return the SVG of the graph, laid out by GraphViz */
 	private static String computeSvg(final Animator animator,
-			final Graph graph, final PrologTerm expression,
-			final IProgressMonitor monitor)
-			throws GraphException {
+			final String stateId, final CommandInfo command,
+			final List<PrologTerm> formulas, final Runnable layingOut,
+			final IProgressMonitor monitor) throws GraphException {
 		File dotFile = null;
 		File svgFile = null;
 		try {
 			dotFile = File.createTempFile("prob_graph", ".dot");
 			svgFile = File.createTempFile("prob_graph", ".svg");
 			try {
-				WriteDotCommand.writeDot(animator, graph, expression, dotFile);
+				CallDotCommand.writeDot(animator, stateId,
+						command.getCommand(), formulas, dotFile);
 			} catch (ProBException e) {
 				throw new GraphException("ProB could not compute the graph: "
 						+ e.getMessage());
 			}
 			if (monitor.isCanceled())
 				throw new GraphException("Cancelled.");
-			runDot(animator, dotFile, svgFile, monitor);
+			layingOut.run();
+			runDot(animator, command, dotFile, svgFile, monitor);
 			final String svg = new String(Files.readAllBytes(svgFile.toPath()),
 					StandardCharsets.UTF_8);
 			// without the XML declaration and DOCTYPE, to embed it in HTML
@@ -314,9 +482,9 @@ public class GraphViewPart extends ViewPart implements ILifecycleListener {
 		}
 	}
 
-	private static void runDot(final Animator animator, final File dotFile,
-			final File svgFile, final IProgressMonitor monitor)
-			throws GraphException {
+	private static void runDot(final Animator animator,
+			final CommandInfo command, final File dotFile, final File svgFile,
+			final IProgressMonitor monitor) throws GraphException {
 		final List<String> candidates = new ArrayList<String>();
 		try {
 			final String preference = GetCurrentPreferencesCommand
@@ -331,11 +499,18 @@ public class GraphViewPart extends ViewPart implements ILifecycleListener {
 				candidates.add(location);
 
 		for (String dot : candidates) {
+			final List<String> arguments = new ArrayList<String>();
+			arguments.add(dot);
+			// the layout ProB suggests, e.g. sfdp for large state spaces
+			if (command.getPreferredDotType() != null)
+				arguments.add("-K" + command.getPreferredDotType());
+			arguments.addAll(command.getExtraArguments());
+			arguments.addAll(Arrays.asList("-Tsvg", "-o",
+					svgFile.getAbsolutePath(), dotFile.getAbsolutePath()));
 			final Process process;
 			try {
-				process = new ProcessBuilder(dot, "-Tsvg", "-o",
-						svgFile.getAbsolutePath(), dotFile.getAbsolutePath())
-						.redirectErrorStream(true).start();
+				process = new ProcessBuilder(arguments).redirectErrorStream(
+						true).start();
 			} catch (IOException e) {
 				continue; // not there, try the next location
 			}
@@ -384,7 +559,7 @@ public class GraphViewPart extends ViewPart implements ILifecycleListener {
 					throw new GraphException("GraphViz did not finish within "
 							+ DOT_TIMEOUT_SECONDS
 							+ " seconds; the graph is probably too large."
-							+ " Try the Signature Merge instead.");
+							+ " Try State Space \u203a Signature Merge or State Space (Fast) instead.");
 				}
 			}
 			reader.join(1000);
@@ -407,7 +582,7 @@ public class GraphViewPart extends ViewPart implements ILifecycleListener {
 				if (browser == null || browser.isDisposed())
 					return;
 				if (runningJob == job)
-					runningJob = null;
+					setRunningJob(null);
 				else
 					return; // a newer graph is being computed
 				if (isSvg)
@@ -473,9 +648,13 @@ public class GraphViewPart extends ViewPart implements ILifecycleListener {
 		display.asyncExec(new Runnable() {
 			@Override
 			public void run() {
-				if (browser != null && !browser.isDisposed())
-					showMessage("A new model was loaded. Press Refresh to show its "
-							+ graph.getLabel() + ".");
+				if (browser == null || browser.isDisposed())
+					return;
+				if (runningJob != null)
+					runningJob.cancel();
+				setRunningJob(null);
+				shown = null;
+				loadCommands(null);
 			}
 		});
 	}

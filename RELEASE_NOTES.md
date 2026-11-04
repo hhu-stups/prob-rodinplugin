@@ -23,12 +23,21 @@ A new view for evaluating formulas in the current state of the animation. Open i
   - Type errors name the identifiers whose type can't be inferred.
 
 ### ProB Graph
-A new view that shows graphs of the state space. Open it from the State view's right-click menu ("Open ProB Graph") or via Window › Show View › ProB › ProB Graph.
-- **State Space:** all states and transitions explored so far. Double-click a state to make it the current state, reached by the shortest trace from the root.
-- **Signature Merge:** states merged by the events enabled in them.
-- **Transition Diagram:** states merged by the value of an expression. Enter the expression in the field above the graph, e.g. a variable or `card(s)`, and press Enter. The field translates ASCII to symbols and completes identifiers with Tab or Ctrl+Space.
+A new view that shows the graphs ProB can compute. Open it from the State view's right-click menu ("Open ProB Graph") or via Window › Show View › ProB › ProB Graph.
+- **Menus:** the graphs are offered in toolbar drop-down menus, one per group: State Space, State, Formula, Trace, Data Flow and Machine. Unavailable graphs appear greyed out, with the reason.
+- **Examples:**
+  - the state space, also with a faster layout
+  - the signature merge and DFA merge
+  - the current state as a graph
+  - the path to the current state
+  - formula trees of the invariant and axioms
+  - the deadlock formula tree
+  - the event enable and dependence graphs
+  - the variable read/write graph
+- **Going to a state:** in graphs of states (e.g. State Space), double-click a state to make it the current state, reached by the shortest trace from the root.
+- **Graphs for a formula:** graphs whose names end in "…" use the expression or predicate in the field above the graph, e.g. State Space Expression Projection… (states merged by the value of an expression), Expression as Graph… and Formula Tree…. Enter recomputes the graph. The field translates ASCII to symbols and completes identifiers with Tab or Ctrl+Space.
 - **Navigation:** the mouse wheel zooms and dragging moves the graph. The + / − / Fit buttons zoom in, zoom out, or fit the whole graph into the view.
-- **Refresh** recomputes the graph, e.g. after animating or model checking. Computations run in the background and can be cancelled.
+- **Refresh** recomputes the graph, e.g. after animating or model checking. Computations run in the background. The red Stop button interrupts ProB or, once ProB has written the graph, GraphViz.
 - **Requirements:**
   - GraphViz must be installed.
   - Its `dot` program is looked up first via ProB's DOT preference, then on the PATH and in the usual install locations (Homebrew, `/usr/local/bin`, `/usr/bin`, `C:/Program Files/Graphviz/bin`).
@@ -40,7 +49,7 @@ A new view that shows the tables ProB can compute, e.g. machine statistics, oper
 - **Tables for an expression:** tables whose names end in "…", e.g. Expression Table…, Expression Coverage… and Find Value…, use the expression in the field above the table. Enter recomputes the table. The field translates ASCII to symbols and completes identifiers with Tab or Ctrl+Space.
 - **From the State view:** "Show Table" in the right-click menu of a variable or formula shows its value as an Expression Table, e.g. a relation with one row per pair.
 - **Working with tables:** click a column header to sort (numbers sort numerically). Ctrl/Cmd+C copies the selected rows, or all, tab-separated with headers, ready for a spreadsheet.
-- **Refresh** recomputes the table in the current state, e.g. after animating or model checking. Computations run in the background and can be cancelled.
+- **Refresh** recomputes the table in the current state, e.g. after animating or model checking. Computations run in the background, and the red Stop button interrupts them.
 - **Not yet offered:** the VisB and MC/DC tables.
 
 ### Start animation from the editors
@@ -111,5 +120,5 @@ When you right-click an enabled event, each non-deterministic choice is now labe
 
 ## Notes
 - **Free identifiers:** in the console, they need inferable types. Add a typing predicate such as `x : INT` if needed.
-- **Large state spaces:** GraphViz can get slow with thousands of states, so it is stopped after 120 seconds. The Signature Merge or a Transition Diagram give smaller graphs.
+- **Large state spaces:** GraphViz can get slow with thousands of states, so it is stopped after 120 seconds. State Space (Fast), the Signature Merge or an Expression Projection give smaller or faster graphs.
 - **ProB version for the WD prover:** "Use ProB WD Prover" needs a probcli that supports the `no_constraint_solving` disprover option.

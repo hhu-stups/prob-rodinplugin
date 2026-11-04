@@ -16,8 +16,6 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.IAction;
-import org.eclipse.jface.action.IMenuCreator;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.swt.SWT;
@@ -31,29 +29,30 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.ISharedImages;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 
 import de.prob.core.Animator;
 import de.prob.core.ILifecycleListener;
 import de.prob.core.command.CallTableCommand;
-import de.prob.core.command.GetTableCommandsCommand;
-import de.prob.core.command.GetTableCommandsCommand.TableCommand;
-import de.prob.core.command.WriteDotCommand;
+import de.prob.core.command.CommandFormulas;
+import de.prob.core.command.GetCommandsCommand;
+import de.prob.core.command.GetCommandsCommand.Category;
+import de.prob.core.command.GetCommandsCommand.CommandInfo;
 import de.prob.core.domainobjects.State;
 import de.prob.exceptions.ProBException;
 import de.prob.parserbase.ProBParseException;
 import de.prob.prolog.term.PrologTerm;
+import de.prob.ui.CommandMenus;
 import de.prob.ui.StaticListenerRegistry;
 import de.prob.ui.console.ConsoleViewPart;
 
@@ -95,12 +94,12 @@ public class TableViewPart extends ViewPart implements ILifecycleListener {
 	private Label status;
 	private Table table;
 	private Job runningJob;
+	private Action stop;
 	private Clipboard clipboard;
 
-	// the menus' contents, from ProB
-	private List<TableCommand> commands = Collections.emptyList();
-	private final List<Action> groupActions = new ArrayList<Action>();
-	private TableCommand shown;
+	// the menus with the tables from ProB
+	private CommandMenus menus;
+	private CommandInfo shown;
 
 	// the table's contents
 	private List<String> headers = Collections.emptyList();
@@ -189,7 +188,15 @@ public class TableViewPart extends ViewPart implements ILifecycleListener {
 	private void createActions() {
 		final IToolBarManager toolBar = getViewSite().getActionBars()
 				.getToolBarManager();
-		toolBar.add(new Separator("groups"));
+		menus = new CommandMenus(getViewSite(), "de.prob.ui.table", "tables",
+				GROUP_LABELS, HIDDEN_GROUPS, HIDDEN_COMMANDS,
+				new CommandMenus.Handler() {
+					@Override
+					public void run(final CommandInfo command) {
+						showTable(command);
+					}
+				});
+		menus.addTo(toolBar);
 		toolBar.add(new Separator());
 		final Action refresh = new Action("Refresh") {
 			@Override
@@ -199,119 +206,25 @@ public class TableViewPart extends ViewPart implements ILifecycleListener {
 		};
 		refresh.setToolTipText("Compute the table again (e.g. after animating or model checking)");
 		toolBar.add(refresh);
-	}
-
-	/** one drop-down menu per group of the commands */
-	private void updateMenus() {
-		final IToolBarManager toolBar = getViewSite().getActionBars()
-				.getToolBarManager();
-		for (Action action : groupActions)
-			toolBar.remove(action.getId());
-		groupActions.clear();
-
-		final Map<String, List<TableCommand>> groups = new LinkedHashMap<String, List<TableCommand>>();
-		for (String group : GROUP_LABELS.keySet())
-			groups.put(group, new ArrayList<TableCommand>());
-		for (TableCommand command : commands) {
-			if (HIDDEN_GROUPS.contains(command.getGroup())
-					|| HIDDEN_COMMANDS.contains(command.getCommand()))
-				continue;
-			List<TableCommand> list = groups.get(command.getGroup());
-			if (list == null) {
-				list = new ArrayList<TableCommand>();
-				groups.put(command.getGroup(), list);
-			}
-			list.add(command);
-		}
-		for (Map.Entry<String, List<TableCommand>> group : groups.entrySet()) {
-			if (group.getValue().isEmpty())
-				continue;
-			final Action action = createGroupAction(group.getKey(),
-					group.getValue());
-			groupActions.add(action);
-			toolBar.appendToGroup("groups", action);
-		}
-		toolBar.update(true);
-		getViewSite().getActionBars().updateActionBars();
-	}
-
-	private Action createGroupAction(final String group,
-			final List<TableCommand> groupCommands) {
-		final String label = groupLabel(group);
-		final Action action = new Action(label, IAction.AS_DROP_DOWN_MENU) {
+		stop = new Action("Stop") {
 			@Override
-			public void runWithEvent(final Event event) {
-				// a click on the button itself also opens the menu
-				if (event.widget instanceof org.eclipse.swt.widgets.ToolItem) {
-					final org.eclipse.swt.widgets.ToolItem item = (org.eclipse.swt.widgets.ToolItem) event.widget;
-					final Menu menu = getMenuCreator().getMenu(
-							item.getParent());
-					final org.eclipse.swt.graphics.Rectangle bounds = item
-							.getBounds();
-					menu.setLocation(item.getParent().toDisplay(bounds.x,
-							bounds.y + bounds.height));
-					menu.setVisible(true);
-				}
+			public void run() {
+				if (runningJob == null)
+					return;
+				runningJob.cancel();
+				setRunningJob(null);
+				setStatus("Stopped. Choose a table or press Refresh to compute it again.", false);
 			}
 		};
-		action.setId("de.prob.ui.table.group." + group);
-		action.setToolTipText(label + " tables");
-		action.setMenuCreator(new IMenuCreator() {
-			private Menu menu;
-
-			@Override
-			public Menu getMenu(final Control parent) {
-				dispose();
-				menu = new Menu(parent);
-				for (final TableCommand command : groupCommands) {
-					final MenuItem item = new MenuItem(menu, SWT.PUSH);
-					String text = command.getName();
-					if (!command.isAvailable())
-						text += "  (" + command.getUnavailableReason() + ")";
-					item.setText(text);
-					item.setEnabled(command.isAvailable());
-					item.setToolTipText(command.getDescription());
-					item.addSelectionListener(new SelectionAdapter() {
-						@Override
-						public void widgetSelected(final SelectionEvent e) {
-							showTable(command);
-						}
-					});
-				}
-				return menu;
-			}
-
-			@Override
-			public Menu getMenu(final Menu parent) {
-				return null;
-			}
-
-			@Override
-			public void dispose() {
-				if (menu != null && !menu.isDisposed())
-					menu.dispose();
-				menu = null;
-			}
-		});
-		return action;
-	}
-
-	private static String groupLabel(final String group) {
-		final String label = GROUP_LABELS.get(group);
-		if (label != null)
-			return label;
-		// e.g. state_space_info --> State Space
-		final StringBuilder result = new StringBuilder();
-		for (String word : group.replaceFirst("_(info|visualisation)$", "")
-				.split("_")) {
-			if (word.isEmpty())
-				continue;
-			if (result.length() > 0)
-				result.append(' ');
-			result.append(Character.toUpperCase(word.charAt(0))).append(
-					word.substring(1));
-		}
-		return result.toString();
+		stop.setToolTipText("Stop computing the table: interrupts ProB");
+		final ISharedImages images = PlatformUI.getWorkbench()
+				.getSharedImages();
+		stop.setImageDescriptor(images
+				.getImageDescriptor(ISharedImages.IMG_ELCL_STOP));
+		stop.setDisabledImageDescriptor(images
+				.getImageDescriptor(ISharedImages.IMG_ELCL_STOP_DISABLED));
+		stop.setEnabled(false);
+		toolBar.add(stop);
 	}
 
 	private static String currentStateId(final Animator animator) {
@@ -326,8 +239,7 @@ public class TableViewPart extends ViewPart implements ILifecycleListener {
 	private void loadCommands(final String then) {
 		final Animator animator = Animator.getAnimator();
 		if (!animator.isMachineLoaded()) {
-			commands = Collections.emptyList();
-			updateMenus();
+			menus.setCommands(Collections.<CommandInfo> emptyList());
 			setStatus("No model is being animated.", false);
 			return;
 		}
@@ -335,27 +247,26 @@ public class TableViewPart extends ViewPart implements ILifecycleListener {
 		final Job job = new Job("ProB Table: available tables") {
 			@Override
 			protected IStatus run(final IProgressMonitor monitor) {
-				List<TableCommand> result;
+				List<CommandInfo> result;
 				String error = null;
 				try {
-					result = GetTableCommandsCommand.getTableCommands(animator,
-							stateId);
+					result = GetCommandsCommand.getCommands(animator,
+							Category.TABLE, stateId);
 				} catch (ProBException e) {
 					result = Collections.emptyList();
 					error = "ProB could not list its tables: "
 							+ e.getMessage();
 				}
-				final List<TableCommand> loaded = result;
+				final List<CommandInfo> loaded = result;
 				final String loadError = error;
 				asyncExec(new Runnable() {
 					@Override
 					public void run() {
-						commands = loaded;
-						updateMenus();
+						menus.setCommands(loaded);
 						if (loadError != null)
 							setStatus(loadError, true);
 						else if (then != null)
-							showTable(find(then));
+							showTable(menus.find(then));
 						else if (shown == null)
 							setStatus("Choose a table in the toolbar menus. "
 									+ COMPLETION_HINT, false);
@@ -366,13 +277,6 @@ public class TableViewPart extends ViewPart implements ILifecycleListener {
 		};
 		job.setSystem(true);
 		job.schedule();
-	}
-
-	private TableCommand find(final String command) {
-		for (TableCommand c : commands)
-			if (c.getCommand().equals(command))
-				return c;
-		return null;
 	}
 
 	/** gets the tables again, as they depend on the state, and the table */
@@ -386,7 +290,7 @@ public class TableViewPart extends ViewPart implements ILifecycleListener {
 	 */
 	public void showExpressionTable(final String expression) {
 		expressionField.setText(expression);
-		final TableCommand command = find(EXPRESSION_TABLE);
+		final CommandInfo command = menus.find(EXPRESSION_TABLE);
 		if (command != null)
 			showTable(command);
 		else
@@ -395,7 +299,7 @@ public class TableViewPart extends ViewPart implements ILifecycleListener {
 	}
 
 	/** computes a table in the background and shows it */
-	private void showTable(final TableCommand command) {
+	private void showTable(final CommandInfo command) {
 		if (command == null) {
 			setStatus("This table is no longer available.", true);
 			return;
@@ -425,7 +329,7 @@ public class TableViewPart extends ViewPart implements ILifecycleListener {
 				return;
 			}
 			try {
-				formulas.add(WriteDotCommand.parseExpression(animator, text));
+				formulas.add(CommandFormulas.parseExpression(animator, text));
 			} catch (ProBParseException e) {
 				setStatus("The expression has an error: " + e.getMessage(),
 						true);
@@ -461,7 +365,7 @@ public class TableViewPart extends ViewPart implements ILifecycleListener {
 					public void run() {
 						if (runningJob != self)
 							return; // a newer table is being computed
-						runningJob = null;
+						setRunningJob(null);
 						if (computeError != null) {
 							setTable(Collections.<List<String>> emptyList());
 							setStatus(computeError, true);
@@ -482,8 +386,15 @@ public class TableViewPart extends ViewPart implements ILifecycleListener {
 				Animator.getAnimator().sendUserInterruptSignal();
 			}
 		};
-		runningJob = job;
+		setRunningJob(job);
 		job.schedule();
+	}
+
+	/** the job computing the table; the Stop button is enabled while there is one */
+	private void setRunningJob(final Job job) {
+		runningJob = job;
+		if (stop != null)
+			stop.setEnabled(job != null);
 	}
 
 	private void asyncExec(final Runnable runnable) {
@@ -619,7 +530,7 @@ public class TableViewPart extends ViewPart implements ILifecycleListener {
 			public void run() {
 				if (runningJob != null)
 					runningJob.cancel();
-				runningJob = null;
+				setRunningJob(null);
 				shown = null;
 				setTable(Collections.<List<String>> emptyList());
 				loadCommands(null);

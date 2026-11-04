@@ -13,31 +13,51 @@ import de.prob.prolog.term.ListPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 
 /**
- * Gets the tables that ProB can compute in a state, using
- * <code>get_table_commands_in_state/2</code>. The tables are computed by
- * {@link CallTableCommand}.
+ * Gets the tables or graphs that ProB can compute in a state, using
+ * <code>get_table_commands_in_state/2</code> or
+ * <code>get_dot_commands_in_state/2</code>. They are computed by
+ * {@link CallTableCommand} and {@link CallDotCommand}.
  */
-public final class GetTableCommandsCommand implements IComposableCommand {
+public final class GetCommandsCommand implements IComposableCommand {
 
 	private static final String LIST_VARIABLE = "Commands";
 
-	/** a table that ProB can compute */
-	public static final class TableCommand {
+	public enum Category {
+		/** tables, see {@link CallTableCommand} */
+		TABLE("get_table_commands_in_state"),
+		/** GraphViz graphs, see {@link CallDotCommand} */
+		DOT("get_dot_commands_in_state");
+
+		private final String predicate;
+
+		private Category(final String predicate) {
+			this.predicate = predicate;
+		}
+	}
+
+	/** a table or graph that ProB can compute */
+	public static final class CommandInfo {
 		private final String command;
 		private final String name;
 		private final String description;
 		private final int formulaArguments;
 		private final String group;
+		private final String preferredDotType;
+		private final List<String> extraArguments;
 		private final String unavailableReason;
 
-		TableCommand(final String command, final String name,
+		CommandInfo(final String command, final String name,
 				final String description, final int formulaArguments,
-				final String group, final String unavailableReason) {
+				final String group, final String preferredDotType,
+				final List<String> extraArguments,
+				final String unavailableReason) {
 			this.command = command;
 			this.name = name;
 			this.description = description;
 			this.formulaArguments = formulaArguments;
 			this.group = group;
+			this.preferredDotType = preferredDotType;
+			this.extraArguments = extraArguments;
 			this.unavailableReason = unavailableReason;
 		}
 
@@ -55,7 +75,7 @@ public final class GetTableCommandsCommand implements IComposableCommand {
 			return description;
 		}
 
-		/** @return the number of expressions the command needs (0 or 1) */
+		/** @return the number of formulas the command needs (0 or 1) */
 		public int getFormulaArguments() {
 			return formulaArguments;
 		}
@@ -63,6 +83,19 @@ public final class GetTableCommandsCommand implements IComposableCommand {
 		/** @return the group, e.g. "machine_info", or "other" */
 		public String getGroup() {
 			return group;
+		}
+
+		/**
+		 * @return the GraphViz layout program for a graph, e.g. "sfdp", or
+		 *         <code>null</code> for the default (dot)
+		 */
+		public String getPreferredDotType() {
+			return preferredDotType;
+		}
+
+		/** @return further arguments for GraphViz, e.g. -Goverlap=scale */
+		public List<String> getExtraArguments() {
+			return extraArguments;
 		}
 
 		public boolean isAvailable() {
@@ -75,17 +108,19 @@ public final class GetTableCommandsCommand implements IComposableCommand {
 		}
 	}
 
+	private final Category category;
 	private final String stateId;
-	private List<TableCommand> commands = Collections.emptyList();
+	private List<CommandInfo> commands = Collections.emptyList();
 
-	public GetTableCommandsCommand(final String stateId) {
+	public GetCommandsCommand(final Category category, final String stateId) {
+		this.category = category;
 		this.stateId = stateId;
 	}
 
-	public static List<TableCommand> getTableCommands(
-			final Animator animator, final String stateId)
+	public static List<CommandInfo> getCommands(final Animator animator,
+			final Category category, final String stateId)
 			throws ProBException {
-		final GetTableCommandsCommand command = new GetTableCommandsCommand(
+		final GetCommandsCommand command = new GetCommandsCommand(category,
 				stateId);
 		animator.execute(command);
 		return command.getCommands();
@@ -93,7 +128,7 @@ public final class GetTableCommandsCommand implements IComposableCommand {
 
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
-		pto.openTerm("get_table_commands_in_state");
+		pto.openTerm(category.predicate);
 		pto.printAtomOrNumber(stateId);
 		pto.printVariable(LIST_VARIABLE);
 		pto.closeTerm();
@@ -103,7 +138,7 @@ public final class GetTableCommandsCommand implements IComposableCommand {
 	public void processResult(
 			final ISimplifiedROMap<String, PrologTerm> bindings)
 			throws CommandException {
-		final List<TableCommand> result = new ArrayList<TableCommand>();
+		final List<CommandInfo> result = new ArrayList<CommandInfo>();
 		for (PrologTerm term : (ListPrologTerm) bindings.get(LIST_VARIABLE)) {
 			// command(Command,Name,Description,NumberOfFormulaArgs,
 			// RelevantPrefs,AdditionalInfo,AvailMsg)
@@ -113,15 +148,25 @@ public final class GetTableCommandsCommand implements IComposableCommand {
 			final int formulaArguments = args instanceof AIntegerPrologTerm ? ((AIntegerPrologTerm) args)
 					.intValue() : 0;
 			String group = "other";
+			String dotType = null;
+			final List<String> extraArguments = new ArrayList<String>();
 			final PrologTerm info = term.getArgument(6);
 			if (info instanceof ListPrologTerm)
-				for (PrologTerm i : (ListPrologTerm) info)
+				for (PrologTerm i : (ListPrologTerm) info) {
 					if (i.hasFunctor("group", 1))
 						group = text(i.getArgument(1));
+					else if (i.hasFunctor("preferred_dot_type", 1))
+						dotType = text(i.getArgument(1));
+					else if (i.hasFunctor("extra_arguments", 1)
+							&& i.getArgument(1) instanceof ListPrologTerm)
+						for (PrologTerm a : (ListPrologTerm) i.getArgument(1))
+							extraArguments.add(text(a));
+				}
 			final String available = text(term.getArgument(7));
-			result.add(new TableCommand(text(term.getArgument(1)),
+			result.add(new CommandInfo(text(term.getArgument(1)),
 					text(term.getArgument(2)), text(term.getArgument(3)),
-					formulaArguments, group,
+					formulaArguments, group, dotType,
+					Collections.unmodifiableList(extraArguments),
 					"available".equals(available) ? null : available));
 		}
 		commands = Collections.unmodifiableList(result);
@@ -132,8 +177,8 @@ public final class GetTableCommandsCommand implements IComposableCommand {
 		return term.isAtom() ? PrologTerm.atomicString(term) : term.toString();
 	}
 
-	/** @return the tables in the order given by ProB */
-	public List<TableCommand> getCommands() {
+	/** @return the commands in the order given by ProB */
+	public List<CommandInfo> getCommands() {
 		return commands;
 	}
 }
