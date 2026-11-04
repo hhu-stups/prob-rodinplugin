@@ -42,12 +42,14 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 
 import de.prob.core.Animator;
+import de.prob.core.IAnimationListener;
 import de.prob.core.ILifecycleListener;
 import de.prob.core.command.CallTableCommand;
 import de.prob.core.command.CommandFormulas;
 import de.prob.core.command.GetCommandsCommand;
 import de.prob.core.command.GetCommandsCommand.Category;
 import de.prob.core.command.GetCommandsCommand.CommandInfo;
+import de.prob.core.domainobjects.Operation;
 import de.prob.core.domainobjects.State;
 import de.prob.exceptions.ProBException;
 import de.prob.parserbase.ProBParseException;
@@ -62,7 +64,8 @@ import de.prob.ui.console.ConsoleViewPart;
  * drop-down menu per group. Tables that need an expression take it from the
  * field above the table.
  */
-public class TableViewPart extends ViewPart implements ILifecycleListener {
+public class TableViewPart extends ViewPart implements ILifecycleListener,
+		IAnimationListener {
 
 	public static final String VIEW_ID = "de.prob.ui.TableView";
 
@@ -151,6 +154,7 @@ public class TableViewPart extends ViewPart implements ILifecycleListener {
 
 		createActions();
 		StaticListenerRegistry.registerListener((ILifecycleListener) this);
+		StaticListenerRegistry.registerListener((IAnimationListener) this);
 		loadCommands(null);
 	}
 
@@ -538,6 +542,16 @@ public class TableViewPart extends ViewPart implements ILifecycleListener {
 		});
 	}
 
+	/**
+	 * the state changed: whether the tables are available depends on it, e.g. some
+	 * need an initialised state
+	 */
+	@Override
+	public void currentStateChanged(final State currentState,
+			final Operation operation) {
+		menus.updateForCurrentState(Category.TABLE);
+	}
+
 	@Override
 	public void setFocus() {
 		if (table != null && !table.isDisposed())
@@ -547,6 +561,8 @@ public class TableViewPart extends ViewPart implements ILifecycleListener {
 	@Override
 	public void dispose() {
 		StaticListenerRegistry.unregisterListener((ILifecycleListener) this);
+		StaticListenerRegistry.unregisterListener((IAnimationListener) this);
+		menus.dispose();
 		if (runningJob != null)
 			runningJob.cancel();
 		if (clipboard != null)

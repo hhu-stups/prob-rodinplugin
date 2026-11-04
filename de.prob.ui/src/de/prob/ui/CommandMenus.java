@@ -7,6 +7,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuCreator;
@@ -17,13 +21,19 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.ui.IViewSite;
 
+import de.prob.core.Animator;
+import de.prob.core.command.GetCommandsCommand;
+import de.prob.core.command.GetCommandsCommand.Category;
 import de.prob.core.command.GetCommandsCommand.CommandInfo;
+import de.prob.core.domainobjects.State;
+import de.prob.exceptions.ProBException;
 
 /**
  * Toolbar drop-down menus, one per group, for ProB's table or graph commands
@@ -39,6 +49,9 @@ public final class CommandMenus {
 
 	private static final String GROUP_MARKER = "de.prob.ui.commandMenus";
 
+	/** waits for further state changes, e.g. while executing random steps */
+	private static final long UPDATE_DELAY_MS = 300;
+
 	private final IViewSite site;
 	private final String idPrefix;
 	private final String kind;
@@ -48,6 +61,8 @@ public final class CommandMenus {
 	private final Handler handler;
 	private final List<Action> groupActions = new ArrayList<Action>();
 	private List<CommandInfo> commands = Collections.emptyList();
+	private Job updateJob;
+	private volatile boolean disposed;
 
 	/**
 	 * @param idPrefix
@@ -127,6 +142,56 @@ public final class CommandMenus {
 		}
 		toolBar.update(true);
 		site.getActionBars().updateActionBars();
+	}
+
+	/**
+	 * Gets the commands for the current state again in the background, as
+	 * whether they are available depends on the state (e.g. some need an
+	 * initialised state). Several calls in quick succession get them only
+	 * once. If ProB fails, the menus are kept. May be called from any thread.
+	 */
+	public synchronized void updateForCurrentState(final Category category) {
+		if (disposed)
+			return;
+		if (updateJob != null)
+			updateJob.cancel();
+		updateJob = new Job("ProB: available " + kind) {
+			@Override
+			protected IStatus run(final IProgressMonitor monitor) {
+				final Animator animator = Animator.getAnimator();
+				if (monitor.isCanceled() || !animator.isMachineLoaded())
+					return Status.CANCEL_STATUS;
+				final State state = animator.getCurrentState();
+				final List<CommandInfo> loaded;
+				try {
+					loaded = GetCommandsCommand.getCommands(animator,
+							category, state == null ? "root" : state.getId());
+				} catch (ProBException e) {
+					return Status.OK_STATUS;
+				}
+				if (monitor.isCanceled())
+					return Status.CANCEL_STATUS;
+				final Display display = Display.getDefault();
+				if (!display.isDisposed())
+					display.asyncExec(new Runnable() {
+						@Override
+						public void run() {
+							if (!disposed)
+								setCommands(loaded);
+						}
+					});
+				return Status.OK_STATUS;
+			}
+		};
+		updateJob.setSystem(true);
+		updateJob.schedule(UPDATE_DELAY_MS);
+	}
+
+	/** to be called when the view is disposed */
+	public synchronized void dispose() {
+		disposed = true;
+		if (updateJob != null)
+			updateJob.cancel();
 	}
 
 	private Action createGroupAction(final String group,

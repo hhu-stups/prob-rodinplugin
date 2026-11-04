@@ -41,6 +41,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 
 import de.prob.core.Animator;
+import de.prob.core.IAnimationListener;
 import de.prob.core.ILifecycleListener;
 import de.prob.core.PrologException;
 import de.prob.core.command.CallDotCommand;
@@ -49,6 +50,7 @@ import de.prob.core.command.GetCommandsCommand;
 import de.prob.core.command.GetCommandsCommand.Category;
 import de.prob.core.command.GetCommandsCommand.CommandInfo;
 import de.prob.core.command.GetCurrentPreferencesCommand;
+import de.prob.core.domainobjects.Operation;
 import de.prob.core.domainobjects.State;
 import de.prob.exceptions.ProBException;
 import de.prob.parserbase.ProBParseException;
@@ -66,7 +68,8 @@ import de.prob.ui.stateview.LoadShortestTraceHandler;
  * Double-clicking a state of the state space makes it the current state.
  * Graphs that need a formula take it from the field above the graph.
  */
-public class GraphViewPart extends ViewPart implements ILifecycleListener {
+public class GraphViewPart extends ViewPart implements ILifecycleListener,
+		IAnimationListener {
 
 	public static final String VIEW_ID = "de.prob.ui.GraphView";
 
@@ -170,6 +173,7 @@ public class GraphViewPart extends ViewPart implements ILifecycleListener {
 		};
 		createActions();
 		StaticListenerRegistry.registerListener((ILifecycleListener) this);
+		StaticListenerRegistry.registerListener((IAnimationListener) this);
 		loadCommands(null);
 	}
 
@@ -702,6 +706,16 @@ public class GraphViewPart extends ViewPart implements ILifecycleListener {
 		});
 	}
 
+	/**
+	 * the state changed: whether the graphs are available depends on it, e.g. some
+	 * need an initialised state
+	 */
+	@Override
+	public void currentStateChanged(final State currentState,
+			final Operation operation) {
+		menus.updateForCurrentState(Category.DOT);
+	}
+
 	@Override
 	public void setFocus() {
 		if (browser != null && !browser.isDisposed())
@@ -711,6 +725,8 @@ public class GraphViewPart extends ViewPart implements ILifecycleListener {
 	@Override
 	public void dispose() {
 		StaticListenerRegistry.unregisterListener((ILifecycleListener) this);
+		StaticListenerRegistry.unregisterListener((IAnimationListener) this);
+		menus.dispose();
 		if (runningJob != null)
 			runningJob.cancel();
 		super.dispose();

@@ -24,7 +24,7 @@ A new view for evaluating formulas in the current state of the animation. Open i
 
 ### ProB Graph
 A new view that shows the graphs ProB can compute. Open it from the State view's right-click menu ("Open ProB Graph") or via Window › Show View › ProB › ProB Graph.
-- **Menus:** the graphs are offered in toolbar drop-down menus, one per group: State Space, State, Formula, Trace, Data Flow and Machine. Unavailable graphs appear greyed out, with the reason.
+- **Menus:** the graphs are offered in toolbar drop-down menus, one per group: State Space, State, Formula, Trace, Data Flow and Machine. Unavailable graphs appear greyed out, with the reason; this is updated when the current state changes (e.g. the invariant formula tree needs an initialised state).
 - **Examples:**
   - the state space, also with a faster layout
   - the signature merge and DFA merge
@@ -47,7 +47,7 @@ A new view that shows the graphs ProB can compute. Open it from the State view's
 
 ### ProB Table
 A new view that shows the tables ProB can compute, e.g. machine statistics, operation and variable coverage, min/max values, read/write matrices and well-definedness proof obligations. Open it from the State view's right-click menu ("Open ProB Table") or via Window › Show View › ProB › ProB Table.
-- **Menus:** the tables are offered in toolbar drop-down menus, one per group: Machine, Coverage, Formulas, Well-Definedness, Trace, Debug. Unavailable tables appear greyed out, with the reason.
+- **Menus:** the tables are offered in toolbar drop-down menus, one per group: Machine, Coverage, Formulas, Well-Definedness, Trace, Debug. Unavailable tables appear greyed out, with the reason; this is updated when the current state changes.
 - **Tables for an expression:** tables whose names end in "…", e.g. Expression Table…, Expression Coverage… and Find Value…, use the expression in the field above the table. Enter recomputes the table. The field translates ASCII to symbols and completes identifiers with Tab or Ctrl+Space.
 - **From the State view:** "Show Value as Table" in the right-click menu of a variable or formula shows its value as an Expression Table, e.g. a relation with one row per pair.
 - **Working with tables:** click a column header to sort (numbers sort numerically). Ctrl/Cmd+C copies the selected rows, or all, tab-separated with headers, ready for a spreadsheet.
