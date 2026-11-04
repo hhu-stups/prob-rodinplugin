@@ -202,6 +202,23 @@ public final class Animator {
 
 	public final void execute(final IComposableCommand command)
 			throws ProBException {
+		execute(command, false);
+	}
+
+	/**
+	 * Like {@link #execute(IComposableCommand)}, but does not notify the user
+	 * (e.g. by a pop-up dialog) if the command fails or ProB reports errors.
+	 * Instead, the thrown exception's message has ProB's error messages, for
+	 * a view to show them itself. Warnings of a successful command are only
+	 * logged.
+	 */
+	public final void executeQuietly(final IComposableCommand command)
+			throws ProBException {
+		execute(command, true);
+	}
+
+	private void execute(final IComposableCommand command, final boolean quiet)
+			throws ProBException {
 		waitingCommands.incrementAndGet();
 		boolean waiting = true;
 		try {
@@ -210,7 +227,7 @@ public final class Animator {
 				waiting = false;
 				restartIfConnectionLost();
 				LimitedLogger.getLogger().log("execute command", command, null);
-				getImplementation().execute(command);
+				getImplementation().execute(command, quiet);
 				LimitedLogger.getLogger().log("command executed", command, null);
 			}
 		} finally {

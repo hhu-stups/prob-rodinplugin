@@ -42,6 +42,7 @@ import org.eclipse.ui.part.ViewPart;
 
 import de.prob.core.Animator;
 import de.prob.core.ILifecycleListener;
+import de.prob.core.PrologException;
 import de.prob.core.command.CallDotCommand;
 import de.prob.core.command.CommandFormulas;
 import de.prob.core.command.GetCommandsCommand;
@@ -121,6 +122,13 @@ public class GraphViewPart extends ViewPart implements ILifecycleListener {
 	private static final long DOT_TIMEOUT_SECONDS = 120;
 
 	private static final String COMPLETION_HINT = "Tab or Ctrl+Space in the formula field completes identifiers.";
+
+	/** for messages, e.g. ProB's errors, instead of a graph */
+	private static final String MESSAGE_PAGE = "<!DOCTYPE html><html><head><meta charset=\"UTF-8\"><style>"
+			+ "body { margin: 0; background: #ffffff; font-family: sans-serif; }"
+			+ "#message { padding: 12px; color: #555555; white-space: pre-wrap; }"
+			+ "#message.error { color: #b00000; }"
+			+ "</style></head><body>%CONTENT%</body></html>";
 
 	private Browser browser;
 	private Text formulaField;
@@ -301,8 +309,7 @@ public class GraphViewPart extends ViewPart implements ILifecycleListener {
 							Category.DOT, stateId);
 				} catch (ProBException e) {
 					result = Collections.emptyList();
-					error = "ProB could not list its graphs: "
-							+ e.getMessage();
+					error = failure("ProB could not list its graphs", e);
 				}
 				final List<CommandInfo> loaded = result;
 				final String loadError = error;
@@ -460,6 +467,16 @@ public class GraphViewPart extends ViewPart implements ILifecycleListener {
 		});
 	}
 
+	/**
+	 * @return the message for a failed ProB command: ProB's error messages
+	 *         below, or the reason after <code>what</code>
+	 */
+	private static String failure(final String what, final ProBException e) {
+		if (e instanceof PrologException)
+			return what + ". ProB reported:\n\n" + e.getMessage();
+		return what + ": " + e.getMessage();
+	}
+
 	private static final class GraphException extends Exception {
 		private static final long serialVersionUID = 1L;
 
@@ -482,8 +499,8 @@ public class GraphViewPart extends ViewPart implements ILifecycleListener {
 				CallDotCommand.writeDot(animator, stateId,
 						command.getCommand(), formulas, dotFile);
 			} catch (ProBException e) {
-				throw new GraphException("ProB could not compute the graph: "
-						+ e.getMessage());
+				throw new GraphException(failure("ProB could not compute "
+						+ command.getName(), e));
 			}
 			if (monitor.isCanceled())
 				throw new GraphException("Cancelled.");
@@ -640,10 +657,13 @@ public class GraphViewPart extends ViewPart implements ILifecycleListener {
 				+ "</div>");
 	}
 
+	/**
+	 * shows a message on a plain page, which scrolls and whose text can be
+	 * selected (unlike a graph, which is moved by dragging)
+	 */
 	private void setHtml(final String content) {
 		if (browser != null && !browser.isDisposed())
-			browser.setText(template.replace("%CLICKABLE%", "false").replace(
-					"%CONTENT%", content));
+			browser.setText(MESSAGE_PAGE.replace("%CONTENT%", content));
 	}
 
 	private static String escape(final String text) {

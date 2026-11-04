@@ -33,10 +33,15 @@ public final class CallDotCommand implements IComposableCommand {
 		this.file = file;
 	}
 
+	/**
+	 * Does not notify the user if ProB fails: the exception's message has
+	 * ProB's error messages, see {@link Animator#executeQuietly}.
+	 */
 	public static void writeDot(final Animator animator, final String stateId,
 			final String command, final List<PrologTerm> formulas,
 			final File file) throws ProBException {
-		animator.execute(new CallDotCommand(stateId, command, formulas, file));
+		animator.executeQuietly(new CallDotCommand(stateId, command,
+				formulas, file));
 	}
 
 	@Override

@@ -13,6 +13,7 @@ import java.util.Map;
 import de.prob.cli.CliException;
 import de.prob.core.LanguageDependendAnimationPart;
 import de.prob.core.ProblemHandler;
+import de.prob.core.PrologException;
 import de.prob.core.command.CommandException;
 import de.prob.core.command.ComposedCommand;
 import de.prob.core.command.GetErrorsCommand;
@@ -22,7 +23,9 @@ import de.prob.core.domainobjects.HistoryItem;
 import de.prob.core.domainobjects.MachineDescription;
 import de.prob.core.domainobjects.State;
 import de.prob.core.sablecc.node.ACallBackResult;
+import de.prob.core.sablecc.node.AExceptionResult;
 import de.prob.core.sablecc.node.AInterruptedResult;
+import de.prob.core.sablecc.node.ANoResult;
 import de.prob.core.sablecc.node.AProgressResult;
 import de.prob.core.sablecc.node.AYesResult;
 import de.prob.core.sablecc.node.PResult;
@@ -123,6 +126,16 @@ public class AnimatorImpl {
 	}
 
 	public void execute(final IComposableCommand command) throws ProBException {
+		execute(command, false);
+	}
+
+	/**
+	 * @param quiet
+	 *            if the user is not to be notified about a failure or ProB's
+	 *            errors; the thrown exception has ProB's error messages
+	 */
+	public void execute(final IComposableCommand command, final boolean quiet)
+			throws ProBException {
 		checkConnector(command.getClass().getName());
 
 		final GetErrorsCommand getErrors = new GetErrorsCommand();
@@ -130,7 +143,7 @@ public class AnimatorImpl {
 		SimplifiedROMap<String, PrologTerm> bindings = null;
 		ProBException failure = null;
 		try {
-			bindings = sendCommand(cmds);
+			bindings = sendCommand(cmds, quiet);
 			cmds.processResult(bindings);
 		} catch (ProBException e) {
 			failure = e;
@@ -139,12 +152,19 @@ public class AnimatorImpl {
 			// look successful (its result would be missing)
 			final String message = "Processing the result of "
 					+ command.getClass().getSimpleName() + " failed: " + e;
-			Logger.notifyUser(message, e);
+			if (quiet)
+				Logger.info(message);
+			else
+				Logger.notifyUser(message, e);
 			failure = new CommandException(message, e);
 		}
 
 		final List<String> errors = retrieveErrors(getErrors, cmds, bindings,
-				failure);
+				failure, quiet);
+		if (quiet) {
+			throwQuietly(errors, getErrors.onlyWarningsOccurred(), failure);
+			return;
+		}
 		if (errors != null && !errors.isEmpty()) {
 			ProblemHandler.raisePrologException(errors,
 					getErrors.onlyWarningsOccurred());
@@ -154,10 +174,35 @@ public class AnimatorImpl {
 		}
 	}
 
+	/**
+	 * For a quiet command: throws an exception with ProB's error messages if
+	 * the command failed or ProB reported errors; only logs warnings of a
+	 * successful command.
+	 */
+	private static void throwQuietly(final List<String> errors,
+			final boolean onlyWarnings, final ProBException failure)
+			throws ProBException {
+		final boolean hasMessages = errors != null && !errors.isEmpty();
+		if (failure == null && (!hasMessages || onlyWarnings)) {
+			if (hasMessages)
+				// only logged: warnings would also be shown in a dialog
+				Logger.info("ProB reported warnings:\n"
+						+ String.join("\n", errors));
+			return;
+		}
+		if (!hasMessages)
+			throw failure;
+		final String message = String.join("\n", errors);
+		// PrologExceptions count as already handled, i.e. not to be shown
+		// to the user by whoever catches it
+		throw new PrologException(message, onlyWarnings);
+	}
+
 	private List<String> retrieveErrors(final GetErrorsCommand getErrors,
 			final ComposedCommand cmds,
 			final SimplifiedROMap<String, PrologTerm> bindings,
-			final ProBException failure) throws CommandException {
+			final ProBException failure, final boolean quiet)
+			throws CommandException {
 		if (failure == null) {
 			// cmds.processResult has also processed getErrors
 			return getErrors.getErrors();
@@ -176,7 +221,7 @@ public class AnimatorImpl {
 		// the exception occurred while sending the commands
 		// launch another query to get errors
 		try {
-			getErrors.processResult(sendCommand(getErrors));
+			getErrors.processResult(sendCommand(getErrors, quiet));
 			return getErrors.getErrors();
 		} catch (ProBException e) {
 			Logger.info("Could not retrieve errors from ProB: "
@@ -186,7 +231,8 @@ public class AnimatorImpl {
 	}
 
 	private SimplifiedROMap<String, PrologTerm> sendCommand(
-			final IComposableCommand command) throws ProBException,
+			final IComposableCommand command, final boolean quiet)
+			throws ProBException,
 			CommandException {
 
 		PrologTermStringOutput pto = new PrologTermStringOutput();
@@ -209,6 +255,16 @@ public class AnimatorImpl {
 				// error to report; CommandExceptions count as already handled
 				throw new CommandException("The command was interrupted.");
 			}
+			if (quiet && topnode instanceof ANoResult) {
+				// the caller shows ProB's errors, or that it failed
+				throw new CommandException("ProB's query failed.");
+			}
+			if (quiet && topnode instanceof AExceptionResult) {
+				throw new CommandException("ProB raised an exception: "
+						+ PrologTermGenerator
+								.toPrologTerm(((AExceptionResult) topnode)
+										.getTerm()));
+			}
 			if (!(topnode instanceof AYesResult)) {
 				String queryForMessage = query;
 				if (queryForMessage.length() > 400) {
@@ -218,7 +274,10 @@ public class AnimatorImpl {
 			}
 			bindings = BindingGenerator.createBinding(PrologTermGenerator.toPrologTerm(topnode));
 		} catch (ResultParserException e) {
-			Logger.notifyUser(e.getMessage(), e);
+			if (quiet)
+				Logger.info(e.getMessage());
+			else
+				Logger.notifyUser(e.getMessage(), e);
 			throw new CommandException(e.getMessage(), e);
 		}
 		return new SimplifiedROMap<String, PrologTerm>(bindings);

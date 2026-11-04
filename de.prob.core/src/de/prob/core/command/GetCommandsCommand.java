@@ -117,12 +117,16 @@ public final class GetCommandsCommand implements IComposableCommand {
 		this.stateId = stateId;
 	}
 
+	/**
+	 * Does not notify the user if ProB fails: the exception's message has
+	 * ProB's error messages, see {@link Animator#executeQuietly}.
+	 */
 	public static List<CommandInfo> getCommands(final Animator animator,
 			final Category category, final String stateId)
 			throws ProBException {
 		final GetCommandsCommand command = new GetCommandsCommand(category,
 				stateId);
-		animator.execute(command);
+		animator.executeQuietly(command);
 		return command.getCommands();
 	}
 
