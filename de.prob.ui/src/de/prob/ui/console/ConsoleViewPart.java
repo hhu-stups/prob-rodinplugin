@@ -439,9 +439,17 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 	/**
 	 * Translates ASCII to mathematical symbols while typing in a text field
 	 * of another view, if the console does so (the ∀ toggle) and Rodin's
-	 * keyboard is available.
+	 * keyboard is available. The field gets Rodin's math font, at its current
+	 * size.
 	 */
 	public static void installMathSymbols(final Text text) {
+		// Rodin's math font, at the size of the view's other text
+		final int height = text.getFont().getFontData()[0].getHeight();
+		final LocalResourceManager resources = new LocalResourceManager(
+				JFaceResources.getResources(), text);
+		text.setFont(resources.createFont(FontDescriptor.createFrom(
+				getConsoleFont()).setHeight(height)));
+
 		final IDialogSettings settings = ProbUiPlugin.getDefault()
 				.getDialogSettings();
 		if (settings.get(MATH_SYMBOLS_SETTING) != null
@@ -455,15 +463,73 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 		} catch (LinkageError e) {
 			// no Rodin keyboard: no translation
 		}
-		text.setFont(getConsoleFont());
 	}
 
 	/**
-	 * @return completion of the model's identifiers and Event-B keywords,
-	 *         e.g. for a text field of another view
+	 * Completes the model's identifiers and Event-B keywords in a text field
+	 * of another view, as in the console: Tab inserts the common prefix of the
+	 * proposals or shows them, Ctrl+Space shows them.
 	 */
-	public static IContentProposalProvider createIdentifierProposals() {
-		return new IdentifierProposals();
+	public static void installCompletion(final Text text) {
+		final ContentProposalAdapter adapter;
+		try {
+			adapter = new ContentProposalAdapter(text, new TextContentAdapter(),
+					new IdentifierProposals(),
+					KeyStroke.getInstance("Ctrl+Space"), null);
+		} catch (ParseException e) {
+			// cannot happen for a constant key stroke; no completion then
+			return;
+		}
+		adapter.setProposalAcceptanceStyle(ContentProposalAdapter.PROPOSAL_INSERT);
+		text.addListener(SWT.KeyDown, new Listener() {
+			@Override
+			public void handleEvent(final Event e) {
+				if (e.keyCode == SWT.TAB
+						&& (e.stateMask & SWT.MODIFIER_MASK) == 0
+						&& !adapter.isProposalPopupOpen()) {
+					e.doit = false;
+					final String prefix = commonPrefix(text.getText(),
+							text.getCaretPosition());
+					if (prefix == null)
+						return;
+					if (!prefix.isEmpty())
+						text.insert(prefix);
+					else
+						adapter.openProposalPopup();
+				}
+			}
+		});
+		// Tab completes instead of moving the focus to the next control
+		text.addListener(SWT.Traverse, new Listener() {
+			@Override
+			public void handleEvent(final Event e) {
+				if (e.detail == SWT.TRAVERSE_TAB_NEXT
+						&& (e.stateMask & SWT.MODIFIER_MASK) == 0)
+					e.doit = false;
+			}
+		});
+	}
+
+	/**
+	 * @return the text that all proposals at the position add (may be
+	 *         empty), or <code>null</code> if there are no proposals
+	 */
+	private static String commonPrefix(final String contents,
+			final int position) {
+		final IContentProposal[] proposals = new IdentifierProposals()
+				.getProposals(contents, position);
+		if (proposals.length == 0)
+			return null;
+		String common = proposals[0].getContent();
+		for (IContentProposal proposal : proposals) {
+			final String content = proposal.getContent();
+			int i = 0;
+			while (i < common.length() && i < content.length()
+					&& common.charAt(i) == content.charAt(i))
+				i++;
+			common = common.substring(0, i);
+		}
+		return common;
 	}
 
 	private void installMathSymbols() {
@@ -533,19 +599,10 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 	 * the proposal popup opens.
 	 */
 	private void complete() {
-		final IContentProposal[] proposals = new IdentifierProposals()
-				.getProposals(input.getText(), input.getCaretPosition());
-		if (proposals.length == 0)
+		final String common = commonPrefix(input.getText(),
+				input.getCaretPosition());
+		if (common == null)
 			return;
-		String common = proposals[0].getContent();
-		for (IContentProposal proposal : proposals) {
-			final String content = proposal.getContent();
-			int i = 0;
-			while (i < common.length() && i < content.length()
-					&& common.charAt(i) == content.charAt(i))
-				i++;
-			common = common.substring(0, i);
-		}
 		if (!common.isEmpty())
 			input.insert(common);
 		else if (proposalAdapter != null)

@@ -22,10 +22,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTError;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.browser.BrowserFunction;
-import org.eclipse.jface.bindings.keys.KeyStroke;
-import org.eclipse.jface.bindings.keys.ParseException;
-import org.eclipse.jface.fieldassist.ContentProposalAdapter;
-import org.eclipse.jface.fieldassist.TextContentAdapter;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.FillLayout;
@@ -69,6 +65,8 @@ public class GraphViewPart extends ViewPart implements ILifecycleListener {
 			"C:/Program Files/Graphviz/bin/dot.exe" };
 	private static final long DOT_TIMEOUT_SECONDS = 120;
 
+	private static final String COMPLETION_HINT = "Tab or Ctrl+Space in the expression field completes identifiers.";
+
 	private Browser browser;
 	private Text expressionField;
 	private String template;
@@ -106,7 +104,8 @@ public class GraphViewPart extends ViewPart implements ILifecycleListener {
 			}
 		};
 		showMessage("Choose a graph in the toolbar, e.g. State Space, to show it.\n"
-				+ "Mouse wheel: zoom, drag: move, double-click on a state: go to that state.");
+				+ "Mouse wheel: zoom, drag: move, double-click on a state: go to that state.\n"
+				+ COMPLETION_HINT);
 		createActions();
 		StaticListenerRegistry.registerListener((ILifecycleListener) this);
 	}
@@ -127,7 +126,7 @@ public class GraphViewPart extends ViewPart implements ILifecycleListener {
 				.setMessage("an expression, e.g. a variable or card(s); Enter shows the diagram");
 		expressionField
 				.setToolTipText("States with the same value of the expression are merged into one node."
-						+ "\nEnter: show the diagram, Ctrl+Space: complete identifiers");
+						+ "\nEnter: show the diagram, Tab or Ctrl+Space: complete identifiers");
 		expressionField.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetDefaultSelected(final SelectionEvent e) {
@@ -135,15 +134,7 @@ public class GraphViewPart extends ViewPart implements ILifecycleListener {
 			}
 		});
 		ConsoleViewPart.installMathSymbols(expressionField);
-		try {
-			new ContentProposalAdapter(expressionField,
-					new TextContentAdapter(),
-					ConsoleViewPart.createIdentifierProposals(),
-					KeyStroke.getInstance("Ctrl+Space"), null)
-					.setProposalAcceptanceStyle(ContentProposalAdapter.PROPOSAL_INSERT);
-		} catch (ParseException e) {
-			// cannot happen for a constant key stroke; no completion then
-		}
+		ConsoleViewPart.installCompletion(expressionField);
 	}
 
 	/** chooses a graph (also in the toolbar) and shows it */
@@ -236,7 +227,8 @@ public class GraphViewPart extends ViewPart implements ILifecycleListener {
 			final String text = expressionField.getText().trim();
 			if (text.isEmpty()) {
 				showMessage("Enter an expression above the graph, e.g. a variable, and press Enter."
-						+ " States with the same value of the expression are merged.");
+						+ " States with the same value of the expression are merged.\n"
+						+ COMPLETION_HINT);
 				expressionField.setFocus();
 				return;
 			}

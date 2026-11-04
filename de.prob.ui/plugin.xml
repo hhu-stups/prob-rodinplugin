@@ -101,6 +101,14 @@
             name="ProB Graph"
             restorable="true">
       </view>
+      <view
+            allowMultiple="false"
+            category="de.hhu.stups.prob"
+            class="de.prob.ui.table.TableViewPart"
+            id="de.prob.ui.TableView"
+            name="ProB Table"
+            restorable="true">
+      </view>
    </extension>
    <extension
          point="de.prob.core.animation">
@@ -146,6 +154,11 @@
             description="Show the full value of a state item in a dialog"
             id="de.prob.ui.command.showFullValue"
             name="Show Full Value">
+      </command>
+      <command
+            description="Show the value of a state item as a table in the ProB Table view"
+            id="de.prob.ui.command.showTable"
+            name="Show Table">
       </command>
       <command
             categoryId="de.prob.ui.commands.category"
@@ -362,6 +375,33 @@
       <handler
             class="de.prob.ui.stateview.ShowFullValueHandler"
             commandId="de.prob.ui.command.showFullValue">
+         <enabledWhen>
+            <!-- the selection of the viewer whose context menu is shown;
+                 "selection" lags behind the right-click -->
+            <with
+                  variable="activeMenuSelection">
+               <and>
+                  <count
+                        value="1">
+                  </count>
+                  <iterate
+                        operator="or">
+                     <or>
+                        <instanceof
+                              value="de.prob.ui.stateview.statetree.StateTreeVariable">
+                        </instanceof>
+                        <instanceof
+                              value="de.prob.ui.stateview.statetree.StateTreeExpression">
+                        </instanceof>
+                     </or>
+                  </iterate>
+               </and>
+            </with>
+         </enabledWhen>
+      </handler>
+      <handler
+            class="de.prob.ui.stateview.ShowTableHandler"
+            commandId="de.prob.ui.command.showTable">
          <enabledWhen>
             <!-- the selection of the viewer whose context menu is shown;
                  "selection" lags behind the right-click -->
@@ -981,6 +1021,11 @@
                label="Show Full Value ..."
                style="push">
          </command>
+         <command
+               commandId="de.prob.ui.command.showTable"
+               label="Show Table"
+               style="push">
+         </command>
          <separator
                name="de.prob.ui.stateview.consoleSeparator"
                visible="true">
@@ -1001,6 +1046,15 @@
             <parameter
                   name="org.eclipse.ui.views.showView.viewId"
                   value="de.prob.ui.GraphView">
+            </parameter>
+         </command>
+         <command
+               commandId="org.eclipse.ui.views.showView"
+               label="Open ProB Table"
+               style="push">
+            <parameter
+                  name="org.eclipse.ui.views.showView.viewId"
+                  value="de.prob.ui.TableView">
             </parameter>
          </command>
       </menuContribution>

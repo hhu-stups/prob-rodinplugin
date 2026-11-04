@@ -26,13 +26,22 @@ A new view for evaluating formulas in the current state of the animation. Open i
 A new view that shows graphs of the state space. Open it from the State view's right-click menu ("Open ProB Graph") or via Window › Show View › ProB › ProB Graph.
 - **State Space:** all states and transitions explored so far. Double-click a state to make it the current state, reached by the shortest trace from the root.
 - **Signature Merge:** states merged by the events enabled in them.
-- **Transition Diagram:** states merged by the value of an expression. Enter the expression in the field above the graph, e.g. a variable or `card(s)`, and press Enter. The field translates ASCII to symbols and completes identifiers with Ctrl+Space.
+- **Transition Diagram:** states merged by the value of an expression. Enter the expression in the field above the graph, e.g. a variable or `card(s)`, and press Enter. The field translates ASCII to symbols and completes identifiers with Tab or Ctrl+Space.
 - **Navigation:** the mouse wheel zooms and dragging moves the graph. The + / − / Fit buttons zoom in, zoom out, or fit the whole graph into the view.
 - **Refresh** recomputes the graph, e.g. after animating or model checking. Computations run in the background and can be cancelled.
 - **Requirements:**
   - GraphViz must be installed.
   - Its `dot` program is looked up first via ProB's DOT preference, then on the PATH and in the usual install locations (Homebrew, `/usr/local/bin`, `/usr/bin`, `C:/Program Files/Graphviz/bin`).
   - The view needs Eclipse's embedded browser.
+
+### ProB Table
+A new view that shows the tables ProB can compute, e.g. machine statistics, operation and variable coverage, min/max values, read/write matrices and well-definedness proof obligations. Open it from the State view's right-click menu ("Open ProB Table") or via Window › Show View › ProB › ProB Table.
+- **Menus:** the tables are offered in toolbar drop-down menus, one per group: Machine, Coverage, Formulas, Well-Definedness, Trace, Debug. Unavailable tables appear greyed out, with the reason.
+- **Tables for an expression:** tables whose names end in "…", e.g. Expression Table…, Expression Coverage… and Find Value…, use the expression in the field above the table. Enter recomputes the table. The field translates ASCII to symbols and completes identifiers with Tab or Ctrl+Space.
+- **From the State view:** "Show Table" in the right-click menu of a variable or formula shows its value as an Expression Table, e.g. a relation with one row per pair.
+- **Working with tables:** click a column header to sort (numbers sort numerically). Ctrl/Cmd+C copies the selected rows, or all, tab-separated with headers, ready for a spreadsheet.
+- **Refresh** recomputes the table in the current state, e.g. after animating or model checking. Computations run in the background and can be cancelled.
+- **Not yet offered:** the VisB and MC/DC tables.
 
 ### Start animation from the editors
 - **Camille:** "Start Animation / Model Checking" in the right-click menu of the Camille text editor.
