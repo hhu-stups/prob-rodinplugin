@@ -64,6 +64,9 @@ A new proof tactic that calls ProB's well-definedness prover without constraint 
 ### State view: Show Full Value
 A new "Show Full Value ..." entry in the right-click menu shows the complete value of a variable or formula. Formula values are not cut off at 600 characters. The dialog can switch between the current and the previous state, and between plain and pretty-printed output.
 
+### State view: open a machine or context
+Double-clicking a machine or context name in the State view opens its file in the default editor, e.g. Rodin's editor or Camille.
+
 ### Operations view: non-deterministic choices
 When you right-click an enabled event, each non-deterministic choice is now labelled with the variables it changes and their new values.
 
