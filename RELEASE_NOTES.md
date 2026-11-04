@@ -67,6 +67,9 @@ A new "Show Full Value ..." entry in the right-click menu shows the complete val
 ### Operations view: non-deterministic choices
 When you right-click an enabled event, each non-deterministic choice is now labelled with the variables it changes and their new values.
 
+### Operations view: "Unexplored Successors First"
+A new option in the Double Click Behaviour menu. A double-click on an event picks one of its choices at random, preferring choices that lead to a state ProB has not explored yet. If all successor states are explored, it picks any choice at random. This needs a probcli that knows the `explored` state property. With an older probcli it behaves like "Random solution for Parameters".
+
 ## Improvements
 - **Model checking:** the progress dialog and its cancel button now stay responsive during model checking.
 - **probcli crashes:** ProB restarts probcli automatically after a crash, instead of requiring a Rodin restart.

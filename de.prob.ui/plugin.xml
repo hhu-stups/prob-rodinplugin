@@ -1208,6 +1208,15 @@
       </command>
       <command
             commandId="de.prob.ui.doubleclickbehaviour"
+            label="Unexplored Successors First"
+            style="radio">
+         <parameter
+               name="org.eclipse.ui.commands.radioStateParameter"
+               value="UNEXPLORED_FIRST">
+         </parameter>
+      </command>
+      <command
+            commandId="de.prob.ui.doubleclickbehaviour"
             label="Open Dialog"
             style="radio">
          <parameter
