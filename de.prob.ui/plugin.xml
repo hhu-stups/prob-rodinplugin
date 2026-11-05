@@ -922,8 +922,8 @@
             </reference>
          </and>
       </definition>
-      <!-- the active editor shows an Event-B machine or context: Camille or
-           Rodin's own editors -->
+      <!-- the active editor shows an Event-B machine or context: Camille,
+           Rodin's form editors or Systerel's Rodin Editor -->
       <definition
             id="de.prob.ui.eventbEditorActive">
          <!-- by id: needs no plug-in activation, unlike adapting the input -->
@@ -938,6 +938,9 @@
                </equals>
                <equals
                      value="org.eventb.ui.editors.context">
+               </equals>
+               <equals
+                     value="fr.systerel.editor.editors.RodinEditor">
                </equals>
             </or>
          </with>
@@ -965,9 +968,29 @@
                tooltip="Start Animation / Model Checking with ProB">
          </command>
       </menuContribution>
+      <!-- toolbars of Camille and of Systerel's Rodin Editor -->
+      <menuContribution
+            locationURI="toolbar:org.eventb.texteditor.ui.texteditor">
+         <command
+               commandId="de.prob.ui.starteditoranimation"
+               icon="icons/prob.png"
+               style="push"
+               tooltip="Start Animation / Model Checking with ProB">
+         </command>
+      </menuContribution>
+      <menuContribution
+            locationURI="toolbar:fr.systerel.editor.editors.RodinEditor">
+         <command
+               commandId="de.prob.ui.starteditoranimation"
+               icon="icons/prob.png"
+               style="push"
+               tooltip="Start Animation / Model Checking with ProB">
+         </command>
+      </menuContribution>
       <!-- right-click menus of the editors for machines and contexts:
-           Camille (registered as #texteditor.context.menu) and the
-           tree pages of Rodin's editors (registered with the editor ids) -->
+           Camille (registered as #texteditor.context.menu), the tree
+           pages of Rodin's form editors and Systerel's Rodin Editor
+           (registered with the editor ids) -->
       <menuContribution
             locationURI="popup:#texteditor.context.menu?after=additions">
          <separator
@@ -1008,6 +1031,25 @@
       </menuContribution>
       <menuContribution
             locationURI="popup:org.eventb.ui.editors.context?after=additions">
+         <separator
+               name="de.prob.ui.editorSeparator"
+               visible="true">
+         </separator>
+         <command
+               commandId="de.prob.ui.starteditoranimation"
+               icon="icons/prob.png"
+               label="Start Animation / Model Checking"
+               style="push">
+            <visibleWhen
+                  checkEnabled="false">
+               <reference
+                     definitionId="de.prob.ui.eventbEditorActive">
+               </reference>
+            </visibleWhen>
+         </command>
+      </menuContribution>
+      <menuContribution
+            locationURI="popup:fr.systerel.editor.editors.RodinEditor?after=additions">
          <separator
                name="de.prob.ui.editorSeparator"
                visible="true">
