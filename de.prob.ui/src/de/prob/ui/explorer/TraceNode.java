@@ -1,13 +1,14 @@
 package de.prob.ui.explorer;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.runtime.IAdaptable;
 
 /**
  * A trace file below the "Traces" node of a machine or context in the
- * Event-B Explorer. It adapts to its file, e.g. for the Properties view.
+ * Event-B Explorer. It deliberately does not adapt to its file: Eclipse's
+ * resource actions would then open the file in an editor on a double-click,
+ * instead of replaying it (see {@link TraceActionProvider}).
  */
-public final class TraceNode implements IAdaptable {
+public final class TraceNode {
 
 	private final TracesNode parent;
 	private final IFile file;
@@ -23,13 +24,6 @@ public final class TraceNode implements IAdaptable {
 
 	public IFile getFile() {
 		return file;
-	}
-
-	@Override
-	public <T> T getAdapter(final Class<T> adapter) {
-		if (adapter.isInstance(file))
-			return adapter.cast(file);
-		return null;
 	}
 
 	@Override

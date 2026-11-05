@@ -26,21 +26,27 @@ public class ReplayExplorerTraceHandler extends AbstractHandler {
 	@Override
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
 		final TraceNode trace = selectedTrace(event);
-		if (trace == null)
-			return null;
+		if (trace != null)
+			replay(HandlerUtil.getActiveShell(event), trace);
+		return null;
+	}
+
+	/**
+	 * Replays a trace of the Explorer (from its right-click menu or by a
+	 * double-click), starting the animation of its model first if necessary
+	 */
+	static void replay(final Shell shell, final TraceNode trace) {
 		final IEventBRoot root = trace.getParent().getRoot();
 		if (!isAnimated(root)) {
 			try {
 				StartAnimationHandler.startAnimation(root);
 			} catch (ProBException e) {
 				e.notifyUserOnce();
-				throw new ExecutionException("Loading the machine failed", e);
+				return;
 			}
 		}
-		final Shell shell = HandlerUtil.getActiveShell(event);
 		ReplayTraceHandler.replay(shell, null, trace.getFile().getLocation()
 				.toFile());
-		return null;
 	}
 
 	/**

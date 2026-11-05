@@ -1743,6 +1743,16 @@
                </instanceof>
             </or>
          </possibleChildren>
+         <!-- a double-click on a trace replays it -->
+         <actionProvider
+               class="de.prob.ui.explorer.TraceActionProvider"
+               id="de.prob.ui.explorer.traceActions">
+            <enablement>
+               <instanceof
+                     value="de.prob.ui.explorer.TraceNode">
+               </instanceof>
+            </enablement>
+         </actionProvider>
       </navigatorContent>
    </extension>
    <extension
