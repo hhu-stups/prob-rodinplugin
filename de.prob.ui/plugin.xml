@@ -670,8 +670,10 @@
             class="de.prob.ui.historyview.SaveTraceHandler"
             commandId="de.prob.ui.history.saveTrace">
          <enabledWhen>
+            <!-- a model is loaded and the history has steps to the current
+                 state -->
             <with
-                  variable="de.prob.core.model_loaded">
+                  variable="de.prob.core.trace_savable">
                <equals
                      value="enabled">
                </equals>
@@ -1562,6 +1564,13 @@
             provider="de.prob.ui.services.ContextLoadedProvider">
          <variable
                name="de.prob.core.context_loaded"
+               priorityLevel="workbench">
+         </variable>
+      </sourceProvider>
+      <sourceProvider
+            provider="de.prob.ui.services.TraceSavableProvider">
+         <variable
+               name="de.prob.core.trace_savable"
                priorityLevel="workbench">
          </variable>
       </sourceProvider>
