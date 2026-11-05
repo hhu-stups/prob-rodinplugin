@@ -55,7 +55,12 @@ public class TracesLabelProvider extends LabelProvider implements
 		if (!(element instanceof TraceNode))
 			return null;
 		final TraceNode trace = (TraceNode) element;
-		final String name = trace.getFile().getName();
+		final String recordedFor = TraceFiles.modelName(trace.getFile());
+		final String name = trace.getFile().getName()
+				+ (recordedFor == null
+						|| recordedFor.equals(trace.getParent().getRoot()
+								.getComponentName()) ? "" : " (recorded for "
+						+ recordedFor + ")");
 		final String detail = TraceStatus.getDetail(trace.getFile());
 		switch (status(trace)) {
 		case PERFECT:

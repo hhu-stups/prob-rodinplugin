@@ -21,9 +21,10 @@ import org.eventb.core.IEventBRoot;
 import de.prob.ui.historyview.SaveTraceHandler;
 
 /**
- * Finds the trace files (.prob2trace) of a machine or context in the folder
- * "traces" of its project: those whose metadata name the model, or, if they
- * have no model name, whose file name starts with the model's name and "_".
+ * Finds the trace files (.prob2trace) of a machine or context: those in the
+ * model's own folder of its project, named like the model (e.g. M1/ for
+ * M1.bum). The folder decides, not the model name stored in a trace, so a
+ * trace of another model can be copied there to be replayed for this one.
  */
 public final class TraceFiles {
 
@@ -46,10 +47,10 @@ public final class TraceFiles {
 	private TraceFiles() {
 	}
 
-	/** @return the folder with the traces of the model's project */
+	/** @return the model's folder in its project, with its traces */
 	public static IFolder folder(final IEventBRoot root) {
 		return root.getRodinProject().getProject()
-				.getFolder(SaveTraceHandler.FOLDER);
+				.getFolder(root.getComponentName());
 	}
 
 	/** @return the trace files of the model, sorted by name and number */
@@ -57,19 +58,12 @@ public final class TraceFiles {
 		final IFolder folder = folder(root);
 		if (!folder.exists())
 			return Collections.emptyList();
-		final String name = root.getComponentName();
 		final List<IFile> result = new ArrayList<IFile>();
 		try {
-			for (IResource member : folder.members()) {
-				if (!(member instanceof IFile)
-						|| !member.getName().endsWith(SaveTraceHandler.EXTENSION))
-					continue;
-				final IFile file = (IFile) member;
-				final String modelName = modelName(file);
-				if (modelName != null ? modelName.equals(name) : file
-						.getName().startsWith(name + "_"))
-					result.add(file);
-			}
+			for (IResource member : folder.members())
+				if (member instanceof IFile
+						&& member.getName().endsWith(SaveTraceHandler.EXTENSION))
+					result.add((IFile) member);
 		} catch (CoreException e) {
 			return Collections.emptyList();
 		}
@@ -77,8 +71,11 @@ public final class TraceFiles {
 		return result;
 	}
 
-	/** @return the model name in the file's metadata, or <code>null</code> */
-	private static String modelName(final IFile file) {
+	/**
+	 * @return the model name in the file's metadata, i.e. the model it was
+	 *         recorded for, or <code>null</code>
+	 */
+	public static String modelName(final IFile file) {
 		final long stamp = file.getModificationStamp();
 		final CachedName cached = CACHE.get(file);
 		if (cached != null && cached.stamp == stamp)

@@ -32,6 +32,7 @@ import de.prob.core.LanguageDependendAnimationPart;
 import de.prob.core.command.SaveTraceCommand;
 import de.prob.core.langdep.EventBAnimatorPart;
 import de.prob.exceptions.ProBException;
+import de.prob.ui.explorer.TraceFiles;
 import de.prob.ui.explorer.TraceNode;
 import de.prob.ui.explorer.TraceStatus;
 import de.prob.ui.explorer.TracesNode;
@@ -43,7 +44,6 @@ import de.prob.ui.explorer.TracesNode;
  */
 public class SaveTraceHandler extends AbstractHandler {
 
-	public static final String FOLDER = "traces";
 	public static final String EXTENSION = ".prob2trace";
 	/** Rodin's Event-B Explorer */
 	private static final String EXPLORER_ID = "fr.systerel.explorer.navigator.view";
@@ -61,8 +61,7 @@ public class SaveTraceHandler extends AbstractHandler {
 			return null;
 		}
 		final IEventBRoot root = ((EventBAnimatorPart) ldp).getRoot();
-		final IFolder folder = root.getRodinProject().getProject()
-				.getFolder(FOLDER);
+		final IFolder folder = TraceFiles.folder(root);
 		final IFile file;
 		try {
 			if (!folder.exists())

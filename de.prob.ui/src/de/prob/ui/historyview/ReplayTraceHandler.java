@@ -24,6 +24,7 @@ import de.prob.core.LanguageDependendAnimationPart;
 import de.prob.core.command.ReplayJsonTraceCommand;
 import de.prob.core.langdep.EventBAnimatorPart;
 import de.prob.exceptions.ProBException;
+import de.prob.ui.explorer.TraceFiles;
 import de.prob.ui.explorer.TraceStatus;
 
 /**
@@ -54,8 +55,7 @@ public class ReplayTraceHandler extends AbstractHandler {
 		dialog.setFilterNames(new String[] { "ProB2 Trace Files",
 				"JSON Files", "All Files" });
 		// the traces saved by the Save Trace button
-		final IFolder folder = root.getRodinProject().getProject()
-				.getFolder(SaveTraceHandler.FOLDER);
+		final IFolder folder = TraceFiles.folder(root);
 		if (folder.exists() && folder.getLocation() != null)
 			dialog.setFilterPath(folder.getLocation().toOSString());
 		final String path = dialog.open();

@@ -37,7 +37,6 @@ import de.prob.core.command.LoadEventBModelCommand;
 import de.prob.exceptions.ProBException;
 import de.prob.logging.Logger;
 import de.prob.ui.PerspectiveFactory;
-import de.prob.ui.historyview.SaveTraceHandler;
 
 public class StartAnimationHandler extends AbstractHandler implements IHandler {
 
@@ -67,17 +66,17 @@ public class StartAnimationHandler extends AbstractHandler implements IHandler {
 		}
 
 		/**
-		 * whether the project's change is not only in its traces folder
-		 * (saved traces do not change the model)
+		 * whether the project's change is not only inside its folders: the
+		 * machines and contexts are files directly in the project, the
+		 * folders hold e.g. saved traces
 		 */
 		private static boolean changesModel(final IResourceDelta project) {
 			final IResourceDelta[] children = project.getAffectedChildren();
 			if (children.length == 0)
 				return true; // e.g. the project itself was closed or deleted
 			for (IResourceDelta child : children)
-				if (!SaveTraceHandler.FOLDER.equals(child.getResource()
-						.getName())
-						|| child.getResource().getType() != IResource.FOLDER)
+				// also when a folder is created, e.g. for the first trace
+				if (child.getResource().getType() != IResource.FOLDER)
 					return true;
 			return false;
 		}

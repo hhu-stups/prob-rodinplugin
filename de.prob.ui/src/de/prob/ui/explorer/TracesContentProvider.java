@@ -3,6 +3,7 @@ package de.prob.ui.explorer;
 import java.util.List;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.IResourceDelta;
@@ -114,8 +115,8 @@ public class TracesContentProvider implements ITreeContentProvider,
 	}
 
 	/**
-	 * whether a trace file in a project's traces folder or a machine or
-	 * context was changed
+	 * whether a trace file in a model's folder or a machine or context was
+	 * changed
 	 */
 	private static boolean touchesTraces(final IResourceDelta delta) {
 		final boolean[] found = { false };
@@ -125,25 +126,25 @@ public class TracesContentProvider implements ITreeContentProvider,
 				public boolean visit(final IResourceDelta d) {
 					if (found[0])
 						return false;
-					final String name = d.getResource().getName();
-					if (name.endsWith(SaveTraceHandler.EXTENSION)
-							&& d.getResource().getParent() != null
-							&& SaveTraceHandler.FOLDER.equals(d.getResource()
-									.getParent().getName())
-							|| isModel(d)) {
+					final IResource resource = d.getResource();
+					if (resource.getName().endsWith(SaveTraceHandler.EXTENSION)
+							&& depth(resource) == 3 || isModel(d)) {
 						found[0] = true;
 						return false;
 					}
-					// only the workspace, projects and their traces folders
-					return d.getResource().getParent() == null
-							|| d.getResource().getParent().getParent() == null
-							|| SaveTraceHandler.FOLDER.equals(name);
+					// only the workspace, projects and their (model) folders
+					return depth(resource) < 3;
 				}
 			});
 		} catch (CoreException e) {
 			return false;
 		}
 		return found[0];
+	}
+
+	/** @return 0 for the workspace, 1 for a project, 2 for its members, ... */
+	private static int depth(final IResource resource) {
+		return resource.getFullPath().segmentCount();
 	}
 
 	/** a changed machine or context file, directly in a project */
