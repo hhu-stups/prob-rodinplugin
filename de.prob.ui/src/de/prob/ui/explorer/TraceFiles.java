@@ -71,6 +71,13 @@ public final class TraceFiles {
 		return result;
 	}
 
+	/** @return the file's name without the .prob2trace extension, e.g. M1_2 */
+	public static String displayName(final IFile file) {
+		final String name = file.getName();
+		return name.endsWith(SaveTraceHandler.EXTENSION) ? name.substring(0,
+				name.length() - SaveTraceHandler.EXTENSION.length()) : name;
+	}
+
 	/**
 	 * @return the model name in the file's metadata, i.e. the model it was
 	 *         recorded for, or <code>null</code>

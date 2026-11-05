@@ -37,7 +37,8 @@ public class ShowTraceDetailsHandler extends AbstractHandler {
 		if (trace == null)
 			return null;
 		final Shell shell = HandlerUtil.getActiveShell(event);
-		new DetailsDialog(shell, trace.getFile().getName(), details(trace))
+		new DetailsDialog(shell, TraceFiles.displayName(trace.getFile()),
+				details(trace))
 				.open();
 		return null;
 	}

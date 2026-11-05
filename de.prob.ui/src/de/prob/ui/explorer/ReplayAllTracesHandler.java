@@ -63,7 +63,7 @@ public class ReplayAllTracesHandler extends AbstractHandler {
 				for (IFile trace : traces) {
 					if (monitor.isCanceled())
 						break;
-					monitor.subTask(trace.getName());
+					monitor.subTask(TraceFiles.displayName(trace));
 					ReplayJsonTraceCommand.Result result = null;
 					try {
 						result = ReplayJsonTraceCommand.replay(animator, trace
@@ -74,8 +74,8 @@ public class ReplayAllTracesHandler extends AbstractHandler {
 					final TraceStatus.Status status = ReplayTraceHandler
 							.storeStatus(trace.getLocation().toFile(), root,
 									result);
-					final String line = result == null ? trace.getName()
-							+ " (ProB failed)" : trace.getName() + " ("
+					final String line = result == null ? TraceFiles.displayName(trace)
+							+ " (ProB failed)" : TraceFiles.displayName(trace) + " ("
 							+ result.getReplayedSteps() + " of "
 							+ result.getSteps() + " steps)";
 					if (status == TraceStatus.Status.PERFECT)

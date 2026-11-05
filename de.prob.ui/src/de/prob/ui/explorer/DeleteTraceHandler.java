@@ -23,7 +23,7 @@ public class DeleteTraceHandler extends AbstractHandler {
 		final IFile file = trace.getFile();
 		final Shell shell = HandlerUtil.getActiveShell(event);
 		if (!MessageDialog.openConfirm(shell, "Delete Trace",
-				"Delete the trace " + file.getName() + "?"))
+				"Delete the trace " + TraceFiles.displayName(file) + "?"))
 			return null;
 		try {
 			file.delete(true, true, null);

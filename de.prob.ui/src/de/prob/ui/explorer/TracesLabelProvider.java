@@ -34,7 +34,7 @@ public class TracesLabelProvider extends LabelProvider implements
 		if (element instanceof TracesNode)
 			return "Traces";
 		if (element instanceof TraceNode)
-			return ((TraceNode) element).getFile().getName();
+			return TraceFiles.displayName(((TraceNode) element).getFile());
 		return null;
 	}
 
@@ -56,7 +56,7 @@ public class TracesLabelProvider extends LabelProvider implements
 			return null;
 		final TraceNode trace = (TraceNode) element;
 		final String recordedFor = TraceFiles.modelName(trace.getFile());
-		final String name = trace.getFile().getName()
+		final String name = TraceFiles.displayName(trace.getFile())
 				+ (recordedFor == null
 						|| recordedFor.equals(trace.getParent().getRoot()
 								.getComponentName()) ? "" : " (recorded for "

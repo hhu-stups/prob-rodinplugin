@@ -54,7 +54,7 @@ public class ReplayTraceMenu extends CompoundContributionItem {
 
 	private static Action replayAction(final IEventBRoot root,
 			final IFile trace) {
-		final Action action = new Action(trace.getName()) {
+		final Action action = new Action(TraceFiles.displayName(trace)) {
 			@Override
 			public void run() {
 				final IWorkbenchWindow window = PlatformUI.getWorkbench()
