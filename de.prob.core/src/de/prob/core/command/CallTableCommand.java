@@ -37,12 +37,16 @@ public final class CallTableCommand implements IComposableCommand {
 		this.formulas = formulas;
 	}
 
+	/**
+	 * Does not notify the user if ProB fails: the exception's message has
+	 * ProB's error messages, see {@link Animator#executeQuietly}.
+	 */
 	public static List<List<String>> callTableCommand(final Animator animator,
 			final String stateId, final String command,
 			final List<PrologTerm> formulas) throws ProBException {
 		final CallTableCommand call = new CallTableCommand(stateId, command,
 				formulas);
-		animator.execute(call);
+		animator.executeQuietly(call);
 		return call.getRows();
 	}
 

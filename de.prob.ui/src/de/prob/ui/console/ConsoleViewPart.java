@@ -50,6 +50,7 @@ import org.rodinp.keyboard.ui.RodinKeyboardUIPlugin;
 
 import de.prob.core.Animator;
 import de.prob.core.ILifecycleListener;
+import de.prob.core.PrologException;
 import de.prob.core.domainobjects.MachineDescription;
 import de.prob.exceptions.ProBException;
 import de.prob.ui.ProbUiPlugin;
@@ -823,7 +824,16 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 			protected IStatus run(final IProgressMonitor monitor) {
 				Result result;
 				try {
-					result = evaluator.evaluate(text);
+					// errors are shown in the console, not in dialogs
+					result = Animator.callQuietly(new Animator.ProBCall<Result>() {
+						@Override
+						public Result call() throws ProBException {
+							return evaluator.evaluate(text);
+						}
+					});
+				} catch (PrologException e) {
+					result = new Result(Kind.ERROR, monitor.isCanceled() ? "Cancelled."
+							: "ProB reported:\n" + e.getMessage());
 				} catch (ProBException e) {
 					result = new Result(Kind.ERROR, monitor.isCanceled() ? "Cancelled."
 							: e.getMessage());

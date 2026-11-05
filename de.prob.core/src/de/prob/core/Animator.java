@@ -202,7 +202,33 @@ public final class Animator {
 
 	public final void execute(final IComposableCommand command)
 			throws ProBException {
-		execute(command, false);
+		execute(command, QUIET.get());
+	}
+
+	/** whether the commands of a thread are executed quietly */
+	private static final ThreadLocal<Boolean> QUIET = ThreadLocal
+			.withInitial(() -> Boolean.FALSE);
+
+	/** a computation that executes ProB commands, see {@link #callQuietly} */
+	public interface ProBCall<T> {
+		T call() throws ProBException;
+	}
+
+	/**
+	 * Runs a computation whose ProB commands, also those executed by helper
+	 * methods, are executed quietly (see {@link #executeQuietly}): the user
+	 * is not notified, e.g. by a pop-up dialog, as the caller shows the
+	 * errors itself.
+	 */
+	public static <T> T callQuietly(final ProBCall<T> call)
+			throws ProBException {
+		final Boolean before = QUIET.get();
+		QUIET.set(Boolean.TRUE);
+		try {
+			return call.call();
+		} finally {
+			QUIET.set(before);
+		}
 	}
 
 	/**

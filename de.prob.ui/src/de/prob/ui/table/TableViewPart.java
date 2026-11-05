@@ -44,6 +44,7 @@ import org.eclipse.ui.part.ViewPart;
 import de.prob.core.Animator;
 import de.prob.core.IAnimationListener;
 import de.prob.core.ILifecycleListener;
+import de.prob.core.PrologException;
 import de.prob.core.command.CallTableCommand;
 import de.prob.core.command.CommandFormulas;
 import de.prob.core.command.GetCommandsCommand;
@@ -355,6 +356,15 @@ public class TableViewPart extends ViewPart implements ILifecycleListener,
 				try {
 					result = CallTableCommand.callTableCommand(animator,
 							stateId, command.getCommand(), formulas);
+				} catch (PrologException e) {
+					// ProB's error messages, shown in the table
+					error = "ProB could not compute " + shownTitle
+							+ ". ProB reported:";
+					result = new ArrayList<List<String>>();
+					result.add(Collections.singletonList("Error"));
+					for (String line : e.getMessage().split("\n"))
+						if (!line.trim().isEmpty())
+							result.add(Collections.singletonList(line));
 				} catch (ProBException e) {
 					error = "ProB could not compute " + shownTitle + ": "
 							+ e.getMessage();
@@ -371,7 +381,8 @@ public class TableViewPart extends ViewPart implements ILifecycleListener,
 							return; // a newer table is being computed
 						setRunningJob(null);
 						if (computeError != null) {
-							setTable(Collections.<List<String>> emptyList());
+							setTable(computed != null ? computed : Collections
+									.<List<String>> emptyList());
 							setStatus(computeError, true);
 						} else {
 							setTable(computed);

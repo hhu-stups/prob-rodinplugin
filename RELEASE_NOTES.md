@@ -21,6 +21,7 @@ A new view for evaluating formulas in the current state of the animation. Open i
   - The ms toggle shows solving times.
   - The + / − buttons, or Ctrl+= / Ctrl+-, change the font size.
   - Type errors name the identifiers whose type can't be inferred.
+- **Errors** are shown in the console, in red, instead of in a dialog, including the error messages ProB reports while evaluating.
 
 ### ProB Graph
 A new view that shows the graphs ProB can compute. Open it from the State view's right-click menu ("Open ProB Graph") or via Window › Show View › ProB › ProB Graph.
@@ -39,7 +40,7 @@ A new view that shows the graphs ProB can compute. Open it from the State view's
 - **Graphs for a formula:** graphs whose names end in "…" use the expression or predicate in the field above the graph, e.g. State Space Expression Projection… (states merged by the value of an expression), Expression as Graph… and Formula Tree…. Enter recomputes the graph. The field translates ASCII to symbols and completes identifiers with Tab or Ctrl+Space.
 - **Navigation:** the mouse wheel zooms and dragging moves the graph. The + / − / Fit buttons zoom in, zoom out, or fit the whole graph into the view.
 - **Refresh** recomputes the graph, e.g. after animating or model checking. Computations run in the background. The red Stop button interrupts ProB or, once ProB has written the graph, GraphViz.
-- **Errors** while computing a graph, e.g. ProB's error messages, are shown in the view itself instead of in a dialog.
+- **Errors** while computing a graph are shown in the view instead of in a dialog: ProB's error messages are listed in red, where they can be scrolled, selected and copied.
 - **Requirements:**
   - GraphViz must be installed.
   - Its `dot` program is looked up first via ProB's DOT preference, then on the PATH and in the usual install locations (Homebrew, `/usr/local/bin`, `/usr/bin`, `C:/Program Files/Graphviz/bin`).
@@ -52,11 +53,13 @@ A new view that shows the tables ProB can compute, e.g. machine statistics, oper
 - **From the State view:** "Show Value as Table" in the right-click menu of a variable or formula shows its value as an Expression Table, e.g. a relation with one row per pair.
 - **Working with tables:** click a column header to sort (numbers sort numerically). Ctrl/Cmd+C copies the selected rows, or all, tab-separated with headers, ready for a spreadsheet.
 - **Refresh** recomputes the table in the current state, e.g. after animating or model checking. Computations run in the background, and the red Stop button interrupts them.
+- **Errors** while computing a table are shown in the view instead of in a dialog: a red summary in the status line, and ProB's error messages as the rows of the table, where they can be copied.
 - **Not yet offered:** the VisB and MC/DC tables.
 
 ### Start animation from the editors
-- **Camille:** "Start Animation / Model Checking" in the right-click menu of the Camille text editor.
-- **Rodin's editors:** a ProB toolbar button in the machine and context editors.
+- **Camille:** a ProB toolbar button, and "Start Animation / Model Checking" in the right-click menu of the Camille text editor.
+- **Rodin Editor (Systerel):** a ProB toolbar button and the same right-click menu entry.
+- **Rodin's form editors:** a ProB toolbar button in the machine and context editors.
 
 ### Disprover: "Use ProB WD Prover"
 A new proof tactic that calls ProB's well-definedness prover without constraint solving. Its time-out is set in the disprover preferences. Proofs found by it are labelled "ProB WD prover" in the proof tree.
@@ -65,13 +68,13 @@ A new proof tactic that calls ProB's well-definedness prover without constraint 
 A new "Show Full Value ..." entry in the right-click menu shows the complete value of a variable or formula. Formula values are not cut off at 600 characters. The dialog can switch between the current and the previous state, and between plain and pretty-printed output.
 
 ### State view: open a machine or context
-Double-clicking a machine or context name in the State view opens its file in the default editor, e.g. Rodin's editor or Camille.
+Double-clicking a machine or context name in the State view opens its file in the default editor, e.g. Rodin's form editor, the Rodin Editor or Camille.
 
 ### Operations view: non-deterministic choices
 When you right-click an enabled event, each non-deterministic choice is now labelled with the variables it changes and their new values.
 
 ### Operations view: "Unexplored Successors First"
-A new option in the Double Click Behaviour menu. A double-click on an event picks one of its choices at random, preferring choices that lead to a state ProB has not explored yet. If all successor states are explored, it picks any choice at random. This needs a probcli that knows the `explored` state property. With an older probcli it behaves like "Random solution for Parameters".
+A new option in the Double Click Behaviour menu. A double-click on an event picks one of its choices at random, preferring choices that lead to a state ProB has not explored yet. If all successor states are explored, it picks any choice at random. This needs a probcli whose `state_property/3` knows the new `explored` property (added to `prob2_interface.pl`). With an older probcli it behaves like "Random solution for Parameters".
 
 ## Improvements
 - **Model checking:** the progress dialog and its cancel button now stay responsive during model checking.
