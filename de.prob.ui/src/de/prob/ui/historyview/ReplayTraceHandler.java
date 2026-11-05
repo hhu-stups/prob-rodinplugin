@@ -60,10 +60,22 @@ public class ReplayTraceHandler extends AbstractHandler {
 		final String path = dialog.open();
 		if (path == null)
 			return null;
-		final File file = new File(path);
-		final IStatusLineManager statusLine = SaveTraceHandler
-				.statusLine(HandlerUtil.getActivePart(event));
+		replay(shell, SaveTraceHandler.statusLine(HandlerUtil
+				.getActivePart(event)), new File(path));
+		return null;
+	}
 
+	/**
+	 * Replays a trace file in the background, e.g. from the Event-B
+	 * Explorer, and reports the outcome: in the status line if the replay was
+	 * perfect, else in a dialog.
+	 * 
+	 * @param statusLine
+	 *            may be <code>null</code>
+	 */
+	public static void replay(final Shell shell,
+			final IStatusLineManager statusLine, final File file) {
+		final Animator animator = Animator.getAnimator();
 		final Job job = new Job("Replaying trace " + file.getName()) {
 			@Override
 			protected IStatus run(final IProgressMonitor monitor) {
@@ -82,8 +94,9 @@ public class ReplayTraceHandler extends AbstractHandler {
 					display.asyncExec(new Runnable() {
 						@Override
 						public void run() {
-							showResult(shell.isDisposed() ? null : shell,
-									statusLine, file, replayed, message);
+							showResult(shell == null || shell.isDisposed() ? null
+									: shell, statusLine, file, replayed,
+									message);
 						}
 					});
 				return Status.OK_STATUS;
@@ -91,7 +104,6 @@ public class ReplayTraceHandler extends AbstractHandler {
 		};
 		job.setUser(true);
 		job.schedule();
-		return null;
 	}
 
 	private static void showResult(final Shell shell,

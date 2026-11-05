@@ -16,7 +16,13 @@ import org.eclipse.jface.action.IStatusLineManager;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IViewSite;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.part.ISetSelectionTarget;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.eventb.core.IEventBRoot;
@@ -26,6 +32,8 @@ import de.prob.core.LanguageDependendAnimationPart;
 import de.prob.core.command.SaveTraceCommand;
 import de.prob.core.langdep.EventBAnimatorPart;
 import de.prob.exceptions.ProBException;
+import de.prob.ui.explorer.TraceNode;
+import de.prob.ui.explorer.TracesNode;
 
 /**
  * Saves the trace from the root to the current state as a ProB2 JSON trace
@@ -34,8 +42,10 @@ import de.prob.exceptions.ProBException;
  */
 public class SaveTraceHandler extends AbstractHandler {
 
-	static final String FOLDER = "traces";
-	static final String EXTENSION = ".prob2trace";
+	public static final String FOLDER = "traces";
+	public static final String EXTENSION = ".prob2trace";
+	/** Rodin's Event-B Explorer */
+	private static final String EXPLORER_ID = "fr.systerel.explorer.navigator.view";
 	private static final String TITLE = "Save Trace";
 
 	@Override
@@ -64,6 +74,7 @@ public class SaveTraceHandler extends AbstractHandler {
 		}
 		final IStatusLineManager statusLine = statusLine(HandlerUtil
 				.getActivePart(event));
+		final IWorkbenchWindow window = HandlerUtil.getActiveWorkbenchWindow(event);
 		final IPath modelLocation = root.getRodinFile().getResource()
 				.getLocation();
 		final String modelFile = modelLocation == null ? root
@@ -91,13 +102,18 @@ public class SaveTraceHandler extends AbstractHandler {
 					display.asyncExec(new Runnable() {
 						@Override
 						public void run() {
-							if (message != null)
+							if (message != null) {
 								MessageDialog.openError(
 										shell.isDisposed() ? null : shell,
 										TITLE, message);
-							else if (statusLine != null)
+								return;
+							}
+							if (statusLine != null)
 								statusLine.setMessage("Saved the trace to "
 										+ file.getFullPath());
+							// queued after the Explorer's refresh for the
+							// new file (see TracesContentProvider)
+							revealInExplorer(window, root, file);
 						}
 					});
 				return Status.OK_STATUS;
@@ -106,6 +122,26 @@ public class SaveTraceHandler extends AbstractHandler {
 		job.setUser(false);
 		job.schedule();
 		return null;
+	}
+
+	/**
+	 * Shows the new trace in the Event-B Explorer, below the "Traces" node of
+	 * its model, without taking the focus from the History view
+	 */
+	private static void revealInExplorer(final IWorkbenchWindow window,
+			final IEventBRoot root, final IFile file) {
+		if (window == null || window.getActivePage() == null)
+			return;
+		try {
+			final IViewPart view = window.getActivePage().showView(
+					EXPLORER_ID, null, IWorkbenchPage.VIEW_VISIBLE);
+			if (view instanceof ISetSelectionTarget)
+				((ISetSelectionTarget) view)
+						.selectReveal(new StructuredSelection(new TraceNode(
+								new TracesNode(root), file)));
+		} catch (PartInitException e) {
+			// the Explorer is not available; the trace is saved anyway
+		}
 	}
 
 	/** @return ModelName_Nr.prob2trace with the first unused number */

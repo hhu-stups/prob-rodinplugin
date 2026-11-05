@@ -37,6 +37,7 @@ import de.prob.core.command.LoadEventBModelCommand;
 import de.prob.exceptions.ProBException;
 import de.prob.logging.Logger;
 import de.prob.ui.PerspectiveFactory;
+import de.prob.ui.historyview.SaveTraceHandler;
 
 public class StartAnimationHandler extends AbstractHandler implements IHandler {
 
@@ -59,10 +60,26 @@ public class StartAnimationHandler extends AbstractHandler implements IHandler {
 			// deleting the project is reported by the following POST_CHANGE
 			if (path != null && delta != null) {
 				IResourceDelta member = delta.findMember(path);
-				if (member != null) {
+				if (member != null && changesModel(member)) {
 					Animator.getAnimator().setDirty();
 				}
 			}
+		}
+
+		/**
+		 * whether the project's change is not only in its traces folder
+		 * (saved traces do not change the model)
+		 */
+		private static boolean changesModel(final IResourceDelta project) {
+			final IResourceDelta[] children = project.getAffectedChildren();
+			if (children.length == 0)
+				return true; // e.g. the project itself was closed or deleted
+			for (IResourceDelta child : children)
+				if (!SaveTraceHandler.FOLDER.equals(child.getResource()
+						.getName())
+						|| child.getResource().getType() != IResource.FOLDER)
+					return true;
+			return false;
 		}
 	}
 
@@ -85,6 +102,23 @@ public class StartAnimationHandler extends AbstractHandler implements IHandler {
 			return null;
 		}
 
+		try {
+			startAnimation(rootElement);
+		} catch (ProBException e) {
+			e.notifyUserOnce();
+			throw new ExecutionException("Loading the machine failed", e);
+		}
+		return null;
+	}
+
+	/**
+	 * Starts the animation of a machine or context: loads it into ProB and
+	 * opens the ProB perspective. Errors and warnings of the project are
+	 * logged.
+	 */
+	public static void startAnimation(final IEventBRoot rootElement)
+			throws ProBException {
+		final IFile resource = extractResource(rootElement);
 		ArrayList<String> errors = new ArrayList<String>();
 		boolean realError = checkErrorMarkers(resource, errors);
 		if (!errors.isEmpty()) {
@@ -116,17 +150,10 @@ public class StartAnimationHandler extends AbstractHandler implements IHandler {
 		registerModificationListener(resource);
 		PerspectiveFactory.openPerspective();
 
-		final Animator animator = Animator.getAnimator();
-		try {
-			LoadEventBModelCommand.load(animator, rootElement);
-		} catch (ProBException e) {
-			e.notifyUserOnce();
-			throw new ExecutionException("Loading the machine failed", e);
-		}
-		return null;
+		LoadEventBModelCommand.load(Animator.getAnimator(), rootElement);
 	}
 
-	private boolean checkErrorMarkers(final IFile resource, List<String> errors) {
+	private static boolean checkErrorMarkers(final IFile resource, List<String> errors) {
 		boolean result = false;
 		IProject project = resource.getProject();
 		try {
@@ -190,7 +217,7 @@ public class StartAnimationHandler extends AbstractHandler implements IHandler {
 		return (IEventBRoot) rodinFile.getRoot();
 	}
 
-	private IFile extractResource(final IEventBRoot rootElement) {
+	private static IFile extractResource(final IEventBRoot rootElement) {
 		IFile resource = null;
 		if (rootElement == null) {
 			resource = null;
@@ -204,7 +231,7 @@ public class StartAnimationHandler extends AbstractHandler implements IHandler {
 		return resource;
 	}
 
-	private void registerModificationListener(final IFile resource) {
+	private static void registerModificationListener(final IFile resource) {
 		if (listener != null) {
 			ResourcesPlugin.getWorkspace().removeResourceChangeListener(
 					listener);
