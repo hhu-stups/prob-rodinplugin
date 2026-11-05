@@ -293,6 +293,16 @@
             id="de.prob.ui.history.showParametersState" />
       </command>
       <command
+            description="Save the trace to the current state as a ProB2 JSON trace file in the project's traces folder"
+            id="de.prob.ui.history.saveTrace"
+            name="Save Trace">
+      </command>
+      <command
+            description="Replay a ProB2 JSON trace file and show the trace in the history"
+            id="de.prob.ui.history.replayTrace"
+            name="Replay Trace">
+      </command>
+      <command
             id="de.prob.ui.show_parameter_dialog"
             name="Show Parameter Dialog">
       </command>
@@ -647,6 +657,30 @@
          <class
                class="de.prob.ui.stateview.ToggleShowDuplicatesHandler">
          </class>
+         <enabledWhen>
+            <with
+                  variable="de.prob.core.model_loaded">
+               <equals
+                     value="enabled">
+               </equals>
+            </with>
+         </enabledWhen>
+      </handler>
+      <handler
+            class="de.prob.ui.historyview.SaveTraceHandler"
+            commandId="de.prob.ui.history.saveTrace">
+         <enabledWhen>
+            <with
+                  variable="de.prob.core.model_loaded">
+               <equals
+                     value="enabled">
+               </equals>
+            </with>
+         </enabledWhen>
+      </handler>
+      <handler
+            class="de.prob.ui.historyview.ReplayTraceHandler"
+            commandId="de.prob.ui.history.replayTrace">
          <enabledWhen>
             <with
                   variable="de.prob.core.model_loaded">
@@ -1154,6 +1188,20 @@
                icon="icons/filter_ps.gif"
                label="Show Parameters"
                style="toggle">
+         </command>
+         <command
+               commandId="de.prob.ui.history.saveTrace"
+               icon="platform:/plugin/org.eclipse.ui/icons/full/etool16/save_edit.png"
+               label="Save Trace"
+               style="push"
+               tooltip="Save the trace to the current state as ModelName_Nr.prob2trace in the project's traces folder">
+         </command>
+         <command
+               commandId="de.prob.ui.history.replayTrace"
+               icon="icons/resume.gif"
+               label="Replay Trace"
+               style="push"
+               tooltip="Replay a saved trace (.prob2trace)">
          </command>
       </menuContribution>
       
