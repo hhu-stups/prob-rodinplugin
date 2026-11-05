@@ -37,16 +37,10 @@ public class ReplayExplorerTraceHandler extends AbstractHandler {
 	 */
 	static void replay(final Shell shell, final TraceNode trace) {
 		final IEventBRoot root = trace.getParent().getRoot();
-		if (!isAnimated(root)) {
-			try {
-				StartAnimationHandler.startAnimation(root);
-			} catch (ProBException e) {
-				e.notifyUserOnce();
-				return;
-			}
-		}
+		if (!ensureAnimated(root))
+			return;
 		ReplayTraceHandler.replay(shell, null, trace.getFile().getLocation()
-				.toFile());
+				.toFile(), root);
 	}
 
 	/**
@@ -63,6 +57,24 @@ public class ReplayExplorerTraceHandler extends AbstractHandler {
 		final Object element = ((IStructuredSelection) selection)
 				.getFirstElement();
 		return element instanceof TraceNode ? (TraceNode) element : null;
+	}
+
+	/**
+	 * starts the animation of the model unless it is animated, unchanged
+	 * since it was loaded
+	 * 
+	 * @return false if loading failed (the user was told)
+	 */
+	static boolean ensureAnimated(final IEventBRoot root) {
+		if (isAnimated(root))
+			return true;
+		try {
+			StartAnimationHandler.startAnimation(root);
+			return true;
+		} catch (ProBException e) {
+			e.notifyUserOnce();
+			return false;
+		}
 	}
 
 	/** whether the model is animated, unchanged since it was loaded */

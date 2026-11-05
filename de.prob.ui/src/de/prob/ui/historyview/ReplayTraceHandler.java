@@ -24,6 +24,7 @@ import de.prob.core.LanguageDependendAnimationPart;
 import de.prob.core.command.ReplayJsonTraceCommand;
 import de.prob.core.langdep.EventBAnimatorPart;
 import de.prob.exceptions.ProBException;
+import de.prob.ui.explorer.TraceStatus;
 
 /**
  * Replays a ProB2 JSON trace file (.prob2trace), e.g. one saved by
@@ -61,7 +62,7 @@ public class ReplayTraceHandler extends AbstractHandler {
 		if (path == null)
 			return null;
 		replay(shell, SaveTraceHandler.statusLine(HandlerUtil
-				.getActivePart(event)), new File(path));
+				.getActivePart(event)), new File(path), root);
 		return null;
 	}
 
@@ -70,11 +71,17 @@ public class ReplayTraceHandler extends AbstractHandler {
 	 * Explorer, and reports the outcome: in the status line if the replay was
 	 * perfect, else in a dialog.
 	 * 
+	 * The outcome is stored as the trace's replay status for the model (see
+	 * {@link TraceStatus}) if the file is in the workspace.
+	 * 
 	 * @param statusLine
 	 *            may be <code>null</code>
+	 * @param root
+	 *            the animated machine or context
 	 */
 	public static void replay(final Shell shell,
-			final IStatusLineManager statusLine, final File file) {
+			final IStatusLineManager statusLine, final File file,
+			final IEventBRoot root) {
 		final Animator animator = Animator.getAnimator();
 		final Job job = new Job("Replaying trace " + file.getName()) {
 			@Override
@@ -87,6 +94,7 @@ public class ReplayTraceHandler extends AbstractHandler {
 					error = "ProB could not replay " + file.getName()
 							+ ":\n\n" + e.getMessage();
 				}
+				storeStatus(file, root, result);
 				final ReplayJsonTraceCommand.Result replayed = result;
 				final String message = error;
 				final Display display = Display.getDefault();
@@ -104,6 +112,34 @@ public class ReplayTraceHandler extends AbstractHandler {
 		};
 		job.setUser(true);
 		job.schedule();
+	}
+
+	/**
+	 * Stores the outcome of a replay as the trace's status for the model
+	 * (see {@link TraceStatus})
+	 * 
+	 * @param result
+	 *            null if ProB failed
+	 * @return the status
+	 */
+	public static TraceStatus.Status storeStatus(final File file,
+			final IEventBRoot root, final ReplayJsonTraceCommand.Result result) {
+		if (result == null) {
+			TraceStatus.store(file, root, TraceStatus.Status.FAILED,
+					"ProB failed");
+			return TraceStatus.Status.FAILED;
+		}
+		final TraceStatus.Status status;
+		if (result.getReplayedSteps() < result.getSteps()
+				|| "partial".equals(result.getStatus()))
+			status = TraceStatus.Status.FAILED;
+		else if (result.isPerfect())
+			status = TraceStatus.Status.PERFECT;
+		else
+			status = TraceStatus.Status.IMPERFECT;
+		TraceStatus.store(file, root, status, result.getReplayedSteps()
+				+ " of " + result.getSteps() + " steps");
+		return status;
 	}
 
 	private static void showResult(final Shell shell,

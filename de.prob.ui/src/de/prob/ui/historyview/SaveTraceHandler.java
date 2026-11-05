@@ -33,6 +33,7 @@ import de.prob.core.command.SaveTraceCommand;
 import de.prob.core.langdep.EventBAnimatorPart;
 import de.prob.exceptions.ProBException;
 import de.prob.ui.explorer.TraceNode;
+import de.prob.ui.explorer.TraceStatus;
 import de.prob.ui.explorer.TracesNode;
 
 /**
@@ -111,6 +112,10 @@ public class SaveTraceHandler extends AbstractHandler {
 							if (statusLine != null)
 								statusLine.setMessage("Saved the trace to "
 										+ file.getFullPath());
+							// recorded from the model: replays perfectly
+							TraceStatus.store(file, root,
+									TraceStatus.Status.PERFECT,
+									"saved from the animation");
 							// queued after the Explorer's refresh for the
 							// new file (see TracesContentProvider)
 							revealInExplorer(window, root, file);

@@ -20,7 +20,9 @@ import de.prob.ui.historyview.SaveTraceHandler;
 /**
  * Adds a "Traces" node with the saved traces (see {@link TraceFiles}) to each
  * machine and context with traces in the Event-B Explorer. The explorer is
- * refreshed when a trace file is added, changed or removed.
+ * refreshed when a trace file is added, changed or removed, when a replay
+ * status is stored, and when a model changes (its traces' status may become
+ * unknown, see {@link TraceStatus}).
  */
 public class TracesContentProvider implements ITreeContentProvider,
 		IResourceChangeListener {
@@ -29,9 +31,17 @@ public class TracesContentProvider implements ITreeContentProvider,
 
 	private StructuredViewer viewer;
 
+	private final Runnable statusListener = new Runnable() {
+		@Override
+		public void run() {
+			refreshLater();
+		}
+	};
+
 	public TracesContentProvider() {
 		ResourcesPlugin.getWorkspace().addResourceChangeListener(this,
 				IResourceChangeEvent.POST_CHANGE);
+		TraceStatus.addListener(statusListener);
 	}
 
 	@Override
@@ -83,7 +93,13 @@ public class TracesContentProvider implements ITreeContentProvider,
 	@Override
 	public void resourceChanged(final IResourceChangeEvent event) {
 		final IResourceDelta delta = event.getDelta();
-		if (delta == null || viewer == null || !touchesTraces(delta))
+		if (delta != null && touchesTraces(delta))
+			refreshLater();
+	}
+
+	private void refreshLater() {
+		final StructuredViewer viewer = this.viewer;
+		if (viewer == null)
 			return;
 		final Control control = viewer.getControl();
 		if (control == null || control.isDisposed())
@@ -97,7 +113,10 @@ public class TracesContentProvider implements ITreeContentProvider,
 		});
 	}
 
-	/** whether a trace file in a project's traces folder was changed */
+	/**
+	 * whether a trace file in a project's traces folder or a machine or
+	 * context was changed
+	 */
 	private static boolean touchesTraces(final IResourceDelta delta) {
 		final boolean[] found = { false };
 		try {
@@ -110,7 +129,8 @@ public class TracesContentProvider implements ITreeContentProvider,
 					if (name.endsWith(SaveTraceHandler.EXTENSION)
 							&& d.getResource().getParent() != null
 							&& SaveTraceHandler.FOLDER.equals(d.getResource()
-									.getParent().getName())) {
+									.getParent().getName())
+							|| isModel(d)) {
 						found[0] = true;
 						return false;
 					}
@@ -126,8 +146,19 @@ public class TracesContentProvider implements ITreeContentProvider,
 		return found[0];
 	}
 
+	/** a changed machine or context file, directly in a project */
+	private static boolean isModel(final IResourceDelta d) {
+		final String name = d.getResource().getName();
+		return (name.endsWith(".bum") || name.endsWith(".buc"))
+				&& d.getResource().getParent() != null
+				&& d.getResource().getParent().getParent() != null
+				&& d.getResource().getParent().getParent().getParent() == null
+				&& (d.getKind() != IResourceDelta.CHANGED || (d.getFlags() & IResourceDelta.CONTENT) != 0);
+	}
+
 	@Override
 	public void dispose() {
+		TraceStatus.removeListener(statusListener);
 		ResourcesPlugin.getWorkspace().removeResourceChangeListener(this);
 		viewer = null;
 	}

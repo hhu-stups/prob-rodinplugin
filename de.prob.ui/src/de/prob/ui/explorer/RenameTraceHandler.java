@@ -1,5 +1,7 @@
 package de.prob.ui.explorer;
 
+import java.util.Map;
+
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
@@ -9,6 +11,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.QualifiedName;
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -49,8 +52,13 @@ public class RenameTraceHandler extends AbstractHandler {
 				|| dialog.getValue().trim().equals(oldName))
 			return null;
 		try {
-			file.move(file.getParent().getFullPath()
-					.append(fileName(dialog.getValue())), true, null);
+			final String newName = fileName(dialog.getValue());
+			final Map<QualifiedName, String> status = TraceStatus.saved(file);
+			file.move(file.getParent().getFullPath().append(newName), true,
+					null);
+			// in case the replay status did not move with the file
+			TraceStatus.restoreIfMissing(file.getParent().getFile(
+					Path.fromPortableString(newName)), status);
 		} catch (CoreException e) {
 			MessageDialog.openError(shell, TITLE, "Could not rename "
 					+ file.getFullPath() + ": " + e.getMessage());

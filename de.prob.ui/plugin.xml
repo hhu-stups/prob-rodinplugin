@@ -308,6 +308,11 @@
             name="Replay Trace with ProB">
       </command>
       <command
+            description="Replay all traces of the model selected in the Event-B Explorer"
+            id="de.prob.ui.explorer.replayAllTraces"
+            name="Replay All Traces">
+      </command>
+      <command
             description="Rename the trace selected in the Event-B Explorer"
             id="de.prob.ui.explorer.renameTrace"
             name="Rename Trace">
@@ -708,6 +713,25 @@
                   <iterate>
                      <instanceof
                            value="de.prob.ui.explorer.TraceNode">
+                     </instanceof>
+                  </iterate>
+               </and>
+            </with>
+         </enabledWhen>
+      </handler>
+      <handler
+            class="de.prob.ui.explorer.ReplayAllTracesHandler"
+            commandId="de.prob.ui.explorer.replayAllTraces">
+         <enabledWhen>
+            <with
+                  variable="activeMenuSelection">
+               <and>
+                  <count
+                        value="1">
+                  </count>
+                  <iterate>
+                     <instanceof
+                           value="de.prob.ui.explorer.TracesNode">
                      </instanceof>
                   </iterate>
                </and>
@@ -1438,6 +1462,27 @@
                      <iterate>
                         <instanceof
                               value="de.prob.ui.explorer.TraceNode">
+                        </instanceof>
+                     </iterate>
+                  </and>
+               </with>
+            </visibleWhen>
+         </command>
+         <command
+               commandId="de.prob.ui.explorer.replayAllTraces"
+               icon="icons/resume.gif"
+               label="Replay All Traces"
+               style="push">
+            <visibleWhen>
+               <with
+                     variable="selection">
+                  <and>
+                     <count
+                           value="1">
+                     </count>
+                     <iterate>
+                        <instanceof
+                              value="de.prob.ui.explorer.TracesNode">
                         </instanceof>
                      </iterate>
                   </and>
