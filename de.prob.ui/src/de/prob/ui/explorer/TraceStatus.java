@@ -37,9 +37,10 @@ import de.prob.ui.ProbUiPlugin;
 /**
  * Whether a trace file was replayed successfully, stored as persistent
  * properties of the file (in the workspace's metadata, not in the file).
- * Stored with it is a fingerprint of the model: the content hashes of the
- * machine or context and of what it depends on (abstract machines, seen and
- * extended contexts). When the model has changed since, the status is
+ * Stored with it is a fingerprint of the trace and the model: the content
+ * hashes of the trace file, of the machine or context and of what it depends
+ * on (abstract machines, seen and extended contexts). When the trace (e.g.
+ * edited) or the model has changed since, the status is
  * {@link Status#UNKNOWN}.
  */
 public final class TraceStatus {
@@ -106,7 +107,7 @@ public final class TraceStatus {
 			return;
 		try {
 			file.setPersistentProperty(STATUS, status.name());
-			file.setPersistentProperty(FINGERPRINT, fingerprint(root));
+			file.setPersistentProperty(FINGERPRINT, fingerprint(file, root));
 			file.setPersistentProperty(DETAIL, detail + ", "
 					+ DateFormat.getDateTimeInstance(DateFormat.MEDIUM,
 							DateFormat.SHORT).format(new Date()));
@@ -137,7 +138,7 @@ public final class TraceStatus {
 			if (status == null)
 				return Status.UNKNOWN;
 			final String stored = file.getPersistentProperty(FINGERPRINT);
-			if (stored == null || !stored.equals(fingerprint(root)))
+			if (stored == null || !stored.equals(fingerprint(file, root)))
 				return Status.UNKNOWN;
 			return Status.valueOf(status);
 		} catch (CoreException e) {
@@ -191,10 +192,10 @@ public final class TraceStatus {
 	}
 
 	/**
-	 * @return a hash over the contents of the model's file and of the files
-	 *         of the models it depends on
+	 * @return a hash over the contents of the trace file, the model's file
+	 *         and the files of the models it depends on
 	 */
-	static String fingerprint(final IEventBRoot root) {
+	static String fingerprint(final IFile trace, final IEventBRoot root) {
 		final List<IEventBRoot> models = new ArrayList<IEventBRoot>(
 				dependencies(root));
 		Collections.sort(models, new Comparator<IEventBRoot>() {
@@ -204,6 +205,7 @@ public final class TraceStatus {
 			}
 		});
 		final StringBuilder all = new StringBuilder();
+		all.append("trace=").append(hash(trace)).append('\n');
 		for (IEventBRoot model : models) {
 			final IResource resource = model.getRodinFile().getResource();
 			all.append(model.getPath()).append('=');

@@ -313,6 +313,16 @@
             name="Replay All Traces">
       </command>
       <command
+            description="Show the details of the trace selected in the Event-B Explorer"
+            id="de.prob.ui.explorer.showTraceDetails"
+            name="Show Trace Details">
+      </command>
+      <command
+            description="Open the trace selected in the Event-B Explorer in the text editor"
+            id="de.prob.ui.explorer.editTrace"
+            name="Edit Trace">
+      </command>
+      <command
             description="Rename the trace selected in the Event-B Explorer"
             id="de.prob.ui.explorer.renameTrace"
             name="Rename Trace">
@@ -732,6 +742,44 @@
                   <iterate>
                      <instanceof
                            value="de.prob.ui.explorer.TracesNode">
+                     </instanceof>
+                  </iterate>
+               </and>
+            </with>
+         </enabledWhen>
+      </handler>
+      <handler
+            class="de.prob.ui.explorer.ShowTraceDetailsHandler"
+            commandId="de.prob.ui.explorer.showTraceDetails">
+         <enabledWhen>
+            <with
+                  variable="activeMenuSelection">
+               <and>
+                  <count
+                        value="1">
+                  </count>
+                  <iterate>
+                     <instanceof
+                           value="de.prob.ui.explorer.TraceNode">
+                     </instanceof>
+                  </iterate>
+               </and>
+            </with>
+         </enabledWhen>
+      </handler>
+      <handler
+            class="de.prob.ui.explorer.EditTraceHandler"
+            commandId="de.prob.ui.explorer.editTrace">
+         <enabledWhen>
+            <with
+                  variable="activeMenuSelection">
+               <and>
+                  <count
+                        value="1">
+                  </count>
+                  <iterate>
+                     <instanceof
+                           value="de.prob.ui.explorer.TraceNode">
                      </instanceof>
                   </iterate>
                </and>
@@ -1294,13 +1342,33 @@
                style="push"
                tooltip="Save the trace to the current state as ModelName_Nr.prob2trace in the project's traces folder">
          </command>
+         <!-- the button chooses a trace file; its drop-down menu also
+              lists the saved traces of the animated model -->
          <command
                commandId="de.prob.ui.history.replayTrace"
                icon="icons/resume.gif"
+               id="de.prob.ui.history.replayTraceMenu"
                label="Replay Trace"
-               style="push"
+               style="pulldown"
                tooltip="Replay a saved trace (.prob2trace)">
          </command>
+      </menuContribution>
+      <menuContribution
+            locationURI="menu:de.prob.ui.history.replayTraceMenu">
+         <command
+               commandId="de.prob.ui.history.replayTrace"
+               label="Other Trace..."
+               style="push"
+               tooltip="Choose a .prob2trace file to replay">
+         </command>
+         <separator
+               name="de.prob.ui.history.savedTraces"
+               visible="true">
+         </separator>
+         <dynamic
+               class="de.prob.ui.historyview.ReplayTraceMenu"
+               id="de.prob.ui.history.savedTraceItems">
+         </dynamic>
       </menuContribution>
       
       <menuContribution
@@ -1483,6 +1551,46 @@
                      <iterate>
                         <instanceof
                               value="de.prob.ui.explorer.TracesNode">
+                        </instanceof>
+                     </iterate>
+                  </and>
+               </with>
+            </visibleWhen>
+         </command>
+         <command
+               commandId="de.prob.ui.explorer.showTraceDetails"
+               label="Show Trace Details..."
+               style="push">
+            <visibleWhen>
+               <with
+                     variable="selection">
+                  <and>
+                     <count
+                           value="1">
+                     </count>
+                     <iterate>
+                        <instanceof
+                              value="de.prob.ui.explorer.TraceNode">
+                        </instanceof>
+                     </iterate>
+                  </and>
+               </with>
+            </visibleWhen>
+         </command>
+         <command
+               commandId="de.prob.ui.explorer.editTrace"
+               label="Edit Trace"
+               style="push">
+            <visibleWhen>
+               <with
+                     variable="selection">
+                  <and>
+                     <count
+                           value="1">
+                     </count>
+                     <iterate>
+                        <instanceof
+                              value="de.prob.ui.explorer.TraceNode">
                         </instanceof>
                      </iterate>
                   </and>
@@ -1765,6 +1873,9 @@
             labelProvider="de.prob.ui.explorer.TracesLabelProvider"
             name="ProB Traces"
             priority="lowest">
+         <!-- Rodin's nodes (Invariants, ..., Proof Obligations) are trigger
+              points only so that the sorter below applies when they are
+              compared with the "Traces" node; they get no children here -->
          <triggerPoints>
             <or>
                <instanceof
@@ -1775,6 +1886,9 @@
                </instanceof>
                <instanceof
                      value="de.prob.ui.explorer.TracesNode">
+               </instanceof>
+               <instanceof
+                     value="fr.systerel.explorer.IElementNode">
                </instanceof>
             </or>
          </triggerPoints>
@@ -1788,6 +1902,21 @@
                </instanceof>
             </or>
          </possibleChildren>
+         <!-- the "Traces" node after Rodin's nodes, e.g. Proof Obligations -->
+         <commonSorter
+               class="de.prob.ui.explorer.TracesLastSorter"
+               id="de.prob.ui.explorer.tracesLastSorter">
+            <parentExpression>
+               <or>
+                  <instanceof
+                        value="org.eventb.core.IMachineRoot">
+                  </instanceof>
+                  <instanceof
+                        value="org.eventb.core.IContextRoot">
+                  </instanceof>
+               </or>
+            </parentExpression>
+         </commonSorter>
          <!-- a double-click on a trace replays it -->
          <actionProvider
                class="de.prob.ui.explorer.TraceActionProvider"

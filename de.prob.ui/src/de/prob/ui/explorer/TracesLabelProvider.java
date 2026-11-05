@@ -85,6 +85,18 @@ public class TracesLabelProvider extends LabelProvider implements
 		return image;
 	}
 
+	/**
+	 * @return the icon of a trace with the given replay status, e.g. for a
+	 *         menu entry
+	 */
+	public static ImageDescriptor descriptor(final Status status) {
+		final ImageDescriptor overlay = overlay(status);
+		final Image file = shared().getImage(ISharedImages.IMG_OBJ_FILE);
+		return overlay == null ? shared().getImageDescriptor(
+				ISharedImages.IMG_OBJ_FILE) : new DecorationOverlayIcon(file,
+				overlay, IDecoration.BOTTOM_LEFT);
+	}
+
 	private static ImageDescriptor overlay(final Status status) {
 		switch (status) {
 		case PERFECT:
