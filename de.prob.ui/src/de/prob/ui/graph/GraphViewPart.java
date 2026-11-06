@@ -12,6 +12,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -23,6 +24,7 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTError;
 import org.eclipse.swt.browser.Browser;
@@ -34,6 +36,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.ISharedImages;
@@ -138,6 +141,9 @@ public class GraphViewPart extends ViewPart implements ILifecycleListener,
 	private String template;
 	private Job runningJob;
 	private Action stop;
+	private Action save;
+	/** the graph shown, for Save; null while a message is shown */
+	private Graph shownGraph;
 	// the menus with the graphs from ProB
 	private CommandMenus menus;
 	private CommandInfo shown;
@@ -279,6 +285,73 @@ public class GraphViewPart extends ViewPart implements ILifecycleListener,
 				execute("window.probFit && probFit();");
 			}
 		});
+		toolBar.add(new Separator());
+		save = new Action("Save Graph As...") {
+			@Override
+			public void run() {
+				saveGraph();
+			}
+		};
+		save.setToolTipText("Save the graph as an SVG image (.svg) or as a GraphViz file (.dot)");
+		save.setImageDescriptor(images
+				.getImageDescriptor(ISharedImages.IMG_ETOOL_SAVEAS_EDIT));
+		save.setDisabledImageDescriptor(images
+				.getImageDescriptor(ISharedImages.IMG_ETOOL_SAVEAS_EDIT_DISABLED));
+		save.setEnabled(false);
+		toolBar.add(save);
+	}
+
+	private void setShownGraph(final Graph graph) {
+		shownGraph = graph;
+		if (save != null)
+			save.setEnabled(graph != null);
+	}
+
+	/** saves the shown graph as .svg or .dot, chosen by the file's extension */
+	private void saveGraph() {
+		final Graph graph = shownGraph;
+		if (graph == null)
+			return;
+		final FileDialog dialog = new FileDialog(getSite().getShell(),
+				SWT.SAVE);
+		dialog.setText("Save Graph As");
+		dialog.setFilterExtensions(new String[] { "*.svg", "*.dot" });
+		dialog.setFilterNames(new String[] { "SVG image (*.svg)",
+				"GraphViz dot file (*.dot)" });
+		dialog.setFileName(fileName(graph.title) + ".svg");
+		dialog.setOverwrite(true);
+		String path = dialog.open();
+		if (path == null)
+			return;
+		final String lower = path.toLowerCase(Locale.ROOT);
+		final boolean dot;
+		if (lower.endsWith(".dot") || lower.endsWith(".gv"))
+			dot = true;
+		else if (lower.endsWith(".svg"))
+			dot = false;
+		else {
+			// no known extension: the chosen file type's
+			dot = dialog.getFilterIndex() == 1;
+			path += dot ? ".dot" : ".svg";
+		}
+		try {
+			Files.write(new File(path).toPath(), (dot ? graph.dot : graph.svg)
+					.getBytes(StandardCharsets.UTF_8));
+			getViewSite().getActionBars().getStatusLineManager()
+					.setMessage("Saved the graph to " + path);
+		} catch (IOException e) {
+			MessageDialog.openError(getSite().getShell(), "Save Graph As",
+					"Could not save the graph to " + path + ": "
+							+ e.getMessage());
+		}
+	}
+
+	/** @return the title without characters that are not allowed in files */
+	public static String fileName(final String title) {
+		final String name = title.replaceAll("[\\\\/:*?\"<>|\\s]+", "_")
+				.replaceAll("_+$", "").replaceAll("^_+", "");
+		return name.isEmpty() ? "graph"
+				: name.length() > 60 ? name.substring(0, 60) : name;
 	}
 
 	private void execute(final String script) {
@@ -427,18 +500,18 @@ public class GraphViewPart extends ViewPart implements ILifecycleListener,
 						});
 					}
 				};
+				Graph graph = null;
 				String content;
-				boolean isSvg = false;
 				try {
-					content = computeSvg(animator, stateId, command, formulas,
-							layingOut, monitor);
-					isSvg = true;
+					graph = computeGraph(animator, stateId, command, formulas,
+							shownTitle, layingOut, monitor);
+					content = graph.svgForHtml();
 				} catch (GraphException e) {
 					content = e.getMessage();
 				}
 				if (monitor.isCanceled())
 					return Status.CANCEL_STATUS;
-				show(this, content, isSvg, clickable);
+				show(this, content, graph, clickable);
 				return Status.OK_STATUS;
 			}
 
@@ -489,11 +562,31 @@ public class GraphViewPart extends ViewPart implements ILifecycleListener,
 		}
 	}
 
-	/** @return the SVG of the graph, laid out by GraphViz */
-	private static String computeSvg(final Animator animator,
+	/** a computed graph: ProB's dot file and its SVG laid out by GraphViz */
+	private static final class Graph {
+		final String title;
+		final String dot;
+		final String svg;
+
+		Graph(final String title, final String dot, final String svg) {
+			this.title = title;
+			this.dot = dot;
+			this.svg = svg;
+		}
+
+		/** without the XML declaration and DOCTYPE, to embed it in HTML */
+		String svgForHtml() {
+			final int start = svg.indexOf("<svg");
+			return start < 0 ? svg : svg.substring(start);
+		}
+	}
+
+	/** @return the graph, laid out by GraphViz */
+	private static Graph computeGraph(final Animator animator,
 			final String stateId, final CommandInfo command,
-			final List<PrologTerm> formulas, final Runnable layingOut,
-			final IProgressMonitor monitor) throws GraphException {
+			final List<PrologTerm> formulas, final String title,
+			final Runnable layingOut, final IProgressMonitor monitor)
+			throws GraphException {
 		File dotFile = null;
 		File svgFile = null;
 		try {
@@ -510,11 +603,9 @@ public class GraphViewPart extends ViewPart implements ILifecycleListener,
 				throw new GraphException("Cancelled.");
 			layingOut.run();
 			runDot(animator, command, dotFile, svgFile, monitor);
-			final String svg = new String(Files.readAllBytes(svgFile.toPath()),
-					StandardCharsets.UTF_8);
-			// without the XML declaration and DOCTYPE, to embed it in HTML
-			final int start = svg.indexOf("<svg");
-			return start < 0 ? svg : svg.substring(start);
+			return new Graph(title, new String(Files.readAllBytes(dotFile
+					.toPath()), StandardCharsets.UTF_8), new String(
+					Files.readAllBytes(svgFile.toPath()), StandardCharsets.UTF_8));
 		} catch (IOException e) {
 			throw new GraphException("Could not create the graph: "
 					+ e.getMessage());
@@ -616,7 +707,7 @@ public class GraphViewPart extends ViewPart implements ILifecycleListener,
 	}
 
 	private void show(final Job job, final String content,
-			final boolean isSvg, final boolean statesClickable) {
+			final Graph graph, final boolean statesClickable) {
 		final Display display = Display.getDefault();
 		if (display.isDisposed())
 			return;
@@ -629,11 +720,12 @@ public class GraphViewPart extends ViewPart implements ILifecycleListener,
 					setRunningJob(null);
 				else
 					return; // a newer graph is being computed
-				if (isSvg)
+				if (graph != null) {
 					browser.setText(template.replace("%CLICKABLE%",
 							Boolean.toString(statesClickable)).replace(
 							"%CONTENT%", content));
-				else
+					setShownGraph(graph);
+				} else
 					showError(content);
 			}
 		});
@@ -666,6 +758,7 @@ public class GraphViewPart extends ViewPart implements ILifecycleListener,
 	 * selected (unlike a graph, which is moved by dragging)
 	 */
 	private void setHtml(final String content) {
+		setShownGraph(null);
 		if (browser != null && !browser.isDisposed())
 			browser.setText(MESSAGE_PAGE.replace("%CONTENT%", content));
 	}

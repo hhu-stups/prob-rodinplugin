@@ -1,6 +1,10 @@
 package de.prob.ui.table;
 
+import java.io.File;
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -8,6 +12,7 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -18,6 +23,7 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.TextTransfer;
@@ -31,6 +37,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
@@ -58,6 +65,7 @@ import de.prob.prolog.term.PrologTerm;
 import de.prob.ui.CommandMenus;
 import de.prob.ui.StaticListenerRegistry;
 import de.prob.ui.console.ConsoleViewPart;
+import de.prob.ui.graph.GraphViewPart;
 
 /**
  * Shows the tables that ProB can compute in the current state, e.g. machine
@@ -99,6 +107,9 @@ public class TableViewPart extends ViewPart implements ILifecycleListener,
 	private Table table;
 	private Job runningJob;
 	private Action stop;
+	private Action save;
+	/** the title of the table shown, for Save; null if there is none */
+	private String savableTitle;
 	private Clipboard clipboard;
 
 	// the menus with the tables from ProB
@@ -230,6 +241,142 @@ public class TableViewPart extends ViewPart implements ILifecycleListener,
 				.getImageDescriptor(ISharedImages.IMG_ELCL_STOP_DISABLED));
 		stop.setEnabled(false);
 		toolBar.add(stop);
+		toolBar.add(new Separator());
+		save = new Action("Save Table As...") {
+			@Override
+			public void run() {
+				saveTable();
+			}
+		};
+		save.setToolTipText("Save the table as comma-separated values (.csv) or as text with aligned columns (.txt)");
+		save.setImageDescriptor(images
+				.getImageDescriptor(ISharedImages.IMG_ETOOL_SAVEAS_EDIT));
+		save.setDisabledImageDescriptor(images
+				.getImageDescriptor(ISharedImages.IMG_ETOOL_SAVEAS_EDIT_DISABLED));
+		save.setEnabled(false);
+		toolBar.add(save);
+	}
+
+	private void setSavableTitle(final String title) {
+		savableTitle = title;
+		if (save != null)
+			save.setEnabled(title != null);
+	}
+
+	/**
+	 * saves the shown table, in its current order, as .csv or .txt, chosen by
+	 * the file's extension
+	 */
+	private void saveTable() {
+		if (savableTitle == null)
+			return;
+		final FileDialog dialog = new FileDialog(getSite().getShell(),
+				SWT.SAVE);
+		dialog.setText("Save Table As");
+		dialog.setFilterExtensions(new String[] { "*.csv", "*.txt" });
+		dialog.setFilterNames(new String[] {
+				"Comma-separated values (*.csv)", "Text (*.txt)" });
+		dialog.setFileName(GraphViewPart.fileName(savableTitle) + ".csv");
+		dialog.setOverwrite(true);
+		String path = dialog.open();
+		if (path == null)
+			return;
+		final String lower = path.toLowerCase(Locale.ROOT);
+		final boolean csv;
+		if (lower.endsWith(".csv"))
+			csv = true;
+		else if (lower.endsWith(".txt"))
+			csv = false;
+		else {
+			// no known extension: the chosen file type's
+			csv = dialog.getFilterIndex() != 1;
+			path += csv ? ".csv" : ".txt";
+		}
+		final String text = csv ? toCsv(headers, rows) : toText(headers, rows);
+		try {
+			Files.write(new File(path).toPath(),
+					text.getBytes(StandardCharsets.UTF_8));
+			getViewSite().getActionBars().getStatusLineManager()
+					.setMessage("Saved the table to " + path);
+		} catch (IOException e) {
+			MessageDialog.openError(getSite().getShell(), "Save Table As",
+					"Could not save the table to " + path + ": "
+							+ e.getMessage());
+		}
+	}
+
+	/** @return the table as CSV (RFC 4180), with the headers first */
+	static String toCsv(final List<String> headers,
+			final List<List<String>> rows) {
+		final StringBuilder text = new StringBuilder();
+		csvLine(text, headers);
+		for (List<String> row : rows)
+			csvLine(text, row);
+		return text.toString();
+	}
+
+	private static void csvLine(final StringBuilder text,
+			final List<String> cells) {
+		for (int i = 0; i < cells.size(); i++) {
+			if (i > 0)
+				text.append(',');
+			final String cell = cells.get(i);
+			if (cell.indexOf(',') >= 0 || cell.indexOf('"') >= 0
+					|| cell.indexOf('\n') >= 0 || cell.indexOf('\r') >= 0)
+				text.append('"').append(cell.replace("\"", "\"\"")).append('"');
+			else
+				text.append(cell);
+		}
+		text.append("\r\n");
+	}
+
+	/**
+	 * @return the table as text, with the columns aligned and the headers
+	 *         underlined
+	 */
+	static String toText(final List<String> headers,
+			final List<List<String>> rows) {
+		final List<Integer> widths = new ArrayList<Integer>();
+		widen(widths, headers);
+		for (List<String> row : rows)
+			widen(widths, row);
+		final StringBuilder text = new StringBuilder();
+		textLine(text, headers, widths);
+		final List<String> rule = new ArrayList<String>();
+		for (int width : widths)
+			rule.add("-".repeat(width));
+		textLine(text, rule, widths);
+		for (List<String> row : rows)
+			textLine(text, row, widths);
+		return text.toString();
+	}
+
+	private static void widen(final List<Integer> widths,
+			final List<String> cells) {
+		for (int i = 0; i < cells.size(); i++) {
+			final int width = cells.get(i).codePointCount(0,
+					cells.get(i).length());
+			if (i < widths.size())
+				widths.set(i, Math.max(widths.get(i), width));
+			else
+				widths.add(width);
+		}
+	}
+
+	private static void textLine(final StringBuilder text,
+			final List<String> cells, final List<Integer> widths) {
+		final StringBuilder line = new StringBuilder();
+		for (int i = 0; i < cells.size(); i++) {
+			if (i > 0)
+				line.append("  ");
+			final String cell = cells.get(i).replace('\n', ' ');
+			line.append(cell);
+			if (i < cells.size() - 1)
+				for (int n = cell.codePointCount(0, cell.length()); n < widths
+						.get(i); n++)
+					line.append(' ');
+		}
+		text.append(line.toString().replaceAll("\\s+$", "")).append('\n');
 	}
 
 	private static String currentStateId(final Animator animator) {
@@ -386,6 +533,7 @@ public class TableViewPart extends ViewPart implements ILifecycleListener,
 							setStatus(computeError, true);
 						} else {
 							setTable(computed);
+							setSavableTitle(shownTitle);
 							final int n = rows.size();
 							setStatus(shownTitle + " (state " + stateId
 									+ "): " + n + (n == 1 ? " row" : " rows"),
@@ -434,6 +582,7 @@ public class TableViewPart extends ViewPart implements ILifecycleListener,
 
 	/** @param table the rows; the first one has the column headers */
 	private void setTable(final List<List<String>> table) {
+		setSavableTitle(null);
 		headers = table.isEmpty() ? Collections.<String> emptyList() : table
 				.get(0);
 		rows = table.isEmpty() ? Collections.<List<String>> emptyList()
