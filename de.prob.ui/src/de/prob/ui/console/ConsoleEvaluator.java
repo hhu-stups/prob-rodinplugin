@@ -321,7 +321,7 @@ public class ConsoleEvaluator implements ILifecycleListener {
 		final String solver = SOLVERS.get(name.toLowerCase(Locale.ROOT));
 		if (solver == null)
 			return new Result(Kind.ERROR, "Unknown command :" + name
-					+ ", available: :help, :x, :clear, :type, :state, :prefs, "
+					+ ", available: :help, :x, :clear, :type, :state, :table, :graph, :prefs, "
 					+ solverCommands());
 		final String formula = command.substring(end).trim();
 		if (formula.isEmpty())

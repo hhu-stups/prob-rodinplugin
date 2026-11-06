@@ -44,6 +44,9 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.ISharedImages;
+import org.eclipse.ui.IViewPart;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 import org.rodinp.keyboard.ui.RodinKeyboardUIPlugin;
@@ -57,6 +60,8 @@ import de.prob.ui.ProbUiPlugin;
 import de.prob.ui.StaticListenerRegistry;
 import de.prob.ui.console.ConsoleEvaluator.Kind;
 import de.prob.ui.console.ConsoleEvaluator.Result;
+import de.prob.ui.graph.GraphViewPart;
+import de.prob.ui.table.TableViewPart;
 import de.prob.unicode.UnicodeTranslator;
 
 /**
@@ -643,6 +648,12 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 						getSite().getPage().hideView(view);
 				}
 			});
+		} else if (viewArgument(text.trim(), "table") != null) {
+			append(PROMPT + echo(text) + "\n", null, SWT.BOLD);
+			showInView(TableViewPart.VIEW_ID, viewArgument(text.trim(), "table"));
+		} else if (viewArgument(text.trim(), "graph") != null) {
+			append(PROMPT + echo(text) + "\n", null, SWT.BOLD);
+			showInView(GraphViewPart.VIEW_ID, viewArgument(text.trim(), "graph"));
 		} else if (helpArgument(text.trim()) != null) {
 			append(PROMPT + text + "\n", null, SWT.BOLD);
 			final String command = helpArgument(text.trim());
@@ -683,6 +694,59 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 	}
 
 	/**
+	 * @return the expression of ":table EXPR" or ":graph EXPR" (for the given
+	 *         command name), "" if it is missing, null if the input is not
+	 *         this command
+	 */
+	private static String viewArgument(final String text, final String command) {
+		// with "Type Mathematical Symbols", ':' may have become '\u2208'
+		if (!text.startsWith(":") && !text.startsWith("\u2208"))
+			return null;
+		final String rest = text.substring(1);
+		if (!rest.startsWith(command))
+			return null;
+		final String argument = rest.substring(command.length());
+		if (!argument.isEmpty() && !Character.isWhitespace(argument.charAt(0)))
+			return null; // e.g. ":tables"
+		return argument.trim();
+	}
+
+	/**
+	 * ":table EXPR" and ":graph EXPR": shows the value of EXPR in the ProB
+	 * Table or Graph view, like "Show Value as Table/Graph" in the State
+	 * view. The view shows errors, e.g. a syntax error, itself.
+	 */
+	private void showInView(final String viewId, final String expression) {
+		final boolean table = viewId.equals(TableViewPart.VIEW_ID);
+		final String name = table ? "ProB Table" : "ProB Graph";
+		if (expression.isEmpty()) {
+			append("Usage: :" + (table ? "table" : "graph") + " EXPR\n",
+					getColor(SWT.COLOR_RED), SWT.NORMAL);
+			return;
+		}
+		if (!Animator.getAnimator().isMachineLoaded()) {
+			append("No model is being animated.\n",
+					getColor(SWT.COLOR_DARK_GRAY), SWT.NORMAL);
+			return;
+		}
+		try {
+			// shown, but the console keeps the focus for the next input
+			final IViewPart view = getSite().getPage().showView(viewId, null,
+					IWorkbenchPage.VIEW_VISIBLE);
+			if (view instanceof TableViewPart)
+				((TableViewPart) view).showExpressionTable(expression);
+			else if (view instanceof GraphViewPart)
+				((GraphViewPart) view).showFormulaGraph(
+						GraphViewPart.EXPRESSION_GRAPH, expression);
+			append("Shown in the " + name + " view.\n",
+					getColor(SWT.COLOR_DARK_GRAY), SWT.NORMAL);
+		} catch (PartInitException e) {
+			append("Could not open the " + name + " view: " + e.getMessage()
+					+ "\n", getColor(SWT.COLOR_RED), SWT.NORMAL);
+		}
+	}
+
+	/**
 	 * @return for ":help" or ":?" the command to explain, e.g. "type" for
 	 *         ":help type" or ":help :type", "" for all; null if the input
 	 *         is not a help command
@@ -720,6 +784,10 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 						"the type of the predicate or expression F, and the\ninferred types of its free identifiers" },
 				{ "state", ":state",
 						"the current state: values, status, enabled events" },
+				{ "table", ":table EXPR",
+						"show the value of the expression EXPR as a table in the\nProB Table view (like Show Value as Table in the State view)" },
+				{ "graph", ":graph EXPR",
+						"show the value of the expression EXPR as a graph in the\nProB Graph view (like Show Value as Graph in the State view)" },
 				{ "prefs", ":prefs [TEXT]",
 						"ProB's preferences (only those whose name contains\nTEXT), with the default value if it was changed" },
 				{ "SOLVER", ":SOLVER PRED",
@@ -993,6 +1061,8 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 				names.add(":clear");
 				names.add(":type");
 				names.add(":state");
+				names.add(":table");
+				names.add(":graph");
 				names.add(":prefs");
 				names.addAll(Arrays.asList(ConsoleEvaluator.solverCommands()
 						.split(", ")));

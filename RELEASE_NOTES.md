@@ -10,6 +10,7 @@ A new view for evaluating formulas in the current state of the animation. Open i
 - **Commands:**
   - `:type F`: the type of a formula and of its free identifiers
   - `:state`: the current state's values, status and enabled events
+  - `:table EXPR` / `:graph EXPR`: show the value of EXPR in the ProB Table or ProB Graph view, like "Show Value as Table/Graph" in the State view. The view is opened if necessary, and the console keeps the focus.
   - `:prefs [TEXT]`: ProB's preferences, with their defaults if changed
   - `:clear` clears the output, and `:x` closes the console
   - `:help [COMMAND]` or the ? button shows the help
