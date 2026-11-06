@@ -12,6 +12,7 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 
 import de.prob.logging.Logger;
+import de.prob.ui.ticket.NonModalNotification;
 import de.prob.ui.ticket.ProBLogListener;
 
 public class ProbUiPlugin extends AbstractUIPlugin {
@@ -62,6 +63,7 @@ public class ProbUiPlugin extends AbstractUIPlugin {
 		super.start(context);
 		this.context = context;
 		Logger.addListener(new ProBLogListener());
+		Logger.setNonModalNotifier(new NonModalNotification());
 	}
 
 	public static ProbUiPlugin getDefault() {

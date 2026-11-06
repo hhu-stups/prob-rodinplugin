@@ -99,6 +99,7 @@ A new option in the Double Click Behaviour menu. A double-click on an event pick
 - **Model checking:** the progress dialog and its cancel button now stay responsive during model checking.
 - **probcli crashes:** ProB restarts probcli automatically after a crash, instead of requiring a Rodin restart.
 - **Error reporting:** errors inside ProB commands are no longer swallowed.
+- **Incomplete proof information:** when proof information is skipped because of an issue with the Rodin database ("Translation incomplete ... try Project -> Clean..."), loading a model now shows one notice for the whole model instead of one modal dialog per machine and context. The notice appears at the bottom right of the window without blocking work. It says how many proof obligations were skipped, lists them per machine or context under "Show details", and closes itself after 15 seconds unless the mouse is over it. Such a proof obligation is now skipped completely, instead of being passed to ProB with only some of its sources.
 - **ProB Tcl/Tk and ProB2-UI:** starting them gives clearer messages, including the program's last output when it exits with an error.
 - **Preferences:** ProB's read-only version preferences are no longer stored or sent to probcli, which removes six error log entries on every model load.
 - **State view:** in the right-click menu of a section title (Variables, Constants, Formulas, ...), the entries for values, such as "Show item in history", are disabled. Opening the ProB Console, Graph and Table stays possible.

@@ -246,11 +246,7 @@ public class ModelTranslator extends AbstractComponentTranslator {
 			bugs.add(e.getLocalizedMessage());
 		}
 
-		if (!bugs.isEmpty()) {
-			String message = "Translation incomplete due to an issue with the Rodin database (try Project -> Clean...). This does not affect correctness of the Animation/Model Checking but can decrease its performance. Skipped discharged information about: "
-					+ String.join(",", bugs);
-			Logger.notifyUser(message);
-		}
+		skippedProofInfo(machine.getComponentName(), bugs);
 
 	}
 

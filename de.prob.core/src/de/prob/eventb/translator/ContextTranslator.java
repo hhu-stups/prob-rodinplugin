@@ -71,7 +71,6 @@ import de.prob.core.translator.TranslationFailedException;
 import de.prob.eventb.translator.internal.EProofStatus;
 import de.prob.eventb.translator.internal.ProofObligation;
 import de.prob.eventb.translator.internal.SequentSource;
-import de.prob.logging.Logger;
 
 public final class ContextTranslator extends AbstractComponentTranslator {
 
@@ -227,11 +226,7 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 			bugs.add(e.getLocalizedMessage());
 		}
 
-		if (!bugs.isEmpty()) {
-			String message = "Translation incomplete due to a an issue with the Rodin database (try Project -> Clean...). This does not affect correctness of the Animation/Model Checking but can decrease its performance. Skipped discharged information about: "
-					+ String.join(",", bugs);
-			Logger.notifyUser(message);
-		}
+		skippedProofInfo(origin.getComponentName(), bugs);
 
 	}
 

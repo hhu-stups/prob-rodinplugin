@@ -122,6 +122,38 @@ public final class Logger {
 		log(status);
 	}
 
+	/** shows notices without interrupting the user, e.g. in a small popup */
+	public interface NonModalNotifier {
+		/**
+		 * @param message
+		 *            a short summary
+		 * @param details
+		 *            more information, e.g. a list of elements, or
+		 *            <code>null</code>
+		 */
+		void notify(String message, String details);
+	}
+
+	private static volatile NonModalNotifier nonModalNotifier;
+
+	/** called by the UI plug-in, which shows the notices */
+	public static void setNonModalNotifier(final NonModalNotifier notifier) {
+		nonModalNotifier = notifier;
+	}
+
+	/**
+	 * Tells the user about a problem that needs no immediate action, without
+	 * a modal dialog: it is shown by the UI's notifier (if there is one) and
+	 * written to the log as information, so it opens no error dialog.
+	 */
+	public static void notifyUserNonModal(final String message,
+			final String details) {
+		info(details == null ? message : message + "\n" + details);
+		final NonModalNotifier notifier = nonModalNotifier;
+		if (notifier != null)
+			notifier.notify(message, details);
+	}
+
 	public static void info(final String message) {
 		final IStatus status = new Status(IStatus.INFO, Activator.PLUGIN_ID,
 				IStatus.OK, message, null);

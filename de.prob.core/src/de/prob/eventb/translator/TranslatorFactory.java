@@ -34,6 +34,7 @@ public class TranslatorFactory {
 	public static void translate(final IEventBRoot root,
 			final IPrologTermOutput pto) throws TranslationFailedException {
 		final String componentName = root.getComponentName();
+		AbstractComponentTranslator.beginTranslation();
 		try {
 			if (root instanceof IMachineRoot) {
 				final ISCMachineRoot scRoot = ((IMachineRoot) root)
@@ -52,6 +53,8 @@ public class TranslatorFactory {
 		} catch (RuntimeException e) {
 			throw new TranslationFailedException(componentName,
 					"A runtime exception occurred: " + e.getMessage(), e);
+		} finally {
+			AbstractComponentTranslator.endTranslation(componentName);
 		}
 	}
 
