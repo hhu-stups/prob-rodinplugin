@@ -1653,6 +1653,29 @@
                </with>
             </visibleWhen>
          </command>
+         <menu
+               id="de.prob.ui.explorer.copyTraceMenu"
+               label="Copy Trace To">
+            <visibleWhen>
+               <with
+                     variable="selection">
+                  <and>
+                     <count
+                           value="1">
+                     </count>
+                     <iterate>
+                        <instanceof
+                              value="de.prob.ui.explorer.TraceNode">
+                        </instanceof>
+                     </iterate>
+                  </and>
+               </with>
+            </visibleWhen>
+            <dynamic
+                  class="de.prob.ui.explorer.CopyTraceMenu"
+                  id="de.prob.ui.explorer.copyTraceItems">
+            </dynamic>
+         </menu>
          <command
                commandId="de.prob.ui.explorer.renameTrace"
                label="Rename Trace..."

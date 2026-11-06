@@ -92,6 +92,21 @@ public final class TraceFiles {
 		return result;
 	}
 
+	/**
+	 * @return ModelName_Nr.prob2trace in the model's folder, with the first
+	 *         unused number
+	 */
+	public static IFile nextFreeFile(final IEventBRoot root) {
+		final IFolder folder = folder(root);
+		for (int n = 1;; n++) {
+			final IFile file = folder.getFile(root.getComponentName() + "_" + n
+					+ SaveTraceHandler.EXTENSION);
+			// also files not yet known to the workspace
+			if (!file.exists() && !file.getLocation().toFile().exists())
+				return file;
+		}
+	}
+
 	/** @return the file's name without the .prob2trace extension, e.g. M1_2 */
 	public static String displayName(final IFile file) {
 		final String name = file.getName();

@@ -191,6 +191,16 @@ public final class TraceStatus {
 		}
 	}
 
+	/** removes the stored status of a trace, e.g. of a copy */
+	public static void clear(final IFile file) {
+		try {
+			for (QualifiedName key : KEYS)
+				file.setPersistentProperty(key, null);
+		} catch (CoreException e) {
+			// its fingerprint does not match the target model anyway
+		}
+	}
+
 	/** whether a trace's status was still valid before an edit */
 	public static final class Kept {
 		final IEventBRoot root;

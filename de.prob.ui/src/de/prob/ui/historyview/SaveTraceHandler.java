@@ -75,7 +75,7 @@ public class SaveTraceHandler extends AbstractHandler {
 		try {
 			if (!folder.exists())
 				folder.create(true, true, null);
-			file = nextFreeFile(folder, root.getComponentName());
+			file = TraceFiles.nextFreeFile(root);
 		} catch (CoreException e) {
 			MessageDialog.openError(shell, TITLE, "Could not create the folder "
 					+ folder.getFullPath() + ": " + e.getMessage());
@@ -141,7 +141,7 @@ public class SaveTraceHandler extends AbstractHandler {
 	 * Shows the new trace in the Event-B Explorer, below the "Traces" node of
 	 * its model, without taking the focus from the History view
 	 */
-	private static void revealInExplorer(final IWorkbenchWindow window,
+	public static void revealInExplorer(final IWorkbenchWindow window,
 			final IEventBRoot root, final IFile file) {
 		if (window == null || window.getActivePage() == null)
 			return;
@@ -154,16 +154,6 @@ public class SaveTraceHandler extends AbstractHandler {
 								new TracesNode(root), file)));
 		} catch (PartInitException e) {
 			// the Explorer is not available; the trace is saved anyway
-		}
-	}
-
-	/** @return ModelName_Nr.prob2trace with the first unused number */
-	private static IFile nextFreeFile(final IFolder folder, final String model) {
-		for (int n = 1;; n++) {
-			final IFile file = folder.getFile(model + "_" + n + EXTENSION);
-			// also files not yet known to the workspace
-			if (!file.exists() && !file.getLocation().toFile().exists())
-				return file;
 		}
 	}
 
