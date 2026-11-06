@@ -14,6 +14,7 @@ import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.StructuredViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Tree;
 import org.eventb.core.IEventBRoot;
 
 import de.prob.ui.historyview.SaveTraceHandler;
@@ -89,6 +90,8 @@ public class TracesContentProvider implements ITreeContentProvider,
 			final Object newInput) {
 		this.viewer = viewer instanceof StructuredViewer ? (StructuredViewer) viewer
 				: null;
+		if (viewer != null && viewer.getControl() instanceof Tree)
+			TraceToolTip.install((Tree) viewer.getControl());
 	}
 
 	@Override

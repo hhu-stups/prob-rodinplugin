@@ -44,6 +44,27 @@ public final class TraceFiles {
 
 	private static final Map<IFile, CachedName> CACHE = new ConcurrentHashMap<IFile, CachedName>();
 
+	/** length and description of a trace file, e.g. for its hover */
+	public static final class Summary {
+		final long stamp;
+		/** the number of steps, or -1 if the file could not be read */
+		public final int steps;
+		/** the description, or <code>null</code> */
+		public final String description;
+		/** why the file could not be read, or <code>null</code> */
+		public final String error;
+
+		Summary(final long stamp, final int steps, final String description,
+				final String error) {
+			this.stamp = stamp;
+			this.steps = steps;
+			this.description = description;
+			this.error = error;
+		}
+	}
+
+	private static final Map<IFile, Summary> SUMMARIES = new ConcurrentHashMap<IFile, Summary>();
+
 	private TraceFiles() {
 	}
 
@@ -103,6 +124,34 @@ public final class TraceFiles {
 		}
 		CACHE.put(file, new CachedName(stamp, modelName));
 		return modelName;
+	}
+
+	/** @return the number of steps and description of a trace file */
+	public static Summary summary(final IFile file) {
+		final long stamp = file.getModificationStamp();
+		final Summary cached = SUMMARIES.get(file);
+		if (cached != null && cached.stamp == stamp)
+			return cached;
+		Summary summary;
+		try {
+			if (file.getLocation() == null)
+				throw new IOException("not a local file");
+			final Object json = SimpleJson.parse(new String(Files
+					.readAllBytes(file.getLocation().toFile().toPath()),
+					StandardCharsets.UTF_8));
+			if (!(json instanceof Map))
+				throw new IllegalArgumentException("not a JSON object");
+			final Object steps = ((Map<?, ?>) json).get("transitionList");
+			final Object description = ((Map<?, ?>) json).get("description");
+			summary = new Summary(stamp, steps instanceof List ? ((List<?>) steps)
+					.size() : 0, description instanceof String
+					&& !((String) description).isEmpty() ? (String) description
+					: null, null);
+		} catch (IOException | RuntimeException e) {
+			summary = new Summary(stamp, -1, null, e.getMessage());
+		}
+		SUMMARIES.put(file, summary);
+		return summary;
 	}
 
 	/** M1_2 before M1_10 */

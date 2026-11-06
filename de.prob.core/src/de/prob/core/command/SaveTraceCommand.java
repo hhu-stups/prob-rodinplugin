@@ -26,10 +26,12 @@ import de.prob.prolog.term.PrologTerm;
  */
 public final class SaveTraceCommand implements IComposableCommand {
 
-	private static final String DESCRIPTION = "File created by ProB for Rodin";
+	/** used if no description is given */
+	public static final String DEFAULT_DESCRIPTION = "File created by ProB for Rodin";
 
 	private final List<Long> transitionIds;
 	private final String modelFile;
+	private final String description;
 	private final File file;
 
 	/**
@@ -38,11 +40,16 @@ public final class SaveTraceCommand implements IComposableCommand {
 	 * @param modelFile
 	 *            the model's file, stored in the trace file's metadata (ProB
 	 *            does not know it: the plug-in sends the model itself)
+	 * @param description
+	 *            the trace's description, or <code>null</code> or empty for
+	 *            {@link #DEFAULT_DESCRIPTION}
 	 */
 	public SaveTraceCommand(final List<Long> transitionIds,
-			final String modelFile, final File file) {
+			final String modelFile, final String description, final File file) {
 		this.transitionIds = transitionIds;
 		this.modelFile = modelFile;
+		this.description = description == null || description.trim().isEmpty() ? DEFAULT_DESCRIPTION
+				: description.trim();
 		this.file = file;
 	}
 
@@ -52,9 +59,11 @@ public final class SaveTraceCommand implements IComposableCommand {
 	 * ProB's error messages, see {@link Animator#executeQuietly}.
 	 */
 	public static void saveCurrentTrace(final Animator animator,
-			final String modelFile, final File file) throws ProBException {
+			final String modelFile, final String description, final File file)
+			throws ProBException {
 		animator.executeQuietly(new SaveTraceCommand(
-				currentTransitionIds(animator.getHistory()), modelFile, file));
+				currentTransitionIds(animator.getHistory()), modelFile,
+				description, file));
 	}
 
 	/** @return the transitions from the root to the current state */
@@ -82,7 +91,7 @@ public final class SaveTraceCommand implements IComposableCommand {
 		pto.closeList();
 		pto.printAtom("json");
 		pto.openList();
-		pto.openTerm("=").printAtom("description").printAtom(DESCRIPTION)
+		pto.openTerm("=").printAtom("description").printAtom(description)
 				.closeTerm();
 		pto.openTerm("=").printAtom("model_file").printAtom(modelFile)
 				.closeTerm();

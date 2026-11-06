@@ -13,7 +13,9 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.IStatusLineManager;
+import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.jface.viewers.StructuredSelection;
@@ -39,8 +41,9 @@ import de.prob.ui.explorer.TracesNode;
 
 /**
  * Saves the trace from the root to the current state as a ProB2 JSON trace
- * file in the folder "traces" of the animated model's project, named
- * ModelName_Nr.prob2trace with the first unused number.
+ * file in the animated model's folder (see {@link TraceFiles}), named
+ * ModelName_Nr.prob2trace with the first unused number. The user is asked
+ * for a description of the trace first.
  */
 public class SaveTraceHandler extends AbstractHandler {
 
@@ -62,6 +65,12 @@ public class SaveTraceHandler extends AbstractHandler {
 		}
 		final IEventBRoot root = ((EventBAnimatorPart) ldp).getRoot();
 		final IFolder folder = TraceFiles.folder(root);
+		final InputDialog ask = new InputDialog(shell, TITLE,
+				"Description of the trace (optional), shown when hovering over it in the Event-B Explorer:",
+				"", null);
+		if (ask.open() != Window.OK)
+			return null;
+		final String description = ask.getValue();
 		final IFile file;
 		try {
 			if (!folder.exists())
@@ -86,7 +95,7 @@ public class SaveTraceHandler extends AbstractHandler {
 				String error = null;
 				try {
 					SaveTraceCommand.saveCurrentTrace(animator, modelFile,
-							file.getLocation().toFile());
+							description, file.getLocation().toFile());
 				} catch (ProBException e) {
 					error = "ProB could not save the trace to "
 							+ file.getFullPath() + ":\n\n" + e.getMessage();
