@@ -191,6 +191,42 @@ public final class TraceStatus {
 		}
 	}
 
+	/** whether a trace's status was still valid before an edit */
+	public static final class Kept {
+		final IEventBRoot root;
+		final boolean valid;
+
+		Kept(final IEventBRoot root, final boolean valid) {
+			this.root = root;
+			this.valid = valid;
+		}
+	}
+
+	/**
+	 * To be called before an edit of the trace file that does not change its
+	 * steps (e.g. of its description), see {@link #keepAfterEdit}.
+	 */
+	public static Kept beforeEdit(final IFile file, final IEventBRoot root) {
+		return new Kept(root, get(file, root) != Status.UNKNOWN);
+	}
+
+	/**
+	 * keeps the status of the trace after such an edit, if it was valid
+	 * before, by storing the fingerprint of the edited file
+	 */
+	public static void keepAfterEdit(final IFile file, final Kept kept) {
+		if (!kept.valid || !file.exists())
+			return;
+		try {
+			file.setPersistentProperty(FINGERPRINT,
+					fingerprint(file, kept.root));
+		} catch (CoreException e) {
+			return; // the status is unknown then
+		}
+		for (Runnable listener : LISTENERS)
+			listener.run();
+	}
+
 	/**
 	 * @return a hash over the contents of the trace file, the model's file
 	 *         and the files of the models it depends on

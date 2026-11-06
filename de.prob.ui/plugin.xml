@@ -323,6 +323,11 @@
             name="Edit Trace">
       </command>
       <command
+            description="Change the description of the trace selected in the Event-B Explorer"
+            id="de.prob.ui.explorer.editTraceDescription"
+            name="Edit Trace Description">
+      </command>
+      <command
             description="Rename the trace selected in the Event-B Explorer"
             id="de.prob.ui.explorer.renameTrace"
             name="Rename Trace">
@@ -770,6 +775,25 @@
       <handler
             class="de.prob.ui.explorer.EditTraceHandler"
             commandId="de.prob.ui.explorer.editTrace">
+         <enabledWhen>
+            <with
+                  variable="activeMenuSelection">
+               <and>
+                  <count
+                        value="1">
+                  </count>
+                  <iterate>
+                     <instanceof
+                           value="de.prob.ui.explorer.TraceNode">
+                     </instanceof>
+                  </iterate>
+               </and>
+            </with>
+         </enabledWhen>
+      </handler>
+      <handler
+            class="de.prob.ui.explorer.EditTraceDescriptionHandler"
+            commandId="de.prob.ui.explorer.editTraceDescription">
          <enabledWhen>
             <with
                   variable="activeMenuSelection">
@@ -1592,6 +1616,26 @@
          <command
                commandId="de.prob.ui.explorer.editTrace"
                label="Edit Trace"
+               style="push">
+            <visibleWhen>
+               <with
+                     variable="selection">
+                  <and>
+                     <count
+                           value="1">
+                     </count>
+                     <iterate>
+                        <instanceof
+                              value="de.prob.ui.explorer.TraceNode">
+                        </instanceof>
+                     </iterate>
+                  </and>
+               </with>
+            </visibleWhen>
+         </command>
+         <command
+               commandId="de.prob.ui.explorer.editTraceDescription"
+               label="Edit Description..."
                style="push">
             <visibleWhen>
                <with
