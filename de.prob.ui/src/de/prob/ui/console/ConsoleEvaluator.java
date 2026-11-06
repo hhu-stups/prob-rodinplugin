@@ -10,12 +10,16 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.eclipse.core.runtime.Platform;
+import org.osgi.framework.Bundle;
+
 import de.prob.core.Animator;
 import de.prob.core.ILifecycleListener;
 import de.prob.core.LanguageDependendAnimationPart;
 import de.prob.core.command.CbcSolveCommand;
 import de.prob.core.command.GetCurrentPreferencesCommand;
 import de.prob.core.command.GetPreferencesCommand;
+import de.prob.core.command.GetVersionCommand;
 import de.prob.core.command.EvaluationGetValuesCommand;
 import de.prob.core.command.EvaluationGetValuesCommand.EvaluationResult;
 import de.prob.core.command.EvaluationInsertFormulaCommand;
@@ -129,6 +133,8 @@ public class ConsoleEvaluator implements ILifecycleListener {
 	public Result evaluate(final String input) throws ProBException {
 		final String formula = input.trim();
 		final Animator animator = Animator.getAnimator();
+		if (commandArgument(formula, "version") != null)
+			return describeVersion(animator);
 		if (!animator.isMachineLoaded())
 			return new Result(Kind.NOT_AVAILABLE, "No model is being animated.");
 		final String typeArgument = commandArgument(formula, "type");
@@ -252,6 +258,45 @@ public class ConsoleEvaluator implements ILifecycleListener {
 	}
 
 	/**
+	 * ":version": the versions of probcli (if it is running, i.e. a model is
+	 * loaded), of the plug-ins, of Rodin's Event-B core and of Java
+	 */
+	private static Result describeVersion(final Animator animator)
+			throws ProBException {
+		final StringBuilder sb = new StringBuilder();
+		if (animator.isMachineLoaded()) {
+			final GetVersionCommand version = GetVersionCommand
+					.getVersion(animator);
+			sb.append("ProB (probcli) ").append(version.getVersion());
+			sb.append("\n  Revision:     ").append(version.getRevision());
+			sb.append("\n  Last changed: ").append(version.getLastChanged());
+			sb.append("\n  Prolog:       ").append(version.getProlog());
+		} else {
+			sb.append("ProB (probcli): start an animation to see its version");
+		}
+		sb.append("\nPlug-ins");
+		bundleVersion(sb, "de.prob.core", "ProB core");
+		bundleVersion(sb, "de.prob.ui", "ProB UI");
+		bundleVersion(sb, "org.eventb.core", "Rodin Event-B core");
+		sb.append("\nJava ").append(System.getProperty("java.version"))
+				.append(" (").append(System.getProperty("java.vendor"))
+				.append(')');
+		return new Result(Kind.VALUE, sb.toString());
+	}
+
+	private static void bundleVersion(final StringBuilder sb,
+			final String bundleId, final String name) {
+		final Bundle bundle = Platform.getBundle(bundleId);
+		if (bundle == null)
+			return;
+		final String label = "  " + name + ":";
+		sb.append("\n").append(label);
+		for (int i = label.length(); i < 24; i++)
+			sb.append(' ');
+		sb.append(bundle.getVersion());
+	}
+
+	/**
 	 * ":prefs [TEXT]": the current values of ProB's preferences, only those
 	 * whose name contains TEXT (ignoring case) if given
 	 */
@@ -321,7 +366,7 @@ public class ConsoleEvaluator implements ILifecycleListener {
 		final String solver = SOLVERS.get(name.toLowerCase(Locale.ROOT));
 		if (solver == null)
 			return new Result(Kind.ERROR, "Unknown command :" + name
-					+ ", available: :help, :x, :clear, :type, :state, :table, :graph, :prefs, "
+					+ ", available: :help, :x, :clear, :type, :state, :table, :graph, :prefs, :version, "
 					+ solverCommands());
 		final String formula = command.substring(end).trim();
 		if (formula.isEmpty())

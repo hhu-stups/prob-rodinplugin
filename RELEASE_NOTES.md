@@ -12,6 +12,7 @@ A new view for evaluating formulas in the current state of the animation. Open i
   - `:state`: the current state's values, status and enabled events
   - `:table EXPR` / `:graph EXPR`: show the value of EXPR in the ProB Table or ProB Graph view, like "Show Value as Table/Graph" in the State view. The view is opened if necessary, and the console keeps the focus.
   - `:prefs [TEXT]`: ProB's preferences, with their defaults if changed
+  - `:version`: the versions of ProB (probcli, with its Git revision, last change date and Prolog version), of the ProB plug-ins, of Rodin's Event-B core and of Java. probcli's version needs a running animation.
   - `:clear` clears the output, and `:x` closes the console
   - `:help [COMMAND]` or the ? button shows the help
 - **Editing:**
@@ -100,7 +101,10 @@ A new option in the Double Click Behaviour menu. A double-click on an event pick
 - **Model checking:** the progress dialog and its cancel button now stay responsive during model checking.
 - **probcli crashes:** ProB restarts probcli automatically after a crash, instead of requiring a Rodin restart.
 - **Error reporting:** errors inside ProB commands are no longer swallowed.
-- **Incomplete proof information:** when proof information is skipped because of an issue with the Rodin database ("Translation incomplete ... try Project -> Clean..."), loading a model now shows one notice for the whole model instead of one modal dialog per machine and context. The notice appears at the bottom right of the window without blocking work. It says how many proof obligations were skipped, lists them per machine or context under "Show details", and closes itself after 15 seconds unless the mouse is over it. Such a proof obligation is now skipped completely, instead of being passed to ProB with only some of its sources. A machine or context without a proof status file (`.bps`), e.g. while Rodin has not built the project yet or with Build Automatically switched off, is no longer reported as a database issue. The same notice says that no proof information is used for it and lists the missing files, with a hint to build the project. If both problems occur in one load, they share one notice.
+- **Proof information notices:** problems with the proof information of a model no longer open one modal dialog per machine and context when the model is loaded. Instead, one notice for the whole model appears at the bottom right of the window without blocking work. "Show details" lists the affected machines and contexts, and the notice closes itself after 15 seconds unless the mouse is over it. If both problems below occur in one load, they share one notice.
+  - **Missing proof status files:** a machine or context without a `.bps` file, e.g. while Rodin has not built the project yet or with Build Automatically switched off, is no longer reported as a Rodin database issue. The notice says that no proof information is used for it, with a hint to build the project.
+  - **Database issues:** when proof obligations refer to model elements that no longer exist ("Translation incomplete ... try Project -> Clean..."), the notice says how many were skipped. Such a proof obligation is now skipped completely, instead of being passed to ProB with only some of its sources.
+  - **Effect:** in both cases, animation and model checking remain correct, but can be slower.
 - **ProB Tcl/Tk and ProB2-UI:** starting them gives clearer messages, including the program's last output when it exits with an error.
 - **Preferences:** ProB's read-only version preferences are no longer stored or sent to probcli, which removes six error log entries on every model load.
 - **State view:** in the right-click menu of a section title (Variables, Constants, Formulas, ...), the entries for values, such as "Show item in history", are disabled. Opening the ProB Console, Graph and Table stays possible.

@@ -790,6 +790,8 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 						"show the value of the expression EXPR as a graph in the\nProB Graph view (like Show Value as Graph in the State view)" },
 				{ "prefs", ":prefs [TEXT]",
 						"ProB's preferences (only those whose name contains\nTEXT), with the default value if it was changed" },
+				{ "version", ":version",
+						"the versions of ProB (probcli), of the plug-ins,\nof Rodin's Event-B core and of Java" },
 				{ "SOLVER", ":SOLVER PRED",
 						"solve PRED (or an expression) with another solver, also\nwithout free identifiers; SOLVER is one of\n"
 								+ ConsoleEvaluator.solverCommands()
@@ -1064,6 +1066,7 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 				names.add(":table");
 				names.add(":graph");
 				names.add(":prefs");
+				names.add(":version");
 				names.addAll(Arrays.asList(ConsoleEvaluator.solverCommands()
 						.split(", ")));
 				for (String command : names) {
@@ -1071,6 +1074,7 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 					// a solver command is followed by the predicate
 					final String space = name.equals("help")
 							|| name.equals("x") || name.equals("state")
+							|| name.equals("version")
 							|| name.equals("clear") ? ""
 							: " ";
 					if (name.startsWith(prefix))
