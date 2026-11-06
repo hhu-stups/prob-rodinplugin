@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eventb.core.IPSRoot;
 import org.eventb.core.ISCExpressionElement;
 import org.eventb.core.ISCIdentifierElement;
 import org.eventb.core.ISCPredicateElement;
@@ -38,10 +39,21 @@ import de.prob.eventb.translator.internal.TranslationVisitor;
 public abstract class AbstractComponentTranslator {
 
 	/**
-	 * the proof obligations skipped during the current translation (see
-	 * {@link TranslatorFactory}), by component, reported once at its end
+	 * the problems with proof information found during the current
+	 * translation (see {@link TranslatorFactory}), reported once at its end
 	 */
-	private static final ThreadLocal<Map<String, List<String>>> SKIPPED_PROOF_INFO = new ThreadLocal<Map<String, List<String>>>();
+	private static final class ProofInfoProblems {
+		/** skipped proof obligations, by component */
+		final Map<String, List<String>> skipped = new LinkedHashMap<String, List<String>>();
+		/** the proof status files that do not exist, by component */
+		final Map<String, String> missing = new LinkedHashMap<String, String>();
+
+		boolean isEmpty() {
+			return skipped.isEmpty() && missing.isEmpty();
+		}
+	}
+
+	private static final ThreadLocal<ProofInfoProblems> PROBLEMS = new ThreadLocal<ProofInfoProblems>();
 
 	/**
 	 * Records that the discharged information of proof obligations of a
@@ -53,51 +65,106 @@ public abstract class AbstractComponentTranslator {
 			final List<String> proofObligations) {
 		if (proofObligations.isEmpty())
 			return;
-		final Map<String, List<String>> skipped = SKIPPED_PROOF_INFO.get();
-		if (skipped == null) {
-			final Map<String, List<String>> single = new LinkedHashMap<String, List<String>>();
-			single.put(component, proofObligations);
-			reportSkippedProofInfo(component, single);
-			return;
-		}
-		List<String> list = skipped.get(component);
+		final ProofInfoProblems problems = problems();
+		List<String> list = problems.skipped.get(component);
 		if (list == null) {
 			list = new ArrayList<String>();
-			skipped.put(component, list);
+			problems.skipped.put(component, list);
 		}
 		list.addAll(proofObligations);
+		reportUnlessCollecting(component, problems);
 	}
 
-	/** starts collecting skipped proof information, see {@link #endTranslation} */
+	/**
+	 * @return whether the component has a proof status file. It has none
+	 *         e.g. while Rodin has not built the project, or with automatic
+	 *         building switched off; then there is no proof information to
+	 *         use. This is not an inconsistency, but the user is told, as
+	 *         ProB may be slower.
+	 */
+	protected static boolean hasProofStatus(final IPSRoot proofStatus,
+			final String component) {
+		if (proofStatus.getRodinFile().exists())
+			return true;
+		final ProofInfoProblems problems = problems();
+		problems.missing.put(component, proofStatus.getRodinFile()
+				.getElementName());
+		reportUnlessCollecting(component, problems);
+		return false;
+	}
+
+	/** @return the current translation's problems, or new ones */
+	private static ProofInfoProblems problems() {
+		final ProofInfoProblems problems = PROBLEMS.get();
+		return problems != null ? problems : new ProofInfoProblems();
+	}
+
+	private static void reportUnlessCollecting(final String component,
+			final ProofInfoProblems problems) {
+		if (PROBLEMS.get() != problems)
+			report(component, problems);
+	}
+
+	/** starts collecting problems with proof information, see {@link #endTranslation} */
 	static void beginTranslation() {
-		SKIPPED_PROOF_INFO.set(new LinkedHashMap<String, List<String>>());
+		PROBLEMS.set(new ProofInfoProblems());
 	}
 
-	/** tells the user once, without a modal dialog, what was skipped */
+	/** tells the user once, without a modal dialog, about the problems */
 	static void endTranslation(final String model) {
-		final Map<String, List<String>> skipped = SKIPPED_PROOF_INFO.get();
-		SKIPPED_PROOF_INFO.remove();
-		if (skipped != null && !skipped.isEmpty())
-			reportSkippedProofInfo(model, skipped);
+		final ProofInfoProblems problems = PROBLEMS.get();
+		PROBLEMS.remove();
+		if (problems != null && !problems.isEmpty())
+			report(model, problems);
 	}
 
-	private static void reportSkippedProofInfo(final String model,
-			final Map<String, List<String>> skipped) {
-		int count = 0;
-		final StringBuilder details = new StringBuilder(
-				"Skipped discharged information about:");
-		for (Map.Entry<String, List<String>> entry : skipped.entrySet()) {
-			count += entry.getValue().size();
-			details.append("\n").append(entry.getKey()).append(": ")
-					.append(String.join(", ", entry.getValue()));
+	/**
+	 * one notice for both kinds of problems, as a new notice replaces the
+	 * shown one
+	 */
+	private static void report(final String model,
+			final ProofInfoProblems problems) {
+		final StringBuilder message = new StringBuilder();
+		final StringBuilder details = new StringBuilder();
+		if (!problems.missing.isEmpty()) {
+			final List<String> names = new ArrayList<String>(
+					problems.missing.keySet());
+			final boolean one = names.size() == 1;
+			message.append("No proof information is used for ")
+					.append(String.join(", ", names))
+					.append(one ? ": its proof status file (.bps) does not exist."
+							: ": their proof status files (.bps) do not exist.")
+					.append(" Rodin creates ").append(one ? "it" : "them")
+					.append(" when building the project (is Project -> Build Automatically on?).");
+			details.append("Missing proof status files:");
+			for (Map.Entry<String, String> entry : problems.missing
+					.entrySet())
+				details.append("\n").append(entry.getKey()).append(": ")
+						.append(entry.getValue());
 		}
-		Logger.notifyUserNonModal("Translation of " + model
-				+ " is incomplete due to an issue with the Rodin database"
-				+ " (try Project -> Clean...): the proof information of "
-				+ count + (count == 1 ? " proof obligation" : " proof obligations")
-				+ " was skipped. This does not affect the correctness of"
-				+ " animation and model checking, but can decrease their"
-				+ " performance.", details.toString());
+		if (!problems.skipped.isEmpty()) {
+			int count = 0;
+			if (details.length() > 0)
+				details.append("\n\n");
+			details.append("Skipped discharged information about:");
+			for (Map.Entry<String, List<String>> entry : problems.skipped
+					.entrySet()) {
+				count += entry.getValue().size();
+				details.append("\n").append(entry.getKey()).append(": ")
+						.append(String.join(", ", entry.getValue()));
+			}
+			if (message.length() > 0)
+				message.append("\n\n");
+			message.append("Translation of ").append(model)
+					.append(" is incomplete due to an issue with the Rodin database")
+					.append(" (try Project -> Clean...): the proof information of ")
+					.append(count)
+					.append(count == 1 ? " proof obligation" : " proof obligations")
+					.append(" was skipped.");
+		}
+		message.append("\n\nThis does not affect the correctness of animation")
+				.append(" and model checking, but can decrease their performance.");
+		Logger.notifyUserNonModal(message.toString(), details.toString());
 	}
 
 	protected final Map<Node, IInternalElement> labelMapping = new ConcurrentHashMap<Node, IInternalElement>();

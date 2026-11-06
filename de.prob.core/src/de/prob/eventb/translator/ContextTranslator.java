@@ -186,6 +186,8 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 
 		try {
 			IPSRoot proofStatus = origin.getPSRoot();
+			if (!hasProofStatus(proofStatus, origin.getComponentName()))
+				return;
 			IPSStatus[] statuses = proofStatus.getStatuses();
 
 			nextStatus: for (IPSStatus status : statuses) {

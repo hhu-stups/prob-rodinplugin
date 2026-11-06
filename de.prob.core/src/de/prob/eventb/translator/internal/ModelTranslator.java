@@ -184,6 +184,8 @@ public class ModelTranslator extends AbstractComponentTranslator {
 		List<String> bugs = new LinkedList<String>();
 		try {
 			IPSRoot proofStatus = machine.getPSRoot();
+			if (!hasProofStatus(proofStatus, machine.getComponentName()))
+				return;
 			IPSStatus[] statuses = proofStatus.getStatuses();
 
 			nextStatus: for (IPSStatus status : statuses) {
