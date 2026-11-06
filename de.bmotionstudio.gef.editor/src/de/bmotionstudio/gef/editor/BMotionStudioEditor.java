@@ -9,6 +9,8 @@ package de.bmotionstudio.gef.editor;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.WeakHashMap;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -25,9 +27,11 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IFileEditorInput;
+import org.eclipse.ui.IPartListener2;
 import org.eclipse.ui.IPerspectiveDescriptor;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchPartReference;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
@@ -153,11 +157,54 @@ public class BMotionStudioEditor extends MultiPageEditorPart implements
 	@Override
 	public void dispose() {
 		unregister();
+		disposed = true;
 		final IWorkbenchPage page = getSite() != null ? getSite().getPage()
 				: null;
 		super.dispose();
 		if (page != null)
 			closePerspectivesLater(page);
+	}
+
+	/** whether the editor was closed, see {@link #isOpen} */
+	private volatile boolean disposed;
+
+	/** the closed visualisations, see {@link #isOpen} */
+	private static final Map<IWorkbenchPartReference, Boolean> CLOSED = new WeakHashMap<IWorkbenchPartReference, Boolean>();
+
+	/** the pages whose closing of visualisations is listened to */
+	private static final Map<IWorkbenchPage, Boolean> LISTENED_PAGES = new WeakHashMap<IWorkbenchPage, Boolean>();
+
+	/**
+	 * Listens to the closing of visualisations in the page, besides
+	 * {@link #dispose}: e.g. "Close Others" on an editor tab only hides the
+	 * other editors, which may be disposed later.
+	 */
+	private static void listenToClosing(final IWorkbenchPage page) {
+		if (LISTENED_PAGES.put(page, Boolean.TRUE) != null)
+			return;
+		page.addPartListener(new IPartListener2() {
+			@Override
+			public void partClosed(final IWorkbenchPartReference partRef) {
+				if (ID.equals(partRef.getId())) {
+					CLOSED.put(partRef, Boolean.TRUE);
+					closePerspectivesLater(page);
+				}
+			}
+		});
+	}
+
+	/**
+	 * @return whether the editor reference is a visualisation that is still
+	 *         open: the page may still list closed ones for a while
+	 */
+	private static boolean isOpen(final IEditorReference editor) {
+		if (!ID.equals(editor.getId()) || CLOSED.containsKey(editor))
+			return false;
+		// null if not created yet, e.g. a visualisation restored at startup
+		// whose tab was not selected yet
+		final IEditorPart part = editor.getEditor(false);
+		return !(part instanceof BMotionStudioEditor
+				&& ((BMotionStudioEditor) part).disposed);
 	}
 
 	/**
@@ -180,7 +227,7 @@ public class BMotionStudioEditor extends MultiPageEditorPart implements
 						|| page.getWorkbenchWindow().getShell().isDisposed())
 					return;
 				for (IEditorReference editor : page.getEditorReferences())
-					if (ID.equals(editor.getId()))
+					if (isOpen(editor))
 						return; // a visualisation is still open
 				final IPerspectiveDescriptor active = page.getPerspective();
 				IPerspectiveDescriptor closeLast = null;
@@ -223,6 +270,7 @@ public class BMotionStudioEditor extends MultiPageEditorPart implements
 			throws PartInitException {
 
 		super.init(iSite, iInput);
+		listenToClosing(iSite.getPage());
 
 		IFile file = ((IFileEditorInput) iInput).getFile();
 

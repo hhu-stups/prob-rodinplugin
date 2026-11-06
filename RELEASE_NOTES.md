@@ -109,6 +109,7 @@ A new option in the Double Click Behaviour menu. A double-click on an event pick
   - **Effect:** in both cases, animation and model checking remain correct, but can be slower.
 - **ProB Tcl/Tk and ProB2-UI:** starting them gives clearer messages, including the program's last output when it exits with an error.
 - **Preferences:** ProB's read-only version preferences are no longer stored or sent to probcli, which removes six error log entries on every model load.
+- **BMotion Studio perspectives:** the BMS Edit and BMS Run icons no longer stay in the perspective bar (top right) after use. Closing the last visualisation, including with "Close Others" or "Close All" on editor tabs, also closes these two perspectives. If one of them was shown, Eclipse switches back to the previously used perspective. They reappear when a visualisation is started, and are kept when Rodin is closed with a visualisation open.
 - **State view:** in the right-click menu of a section title (Variables, Constants, Formulas, ...), the entries for values, such as "Show item in history", are disabled. Opening the ProB Console, Graph and Table stays possible.
 
 ## Bug fixes
