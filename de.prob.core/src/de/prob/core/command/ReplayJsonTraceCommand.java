@@ -123,7 +123,8 @@ public final class ReplayJsonTraceCommand implements IComposableCommand {
 			if (op == null) {
 				final List<String> all = new ArrayList<String>(messages);
 				all.add("Transition " + id + " of step " + (replayed + 1)
-						+ " is not enabled in state " + state.getId() + ".");
+						+ (state == null ? " cannot be replayed: there is no current state."
+								: " is not enabled in state " + state.getId() + "."));
 				messages = all;
 				break;
 			}

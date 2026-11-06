@@ -9,6 +9,7 @@ import org.eclipse.swt.graphics.Image;
 
 import de.prob.core.Animator;
 import de.prob.core.domainobjects.Operation;
+import de.prob.core.domainobjects.State;
 import de.prob.ui.ProbUiPlugin;
 
 /**
@@ -44,8 +45,11 @@ class OperationsLabelProvider extends LabelProvider implements
 		if (columnIndex == 0) {
 			if (element instanceof String) {
 
-				boolean timeout = Animator.getAnimator().getCurrentState()
-						.isTimeoutOp((String) element);
+				// no current state e.g. while a trace replay rebuilds the
+				// history
+				final State state = Animator.getAnimator().getCurrentState();
+				final boolean timeout = state != null
+						&& state.isTimeoutOp((String) element);
 
 				if (timeout)
 					return imgTimeout;
