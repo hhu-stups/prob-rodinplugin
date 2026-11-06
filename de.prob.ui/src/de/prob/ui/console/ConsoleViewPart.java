@@ -784,6 +784,8 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 						"the type of the predicate or expression F, and the\ninferred types of its free identifiers" },
 				{ "state", ":state",
 						"the current state: values, status, enabled events" },
+				{ "states", ":states",
+						"statistics about the state space explored so far:\nnumber of states and transitions, states by kind\n(e.g. deadlocked, invariant violated), transitions per event" },
 				{ "table", ":table EXPR",
 						"show the value of the expression EXPR as a table in the\nProB Table view (like Show Value as Table in the State view)" },
 				{ "graph", ":graph EXPR",
@@ -1063,6 +1065,7 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 				names.add(":clear");
 				names.add(":type");
 				names.add(":state");
+				names.add(":states");
 				names.add(":table");
 				names.add(":graph");
 				names.add(":prefs");
@@ -1074,6 +1077,7 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 					// a solver command is followed by the predicate
 					final String space = name.equals("help")
 							|| name.equals("x") || name.equals("state")
+							|| name.equals("states")
 							|| name.equals("version")
 							|| name.equals("clear") ? ""
 							: " ";

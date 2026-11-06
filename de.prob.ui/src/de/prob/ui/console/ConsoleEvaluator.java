@@ -1,8 +1,10 @@
 package de.prob.ui.console;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -17,6 +19,8 @@ import de.prob.core.Animator;
 import de.prob.core.ILifecycleListener;
 import de.prob.core.LanguageDependendAnimationPart;
 import de.prob.core.command.CbcSolveCommand;
+import de.prob.core.command.ComputeCoverageCommand;
+import de.prob.core.command.ComputeCoverageCommand.ComputeCoverageResult;
 import de.prob.core.command.GetCurrentPreferencesCommand;
 import de.prob.core.command.GetPreferencesCommand;
 import de.prob.core.command.GetVersionCommand;
@@ -140,6 +144,8 @@ public class ConsoleEvaluator implements ILifecycleListener {
 		final String typeArgument = commandArgument(formula, "type");
 		if (typeArgument != null)
 			return describeType(animator, typeArgument);
+		if (commandArgument(formula, "states") != null)
+			return describeStateSpace(animator);
 		final String prefsArgument = commandArgument(formula, "prefs");
 		if (prefsArgument != null)
 			return describePreferences(animator, prefsArgument);
@@ -258,6 +264,77 @@ public class ConsoleEvaluator implements ILifecycleListener {
 	}
 
 	/**
+	 * ":states": statistics about the state space explored so far (as in
+	 * the Coverage table): its states and transitions, the states by kind
+	 * and the transitions by event
+	 */
+	private static Result describeStateSpace(final Animator animator)
+			throws ProBException {
+		final ComputeCoverageResult coverage = ComputeCoverageCommand
+				.getCoverage(animator);
+		final StringBuilder sb = new StringBuilder("State space: ")
+				.append(coverage.getTotalNumberOfNodes()).append(" state(s), ")
+				.append(coverage.getTotalNumberOfTransitions())
+				.append(" transition(s)");
+		final Map<String, String> states = counts(coverage.getNodes());
+		// the total is already in the first line
+		states.remove("total");
+		appendCounts(sb, "States", states);
+		appendCounts(sb, "Transitions per event", counts(coverage.getOps()));
+		final List<String> uncovered = new ArrayList<String>();
+		for (String event : coverage.getUncovered())
+			uncovered.add(eventName(event));
+		sb.append("\nEvents not yet executed: ").append(
+				uncovered.isEmpty() ? "none" : String.join(", ", uncovered));
+		return new Result(Kind.VALUE, sb.toString());
+	}
+
+	/** @return the entries "name:number" of ProB's coverage, by name */
+	private static Map<String, String> counts(final List<String> entries) {
+		final Map<String, String> counts = new LinkedHashMap<String, String>();
+		for (String entry : entries) {
+			final int colon = entry.lastIndexOf(':');
+			if (colon > 0)
+				counts.put(eventName(entry.substring(0, colon)),
+						entry.substring(colon + 1));
+			else
+				counts.put(entry, "?");
+		}
+		return counts;
+	}
+
+	private static void appendCounts(final StringBuilder sb,
+			final String title, final Map<String, String> counts) {
+		if (counts.isEmpty())
+			return;
+		int width = 0;
+		for (String name : counts.keySet())
+			width = Math.max(width, name.length());
+		sb.append("\n").append(title).append(':');
+		for (Map.Entry<String, String> entry : counts.entrySet()) {
+			sb.append("\n  ").append(entry.getKey()).append(':');
+			for (int i = entry.getKey().length(); i <= width; i++)
+				sb.append(' ');
+			sb.append(entry.getValue());
+		}
+	}
+
+	/**
+	 * @return the name of an event as in Rodin, e.g. INITIALISATION for
+	 *         ProB's $initialise_machine; other names (such as the kinds of
+	 *         states, e.g. invariant_violated) are readable as they are
+	 */
+	private static String eventName(final String name) {
+		if (name.equals("$initialise_machine"))
+			return "INITIALISATION";
+		if (name.equals("$setup_constants"))
+			return "SETUP_CONTEXT";
+		if (name.equals("$partial_setup_constants"))
+			return "PARTIAL_SETUP_CONTEXT";
+		return name;
+	}
+
+	/**
 	 * ":version": the versions of probcli (if it is running, i.e. a model is
 	 * loaded), of the plug-ins, of Rodin's Event-B core and of Java
 	 */
@@ -366,7 +443,7 @@ public class ConsoleEvaluator implements ILifecycleListener {
 		final String solver = SOLVERS.get(name.toLowerCase(Locale.ROOT));
 		if (solver == null)
 			return new Result(Kind.ERROR, "Unknown command :" + name
-					+ ", available: :help, :x, :clear, :type, :state, :table, :graph, :prefs, :version, "
+					+ ", available: :help, :x, :clear, :type, :state, :table, :graph, :states, :prefs, :version, "
 					+ solverCommands());
 		final String formula = command.substring(end).trim();
 		if (formula.isEmpty())
