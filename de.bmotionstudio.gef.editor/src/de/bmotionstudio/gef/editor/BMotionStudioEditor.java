@@ -22,8 +22,10 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IFileEditorInput;
+import org.eclipse.ui.IPerspectiveDescriptor;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
@@ -49,6 +51,10 @@ public class BMotionStudioEditor extends MultiPageEditorPart implements
 		ILifecycleListener {
 
 	public static final String ID = "de.bmotionstudio.gef.editor.BMotionStudioEditor";
+
+	public static final String PERSPECTIVE_RUN = "de.bmotionstudio.perspective.run";
+
+	public static final String PERSPECTIVE_EDIT = "de.bmotionstudio.perspective.edit";
 
 	private BMotionStudioEditorPage editPage;
 
@@ -147,7 +153,58 @@ public class BMotionStudioEditor extends MultiPageEditorPart implements
 	@Override
 	public void dispose() {
 		unregister();
+		final IWorkbenchPage page = getSite() != null ? getSite().getPage()
+				: null;
 		super.dispose();
+		if (page != null)
+			closePerspectivesLater(page);
+	}
+
+	/**
+	 * Closes the BMS Edit and BMS Run perspectives, which removes their icons
+	 * from the perspective bar, once no visualisation is open in the page any
+	 * more. Not when the workbench closes, so that they are restored with
+	 * the visualisations at the next start.
+	 */
+	private static void closePerspectivesLater(final IWorkbenchPage page) {
+		final IWorkbench workbench = PlatformUI.getWorkbench();
+		if (workbench.isClosing())
+			return;
+		// after the editor was removed from the page, and only once when
+		// several visualisations are closed together
+		Display.getDefault().asyncExec(new Runnable() {
+			@Override
+			public void run() {
+				if (workbench.isClosing() || page.getWorkbenchWindow() == null
+						|| page.getWorkbenchWindow().getShell() == null
+						|| page.getWorkbenchWindow().getShell().isDisposed())
+					return;
+				for (IEditorReference editor : page.getEditorReferences())
+					if (ID.equals(editor.getId()))
+						return; // a visualisation is still open
+				final IPerspectiveDescriptor active = page.getPerspective();
+				IPerspectiveDescriptor closeLast = null;
+				for (IPerspectiveDescriptor perspective : page
+						.getOpenPerspectives()) {
+					if (!isBMotionPerspective(perspective))
+						continue;
+					if (perspective.equals(active))
+						closeLast = perspective;
+					else
+						page.closePerspective(perspective, false, false);
+				}
+				// Eclipse then switches to the previously used perspective,
+				// unless there is none
+				if (closeLast != null && page.getOpenPerspectives().length > 1)
+					page.closePerspective(closeLast, false, false);
+			}
+		});
+	}
+
+	private static boolean isBMotionPerspective(
+			final IPerspectiveDescriptor perspective) {
+		return PERSPECTIVE_RUN.equals(perspective.getId())
+				|| PERSPECTIVE_EDIT.equals(perspective.getId());
 	}
 
 	public Visualization getVisualization() {
@@ -262,8 +319,7 @@ public class BMotionStudioEditor extends MultiPageEditorPart implements
 		super.pageChange(newPageIndex);
 		String newPageString = getPageText(newPageIndex);
 		final String perspective = newPageString.equals("Run")
-				? "de.bmotionstudio.perspective.run"
-				: "de.bmotionstudio.perspective.edit";
+				? PERSPECTIVE_RUN : PERSPECTIVE_EDIT;
 		// Not immediately: pageChange is also called while the editor is
 		// created, e.g. when Rodin restores it at startup in the middle of
 		// creating the workbench window. Switching the perspective then left

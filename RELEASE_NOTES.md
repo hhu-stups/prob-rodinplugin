@@ -128,6 +128,7 @@ A new option in the Double Click Behaviour menu. A double-click on an event pick
   - fixed the id of the extended-timeout tactic
 - **Trace replay and caching:**
   - fixed a null-pointer exception in trace replay
+  - replaying a trace (e.g. by double-clicking it in the Event-B Explorer) no longer sometimes shows "An error has occurred": the Operations view could redraw while the replay had reset the history, when there was no current state yet
   - fixed user notifications when loading traces
   - fixed a stale evaluation cache
 - **BMotion Studio:**
