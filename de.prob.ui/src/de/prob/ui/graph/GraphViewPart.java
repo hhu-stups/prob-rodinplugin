@@ -45,6 +45,7 @@ import org.eclipse.ui.part.ViewPart;
 
 import de.prob.core.Animator;
 import de.prob.core.IAnimationListener;
+import de.prob.core.LanguageDependendAnimationPart;
 import de.prob.core.ILifecycleListener;
 import de.prob.core.PrologException;
 import de.prob.core.command.CallDotCommand;
@@ -55,6 +56,7 @@ import de.prob.core.command.GetCommandsCommand.CommandInfo;
 import de.prob.core.command.GetCurrentPreferencesCommand;
 import de.prob.core.domainobjects.Operation;
 import de.prob.core.domainobjects.State;
+import de.prob.core.langdep.EventBAnimatorPart;
 import de.prob.exceptions.ProBException;
 import de.prob.parserbase.ProBParseException;
 import de.prob.prolog.term.PrologTerm;
@@ -346,12 +348,34 @@ public class GraphViewPart extends ViewPart implements ILifecycleListener,
 		}
 	}
 
-	/** @return the title without characters that are not allowed in files */
+	/**
+	 * @return a file name (without extension) for saving: the animated
+	 *         model's name and the title, without characters that are not
+	 *         allowed in files, e.g. M1_Value_as_Graph_for_x
+	 */
 	public static String fileName(final String title) {
-		final String name = title.replaceAll("[\\\\/:*?\"<>|\\s]+", "_")
+		String name = sanitize(title);
+		if (name.length() > 60)
+			name = name.substring(0, 60);
+		final String model = sanitize(modelName());
+		if (model.isEmpty())
+			return name.isEmpty() ? "graph" : name;
+		return name.isEmpty() ? model : model + "_" + name;
+	}
+
+	private static String sanitize(final String text) {
+		return text.replaceAll("[\\\\/:*?\"<>|\\s]+", "_")
 				.replaceAll("_+$", "").replaceAll("^_+", "");
-		return name.isEmpty() ? "graph"
-				: name.length() > 60 ? name.substring(0, 60) : name;
+	}
+
+	/** @return the name of the animated machine or context, or "" */
+	private static String modelName() {
+		final Animator animator = Animator.getAnimator();
+		final LanguageDependendAnimationPart ldp = animator
+				.getLanguageDependendPart();
+		if (animator.isMachineLoaded() && ldp instanceof EventBAnimatorPart)
+			return ((EventBAnimatorPart) ldp).getRoot().getComponentName();
+		return "";
 	}
 
 	private void execute(final String script) {
