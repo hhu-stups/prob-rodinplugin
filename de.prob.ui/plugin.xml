@@ -293,7 +293,7 @@
             id="de.prob.ui.history.showParametersState" />
       </command>
       <command
-            description="Save the trace to the current state as a ProB2 JSON trace file in the project's traces folder"
+            description="Save the trace to the current state as a ProB2 JSON trace file in the model's folder"
             id="de.prob.ui.history.saveTrace"
             name="Save Trace">
       </command>
@@ -1335,12 +1335,15 @@
                label="Show Parameters"
                style="toggle">
          </command>
+         <!-- the button saves the trace; its drop-down menu offers the
+              same as "Save Trace for Replay" -->
          <command
                commandId="de.prob.ui.history.saveTrace"
                icon="platform:/plugin/org.eclipse.ui/icons/full/etool16/save_edit.png"
+               id="de.prob.ui.history.saveTraceMenu"
                label="Save Trace"
-               style="push"
-               tooltip="Save the trace to the current state as ModelName_Nr.prob2trace in the project's traces folder">
+               style="pulldown"
+               tooltip="Save the trace to the current state as ModelName_Nr.prob2trace in the model's folder">
          </command>
          <!-- the button chooses a trace file; its drop-down menu also
               lists the saved traces of the animated model -->
@@ -1351,6 +1354,15 @@
                label="Replay Trace"
                style="pulldown"
                tooltip="Replay a saved trace (.prob2trace)">
+         </command>
+      </menuContribution>
+      <menuContribution
+            locationURI="menu:de.prob.ui.history.saveTraceMenu">
+         <command
+               commandId="de.prob.ui.history.saveTrace"
+               label="Save Trace for Replay"
+               style="push"
+               tooltip="Save the trace to the current state as ModelName_Nr.prob2trace in the model's folder, for replay with ProB">
          </command>
       </menuContribution>
       <menuContribution
