@@ -98,7 +98,11 @@ public class TableViewPart extends ViewPart implements ILifecycleListener,
 			Arrays.asList("visb_info"));
 	// commands of ProB that are not offered (yet); edit to show them
 	private static final Set<String> HIDDEN_COMMANDS = new HashSet<String>(
-			Arrays.asList("mcdc_coverage", "mcdc_inv_coverage"));
+			Arrays.asList(
+			        "mcdc_coverage", "mcdc_inv_coverage", // yields WD errors when run; needs to be improved
+					"prob_external_fun_profile_info", // not very useful in Rodin at the moment (except in Theory plugin)
+					 "prob_cache_info" // cache can currently not be activated in Rodin
+					 ));
 
 	private static final String COMPLETION_HINT = "Tab or Ctrl+Space in the expression field completes identifiers.";
 
