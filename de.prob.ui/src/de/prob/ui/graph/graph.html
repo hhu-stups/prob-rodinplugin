@@ -8,7 +8,7 @@
   #viewport { width: 100%; height: 100%; cursor: grab; }
   #viewport.dragging { cursor: grabbing; }
   #content { transform-origin: 0 0; display: inline-block; }
-  g.node.clickable { cursor: pointer; }
+  g.node.clickable { cursor: pointer; -webkit-user-select: none; user-select: none; }
   g.node.clickable:hover polygon, g.node.clickable:hover ellipse,
   g.node.clickable:hover path { stroke-width: 3; }
 </style>
@@ -74,20 +74,60 @@
     viewport.classList.remove('dragging');
   });
 
-  // double-click on a state: ask the plug-in to go there; GraphViz writes the
-  // name of a node (the state id) into its <title>
+  // the machine or context a node stands for, or null: ProB gives the nodes
+  // of e.g. the machine hierarchy internal names (dot_node_N), but their
+  // tooltip is e.g. "MACHINE M0" and their label shows the name
+  var models = %MODELS%;
+  function modelOf(node, id) {
+    if (models.length === 0) return null;
+    var candidates = [id];
+    var links = node.querySelectorAll('a');
+    for (var j = 0; j < links.length; j++) {
+      var tip = links[j].getAttributeNS('http://www.w3.org/1999/xlink', 'title')
+        || links[j].getAttribute('xlink:title') || links[j].getAttribute('title') || '';
+      var words = tip.trim().split(/\s+/);
+      candidates.push(words[words.length - 1]);
+    }
+    var texts = node.querySelectorAll('text');
+    for (var k = 0; k < texts.length; k++)
+      candidates.push(texts[k].textContent.trim());
+    for (var c = 0; c < candidates.length; c++)
+      if (models.indexOf(candidates[c]) >= 0) return candidates[c];
+    return null;
+  }
+
+  // double-click on a state: ask the plug-in to go there (GraphViz writes
+  // the name of a node, the state id, into its <title>); on a machine or
+  // context: ask it to open it in its editor
   var nodes = content.querySelectorAll('g.node');
   for (var i = 0; i < nodes.length; i++) {
     var title = nodes[i].querySelector('title');
     var id = title ? title.textContent.trim() : '';
-    if (%CLICKABLE% && /^(root|-?\d+)$/.test(id)) {
+    var open = null, target = id;
+    var model = modelOf(nodes[i], id);
+    if (%CLICKABLE% && /^(root|-?\d+)$/.test(id))
+      open = function (stateId) {
+        if (window.probGotoState) window.probGotoState(stateId);
+      };
+    else if (model !== null) {
+      target = model;
+      open = function (name) {
+        if (window.probOpenModel) window.probOpenModel(name);
+      };
+    }
+    if (open) {
       nodes[i].classList.add('clickable');
-      (function (stateId) {
+      // a double-click would otherwise select the node's text
+      nodes[i].addEventListener('mousedown', function (e) {
+        if (e.detail > 1) e.preventDefault();
+      });
+      (function (open, target) {
         nodes[i].addEventListener('dblclick', function (e) {
           e.stopPropagation();
-          if (window.probGotoState) window.probGotoState(stateId);
+          e.preventDefault();
+          open(target);
         });
-      })(id);
+      })(open, target);
     }
   }
 

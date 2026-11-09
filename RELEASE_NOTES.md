@@ -10,6 +10,7 @@ A new view for evaluating formulas in the current state of the animation. Open i
 - **Commands:**
   - `:type F`: the type of a formula and of its free identifiers
   - `:state`: the current state's values, status and enabled events
+  - `:states`: statistics about the state space explored so far, e.g. after model checking: the number of states and transitions, the states by kind (e.g. open, live, deadlocked, invariant violated), the transitions per event, and the events not executed yet. It needs a running animation, but no current state.
   - `:table EXPR` / `:graph EXPR`: show the value of EXPR in the ProB Table or ProB Graph view, like "Show Value as Table/Graph" in the State view. The view is opened if necessary, and the console keeps the focus.
   - `:prefs [TEXT]`: ProB's preferences, with their defaults if changed
   - `:version`: the versions of ProB (probcli, with its Git revision, last change date and Prolog version), of the ProB plug-ins, of Rodin's Event-B core and of Java. probcli's version needs a running animation.
@@ -38,6 +39,7 @@ A new view that shows the graphs ProB can compute. Open it from the State view's
   - the event enable and dependence graphs
   - the variable read/write graph
 - **Going to a state:** in graphs of states (e.g. State Space), double-click a state to make it the current state, reached by the shortest trace from the root.
+- **Opening a model:** in the Machine Hierarchy graph, double-click a machine or context to open it in its default editor (e.g. Rodin's Event-B editor).
 - **From the State view:** the right-click menu of a variable or formula has two new entries. "Show Value as Graph" draws its value, e.g. a relation, as a graph. "Project State Space onto Value" merges the states that have the same value.
 - **Graphs for a formula:** graphs whose names end in "…" use the expression or predicate in the field above the graph, e.g. State Space Expression Projection… (states merged by the value of an expression), Expression as Graph… and Formula Tree…. Enter recomputes the graph. The field translates ASCII to symbols and completes identifiers with Tab or Ctrl+Space.
 - **Navigation:** the mouse wheel zooms and dragging moves the graph. The + / − / Fit buttons zoom in, zoom out, or fit the whole graph into the view.
@@ -58,7 +60,7 @@ A new view that shows the tables ProB can compute, e.g. machine statistics, oper
 - **Save Table As...:** a toolbar button saves the shown table, in its current sort order, as comma-separated values (`.csv`, e.g. for a spreadsheet) or as text with aligned columns (`.txt`). The format follows the file's extension, or the file type chosen in the dialog. The proposed file name is the model's name followed by the table's title, e.g. `M1_Machine_Statistics.csv`. Files are written in UTF-8, so mathematical symbols are kept.
 - **Refresh** recomputes the table in the current state, e.g. after animating or model checking. Computations run in the background, and the red Stop button interrupts them.
 - **Errors** while computing a table are shown in the view instead of in a dialog: a red summary in the status line, and ProB's error messages as the rows of the table, where they can be copied.
-- **Not yet offered:** the VisB and MC/DC tables.
+- **Not offered:** the VisB and MC/DC tables, and ProB's internal profiling tables (external function profile, cache info).
 
 ### Start animation from the editors
 - **Camille:** a ProB toolbar button, and "Start Animation / Model Checking" in the right-click menu of the Camille text editor.

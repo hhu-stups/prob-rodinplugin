@@ -17,6 +17,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -40,8 +42,15 @@ import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.ISharedImages;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.part.ViewPart;
+import org.eventb.core.IContextRoot;
+import org.eventb.core.IEventBRoot;
+import org.eventb.core.IMachineRoot;
+import org.rodinp.core.IRodinProject;
+import org.rodinp.core.RodinDBException;
 
 import de.prob.core.Animator;
 import de.prob.core.IAnimationListener;
@@ -112,6 +121,13 @@ public class GraphViewPart extends ViewPart implements ILifecycleListener,
 			Arrays.asList("state_space", "state_space_sfdp", "current_state",
 					"history"));
 
+	/**
+	 * ProB's graphs whose nodes are named after the machines and contexts
+	 * of the model: a double-click on one opens it in its editor
+	 */
+	private static final Set<String> MODEL_GRAPHS = new HashSet<String>(
+			Arrays.asList("machine_hierarchy"));
+
 	/** ProB's command for the value of an expression as a graph */
 	public static final String EXPRESSION_GRAPH = "expr_as_graph";
 	/** ProB's command for the state space projected onto an expression */
@@ -176,6 +192,14 @@ public class GraphViewPart extends ViewPart implements ILifecycleListener,
 			public Object function(final Object[] arguments) {
 				if (arguments.length == 1 && arguments[0] instanceof String)
 					gotoState((String) arguments[0]);
+				return null;
+			}
+		};
+		new BrowserFunction(browser, "probOpenModel") {
+			@Override
+			public Object function(final Object[] arguments) {
+				if (arguments.length == 1 && arguments[0] instanceof String)
+					openModel((String) arguments[0]);
 				return null;
 			}
 		};
@@ -503,6 +527,8 @@ public class GraphViewPart extends ViewPart implements ILifecycleListener,
 			runningJob.cancel();
 		final String stateId = currentStateId(animator);
 		final boolean clickable = STATE_GRAPHS.contains(command.getCommand());
+		final String models = MODEL_GRAPHS.contains(command.getCommand()) ? modelNamesAsJson()
+				: "[]";
 		final String shownTitle = title;
 		showMessage("ProB is computing " + title
 				+ " ...\nThe red Stop button interrupts it.");
@@ -535,7 +561,7 @@ public class GraphViewPart extends ViewPart implements ILifecycleListener,
 				}
 				if (monitor.isCanceled())
 					return Status.CANCEL_STATUS;
-				show(this, content, graph, clickable);
+				show(this, content, graph, clickable, models);
 				return Status.OK_STATUS;
 			}
 
@@ -731,7 +757,8 @@ public class GraphViewPart extends ViewPart implements ILifecycleListener,
 	}
 
 	private void show(final Job job, final String content,
-			final Graph graph, final boolean statesClickable) {
+			final Graph graph, final boolean statesClickable,
+			final String models) {
 		final Display display = Display.getDefault();
 		if (display.isDisposed())
 			return;
@@ -745,12 +772,86 @@ public class GraphViewPart extends ViewPart implements ILifecycleListener,
 				else
 					return; // a newer graph is being computed
 				if (graph != null) {
-					browser.setText(template.replace("%CLICKABLE%",
-							Boolean.toString(statesClickable)).replace(
-							"%CONTENT%", content));
+					browser.setText(template
+							.replace("%CLICKABLE%",
+									Boolean.toString(statesClickable))
+							.replace("%MODELS%", models)
+							.replace("%CONTENT%", content));
 					setShownGraph(graph);
 				} else
 					showError(content);
+			}
+		});
+	}
+
+	/**
+	 * @return the names of the machines and contexts of the animated
+	 *         model's project as a JavaScript array, e.g. ["M0","C0"]
+	 */
+	private static String modelNamesAsJson() {
+		final StringBuilder json = new StringBuilder("[");
+		for (IEventBRoot model : projectModels()) {
+			if (json.length() > 1)
+				json.append(',');
+			json.append('"');
+			for (char c : model.getComponentName().toCharArray())
+				// also no "</script>" in the page
+				if (c == '"' || c == '\\' || c == '<' || c == '>' || c < ' ')
+					json.append(String.format("\\u%04x", (int) c));
+				else
+					json.append(c);
+			json.append('"');
+		}
+		return json.append(']').toString();
+	}
+
+	/** @return the machines and contexts of the animated model's project */
+	private static List<IEventBRoot> projectModels() {
+		final List<IEventBRoot> models = new ArrayList<IEventBRoot>();
+		final Animator animator = Animator.getAnimator();
+		final LanguageDependendAnimationPart ldp = animator
+				.getLanguageDependendPart();
+		if (!animator.isMachineLoaded() || !(ldp instanceof EventBAnimatorPart))
+			return models;
+		final IRodinProject project = ((EventBAnimatorPart) ldp).getRoot()
+				.getRodinProject();
+		try {
+			models.addAll(Arrays.asList(project
+					.getRootElementsOfType(IMachineRoot.ELEMENT_TYPE)));
+			models.addAll(Arrays.asList(project
+					.getRootElementsOfType(IContextRoot.ELEMENT_TYPE)));
+		} catch (RodinDBException e) {
+			// no node can be opened then
+		}
+		return models;
+	}
+
+	/**
+	 * opens the machine or context of the animated model's project with this
+	 * name in its default editor (e.g. Rodin's Event-B editor)
+	 */
+	private void openModel(final String name) {
+		// after the browser's event, so that it is not blocked meanwhile
+		browser.getDisplay().asyncExec(new Runnable() {
+			@Override
+			public void run() {
+				for (IEventBRoot model : projectModels()) {
+					if (!model.getComponentName().equals(name))
+						continue;
+					final IResource resource = model.getRodinFile()
+							.getResource();
+					if (!(resource instanceof IFile) || !resource.exists())
+						continue;
+					try {
+						IDE.openEditor(getSite().getPage(), (IFile) resource,
+								true);
+					} catch (PartInitException e) {
+						MessageDialog.openError(getSite().getShell(),
+								"ProB Graph", "Could not open " + name + ": "
+										+ e.getMessage());
+					}
+					return;
+				}
 			}
 		});
 	}
@@ -800,7 +901,7 @@ public class GraphViewPart extends ViewPart implements ILifecycleListener,
 		} catch (IOException e) {
 			// use the minimal page below
 		}
-		return "<html><body>%CONTENT%<script>var x=%CLICKABLE%;</script></body></html>";
+		return "<html><body>%CONTENT%<script>var x=%CLICKABLE%, m=%MODELS%;</script></body></html>";
 	}
 
 	/** a new model: the graph shown belongs to the old one */
