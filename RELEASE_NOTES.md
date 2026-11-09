@@ -39,7 +39,7 @@ A new view that shows the graphs ProB can compute. Open it from the State view's
   - the event enable and dependence graphs
   - the variable read/write graph
 - **Going to a state:** in graphs of states (e.g. State Space), double-click a state to make it the current state, reached by the shortest trace from the root.
-- **Opening a model:** in the Machine Hierarchy graph, double-click a machine or context to open it in its default editor (e.g. Rodin's Event-B editor).
+- **Opening a model:** in the Machine Hierarchy graph, double-click a machine or context to open it in its default editor (e.g. Rodin's Event-B editor). In the Event Hierarchy graph, double-click the box of a machine to open that machine, or an event to open its machine with the event selected. This works in Rodin's Event-B editor and in text editors such as Camille (where the event's declaration `event NAME` is selected); other editors just open the machine.
 - **From the State view:** the right-click menu of a variable or formula has two new entries. "Show Value as Graph" draws its value, e.g. a relation, as a graph. "Project State Space onto Value" merges the states that have the same value.
 - **Graphs for a formula:** graphs whose names end in "…" use the expression or predicate in the field above the graph, e.g. State Space Expression Projection… (states merged by the value of an expression), Expression as Graph… and Formula Tree…. Enter recomputes the graph. The field translates ASCII to symbols and completes identifiers with Tab or Ctrl+Space.
 - **Navigation:** the mouse wheel zooms and dragging moves the graph. The + / − / Fit buttons zoom in, zoom out, or fit the whole graph into the view.

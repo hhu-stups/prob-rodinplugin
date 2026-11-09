@@ -10,7 +10,9 @@
   #content { transform-origin: 0 0; display: inline-block; }
   g.node.clickable { cursor: pointer; -webkit-user-select: none; user-select: none; }
   g.node.clickable:hover polygon, g.node.clickable:hover ellipse,
-  g.node.clickable:hover path { stroke-width: 3; }
+  g.node.clickable:hover path, g.cluster.clickable:hover polygon,
+  g.cluster.clickable:hover path { stroke-width: 3; }
+  g.cluster.clickable { cursor: pointer; -webkit-user-select: none; user-select: none; }
 </style>
 </head>
 <body>
@@ -74,18 +76,42 @@
     viewport.classList.remove('dragging');
   });
 
-  // the machine or context a node stands for, or null: ProB gives the nodes
-  // of e.g. the machine hierarchy internal names (dot_node_N), but their
-  // tooltip is e.g. "MACHINE M0" and their label shows the name
+  // the machine or context a node or cluster stands for, or null: ProB
+  // gives the nodes internal names (dot_node_N), but the first line of
+  // their tooltip ends with the machine's name, e.g. "MACHINE M0" in the
+  // machine hierarchy, "Event inc in M1" and "machine M1" (a cluster) in
+  // the event hierarchy; the label of a machine shows its name
   var models = %MODELS%;
-  function modelOf(node, id) {
-    if (models.length === 0) return null;
-    var candidates = [id];
+
+  // the first lines of the tooltips of a node or cluster
+  function tooltips(node) {
+    var result = [];
     var links = node.querySelectorAll('a');
     for (var j = 0; j < links.length; j++) {
       var tip = links[j].getAttributeNS('http://www.w3.org/1999/xlink', 'title')
         || links[j].getAttribute('xlink:title') || links[j].getAttribute('title') || '';
-      var words = tip.trim().split(/\s+/);
+      result.push(tip.trim().split(/\r?\n|\\n/)[0].trim());
+    }
+    return result;
+  }
+
+  // the event an event hierarchy node stands for ("Event inc in M1"), or null
+  function eventOf(node) {
+    var tips = tooltips(node);
+    for (var j = 0; j < tips.length; j++) {
+      var words = tips[j].split(/\s+/);
+      if (words.length >= 4 && words[0] === 'Event' && words[words.length - 2] === 'in')
+        return words.slice(1, words.length - 2).join(' ');
+    }
+    return null;
+  }
+
+  function modelOf(node, id) {
+    if (models.length === 0) return null;
+    var candidates = [id];
+    var tips = tooltips(node);
+    for (var j = 0; j < tips.length; j++) {
+      var words = tips[j].split(/\s+/);
       candidates.push(words[words.length - 1]);
     }
     var texts = node.querySelectorAll('text');
@@ -98,12 +124,13 @@
 
   // double-click on a state: ask the plug-in to go there (GraphViz writes
   // the name of a node, the state id, into its <title>); on a machine or
-  // context: ask it to open it in its editor
-  var nodes = content.querySelectorAll('g.node');
+  // context: ask it to open it in its editor, and on an event also to select
+  // the event there
+  var nodes = content.querySelectorAll('g.node, g.cluster');
   for (var i = 0; i < nodes.length; i++) {
     var title = nodes[i].querySelector('title');
     var id = title ? title.textContent.trim() : '';
-    var open = null, target = id;
+    var open = null, target = id, event = null;
     var model = modelOf(nodes[i], id);
     if (%CLICKABLE% && /^(root|-?\d+)$/.test(id))
       open = function (stateId) {
@@ -111,8 +138,11 @@
       };
     else if (model !== null) {
       target = model;
-      open = function (name) {
-        if (window.probOpenModel) window.probOpenModel(name);
+      event = eventOf(nodes[i]);
+      open = function (name, event) {
+        if (window.probOpenModel)
+          if (event !== null) window.probOpenModel(name, event);
+          else window.probOpenModel(name);
       };
     }
     if (open) {
@@ -121,13 +151,13 @@
       nodes[i].addEventListener('mousedown', function (e) {
         if (e.detail > 1) e.preventDefault();
       });
-      (function (open, target) {
+      (function (open, target, event) {
         nodes[i].addEventListener('dblclick', function (e) {
           e.stopPropagation();
           e.preventDefault();
-          open(target);
+          open(target, event);
         });
-      })(open, target);
+      })(open, target, event);
     }
   }
 

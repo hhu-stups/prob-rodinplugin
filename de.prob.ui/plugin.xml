@@ -2019,4 +2019,18 @@
          </includes>
       </viewerContentBinding>
    </extension>
+   <extension
+         id="gotoElement"
+         name="ProB: go to element"
+         point="org.eclipse.core.resources.markers">
+      <!-- created by the Graph view only to select an event in Rodin's
+           editor (which only understands Rodin's problem markers), and
+           deleted at once -->
+      <super
+            type="org.rodinp.core.problem">
+      </super>
+      <persistent
+            value="false">
+      </persistent>
+   </extension>
 </plugin>

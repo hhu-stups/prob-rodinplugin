@@ -41,6 +41,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
@@ -122,11 +123,12 @@ public class GraphViewPart extends ViewPart implements ILifecycleListener,
 					"history"));
 
 	/**
-	 * ProB's graphs whose nodes are named after the machines and contexts
-	 * of the model: a double-click on one opens it in its editor
+	 * ProB's graphs whose nodes (or clusters) stand for the machines and
+	 * contexts of the model, or for their events: a double-click on one
+	 * opens the machine or context in its editor
 	 */
 	private static final Set<String> MODEL_GRAPHS = new HashSet<String>(
-			Arrays.asList("machine_hierarchy"));
+			Arrays.asList("machine_hierarchy", "event_hierarchy"));
 
 	/** ProB's command for the value of an expression as a graph */
 	public static final String EXPRESSION_GRAPH = "expr_as_graph";
@@ -198,8 +200,12 @@ public class GraphViewPart extends ViewPart implements ILifecycleListener,
 		new BrowserFunction(browser, "probOpenModel") {
 			@Override
 			public Object function(final Object[] arguments) {
-				if (arguments.length == 1 && arguments[0] instanceof String)
-					openModel((String) arguments[0]);
+				// the machine or context, and optionally an event of it
+				if (arguments.length >= 1 && arguments[0] instanceof String)
+					openModel((String) arguments[0],
+							arguments.length >= 2
+									&& arguments[1] instanceof String ? (String) arguments[1]
+									: null);
 				return null;
 			}
 		};
@@ -828,9 +834,10 @@ public class GraphViewPart extends ViewPart implements ILifecycleListener,
 
 	/**
 	 * opens the machine or context of the animated model's project with this
-	 * name in its default editor (e.g. Rodin's Event-B editor)
+	 * name in its default editor (e.g. Rodin's Event-B editor or Camille),
+	 * and selects the event if one is given
 	 */
-	private void openModel(final String name) {
+	private void openModel(final String name, final String event) {
 		// after the browser's event, so that it is not blocked meanwhile
 		browser.getDisplay().asyncExec(new Runnable() {
 			@Override
@@ -843,8 +850,12 @@ public class GraphViewPart extends ViewPart implements ILifecycleListener,
 					if (!(resource instanceof IFile) || !resource.exists())
 						continue;
 					try {
-						IDE.openEditor(getSite().getPage(), (IFile) resource,
-								true);
+						final IEditorPart editor = IDE.openEditor(getSite()
+								.getPage(), (IFile) resource, true);
+						if (editor != null && event != null
+								&& model instanceof IMachineRoot)
+							EditorNavigation.selectEvent(editor,
+									(IMachineRoot) model, event);
 					} catch (PartInitException e) {
 						MessageDialog.openError(getSite().getShell(),
 								"ProB Graph", "Could not open " + name + ": "

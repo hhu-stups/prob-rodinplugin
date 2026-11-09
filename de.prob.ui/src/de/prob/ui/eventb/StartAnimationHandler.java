@@ -75,8 +75,12 @@ public class StartAnimationHandler extends AbstractHandler implements IHandler {
 			if (children.length == 0)
 				return true; // e.g. the project itself was closed or deleted
 			for (IResourceDelta child : children)
-				// also when a folder is created, e.g. for the first trace
-				if (child.getResource().getType() != IResource.FOLDER)
+				// not when a folder is created, e.g. for the first trace, or
+				// when only markers change (e.g. Rodin's problem markers, or
+				// the Graph view selecting an event)
+				if (child.getResource().getType() != IResource.FOLDER
+						&& !(child.getKind() == IResourceDelta.CHANGED && child
+								.getFlags() == IResourceDelta.MARKERS))
 					return true;
 			return false;
 		}
