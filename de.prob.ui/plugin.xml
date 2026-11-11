@@ -10,6 +10,55 @@
             name="ProB"> 
       </perspective>
    </extension>
+   <!-- the ProB Console, Graph and Table views open below the editors
+        (placeholders only: they are not shown until opened) -->
+   <extension
+         point="org.eclipse.ui.perspectiveExtensions">
+      <perspectiveExtension
+            targetID="org.eventb.ui.perspective.eventb">
+         <view
+               id="de.prob.ui.ConsoleView"
+               relationship="bottom"
+               relative="org.eclipse.ui.editorss"
+               ratio="0.6"
+               visible="false">
+         </view>
+         <view
+               id="de.prob.ui.GraphView"
+               relationship="stack"
+               relative="de.prob.ui.ConsoleView"
+               visible="false">
+         </view>
+         <view
+               id="de.prob.ui.TableView"
+               relationship="stack"
+               relative="de.prob.ui.ConsoleView"
+               visible="false">
+         </view>
+      </perspectiveExtension>
+      <perspectiveExtension
+            targetID="org.eventb.ui.perspective.proving">
+         <view
+               id="de.prob.ui.ConsoleView"
+               relationship="bottom"
+               relative="org.eclipse.ui.editorss"
+               ratio="0.6"
+               visible="false">
+         </view>
+         <view
+               id="de.prob.ui.GraphView"
+               relationship="stack"
+               relative="de.prob.ui.ConsoleView"
+               visible="false">
+         </view>
+         <view
+               id="de.prob.ui.TableView"
+               relationship="stack"
+               relative="de.prob.ui.ConsoleView"
+               visible="false">
+         </view>
+      </perspectiveExtension>
+   </extension>
    <extension
          point="org.eclipse.ui.preferencePages">
       <page
