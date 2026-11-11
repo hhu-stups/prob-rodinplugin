@@ -36,7 +36,9 @@ public final class CommandFormulas {
 	 * tree.
 	 *
 	 * @throws ProBParseException
-	 *             if it is neither (with the error of the expression)
+	 *             if it is neither: with the error of the predicate if the
+	 *             formula is one (e.g. with a type error), otherwise with the
+	 *             error of the expression
 	 */
 	public static PrologTerm parseFormula(final Animator animator,
 			final String formula) throws ProBParseException {
@@ -49,7 +51,12 @@ public final class CommandFormulas {
 			try {
 				ldp.parsePredicate(out, formula, false);
 			} catch (ProBParseException predicateError) {
-				throw expressionError;
+				// Rodin's parser: "Unexpected sub-formula, expected: an
+				// expression but was: predicate"
+				final String message = expressionError.getMessage();
+				throw message != null
+						&& message.contains("but was: predicate") ? predicateError
+						: expressionError;
 			}
 			out.fullstop();
 			return out.getSentences().get(0);

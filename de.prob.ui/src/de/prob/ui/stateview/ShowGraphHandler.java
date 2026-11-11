@@ -10,7 +10,6 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.handlers.HandlerUtil;
 
 import de.prob.ui.graph.GraphViewPart;
-import de.prob.ui.stateview.statetree.StaticStateElement;
 
 /**
  * Shows a graph for the selected variable or formula of the state view in the
@@ -51,9 +50,8 @@ public abstract class ShowGraphHandler extends AbstractHandler {
 			return null;
 		final Object element = ((IStructuredSelection) selection)
 				.getFirstElement();
-		if (!(element instanceof StaticStateElement))
-			return null;
-		final String formula = ((StaticStateElement) element).getLabel();
+		// the formula, e.g. the guard of an event rather than its name
+		final String formula = StateFormulas.formulaOf(element);
 		if (formula == null)
 			return null;
 
