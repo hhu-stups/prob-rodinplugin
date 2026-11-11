@@ -57,6 +57,12 @@ public class AnimatorImpl {
 	// read without lock, e.g. from the UI thread
 	private volatile LanguageDependendAnimationPart langdep;
 
+	/**
+	 * if probcli has getErrorMessagesWithSources/2, null while unknown; see
+	 * {@link #checkErrorSources()}
+	 */
+	private volatile Boolean errorSources;
+
 	public AnimatorImpl(final ServerConnection serverConnection, final File file) {
 		this.file = file;
 		setConnector(serverConnection);
@@ -140,7 +146,8 @@ public class AnimatorImpl {
 		checkConnector(command.getClass().getName());
 
 		UnsatAxiomsNotice.discardPending();
-		final GetErrorsCommand getErrors = new GetErrorsCommand();
+		final GetErrorsCommand getErrors = new GetErrorsCommand(
+				Boolean.TRUE.equals(errorSources));
 		final ComposedCommand cmds = new ComposedCommand(command, getErrors);
 		SimplifiedROMap<String, PrologTerm> bindings = null;
 		ProBException failure = null;
@@ -161,8 +168,12 @@ public class AnimatorImpl {
 			failure = new CommandException(message, e);
 		}
 
+		final List<String> retrieved = retrieveErrors(getErrors, cmds,
+				bindings, failure, quiet);
+		if (errorSources == null)
+			checkErrorSources();
 		final List<String> errors = UnsatAxiomsNotice.handlePending(
-				retrieveErrors(getErrors, cmds, bindings, failure, quiet),
+				retrieved, retrieved == null ? null : getErrors.getSources(),
 				getErrors.onlyWarningsOccurred(), quiet);
 		if (quiet) {
 			throwQuietly(errors, getErrors.onlyWarningsOccurred(), failure);
@@ -174,6 +185,30 @@ public class AnimatorImpl {
 		}
 		if (failure != null) {
 			throw failure;
+		}
+	}
+
+	/**
+	 * Finds out once whether probcli can tell the sources of its messages
+	 * (getErrorMessagesWithSources/2, e.g. to recognise its messages about the
+	 * axioms without relying on their wording). Called after a call, when
+	 * its messages have been retrieved, so that the check takes none away.
+	 */
+	private void checkErrorSources() {
+		if (isConnectionLost())
+			return;
+		final GetErrorsCommand check = new GetErrorsCommand(true);
+		try {
+			check.processResult(sendCommand(check, true));
+			errorSources = Boolean.TRUE;
+			if (check.getErrors() != null && !check.getErrors().isEmpty())
+				Logger.info("ProB reported:\n"
+						+ String.join("\n", check.getErrors()));
+		} catch (ProBException | RuntimeException e) {
+			// an older probcli, which does not know the predicate
+			errorSources = Boolean.FALSE;
+			Logger.info("probcli does not tell the sources of its messages (no getErrorMessagesWithSources/2): "
+					+ e.getMessage());
 		}
 	}
 

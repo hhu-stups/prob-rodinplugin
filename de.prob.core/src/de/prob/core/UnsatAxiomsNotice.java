@@ -7,6 +7,7 @@
 package de.prob.core;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -141,11 +142,15 @@ public final class UnsatAxiomsNotice {
 	 *
 	 * @param messages
 	 *            ProB's messages of the call (or <code>null</code>)
+	 * @param sources
+	 *            the sources of the messages, in the same order, or
+	 *            <code>null</code> if probcli cannot tell them
 	 * @return the messages still to be shown to the user, i.e. without the
 	 *         warnings about the axioms which the notice shows
 	 */
 	public static List<String> handlePending(final List<String> messages,
-			final boolean onlyWarnings, final boolean quiet) {
+			final List<String> sources, final boolean onlyWarnings,
+			final boolean quiet) {
 		final Pending pending = PENDING.get();
 		PENDING.remove();
 		if (pending == null)
@@ -161,13 +166,18 @@ public final class UnsatAxiomsNotice {
 		final List<String> taken = new ArrayList<String>();
 		List<String> rest = messages;
 		if (!quiet && messages != null) {
+			final List<Boolean> about = new ArrayList<Boolean>();
+			for (int i = 0; i < messages.size(); i++) {
+				about.add(isAboutAxioms(messages.get(i), sources == null
+						|| sources.size() != messages.size() ? null : sources
+						.get(i)));
+			}
 			if (onlyWarnings) {
 				rest = new ArrayList<String>();
-				for (final String message : messages) {
-					(isAboutAxioms(message) ? taken : rest).add(message);
+				for (int i = 0; i < messages.size(); i++) {
+					(about.get(i) ? taken : rest).add(messages.get(i));
 				}
-			} else if (messages.stream().allMatch(
-					UnsatAxiomsNotice::isAboutAxioms)) {
+			} else if (!about.contains(Boolean.FALSE)) {
 				// e.g. "AXIOMS are unsatisfiable (but some CONSTANTS valued,
 				// e.g., z)", an error for ProB: the notice says it all, and
 				// the model is loaded (without valid constants)
@@ -189,8 +199,22 @@ public final class UnsatAxiomsNotice {
 		job.schedule();
 	}
 
-	/** e.g. "AXIOMS are unsatisfiable (but all CONSTANTS valued)" */
-	private static boolean isAboutAxioms(final String message) {
+	/** the sources of ProB's messages about the axioms */
+	private static final List<String> AXIOM_SOURCES = Arrays.asList(
+			"setup_constants_inconsistent", "setup_constants_unknown");
+
+	/**
+	 * e.g. "AXIOMS are unsatisfiable (but all CONSTANTS valued)"
+	 * 
+	 * @param source
+	 *            the message's source, or null if probcli cannot tell it:
+	 *            then the message's wording is used (see
+	 *            b_partial_set_up_error_messages in b_interpreter.pl)
+	 */
+	private static boolean isAboutAxioms(final String message,
+			final String source) {
+		if (source != null)
+			return AXIOM_SOURCES.contains(source);
 		return message.contains("CONSTANTS valued");
 	}
 
