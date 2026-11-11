@@ -124,11 +124,13 @@ public class GraphViewPart extends ViewPart implements ILifecycleListener,
 
 	/**
 	 * ProB's graphs whose nodes (or clusters) stand for the machines and
-	 * contexts of the model, or for their events: a double-click on one
-	 * opens the machine or context in its editor
+	 * contexts of the model, or for their events or variables: a
+	 * double-click on one opens the machine or context in its editor (and
+	 * selects the event or variable)
 	 */
 	private static final Set<String> MODEL_GRAPHS = new HashSet<String>(
-			Arrays.asList("machine_hierarchy", "event_hierarchy"));
+			Arrays.asList("machine_hierarchy", "event_hierarchy",
+					"variable_hierarchy"));
 
 	/** ProB's command for the value of an expression as a graph */
 	public static final String EXPRESSION_GRAPH = "expr_as_graph";
@@ -200,12 +202,15 @@ public class GraphViewPart extends ViewPart implements ILifecycleListener,
 		new BrowserFunction(browser, "probOpenModel") {
 			@Override
 			public Object function(final Object[] arguments) {
-				// the machine or context, and optionally an event of it
+				// the machine or context, and optionally an event of it,
+				// or with "identifier" a variable, constant or set of it
 				if (arguments.length >= 1 && arguments[0] instanceof String)
 					openModel((String) arguments[0],
 							arguments.length >= 2
 									&& arguments[1] instanceof String ? (String) arguments[1]
-									: null);
+									: null,
+							arguments.length >= 3
+									&& "identifier".equals(arguments[2]));
 				return null;
 			}
 		};
@@ -454,7 +459,8 @@ public class GraphViewPart extends ViewPart implements ILifecycleListener,
 							showGraph(menus.find(then));
 						else if (shown == null)
 							showMessage("Choose a graph in the toolbar menus, e.g. State Space \u203a State Space.\n"
-									+ "Mouse wheel: zoom, drag: move, double-click on a state: go to that state.\n"
+									+ "Mouse wheel: zoom, drag: move, double-click on a state: go to that state;\n"
+									+ "in the hierarchy graphs: open a machine or context, or select an event or variable.\n"
 									+ COMPLETION_HINT);
 					}
 				});
@@ -835,9 +841,11 @@ public class GraphViewPart extends ViewPart implements ILifecycleListener,
 	/**
 	 * opens the machine or context of the animated model's project with this
 	 * name in its default editor (e.g. Rodin's Event-B editor or Camille),
-	 * and selects the event if one is given
+	 * and selects the event (or with isIdentifier the variable, constant or
+	 * set) if one is given
 	 */
-	private void openModel(final String name, final String event) {
+	private void openModel(final String name, final String event,
+			final boolean isIdentifier) {
 		// after the browser's event, so that it is not blocked meanwhile
 		browser.getDisplay().asyncExec(new Runnable() {
 			@Override
@@ -852,7 +860,10 @@ public class GraphViewPart extends ViewPart implements ILifecycleListener,
 					try {
 						final IEditorPart editor = IDE.openEditor(getSite()
 								.getPage(), (IFile) resource, true);
-						if (editor != null && event != null
+						if (editor != null && event != null && isIdentifier)
+							EditorNavigation.selectIdentifier(editor, model,
+									event);
+						else if (editor != null && event != null
 								&& model instanceof IMachineRoot)
 							EditorNavigation.selectEvent(editor,
 									(IMachineRoot) model, event);

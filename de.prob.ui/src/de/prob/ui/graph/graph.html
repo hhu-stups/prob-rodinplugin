@@ -106,6 +106,43 @@
     return null;
   }
 
+  // the variable (or constant or set) a node of the variable refinement
+  // hierarchy stands for, or null: its tooltip is e.g. "New variable in M1"
+  // or "Kept from abstraction M0", and its label shows the name (in the
+  // first text, a second one may say "removed in M2")
+  function identifierOf(node) {
+    if (!node.classList.contains('node')) return null;
+    var tips = tooltips(node);
+    for (var j = 0; j < tips.length; j++)
+      if (/^(Kept from abstraction|New (variable|set|constant) in) /.test(tips[j])) {
+        var text = node.querySelector('text');
+        var name = text ? text.textContent.trim() : '';
+        return name === '' ? null : name;
+      }
+    return null;
+  }
+
+  // the machine or context of the cluster (drawn around its nodes, but not
+  // containing them in the SVG) that contains the node, or null
+  function clusterModelOf(node) {
+    var box;
+    try { box = node.getBBox(); } catch (e) { return null; }
+    var cx = box.x + box.width / 2, cy = box.y + box.height / 2;
+    var best = null, bestArea = Infinity;
+    var clusters = content.querySelectorAll('g.cluster');
+    for (var j = 0; j < clusters.length; j++) {
+      var b;
+      try { b = clusters[j].getBBox(); } catch (e) { continue; }
+      if (cx < b.x || cx > b.x + b.width || cy < b.y || cy > b.y + b.height) continue;
+      var t = clusters[j].querySelector('title');
+      var m = modelOf(clusters[j], t ? t.textContent.trim() : '');
+      if (m !== null && b.width * b.height < bestArea) {
+        best = m; bestArea = b.width * b.height;
+      }
+    }
+    return best;
+  }
+
   function modelOf(node, id) {
     if (models.length === 0) return null;
     var candidates = [id];
@@ -124,19 +161,28 @@
 
   // double-click on a state: ask the plug-in to go there (GraphViz writes
   // the name of a node, the state id, into its <title>); on a machine or
-  // context: ask it to open it in its editor, and on an event also to select
-  // the event there
+  // context: ask it to open it in its editor, and on an event or a variable
+  // (constant, set) also to select it there
   var nodes = content.querySelectorAll('g.node, g.cluster');
   for (var i = 0; i < nodes.length; i++) {
     var title = nodes[i].querySelector('title');
     var id = title ? title.textContent.trim() : '';
     var open = null, target = id, event = null;
-    var model = modelOf(nodes[i], id);
+    var identifier = models.length > 0 ? identifierOf(nodes[i]) : null;
+    // the tooltip of a kept variable names the abstraction, not its machine
+    var model = identifier !== null ? (clusterModelOf(nodes[i]) || modelOf(nodes[i], id))
+      : modelOf(nodes[i], id);
     if (%CLICKABLE% && /^(root|-?\d+)$/.test(id))
       open = function (stateId) {
         if (window.probGotoState) window.probGotoState(stateId);
       };
-    else if (model !== null) {
+    else if (model !== null && identifier !== null) {
+      target = model;
+      event = identifier;
+      open = function (name, identifier) {
+        if (window.probOpenModel) window.probOpenModel(name, identifier, 'identifier');
+      };
+    } else if (model !== null) {
       target = model;
       event = eventOf(nodes[i]);
       open = function (name, event) {
