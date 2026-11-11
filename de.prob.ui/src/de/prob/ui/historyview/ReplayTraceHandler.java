@@ -158,15 +158,10 @@ public class ReplayTraceHandler extends AbstractHandler {
 				statusLine.setMessage(summary);
 			return;
 		}
-		final StringBuilder text = new StringBuilder(summary);
-		if (!result.getMessages().isEmpty()) {
-			text.append("\n\nProB reported:\n");
-			for (String message : result.getMessages())
-				text.append('\n').append(message);
-		}
-		if (result.getReplayedSteps() < result.getSteps())
-			MessageDialog.openError(shell, TITLE, text.toString());
-		else
-			MessageDialog.openWarning(shell, TITLE, text.toString());
+		final String explanation = result.getTable().isEmpty() ? ""
+				: "\n\nHow the steps of the trace file were replayed:";
+		new ReplayResultDialog(shell, TITLE, summary + explanation,
+				result.getReplayedSteps() < result.getSteps(),
+				result.getTable(), result.getMessages()).open();
 	}
 }
