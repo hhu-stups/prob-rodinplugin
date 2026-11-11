@@ -9,7 +9,6 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.handlers.HandlerUtil;
 
-import de.prob.ui.stateview.statetree.StaticStateElement;
 import de.prob.ui.table.TableViewPart;
 
 /**
@@ -29,9 +28,8 @@ public class ShowTableHandler extends AbstractHandler {
 			return null;
 		final Object element = ((IStructuredSelection) selection)
 				.getFirstElement();
-		if (!(element instanceof StaticStateElement))
-			return null;
-		final String expression = ((StaticStateElement) element).getLabel();
+		// the expression, not just the entry's label
+		final String expression = StateFormulas.expressionOf(element);
 		if (expression == null)
 			return null;
 

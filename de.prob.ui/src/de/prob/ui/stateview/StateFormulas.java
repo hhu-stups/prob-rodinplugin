@@ -17,9 +17,13 @@ import de.prob.ui.stateview.statetree.StateTreeVariable;
  * an entry of the formula tree (e.g. an invariant or the guard of an event),
  * but not a section such as "invariants".
  * 
- * Also a property tester (namespace de.prob.ui.stateview, property isFormula)
- * for the commands that need a formula, e.g. the projection of the state
- * space.
+ * Entries whose formula refers to quantified or local identifiers, e.g. a
+ * part of the guard of an event with parameters, have none: it cannot be
+ * evaluated on its own.
+ * 
+ * Also a property tester (namespace de.prob.ui.stateview, properties
+ * isFormula and isExpression) for the commands that need a formula, e.g. the
+ * projection of the state space.
  */
 public final class StateFormulas extends PropertyTester {
 
@@ -44,11 +48,28 @@ public final class StateFormulas extends PropertyTester {
 		return formula.getText();
 	}
 
+	/**
+	 * @return the entry's formula as text if it is an expression (or, with an
+	 *         older probcli, of unknown kind), otherwise null
+	 */
+	public static String expressionOf(final Object element) {
+		if (element instanceof StateTreeExpression) {
+			final EvaluationFormulaTextCommand formula = ((StateTreeExpression) element)
+					.getStaticElement().getFormula();
+			if (formula != null
+					&& formula.getKind() != EvaluationFormulaTextCommand.Kind.EXPRESSION)
+				return null;
+		}
+		return formulaOf(element);
+	}
+
 	@Override
 	public boolean test(final Object receiver, final String property,
 			final Object[] args, final Object expectedValue) {
 		if ("isFormula".equals(property))
 			return formulaOf(receiver) != null;
+		if ("isExpression".equals(property))
+			return expressionOf(receiver) != null;
 		return false;
 	}
 }

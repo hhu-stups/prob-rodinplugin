@@ -18,7 +18,7 @@
             class="de.prob.ui.stateview.StateFormulas"
             id="de.prob.ui.stateview.formulaTester"
             namespace="de.prob.ui.stateview"
-            properties="isFormula"
+            properties="isFormula,isExpression"
             type="java.lang.Object">
       </propertyTester>
    </extension>
@@ -233,7 +233,7 @@
       <command
             description="Project the state space onto the value of a state item in the ProB Graph view"
             id="de.prob.ui.command.showProjection"
-            name="Project State Space onto Variable">
+            name="Project State Space onto Item">
       </command>
       <command
             categoryId="de.prob.ui.commands.category"
@@ -511,7 +511,7 @@
             commandId="de.prob.ui.command.showTable">
          <enabledWhen>
             <reference
-                  definitionId="de.prob.ui.stateview.oneValueSelected">
+                  definitionId="de.prob.ui.stateview.oneExpressionSelected">
             </reference>
          </enabledWhen>
       </handler>
@@ -1212,6 +1212,25 @@
             </with>
          </and>
       </definition>
+      <!-- one entry of the State view with an expression, e.g. for a table -->
+      <definition
+            id="de.prob.ui.stateview.oneExpressionSelected">
+         <and>
+            <reference
+                  definitionId="de.prob.ui.stateview.oneValueSelected">
+            </reference>
+            <with
+                  variable="activeMenuSelection">
+               <iterate
+                     operator="and">
+                  <test
+                        forcePluginActivation="true"
+                        property="de.prob.ui.stateview.isExpression">
+                  </test>
+               </iterate>
+            </with>
+         </and>
+      </definition>
       <!-- the active editor shows an Event-B machine or context: Camille,
            Rodin's form editors or Systerel's Rodin Editor -->
       <definition
@@ -1402,7 +1421,7 @@
          </command>
          <command
                commandId="de.prob.ui.command.showProjection"
-               label="Project State Space onto Variable"
+               label="Project State Space onto Item"
                style="push">
          </command>
          <separator
