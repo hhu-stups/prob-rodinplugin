@@ -14,6 +14,7 @@ import de.prob.cli.CliException;
 import de.prob.core.LanguageDependendAnimationPart;
 import de.prob.core.ProblemHandler;
 import de.prob.core.PrologException;
+import de.prob.core.UnsatAxiomsNotice;
 import de.prob.core.command.CommandException;
 import de.prob.core.command.ComposedCommand;
 import de.prob.core.command.GetErrorsCommand;
@@ -138,6 +139,7 @@ public class AnimatorImpl {
 			throws ProBException {
 		checkConnector(command.getClass().getName());
 
+		UnsatAxiomsNotice.discardPending();
 		final GetErrorsCommand getErrors = new GetErrorsCommand();
 		final ComposedCommand cmds = new ComposedCommand(command, getErrors);
 		SimplifiedROMap<String, PrologTerm> bindings = null;
@@ -159,8 +161,9 @@ public class AnimatorImpl {
 			failure = new CommandException(message, e);
 		}
 
-		final List<String> errors = retrieveErrors(getErrors, cmds, bindings,
-				failure, quiet);
+		final List<String> errors = UnsatAxiomsNotice.handlePending(
+				retrieveErrors(getErrors, cmds, bindings, failure, quiet),
+				getErrors.onlyWarningsOccurred(), quiet);
 		if (quiet) {
 			throwQuietly(errors, getErrors.onlyWarningsOccurred(), failure);
 			return;

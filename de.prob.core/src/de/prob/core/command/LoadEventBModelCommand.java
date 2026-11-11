@@ -18,6 +18,7 @@ import org.osgi.service.prefs.Preferences;
 import org.rodinp.core.RodinDBException;
 
 import de.prob.core.Animator;
+import de.prob.core.UnsatAxiomsNotice;
 import de.prob.core.LanguageDependendAnimationPart;
 import de.prob.core.command.internal.InternalLoadCommand;
 import de.prob.core.domainobjects.MachineDescription;
@@ -74,6 +75,7 @@ public final class LoadEventBModelCommand {
 		animator.resetDirty();
 		// animator.resetRodinProjectHasErrorsOrWarnings(); // set in StartAnimationHandler; reset here would override this
 		removeObsoletePreferences(animator);
+		UnsatAxiomsNotice.clearMarkers(); // of the model animated before
 
 		final LanguageDependendAnimationPart ldp = new EventBAnimatorPart(model);
 
