@@ -11,7 +11,9 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 
+import de.prob.core.UnsatAxiomsNotice;
 import de.prob.logging.Logger;
+import de.prob.ui.eventb.ExplorerLabels;
 import de.prob.ui.ticket.NonModalNotification;
 import de.prob.ui.ticket.ProBLogListener;
 
@@ -64,6 +66,7 @@ public class ProbUiPlugin extends AbstractUIPlugin {
 		this.context = context;
 		Logger.addListener(new ProBLogListener());
 		Logger.setNonModalNotifier(new NonModalNotification());
+		UnsatAxiomsNotice.setMarkersChangedListener(ExplorerLabels::refreshLater);
 	}
 
 	public static ProbUiPlugin getDefault() {

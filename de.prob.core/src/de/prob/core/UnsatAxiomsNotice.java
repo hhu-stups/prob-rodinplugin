@@ -55,6 +55,17 @@ public final class UnsatAxiomsNotice {
 	private static final String PROB_MARKER_ATTRIBUTE = Activator.PLUGIN_ID
 			+ ".unsatAxiom";
 
+	/** called after ProB's markers have changed, see the setter */
+	private static volatile Runnable markersChangedListener;
+
+	/**
+	 * Called by the UI plug-in: the Event-B Explorer does not update its
+	 * icons when markers are only deleted, so it is refreshed then.
+	 */
+	public static void setMarkersChangedListener(final Runnable listener) {
+		markersChangedListener = listener;
+	}
+
 	/** a notice reported while the result of a call is processed */
 	private static final class Pending {
 		final String headline;
@@ -204,12 +215,16 @@ public final class UnsatAxiomsNotice {
 			final List<String> marked = new ArrayList<String>();
 			try {
 				final IWorkspace workspace = ResourcesPlugin.getWorkspace();
-				deleteMarkers(workspace);
+				boolean changed = deleteMarkers(workspace);
 				if (pending != null) {
 					final List<Position> positions = positions();
 					workspace.run(m -> mark(positions, marked), null,
 							IWorkspace.AVOID_UPDATE, monitor);
+					changed |= !marked.isEmpty();
 				}
+				final Runnable listener = markersChangedListener;
+				if (changed && listener != null)
+					listener.run();
 			} catch (CoreException e) {
 				Logger.info("Could not update the markers of the axioms: "
 						+ e.getMessage());
@@ -222,8 +237,12 @@ public final class UnsatAxiomsNotice {
 			return Status.OK_STATUS;
 		}
 
-		/** deletes ProB's markers, but not Rodin's */
-		private static void deleteMarkers(final IWorkspace workspace)
+		/**
+		 * deletes ProB's markers, but not Rodin's
+		 * 
+		 * @return if there were any
+		 */
+		private static boolean deleteMarkers(final IWorkspace workspace)
 				throws CoreException {
 			final IMarker[] markers = workspace.getRoot().findMarkers(
 					MARKER_TYPE, false, IResource.DEPTH_INFINITE);
@@ -232,8 +251,10 @@ public final class UnsatAxiomsNotice {
 				if (marker.getAttribute(PROB_MARKER_ATTRIBUTE, false))
 					own.add(marker);
 			}
-			if (!own.isEmpty())
-				workspace.deleteMarkers(own.toArray(new IMarker[own.size()]));
+			if (own.isEmpty())
+				return false;
+			workspace.deleteMarkers(own.toArray(new IMarker[own.size()]));
+			return true;
 		}
 
 		private static List<Position> positions() {
