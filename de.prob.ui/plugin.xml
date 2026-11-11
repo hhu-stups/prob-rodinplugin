@@ -180,6 +180,12 @@
             id="probpreferences"
             name="ProB">
       </page>
+      <page
+            category="probpreferences"
+            class="de.prob.ui.ProBViewPreferences"
+            id="de.prob.ui.viewpreferences"
+            name="Views">
+      </page>
    </extension>
    
    <extension

@@ -110,6 +110,8 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 
 	@Override
 	public void createPartControl(final Composite viewParent) {
+		// detached later if the preference says so
+		de.prob.ui.DetachedViews.viewCreated(this);
 		// Eclipse does not let a view limit how small it is made, so when
 		// there is no room for the minimal output and the input the console
 		// scrolls instead of clipping the input

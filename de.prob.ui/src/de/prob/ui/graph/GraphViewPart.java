@@ -186,6 +186,8 @@ public class GraphViewPart extends ViewPart implements ILifecycleListener,
 
 	@Override
 	public void createPartControl(final Composite parent) {
+		// detached later if the preference says so
+		de.prob.ui.DetachedViews.viewCreated(this);
 		final GridLayout layout = new GridLayout(1, false);
 		layout.marginWidth = 0;
 		layout.marginHeight = 0;
