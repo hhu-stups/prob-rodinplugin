@@ -5,7 +5,7 @@
          point="org.eclipse.ui.perspectives">
       <perspective
             class="de.prob.ui.PerspectiveFactory"
-            icon="icons/prob.png"
+            icon="icons/prob_perspective.png"
             id="de.prob.ui.perspective"
             name="ProB"> 
       </perspective>
@@ -1158,7 +1158,7 @@
             locationURI="toolbar:org.eventb.ui.editors.machine">
          <command
                commandId="de.prob.ui.starteditoranimation"
-               icon="icons/prob.png"
+               icon="icons/prob_run.png"
                style="push"
                tooltip="Start Animation / Model Checking with ProB">
          </command>
@@ -1167,7 +1167,7 @@
             locationURI="toolbar:org.eventb.ui.editors.context">
          <command
                commandId="de.prob.ui.starteditoranimation"
-               icon="icons/prob.png"
+               icon="icons/prob_run.png"
                style="push"
                tooltip="Start Animation / Model Checking with ProB">
          </command>
@@ -1177,7 +1177,7 @@
             locationURI="toolbar:org.eventb.texteditor.ui.texteditor">
          <command
                commandId="de.prob.ui.starteditoranimation"
-               icon="icons/prob.png"
+               icon="icons/prob_run.png"
                style="push"
                tooltip="Start Animation / Model Checking with ProB">
          </command>
@@ -1186,7 +1186,7 @@
             locationURI="toolbar:fr.systerel.editor.editors.RodinEditor">
          <command
                commandId="de.prob.ui.starteditoranimation"
-               icon="icons/prob.png"
+               icon="icons/prob_run.png"
                style="push"
                tooltip="Start Animation / Model Checking with ProB">
          </command>
@@ -1203,7 +1203,7 @@
          </separator>
          <command
                commandId="de.prob.ui.starteditoranimation"
-               icon="icons/prob.png"
+               icon="icons/prob_run.png"
                label="Start Animation / Model Checking"
                style="push">
             <visibleWhen
@@ -1222,7 +1222,7 @@
          </separator>
          <command
                commandId="de.prob.ui.starteditoranimation"
-               icon="icons/prob.png"
+               icon="icons/prob_run.png"
                label="Start Animation / Model Checking"
                style="push">
             <visibleWhen
@@ -1241,7 +1241,7 @@
          </separator>
          <command
                commandId="de.prob.ui.starteditoranimation"
-               icon="icons/prob.png"
+               icon="icons/prob_run.png"
                label="Start Animation / Model Checking"
                style="push">
             <visibleWhen
@@ -1260,7 +1260,7 @@
          </separator>
          <command
                commandId="de.prob.ui.starteditoranimation"
-               icon="icons/prob.png"
+               icon="icons/prob_run.png"
                label="Start Animation / Model Checking"
                style="push">
             <visibleWhen
@@ -1719,7 +1719,7 @@
          </command>
          <command
                commandId="de.prob.ui.starteventbanimation"
-               icon="icons/prob.png"
+               icon="icons/prob_run.png"
                label="Start Animation / Model Checking"
                style="push">
             <visibleWhen>
