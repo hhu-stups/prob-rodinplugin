@@ -40,6 +40,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.ISharedImages;
@@ -64,6 +66,7 @@ import de.prob.core.command.GetCommandsCommand;
 import de.prob.core.command.GetCommandsCommand.Category;
 import de.prob.core.command.GetCommandsCommand.CommandInfo;
 import de.prob.core.command.GetCurrentPreferencesCommand;
+import de.prob.core.command.GetEquivalenceClassStatesCommand;
 import de.prob.core.domainobjects.Operation;
 import de.prob.core.domainobjects.State;
 import de.prob.core.langdep.EventBAnimatorPart;
@@ -132,6 +135,15 @@ public class GraphViewPart extends ViewPart implements ILifecycleListener,
 			Arrays.asList("machine_hierarchy", "event_hierarchy",
 					"variable_hierarchy"));
 
+	/**
+	 * ProB's graphs whose nodes are equivalence classes of states, named by
+	 * their class ids: a double-click on one goes to a state in it
+	 */
+	private static final Set<String> CLASS_GRAPHS = new HashSet<String>(
+			Arrays.asList("signature_merge", "transition_diagram"));
+	// the number of states of a class offered in its menu
+	private static final int CLASS_MENU_STATES = 30;
+
 	/** ProB's command for the value of an expression as a graph */
 	public static final String EXPRESSION_GRAPH = "expr_as_graph";
 	/** ProB's command for the state space projected onto an expression */
@@ -169,6 +181,8 @@ public class GraphViewPart extends ViewPart implements ILifecycleListener,
 	// the menus with the graphs from ProB
 	private CommandMenus menus;
 	private CommandInfo shown;
+	/** the menu with the states of a class, see {@link #gotoClass} */
+	private Menu classMenu;
 
 	@Override
 	public void createPartControl(final Composite parent) {
@@ -211,6 +225,19 @@ public class GraphViewPart extends ViewPart implements ILifecycleListener,
 									: null,
 							arguments.length >= 3
 									&& "identifier".equals(arguments[2]));
+				return null;
+			}
+		};
+		new BrowserFunction(browser, "probGotoClass") {
+			@Override
+			public Object function(final Object[] arguments) {
+				// the class id, and an example state of it from the tooltip
+				if (arguments.length >= 1 && arguments[0] instanceof String)
+					gotoClass((String) arguments[0],
+							arguments.length >= 2
+									&& arguments[1] instanceof String
+									&& !((String) arguments[1]).isEmpty() ? (String) arguments[1]
+									: null);
 				return null;
 			}
 		};
@@ -460,7 +487,8 @@ public class GraphViewPart extends ViewPart implements ILifecycleListener,
 						else if (shown == null)
 							showMessage("Choose a graph in the toolbar menus, e.g. State Space \u203a State Space.\n"
 									+ "Mouse wheel: zoom, drag: move, double-click on a state: go to that state;\n"
-									+ "in the hierarchy graphs: open a machine or context, or select an event or variable.\n"
+									+ "in the hierarchy graphs: open a machine or context, or select an event or variable;\n"
+									+ "in Signature Merge and State Space Expression Projection: go to a state of the node.\n"
 									+ COMPLETION_HINT);
 					}
 				});
@@ -539,6 +567,7 @@ public class GraphViewPart extends ViewPart implements ILifecycleListener,
 			runningJob.cancel();
 		final String stateId = currentStateId(animator);
 		final boolean clickable = STATE_GRAPHS.contains(command.getCommand());
+		final boolean classes = CLASS_GRAPHS.contains(command.getCommand());
 		final String models = MODEL_GRAPHS.contains(command.getCommand()) ? modelNamesAsJson()
 				: "[]";
 		final String shownTitle = title;
@@ -573,7 +602,7 @@ public class GraphViewPart extends ViewPart implements ILifecycleListener,
 				}
 				if (monitor.isCanceled())
 					return Status.CANCEL_STATUS;
-				show(this, content, graph, clickable, models);
+				show(this, content, graph, clickable, classes, models);
 				return Status.OK_STATUS;
 			}
 
@@ -770,7 +799,7 @@ public class GraphViewPart extends ViewPart implements ILifecycleListener,
 
 	private void show(final Job job, final String content,
 			final Graph graph, final boolean statesClickable,
-			final String models) {
+			final boolean classesClickable, final String models) {
 		final Display display = Display.getDefault();
 		if (display.isDisposed())
 			return;
@@ -787,6 +816,8 @@ public class GraphViewPart extends ViewPart implements ILifecycleListener,
 					browser.setText(template
 							.replace("%CLICKABLE%",
 									Boolean.toString(statesClickable))
+							.replace("%CLASSES%",
+									Boolean.toString(classesClickable))
 							.replace("%MODELS%", models)
 							.replace("%CONTENT%", content));
 					setShownGraph(graph);
@@ -891,6 +922,104 @@ public class GraphViewPart extends ViewPart implements ILifecycleListener,
 		});
 	}
 
+	/**
+	 * goes to a state of an equivalence class (a node of the Signature Merge
+	 * or State Space Expression Projection graph): directly if it has only
+	 * one state, otherwise the user chooses one in a menu
+	 *
+	 * @param example
+	 *            a state of the class, from the node's tooltip, used if ProB
+	 *            cannot list the states (e.g. an older probcli); may be null
+	 */
+	private void gotoClass(final String classId, final String example) {
+		final Animator animator = Animator.getAnimator();
+		if (!animator.isMachineLoaded())
+			return;
+		final long id;
+		try {
+			id = Long.parseLong(classId);
+		} catch (NumberFormatException e) {
+			return;
+		}
+		final Job job = new Job("ProB Graph: states of a node") {
+			@Override
+			protected IStatus run(final IProgressMonitor monitor) {
+				List<String> states;
+				int total;
+				try {
+					final GetEquivalenceClassStatesCommand command = Animator
+							.callQuietly(new Animator.ProBCall<GetEquivalenceClassStatesCommand>() {
+								@Override
+								public GetEquivalenceClassStatesCommand call()
+										throws ProBException {
+									final GetEquivalenceClassStatesCommand c = new GetEquivalenceClassStatesCommand(
+											id, CLASS_MENU_STATES);
+									animator.execute(c);
+									return c;
+								}
+							});
+					states = command.getStates();
+					total = command.getTotal();
+				} catch (ProBException e) {
+					states = Collections.emptyList();
+					total = 0;
+				}
+				// the classes of another graph, e.g. computed meanwhile
+				if (example != null && !states.contains(example)) {
+					states = Collections.singletonList(example);
+					total = 1;
+				}
+				final List<String> found = states;
+				final int all = total;
+				asyncExec(new Runnable() {
+					@Override
+					public void run() {
+						if (found.size() == 1)
+							gotoState(found.get(0));
+						else if (!found.isEmpty())
+							showClassMenu(found, all,
+									currentStateId(animator));
+					}
+				});
+				return Status.OK_STATUS;
+			}
+		};
+		job.setSystem(true);
+		job.schedule();
+	}
+
+	private void showClassMenu(final List<String> states, final int total,
+			final String current) {
+		if (browser == null || browser.isDisposed())
+			return;
+		if (classMenu != null && !classMenu.isDisposed())
+			classMenu.dispose();
+		classMenu = new Menu(browser);
+		final MenuItem header = new MenuItem(classMenu, SWT.NONE);
+		header.setText("Go to one of the " + total + " states of this node:");
+		header.setEnabled(false);
+		new MenuItem(classMenu, SWT.SEPARATOR);
+		for (final String state : states) {
+			final MenuItem item = new MenuItem(classMenu, SWT.NONE);
+			item.setText("State " + state
+					+ (state.equals(current) ? " (current state)" : ""));
+			item.addSelectionListener(new SelectionAdapter() {
+				@Override
+				public void widgetSelected(final SelectionEvent e) {
+					gotoState(state);
+				}
+			});
+		}
+		if (total > states.size()) {
+			final MenuItem more = new MenuItem(classMenu, SWT.NONE);
+			more.setText("... and " + (total - states.size())
+					+ " more states");
+			more.setEnabled(false);
+		}
+		classMenu.setLocation(browser.getDisplay().getCursorLocation());
+		classMenu.setVisible(true);
+	}
+
 	private void showMessage(final String message) {
 		setHtml("<div id=\"message\">" + escape(message) + "</div>");
 	}
@@ -923,7 +1052,7 @@ public class GraphViewPart extends ViewPart implements ILifecycleListener,
 		} catch (IOException e) {
 			// use the minimal page below
 		}
-		return "<html><body>%CONTENT%<script>var x=%CLICKABLE%, m=%MODELS%;</script></body></html>";
+		return "<html><body>%CONTENT%<script>var x=%CLICKABLE%, c=%CLASSES%, m=%MODELS%;</script></body></html>";
 	}
 
 	/** a new model: the graph shown belongs to the old one */
@@ -967,6 +1096,8 @@ public class GraphViewPart extends ViewPart implements ILifecycleListener,
 		StaticListenerRegistry.unregisterListener((ILifecycleListener) this);
 		StaticListenerRegistry.unregisterListener((IAnimationListener) this);
 		menus.dispose();
+		if (classMenu != null && !classMenu.isDisposed())
+			classMenu.dispose();
 		if (runningJob != null)
 			runningJob.cancel();
 		super.dispose();

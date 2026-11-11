@@ -143,6 +143,19 @@
     return best;
   }
 
+  // an example state of a node of the Signature Merge or State Space
+  // Expression Projection graph, from its tooltip, e.g. "3 state(s), e.g.
+  // state 12" or "root, contains current state"; or ''
+  function exampleStateOf(node) {
+    var tips = tooltips(node);
+    for (var j = 0; j < tips.length; j++) {
+      if (/^root\b/.test(tips[j])) return 'root';
+      var m = /e\.g\. state (-?\d+|root)/.exec(tips[j]);
+      if (m) return m[1];
+    }
+    return '';
+  }
+
   function modelOf(node, id) {
     if (models.length === 0) return null;
     var candidates = [id];
@@ -176,7 +189,13 @@
       open = function (stateId) {
         if (window.probGotoState) window.probGotoState(stateId);
       };
-    else if (model !== null && identifier !== null) {
+    else if (%CLASSES% && /^\d+$/.test(id) && nodes[i].classList.contains('node')) {
+      // a node of the Signature Merge or Expression Projection: the class id
+      event = exampleStateOf(nodes[i]);
+      open = function (classId, example) {
+        if (window.probGotoClass) window.probGotoClass(classId, example);
+      };
+    } else if (model !== null && identifier !== null) {
       target = model;
       event = identifier;
       open = function (name, identifier) {
