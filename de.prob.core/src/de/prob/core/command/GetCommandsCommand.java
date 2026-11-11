@@ -45,12 +45,14 @@ public final class GetCommandsCommand implements IComposableCommand {
 		private final String preferredDotType;
 		private final List<String> extraArguments;
 		private final String unavailableReason;
+		private final List<String> preferences;
 
 		CommandInfo(final String command, final String name,
 				final String description, final int formulaArguments,
 				final String group, final String preferredDotType,
 				final List<String> extraArguments,
-				final String unavailableReason) {
+				final String unavailableReason, final List<String> preferences) {
+			this.preferences = preferences;
 			this.command = command;
 			this.name = name;
 			this.description = description;
@@ -100,6 +102,15 @@ public final class GetCommandsCommand implements IComposableCommand {
 
 		public boolean isAvailable() {
 			return unavailableReason == null;
+		}
+
+		/**
+		 * @return the names of the ProB preferences relevant for the command
+		 *         (eclipse names where they exist, else internal names), see
+		 *         {@link GetPreferenceInfosCommand}
+		 */
+		public List<String> getPreferences() {
+			return preferences;
 		}
 
 		/** @return why the command is unavailable, or <code>null</code> */
@@ -166,12 +177,17 @@ public final class GetCommandsCommand implements IComposableCommand {
 						for (PrologTerm a : (ListPrologTerm) i.getArgument(1))
 							extraArguments.add(text(a));
 				}
+			final List<String> preferences = new ArrayList<String>();
+			if (term.getArgument(5) instanceof ListPrologTerm)
+				for (PrologTerm p : (ListPrologTerm) term.getArgument(5))
+					preferences.add(text(p));
 			final String available = text(term.getArgument(7));
 			result.add(new CommandInfo(text(term.getArgument(1)),
 					text(term.getArgument(2)), text(term.getArgument(3)),
 					formulaArguments, group, dotType,
 					Collections.unmodifiableList(extraArguments),
-					"available".equals(available) ? null : available));
+					"available".equals(available) ? null : available,
+					Collections.unmodifiableList(preferences)));
 		}
 		commands = Collections.unmodifiableList(result);
 	}

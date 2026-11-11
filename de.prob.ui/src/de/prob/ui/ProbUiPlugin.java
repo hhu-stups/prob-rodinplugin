@@ -32,6 +32,7 @@ public class ProbUiPlugin extends AbstractUIPlugin {
 	public static final String IMG_DOUBLECLICK = "IMG_DOUBLECLICK";
 	public static final String CHANGE_STAR = "change_star";
 	public static final String IMG_RELOAD = "IMG_RELOAD";
+	public static final String IMG_PREFERENCES = "IMG_PREFERENCES";
 	public static final String IMG_CHECKED = "IMG_CHECKED";
 	public static final String IMG_UNCHECKED = "IMG_UNCHECKED";
 	public static final String IMG_MACHINE = "IMG_MACHINE";
@@ -96,6 +97,8 @@ public class ProbUiPlugin extends AbstractUIPlugin {
 				imageDescriptorFromPlugin(PLUGIN_ID, "icons/doubleclick.png"));
 		reg.put(CHANGE_STAR,
 				imageDescriptorFromPlugin(PLUGIN_ID, "icons/star.png"));
+		reg.put(IMG_PREFERENCES,
+				imageDescriptorFromPlugin(PLUGIN_ID, "icons/settings.png"));
 		reg.put(IMG_RELOAD,
 				imageDescriptorFromPlugin(PLUGIN_ID, "icons/refresh.gif"));
 		reg.put(IMG_CHECKED,

@@ -120,6 +120,12 @@ public class GraphViewPart extends ViewPart implements ILifecycleListener,
 					"proof_tree_graph" // sequent prover only
 			));
 
+	/**
+	 * "Current State in State Space": shown again after going to a state by
+	 * double-clicking it
+	 */
+	private static final String CURRENT_STATE_GRAPH = "current_state";
+
 	// graphs whose nodes are states, named by their ids
 	private static final Set<String> STATE_GRAPHS = new HashSet<String>(
 			Arrays.asList("state_space", "state_space_sfdp", "current_state",
@@ -301,6 +307,30 @@ public class GraphViewPart extends ViewPart implements ILifecycleListener,
 		};
 		refresh.setToolTipText("Compute the graph again (e.g. after animating or model checking)");
 		toolBar.add(refresh);
+		final Action preferences = new Action("Preferences...") {
+			@Override
+			public void run() {
+				if (shown == null) {
+					MessageDialog.openInformation(getSite().getShell(),
+							"Preferences", "Choose a graph first.");
+					return;
+				}
+				de.prob.ui.CommandPreferencesDialog.open(getSite().getShell(),
+						shown.getName().replaceFirst("\\.\\.\\.$", "")
+								.replace("\u2026", ""),
+						shown.getPreferences(), new Runnable() {
+							@Override
+							public void run() {
+								refresh();
+							}
+						});
+			}
+		};
+		preferences.setToolTipText("Edit the ProB preferences of the current graph; OK computes it again");
+		preferences.setImageDescriptor(de.prob.ui.ProbUiPlugin.getDefault()
+				.getImageRegistry()
+				.getDescriptor(de.prob.ui.ProbUiPlugin.IMG_PREFERENCES));
+		toolBar.add(preferences);
 		stop = new Action("Stop") {
 			@Override
 			public void run() {
@@ -360,9 +390,9 @@ public class GraphViewPart extends ViewPart implements ILifecycleListener,
 		};
 		save.setToolTipText("Save the graph as an SVG image (.svg) or as a GraphViz file (.dot)");
 		save.setImageDescriptor(images
-				.getImageDescriptor(ISharedImages.IMG_ETOOL_SAVEAS_EDIT));
+				.getImageDescriptor(ISharedImages.IMG_ETOOL_SAVE_EDIT));
 		save.setDisabledImageDescriptor(images
-				.getImageDescriptor(ISharedImages.IMG_ETOOL_SAVEAS_EDIT_DISABLED));
+				.getImageDescriptor(ISharedImages.IMG_ETOOL_SAVE_EDIT_DISABLED));
 		save.setEnabled(false);
 		toolBar.add(save);
 	}
@@ -920,6 +950,10 @@ public class GraphViewPart extends ViewPart implements ILifecycleListener,
 			@Override
 			public void run() {
 				LoadShortestTraceHandler.loadShortestTraceTo(animator, stateId);
+				// this graph is centred on the current state, which changed
+				if (shown != null
+						&& CURRENT_STATE_GRAPH.equals(shown.getCommand()))
+					refresh();
 			}
 		});
 	}

@@ -228,6 +228,30 @@ public class TableViewPart extends ViewPart implements ILifecycleListener,
 		};
 		refresh.setToolTipText("Compute the table again (e.g. after animating or model checking)");
 		toolBar.add(refresh);
+		final Action preferences = new Action("Preferences...") {
+			@Override
+			public void run() {
+				if (shown == null) {
+					MessageDialog.openInformation(getSite().getShell(),
+							"Preferences", "Choose a table first.");
+					return;
+				}
+				de.prob.ui.CommandPreferencesDialog.open(getSite().getShell(),
+						shown.getName().replaceFirst("\\.\\.\\.$", "")
+								.replace("\u2026", ""),
+						shown.getPreferences(), new Runnable() {
+							@Override
+							public void run() {
+								refresh();
+							}
+						});
+			}
+		};
+		preferences.setToolTipText("Edit the ProB preferences of the current table; OK computes it again");
+		preferences.setImageDescriptor(de.prob.ui.ProbUiPlugin.getDefault()
+				.getImageRegistry()
+				.getDescriptor(de.prob.ui.ProbUiPlugin.IMG_PREFERENCES));
+		toolBar.add(preferences);
 		stop = new Action("Stop") {
 			@Override
 			public void run() {
@@ -256,9 +280,9 @@ public class TableViewPart extends ViewPart implements ILifecycleListener,
 		};
 		save.setToolTipText("Save the table as comma-separated values (.csv) or as text with aligned columns (.txt)");
 		save.setImageDescriptor(images
-				.getImageDescriptor(ISharedImages.IMG_ETOOL_SAVEAS_EDIT));
+				.getImageDescriptor(ISharedImages.IMG_ETOOL_SAVE_EDIT));
 		save.setDisabledImageDescriptor(images
-				.getImageDescriptor(ISharedImages.IMG_ETOOL_SAVEAS_EDIT_DISABLED));
+				.getImageDescriptor(ISharedImages.IMG_ETOOL_SAVE_EDIT_DISABLED));
 		save.setEnabled(false);
 		toolBar.add(save);
 	}

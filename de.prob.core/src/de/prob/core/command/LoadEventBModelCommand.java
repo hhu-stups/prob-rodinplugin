@@ -90,6 +90,8 @@ public final class LoadEventBModelCommand {
 
 		try {
 			animator.execute(composed);
+			// e.g. of the ProB Graph view, not set by setPrefs
+			CommandPreferences.apply(animator);
 
 			final State commandResult = explore.getState();
 			animator.announceCurrentStateChanged(commandResult, Operation.NULL_OPERATION);
