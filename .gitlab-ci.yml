@@ -49,8 +49,4 @@ deploy:release:
     - apk update
     - apk add lftp openssh-client
   script:
-    # Upload to release-next, then swap it in, keeping the old release as
-    # release-prev. Leftovers of an interrupted run (release-next) and the
-    # previous backup (release-prev) are removed first, otherwise mkdir/mv
-    # fail; these rm commands may fail if the directories don't exist.
-    - LFTP_PASSWORD="${DEPLOY_PASSWORD}" lftp -c "set cmd:fail-exit true; set sftp:auto-confirm true; open --user ${DEPLOY_USERNAME} --env-password sftp://${DEPLOY_HOST}/${DEPLOY_REMOTE_BASEDIR}/rodin/prob1/; set cmd:fail-exit false; rm -r release-next; set cmd:fail-exit true; mkdir release-next; mirror -vvv -R de.prob.repository/target/repository release-next; set cmd:fail-exit false; rm -r release-prev; set cmd:fail-exit true; mv release release-prev; mv release-next release"
+    - LFTP_PASSWORD="${DEPLOY_PASSWORD}" lftp -c "set cmd:fail-exit true; set sftp:auto-confirm true; open --user ${DEPLOY_USERNAME} --env-password sftp://${DEPLOY_HOST}/${DEPLOY_REMOTE_BASEDIR}/rodin/prob1/; mkdir release-next; mirror -vvv -R de.prob.repository/target/repository release-next; mv release release-prev; mv release-next release"
