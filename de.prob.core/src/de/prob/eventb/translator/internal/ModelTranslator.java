@@ -126,7 +126,14 @@ public class ModelTranslator extends AbstractComponentTranslator {
 
 	public AEventBModelParseUnit getModelAST() {
 		if (broken) {
-			Logger.notifyUser("The machine contains Rodin Problems. ProB will continue, but you may observe unexpected behaviour");
+			// a notice that does not block the user, not an error dialog
+			Logger.notifyUserNonModal(
+					"The machine " + machine.getComponentName()
+							+ " contains Rodin problems. ProB will continue, but you may observe unexpected behaviour.",
+					"Rodin's static checker marked the machine as not accurate, e.g. because of errors"
+							+ " in it or in a machine or context it depends on;"
+							+ " ProB only sees the parts that Rodin could check."
+							+ " See the Problems view for Rodin's errors and warnings.");
 			return model;
 		}
 		return model;
