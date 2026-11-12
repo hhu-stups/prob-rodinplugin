@@ -132,6 +132,19 @@ public final class Logger {
 		 *            <code>null</code>
 		 */
 		void notify(String message, String details);
+
+		/**
+		 * Like {@link #notify(String, String)}, with a link below the
+		 * details' link that runs the action (in the UI thread) and closes
+		 * the notice.
+		 *
+		 * @param actionLabel
+		 *            e.g. "Compute Unsat Core", or <code>null</code> for none
+		 */
+		default void notify(final String message, final String details,
+				final String actionLabel, final Runnable action) {
+			notify(message, details);
+		}
 	}
 
 	private static volatile NonModalNotifier nonModalNotifier;
@@ -152,6 +165,24 @@ public final class Logger {
 		final NonModalNotifier notifier = nonModalNotifier;
 		if (notifier != null)
 			notifier.notify(message, details);
+	}
+
+	/**
+	 * Like {@link #notifyUserNonModal(String, String)}, with an action the
+	 * user can start from the notice, e.g. computing an unsat core.
+	 *
+	 * @param actionLabel
+	 *            the link's text, or <code>null</code> for no action
+	 * @param action
+	 *            run in the UI thread when the link is clicked
+	 */
+	public static void notifyUserNonModal(final String message,
+			final String details, final String actionLabel,
+			final Runnable action) {
+		info(details == null ? message : message + "\n" + details);
+		final NonModalNotifier notifier = nonModalNotifier;
+		if (notifier != null)
+			notifier.notify(message, details, actionLabel, action);
 	}
 
 	public static void info(final String message) {

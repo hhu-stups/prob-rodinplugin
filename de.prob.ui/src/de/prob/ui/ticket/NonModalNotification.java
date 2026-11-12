@@ -38,19 +38,26 @@ public final class NonModalNotification implements Logger.NonModalNotifier {
 
 	@Override
 	public void notify(final String message, final String details) {
+		notify(message, details, null, null);
+	}
+
+	@Override
+	public void notify(final String message, final String details,
+			final String actionLabel, final Runnable action) {
 		final Display display = Display.getDefault();
 		if (display == null || display.isDisposed())
 			return;
 		display.asyncExec(new Runnable() {
 			@Override
 			public void run() {
-				show(display, message, details);
+				show(display, message, details, actionLabel, action);
 			}
 		});
 	}
 
 	private void show(final Display display, final String message,
-			final String details) {
+			final String details, final String actionLabel,
+			final Runnable action) {
 		if (popup != null && !popup.isDisposed())
 			popup.close();
 		final Shell parent = parentShell(display);
@@ -75,6 +82,7 @@ public final class NonModalNotification implements Logger.NonModalNotifier {
 			new Label(shell, SWT.NONE);
 			final Link link = new Link(shell, SWT.NONE);
 			link.setText("<a>Show details</a>");
+			addAction(shell, actionLabel, action);
 			final Text detailText = new Text(shell, SWT.MULTI | SWT.READ_ONLY
 					| SWT.WRAP | SWT.V_SCROLL | SWT.BORDER);
 			detailText.setText(details);
@@ -95,10 +103,30 @@ public final class NonModalNotification implements Logger.NonModalNotifier {
 			});
 		}
 
+		if (details == null)
+			addAction(shell, actionLabel, action);
+
 		place(shell, parent);
 		// shown without taking the focus from the user's editor or view
 		shell.setVisible(true);
 		closeLater(display, shell, expanded);
+	}
+
+	/**
+	 * a link below the details' link (or the message) that runs the action
+	 * and closes the notice
+	 */
+	private static void addAction(final Shell shell, final String label,
+			final Runnable action) {
+		if (label == null || action == null)
+			return;
+		new Label(shell, SWT.NONE);
+		final Link link = new Link(shell, SWT.NONE);
+		link.setText("<a>" + label + "</a>");
+		link.addListener(SWT.Selection, e -> {
+			shell.close();
+			action.run();
+		});
 	}
 
 	/** closes the notice after a while, unless it is being looked at */

@@ -67,6 +67,22 @@ public final class UnsatAxiomsNotice {
 		markersChangedListener = listener;
 	}
 
+	/** the link of the notice about the axioms */
+	private static final String UNSAT_CORE_LABEL = "Compute Unsat Core";
+
+	/** shows the unsat core of the axioms, see the setter */
+	private static volatile Runnable unsatCoreAction;
+
+	/**
+	 * Called by the UI plug-in: the action of the notice's "Compute Unsat
+	 * Core" link, run in the UI thread (e.g. opening the ProB Table view at
+	 * the Unsat Core of Properties/Axioms table). Without one, the notice has
+	 * no such link.
+	 */
+	public static void setUnsatCoreAction(final Runnable action) {
+		unsatCoreAction = action;
+	}
+
 	/** a notice reported while the result of a call is processed */
 	private static final class Pending {
 		final String headline;
@@ -253,8 +269,11 @@ public final class UnsatAxiomsNotice {
 				Logger.info("Could not update the markers of the axioms: "
 						+ e.getMessage());
 			}
-			if (notify)
-				Logger.notifyUserNonModal(message(marked), details());
+			if (notify) {
+				final Runnable unsatCore = unsatCoreAction;
+				Logger.notifyUserNonModal(message(marked), details(),
+						unsatCore == null ? null : UNSAT_CORE_LABEL, unsatCore);
+			}
 			else if (pending != null)
 				Logger.info(pending.description == null ? pending.headline
 						: pending.headline + "\n" + pending.description);

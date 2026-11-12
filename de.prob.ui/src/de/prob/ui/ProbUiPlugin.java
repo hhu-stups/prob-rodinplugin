@@ -68,6 +68,26 @@ public class ProbUiPlugin extends AbstractUIPlugin {
 		Logger.addListener(new ProBLogListener());
 		Logger.setNonModalNotifier(new NonModalNotification());
 		UnsatAxiomsNotice.setMarkersChangedListener(ExplorerLabels::refreshLater);
+		UnsatAxiomsNotice.setUnsatCoreAction(ProbUiPlugin::showUnsatCore);
+	}
+
+	/**
+	 * opens the ProB Table view at the Unsat Core of Properties/Axioms table,
+	 * which computes it
+	 */
+	private static void showUnsatCore() {
+		final org.eclipse.ui.IWorkbenchWindow window = org.eclipse.ui.PlatformUI
+				.getWorkbench().getActiveWorkbenchWindow();
+		if (window == null || window.getActivePage() == null)
+			return;
+		try {
+			final de.prob.ui.table.TableViewPart view = (de.prob.ui.table.TableViewPart) window
+					.getActivePage().showView(
+							de.prob.ui.table.TableViewPart.VIEW_ID);
+			view.showTable(de.prob.ui.table.TableViewPart.UNSAT_CORE_TABLE);
+		} catch (org.eclipse.ui.PartInitException e) {
+			Logger.notifyUser("Could not open the ProB Table view", e);
+		}
 	}
 
 	public static ProbUiPlugin getDefault() {

@@ -80,6 +80,8 @@ public class TableViewPart extends ViewPart implements ILifecycleListener,
 
 	// ProB's command for the value of an expression as a table
 	private static final String EXPRESSION_TABLE = "expr_as_table";
+	/** ProB's Unsat Core of Properties/Axioms table */
+	public static final String UNSAT_CORE_TABLE = "unsat_core_properties";
 
 	// names of ProB's groups for the menus; others are derived from the name
 	private static final Map<String, String> GROUP_LABELS = new LinkedHashMap<String, String>();
@@ -478,6 +480,22 @@ public class TableViewPart extends ViewPart implements ILifecycleListener,
 		else
 			// the view was just opened and is still getting the tables
 			loadCommands(EXPRESSION_TABLE);
+	}
+
+	/**
+	 * Shows one of ProB's tables, e.g. for the "Compute Unsat Core" link of
+	 * the notice about the axioms.
+	 *
+	 * @param commandName
+	 *            ProB's command, e.g. {@link #UNSAT_CORE_TABLE}
+	 */
+	public void showTable(final String commandName) {
+		final CommandInfo command = menus.find(commandName);
+		if (command != null)
+			showTable(command);
+		else
+			// the view was just opened and is still getting the tables
+			loadCommands(commandName);
 	}
 
 	/** computes a table in the background and shows it */
