@@ -81,6 +81,7 @@ import de.be4.classicalb.core.parser.node.PWitness;
 import de.be4.classicalb.core.parser.node.TIdentifierLiteral;
 import de.be4.classicalb.core.parser.node.TPragmaFreeText;
 import de.prob.core.translator.TranslationFailedException;
+import de.prob.core.translator.TranslationLocation;
 import de.prob.eventb.translator.AbstractComponentTranslator;
 import de.prob.logging.Logger;
 
@@ -108,18 +109,16 @@ public class ModelTranslator extends AbstractComponentTranslator {
 			modelTranslator.translate();
 		} catch (CoreException re) {
 			final String message = "Rodin Database Exception / Core Exception: \n"
-					+ re.getLocalizedMessage();
-			throw new TranslationFailedException(modelTranslator.getClass()
-					.toString(), message);
+					+ TranslationLocation.describe(re);
+			throw new TranslationFailedException(model.getComponentName(),
+					message, re);
 		} catch (RuntimeException e) {
 			// spurious runtime exceptions were thrown, especially if older
 			// EventB= Projects were used without cleaning the project
 			final String message = "Possible cause: building aborted or still in progress. Please wait until building has finished before starting ProB. If this does not help, perform a clean and start ProB after building has finished.\nException was: "
-					+ e.getClass().getSimpleName()
-					+ "\n"
-					+ e.getLocalizedMessage();
-			throw new TranslationFailedException(modelTranslator.getClass()
-					.toString(), message);
+					+ TranslationLocation.describe(e);
+			throw new TranslationFailedException(model.getComponentName(),
+					message, e);
 		}
 		return modelTranslator;
 	}
@@ -166,6 +165,7 @@ public class ModelTranslator extends AbstractComponentTranslator {
 	}
 
 	private void translate() throws CoreException, TranslationFailedException {
+		TranslationLocation.enter("machine " + machine.getComponentName());
 
 		final String message = "machine.getRodinFile().isConsistent() [Note: Maybe you can fix this Rodin problem by refreshing and rebuilding the project]";
 		Logger.assertProB(message, machine.getRodinFile().isConsistent());
@@ -180,6 +180,7 @@ public class ModelTranslator extends AbstractComponentTranslator {
 
 		// Collect Pragmas, Units, etc.
 		collectPragmas();
+		TranslationLocation.leave();
 	}
 
 	private void collectPragmas() throws RodinDBException {
@@ -338,6 +339,7 @@ public class ModelTranslator extends AbstractComponentTranslator {
 		final ISCEvent[] events = machine.getSCEvents();
 		final List<PEvent> eventsList = new ArrayList<PEvent>(events.length);
 		for (final ISCEvent revent : events) {
+			TranslationLocation.enter("event " + revent.getLabel());
 
 			broken = broken || !revent.isAccurate();
 
@@ -386,6 +388,7 @@ public class ModelTranslator extends AbstractComponentTranslator {
 			} else {
 				eventsList.add(event);
 			}
+			TranslationLocation.leave();
 		}
 		clause.setEvent(eventsList);
 		return clause;
@@ -532,9 +535,11 @@ public class ModelTranslator extends AbstractComponentTranslator {
 		final ISCAction[] actions = revent.getSCActions();
 		final List<PSubstitution> actionList = new ArrayList<PSubstitution>();
 		for (final ISCAction action : actions) {
+			TranslationLocation.enter(action);
 			final Assignment assignment = action.getAssignment(localEnv);
 			final PSubstitution substitution = TranslationVisitor
 					.translateAssignment(assignment);
+			TranslationLocation.leave();
 			actionList.add(substitution);
 			labelMapping.put(substitution, action);
 		}

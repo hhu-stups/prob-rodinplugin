@@ -68,6 +68,7 @@ import de.be4.classicalb.core.parser.node.TIdentifierLiteral;
 import de.be4.classicalb.core.parser.node.TPragmaFreeText;
 import de.hhu.stups.sablecc.patch.SourcePosition;
 import de.prob.core.translator.TranslationFailedException;
+import de.prob.core.translator.TranslationLocation;
 import de.prob.eventb.translator.internal.EProofStatus;
 import de.prob.eventb.translator.internal.ProofObligation;
 import de.prob.eventb.translator.internal.SequentSource;
@@ -132,7 +133,8 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 	private static TranslationFailedException createTranslationFailedException(final ISCContext context,
 			CoreException e) throws TranslationFailedException {
 		final String message = "A Rodin exception occured during translation process. Possible cause: building aborted or still in progress. Please wait until building has finished before starting ProB. If this does not help, perform a clean and start ProB after building has finished. Original Exception: ";
-		return new TranslationFailedException(context.getComponentName(), message + e.getLocalizedMessage());
+		return new TranslationFailedException(context.getComponentName(),
+				message + TranslationLocation.describe(e), e);
 	}
 
 	private static boolean assertConsistentModel(IInternalElement machine_root) throws RodinDBException {
@@ -165,9 +167,11 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 	}
 
 	private void translate() throws CoreException {
+		TranslationLocation.enter("context " + context.getComponentName());
 		translateContext();
 		collectProofInfo();
 		collectPragmas();
+		TranslationLocation.leave();
 	}
 
 	private void collectPragmas() throws RodinDBException {

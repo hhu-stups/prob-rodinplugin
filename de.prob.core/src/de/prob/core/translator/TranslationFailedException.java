@@ -16,6 +16,12 @@ public class TranslationFailedException extends ProBException {
 		super(e);
 	}
 
+	/** where the translator failed, see {@link TranslationLocation} */
+	private static String where() {
+		final String location = TranslationLocation.describe();
+		return location == null ? "" : "\nWhere: " + location;
+	}
+
 	public TranslationFailedException(final String component,
 			final String details) {
 		this(component, details, null);
@@ -23,7 +29,8 @@ public class TranslationFailedException extends ProBException {
 
 	public TranslationFailedException(final String component,
 			final String details, Throwable e) {
-		super("Translation of " + component + " failed.\nTry cleaning your workspace.\nDetails: \n" + details, e, false);
+		super("Translation of " + component + " failed.\nTry cleaning your workspace.\nDetails: \n" + details
+				+ where(), e, false);
 		notifyUserOnce();
 	}
 }

@@ -30,6 +30,7 @@ import org.rodinp.core.RodinDBException;
 import de.be4.classicalb.core.parser.node.Node;
 import de.be4.classicalb.core.parser.node.PExpression;
 import de.be4.classicalb.core.parser.node.PPredicate;
+import de.prob.core.translator.TranslationLocation;
 import de.prob.logging.Logger;
 import de.prob.core.translator.pragmas.IPragma;
 import de.prob.core.translator.pragmas.UnitPragma;
@@ -107,6 +108,7 @@ public abstract class AbstractComponentTranslator {
 
 	/** starts collecting problems with proof information, see {@link #endTranslation} */
 	static void beginTranslation() {
+		TranslationLocation.reset();
 		PROBLEMS.set(new ProofInfoProblems());
 	}
 
@@ -222,15 +224,22 @@ public abstract class AbstractComponentTranslator {
 	protected PPredicate translatePredicate(FormulaFactory ff,
 			final ITypeEnvironment env, final ISCPredicateElement predicate)
 			throws CoreException {
+		TranslationLocation.enter(predicate);
 		final Predicate pred = predicate.getPredicate(env);
-		return TranslationVisitor.translatePredicate(pred);
+		final PPredicate result = TranslationVisitor.translatePredicate(pred);
+		// only left on success: after a failure, it is where it failed
+		TranslationLocation.leave();
+		return result;
 	}
 
 	protected PExpression translateExpression(FormulaFactory ff,
 			final ITypeEnvironment env, final ISCExpressionElement expression)
 			throws CoreException {
+		TranslationLocation.enter(expression);
 		final Expression expr = expression.getExpression(env);
-		return TranslationVisitor.translateExpression(expr);
+		final PExpression result = TranslationVisitor.translateExpression(expr);
+		TranslationLocation.leave();
+		return result;
 	}
 
 	abstract public Node getAST();
