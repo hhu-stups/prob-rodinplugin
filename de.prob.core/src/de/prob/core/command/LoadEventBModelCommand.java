@@ -113,7 +113,12 @@ public final class LoadEventBModelCommand {
 							+ " Typically this means, that your axioms are too complicated for automatic solving. "
 							+ "You might create an animation refinement using the context menu to help ProB finding a solution.";
 				}
-				Logger.notifyUser(message);
+				// the animation can continue with the solutions found: a
+				// notice that does not block the user, the advice as details
+				final int end = message.indexOf(". ");
+				Logger.notifyUserNonModal(
+						end < 0 ? message : message.substring(0, end + 1),
+						end < 0 ? null : message.substring(end + 2));
 			}
 		} catch (CommandException ex) {
 			// ProB has (at least partially) dropped the previous model, so

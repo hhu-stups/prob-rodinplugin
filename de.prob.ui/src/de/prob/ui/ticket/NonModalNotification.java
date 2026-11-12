@@ -25,16 +25,22 @@ import de.prob.logging.Logger;
  * Shows notices of {@link Logger#notifyUserNonModal} in a small window at the
  * bottom right of the workbench window, which does not block the user and
  * closes itself after a while (unless the mouse is over it or its details
- * are shown). A new notice replaces the shown one.
+ * are shown). Several notices are stacked upwards (at most
+ * {@link #MAX_SHOWN}, the oldest is closed); a notice with the same message
+ * as a shown one replaces it.
  */
 public final class NonModalNotification implements Logger.NonModalNotifier {
 
 	private static final int CLOSE_AFTER_MS = 15000;
 	private static final int WIDTH = 420;
 	private static final int MARGIN = 16;
+	private static final int GAP = 6;
+	private static final int MAX_SHOWN = 4;
 
-	/** the shown notice; only used in the UI thread */
-	private Shell popup;
+	/** the shown notices, the newest last; only used in the UI thread */
+	private final java.util.List<Shell> popups = new java.util.ArrayList<Shell>();
+	/** their messages, in the same order */
+	private final java.util.List<String> messages = new java.util.ArrayList<String>();
 
 	@Override
 	public void notify(final String message, final String details) {
@@ -58,13 +64,26 @@ public final class NonModalNotification implements Logger.NonModalNotifier {
 	private void show(final Display display, final String message,
 			final String details, final String actionLabel,
 			final Runnable action) {
-		if (popup != null && !popup.isDisposed())
-			popup.close();
+		// the same notice again, e.g. after loading the model again
+		final int same = messages.indexOf(message);
+		if (same >= 0)
+			popups.get(same).close(); // removed by its dispose listener
+		while (popups.size() >= MAX_SHOWN)
+			popups.get(0).close();
 		final Shell parent = parentShell(display);
 		final Shell shell = parent == null ? new Shell(display, SWT.TOOL
 				| SWT.TITLE | SWT.CLOSE | SWT.ON_TOP) : new Shell(parent,
 				SWT.TOOL | SWT.TITLE | SWT.CLOSE);
-		popup = shell;
+		popups.add(shell);
+		messages.add(message);
+		shell.addListener(SWT.Dispose, e -> {
+			final int i = popups.indexOf(shell);
+			if (i >= 0) {
+				popups.remove(i);
+				messages.remove(i);
+				placeAll(parent);
+			}
+		});
 		shell.setText("ProB");
 		shell.setLayout(new GridLayout(2, false));
 
@@ -99,14 +118,14 @@ public final class NonModalNotification implements Logger.NonModalNotifier {
 				detailText.setVisible(expanded[0]);
 				link.setText(expanded[0] ? "<a>Hide details</a>"
 						: "<a>Show details</a>");
-				place(shell, parent);
+				placeAll(parent);
 			});
 		}
 
 		if (details == null)
 			addAction(shell, actionLabel, action);
 
-		place(shell, parent);
+		placeAll(parent);
 		// shown without taking the focus from the user's editor or view
 		shell.setVisible(true);
 		closeLater(display, shell, expanded);
@@ -147,14 +166,27 @@ public final class NonModalNotification implements Logger.NonModalNotifier {
 		});
 	}
 
-	/** sizes the notice and puts it at the bottom right of the parent */
-	private static void place(final Shell shell, final Shell parent) {
-		final Point size = shell.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-		final Rectangle area = parent != null ? parent.getBounds() : shell
-				.getDisplay().getPrimaryMonitor().getClientArea();
-		shell.setBounds(area.x + area.width - size.x - MARGIN, area.y
-				+ area.height - size.y - MARGIN, size.x, size.y);
-		shell.layout(true, true);
+	/**
+	 * sizes the notices and stacks them at the bottom right of the parent,
+	 * the newest at the bottom
+	 */
+	private void placeAll(final Shell parent) {
+		int bottom = -1;
+		for (int i = popups.size() - 1; i >= 0; i--) {
+			final Shell shell = popups.get(i);
+			if (shell.isDisposed())
+				continue;
+			final Point size = shell.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+			final Rectangle area = parent != null && !parent.isDisposed() ? parent
+					.getBounds() : shell.getDisplay().getPrimaryMonitor()
+					.getClientArea();
+			if (bottom < 0)
+				bottom = area.y + area.height - MARGIN;
+			shell.setBounds(area.x + area.width - size.x - MARGIN, bottom
+					- size.y, size.x, size.y);
+			shell.layout(true, true);
+			bottom -= size.y + GAP;
+		}
 	}
 
 	private static Shell parentShell(final Display display) {

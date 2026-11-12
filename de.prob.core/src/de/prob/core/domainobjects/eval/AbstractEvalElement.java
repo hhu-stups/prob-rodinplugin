@@ -47,11 +47,15 @@ public abstract class AbstractEvalElement {
 
 	private synchronized String evaluate(final String stateId) {
 		try {
-			return EvaluateRawExpressionsCommand.evaluate(animator, this,
-					stateId);
+			// quietly: ProB's errors are shown in the notice below, not in
+			// a dialog of their own
+			return Animator.callQuietly(() -> EvaluateRawExpressionsCommand
+					.evaluate(animator, this, stateId));
 		} catch (ProBException e) {
-			Logger.notifyUser(
-					"Something went wrong while evaluating: " + getLabel(), e);
+			// e.g. while the State view is refreshed, possibly for several
+			// entries: a notice that does not block the user
+			Logger.notifyUserNonModal("ProB could not evaluate " + getLabel()
+					+ "; it is shown as \"unknown value\".", e.getMessage());
 		}
 		return "unknown value";
 	}

@@ -65,11 +65,31 @@ public class ProblemHandler {
 	 *            A boolean which is true if only warnings occured
 	 * @throws PrologException
 	 */
+	/** e.g. "ProB reported 2 warnings, e.g.: ..." */
+	private static String warningsSummary(final List<String> warnings) {
+		String first = warnings.get(0).trim();
+		final int newline = first.indexOf('\n');
+		if (newline >= 0)
+			first = first.substring(0, newline);
+		if (first.length() > 200)
+			first = first.substring(0, 200) + "...";
+		return warnings.size() == 1 ? "ProB reported a warning: " + first
+				: "ProB reported " + warnings.size() + " warnings, e.g.: "
+						+ first;
+	}
+
 	public static void raisePrologException(final List<String> errors,
 			final boolean onlyWarnings) throws PrologException {
 		final String message = "ProB reported "
 				+ ((onlyWarnings) ? "warnings:\n" :  "errors:\n")
 				+ String.join("\n", errors);
+		if (onlyWarnings) {
+			// the command succeeded: a notice that does not block the user,
+			// with the warnings as its details
+			Logger.notifyUserNonModal(warningsSummary(errors),
+					String.join("\n", errors));
+			return;
+		}
 		Logger.notifyUser(message);
 		if (! onlyWarnings) {
 			throw new PrologException(message, onlyWarnings);
