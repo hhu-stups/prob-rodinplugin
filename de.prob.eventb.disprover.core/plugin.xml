@@ -17,6 +17,12 @@
             id="disproverTactic"
             name="%autotactic.name">
       </autoTactic>
+      <autoTactic
+            class="de.prob.eventb.disprover.core.internal.DisproverWDProverAutoTactic"
+            description="%autotactic.wd.desc"
+            id="wdProverTactic"
+            name="%autotactic.wd.name">
+      </autoTactic>
    </extension>
 
 </plugin>

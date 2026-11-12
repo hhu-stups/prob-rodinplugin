@@ -71,7 +71,7 @@ A new view that shows the tables ProB can compute, e.g. machine statistics, oper
 - **Rodin's form editors:** a ProB toolbar button in the machine and context editors.
 
 ### Disprover: "Use ProB WD Prover"
-A new proof tactic that calls ProB's well-definedness prover without constraint solving. Its time-out is set in the disprover preferences. Proofs found by it are labelled "ProB WD prover" in the proof tree.
+A new proof tactic that calls ProB's well-definedness prover without constraint solving. Its time-out is set in the disprover preferences. Proofs found by it are labelled "ProB WD prover" in the proof tree. It is also available as the auto tactic "ProB WD Prover", e.g. for the auto-prover's tactic profiles (Window › Preferences › Event-B › Sequent Prover › Auto-Tactic), next to "ProB (Dis)Prover"; it uses the same time-out.
 
 ### Disprover: notice for counter-examples
 When the disprover is started from the Proof Control view and finds a counter-example, a notice appears at the bottom right of the window, without blocking work. It names the proof obligation and its machine or context, and says whether the counter-example only holds for the selected hypotheses (the goal may then still be provable with all hypotheses). "Show details" lists the values of the counter-example and the goal. The auto-prover and proof replay show no notice.

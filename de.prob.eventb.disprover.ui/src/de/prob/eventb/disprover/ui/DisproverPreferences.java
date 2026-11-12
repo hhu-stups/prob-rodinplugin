@@ -1,5 +1,6 @@
 package de.prob.eventb.disprover.ui;
 
+import de.prob.eventb.disprover.core.DisproverReasonerInput;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.preference.PreferencePage;
@@ -47,10 +48,10 @@ public class DisproverPreferences extends PreferencePage implements
 
 	}
 
-	public static final String PREFERENCE_NODE = "prob_disprover_preferences";
+	public static final String PREFERENCE_NODE = DisproverReasonerInput.PREFERENCE_NODE;
 	/** time-out for "Use ProB WD Prover", option wd_prover_timeout(T) */
-	public static final String WD_PROVER_TIMEOUT_KEY = "wdtimeout";
-	public static final int DEFAULT_WD_PROVER_TIMEOUT = 50;
+	public static final String WD_PROVER_TIMEOUT_KEY = DisproverReasonerInput.WD_PROVER_TIMEOUT_KEY;
+	public static final int DEFAULT_WD_PROVER_TIMEOUT = DisproverReasonerInput.DEFAULT_WD_PROVER_TIMEOUT;
 
 	private Preferences prefNode;
 	private Text timeoutTextField;
@@ -235,18 +236,7 @@ public class DisproverPreferences extends PreferencePage implements
 	 * @return the time-out for ProB's WD prover from the preferences
 	 */
 	public static int getWdProverTimeout() {
-		final String value = getPreferenceNode().get(WD_PROVER_TIMEOUT_KEY,
-				null);
-		if (value != null) {
-			try {
-				final int timeout = Integer.parseInt(value.trim());
-				if (timeout >= 0)
-					return timeout;
-			} catch (NumberFormatException e) {
-				// use the default
-			}
-		}
-		return DEFAULT_WD_PROVER_TIMEOUT;
+		return DisproverReasonerInput.getWdProverTimeoutPreference();
 	}
 
 }
