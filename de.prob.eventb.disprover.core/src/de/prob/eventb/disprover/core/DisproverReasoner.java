@@ -48,12 +48,24 @@ public class DisproverReasoner implements IReasoner {
 
 	private final int timeoutFactor;
 
+	/**
+	 * whether the user started it, e.g. in the Proof Control view: then a
+	 * counter-example is also shown in a notice; not for the auto-prover or
+	 * when a proof is replayed
+	 */
+	private final boolean interactive;
+
 	public DisproverReasoner() {
 		this(1);
 	}
 
 	public DisproverReasoner(int timeoutFactor) {
+		this(timeoutFactor, false);
+	}
+
+	public DisproverReasoner(int timeoutFactor, boolean interactive) {
 		this.timeoutFactor = timeoutFactor;
+		this.interactive = interactive;
 	}
 
 	@Override
@@ -72,6 +84,8 @@ public class DisproverReasoner implements IReasoner {
 					disproverInput.getTimeoutFactor());
 			ICounterExample ce = evaluateSequent(sequent, disproverInput,
 					factor, pm);
+			if (interactive && ce != null && ce.counterExampleFound())
+				notifyCounterExample(sequent, ce);
 			return createDisproverResult(ce, sequent, disproverInput);
 		} catch (RodinDBException e) {
 			Logger.log(IStatus.WARNING, e.getMessage(), e);
@@ -140,6 +154,38 @@ public class DisproverReasoner implements IReasoner {
 		Logger.info("Disprover: Result: " + counterExample);
 
 		return counterExample;
+	}
+
+	/**
+	 * Tells the user about the counter-example in a notice that does not
+	 * block them; its details list the values and the goal.
+	 */
+	private static void notifyCounterExample(final IProverSequent sequent,
+			final ICounterExample ce) {
+		final Object origin = sequent.getOrigin();
+		String where = "";
+		if (origin instanceof IPOSequent) {
+			final IPOSequent po = (IPOSequent) origin;
+			where = " for " + po.getElementName() + " ("
+					+ po.getRodinFile().getBareName() + ")";
+		}
+		final String message = ce.onlySelectedHypotheses() ? "ProB found a counter-example"
+				+ where
+				+ " using only the selected hypotheses: the goal may still be provable with all hypotheses."
+				: "ProB found a counter-example" + where
+						+ ": the goal does not follow from the hypotheses.";
+		final StringBuilder details = new StringBuilder();
+		if (ce.getValues().isEmpty())
+			details.append("No identifiers need a value.\n");
+		else {
+			details.append("Values:\n");
+			for (java.util.Map.Entry<String, String> e : ce.getValues()
+					.entrySet())
+				details.append("  ").append(e.getKey()).append(" = ")
+						.append(e.getValue()).append('\n');
+		}
+		details.append("\nGoal: ").append(sequent.goal());
+		Logger.notifyUserNonModal(message, details.toString());
 	}
 
 	/**

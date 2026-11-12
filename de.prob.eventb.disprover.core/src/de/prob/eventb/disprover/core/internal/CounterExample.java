@@ -92,4 +92,9 @@ class CounterExample implements ICounterExample {
 	public boolean doubleCheckFailed() {
 		return doubleCheckFailed;
 	}
+
+	@Override
+	public java.util.Map<String, String> getValues() {
+		return java.util.Collections.unmodifiableMap(state);
+	}
 }

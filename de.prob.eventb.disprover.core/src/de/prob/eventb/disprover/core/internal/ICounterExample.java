@@ -1,5 +1,7 @@
 package de.prob.eventb.disprover.core.internal;
 
+import java.util.Map;
+
 public interface ICounterExample {
 
 	public boolean counterExampleFound();
@@ -13,5 +15,8 @@ public interface ICounterExample {
 	public String getReason();
 
 	public boolean doubleCheckFailed();
+
+	/** @return the values of the counter-example, by identifier */
+	public Map<String, String> getValues();
 
 }

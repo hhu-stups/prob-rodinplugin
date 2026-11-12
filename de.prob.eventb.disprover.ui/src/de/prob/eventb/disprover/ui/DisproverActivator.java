@@ -12,4 +12,13 @@ public class DisproverActivator extends AbstractUIPlugin {
 	 */
 	public DisproverActivator() {
 	}
+
+	@Override
+	public void start(final org.osgi.framework.BundleContext context)
+			throws Exception {
+		super.start(context);
+		// starts ProB's UI plug-in (loading one of its classes does), which
+		// shows the disprover's notices about counter-examples
+		de.prob.ui.ProbUiPlugin.getDefault();
+	}
 }
