@@ -25,28 +25,37 @@ build:
       - "*/target/work/configuration/*.log"
     when: always
 
-deploy:nightly:
+deploy:
   stage: deploy
-  only:
-    - develop@general/stups/prob_rodin_plugin
+  rules:
+    - if: $CI_PROJECT_PATH == "general/stups/prob_rodin_plugin" && ($CI_COMMIT_BRANCH == "develop" || $CI_COMMIT_TAG =~ /\d+\.\d+\..+/)
   image: alpine:3
   variables:
     GIT_STRATEGY: none
+    lftp_setup: "set cmd:fail-exit true; set sftp:auto-confirm true; open --user ${DEPLOY_USERNAME} --env-password sftp://${DEPLOY_HOST}/${DEPLOY_REMOTE_BASEDIR}/rodin/prob1/"
   before_script:
     - apk update
     - apk add lftp openssh-client
   script:
-    - LFTP_PASSWORD="${DEPLOY_PASSWORD}" lftp -c "set cmd:fail-exit true; set sftp:auto-confirm true; open --user ${DEPLOY_USERNAME} --env-password sftp://${DEPLOY_HOST}/${DEPLOY_REMOTE_BASEDIR}/rodin/prob1/nightly/; mirror -vvv -R --delete de.prob.repository/target/repository ."
+    - |
+      if [ -z "${CI_COMMIT_TAG-}" ]
+      then
+        LFTP_PASSWORD="${DEPLOY_PASSWORD}" lftp -c "$lftp_setup; mirror -vvv -R --delete de.prob.repository/target/repository nightly"
+      else
+        probcli_version="$(awk -f deployment/probcli_version_from_build_gradle.awk build.gradle)"
+        release_dir_name="release-${probcli_version}-${CI_COMMIT_TAG}"
+        echo "Uploading to ${release_dir_name}..."
 
-deploy:release:
-  stage: deploy
-  only:
-    - master@general/stups/prob_rodin_plugin
-  image: alpine:3
-  variables:
-    GIT_STRATEGY: none
-  before_script:
-    - apk update
-    - apk add lftp openssh-client
-  script:
-    - LFTP_PASSWORD="${DEPLOY_PASSWORD}" lftp -c "set cmd:fail-exit true; set sftp:auto-confirm true; open --user ${DEPLOY_USERNAME} --env-password sftp://${DEPLOY_HOST}/${DEPLOY_REMOTE_BASEDIR}/rodin/prob1/; mkdir release-next; mirror -vvv -R de.prob.repository/target/repository release-next; mv release release-prev; mv release-next release"
+        case "${probcli_version}" in
+          (*nightly*)
+            echo "ERROR: Cannot make a release with a nightly probcli version."
+            echo "ERROR: Please switch to a release version of probcli before releasing the Rodin plugin."
+            exit 1
+          ;;
+
+          (*)
+            deployment/generate_htaccess.sh "${release_dir_name}" > .htaccess
+            LFTP_PASSWORD="${DEPLOY_PASSWORD}" lftp -c "$lftp_setup; mkdir release_temp; mirror -vvv -R de.prob.repository/target/repository release_temp; mv release_temp ${release_dir_name}; put .htaccess"
+          ;;
+        esac
+      fi
