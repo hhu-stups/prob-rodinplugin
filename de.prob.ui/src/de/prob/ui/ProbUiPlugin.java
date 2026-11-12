@@ -90,6 +90,31 @@ public class ProbUiPlugin extends AbstractUIPlugin {
 		}
 	}
 
+	/**
+	 * Opens the ProB Graph view and shows a graph that is not one of the
+	 * animator's, e.g. the disprover's visualisation of a counter-example.
+	 * To be called in the UI thread.
+	 *
+	 * @param animator
+	 *            the animator writing the dot file: interrupted by the Stop
+	 *            button
+	 */
+	public static void showDotGraph(final String title,
+			final de.prob.core.Animator animator, final DotSource source) {
+		final org.eclipse.ui.IWorkbenchWindow window = org.eclipse.ui.PlatformUI
+				.getWorkbench().getActiveWorkbenchWindow();
+		if (window == null || window.getActivePage() == null)
+			return;
+		try {
+			final de.prob.ui.graph.GraphViewPart view = (de.prob.ui.graph.GraphViewPart) window
+					.getActivePage().showView(
+							de.prob.ui.graph.GraphViewPart.VIEW_ID);
+			view.showDotGraph(title, animator, source);
+		} catch (org.eclipse.ui.PartInitException e) {
+			Logger.notifyUser("Could not open the ProB Graph view", e);
+		}
+	}
+
 	public static ProbUiPlugin getDefault() {
 		return plugin;
 	}

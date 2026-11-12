@@ -516,7 +516,8 @@ public class GraphViewPart extends ViewPart implements ILifecycleListener,
 							showError(loadError);
 						else if (then != null)
 							showGraph(menus.find(then));
-						else if (shown == null)
+						else if (shown == null && shownGraph == null
+								&& runningJob == null)
 							showMessage("Choose a graph in the toolbar menus, e.g. State Space \u203a State Space.\n"
 									+ "Mouse wheel: zoom, drag: move, double-click on a state: go to that state;\n"
 									+ "in the hierarchy graphs: open a machine or context, or select an event or variable;\n"
@@ -647,6 +648,76 @@ public class GraphViewPart extends ViewPart implements ILifecycleListener,
 		job.schedule();
 	}
 
+	/**
+	 * Shows a graph that is not one of the animator's graphs, e.g. the
+	 * disprover's visualisation of a counter-example. Refresh does not
+	 * compute it again.
+	 *
+	 * @param animator
+	 *            the animator writing the dot file: interrupted by the Stop
+	 *            button, and asked for the path of GraphViz
+	 */
+	public void showDotGraph(final String title, final Animator animator,
+			final de.prob.ui.DotSource source) {
+		if (browser == null || browser.isDisposed())
+			return;
+		if (runningJob != null)
+			runningJob.cancel();
+		shown = null;
+		setShownGraph(null);
+		showMessage("ProB is computing " + title
+				+ " ...\nThe red Stop button interrupts it.");
+		final Job job = new Job("ProB Graph: " + title) {
+			@Override
+			protected IStatus run(final IProgressMonitor monitor) {
+				Graph graph = null;
+				String content;
+				File dotFile = null;
+				File svgFile = null;
+				try {
+					dotFile = File.createTempFile("prob_graph", ".dot");
+					svgFile = File.createTempFile("prob_graph", ".svg");
+					try {
+						source.writeDot(dotFile);
+					} catch (ProBException e) {
+						throw new GraphException(failure(
+								"ProB could not compute " + title, e));
+					}
+					if (monitor.isCanceled())
+						return Status.CANCEL_STATUS;
+					runDot(animator, null, Collections.<String> emptyList(),
+							dotFile, svgFile, monitor);
+					graph = new Graph(title, new String(
+							Files.readAllBytes(dotFile.toPath()),
+							StandardCharsets.UTF_8), new String(
+							Files.readAllBytes(svgFile.toPath()),
+							StandardCharsets.UTF_8));
+					content = graph.svgForHtml();
+				} catch (GraphException e) {
+					content = e.getMessage();
+				} catch (IOException e) {
+					content = "Could not create the graph: " + e.getMessage();
+				} finally {
+					if (dotFile != null)
+						dotFile.delete();
+					if (svgFile != null)
+						svgFile.delete();
+				}
+				if (monitor.isCanceled())
+					return Status.CANCEL_STATUS;
+				show(this, content, graph, false, false, "[]");
+				return Status.OK_STATUS;
+			}
+
+			@Override
+			protected void canceling() {
+				animator.sendUserInterruptSignal();
+			}
+		};
+		setRunningJob(job);
+		job.schedule();
+	}
+
 	/** the job computing the graph; the Stop button is enabled while there is one */
 	private void setRunningJob(final Job job) {
 		runningJob = job;
@@ -725,7 +796,8 @@ public class GraphViewPart extends ViewPart implements ILifecycleListener,
 			if (monitor.isCanceled())
 				throw new GraphException("Cancelled.");
 			layingOut.run();
-			runDot(animator, command, dotFile, svgFile, monitor);
+			runDot(animator, command.getPreferredDotType(),
+					command.getExtraArguments(), dotFile, svgFile, monitor);
 			return new Graph(title, new String(Files.readAllBytes(dotFile
 					.toPath()), StandardCharsets.UTF_8), new String(
 					Files.readAllBytes(svgFile.toPath()), StandardCharsets.UTF_8));
@@ -740,8 +812,15 @@ public class GraphViewPart extends ViewPart implements ILifecycleListener,
 		}
 	}
 
+	/**
+	 * @param preferredDotType
+	 *            the layout ProB suggests, e.g. sfdp, or null
+	 * @param extraArguments
+	 *            further arguments for GraphViz
+	 */
 	private static void runDot(final Animator animator,
-			final CommandInfo command, final File dotFile, final File svgFile,
+			final String preferredDotType, final List<String> extraArguments,
+			final File dotFile, final File svgFile,
 			final IProgressMonitor monitor) throws GraphException {
 		final List<String> candidates = new ArrayList<String>();
 		try {
@@ -760,9 +839,9 @@ public class GraphViewPart extends ViewPart implements ILifecycleListener,
 			final List<String> arguments = new ArrayList<String>();
 			arguments.add(dot);
 			// the layout ProB suggests, e.g. sfdp for large state spaces
-			if (command.getPreferredDotType() != null)
-				arguments.add("-K" + command.getPreferredDotType());
-			arguments.addAll(command.getExtraArguments());
+			if (preferredDotType != null)
+				arguments.add("-K" + preferredDotType);
+			arguments.addAll(extraArguments);
 			arguments.addAll(Arrays.asList("-Tsvg", "-o",
 					svgFile.getAbsolutePath(), dotFile.getAbsolutePath()));
 			final Process process;

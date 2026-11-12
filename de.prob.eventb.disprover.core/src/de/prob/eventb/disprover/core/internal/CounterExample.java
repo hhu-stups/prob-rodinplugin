@@ -93,6 +93,17 @@ class CounterExample implements ICounterExample {
 		return doubleCheckFailed;
 	}
 
+	private de.prob.prolog.term.PrologTerm bindings = new de.prob.prolog.term.ListPrologTerm();
+
+	void setBindings(final de.prob.prolog.term.PrologTerm bindings) {
+		this.bindings = bindings;
+	}
+
+	@Override
+	public de.prob.prolog.term.PrologTerm getBindings() {
+		return bindings;
+	}
+
 	@Override
 	public java.util.Map<String, String> getValues() {
 		return java.util.Collections.unmodifiableMap(state);

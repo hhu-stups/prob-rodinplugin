@@ -19,4 +19,11 @@ public interface ICounterExample {
 	/** @return the values of the counter-example, by identifier */
 	public Map<String, String> getValues();
 
+	/**
+	 * @return ProB's bindings of the counter-example, a list of
+	 *         binding(Id,Value,PrettyPrintedValue), e.g. to visualise it; an
+	 *         empty list if there is none
+	 */
+	public de.prob.prolog.term.PrologTerm getBindings();
+
 }

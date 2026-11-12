@@ -84,8 +84,6 @@ public class DisproverReasoner implements IReasoner {
 					disproverInput.getTimeoutFactor());
 			ICounterExample ce = evaluateSequent(sequent, disproverInput,
 					factor, pm);
-			if (interactive && ce != null && ce.counterExampleFound())
-				notifyCounterExample(sequent, ce);
 			return createDisproverResult(ce, sequent, disproverInput);
 		} catch (RodinDBException e) {
 			Logger.log(IStatus.WARNING, e.getMessage(), e);
@@ -152,6 +150,10 @@ public class DisproverReasoner implements IReasoner {
 		// counterExample is null if the ProB command failed;
 		// createDisproverResult turns that into a reasoner failure
 		Logger.info("Disprover: Result: " + counterExample);
+		if (interactive && counterExample != null
+				&& counterExample.counterExampleFound())
+			notifyCounterExample(sequent, counterExample, evbProject, context,
+					selectedHypotheses);
 
 		return counterExample;
 	}
@@ -161,7 +163,9 @@ public class DisproverReasoner implements IReasoner {
 	 * block them; its details list the values and the goal.
 	 */
 	private static void notifyCounterExample(final IProverSequent sequent,
-			final ICounterExample ce) {
+			final ICounterExample ce, final IEventBProject project,
+			final AEventBContextParseUnit context,
+			final Set<Predicate> selectedHypotheses) {
 		final Object origin = sequent.getOrigin();
 		String where = "";
 		if (origin instanceof IPOSequent) {
@@ -185,7 +189,31 @@ public class DisproverReasoner implements IReasoner {
 						.append(e.getValue()).append('\n');
 		}
 		details.append("\nGoal: ").append(sequent.goal());
-		Logger.notifyUserNonModal(message, details.toString());
+		final CounterExampleVisualiser visualiser = counterExampleVisualiser;
+		if (visualiser == null) {
+			Logger.notifyUserNonModal(message, details.toString());
+			return;
+		}
+		final Predicate goal = sequent.goal();
+		final String title = "Counter-Example" + where;
+		Logger.notifyUserNonModal(message, details.toString(), "Visualise",
+				() -> visualiser.show(title, Animator.getAuxAnimator(),
+						dotFile -> DisproverCommand.writeCounterExampleDot(
+								Animator.getAuxAnimator(), project, context,
+								goal, selectedHypotheses, ce.getBindings(),
+								dotFile)));
+	}
+
+	/** shows a counter-example for the notice's "Visualise" link */
+	private static volatile CounterExampleVisualiser counterExampleVisualiser;
+
+	/**
+	 * Called by the disprover's UI plug-in: without a visualiser, the notice
+	 * about a counter-example has no "Visualise" link.
+	 */
+	public static void setCounterExampleVisualiser(
+			final CounterExampleVisualiser visualiser) {
+		counterExampleVisualiser = visualiser;
 	}
 
 	/**

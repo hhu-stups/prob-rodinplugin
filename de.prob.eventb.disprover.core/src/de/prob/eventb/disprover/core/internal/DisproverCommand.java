@@ -1,5 +1,8 @@
 package de.prob.eventb.disprover.core.internal;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -25,6 +28,7 @@ import de.prob.core.command.StartAnimationCommand;
 import de.prob.eventb.disprover.core.DisproverReasoner;
 import de.prob.eventb.disprover.core.command.DisproverLoadCommand;
 import de.prob.eventb.translator.internal.TranslationVisitor;
+import de.prob.exceptions.ProBException;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.ListPrologTerm;
@@ -94,34 +98,9 @@ public class DisproverCommand implements IComposableCommand {
 			Set<Predicate> selectedHypotheses, Predicate goal, int timeoutFactor,
 			AEventBContextParseUnit context, IProofMonitor pm,
 			List<PrologTerm> options) throws InterruptedException {
-		Preferences prefNode = Platform.getPreferencesService().getRootNode()
-				.node(InstanceScope.SCOPE).node("prob_disprover_preferences");
-
-		final ClearMachineCommand clear = new ClearMachineCommand();
-
-		final SetPreferencesCommand setPrefs = SetPreferencesCommand
-				.createSetPreferencesCommand(animator);
-
-		// set clpfd and chr preference
-		final SetPreferenceCommand setCLPFD = new SetPreferenceCommand("CLPFD",
-				Boolean.toString(prefNode.getBoolean("clpfd", true)));
-		final SetPreferenceCommand setCHR = new SetPreferenceCommand("CHR",
-				Boolean.toString(prefNode.getBoolean("chr", true)));
-		final SetPreferenceCommand setCSE = new SetPreferenceCommand("CSE",
-				Boolean.toString(prefNode.getBoolean("cse", false)));
-		final SetPreferenceCommand setSMT = new SetPreferenceCommand(
-				"SMT_SUPPORTED_INTERPRETER", Boolean.toString(prefNode
-						.getBoolean("smt", false)));
-		final SetPreferenceCommand setCSEPred = new SetPreferenceCommand(
-				"CSE_PRED", Boolean.toString(prefNode.getBoolean("cse", false)));
-		// default must match the one shown in DisproverPreferences
-		final SetPreferenceCommand setDoubleEval = new SetPreferenceCommand(
-				"DOUBLE_EVALUATION", Boolean.toString(prefNode.getBoolean(
-						"doubleeval", true)));
-
-		DisproverLoadCommand load = new DisproverLoadCommand(project, context);
-
-		StartAnimationCommand start = new StartAnimationCommand();
+		final Preferences prefNode = preferences();
+		final List<IComposableCommand> commands = setupCommands(animator,
+				project, context);
 
 		final int timeout = timeoutFactor * prefNode.getInt("timeout", 1000);
 		final boolean exportPO = prefNode.getBoolean("exportpo", false);
@@ -131,9 +110,8 @@ public class DisproverCommand implements IComposableCommand {
 						selectedHypotheses, goal, timeout, exportPO, options);
 
 		// local: the auto prover and an interactive call may run concurrently
-		final ComposedCommand composed = new ComposedCommand(clear, setPrefs, setCLPFD, setCHR,
-				setSMT, setCSE, setCSEPred, setDoubleEval, load, start,
-				disprove);
+		commands.add(disprove);
+		final ComposedCommand composed = new ComposedCommand(commands);
 
 		final Job job = new ProBCommandJob("Disproving", animator, composed);
 		job.setUser(true);
@@ -164,6 +142,91 @@ public class DisproverCommand implements IComposableCommand {
 		}
 		return disprove.getResult();
 
+	}
+
+	private static Preferences preferences() {
+		return Platform.getPreferencesService().getRootNode()
+				.node(InstanceScope.SCOPE).node("prob_disprover_preferences");
+	}
+
+	/**
+	 * @return the commands that set ProB up for the disprover: its
+	 *         preferences and the context of the proof obligation
+	 */
+	private static List<IComposableCommand> setupCommands(
+			final Animator animator, final IEventBProject project,
+			final AEventBContextParseUnit context) {
+		final Preferences prefNode = preferences();
+
+		final ClearMachineCommand clear = new ClearMachineCommand();
+
+		final SetPreferencesCommand setPrefs = SetPreferencesCommand
+				.createSetPreferencesCommand(animator);
+
+		// set clpfd and chr preference
+		final SetPreferenceCommand setCLPFD = new SetPreferenceCommand("CLPFD",
+				Boolean.toString(prefNode.getBoolean("clpfd", true)));
+		final SetPreferenceCommand setCHR = new SetPreferenceCommand("CHR",
+				Boolean.toString(prefNode.getBoolean("chr", true)));
+		final SetPreferenceCommand setCSE = new SetPreferenceCommand("CSE",
+				Boolean.toString(prefNode.getBoolean("cse", false)));
+		final SetPreferenceCommand setSMT = new SetPreferenceCommand(
+				"SMT_SUPPORTED_INTERPRETER", Boolean.toString(prefNode
+						.getBoolean("smt", false)));
+		final SetPreferenceCommand setCSEPred = new SetPreferenceCommand(
+				"CSE_PRED", Boolean.toString(prefNode.getBoolean("cse", false)));
+		// default must match the one shown in DisproverPreferences
+		final SetPreferenceCommand setDoubleEval = new SetPreferenceCommand(
+				"DOUBLE_EVALUATION", Boolean.toString(prefNode.getBoolean(
+						"doubleeval", true)));
+
+		DisproverLoadCommand load = new DisproverLoadCommand(project, context);
+
+		StartAnimationCommand start = new StartAnimationCommand();
+		return new ArrayList<IComposableCommand>(Arrays.<IComposableCommand> asList(
+				clear, setPrefs, setCLPFD, setCHR, setSMT, setCSE, setCSEPred,
+				setDoubleEval, load, start));
+	}
+
+	/**
+	 * Writes ProB's formula tree of the hypotheses implying the goal,
+	 * evaluated in a counter-example found before, as a dot file, using
+	 * <code>cbc_disprove_counter_example_dot/5</code>. Sets ProB up for the
+	 * proof obligation again, as the animator may have been used for others
+	 * meanwhile.
+	 *
+	 * @param bindings
+	 *            the counter-example, see {@link ICounterExample#getBindings()}
+	 */
+	public static void writeCounterExampleDot(final Animator animator,
+			final IEventBProject project,
+			final AEventBContextParseUnit context, final Predicate goal,
+			final Set<Predicate> hypotheses, final PrologTerm bindings,
+			final File dotFile) throws ProBException {
+		final int timeout = preferences().getInt("timeout", 1000);
+		final List<IComposableCommand> commands = setupCommands(animator,
+				project, context);
+		commands.add(new IComposableCommand() {
+			@Override
+			public void writeCommand(final IPrologTermOutput pto) {
+				pto.openTerm("cbc_disprove_counter_example_dot");
+				translatePredicate(pto, goal);
+				pto.openList();
+				for (Predicate p : hypotheses)
+					translatePredicate(pto, p);
+				pto.closeList();
+				pto.printTerm(bindings);
+				pto.printNumber(timeout);
+				pto.printAtom(dotFile.getAbsolutePath());
+				pto.closeTerm();
+			}
+
+			@Override
+			public void processResult(
+					final ISimplifiedROMap<String, PrologTerm> result) {
+			}
+		});
+		animator.execute(new ComposedCommand(commands));
 	}
 
 	private ICounterExample getResult() {
@@ -209,7 +272,7 @@ public class DisproverCommand implements IComposableCommand {
 		}
 	}
 
-	private void translatePredicate(final IPrologTermOutput pto, Predicate pred) {
+	private static void translatePredicate(final IPrologTermOutput pto, Predicate pred) {
 		TranslationVisitor v = new TranslationVisitor();
 		pred.accept(v);
 		ASTProlog p = new ASTProlog(pto, null);
@@ -262,6 +325,7 @@ public class DisproverCommand implements IComposableCommand {
 		if ("solution".equals(term.getFunctor())) {
 			counterExample = new CounterExample(true, false, false);
 			ListPrologTerm vars = (ListPrologTerm) term.getArgument(1);
+			counterExample.setBindings(vars);
 
 			for (PrologTerm e : vars) {
 				counterExample.addVar(e.getArgument(1).getFunctor(), e
@@ -272,6 +336,7 @@ public class DisproverCommand implements IComposableCommand {
 		if ("solution_on_selected_hypotheses".equals(term.getFunctor())) {
 			counterExample = new CounterExample(true, false, true);
 			ListPrologTerm vars = (ListPrologTerm) term.getArgument(1);
+			counterExample.setBindings(vars);
 
 			for (PrologTerm e : vars) {
 				counterExample.addVar(e.getArgument(1).getFunctor(), e
