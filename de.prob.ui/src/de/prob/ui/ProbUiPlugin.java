@@ -91,6 +91,29 @@ public class ProbUiPlugin extends AbstractUIPlugin {
 	}
 
 	/**
+	 * Opens the ProB Table view and shows a table contributed with the
+	 * extension point <code>de.prob.ui.tables</code>, e.g. the disprover's
+	 * statistics. To be called in the UI thread.
+	 *
+	 * @param id
+	 *            the table's id in the extension
+	 */
+	public static void showContributedTable(final String id) {
+		final org.eclipse.ui.IWorkbenchWindow window = org.eclipse.ui.PlatformUI
+				.getWorkbench().getActiveWorkbenchWindow();
+		if (window == null || window.getActivePage() == null)
+			return;
+		try {
+			final de.prob.ui.table.TableViewPart view = (de.prob.ui.table.TableViewPart) window
+					.getActivePage().showView(
+							de.prob.ui.table.TableViewPart.VIEW_ID);
+			view.showCustomTable(id);
+		} catch (org.eclipse.ui.PartInitException e) {
+			Logger.notifyUser("Could not open the ProB Table view", e);
+		}
+	}
+
+	/**
 	 * Opens the ProB Graph view and shows a graph that is not one of the
 	 * animator's, e.g. the disprover's visualisation of a counter-example.
 	 * To be called in the UI thread.

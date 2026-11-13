@@ -146,7 +146,7 @@ public class DisproverReasoner implements IReasoner {
 		ICounterExample counterExample = DisproverCommand.disprove(
 				Animator.getAuxAnimator(), evbProject, allHypotheses,
 				selectedHypotheses, goal, timeoutFactor, context, pm,
-				getOptions(disproverInput));
+				getOptions(disproverInput), proofObligationName(origin));
 		// counterExample is null if the ProB command failed;
 		// createDisproverResult turns that into a reasoner failure
 		Logger.info("Disprover: Result: " + counterExample);
@@ -156,6 +156,16 @@ public class DisproverReasoner implements IReasoner {
 					selectedHypotheses);
 
 		return counterExample;
+	}
+
+	/**
+	 * @return the name of the proof obligation, e.g.
+	 *         <code>inv1/INV (M1)</code>, for the Progress view and the
+	 *         statistics; <code>null</code> if it is not known
+	 */
+	private static String proofObligationName(final IPOSequent po) {
+		return po == null ? null : po.getElementName() + " ("
+				+ po.getRodinFile().getBareName() + ")";
 	}
 
 	/**

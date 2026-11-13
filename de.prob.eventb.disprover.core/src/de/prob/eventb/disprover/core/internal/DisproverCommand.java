@@ -6,6 +6,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.preferences.InstanceScope;
@@ -26,6 +28,7 @@ import de.prob.core.command.SetPreferenceCommand;
 import de.prob.core.command.SetPreferencesCommand;
 import de.prob.core.command.StartAnimationCommand;
 import de.prob.eventb.disprover.core.DisproverReasoner;
+import de.prob.eventb.disprover.core.DisproverStatistics;
 import de.prob.eventb.disprover.core.command.DisproverLoadCommand;
 import de.prob.eventb.translator.internal.TranslationVisitor;
 import de.prob.exceptions.ProBException;
@@ -98,6 +101,22 @@ public class DisproverCommand implements IComposableCommand {
 			Set<Predicate> selectedHypotheses, Predicate goal, int timeoutFactor,
 			AEventBContextParseUnit context, IProofMonitor pm,
 			List<PrologTerm> options) throws InterruptedException {
+		return disprove(animator, project, allHypotheses, selectedHypotheses,
+				goal, timeoutFactor, context, pm, options, null);
+	}
+
+	/**
+	 * @param proofObligation
+	 *            the name of the proof obligation, e.g.
+	 *            <code>inv1/INV (M1)</code>, for the Progress view and the
+	 *            {@link DisproverStatistics}; may be <code>null</code>
+	 */
+	public static ICounterExample disprove(Animator animator,
+			IEventBProject project, Set<Predicate> allHypotheses,
+			Set<Predicate> selectedHypotheses, Predicate goal, int timeoutFactor,
+			AEventBContextParseUnit context, IProofMonitor pm,
+			List<PrologTerm> options, String proofObligation)
+			throws InterruptedException {
 		final Preferences prefNode = preferences();
 		final List<IComposableCommand> commands = setupCommands(animator,
 				project, context);
@@ -111,9 +130,34 @@ public class DisproverCommand implements IComposableCommand {
 
 		// local: the auto prover and an interactive call may run concurrently
 		commands.add(disprove);
+		final boolean wdProver = isWdProver(options);
+		// the statistics of the provers after the call, if probcli has them;
+		// they name the prover if it is not the normal disprover
+		String statisticsName = proofObligation == null ? "(unknown proof obligation)"
+				: proofObligation;
+		if (wdProver)
+			statisticsName += " [WD prover]";
+		else if (timeoutFactor != 1)
+			statisticsName += " [timeout x" + timeoutFactor + "]";
+		final StatisticsSlot statistics = new StatisticsSlot(statisticsName,
+				disprove);
+		commands.add(statistics);
 		final ComposedCommand composed = new ComposedCommand(commands);
 
-		final Job job = new ProBCommandJob("Disproving", animator, composed);
+		// the name shown e.g. in the Progress view
+		final String jobName = (wdProver ? "Running ProB WD Prover"
+				: "Running ProB Disprover")
+				+ (proofObligation == null ? "" : " on " + proofObligation);
+		final Job job = new ProBCommandJob(jobName, animator, composed) {
+			@Override
+			protected IStatus run(final IProgressMonitor monitor) {
+				// asks probcli once whether it has the statistics; an older
+				// one would make the whole command fail
+				statistics.supported = DisproverStatistics
+						.checkSupported(animator);
+				return super.run(monitor);
+			}
+		};
 		job.setUser(true);
 		job.schedule();
 
@@ -142,6 +186,21 @@ public class DisproverCommand implements IComposableCommand {
 		}
 		return disprove.getResult();
 
+	}
+
+	/**
+	 * @return whether the options are those of the WD prover, i.e. without
+	 *         constraint solving
+	 */
+	private static boolean isWdProver(final List<PrologTerm> options) {
+		if (options == null)
+			return false;
+		for (PrologTerm option : options)
+			if (option.hasFunctor("disprover_option", 1)
+					&& option.getArgument(1).hasFunctor(
+							"no_constraint_solving", 0))
+				return true;
+		return false;
 	}
 
 	private static Preferences preferences() {
@@ -231,6 +290,60 @@ public class DisproverCommand implements IComposableCommand {
 
 	private ICounterExample getResult() {
 		return counterExample;
+	}
+
+	/**
+	 * Gets the {@link DisproverStatistics} after the disprover call, in the
+	 * same composed command; whether probcli supports them is only known
+	 * when the job runs.
+	 */
+	private static final class StatisticsSlot implements IComposableCommand {
+		private final String proofObligation;
+		private final DisproverCommand disprove;
+		volatile boolean supported;
+		private IComposableCommand command;
+
+		StatisticsSlot(final String proofObligation,
+				final DisproverCommand disprove) {
+			this.proofObligation = proofObligation;
+			this.disprove = disprove;
+		}
+
+		@Override
+		public void writeCommand(final IPrologTermOutput pto)
+				throws CommandException {
+			command = DisproverStatistics.command(supported, proofObligation,
+					() -> outcome(disprove));
+			command.writeCommand(pto);
+		}
+
+		@Override
+		public void processResult(
+				final ISimplifiedROMap<String, PrologTerm> bindings)
+				throws CommandException {
+			if (command != null)
+				command.processResult(bindings);
+		}
+	}
+
+	/** @return a short description of the result, for the statistics */
+	private static String outcome(final DisproverCommand disprove) {
+		final ICounterExample ce = disprove.counterExample;
+		if (disprove.interrupted)
+			return "interrupted";
+		if (ce == null)
+			return "error";
+		if (ce.counterExampleFound())
+			return ce.onlySelectedHypotheses() ? "counter-example for the selected hypotheses"
+					: "counter-example";
+		if (ce.isProof())
+			return ce.doubleCheckFailed() ? "proven (contradiction in hypotheses)"
+					: "proven";
+		if (ce.timeoutOccured())
+			return "time-out";
+		final String reason = ce.getReason();
+		return reason == null || reason.isEmpty() ? "not proven"
+				: "not proven (" + reason + ")";
 	}
 
 	@Override

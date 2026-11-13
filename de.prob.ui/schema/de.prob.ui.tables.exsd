@@ -1,0 +1,46 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Schema file written by PDE -->
+<schema targetNamespace="de.prob.ui" xmlns="http://www.w3.org/2001/XMLSchema">
+<annotation>
+      <appinfo>
+         <meta.schema plugin="de.prob.ui" id="de.prob.ui.tables" name="ProB Table View Tables"/>
+      </appinfo>
+      <documentation>
+         Tables for the ProB Table view that are not computed by the animator's probcli, e.g. the disprover's statistics. The view offers them in a toolbar menu per group.
+      </documentation>
+   </annotation>
+
+   <element name="extension">
+      <complexType>
+         <sequence>
+            <element ref="table" minOccurs="1" maxOccurs="unbounded"/>
+         </sequence>
+         <attribute name="point" type="string" use="required"/>
+         <attribute name="id" type="string"/>
+         <attribute name="name" type="string"/>
+      </complexType>
+   </element>
+
+   <element name="table">
+      <complexType>
+         <attribute name="id" type="string" use="required">
+            <annotation><documentation>a unique id</documentation></annotation>
+         </attribute>
+         <attribute name="name" type="string" use="required">
+            <annotation><documentation>the name in the menu and the title of the table</documentation></annotation>
+         </attribute>
+         <attribute name="description" type="string">
+            <annotation><documentation>the tooltip of the menu entry</documentation></annotation>
+         </attribute>
+         <attribute name="group" type="string" use="required">
+            <annotation><documentation>the name of the toolbar menu, e.g. Disprover</documentation></annotation>
+         </attribute>
+         <attribute name="class" type="string" use="required">
+            <annotation>
+               <documentation>computes the table</documentation>
+               <appinfo><meta.attribute kind="java" basedOn=":de.prob.ui.TableSource"/></appinfo>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+</schema>

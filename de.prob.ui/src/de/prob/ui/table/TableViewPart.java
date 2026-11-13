@@ -103,7 +103,8 @@ public class TableViewPart extends ViewPart implements ILifecycleListener,
 			Arrays.asList(
 			        "mcdc_coverage", "mcdc_inv_coverage", // yields WD errors when run; needs to be improved
 					"prob_external_fun_profile_info", // not very useful in Rodin at the moment (except in Theory plugin)
-					 "prob_cache_info" // cache can currently not be activated in Rodin
+					 "prob_cache_info", // cache can currently not be activated in Rodin
+					 "disprover_statistics" // about the animator's probcli, not the disprover's; see the Disprover menu
 					 ));
 
 	private static final String COMPLETION_HINT = "Tab or Ctrl+Space in the expression field completes identifiers.";
@@ -121,6 +122,10 @@ public class TableViewPart extends ViewPart implements ILifecycleListener,
 	// the menus with the tables from ProB
 	private CommandMenus menus;
 	private CommandInfo shown;
+	/** the contributed table shown (then shown is null), e.g. the disprover's statistics */
+	private CustomTables.CustomTable shownCustom;
+	/** computes shownCustom again when it changed */
+	private Runnable customListener;
 
 	// the table's contents
 	private List<String> headers = Collections.emptyList();
@@ -222,6 +227,8 @@ public class TableViewPart extends ViewPart implements ILifecycleListener,
 				});
 		menus.addTo(toolBar);
 		toolBar.add(new Separator());
+		if (CustomTables.addTo(toolBar, this::showCustomTable))
+			toolBar.add(new Separator());
 		final Action refresh = new Action("Refresh") {
 			@Override
 			public void run() {
@@ -235,7 +242,10 @@ public class TableViewPart extends ViewPart implements ILifecycleListener,
 			public void run() {
 				if (shown == null) {
 					MessageDialog.openInformation(getSite().getShell(),
-							"Preferences", "Choose a table first.");
+							"Preferences",
+							shownCustom != null ? shownCustom.getName()
+									+ " has no ProB preferences."
+									: "Choose a table first.");
 					return;
 				}
 				de.prob.ui.CommandPreferencesDialog.open(getSite().getShell(),
@@ -424,7 +434,8 @@ public class TableViewPart extends ViewPart implements ILifecycleListener,
 		final Animator animator = Animator.getAnimator();
 		if (!animator.isMachineLoaded()) {
 			menus.setCommands(Collections.<CommandInfo> emptyList());
-			setStatus("No model is being animated.", false);
+			if (shownCustom == null)
+				setStatus("No model is being animated.", false);
 			return;
 		}
 		final String stateId = currentStateId(animator);
@@ -447,11 +458,12 @@ public class TableViewPart extends ViewPart implements ILifecycleListener,
 					@Override
 					public void run() {
 						menus.setCommands(loaded);
-						if (loadError != null)
-							setStatus(loadError, true);
-						else if (then != null)
+						if (loadError != null) {
+							if (shownCustom == null)
+								setStatus(loadError, true);
+						} else if (then != null)
 							showTable(menus.find(then));
-						else if (shown == null)
+						else if (shown == null && shownCustom == null)
 							setStatus("Choose a table in the toolbar menus. "
 									+ COMPLETION_HINT, false);
 					}
@@ -465,7 +477,10 @@ public class TableViewPart extends ViewPart implements ILifecycleListener,
 
 	/** gets the tables again, as they depend on the state, and the table */
 	private void refresh() {
-		loadCommands(shown == null ? null : shown.getCommand());
+		if (shownCustom != null)
+			showCustomTable(shownCustom);
+		else
+			loadCommands(shown == null ? null : shown.getCommand());
 	}
 
 	/**
@@ -500,6 +515,7 @@ public class TableViewPart extends ViewPart implements ILifecycleListener,
 
 	/** computes a table in the background and shows it */
 	private void showTable(final CommandInfo command) {
+		setShownCustom(null);
 		if (command == null) {
 			setStatus("This table is no longer available.", true);
 			return;
@@ -595,6 +611,149 @@ public class TableViewPart extends ViewPart implements ILifecycleListener,
 			@Override
 			protected void canceling() {
 				Animator.getAnimator().sendUserInterruptSignal();
+			}
+		};
+		setRunningJob(job);
+		job.schedule();
+	}
+
+	/**
+	 * the table to show, or null for none; computes it again (in the UI
+	 * thread) when it changes
+	 */
+	private void setShownCustom(final CustomTables.CustomTable custom) {
+		if (custom == shownCustom)
+			return;
+		if (shownCustom != null && customListener != null) {
+			final de.prob.ui.TableSource source = shownCustom.getSource();
+			if (source != null)
+				source.removeChangeListener(customListener);
+		}
+		shownCustom = custom;
+		customListener = null;
+		if (custom == null)
+			return;
+		final de.prob.ui.TableSource source = custom.getSource();
+		if (source == null)
+			return;
+		final Runnable listener = new Runnable() {
+			@Override
+			public void run() {
+				asyncExec(new Runnable() {
+					@Override
+					public void run() {
+						// not while it is being computed, e.g. after each
+						// of many proof obligations
+						if (shownCustom == custom && runningJob == null)
+							computeCustomTable(custom, true);
+					}
+				});
+			}
+		};
+		customListener = listener;
+		source.addChangeListener(listener);
+	}
+
+	/**
+	 * Shows a table contributed with the extension point
+	 * <code>de.prob.ui.tables</code>, e.g. the disprover's statistics.
+	 *
+	 * @param id
+	 *            the table's id in the extension
+	 */
+	public void showCustomTable(final String id) {
+		final CustomTables.CustomTable custom = CustomTables.find(id);
+		if (custom != null)
+			showCustomTable(custom);
+		else
+			setStatus("There is no table " + id + ".", true);
+	}
+
+	/** shows a contributed table, e.g. the disprover's statistics */
+	private void showCustomTable(final CustomTables.CustomTable custom) {
+		shown = null;
+		setShownCustom(custom);
+		computeCustomTable(custom, false);
+	}
+
+	/**
+	 * computes a contributed table in the background and shows it
+	 *
+	 * @param keepOrder
+	 *            whether to keep the sort order, e.g. when the table is
+	 *            updated
+	 */
+	private void computeCustomTable(final CustomTables.CustomTable custom,
+			final boolean keepOrder) {
+		final de.prob.ui.TableSource source = custom.getSource();
+		if (source == null) {
+			setTable(Collections.<List<String>> emptyList());
+			setStatus(custom.getName() + " is not available.", true);
+			return;
+		}
+		if (runningJob != null)
+			runningJob.cancel();
+		if (!keepOrder)
+			setStatus("Computing " + custom.getName() + " ...", false);
+		final Job job = new Job("ProB Table: " + custom.getName()) {
+			@Override
+			protected IStatus run(final IProgressMonitor monitor) {
+				de.prob.ui.TableSource.Table result = null;
+				String error = null;
+				try {
+					result = source.compute();
+				} catch (ProBException e) {
+					error = custom.getName() + " failed: " + e.getMessage();
+				} catch (RuntimeException e) {
+					error = custom.getName() + " failed: " + e;
+				}
+				if (monitor.isCanceled())
+					return Status.CANCEL_STATUS;
+				final de.prob.ui.TableSource.Table computed = result;
+				final String computeError = error;
+				final Job self = this;
+				asyncExec(new Runnable() {
+					@Override
+					public void run() {
+						if (runningJob != self)
+							return; // a newer table is being computed
+						setRunningJob(null);
+						if (shownCustom != custom)
+							return;
+						if (computeError != null) {
+							setTable(Collections.<List<String>> emptyList());
+							setStatus(computeError, true);
+							return;
+						}
+						String title = custom.getName();
+						final String followUpId = source.getFollowUpTable();
+						if (followUpId != null) {
+							// e.g. the statistics after resetting them
+							final CustomTables.CustomTable followUp = CustomTables
+									.find(followUpId);
+							if (followUp != null) {
+								setShownCustom(followUp);
+								title = followUp.getName();
+							}
+						}
+						final int column = sortColumn;
+						final boolean ascending = sortAscending;
+						setTable(computed.getRows());
+						if (keepOrder && column >= 0
+								&& column < table.getColumnCount()) {
+							sortColumn = column;
+							sortAscending = !ascending; // sortBy flips it
+							sortBy(column);
+						}
+						setSavableTitle(title);
+						final int n = rows.size();
+						final String note = computed.getNote();
+						setStatus(title + ": " + n + (n == 1 ? " row" : " rows")
+								+ (note == null || note.isEmpty() ? "" : ". "
+										+ note), false);
+					}
+				});
+				return Status.OK_STATUS;
 			}
 		};
 		setRunningJob(job);
@@ -740,6 +899,11 @@ public class TableViewPart extends ViewPart implements ILifecycleListener,
 		asyncExec(new Runnable() {
 			@Override
 			public void run() {
+				if (shownCustom != null) {
+					// not about the model, e.g. the disprover's statistics
+					loadCommands(null);
+					return;
+				}
 				if (runningJob != null)
 					runningJob.cancel();
 				setRunningJob(null);
@@ -771,6 +935,7 @@ public class TableViewPart extends ViewPart implements ILifecycleListener,
 		StaticListenerRegistry.unregisterListener((ILifecycleListener) this);
 		StaticListenerRegistry.unregisterListener((IAnimationListener) this);
 		menus.dispose();
+		setShownCustom(null);
 		if (runningJob != null)
 			runningJob.cancel();
 		if (clipboard != null)

@@ -2,6 +2,23 @@
 <?eclipse version="3.2"?>
 <plugin>
    <extension
+         point="de.prob.ui.tables">
+      <table
+            id="de.prob.eventb.disprover.ui.statisticsTable"
+            name="%table.statistics.name"
+            description="%table.statistics.description"
+            group="Disprover"
+            class="de.prob.eventb.disprover.ui.DisproverStatisticsTable">
+      </table>
+      <table
+            id="de.prob.eventb.disprover.ui.resetStatisticsTable"
+            name="%table.reset_statistics.name"
+            description="%table.reset_statistics.description"
+            group="Disprover"
+            class="de.prob.eventb.disprover.ui.ResetDisproverStatisticsTable">
+      </table>
+   </extension>
+   <extension
          point="org.eventb.ui.proofTactics">
   <!--    <tactic
             dropdown="de.prob.eventb.disprover.ui.DisproverDropdown"
@@ -52,6 +69,18 @@
             tacticProvider="de.prob.eventb.disprover.ui.DisproverWDProverTacticProvider"
             target="global"
             tooltip="%tactic.disprover.wd_prover.tooltip">
+      </tactic>
+      <!-- not a tactic: opens the statistics; last in the menu -->
+      <tactic
+            dropdown="de.prob.eventb.disprover.ui.dropdown"
+            icon="icons/prob.png"
+            id="de.prob.eventb.disprover.ui.showStatistics"
+            interrupt="false"
+            name="%tactic.disprover.statistics.name"
+            priority="100"
+            proofCommand="de.prob.eventb.disprover.ui.ShowDisproverStatisticsCommand"
+            target="global"
+            tooltip="%tactic.disprover.statistics.tooltip">
       </tactic>
    <!--      <tactic
             dropdown="de.prob.eventb.disprover.ui.DisproverDropdown"
