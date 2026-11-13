@@ -117,12 +117,33 @@ public class DisproverCommand implements IComposableCommand {
 			AEventBContextParseUnit context, IProofMonitor pm,
 			List<PrologTerm> options, String proofObligation)
 			throws InterruptedException {
+		return disprove(animator, project, allHypotheses, selectedHypotheses,
+				goal, timeoutFactor, context, pm, options, proofObligation,
+				true);
+	}
+
+	/**
+	 * @param interactive
+	 *            whether the user started the call (e.g. in the Proof Control
+	 *            view); if not (auto-prover, proof replay), the proof
+	 *            obligation is not exported even if the preference says so
+	 */
+	public static ICounterExample disprove(Animator animator,
+			IEventBProject project, Set<Predicate> allHypotheses,
+			Set<Predicate> selectedHypotheses, Predicate goal, int timeoutFactor,
+			AEventBContextParseUnit context, IProofMonitor pm,
+			List<PrologTerm> options, String proofObligation,
+			boolean interactive) throws InterruptedException {
 		final Preferences prefNode = preferences();
 		final List<IComposableCommand> commands = setupCommands(animator,
 				project, context);
 
 		final int timeout = timeoutFactor * prefNode.getInt("timeout", 1000);
-		final boolean exportPO = prefNode.getBoolean("exportpo", false);
+		final boolean wdProver = isWdProver(options);
+		// only for calls the user started: otherwise the export would
+		// overwrite the file for every PO the auto-prover tries
+		final boolean exportPO = prefNode.getBoolean("exportpo", false)
+				&& interactive;
 		final DisproverCommand disprove = options == null ? new DisproverCommand(
 				allHypotheses, selectedHypotheses, goal, timeout, exportPO)
 				: new DisproverCommandWithOptions(allHypotheses,
@@ -130,7 +151,6 @@ public class DisproverCommand implements IComposableCommand {
 
 		// local: the auto prover and an interactive call may run concurrently
 		commands.add(disprove);
-		final boolean wdProver = isWdProver(options);
 		// the statistics of the provers after the call, if probcli has them;
 		// they name the prover if it is not the normal disprover
 		String statisticsName = proofObligation == null ? "(unknown proof obligation)"
