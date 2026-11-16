@@ -388,7 +388,7 @@ public class GraphViewPart extends ViewPart implements ILifecycleListener,
 				saveGraph();
 			}
 		};
-		save.setToolTipText("Save the graph as an SVG image (.svg) or as a GraphViz file (.dot)");
+		save.setToolTipText("Save the graph as an SVG image (.svg), a PDF document (.pdf) or a GraphViz file (.dot)");
 		save.setImageDescriptor(images
 				.getImageDescriptor(ISharedImages.IMG_ETOOL_SAVE_EDIT));
 		save.setDisabledImageDescriptor(images
@@ -403,36 +403,46 @@ public class GraphViewPart extends ViewPart implements ILifecycleListener,
 			save.setEnabled(graph != null);
 	}
 
-	/** saves the shown graph as .svg or .dot, chosen by the file's extension */
+	/** saves the shown graph as .svg, .pdf or .dot, chosen by the file's extension */
 	private void saveGraph() {
 		final Graph graph = shownGraph;
 		if (graph == null)
 			return;
+		final String[] extensions = { ".svg", ".pdf", ".dot" };
 		final FileDialog dialog = new FileDialog(getSite().getShell(),
 				SWT.SAVE);
 		dialog.setText("Save Graph As");
-		dialog.setFilterExtensions(new String[] { "*.svg", "*.dot" });
+		dialog.setFilterExtensions(new String[] { "*.svg", "*.pdf", "*.dot" });
 		dialog.setFilterNames(new String[] { "SVG image (*.svg)",
-				"GraphViz dot file (*.dot)" });
+				"PDF document (*.pdf)", "GraphViz dot file (*.dot)" });
 		dialog.setFileName(fileName(graph.title) + ".svg");
 		dialog.setOverwrite(true);
 		String path = dialog.open();
 		if (path == null)
 			return;
 		final String lower = path.toLowerCase(Locale.ROOT);
-		final boolean dot;
+		final String extension;
 		if (lower.endsWith(".dot") || lower.endsWith(".gv"))
-			dot = true;
+			extension = ".dot";
 		else if (lower.endsWith(".svg"))
-			dot = false;
+			extension = ".svg";
+		else if (lower.endsWith(".pdf"))
+			extension = ".pdf";
 		else {
 			// no known extension: the chosen file type's
-			dot = dialog.getFilterIndex() == 1;
-			path += dot ? ".dot" : ".svg";
+			final int index = dialog.getFilterIndex();
+			extension = extensions[index >= 0 && index < extensions.length ? index
+					: 0];
+			path += extension;
+		}
+		if (".pdf".equals(extension)) {
+			savePdf(graph, new File(path));
+			return;
 		}
 		try {
-			Files.write(new File(path).toPath(), (dot ? graph.dot : graph.svg)
-					.getBytes(StandardCharsets.UTF_8));
+			Files.write(new File(path).toPath(),
+					(".dot".equals(extension) ? graph.dot : graph.svg)
+							.getBytes(StandardCharsets.UTF_8));
 			getViewSite().getActionBars().getStatusLineManager()
 					.setMessage("Saved the graph to " + path);
 		} catch (IOException e) {
@@ -440,6 +450,55 @@ public class GraphViewPart extends ViewPart implements ILifecycleListener,
 					"Could not save the graph to " + path + ": "
 							+ e.getMessage());
 		}
+	}
+
+	/**
+	 * lets GraphViz lay out the graph again, as for the view, but as PDF; in
+	 * a job, as it may take a while for large graphs
+	 */
+	private void savePdf(final Graph graph, final File pdfFile) {
+		final Job job = new Job("ProB Graph: saving " + graph.title + " as PDF") {
+			@Override
+			protected IStatus run(final IProgressMonitor monitor) {
+				String error = null;
+				File dotFile = null;
+				try {
+					dotFile = File.createTempFile("prob_graph", ".dot");
+					Files.write(dotFile.toPath(),
+							graph.dot.getBytes(StandardCharsets.UTF_8));
+					runDot(Collections.singletonList(graph.dotProgram),
+							graph.preferredDotType, graph.extraArguments,
+							dotFile, "pdf", pdfFile, monitor);
+				} catch (GraphException e) {
+					error = e.getMessage();
+				} catch (IOException e) {
+					error = e.getMessage();
+				} finally {
+					if (dotFile != null)
+						dotFile.delete();
+				}
+				if (monitor.isCanceled())
+					return Status.CANCEL_STATUS;
+				final String message = error;
+				asyncExec(new Runnable() {
+					@Override
+					public void run() {
+						if (message == null)
+							getViewSite().getActionBars()
+									.getStatusLineManager()
+									.setMessage("Saved the graph to " + pdfFile);
+						else
+							MessageDialog.openError(getSite().getShell(),
+									"Save Graph As",
+									"Could not save the graph to " + pdfFile
+											+ ":\n" + message);
+					}
+				});
+				return Status.OK_STATUS;
+			}
+		};
+		job.setUser(true);
+		job.schedule();
 	}
 
 	/**
@@ -685,13 +744,15 @@ public class GraphViewPart extends ViewPart implements ILifecycleListener,
 					}
 					if (monitor.isCanceled())
 						return Status.CANCEL_STATUS;
-					runDot(animator, null, Collections.<String> emptyList(),
-							dotFile, svgFile, monitor);
+					final String dotProgram = runDot(animator, null,
+							Collections.<String> emptyList(), dotFile, "svg",
+							svgFile, monitor);
 					graph = new Graph(title, new String(
 							Files.readAllBytes(dotFile.toPath()),
 							StandardCharsets.UTF_8), new String(
 							Files.readAllBytes(svgFile.toPath()),
-							StandardCharsets.UTF_8));
+							StandardCharsets.UTF_8), dotProgram, null,
+							Collections.<String> emptyList());
 					content = graph.svgForHtml();
 				} catch (GraphException e) {
 					content = e.getMessage();
@@ -761,11 +822,20 @@ public class GraphViewPart extends ViewPart implements ILifecycleListener,
 		final String title;
 		final String dot;
 		final String svg;
+		/** how GraphViz laid it out, to lay it out the same way for a PDF */
+		final String dotProgram;
+		final String preferredDotType;
+		final List<String> extraArguments;
 
-		Graph(final String title, final String dot, final String svg) {
+		Graph(final String title, final String dot, final String svg,
+				final String dotProgram, final String preferredDotType,
+				final List<String> extraArguments) {
 			this.title = title;
 			this.dot = dot;
 			this.svg = svg;
+			this.dotProgram = dotProgram;
+			this.preferredDotType = preferredDotType;
+			this.extraArguments = extraArguments;
 		}
 
 		/** without the XML declaration and DOCTYPE, to embed it in HTML */
@@ -796,11 +866,14 @@ public class GraphViewPart extends ViewPart implements ILifecycleListener,
 			if (monitor.isCanceled())
 				throw new GraphException("Cancelled.");
 			layingOut.run();
-			runDot(animator, command.getPreferredDotType(),
-					command.getExtraArguments(), dotFile, svgFile, monitor);
+			final String dotProgram = runDot(animator,
+					command.getPreferredDotType(), command.getExtraArguments(),
+					dotFile, "svg", svgFile, monitor);
 			return new Graph(title, new String(Files.readAllBytes(dotFile
 					.toPath()), StandardCharsets.UTF_8), new String(
-					Files.readAllBytes(svgFile.toPath()), StandardCharsets.UTF_8));
+					Files.readAllBytes(svgFile.toPath()), StandardCharsets.UTF_8),
+					dotProgram, command.getPreferredDotType(),
+					command.getExtraArguments());
 		} catch (IOException e) {
 			throw new GraphException("Could not create the graph: "
 					+ e.getMessage());
@@ -817,10 +890,13 @@ public class GraphViewPart extends ViewPart implements ILifecycleListener,
 	 *            the layout ProB suggests, e.g. sfdp, or null
 	 * @param extraArguments
 	 *            further arguments for GraphViz
+	 * @param format
+	 *            GraphViz's output format, e.g. svg or pdf
+	 * @return the dot program that laid it out
 	 */
-	private static void runDot(final Animator animator,
+	private static String runDot(final Animator animator,
 			final String preferredDotType, final List<String> extraArguments,
-			final File dotFile, final File svgFile,
+			final File dotFile, final String format, final File outputFile,
 			final IProgressMonitor monitor) throws GraphException {
 		final List<String> candidates = new ArrayList<String>();
 		try {
@@ -834,7 +910,19 @@ public class GraphViewPart extends ViewPart implements ILifecycleListener,
 		for (String location : DOT_LOCATIONS)
 			if (!candidates.contains(location))
 				candidates.add(location);
+		return runDot(candidates, preferredDotType, extraArguments, dotFile,
+				format, outputFile, monitor);
+	}
 
+	/**
+	 * @param candidates
+	 *            the dot programs to try, in this order
+	 * @return the dot program that laid it out
+	 */
+	private static String runDot(final List<String> candidates,
+			final String preferredDotType, final List<String> extraArguments,
+			final File dotFile, final String format, final File outputFile,
+			final IProgressMonitor monitor) throws GraphException {
 		for (String dot : candidates) {
 			final List<String> arguments = new ArrayList<String>();
 			arguments.add(dot);
@@ -842,8 +930,8 @@ public class GraphViewPart extends ViewPart implements ILifecycleListener,
 			if (preferredDotType != null)
 				arguments.add("-K" + preferredDotType);
 			arguments.addAll(extraArguments);
-			arguments.addAll(Arrays.asList("-Tsvg", "-o",
-					svgFile.getAbsolutePath(), dotFile.getAbsolutePath()));
+			arguments.addAll(Arrays.asList("-T" + format, "-o",
+					outputFile.getAbsolutePath(), dotFile.getAbsolutePath()));
 			final Process process;
 			try {
 				process = new ProcessBuilder(arguments).redirectErrorStream(
@@ -856,7 +944,7 @@ public class GraphViewPart extends ViewPart implements ILifecycleListener,
 				throw new GraphException("GraphViz (" + dot
 						+ ") failed with exit code " + process.exitValue()
 						+ ":\n" + output);
-			return;
+			return dot;
 		}
 		throw new GraphException(
 				"GraphViz's dot program was not found. Please install GraphViz (https://graphviz.org)"
