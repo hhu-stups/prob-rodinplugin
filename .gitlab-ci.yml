@@ -31,7 +31,11 @@ deploy:
     - if: $CI_PROJECT_PATH == "general/stups/prob_rodin_plugin" && ($CI_COMMIT_BRANCH == "develop" || $CI_COMMIT_TAG =~ /\d+\.\d+\..+/)
   image: alpine:3
   variables:
-    GIT_STRATEGY: none
+    # The release branch of the script needs deployment/ and build.gradle
+    # from the repository, so it cannot skip the checkout (GIT_STRATEGY: none).
+    # A shallow fetch is enough.
+    GIT_STRATEGY: fetch
+    GIT_DEPTH: "1"
     lftp_setup: "set cmd:fail-exit true; set sftp:auto-confirm true; open --user ${DEPLOY_USERNAME} --env-password sftp://${DEPLOY_HOST}/${DEPLOY_REMOTE_BASEDIR}/rodin/prob1/"
   before_script:
     - apk update
