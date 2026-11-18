@@ -42,6 +42,21 @@ deploy:
     - apk add lftp openssh-client
   script:
     - |
+      # protected CI/CD variables are empty in pipelines of unprotected
+      # branches and tags; lftp then only says "open: Not connected"
+      missing=""
+      for v in DEPLOY_USERNAME DEPLOY_PASSWORD DEPLOY_HOST DEPLOY_REMOTE_BASEDIR
+      do
+        eval "value=\${$v-}"
+        [ -n "$value" ] || missing="$missing $v"
+      done
+      if [ -n "$missing" ]
+      then
+        echo "ERROR: these CI/CD variables are not set:$missing"
+        echo "ERROR: if they are protected variables, protect this branch or tag (Settings > Repository > Protected branches/tags)."
+        exit 1
+      fi
+    - |
       if [ -z "${CI_COMMIT_TAG-}" ]
       then
         LFTP_PASSWORD="${DEPLOY_PASSWORD}" lftp -c "$lftp_setup; mirror -vvv -R --delete de.prob.repository/target/repository nightly"
