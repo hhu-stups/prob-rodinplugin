@@ -1,5 +1,6 @@
 package de.prob.eventb.disprover.ui;
 
+import de.prob.eventb.disprover.core.DisproverReasonerInput;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.preference.PreferencePage;
@@ -47,8 +48,14 @@ public class DisproverPreferences extends PreferencePage implements
 
 	}
 
+	public static final String PREFERENCE_NODE = DisproverReasonerInput.PREFERENCE_NODE;
+	/** time-out for "Use ProB WD Prover", option wd_prover_timeout(T) */
+	public static final String WD_PROVER_TIMEOUT_KEY = DisproverReasonerInput.WD_PROVER_TIMEOUT_KEY;
+	public static final int DEFAULT_WD_PROVER_TIMEOUT = DisproverReasonerInput.DEFAULT_WD_PROVER_TIMEOUT;
+
 	private Preferences prefNode;
 	private Text timeoutTextField;
+	private Text wdTimeoutTextField;
 	private Button checkCLPFD;
 	private Button checkCHR;
 	private Button checkCSE;
@@ -105,6 +112,28 @@ public class DisproverPreferences extends PreferencePage implements
 		gridData2.horizontalSpan = 2;
 		timeoutRemark.setLayoutData(gridData2);
 
+		new Label(pageComponent, SWT.NONE).setText("WD prover time-out:");
+		wdTimeoutTextField = new Text(pageComponent, SWT.NONE);
+		wdTimeoutTextField.setText(Integer.toString(getWdProverTimeout()));
+		wdTimeoutTextField.addVerifyListener(new VerifyListener() {
+			@Override
+			public void verifyText(VerifyEvent e) {
+				for (int i = 0; i < e.text.length(); i++) {
+					if (!Character.isDigit(e.text.charAt(i))) {
+						e.doit = false;
+					}
+				}
+			}
+		});
+
+		Label wdTimeoutRemark = new Label(pageComponent, SWT.WRAP);
+		wdTimeoutRemark
+				.setText("Note: The WD prover time-out is used by \"Use ProB WD Prover\", which does not use constraint solving.");
+		// layout data must not be shared between controls
+		GridData wdGridData = new GridData();
+		wdGridData.horizontalSpan = 2;
+		wdTimeoutRemark.setLayoutData(wdGridData);
+
 		new Label(pageComponent, SWT.NONE).setText("Use CLP(FD) Solver:");
 		checkCLPFD = new Button(pageComponent, SWT.CHECK);
 		checkCLPFD.setSelection(prefNode.getBoolean("clpfd", true));
@@ -159,10 +188,11 @@ public class DisproverPreferences extends PreferencePage implements
 		new Label(pageComponent, SWT.NONE)
 				.setText("Check (Hypotheses ^ Goal) in addition to (Hypotheses ^ not Goal) to identify contradiction in hypotheses:");
 		checkDoubleEval = new Button(pageComponent, SWT.CHECK);
-		checkDoubleEval.setSelection(prefNode.getBoolean("doubleeval", false));
+		// default must match the one used in DisproverCommand
+		checkDoubleEval.setSelection(prefNode.getBoolean("doubleeval", true));
 
 		new Label(pageComponent, SWT.NONE)
-				.setText("Export Goal and selected Hypotheses to B file (/tmp/ProB_Rodin_PO_SelectedHyps.mch):");
+				.setText("Export Goal and selected Hypotheses to B file (/tmp/ProB_Rodin_PO_SelectedHyps.mch) when run from the Proof Control:");
 		checkExportSelectedHyps = new Button(pageComponent, SWT.CHECK);
 		checkExportSelectedHyps.setSelection(prefNode.getBoolean("exportpo", false));
 
@@ -172,6 +202,12 @@ public class DisproverPreferences extends PreferencePage implements
 	@Override
 	public boolean performOk() {
 		prefNode.put("timeout", timeoutTextField.getText());
+		final String wdTimeout = wdTimeoutTextField.getText().trim();
+		if (wdTimeout.isEmpty()) {
+			prefNode.remove(WD_PROVER_TIMEOUT_KEY); // back to the default
+		} else {
+			prefNode.put(WD_PROVER_TIMEOUT_KEY, wdTimeout);
+		}
 		prefNode.putBoolean("clpfd", checkCLPFD.getSelection());
 		prefNode.putBoolean("chr", checkCHR.getSelection());
 		prefNode.putBoolean("cse", checkCSE.getSelection());
@@ -188,8 +224,19 @@ public class DisproverPreferences extends PreferencePage implements
 
 	@Override
 	public void init(final IWorkbench workbench) {
-		prefNode = Platform.getPreferencesService().getRootNode()
-				.node(InstanceScope.SCOPE).node("prob_disprover_preferences");
+		prefNode = getPreferenceNode();
+	}
+
+	private static Preferences getPreferenceNode() {
+		return Platform.getPreferencesService().getRootNode()
+				.node(InstanceScope.SCOPE).node(PREFERENCE_NODE);
+	}
+
+	/**
+	 * @return the time-out for ProB's WD prover from the preferences
+	 */
+	public static int getWdProverTimeout() {
+		return DisproverReasonerInput.getWdProverTimeoutPreference();
 	}
 
 }

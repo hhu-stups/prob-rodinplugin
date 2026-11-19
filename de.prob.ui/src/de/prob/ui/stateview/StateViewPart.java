@@ -9,7 +9,6 @@ package de.prob.ui.stateview;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -19,6 +18,8 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.resource.JFaceResources;
+import org.eclipse.jface.viewers.DoubleClickEvent;
+import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.TreeViewerColumn;
@@ -48,6 +49,9 @@ import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.ide.IDE;
+import org.eventb.core.IEventBProject;
+import org.eventb.core.IEventBRoot;
 
 import de.prob.core.Animator;
 import de.prob.core.LanguageDependendAnimationPart;
@@ -58,6 +62,7 @@ import de.prob.core.domainobjects.EvaluationElement;
 import de.prob.core.domainobjects.MachineDescription;
 import de.prob.core.domainobjects.Operation;
 import de.prob.core.domainobjects.State;
+import de.prob.core.langdep.EventBAnimatorPart;
 import de.prob.exceptions.ProBException;
 import de.prob.logging.Logger;
 import de.prob.ui.StateBasedViewPart;
@@ -168,8 +173,8 @@ public class StateViewPart extends StateBasedViewPart {
 					for (final StaticStateElement element : elements) {
 						if (!first) {
 							sb.append(", ");
-							first = false;
 						}
+						first = false;
 						sb.append(element.getLabel());
 					}
 					event.data = sb.toString();
@@ -236,7 +241,8 @@ public class StateViewPart extends StateBasedViewPart {
 				topEvaluationElements = new ArrayList<EvaluationElement>(Arrays.asList(tops));
 			} catch (ProBException e) {
 				e.notifyUserOnce();
-				topEvaluationElements = Collections.emptyList();
+				// mutable: user-defined formulas are added later
+				topEvaluationElements = new ArrayList<EvaluationElement>();
 			}
 			shownState = new ShownState();
 			final MachineDescription md = Animator.getAnimator().getMachineDescription();
@@ -333,6 +339,14 @@ public class StateViewPart extends StateBasedViewPart {
 		treeViewer.getTree().setHeaderVisible(true);
 		treeViewer.getTree().setLinesVisible(true);
 		treeViewer.setAutoExpandLevel(2);
+		treeViewer.addDoubleClickListener(new IDoubleClickListener() {
+			@Override
+			public void doubleClick(final DoubleClickEvent event) {
+				final Object element = ((IStructuredSelection) event.getSelection()).getFirstElement();
+				if (element instanceof StateTreeSection)
+					openSection(((StateTreeSection) element).getLabel());
+			}
+		});
 
 		TreeViewerColumn col1 = new TreeViewerColumn(treeViewer, SWT.LEFT);
 		col1.getColumn().setText(StateViewStrings.columnHeaderName);
@@ -425,6 +439,34 @@ public class StateViewPart extends StateBasedViewPart {
 		}
 	}
 
+	/**
+	 * Opens the machine or context with the name of a section in its default
+	 * editor (e.g. Rodin's editor or Camille).
+	 */
+	private void openSection(final String name) {
+		final LanguageDependendAnimationPart ldp = Animator.getAnimator().getLanguageDependendPart();
+		if (!(ldp instanceof EventBAnimatorPart))
+			return;
+		final IEventBProject project = ((EventBAnimatorPart) ldp).getRoot().getEventBProject();
+		final IEventBRoot root = isContext(name) ? project.getContextRoot(name) : project.getMachineRoot(name);
+		if (!root.exists())
+			return;
+		try {
+			IDE.openEditor(getSite().getPage(), root.getRodinFile().getResource());
+		} catch (PartInitException e) {
+			Logger.notifyUser("Could not open " + name, e);
+		}
+	}
+
+	private static boolean isContext(final String section) {
+		final MachineDescription md = Animator.getAnimator().getMachineDescription();
+		if (md != null)
+			for (final MachineDescription.Section s : md.getSections())
+				if (s.getName().equals(section))
+					return s.getType() == MachineDescription.SectionType.CONTEXT;
+		return false;
+	}
+
 	private static class ResetAnimationListener implements MouseListener {
 		@Override
 		public void mouseDoubleClick(final MouseEvent event) {
@@ -479,7 +521,9 @@ public class StateViewPart extends StateBasedViewPart {
 		final Runnable refresh = new Runnable() {
 			@Override
 			public void run() {
-				treeViewer.refresh();
+				if (treeViewer != null
+						&& !treeViewer.getControl().isDisposed())
+					treeViewer.refresh();
 			}
 		};
 		Display.getDefault().asyncExec(refresh);
@@ -498,8 +542,15 @@ public class StateViewPart extends StateBasedViewPart {
 	}
 
 	public void addUserDefinedExpression(final EvaluationElement userDefinedElement) {
-		this.expressionSection.addChild(userDefinedElement);
-		this.topEvaluationElements.add(userDefinedElement);
+		if (shownState == null) {
+			// no state shown yet; the top-level elements retrieved from ProB
+			// may already contain the new formula
+			initShownState();
+		}
+		if (!topEvaluationElements.contains(userDefinedElement)) {
+			this.expressionSection.addChild(userDefinedElement);
+			this.topEvaluationElements.add(userDefinedElement);
+		}
 		refreshTreeView();
 	}
 }

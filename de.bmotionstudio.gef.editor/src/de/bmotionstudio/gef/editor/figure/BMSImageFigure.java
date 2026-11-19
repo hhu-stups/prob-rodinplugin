@@ -16,6 +16,7 @@ import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.ImageFigure;
 import org.eclipse.draw2d.StackLayout;
 import org.eclipse.draw2d.geometry.Rectangle;
+import org.eclipse.swt.SWTException;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.ImageLoader;
@@ -55,7 +56,13 @@ public class BMSImageFigure extends AbstractBMotionFigure {
 
 		if (new File(myPath).exists()) {
 
-			loader.load(myPath);
+			try {
+				loader.load(myPath);
+			} catch (SWTException e) {
+				// not an image or a corrupt one
+				imageFigure.setImage(null);
+				return;
+			}
 
 			List<Image> imgList = images.get(myPath);
 			if (imgList == null) {
@@ -66,7 +73,7 @@ public class BMSImageFigure extends AbstractBMotionFigure {
 			}
 
 			if (loader.data.length > 1) { // GIF file
-				currentGIFThread = new GIFThread(this.imageFigure, myPath,
+				currentGIFThread = new GIFThread(this.imageFigure, loader.data,
 						imgList);
 				currentGIFThread.start();
 			} else { // Non GIF file
@@ -90,40 +97,56 @@ public class BMSImageFigure extends AbstractBMotionFigure {
 
 	class GIFThread extends Thread {
 
-		ImageFigure imgFigure;
-		int imageNumber;
-		final ImageLoader loader = new ImageLoader();
-		boolean stopped = false;
-		List<Image> imgList;
+		/**
+		 * Like web browsers, frames with a delay below 20ms (often 0, meaning
+		 * "as fast as possible") are shown for 100ms. Otherwise the thread
+		 * floods the UI thread with frame changes and Rodin hangs.
+		 */
+		private static final int MIN_DELAY_MS = 20;
+		private static final int DEFAULT_DELAY_MS = 100;
 
-		public GIFThread(ImageFigure imgFigure, String imgPath,
+		final ImageFigure imgFigure;
+		final ImageData[] frames;
+		final List<Image> imgList;
+		// written by the UI thread
+		volatile int imageNumber;
+		volatile boolean stopped = false;
+
+		public GIFThread(ImageFigure imgFigure, ImageData[] frames,
 				List<Image> imgList) {
+			super("BMotion Studio GIF animation");
+			setDaemon(true);
 			this.imgFigure = imgFigure;
+			this.frames = frames;
 			this.imgList = imgList;
-			loader.load(imgPath);
 		}
 
 		@Override
 		public void run() {
 
-			stopped = false;
-
 			while (!stopped) {
 
-				int delayTime = loader.data[imageNumber].delayTime;
+				int delay = frames[imageNumber].delayTime * 10;
+				if (delay < MIN_DELAY_MS)
+					delay = DEFAULT_DELAY_MS;
 
 				try {
-					Thread.sleep(delayTime * 10);
+					Thread.sleep(delay);
 				} catch (InterruptedException e) {
-					// e.printStackTrace();
+					return; // stopped
 				}
 
-				Display.getDefault().asyncExec(new Runnable() {
+				final Display display = Display.getDefault();
+				if (stopped || display.isDisposed())
+					return;
+				// wait for the frame to be shown before scheduling the next
+				// one
+				display.syncExec(new Runnable() {
 					@Override
 					public void run() {
 						// Increase the variable holding the frame
 						// number
-						imageNumber = imageNumber == loader.data.length - 1 ? 0
+						imageNumber = imageNumber == frames.length - 1 ? 0
 								: imageNumber + 1;
 						Image image = imgList.get(imageNumber);
 						if (image != null && !image.isDisposed() && !stopped) {

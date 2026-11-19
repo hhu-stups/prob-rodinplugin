@@ -10,8 +10,11 @@ import java.util.ArrayList;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.StringButtonFieldEditor;
 import org.eclipse.jface.preference.StringFieldEditor;
 import org.eclipse.jface.resource.JFaceResources;
@@ -25,11 +28,11 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.ui.dialogs.ContainerSelectionDialog;
 import org.eclipse.ui.dialogs.ElementListSelectionDialog;
-import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
 
 import de.prob.ui.ProBGeneralPreferences;
+import de.prob.ui.ProbUiPlugin;
 
 /**
  * Provides an extension to <code>ProBGeneralPreferences</code> with an own
@@ -181,8 +184,17 @@ public class ProBAnimationPreferencePage extends ProBGeneralPreferences {
 		@Override
 		protected String changePressed() {
 
-			IProject project = ResourcesPlugin.getWorkspace().getRoot()
-					.getProject(fdProject.getStringValue());
+			final IWorkspace workspace = ResourcesPlugin.getWorkspace();
+			final String projectName = fdProject.getStringValue().trim();
+			// getProject() throws an exception for invalid names, e.g. ""
+			if (!workspace.validateName(projectName, IResource.PROJECT).isOK()
+					|| !workspace.getRoot().getProject(projectName)
+							.isAccessible()) {
+				MessageDialog.openError(getShell(), "Select Machine",
+						"Please select an existing, open project first.");
+				return null;
+			}
+			IProject project = workspace.getRoot().getProject(projectName);
 			ElementListSelectionDialog dialog = new ElementListSelectionDialog(
 					getShell(), new MachineLabelProvider());
 			dialog.setTitle("Select Machine");
@@ -191,9 +203,10 @@ public class ProBAnimationPreferencePage extends ProBGeneralPreferences {
 			try {
 				ArrayList<IResource> resources = new ArrayList<IResource>();
 				for (IResource r : project.members()) {
+					// the extension is null for files without one
 					if (r.getType() == IResource.FILE
-							&& (r.getFileExtension().equals("bum") || r
-									.getFileExtension().equals("buc"))) {
+							&& ("bum".equals(r.getFileExtension()) || "buc"
+									.equals(r.getFileExtension()))) {
 						resources.add(r);
 					}
 				}
@@ -215,14 +228,14 @@ public class ProBAnimationPreferencePage extends ProBGeneralPreferences {
 
 		@Override
 		public Image getImage(final Object element) {
-			if (((IResource) element).getFileExtension().equals("bum")) {
-				return AbstractUIPlugin.imageDescriptorFromPlugin(
-						AnimationPreferencesDialog.pluginId,
-						"icons/mch_obj.gif").createImage();
-			} else if (((IResource) element).getFileExtension().equals("buc")) {
-				return AbstractUIPlugin.imageDescriptorFromPlugin(
-						AnimationPreferencesDialog.pluginId,
-						"icons/ctx_obj.gif").createImage();
+			// shared registry images; must not be disposed
+			final String extension = ((IResource) element).getFileExtension();
+			if ("bum".equals(extension)) {
+				return ProbUiPlugin.getDefault().getImageRegistry()
+						.get(ProbUiPlugin.IMG_MACHINE);
+			} else if ("buc".equals(extension)) {
+				return ProbUiPlugin.getDefault().getImageRegistry()
+						.get(ProbUiPlugin.IMG_CONTEXT);
 			}
 			return null;
 		}
@@ -264,8 +277,12 @@ public class ProBAnimationPreferencePage extends ProBGeneralPreferences {
 			dialog.setTitle("Select Project");
 			dialog.open();
 			if (dialog.getResult() != null && dialog.getResult().length > 0) {
-				lastproject = ResourcesPlugin.getWorkspace().getRoot()
-						.getProject(dialog.getResult()[0].toString()).getName();
+				// the full path of the selected container, which may be a
+				// folder inside the project
+				final IPath path = (IPath) dialog.getResult()[0];
+				if (path.segmentCount() > 0) {
+					lastproject = path.segment(0);
+				}
 			}
 			return lastproject;
 		}

@@ -1,14 +1,74 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.2"?>
 <plugin>
+   <extension-point id="tables" name="ProB Table View Tables" schema="schema/de.prob.ui.tables.exsd"/>
    <extension
          point="org.eclipse.ui.perspectives">
       <perspective
             class="de.prob.ui.PerspectiveFactory"
-            icon="icons/prob.png"
+            icon="icons/prob_perspective.png"
             id="de.prob.ui.perspective"
             name="ProB"> 
       </perspective>
+   </extension>
+   <!-- the ProB Console, Graph and Table views open below the editors
+        (placeholders only: they are not shown until opened) -->
+   <extension
+         point="org.eclipse.core.expressions.propertyTesters">
+      <propertyTester
+            class="de.prob.ui.stateview.StateFormulas"
+            id="de.prob.ui.stateview.formulaTester"
+            namespace="de.prob.ui.stateview"
+            properties="isFormula,isExpression"
+            type="java.lang.Object">
+      </propertyTester>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectiveExtensions">
+      <perspectiveExtension
+            targetID="org.eventb.ui.perspective.eventb">
+         <view
+               id="de.prob.ui.ConsoleView"
+               relationship="bottom"
+               relative="org.eclipse.ui.editorss"
+               ratio="0.6"
+               visible="false">
+         </view>
+         <view
+               id="de.prob.ui.GraphView"
+               relationship="stack"
+               relative="de.prob.ui.ConsoleView"
+               visible="false">
+         </view>
+         <view
+               id="de.prob.ui.TableView"
+               relationship="stack"
+               relative="de.prob.ui.ConsoleView"
+               visible="false">
+         </view>
+      </perspectiveExtension>
+      <perspectiveExtension
+            targetID="org.eventb.ui.perspective.proving">
+         <view
+               id="de.prob.ui.ConsoleView"
+               relationship="bottom"
+               relative="org.eclipse.ui.editorss"
+               ratio="0.6"
+               visible="false">
+         </view>
+         <view
+               id="de.prob.ui.GraphView"
+               relationship="stack"
+               relative="de.prob.ui.ConsoleView"
+               visible="false">
+         </view>
+         <view
+               id="de.prob.ui.TableView"
+               relationship="stack"
+               relative="de.prob.ui.ConsoleView"
+               visible="false">
+         </view>
+      </perspectiveExtension>
    </extension>
    <extension
          point="org.eclipse.ui.preferencePages">
@@ -85,6 +145,30 @@
             name="LTL Counter-Example"
             restorable="true">
       </view>
+      <view
+            allowMultiple="false"
+            category="de.hhu.stups.prob"
+            class="de.prob.ui.console.ConsoleViewPart"
+            id="de.prob.ui.ConsoleView"
+            name="ProB Console"
+            restorable="true">
+      </view>
+      <view
+            allowMultiple="false"
+            category="de.hhu.stups.prob"
+            class="de.prob.ui.graph.GraphViewPart"
+            id="de.prob.ui.GraphView"
+            name="ProB Graph"
+            restorable="true">
+      </view>
+      <view
+            allowMultiple="false"
+            category="de.hhu.stups.prob"
+            class="de.prob.ui.table.TableViewPart"
+            id="de.prob.ui.TableView"
+            name="ProB Table"
+            restorable="true">
+      </view>
    </extension>
    <extension
          point="de.prob.core.animation">
@@ -107,6 +191,12 @@
             id="probpreferences"
             name="ProB">
       </page>
+      <page
+            category="probpreferences"
+            class="de.prob.ui.ProBViewPreferences"
+            id="de.prob.ui.viewpreferences"
+            name="Views">
+      </page>
    </extension>
    
    <extension
@@ -125,6 +215,26 @@
             description="Show a state item in the history view"
             id="de.prob.ui.command.showInHistory"
             name="ShowInHistory">
+      </command>
+      <command
+            description="Show the full value of a state item in a dialog"
+            id="de.prob.ui.command.showFullValue"
+            name="Show Full Value">
+      </command>
+      <command
+            description="Show the value of a state item as a table in the ProB Table view"
+            id="de.prob.ui.command.showTable"
+            name="Show Value as Table">
+      </command>
+      <command
+            description="Show the value of a state item as a graph in the ProB Graph view"
+            id="de.prob.ui.command.showValueGraph"
+            name="Show Value as Graph">
+      </command>
+      <command
+            description="Project the state space onto the value of a state item in the ProB Graph view"
+            id="de.prob.ui.command.showProjection"
+            name="Project State Space onto Item">
       </command>
       <command
             categoryId="de.prob.ui.commands.category"
@@ -207,6 +317,10 @@
             name="Event-B Animate / Model Check">
       </command>
       <command
+            id="de.prob.ui.starteditoranimation"
+            name="Event-B Animate / Model Check Edited Model">
+      </command>
+      <command
             id="de.prob.ui.navigator.context"
             name="Project Explorer Context Menu">
       </command>
@@ -240,8 +354,54 @@
       <command
             id="de.prob.ui.history.toggleShowParameters"
             name="Show event parameters">
-         <state class="org.eclipse.jface.commands.ToggleState"
+         <!-- parameters are shown by default -->
+         <state class="org.eclipse.ui.handlers.RegistryToggleState:true"
             id="de.prob.ui.history.showParametersState" />
+      </command>
+      <command
+            description="Save the trace to the current state as a ProB2 JSON trace file in the model's folder"
+            id="de.prob.ui.history.saveTrace"
+            name="Save Trace">
+      </command>
+      <command
+            description="Replay a ProB2 JSON trace file and show the trace in the history"
+            id="de.prob.ui.history.replayTrace"
+            name="Replay Trace">
+      </command>
+      <command
+            description="Replay the trace selected in the Event-B Explorer, starting the animation of its model if necessary"
+            id="de.prob.ui.explorer.replayTrace"
+            name="Replay Trace with ProB">
+      </command>
+      <command
+            description="Replay all traces of the model selected in the Event-B Explorer"
+            id="de.prob.ui.explorer.replayAllTraces"
+            name="Replay All Traces">
+      </command>
+      <command
+            description="Show the details of the trace selected in the Event-B Explorer"
+            id="de.prob.ui.explorer.showTraceDetails"
+            name="Show Trace Details">
+      </command>
+      <command
+            description="Open the trace selected in the Event-B Explorer in the text editor"
+            id="de.prob.ui.explorer.editTrace"
+            name="Edit Trace">
+      </command>
+      <command
+            description="Change the description of the trace selected in the Event-B Explorer"
+            id="de.prob.ui.explorer.editTraceDescription"
+            name="Edit Trace Description">
+      </command>
+      <command
+            description="Rename the trace selected in the Event-B Explorer"
+            id="de.prob.ui.explorer.renameTrace"
+            name="Rename Trace">
+      </command>
+      <command
+            description="Delete the trace selected in the Event-B Explorer"
+            id="de.prob.ui.explorer.deleteTrace"
+            name="Delete Trace">
       </command>
       <command
             id="de.prob.ui.show_parameter_dialog"
@@ -332,6 +492,47 @@
          <class
                class="de.prob.ui.stateview.ShowInHistoryHandler">
          </class>
+         <enabledWhen>
+            <reference
+                  definitionId="de.prob.ui.stateview.valuesSelected">
+            </reference>
+         </enabledWhen>
+      </handler>
+      <handler
+            class="de.prob.ui.stateview.ShowFullValueHandler"
+            commandId="de.prob.ui.command.showFullValue">
+         <enabledWhen>
+            <reference
+                  definitionId="de.prob.ui.stateview.oneValueSelected">
+            </reference>
+         </enabledWhen>
+      </handler>
+      <handler
+            class="de.prob.ui.stateview.ShowTableHandler"
+            commandId="de.prob.ui.command.showTable">
+         <enabledWhen>
+            <reference
+                  definitionId="de.prob.ui.stateview.oneExpressionSelected">
+            </reference>
+         </enabledWhen>
+      </handler>
+      <handler
+            class="de.prob.ui.stateview.ShowGraphHandler$Value"
+            commandId="de.prob.ui.command.showValueGraph">
+         <enabledWhen>
+            <reference
+                  definitionId="de.prob.ui.stateview.oneFormulaSelected">
+            </reference>
+         </enabledWhen>
+      </handler>
+      <handler
+            class="de.prob.ui.stateview.ShowGraphHandler$Projection"
+            commandId="de.prob.ui.command.showProjection">
+         <enabledWhen>
+            <reference
+                  definitionId="de.prob.ui.stateview.oneFormulaSelected">
+            </reference>
+         </enabledWhen>
       </handler>
       <handler
             commandId="de.prob.ui.ltl_modelchecking">
@@ -496,6 +697,15 @@
             </enabledWhen>
       </handler>
       <handler
+            class="de.prob.ui.eventb.StartEditorAnimationHandler"
+            commandId="de.prob.ui.starteditoranimation">
+         <enabledWhen>
+            <reference
+                  definitionId="de.prob.ui.eventbEditorActive">
+            </reference>
+         </enabledWhen>
+      </handler>
+      <handler
             commandId="de.prob.ui.create_config">
          <class
                class="de.prob.ui.eventb.CreateConfigurationHandler">
@@ -558,6 +768,165 @@
          </enabledWhen>
       </handler>
       <handler
+            class="de.prob.ui.historyview.SaveTraceHandler"
+            commandId="de.prob.ui.history.saveTrace">
+         <enabledWhen>
+            <!-- a model is loaded and the history has steps to the current
+                 state -->
+            <with
+                  variable="de.prob.core.trace_savable">
+               <equals
+                     value="enabled">
+               </equals>
+            </with>
+         </enabledWhen>
+      </handler>
+      <handler
+            class="de.prob.ui.explorer.ReplayExplorerTraceHandler"
+            commandId="de.prob.ui.explorer.replayTrace">
+         <enabledWhen>
+            <with
+                  variable="activeMenuSelection">
+               <and>
+                  <count
+                        value="1">
+                  </count>
+                  <iterate>
+                     <instanceof
+                           value="de.prob.ui.explorer.TraceNode">
+                     </instanceof>
+                  </iterate>
+               </and>
+            </with>
+         </enabledWhen>
+      </handler>
+      <handler
+            class="de.prob.ui.explorer.ReplayAllTracesHandler"
+            commandId="de.prob.ui.explorer.replayAllTraces">
+         <enabledWhen>
+            <with
+                  variable="activeMenuSelection">
+               <and>
+                  <count
+                        value="1">
+                  </count>
+                  <iterate>
+                     <instanceof
+                           value="de.prob.ui.explorer.TracesNode">
+                     </instanceof>
+                  </iterate>
+               </and>
+            </with>
+         </enabledWhen>
+      </handler>
+      <handler
+            class="de.prob.ui.explorer.ShowTraceDetailsHandler"
+            commandId="de.prob.ui.explorer.showTraceDetails">
+         <enabledWhen>
+            <with
+                  variable="activeMenuSelection">
+               <and>
+                  <count
+                        value="1">
+                  </count>
+                  <iterate>
+                     <instanceof
+                           value="de.prob.ui.explorer.TraceNode">
+                     </instanceof>
+                  </iterate>
+               </and>
+            </with>
+         </enabledWhen>
+      </handler>
+      <handler
+            class="de.prob.ui.explorer.EditTraceHandler"
+            commandId="de.prob.ui.explorer.editTrace">
+         <enabledWhen>
+            <with
+                  variable="activeMenuSelection">
+               <and>
+                  <count
+                        value="1">
+                  </count>
+                  <iterate>
+                     <instanceof
+                           value="de.prob.ui.explorer.TraceNode">
+                     </instanceof>
+                  </iterate>
+               </and>
+            </with>
+         </enabledWhen>
+      </handler>
+      <handler
+            class="de.prob.ui.explorer.EditTraceDescriptionHandler"
+            commandId="de.prob.ui.explorer.editTraceDescription">
+         <enabledWhen>
+            <with
+                  variable="activeMenuSelection">
+               <and>
+                  <count
+                        value="1">
+                  </count>
+                  <iterate>
+                     <instanceof
+                           value="de.prob.ui.explorer.TraceNode">
+                     </instanceof>
+                  </iterate>
+               </and>
+            </with>
+         </enabledWhen>
+      </handler>
+      <handler
+            class="de.prob.ui.explorer.RenameTraceHandler"
+            commandId="de.prob.ui.explorer.renameTrace">
+         <enabledWhen>
+            <with
+                  variable="activeMenuSelection">
+               <and>
+                  <count
+                        value="1">
+                  </count>
+                  <iterate>
+                     <instanceof
+                           value="de.prob.ui.explorer.TraceNode">
+                     </instanceof>
+                  </iterate>
+               </and>
+            </with>
+         </enabledWhen>
+      </handler>
+      <handler
+            class="de.prob.ui.explorer.DeleteTraceHandler"
+            commandId="de.prob.ui.explorer.deleteTrace">
+         <enabledWhen>
+            <with
+                  variable="activeMenuSelection">
+               <and>
+                  <count
+                        value="1">
+                  </count>
+                  <iterate>
+                     <instanceof
+                           value="de.prob.ui.explorer.TraceNode">
+                     </instanceof>
+                  </iterate>
+               </and>
+            </with>
+         </enabledWhen>
+      </handler>
+      <handler
+            class="de.prob.ui.historyview.ReplayTraceHandler"
+            commandId="de.prob.ui.history.replayTrace">
+         <enabledWhen>
+            <with
+                  variable="de.prob.core.model_loaded">
+               <equals
+                     value="enabled">
+               </equals>
+            </with>
+         </enabledWhen>
+      </handler>
+      <handler
             commandId="de.prob.ui.history.toggleShowParameters">
          <class
                class="de.prob.ui.historyview.ToggleShowParametersHandler">
@@ -576,12 +945,28 @@
          <class
                class="de.prob.ui.operationview.ShowParameterDialogHandler">
          </class>
+         <enabledWhen>
+            <with
+                  variable="de.prob.core.model_loaded">
+               <equals
+                     value="enabled">
+               </equals>
+            </with>
+         </enabledWhen>
       </handler>
             <handler
             commandId="de.prob.ui.show_custom_precondition_dialog">
          <class
                class="de.prob.ui.operationview.CustomPreconditionDialogHandler">
          </class>
+         <enabledWhen>
+            <with
+                  variable="de.prob.core.model_loaded">
+               <equals
+                     value="enabled">
+               </equals>
+            </with>
+         </enabledWhen>
       </handler>
       <handler
             commandId="de.prob.ui.deadlock_check">
@@ -766,7 +1151,232 @@
       </handler>
    </extension>
    <extension
+         point="org.eclipse.core.expressions.definitions">
+      <!-- the State view's right-click menu: entries for values are disabled
+           for the section titles (Variables, Constants, Formulas, ...).
+           activeMenuSelection is the selection of the viewer whose context
+           menu is shown; "selection" lags behind the right-click -->
+      <definition
+            id="de.prob.ui.stateview.valuesSelected">
+         <with
+               variable="activeMenuSelection">
+            <and>
+               <count
+                     value="+">
+               </count>
+               <iterate
+                     operator="and">
+                  <or>
+                     <instanceof
+                           value="de.prob.ui.stateview.statetree.StateTreeVariable">
+                     </instanceof>
+                     <instanceof
+                           value="de.prob.ui.stateview.statetree.StateTreeExpression">
+                     </instanceof>
+                  </or>
+               </iterate>
+            </and>
+         </with>
+      </definition>
+      <definition
+            id="de.prob.ui.stateview.oneValueSelected">
+         <and>
+            <with
+                  variable="activeMenuSelection">
+               <count
+                     value="1">
+               </count>
+            </with>
+            <reference
+                  definitionId="de.prob.ui.stateview.valuesSelected">
+            </reference>
+         </and>
+      </definition>
+      <!-- one entry of the State view with a formula (expression or
+           predicate): a variable, an invariant, a guard, ..., but not a
+           section such as "invariants" -->
+      <definition
+            id="de.prob.ui.stateview.oneFormulaSelected">
+         <and>
+            <reference
+                  definitionId="de.prob.ui.stateview.oneValueSelected">
+            </reference>
+            <with
+                  variable="activeMenuSelection">
+               <iterate
+                     operator="and">
+                  <test
+                        forcePluginActivation="true"
+                        property="de.prob.ui.stateview.isFormula">
+                  </test>
+               </iterate>
+            </with>
+         </and>
+      </definition>
+      <!-- one entry of the State view with an expression, e.g. for a table -->
+      <definition
+            id="de.prob.ui.stateview.oneExpressionSelected">
+         <and>
+            <reference
+                  definitionId="de.prob.ui.stateview.oneValueSelected">
+            </reference>
+            <with
+                  variable="activeMenuSelection">
+               <iterate
+                     operator="and">
+                  <test
+                        forcePluginActivation="true"
+                        property="de.prob.ui.stateview.isExpression">
+                  </test>
+               </iterate>
+            </with>
+         </and>
+      </definition>
+      <!-- the active editor shows an Event-B machine or context: Camille,
+           Rodin's form editors or Systerel's Rodin Editor -->
+      <definition
+            id="de.prob.ui.eventbEditorActive">
+         <!-- by id: needs no plug-in activation, unlike adapting the input -->
+         <with
+               variable="activeEditorId">
+            <or>
+               <equals
+                     value="org.eventb.texteditor.ui.texteditor">
+               </equals>
+               <equals
+                     value="org.eventb.ui.editors.machine">
+               </equals>
+               <equals
+                     value="org.eventb.ui.editors.context">
+               </equals>
+               <equals
+                     value="fr.systerel.editor.editors.RodinEditor">
+               </equals>
+            </or>
+         </with>
+      </definition>
+   </extension>
+   <extension
          point="org.eclipse.ui.menus">
+      <!-- toolbars of Rodin's editors for machines and contexts (top right,
+           next to the tabs); their editing pages have no right-click menu -->
+      <menuContribution
+            locationURI="toolbar:org.eventb.ui.editors.machine">
+         <command
+               commandId="de.prob.ui.starteditoranimation"
+               icon="icons/prob_run.png"
+               style="push"
+               tooltip="Start Animation / Model Checking with ProB">
+         </command>
+      </menuContribution>
+      <menuContribution
+            locationURI="toolbar:org.eventb.ui.editors.context">
+         <command
+               commandId="de.prob.ui.starteditoranimation"
+               icon="icons/prob_run.png"
+               style="push"
+               tooltip="Start Animation / Model Checking with ProB">
+         </command>
+      </menuContribution>
+      <!-- toolbars of Camille and of Systerel's Rodin Editor -->
+      <menuContribution
+            locationURI="toolbar:org.eventb.texteditor.ui.texteditor">
+         <command
+               commandId="de.prob.ui.starteditoranimation"
+               icon="icons/prob_run.png"
+               style="push"
+               tooltip="Start Animation / Model Checking with ProB">
+         </command>
+      </menuContribution>
+      <menuContribution
+            locationURI="toolbar:fr.systerel.editor.editors.RodinEditor">
+         <command
+               commandId="de.prob.ui.starteditoranimation"
+               icon="icons/prob_run.png"
+               style="push"
+               tooltip="Start Animation / Model Checking with ProB">
+         </command>
+      </menuContribution>
+      <!-- right-click menus of the editors for machines and contexts:
+           Camille (registered as #texteditor.context.menu), the tree
+           pages of Rodin's form editors and Systerel's Rodin Editor
+           (registered with the editor ids) -->
+      <menuContribution
+            locationURI="popup:#texteditor.context.menu?after=additions">
+         <separator
+               name="de.prob.ui.editorSeparator"
+               visible="true">
+         </separator>
+         <command
+               commandId="de.prob.ui.starteditoranimation"
+               icon="icons/prob_run.png"
+               label="Start Animation / Model Checking"
+               style="push">
+            <visibleWhen
+                  checkEnabled="false">
+               <reference
+                     definitionId="de.prob.ui.eventbEditorActive">
+               </reference>
+            </visibleWhen>
+         </command>
+      </menuContribution>
+      <menuContribution
+            locationURI="popup:org.eventb.ui.editors.machine?after=additions">
+         <separator
+               name="de.prob.ui.editorSeparator"
+               visible="true">
+         </separator>
+         <command
+               commandId="de.prob.ui.starteditoranimation"
+               icon="icons/prob_run.png"
+               label="Start Animation / Model Checking"
+               style="push">
+            <visibleWhen
+                  checkEnabled="false">
+               <reference
+                     definitionId="de.prob.ui.eventbEditorActive">
+               </reference>
+            </visibleWhen>
+         </command>
+      </menuContribution>
+      <menuContribution
+            locationURI="popup:org.eventb.ui.editors.context?after=additions">
+         <separator
+               name="de.prob.ui.editorSeparator"
+               visible="true">
+         </separator>
+         <command
+               commandId="de.prob.ui.starteditoranimation"
+               icon="icons/prob_run.png"
+               label="Start Animation / Model Checking"
+               style="push">
+            <visibleWhen
+                  checkEnabled="false">
+               <reference
+                     definitionId="de.prob.ui.eventbEditorActive">
+               </reference>
+            </visibleWhen>
+         </command>
+      </menuContribution>
+      <menuContribution
+            locationURI="popup:fr.systerel.editor.editors.RodinEditor?after=additions">
+         <separator
+               name="de.prob.ui.editorSeparator"
+               visible="true">
+         </separator>
+         <command
+               commandId="de.prob.ui.starteditoranimation"
+               icon="icons/prob_run.png"
+               label="Start Animation / Model Checking"
+               style="push">
+            <visibleWhen
+                  checkEnabled="false">
+               <reference
+                     definitionId="de.prob.ui.eventbEditorActive">
+               </reference>
+            </visibleWhen>
+         </command>
+      </menuContribution>
       <menuContribution
             locationURI="toolbar:de.prob.ui.StateView">
          <command
@@ -795,6 +1405,57 @@
                label="Show item in history"
                style="push">
          </command>
+         <command
+               commandId="de.prob.ui.command.showFullValue"
+               label="Show Full Value ..."
+               style="push">
+         </command>
+         <command
+               commandId="de.prob.ui.command.showTable"
+               label="Show Value as Table"
+               style="push">
+         </command>
+         <command
+               commandId="de.prob.ui.command.showValueGraph"
+               label="Show Value as Graph"
+               style="push">
+         </command>
+         <command
+               commandId="de.prob.ui.command.showProjection"
+               label="Project State Space onto Item"
+               style="push">
+         </command>
+         <separator
+               name="de.prob.ui.stateview.consoleSeparator"
+               visible="true">
+         </separator>
+         <command
+               commandId="org.eclipse.ui.views.showView"
+               label="Open ProB Console"
+               style="push">
+            <parameter
+                  name="org.eclipse.ui.views.showView.viewId"
+                  value="de.prob.ui.ConsoleView">
+            </parameter>
+         </command>
+         <command
+               commandId="org.eclipse.ui.views.showView"
+               label="Open ProB Graph"
+               style="push">
+            <parameter
+                  name="org.eclipse.ui.views.showView.viewId"
+                  value="de.prob.ui.GraphView">
+            </parameter>
+         </command>
+         <command
+               commandId="org.eclipse.ui.views.showView"
+               label="Open ProB Table"
+               style="push">
+            <parameter
+                  name="org.eclipse.ui.views.showView.viewId"
+                  value="de.prob.ui.TableView">
+            </parameter>
+         </command>
       </menuContribution>
       <menuContribution
             locationURI="toolbar:de.prob.ui.HistoryView">
@@ -804,6 +1465,52 @@
                label="Show Parameters"
                style="toggle">
          </command>
+         <!-- the button saves the trace; its drop-down menu offers the
+              same as "Save Trace for Replay" -->
+         <command
+               commandId="de.prob.ui.history.saveTrace"
+               icon="platform:/plugin/org.eclipse.ui/icons/full/etool16/save_edit.png"
+               id="de.prob.ui.history.saveTraceMenu"
+               label="Save Trace"
+               style="pulldown"
+               tooltip="Save the trace to the current state as ModelName_Nr.prob2trace in the model's folder">
+         </command>
+         <!-- the button chooses a trace file; its drop-down menu also
+              lists the saved traces of the animated model -->
+         <command
+               commandId="de.prob.ui.history.replayTrace"
+               icon="icons/resume.gif"
+               id="de.prob.ui.history.replayTraceMenu"
+               label="Replay Trace"
+               style="pulldown"
+               tooltip="Replay a saved trace (.prob2trace)">
+         </command>
+      </menuContribution>
+      <menuContribution
+            locationURI="menu:de.prob.ui.history.saveTraceMenu">
+         <command
+               commandId="de.prob.ui.history.saveTrace"
+               label="Save Trace for Replay"
+               style="push"
+               tooltip="Save the trace to the current state as ModelName_Nr.prob2trace in the model's folder, for replay with ProB">
+         </command>
+      </menuContribution>
+      <menuContribution
+            locationURI="menu:de.prob.ui.history.replayTraceMenu">
+         <command
+               commandId="de.prob.ui.history.replayTrace"
+               label="Other Trace..."
+               style="push"
+               tooltip="Choose a .prob2trace file to replay">
+         </command>
+         <separator
+               name="de.prob.ui.history.savedTraces"
+               visible="true">
+         </separator>
+         <dynamic
+               class="de.prob.ui.historyview.ReplayTraceMenu"
+               id="de.prob.ui.history.savedTraceItems">
+         </dynamic>
       </menuContribution>
       
       <menuContribution
@@ -868,6 +1575,15 @@
          <parameter
                name="org.eclipse.ui.commands.radioStateParameter"
                value="RANDOM">
+         </parameter>
+      </command>
+      <command
+            commandId="de.prob.ui.doubleclickbehaviour"
+            label="Unexplored Successors First"
+            style="radio">
+         <parameter
+               name="org.eclipse.ui.commands.radioStateParameter"
+               value="UNEXPLORED_FIRST">
          </parameter>
       </command>
       <command
@@ -942,8 +1658,174 @@
                visible="true">
          </separator>
          <command
+               commandId="de.prob.ui.explorer.replayTrace"
+               icon="icons/resume.gif"
+               label="Replay Trace with ProB"
+               style="push">
+            <visibleWhen>
+               <with
+                     variable="selection">
+                  <and>
+                     <count
+                           value="1">
+                     </count>
+                     <iterate>
+                        <instanceof
+                              value="de.prob.ui.explorer.TraceNode">
+                        </instanceof>
+                     </iterate>
+                  </and>
+               </with>
+            </visibleWhen>
+         </command>
+         <command
+               commandId="de.prob.ui.explorer.replayAllTraces"
+               icon="icons/resume.gif"
+               label="Replay All Traces"
+               style="push">
+            <visibleWhen>
+               <with
+                     variable="selection">
+                  <and>
+                     <count
+                           value="1">
+                     </count>
+                     <iterate>
+                        <instanceof
+                              value="de.prob.ui.explorer.TracesNode">
+                        </instanceof>
+                     </iterate>
+                  </and>
+               </with>
+            </visibleWhen>
+         </command>
+         <command
+               commandId="de.prob.ui.explorer.showTraceDetails"
+               label="Show Trace Details..."
+               style="push">
+            <visibleWhen>
+               <with
+                     variable="selection">
+                  <and>
+                     <count
+                           value="1">
+                     </count>
+                     <iterate>
+                        <instanceof
+                              value="de.prob.ui.explorer.TraceNode">
+                        </instanceof>
+                     </iterate>
+                  </and>
+               </with>
+            </visibleWhen>
+         </command>
+         <command
+               commandId="de.prob.ui.explorer.editTrace"
+               label="Edit Trace"
+               style="push">
+            <visibleWhen>
+               <with
+                     variable="selection">
+                  <and>
+                     <count
+                           value="1">
+                     </count>
+                     <iterate>
+                        <instanceof
+                              value="de.prob.ui.explorer.TraceNode">
+                        </instanceof>
+                     </iterate>
+                  </and>
+               </with>
+            </visibleWhen>
+         </command>
+         <command
+               commandId="de.prob.ui.explorer.editTraceDescription"
+               label="Edit Description..."
+               style="push">
+            <visibleWhen>
+               <with
+                     variable="selection">
+                  <and>
+                     <count
+                           value="1">
+                     </count>
+                     <iterate>
+                        <instanceof
+                              value="de.prob.ui.explorer.TraceNode">
+                        </instanceof>
+                     </iterate>
+                  </and>
+               </with>
+            </visibleWhen>
+         </command>
+         <menu
+               id="de.prob.ui.explorer.copyTraceMenu"
+               label="Copy Trace To">
+            <visibleWhen>
+               <with
+                     variable="selection">
+                  <and>
+                     <count
+                           value="1">
+                     </count>
+                     <iterate>
+                        <instanceof
+                              value="de.prob.ui.explorer.TraceNode">
+                        </instanceof>
+                     </iterate>
+                  </and>
+               </with>
+            </visibleWhen>
+            <dynamic
+                  class="de.prob.ui.explorer.CopyTraceMenu"
+                  id="de.prob.ui.explorer.copyTraceItems">
+            </dynamic>
+         </menu>
+         <command
+               commandId="de.prob.ui.explorer.renameTrace"
+               label="Rename Trace..."
+               style="push">
+            <visibleWhen>
+               <with
+                     variable="selection">
+                  <and>
+                     <count
+                           value="1">
+                     </count>
+                     <iterate>
+                        <instanceof
+                              value="de.prob.ui.explorer.TraceNode">
+                        </instanceof>
+                     </iterate>
+                  </and>
+               </with>
+            </visibleWhen>
+         </command>
+         <command
+               commandId="de.prob.ui.explorer.deleteTrace"
+               icon="platform:/plugin/org.eclipse.ui/icons/full/etool16/delete.png"
+               label="Delete Trace"
+               style="push">
+            <visibleWhen>
+               <with
+                     variable="selection">
+                  <and>
+                     <count
+                           value="1">
+                     </count>
+                     <iterate>
+                        <instanceof
+                              value="de.prob.ui.explorer.TraceNode">
+                        </instanceof>
+                     </iterate>
+                  </and>
+               </with>
+            </visibleWhen>
+         </command>
+         <command
                commandId="de.prob.ui.starteventbanimation"
-               icon="icons/prob.png"
+               icon="icons/prob_run.png"
                label="Start Animation / Model Checking"
                style="push">
             <visibleWhen>
@@ -1157,5 +2039,104 @@
                priorityLevel="workbench">
          </variable>
       </sourceProvider>
+      <sourceProvider
+            provider="de.prob.ui.services.TraceSavableProvider">
+         <variable
+               name="de.prob.core.trace_savable"
+               priorityLevel="workbench">
+         </variable>
+      </sourceProvider>
         </extension>
+   <!-- the saved traces (folder "traces" of a project) as a "Traces" node of
+        each machine and context in Rodin's Event-B Explorer -->
+   <extension
+         point="org.eclipse.ui.navigator.navigatorContent">
+      <navigatorContent
+            activeByDefault="true"
+            contentProvider="de.prob.ui.explorer.TracesContentProvider"
+            id="de.prob.ui.explorer.traces"
+            labelProvider="de.prob.ui.explorer.TracesLabelProvider"
+            name="ProB Traces"
+            priority="lowest">
+         <!-- Rodin's nodes (Invariants, ..., Proof Obligations) are trigger
+              points only so that the sorter below applies when they are
+              compared with the "Traces" node; they get no children here -->
+         <triggerPoints>
+            <or>
+               <instanceof
+                     value="org.eventb.core.IMachineRoot">
+               </instanceof>
+               <instanceof
+                     value="org.eventb.core.IContextRoot">
+               </instanceof>
+               <instanceof
+                     value="de.prob.ui.explorer.TracesNode">
+               </instanceof>
+               <instanceof
+                     value="fr.systerel.explorer.IElementNode">
+               </instanceof>
+            </or>
+         </triggerPoints>
+         <possibleChildren>
+            <or>
+               <instanceof
+                     value="de.prob.ui.explorer.TracesNode">
+               </instanceof>
+               <instanceof
+                     value="de.prob.ui.explorer.TraceNode">
+               </instanceof>
+            </or>
+         </possibleChildren>
+         <!-- the "Traces" node after Rodin's nodes, e.g. Proof Obligations -->
+         <commonSorter
+               class="de.prob.ui.explorer.TracesLastSorter"
+               id="de.prob.ui.explorer.tracesLastSorter">
+            <parentExpression>
+               <or>
+                  <instanceof
+                        value="org.eventb.core.IMachineRoot">
+                  </instanceof>
+                  <instanceof
+                        value="org.eventb.core.IContextRoot">
+                  </instanceof>
+               </or>
+            </parentExpression>
+         </commonSorter>
+         <!-- a double-click on a trace replays it -->
+         <actionProvider
+               class="de.prob.ui.explorer.TraceActionProvider"
+               id="de.prob.ui.explorer.traceActions">
+            <enablement>
+               <instanceof
+                     value="de.prob.ui.explorer.TraceNode">
+               </instanceof>
+            </enablement>
+         </actionProvider>
+      </navigatorContent>
+   </extension>
+   <extension
+         point="org.eclipse.ui.navigator.viewer">
+      <viewerContentBinding
+            viewerId="fr.systerel.explorer.navigator.view">
+         <includes>
+            <contentExtension
+                  pattern="de.prob.ui.explorer.traces">
+            </contentExtension>
+         </includes>
+      </viewerContentBinding>
+   </extension>
+   <extension
+         id="gotoElement"
+         name="ProB: go to element"
+         point="org.eclipse.core.resources.markers">
+      <!-- created by the Graph view only to select an event in Rodin's
+           editor (which only understands Rodin's problem markers), and
+           deleted at once -->
+      <super
+            type="org.rodinp.core.problem">
+      </super>
+      <persistent
+            value="false">
+      </persistent>
+   </extension>
 </plugin>

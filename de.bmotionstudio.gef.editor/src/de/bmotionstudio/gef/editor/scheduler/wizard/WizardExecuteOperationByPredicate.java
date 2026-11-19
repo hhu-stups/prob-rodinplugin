@@ -29,8 +29,6 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.events.VerifyEvent;
 import org.eclipse.swt.events.VerifyListener;
-import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -184,8 +182,7 @@ public class WizardExecuteOperationByPredicate extends SchedulerWizard {
 					.getOperations(getBControl().getVisualization()),
 					MachineOperation.class));
 			cbOperation.getCombo().setFont(
-					new Font(Display.getDefault(), new FontData("Arial", 10,
-							SWT.NONE)));
+					BMotionStudioSWTConstants.fontArial10);
 
 			IObservableValue observeSelection = ViewerProperties.singleSelection().observe(cbOperation);
 

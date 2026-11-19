@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #ffffff;
+    font-family: sans-serif; }
+  #viewport { width: 100%; height: 100%; cursor: grab; }
+  #viewport.dragging { cursor: grabbing; }
+  #content { transform-origin: 0 0; display: inline-block; }
+  g.node.clickable { cursor: pointer; -webkit-user-select: none; user-select: none; }
+  g.node.clickable:hover polygon, g.node.clickable:hover ellipse,
+  g.node.clickable:hover path, g.cluster.clickable:hover polygon,
+  g.cluster.clickable:hover path { stroke-width: 3; }
+  g.cluster.clickable { cursor: pointer; -webkit-user-select: none; user-select: none; }
+</style>
+</head>
+<body>
+<div id="viewport"><div id="content">%CONTENT%</div></div>
+<script>
+(function () {
+  var viewport = document.getElementById('viewport');
+  var content = document.getElementById('content');
+  var scale = 1, x = 0, y = 0;
+
+  function apply() {
+    content.style.transform = 'translate(' + x + 'px,' + y + 'px) scale(' + scale + ')';
+  }
+
+  // zoom around the point (px, py) of the viewport
+  function zoomAt(factor, px, py) {
+    var newScale = Math.min(20, Math.max(0.02, scale * factor));
+    factor = newScale / scale;
+    x = px - (px - x) * factor;
+    y = py - (py - y) * factor;
+    scale = newScale;
+    apply();
+  }
+
+  window.probZoom = function (factor) {
+    zoomAt(factor, viewport.clientWidth / 2, viewport.clientHeight / 2);
+  };
+
+  window.probFit = function () {
+    var svg = content.querySelector('svg');
+    if (!svg) { scale = 1; x = 0; y = 0; apply(); return; }
+    var w = svg.getBoundingClientRect().width / scale;
+    var h = svg.getBoundingClientRect().height / scale;
+    if (w <= 0 || h <= 0) return;
+    scale = Math.min(1, Math.min(viewport.clientWidth / w, viewport.clientHeight / h) * 0.95);
+    x = (viewport.clientWidth - w * scale) / 2;
+    y = (viewport.clientHeight - h * scale) / 2;
+    apply();
+  };
+
+  viewport.addEventListener('wheel', function (e) {
+    e.preventDefault();
+    var r = viewport.getBoundingClientRect();
+    zoomAt(e.deltaY < 0 ? 1.15 : 1 / 1.15, e.clientX - r.left, e.clientY - r.top);
+  }, { passive: false });
+
+  var dragging = false, lastX = 0, lastY = 0;
+  viewport.addEventListener('mousedown', function (e) {
+    if (e.button !== 0) return;
+    dragging = true; lastX = e.clientX; lastY = e.clientY;
+    viewport.classList.add('dragging');
+  });
+  window.addEventListener('mousemove', function (e) {
+    if (!dragging) return;
+    x += e.clientX - lastX; y += e.clientY - lastY;
+    lastX = e.clientX; lastY = e.clientY;
+    apply();
+  });
+  window.addEventListener('mouseup', function () {
+    dragging = false;
+    viewport.classList.remove('dragging');
+  });
+
+  // the machine or context a node or cluster stands for, or null: ProB
+  // gives the nodes internal names (dot_node_N), but the first line of
+  // their tooltip ends with the machine's name, e.g. "MACHINE M0" in the
+  // machine hierarchy, "Event inc in M1" and "machine M1" (a cluster) in
+  // the event hierarchy; the label of a machine shows its name
+  var models = %MODELS%;
+
+  // the first lines of the tooltips of a node or cluster
+  function tooltips(node) {
+    var result = [];
+    var links = node.querySelectorAll('a');
+    for (var j = 0; j < links.length; j++) {
+      var tip = links[j].getAttributeNS('http://www.w3.org/1999/xlink', 'title')
+        || links[j].getAttribute('xlink:title') || links[j].getAttribute('title') || '';
+      result.push(tip.trim().split(/\r?\n|\\n/)[0].trim());
+    }
+    return result;
+  }
+
+  // the event an event hierarchy node stands for ("Event inc in M1"), or null
+  function eventOf(node) {
+    var tips = tooltips(node);
+    for (var j = 0; j < tips.length; j++) {
+      var words = tips[j].split(/\s+/);
+      if (words.length >= 4 && words[0] === 'Event' && words[words.length - 2] === 'in')
+        return words.slice(1, words.length - 2).join(' ');
+    }
+    return null;
+  }
+
+  // the variable (or constant or set) a node of the variable refinement
+  // hierarchy stands for, or null: its tooltip is e.g. "New variable in M1"
+  // or "Kept from abstraction M0", and its label shows the name (in the
+  // first text, a second one may say "removed in M2")
+  function identifierOf(node) {
+    if (!node.classList.contains('node')) return null;
+    var tips = tooltips(node);
+    for (var j = 0; j < tips.length; j++)
+      if (/^(Kept from abstraction|New (variable|set|constant) in) /.test(tips[j])) {
+        var text = node.querySelector('text');
+        var name = text ? text.textContent.trim() : '';
+        return name === '' ? null : name;
+      }
+    return null;
+  }
+
+  // the machine or context of the cluster (drawn around its nodes, but not
+  // containing them in the SVG) that contains the node, or null
+  function clusterModelOf(node) {
+    var box;
+    try { box = node.getBBox(); } catch (e) { return null; }
+    var cx = box.x + box.width / 2, cy = box.y + box.height / 2;
+    var best = null, bestArea = Infinity;
+    var clusters = content.querySelectorAll('g.cluster');
+    for (var j = 0; j < clusters.length; j++) {
+      var b;
+      try { b = clusters[j].getBBox(); } catch (e) { continue; }
+      if (cx < b.x || cx > b.x + b.width || cy < b.y || cy > b.y + b.height) continue;
+      var t = clusters[j].querySelector('title');
+      var m = modelOf(clusters[j], t ? t.textContent.trim() : '');
+      if (m !== null && b.width * b.height < bestArea) {
+        best = m; bestArea = b.width * b.height;
+      }
+    }
+    return best;
+  }
+
+  // an example state of a node of the Signature Merge or State Space
+  // Expression Projection graph, from its tooltip, e.g. "3 state(s), e.g.
+  // state 12" or "root, contains current state"; or ''
+  function exampleStateOf(node) {
+    var tips = tooltips(node);
+    for (var j = 0; j < tips.length; j++) {
+      if (/^root\b/.test(tips[j])) return 'root';
+      var m = /e\.g\. state (-?\d+|root)/.exec(tips[j]);
+      if (m) return m[1];
+    }
+    return '';
+  }
+
+  function modelOf(node, id) {
+    if (models.length === 0) return null;
+    var candidates = [id];
+    var tips = tooltips(node);
+    for (var j = 0; j < tips.length; j++) {
+      var words = tips[j].split(/\s+/);
+      candidates.push(words[words.length - 1]);
+    }
+    var texts = node.querySelectorAll('text');
+    for (var k = 0; k < texts.length; k++)
+      candidates.push(texts[k].textContent.trim());
+    for (var c = 0; c < candidates.length; c++)
+      if (models.indexOf(candidates[c]) >= 0) return candidates[c];
+    return null;
+  }
+
+  // double-click on a state: ask the plug-in to go there (GraphViz writes
+  // the name of a node, the state id, into its <title>); on a machine or
+  // context: ask it to open it in its editor, and on an event or a variable
+  // (constant, set) also to select it there
+  var nodes = content.querySelectorAll('g.node, g.cluster');
+  for (var i = 0; i < nodes.length; i++) {
+    var title = nodes[i].querySelector('title');
+    var id = title ? title.textContent.trim() : '';
+    var open = null, target = id, event = null;
+    var identifier = models.length > 0 ? identifierOf(nodes[i]) : null;
+    // the tooltip of a kept variable names the abstraction, not its machine
+    var model = identifier !== null ? (clusterModelOf(nodes[i]) || modelOf(nodes[i], id))
+      : modelOf(nodes[i], id);
+    if (%CLICKABLE% && /^(root|-?\d+)$/.test(id))
+      open = function (stateId) {
+        if (window.probGotoState) window.probGotoState(stateId);
+      };
+    else if (%CLASSES% && /^\d+$/.test(id) && nodes[i].classList.contains('node')) {
+      // a node of the Signature Merge or Expression Projection: the class id
+      event = exampleStateOf(nodes[i]);
+      open = function (classId, example) {
+        if (window.probGotoClass) window.probGotoClass(classId, example);
+      };
+    } else if (model !== null && identifier !== null) {
+      target = model;
+      event = identifier;
+      open = function (name, identifier) {
+        if (window.probOpenModel) window.probOpenModel(name, identifier, 'identifier');
+      };
+    } else if (model !== null) {
+      target = model;
+      event = eventOf(nodes[i]);
+      open = function (name, event) {
+        if (window.probOpenModel)
+          if (event !== null) window.probOpenModel(name, event);
+          else window.probOpenModel(name);
+      };
+    }
+    if (open) {
+      nodes[i].classList.add('clickable');
+      // a double-click would otherwise select the node's text
+      nodes[i].addEventListener('mousedown', function (e) {
+        if (e.detail > 1) e.preventDefault();
+      });
+      (function (open, target, event) {
+        nodes[i].addEventListener('dblclick', function (e) {
+          e.stopPropagation();
+          e.preventDefault();
+          open(target, event);
+        });
+      })(open, target, event);
+    }
+  }
+
+  apply();
+  window.probFit();
+})();
+</script>
+</body>
+</html>

@@ -34,7 +34,12 @@ public class ProBCommandJob extends Job {
 
 	@Override
 	protected IStatus run(final IProgressMonitor monitor) {
-		Activator.getDefault().registerJob(this);
+		final Activator plugin = Activator.getRunningInstance();
+		if (plugin == null) {
+			// the plug-in has been stopped, probcli is shut down
+			return Status.CANCEL_STATUS;
+		}
+		plugin.registerJob(this);
 		monitor.beginTask(getName(), IProgressMonitor.UNKNOWN);
 		commandFailed = false;
 		try {

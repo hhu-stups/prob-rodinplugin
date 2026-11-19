@@ -15,15 +15,16 @@ import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.Adapters;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.handlers.HandlerUtil;
-import org.eclipse.ui.services.ISourceProviderService;
 import org.eventb.core.IContextRoot;
 import org.eventb.core.IEventBRoot;
 import org.eventb.core.IMachineRoot;
@@ -36,7 +37,6 @@ import de.prob.core.command.LoadEventBModelCommand;
 import de.prob.exceptions.ProBException;
 import de.prob.logging.Logger;
 import de.prob.ui.PerspectiveFactory;
-import de.prob.ui.services.ContextLoadedProvider;
 
 public class StartAnimationHandler extends AbstractHandler implements IHandler {
 
@@ -54,28 +54,74 @@ public class StartAnimationHandler extends AbstractHandler implements IHandler {
 
 		@Override
 		public void resourceChanged(final IResourceChangeEvent event) {
-			if (path != null) {
-				final IResourceDelta delta = event.getDelta();
+			final IResourceDelta delta = event.getDelta();
+			// PRE_CLOSE and PRE_DELETE events have no delta; closing or
+			// deleting the project is reported by the following POST_CHANGE
+			if (path != null && delta != null) {
 				IResourceDelta member = delta.findMember(path);
-				if (member != null) {
+				if (member != null && changesModel(member)) {
 					Animator.getAnimator().setDirty();
 				}
 			}
 		}
+
+		/**
+		 * whether the project's change is not only inside its folders: the
+		 * machines and contexts are files directly in the project, the
+		 * folders hold e.g. saved traces
+		 */
+		private static boolean changesModel(final IResourceDelta project) {
+			final IResourceDelta[] children = project.getAffectedChildren();
+			if (children.length == 0)
+				return true; // e.g. the project itself was closed or deleted
+			for (IResourceDelta child : children)
+				// not when a folder is created, e.g. for the first trace, or
+				// when only markers change (e.g. Rodin's problem markers, or
+				// the Graph view selecting an event)
+				if (child.getResource().getType() != IResource.FOLDER
+						&& !(child.getKind() == IResourceDelta.CHANGED && child
+								.getFlags() == IResourceDelta.MARKERS))
+					return true;
+			return false;
+		}
 	}
 
 	private ISelection fSelection;
-	private ModificationListener listener;
+	// shared by the handlers of the explorer and of the editors (see
+	// StartEditorAnimationHandler): only the animated model is watched
+	private static ModificationListener listener;
 
 	@Override
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
 
 		fSelection = HandlerUtil.getCurrentSelection(event);
 
-		// Get the Selection
-		final IEventBRoot rootElement = getRootElement();
+		final IEventBRoot rootElement = findRootElement(event);
 		final IFile resource = extractResource(rootElement);
+		if (resource == null) {
+			// e.g. several elements or no Event-B component selected
+			MessageDialog.openInformation(HandlerUtil.getActiveShell(event),
+					"ProB", "Please select a single machine or context to animate.");
+			return null;
+		}
 
+		try {
+			startAnimation(rootElement);
+		} catch (ProBException e) {
+			e.notifyUserOnce();
+			throw new ExecutionException("Loading the machine failed", e);
+		}
+		return null;
+	}
+
+	/**
+	 * Starts the animation of a machine or context: loads it into ProB and
+	 * opens the ProB perspective. Errors and warnings of the project are
+	 * logged.
+	 */
+	public static void startAnimation(final IEventBRoot rootElement)
+			throws ProBException {
+		final IFile resource = extractResource(rootElement);
 		ArrayList<String> errors = new ArrayList<String>();
 		boolean realError = checkErrorMarkers(resource, errors);
 		if (!errors.isEmpty()) {
@@ -101,26 +147,16 @@ public class StartAnimationHandler extends AbstractHandler implements IHandler {
 		} else {
 		     Animator.getAnimator().resetRodinProjectHasErrorsOrWarnings();
 		}
-		;
 
-		if (resource != null) {
-			LimitedLogger.getLogger().log("user started animation",
-					rootElement.getElementName(), null);
-			registerModificationListener(resource);
-			PerspectiveFactory.openPerspective();
+		LimitedLogger.getLogger().log("user started animation",
+				rootElement.getElementName(), null);
+		registerModificationListener(resource);
+		PerspectiveFactory.openPerspective();
 
-			final Animator animator = Animator.getAnimator();
-			try {
-				LoadEventBModelCommand.load(animator, rootElement);
-			} catch (ProBException e) {
-				e.notifyUserOnce();
-				throw new ExecutionException("Loading the machine failed", e);
-			}
-		}
-		return null;
+		LoadEventBModelCommand.load(Animator.getAnimator(), rootElement);
 	}
 
-	private boolean checkErrorMarkers(final IFile resource, List<String> errors) {
+	private static boolean checkErrorMarkers(final IFile resource, List<String> errors) {
 		boolean result = false;
 		IProject project = resource.getProject();
 		try {
@@ -133,7 +169,8 @@ public class StartAnimationHandler extends AbstractHandler implements IHandler {
 						+ iMarker
 								.getAttribute(IMarker.MESSAGE, "unknown Error"));
 				result = result
-						|| (Integer) iMarker.getAttribute(IMarker.SEVERITY) == IMarker.SEVERITY_ERROR;
+						|| iMarker.getAttribute(IMarker.SEVERITY,
+								IMarker.SEVERITY_INFO) == IMarker.SEVERITY_ERROR;
 			}
 
 		} catch (CoreException e1) {
@@ -159,37 +196,52 @@ public class StartAnimationHandler extends AbstractHandler implements IHandler {
 		return root;
 	}
 
-	private void updateContextLoadedProvider(boolean isContext) {
-		ISourceProviderService service = (ISourceProviderService) PlatformUI
-				.getWorkbench().getService(ISourceProviderService.class);
-		ContextLoadedProvider sourceProvider = (ContextLoadedProvider) service
-				.getSourceProvider(ContextLoadedProvider.SERVICE);
-		sourceProvider.setEnabled(isContext);
+	/**
+	 * @return the machine or context to animate, null if there is none
+	 */
+	protected IEventBRoot findRootElement(final ExecutionEvent event) {
+		return getRootElement();
 	}
 
-	private IFile extractResource(final IEventBRoot rootElement) {
+	/**
+	 * @return the machine or context of the active editor, null if there is
+	 *         none
+	 */
+	protected static IEventBRoot getEditorRootElement(
+			final ExecutionEvent event) {
+		final IEditorInput input = HandlerUtil.getActiveEditorInput(event);
+		final IFile file = input == null ? null : Adapters.adapt(input,
+				IFile.class);
+		if (file == null)
+			return null;
+		final IRodinFile rodinFile = RodinCore.valueOf(file);
+		if (rodinFile == null || !(rodinFile.getRoot() instanceof IEventBRoot))
+			return null;
+		return (IEventBRoot) rodinFile.getRoot();
+	}
+
+	private static IFile extractResource(final IEventBRoot rootElement) {
 		IFile resource = null;
 		if (rootElement == null) {
 			resource = null;
 		} else if (rootElement instanceof IMachineRoot) {
 			resource = ((IMachineRoot) rootElement).getSCMachineRoot()
 					.getResource();
-			updateContextLoadedProvider(false);
 		} else if (rootElement instanceof IContextRoot) {
 			resource = ((IContextRoot) rootElement).getSCContextRoot()
 					.getResource();
-			updateContextLoadedProvider(true);
 		}
 		return resource;
 	}
 
-	private void registerModificationListener(final IFile resource) {
+	private static void registerModificationListener(final IFile resource) {
 		if (listener != null) {
 			ResourcesPlugin.getWorkspace().removeResourceChangeListener(
 					listener);
 		}
 		listener = new ModificationListener(resource);
-		ResourcesPlugin.getWorkspace().addResourceChangeListener(listener);
+		ResourcesPlugin.getWorkspace().addResourceChangeListener(listener,
+				IResourceChangeEvent.POST_CHANGE);
 	}
 
 	public void selectionChanged(final IAction action,

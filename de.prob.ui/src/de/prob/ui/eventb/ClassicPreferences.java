@@ -46,9 +46,12 @@ public class ClassicPreferences extends PreferencePage implements
 		public void widgetSelected(final SelectionEvent e) {
 			super.widgetSelected(e);
 			FileDialog dialog = new FileDialog(shell, SWT.OPEN);
-			String open = dialog.open();
-			open = open.replaceAll(" ", "\\\\ ");
-			text.setText(open);
+			final String open = dialog.open();
+			// null if the dialog was cancelled; the path is stored as chosen,
+			// spaces are handled when ProB is started
+			if (open != null) {
+				text.setText(open);
+			}
 		}
 
 	}
@@ -91,7 +94,7 @@ public class ClassicPreferences extends PreferencePage implements
 		browseButton.addSelectionListener(new PushButton(pageComponent.getShell(), text));
 		Label versionRemark = new Label(pageComponent, SWT.WRAP);
 		versionRemark.setText(
-				"Note: This needs a version of ProB2-UI (jar file) that is at least 1.0.1 or a version of ProB Tcl/Tk that is at least 1.3.1.\nYou can obtain both from https://prob.hhu.de/w/index.php/Download\n"); // precisely 1.3.0-beta6
+				"Note: This needs a version of ProB2-UI (jar file) that is at least 1.0.1 or a version of ProB Tcl/Tk that is at least 1.3.1 (on macOS please select StartProB.sh).\nYou can obtain both from https://prob.hhu.de/w/index.php/Download\n"); // precisely 1.3.0-beta6
 
 		GridData gridData2 = new GridData();
 		gridData2.horizontalSpan = 3;

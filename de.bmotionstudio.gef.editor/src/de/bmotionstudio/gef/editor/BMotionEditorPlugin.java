@@ -9,6 +9,10 @@ package de.bmotionstudio.gef.editor;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import javax.xml.XMLConstants;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionPoint;
@@ -195,6 +199,39 @@ public class BMotionEditorPlugin extends AbstractUIPlugin {
 		return controlServices;
 	}
 
+	/**
+	 * Creates a {@link DocumentBuilderFactory} that does not process DTDs or
+	 * external entities, so that opening a crafted file cannot read local
+	 * files or access the network (XXE).
+	 */
+	public static DocumentBuilderFactory createSecureDocumentBuilderFactory() {
+		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+		// BMotion Studio files never contain a DOCTYPE
+		setFeatureIfSupported(factory,
+				"http://apache.org/xml/features/disallow-doctype-decl", true);
+		setFeatureIfSupported(factory,
+				"http://xml.org/sax/features/external-general-entities", false);
+		setFeatureIfSupported(factory,
+				"http://xml.org/sax/features/external-parameter-entities", false);
+		setFeatureIfSupported(factory,
+				"http://apache.org/xml/features/nonvalidating/load-external-dtd",
+				false);
+		setFeatureIfSupported(factory, XMLConstants.FEATURE_SECURE_PROCESSING,
+				true);
+		factory.setXIncludeAware(false);
+		factory.setExpandEntityReferences(false);
+		return factory;
+	}
+
+	private static void setFeatureIfSupported(DocumentBuilderFactory factory,
+			String feature, boolean value) {
+		try {
+			factory.setFeature(feature, value);
+		} catch (ParserConfigurationException e) {
+			// feature not supported by this parser implementation
+		}
+	}
+
 	public static void allowTypes(XStream xstream) {
 		xstream.allowTypesByWildcard(new String[] {
 			"de.bmotionstudio.gef.editor.**",
@@ -204,7 +241,7 @@ public class BMotionEditorPlugin extends AbstractUIPlugin {
 	}
 
 	public static void setAliases(XStream xstream) {
-		xstream.registerConverter(new BControlListConverter());
+		xstream.registerConverter(new BControlListConverter(xstream.getMapper()));
 		xstream.alias("control", BControl.class);
 		xstream.alias("visualization", Visualization.class);
 		xstream.alias("guide", BMotionGuide.class);

@@ -81,6 +81,7 @@ import de.be4.classicalb.core.parser.node.PWitness;
 import de.be4.classicalb.core.parser.node.TIdentifierLiteral;
 import de.be4.classicalb.core.parser.node.TPragmaFreeText;
 import de.prob.core.translator.TranslationFailedException;
+import de.prob.core.translator.TranslationLocation;
 import de.prob.eventb.translator.AbstractComponentTranslator;
 import de.prob.logging.Logger;
 
@@ -108,25 +109,30 @@ public class ModelTranslator extends AbstractComponentTranslator {
 			modelTranslator.translate();
 		} catch (CoreException re) {
 			final String message = "Rodin Database Exception / Core Exception: \n"
-					+ re.getLocalizedMessage();
-			throw new TranslationFailedException(modelTranslator.getClass()
-					.toString(), message);
+					+ TranslationLocation.describe(re);
+			throw new TranslationFailedException(model.getComponentName(),
+					message, re);
 		} catch (RuntimeException e) {
 			// spurious runtime exceptions were thrown, especially if older
 			// EventB= Projects were used without cleaning the project
 			final String message = "Possible cause: building aborted or still in progress. Please wait until building has finished before starting ProB. If this does not help, perform a clean and start ProB after building has finished.\nException was: "
-					+ e.getClass().getSimpleName()
-					+ "\n"
-					+ e.getLocalizedMessage();
-			throw new TranslationFailedException(modelTranslator.getClass()
-					.toString(), message);
+					+ TranslationLocation.describe(e);
+			throw new TranslationFailedException(model.getComponentName(),
+					message, e);
 		}
 		return modelTranslator;
 	}
 
 	public AEventBModelParseUnit getModelAST() {
 		if (broken) {
-			Logger.notifyUser("The machine contains Rodin Problems. ProB will continue, but you may observe unexpected behaviour");
+			// a notice that does not block the user, not an error dialog
+			Logger.notifyUserNonModal(
+					"The machine " + machine.getComponentName()
+							+ " contains Rodin problems. ProB will continue, but you may observe unexpected behaviour.",
+					"Rodin's static checker marked the machine as not accurate, e.g. because of errors"
+							+ " in it or in a machine or context it depends on;"
+							+ " ProB only sees the parts that Rodin could check."
+							+ " See the Problems view for Rodin's errors and warnings.");
 			return model;
 		}
 		return model;
@@ -159,6 +165,7 @@ public class ModelTranslator extends AbstractComponentTranslator {
 	}
 
 	private void translate() throws CoreException, TranslationFailedException {
+		TranslationLocation.enter("machine " + machine.getComponentName());
 
 		final String message = "machine.getRodinFile().isConsistent() [Note: Maybe you can fix this Rodin problem by refreshing and rebuilding the project]";
 		Logger.assertProB(message, machine.getRodinFile().isConsistent());
@@ -173,6 +180,7 @@ public class ModelTranslator extends AbstractComponentTranslator {
 
 		// Collect Pragmas, Units, etc.
 		collectPragmas();
+		TranslationLocation.leave();
 	}
 
 	private void collectPragmas() throws RodinDBException {
@@ -184,9 +192,11 @@ public class ModelTranslator extends AbstractComponentTranslator {
 		List<String> bugs = new LinkedList<String>();
 		try {
 			IPSRoot proofStatus = machine.getPSRoot();
+			if (!hasProofStatus(proofStatus, machine.getComponentName()))
+				return;
 			IPSStatus[] statuses = proofStatus.getStatuses();
 
-			for (IPSStatus status : statuses) {
+			nextStatus: for (IPSStatus status : statuses) {
 				final int confidence = status.getConfidence();
 				boolean broken = status.isBroken();
 
@@ -210,8 +220,10 @@ public class ModelTranslator extends AbstractComponentTranslator {
 					IRodinElement srcElement = source.getSource();
 					if (!srcElement.exists()
 							|| (!(srcElement instanceof ILabeledElement) && !(srcElement instanceof IVariant))) {
+						// skip the whole PO, a status with incomplete sources
+						// could mark the wrong (or no) element as proven
 						bugs.add(status.getElementName());
-						break;
+						continue nextStatus;
 					}
 
 					if (srcElement instanceof ILabeledElement) {
@@ -244,11 +256,7 @@ public class ModelTranslator extends AbstractComponentTranslator {
 			bugs.add(e.getLocalizedMessage());
 		}
 
-		if (!bugs.isEmpty()) {
-			String message = "Translation incomplete due to an issue with the Rodin database (try Project -> Clean...). This does not affect correctness of the Animation/Model Checking but can decrease its performance. Skipped discharged information about: "
-					+ String.join(",", bugs);
-			Logger.notifyUser(message);
-		}
+		skippedProofInfo(machine.getComponentName(), bugs);
 
 	}
 
@@ -331,6 +339,7 @@ public class ModelTranslator extends AbstractComponentTranslator {
 		final ISCEvent[] events = machine.getSCEvents();
 		final List<PEvent> eventsList = new ArrayList<PEvent>(events.length);
 		for (final ISCEvent revent : events) {
+			TranslationLocation.enter("event " + revent.getLabel());
 
 			broken = broken || !revent.isAccurate();
 
@@ -379,6 +388,7 @@ public class ModelTranslator extends AbstractComponentTranslator {
 			} else {
 				eventsList.add(event);
 			}
+			TranslationLocation.leave();
 		}
 		clause.setEvent(eventsList);
 		return clause;
@@ -525,9 +535,11 @@ public class ModelTranslator extends AbstractComponentTranslator {
 		final ISCAction[] actions = revent.getSCActions();
 		final List<PSubstitution> actionList = new ArrayList<PSubstitution>();
 		for (final ISCAction action : actions) {
+			TranslationLocation.enter(action);
 			final Assignment assignment = action.getAssignment(localEnv);
 			final PSubstitution substitution = TranslationVisitor
 					.translateAssignment(assignment);
+			TranslationLocation.leave();
 			actionList.add(substitution);
 			labelMapping.put(substitution, action);
 		}
@@ -605,21 +617,30 @@ public class ModelTranslator extends AbstractComponentTranslator {
 
 	private boolean isDefinedHere(final ITraceableElement element)
 			throws CoreException, TranslationFailedException {
-		final IRodinElement parentsource = element.getSource().getParent();
-		final boolean result;
+		final IMachineRoot src = getMachineRoot(element.getSource());
 		final String currentName = machine.getComponentName();
-
-		if (parentsource instanceof IMachineRoot) {
-			final IMachineRoot src = (IMachineRoot) parentsource;
-			final String srcName = src.getRodinFile().getBareName();
-			result = currentName.equals(srcName);
-		} else {
-			// Some plugins virtually add new invariants (e.g., FOLLOWED_BY for events)
-			Logger.notifyUser("Source of invariant in " + currentName + " is not a machine. Invariant may be added multiple times.");
-			// TODO: check if this source is local or not
-			result = false; // assume it is local so that it is added in the translation
+		if (src != null) {
+			return currentName.equals(src.getRodinFile().getBareName());
 		}
-		return result;
+		// Some plugins virtually add new invariants (e.g., FOLLOWED_BY for
+		// events) whose source is not part of a machine. Translate them here,
+		// otherwise ProB would not check them at all.
+		Logger.info("Source of invariant " + element + " in " + currentName
+				+ " is not part of a machine. The invariant is translated as part of "
+				+ currentName + " and may be added multiple times.");
+		return true;
+	}
+
+	/**
+	 * @return the machine containing <code>element</code> (or element itself),
+	 *         <code>null</code> if there is none
+	 */
+	private static IMachineRoot getMachineRoot(final IRodinElement element) {
+		for (IRodinElement e = element; e != null; e = e.getParent()) {
+			if (e instanceof IMachineRoot)
+				return (IMachineRoot) e;
+		}
+		return null;
 	}
 
 	@Override

@@ -40,7 +40,10 @@ public class History implements Iterable<HistoryItem>, IComputationListener {
 
 	@Override
 	public synchronized/* @ pure @ */Iterator<HistoryItem> iterator() {
-		return Collections.unmodifiableList(items).iterator();
+		// a copy: the caller iterates without holding the lock, while e.g. a
+		// background job may add items
+		return Collections.unmodifiableList(
+				new ArrayList<HistoryItem>(items)).iterator();
 	}
 
 	public synchronized void add(final State s, final Operation o) {
@@ -96,19 +99,34 @@ public class History implements Iterable<HistoryItem>, IComputationListener {
 	 * 
 	 * @
 	 */
-	public synchronized void gotoPos(final int pos) throws ProBException {
-		// @StartAssert
-		Assert.isTrue(!isEmpty(), "History is empty");
-		Assert.isTrue(0 <= pos, "Position must be greater or equal 0, was "
-				+ pos);
-		Assert.isTrue(pos < size(), "Position must be less than history size");
-		// @EndAssert
-		currentPosition = pos;
-		SetStateCommand.setState(Animator.getAnimator(), getCurrent()
-				.getStateId());
+	public void gotoPos(final int pos) throws ProBException {
+		final Animator animator = Animator.getAnimator();
+		// Lock order must be Animator before History: commands executed by the
+		// Animator (e.g. ExecuteOperationCommand) call add() while holding the
+		// Animator lock. Taking the locks the other way round can deadlock.
+		synchronized (animator) {
+			synchronized (this) {
+				// @StartAssert
+				Assert.isTrue(!isEmpty(), "History is empty");
+				Assert.isTrue(0 <= pos,
+						"Position must be greater or equal 0, was " + pos);
+				Assert.isTrue(pos < size(),
+						"Position must be less than history size");
+				// @EndAssert
+				final int oldPosition = currentPosition;
+				currentPosition = pos;
+				try {
+					SetStateCommand.setState(animator, getCurrent()
+							.getStateId());
+				} catch (ProBException e) {
+					currentPosition = oldPosition;
+					throw e;
+				}
 
-		Animator.getAnimator().announceCurrentStateChanged(
-				getCurrent().getState(), Operation.NULL_OPERATION);
+				animator.announceCurrentStateChanged(getCurrent().getState(),
+						Operation.NULL_OPERATION);
+			}
+		}
 	}
 
 	public synchronized HistoryItem getCurrent() {
@@ -147,10 +165,15 @@ public class History implements Iterable<HistoryItem>, IComputationListener {
 		return item == null ? null : item.getState();
 	}
 
-	public synchronized void gotoNext() {
-		if (currentPosition < items.size() - 1) {
-			currentPosition++;
-			announceCurrentState();
+	public void gotoNext() {
+		// see gotoPos for the lock order
+		synchronized (Animator.getAnimator()) {
+			synchronized (this) {
+				if (currentPosition < items.size() - 1) {
+					currentPosition++;
+					announceCurrentState();
+				}
+			}
 		}
 	}
 
@@ -161,10 +184,15 @@ public class History implements Iterable<HistoryItem>, IComputationListener {
 	 * 
 	 * @
 	 */
-	public synchronized void gotoPrevious() {
-		if (currentPosition > 0) {
-			currentPosition--;
-			announceCurrentState();
+	public void gotoPrevious() {
+		// see gotoPos for the lock order
+		synchronized (Animator.getAnimator()) {
+			synchronized (this) {
+				if (currentPosition > 0) {
+					currentPosition--;
+					announceCurrentState();
+				}
+			}
 		}
 	}
 
@@ -189,13 +217,13 @@ public class History implements Iterable<HistoryItem>, IComputationListener {
 	}
 
 	@Override
-	public void computedState(final State state) {
+	public synchronized void computedState(final State state) {
 		if (isEmpty()) {
 			add(state, null);
 		}
 	}
 
-	public HistoryItem[] getAllItems() {
+	public synchronized HistoryItem[] getAllItems() {
 		return items.toArray(EMPTY_ITEM_ARRAY);
 	}
 

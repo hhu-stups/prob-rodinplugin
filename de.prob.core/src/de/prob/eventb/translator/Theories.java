@@ -229,10 +229,11 @@ public class Theories {
 
 	private static Collection<OperatorMapping> readMappingFile(IFile file,
 			ISCTheoryRoot theory) throws TranslationFailedException {
-		try {
-			final InputStream input = file.getContents();
-			final String name = theory.getComponentName();
-			final Reader reader = new InputStreamReader(input);
+		final String name = theory.getComponentName();
+		// closed afterwards: an open file cannot be changed or deleted on
+		// Windows; the file's charset is configured in Eclipse
+		try (InputStream input = file.getContents();
+				Reader reader = new InputStreamReader(input, file.getCharset())) {
 			return TheoryMappingParser.parseTheoryMapping(name, reader);
 		} catch (CoreException e) {
 			throw new TranslationFailedException(e);

@@ -9,9 +9,6 @@ import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.GroupBoxBorder;
 import org.eclipse.draw2d.RectangleFigure;
 import org.eclipse.draw2d.XYLayout;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.widgets.Display;
 
 import de.prob.core.domainobjects.ltl.CounterExample;
 
@@ -29,8 +26,8 @@ public final class CounterExampleFigure extends Figure {
 		final AbstractLabeledBorder border = new GroupBoxBorder();
 		border.setTextColor(ColorConstants.lightBlue);
 
-		final Font font = new Font(Display.getDefault(), "Arial", 10, SWT.BOLD);
-		border.setFont(font);
+		// shared registry font; must not be disposed
+		border.setFont(CounterExampleResources.getBoldFont());
 		border.setLabel(model.getPropositionRoot().toString()/*
 															 * + ", PathType - "
 															 * +

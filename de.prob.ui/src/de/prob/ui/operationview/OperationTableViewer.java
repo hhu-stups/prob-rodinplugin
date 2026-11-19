@@ -28,6 +28,7 @@ import org.eclipse.ui.handlers.IHandlerService;
 
 import de.prob.core.Animator;
 import de.prob.core.LimitedLogger;
+import de.prob.core.command.CheckExploredStatusCommand;
 import de.prob.core.command.ExecuteOperationCommand;
 import de.prob.core.command.GetOperationNamesCommand;
 import de.prob.core.domainobjects.Operation;
@@ -38,7 +39,7 @@ import de.prob.logging.Logger;
 public class OperationTableViewer {
 
 	public enum DoubleClickBehaviour {
-		NORMAL, RANDOM, DIALOG
+		NORMAL, RANDOM, UNEXPLORED_FIRST, DIALOG
 	};
 
 	private static DoubleClickBehaviour doubleClickBehaviour = DoubleClickBehaviour.NORMAL;
@@ -153,6 +154,9 @@ public class OperationTableViewer {
 				case RANDOM:
 					executeRandomOperation();
 					break;
+				case UNEXPLORED_FIRST:
+					executeUnexploredOperation();
+					break;
 				case DIALOG:
 					IHandlerService service = (IHandlerService) PlatformUI
 							.getWorkbench().getService(IHandlerService.class);
@@ -188,6 +192,33 @@ public class OperationTableViewer {
 		executeSingleOperation(use);
 		// ExecuteRandomStepsCommand.executeOperation(Animator.getAnimator(),
 		// 1);
+	}
+
+	/**
+	 * Executes a random operation leading to a state that has not been
+	 * explored yet, or a random operation if there is none.
+	 */
+	private void executeUnexploredOperation() {
+		final List<Operation> selectedOperations = getSelectedOperations();
+		final List<String> destinations = new ArrayList<String>();
+		for (Operation op : selectedOperations)
+			destinations.add(op.getDestination());
+		final List<Integer> unexplored = new ArrayList<Integer>();
+		try {
+			final List<Boolean> explored = CheckExploredStatusCommand
+					.areExplored(Animator.getAnimator(), destinations);
+			for (int i = 0; i < explored.size(); i++)
+				if (!explored.get(i))
+					unexplored.add(i);
+		} catch (ProBException e) {
+			e.notifyUserOnce();
+			return;
+		}
+		if (unexplored.isEmpty())
+			executeRandomOperation();
+		else
+			executeSingleOperation(unexplored.get(new Random()
+					.nextInt(unexplored.size())));
 	}
 
 	/**

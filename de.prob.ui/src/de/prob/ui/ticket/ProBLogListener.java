@@ -11,6 +11,8 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.swt.widgets.Display;
 
+import de.prob.logging.Logger;
+
 public final class ProBLogListener implements ILogListener {
 
 	private static final Display display = Display.getDefault();
@@ -24,6 +26,8 @@ public final class ProBLogListener implements ILogListener {
 			return;
 		}
 
+		if (status.getCode() == Logger.NO_DIALOG)
+			return; // only for the Error Log
 		if (status.getSeverity() == IStatus.ERROR || status.getSeverity() == IStatus.WARNING) {
 			display.asyncExec(new Runnable() {
 				@Override

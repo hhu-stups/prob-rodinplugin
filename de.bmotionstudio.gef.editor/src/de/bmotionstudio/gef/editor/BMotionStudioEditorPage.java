@@ -109,6 +109,7 @@ import de.bmotionstudio.gef.editor.part.BMSAbstractEditPart;
 import de.bmotionstudio.gef.editor.part.BMSAbstractTreeEditPart;
 import de.bmotionstudio.gef.editor.part.BMSEditPartFactory;
 import de.bmotionstudio.gef.editor.part.BMSTreeEditPartFactory;
+import de.prob.logging.Logger;
 
 public class BMotionStudioEditorPage extends GraphicalEditorWithFlyoutPalette {
 
@@ -225,7 +226,8 @@ public class BMotionStudioEditorPage extends GraphicalEditorWithFlyoutPalette {
 	 **/
 	@Override
 	public boolean isSaveAsAllowed() {
-		return true;
+		// not implemented, see doSaveAs()
+		return false;
 	}
 
 	/**
@@ -241,6 +243,7 @@ public class BMotionStudioEditorPage extends GraphicalEditorWithFlyoutPalette {
 		XStream xstream = new XStream();
 		BMotionEditorPlugin.setAliases(xstream);
 		xstream.toXML(visualization, writer);
+		writer.flush();
 	}
 
 	/**
@@ -257,10 +260,21 @@ public class BMotionStudioEditorPage extends GraphicalEditorWithFlyoutPalette {
 					false, iMonitor);
 			getCommandStack().markSaveLocation();
 		} catch (CoreException ce) {
-			ce.printStackTrace();
+			saveFailed(iMonitor, ce);
 		} catch (IOException ioe) {
-			ioe.printStackTrace();
+			saveFailed(iMonitor, ioe);
+		} catch (RuntimeException re) {
+			// e.g. XStream cannot serialize a value
+			saveFailed(iMonitor, re);
 		}
+	}
+
+	private void saveFailed(final IProgressMonitor monitor, final Exception e) {
+		// the editor stays dirty, e.g. when closing it with "Save"
+		if (monitor != null)
+			monitor.setCanceled(true);
+		Logger.notifyUser("The visualization could not be saved: "
+				+ (e.getMessage() != null ? e.getMessage() : e.toString()), e);
 	}
 
 	@Override
@@ -270,6 +284,9 @@ public class BMotionStudioEditorPage extends GraphicalEditorWithFlyoutPalette {
 
 		// remove PropertyChangeListener from graphical viewer
 		getGraphicalViewer().removePropertyChangeListener(viewerListener);
+
+		// the grid color belongs to the editor, not to the outline page
+		gridColor.dispose();
 
 		// important: always call super implementation of dispose
 		super.dispose();
@@ -715,6 +732,12 @@ public class BMotionStudioEditorPage extends GraphicalEditorWithFlyoutPalette {
 					&& !getGraphicalViewer().getControl().isDisposed())
 				getGraphicalViewer().getControl().removeDisposeListener(
 						disposeListener);
+			// The dispose listener is removed above, so deactivate the
+			// thumbnail here (unregisters it from the viewport)
+			if (thumbnail != null) {
+				thumbnail.deactivate();
+				thumbnail = null;
+			}
 		}
 
 		@Override
@@ -800,7 +823,6 @@ public class BMotionStudioEditorPage extends GraphicalEditorWithFlyoutPalette {
 		@Override
 		public void dispose() {
 			unhookOutlineViewer();
-			gridColor.dispose();
 			super.dispose();
 		}
 

@@ -12,3 +12,5 @@ updatesite/
 de.prob.core/prob/
 build/
 .tycho-consumer-pom.xml
+org.eclipse.m2e.core.prefs
+org.eclipse.jdt.core.prefs

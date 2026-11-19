@@ -5,9 +5,15 @@ package de.prob.core.langdep;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eventb.core.IContextRoot;
@@ -23,11 +29,14 @@ import org.eventb.core.ast.ASTProblem;
 import org.eventb.core.ast.Expression;
 import org.eventb.core.ast.Formula;
 import org.eventb.core.ast.FormulaFactory;
+import org.eventb.core.ast.FreeIdentifier;
 import org.eventb.core.ast.IParseResult;
 import org.eventb.core.ast.ITypeCheckResult;
 import org.eventb.core.ast.ITypeEnvironment;
 import org.eventb.core.ast.ITypeEnvironmentBuilder;
 import org.eventb.core.ast.Predicate;
+import org.eventb.core.ast.ProblemKind;
+import org.eventb.core.ast.SourceLocation;
 import org.eventb.core.ast.Type;
 import org.rodinp.core.IRodinFile;
 import org.rodinp.core.RodinDBException;
@@ -43,6 +52,8 @@ import de.prob.eventb.translator.internal.TranslationVisitor;
 import de.prob.exceptions.ProBException;
 import de.prob.parserbase.ProBParseException;
 import de.prob.prolog.output.IPrologTermOutput;
+import de.prob.prolog.output.StructuredPrologOutput;
+import de.prob.prolog.term.PrologTerm;
 import de.prob.unicode.UnicodeTranslator;
 
 /**
@@ -60,6 +71,13 @@ public class EventBAnimatorPart implements LanguageDependendAnimationPart {
 		this.root = root;
 	}
 
+	/**
+	 * @return the machine or context this part belongs to
+	 */
+	public IEventBRoot getRoot() {
+		return root;
+	}
+
 	@Override
 	public void parseExpression(final IPrologTermOutput pto,
 			final String expression1, final boolean wrap)
@@ -71,7 +89,7 @@ public class EventBAnimatorPart implements LanguageDependendAnimationPart {
 
 		checkParseResult(parseResult);
 		final Expression ee = parseResult.getParsedExpression();
-		typeCheck(ff, ee);
+		typeCheck(ff, ee, expression);
 		final PExpression expr = TranslationVisitor.translateExpression(ee);
 		toPrologTerm(pto, expr, wrap, EXPR_WRAPPER);
 	}
@@ -87,9 +105,233 @@ public class EventBAnimatorPart implements LanguageDependendAnimationPart {
 
 		checkParseResult(parseResult);
 		final Predicate pp = parseResult.getParsedPredicate();
-		typeCheck(ff, pp);
+		typeCheck(ff, pp, predicate);
 		final PPredicate apred = TranslationVisitor.translatePredicate(pp);
 		toPrologTerm(pto, apred, wrap, PRED_WRAPPER);
+	}
+
+	/** the identifier for the value of an expression, see {@link OpenFormula} */
+	public static final String RESULT_IDENTIFIER = "CONSOLE_RESULT";
+
+	/**
+	 * A predicate or expression that may contain free identifiers, i.e.
+	 * identifiers that are not part of the model (see
+	 * {@link EventBAnimatorPart#parseOpenFormula(String)}).
+	 */
+	public static final class OpenFormula {
+		private final boolean predicate;
+		private final boolean usesModelIdentifiers;
+		private final List<String> freeIdentifiers;
+		private final String resultIdentifier;
+		private final PrologTerm solverPredicate;
+
+		OpenFormula(final boolean predicate,
+				final boolean usesModelIdentifiers,
+				final List<String> freeIdentifiers,
+				final String resultIdentifier, final PrologTerm solverPredicate) {
+			this.predicate = predicate;
+			this.usesModelIdentifiers = usesModelIdentifiers;
+			this.freeIdentifiers = Collections
+					.unmodifiableList(freeIdentifiers);
+			this.resultIdentifier = resultIdentifier;
+			this.solverPredicate = solverPredicate;
+		}
+
+		/** @return true for a predicate, false for an expression */
+		public boolean isPredicate() {
+			return predicate;
+		}
+
+		/** @return true if the formula uses constants or variables */
+		public boolean usesModelIdentifiers() {
+			return usesModelIdentifiers;
+		}
+
+		/**
+		 * @return the identifiers of the formula that do not belong to the
+		 *         model, sorted (without the {@link #getResultIdentifier()})
+		 */
+		public List<String> getFreeIdentifiers() {
+			return freeIdentifiers;
+		}
+
+		/**
+		 * @return the identifier that stands for the value of the
+		 *         expression, null for a predicate
+		 */
+		public String getResultIdentifier() {
+			return resultIdentifier;
+		}
+
+		/**
+		 * @return the predicate to solve, unwrapped: the predicate itself or,
+		 *         for an expression E, <code>R = E</code> with the
+		 *         {@link #getResultIdentifier()} R
+		 */
+		public PrologTerm getSolverPredicate() {
+			return solverPredicate;
+		}
+	}
+
+	/**
+	 * Parses a predicate or, if it is not one, an expression, like
+	 * {@link #parsePredicate(IPrologTermOutput, String, boolean)} but
+	 * identifiers that do not belong to the model are allowed (their types
+	 * must be inferable).
+	 */
+	public OpenFormula parseOpenFormula(final String text)
+			throws ProBParseException {
+		final String formula = UnicodeTranslator.toUnicode(text);
+		final FormulaFactory ff = root.getFormulaFactory();
+		final ITypeEnvironment typeEnv = getTypeEnvironment(ff);
+
+		final IParseResult predicateResult = ff.parsePredicate(formula, null);
+		if (!predicateResult.hasProblem()) {
+			final Predicate pred = predicateResult.getParsedPredicate();
+			final List<String> free = typeCheckOpen(pred, typeEnv, formula);
+			return new OpenFormula(true, usesModelIdentifiers(pred, typeEnv),
+					free, null, toPrologTerm(pred));
+		}
+
+		final IParseResult expressionResult = ff
+				.parseExpression(formula, null);
+		// expressions are entered more often than predicates, so the
+		// message for the expression is usually the relevant one
+		checkParseResult(expressionResult);
+		final Expression expr = expressionResult.getParsedExpression();
+		final String result = freshName(expr, typeEnv);
+		final Predicate equality = ff.makeRelationalPredicate(Formula.EQUAL,
+				ff.makeFreeIdentifier(result, null), expr, null);
+		final List<String> free = typeCheckOpen(equality, typeEnv, formula);
+		free.remove(result);
+		return new OpenFormula(false, usesModelIdentifiers(expr, typeEnv),
+				free, result, toPrologTerm(equality));
+	}
+
+	private static boolean usesModelIdentifiers(final Formula<?> formula,
+			final ITypeEnvironment typeEnvironment) {
+		for (FreeIdentifier id : formula.getFreeIdentifiers())
+			if (typeEnvironment.contains(id.getName()))
+				return true;
+		return false;
+	}
+
+	/**
+	 * Describes the type of a predicate or expression (parsed as in
+	 * {@link #parseOpenFormula(String)}): "predicate" or the type of the
+	 * expression, followed by the inferred types of the identifiers that do
+	 * not belong to the model, one per line (e.g. "  x : \u2124").
+	 */
+	public String describeType(final String text) throws ProBParseException {
+		final String formula = UnicodeTranslator.toUnicode(text);
+		final FormulaFactory ff = root.getFormulaFactory();
+		final ITypeEnvironment typeEnv = getTypeEnvironment(ff);
+
+		final Formula<?> parsed;
+		final IParseResult predicateResult = ff.parsePredicate(formula, null);
+		if (!predicateResult.hasProblem()) {
+			parsed = predicateResult.getParsedPredicate();
+		} else {
+			final IParseResult expressionResult = ff.parseExpression(formula,
+					null);
+			checkParseResult(expressionResult);
+			parsed = expressionResult.getParsedExpression();
+		}
+		final ITypeCheckResult tcr = parsed.typeCheck(typeEnv);
+		if (tcr.hasProblem())
+			throw typeError(tcr, formula);
+		final StringBuilder sb = new StringBuilder();
+		sb.append(parsed instanceof Expression ? ((Expression) parsed)
+				.getType().toString() : "predicate");
+		final ITypeEnvironment inferred = tcr.getInferredEnvironment();
+		for (String name : new TreeSet<String>(inferred.getNames()))
+			sb.append("\n  ").append(name).append(" : ")
+					.append(inferred.getType(name));
+		return sb.toString();
+	}
+
+	/**
+	 * Type checks the formula in the type environment of the model.
+	 * 
+	 * @return the identifiers that are not in the type environment, sorted
+	 */
+	private List<String> typeCheckOpen(final Formula<?> formula,
+			final ITypeEnvironment typeEnvironment, final String text)
+			throws ProBParseException {
+		final ITypeCheckResult tcr = formula.typeCheck(typeEnvironment);
+		if (tcr.hasProblem())
+			throw typeError(tcr, text);
+		return new ArrayList<String>(new TreeSet<String>(tcr
+				.getInferredEnvironment().getNames()));
+	}
+
+	/**
+	 * @param text
+	 *            the parsed text, the problems refer to positions in it
+	 * @return an exception for the type check problems; Rodin's message for
+	 *         an unknown type does not say which identifier is concerned
+	 */
+	private static ProBParseException typeError(final ITypeCheckResult tcr,
+			final String text) {
+		// the identifiers in the order they occur in the text
+		final Map<Integer, String> unknownByPosition = new TreeMap<Integer, String>();
+		ASTProblem other = null;
+		for (ASTProblem problem : tcr.getProblems()) {
+			final String snippet = snippet(problem, text);
+			if (problem.getMessage() == ProblemKind.TypeUnknown
+					&& snippet != null)
+				unknownByPosition.put(problem.getSourceLocation().getStart(),
+						snippet);
+			else if (other == null)
+				other = problem;
+		}
+		final Set<String> unknown = new LinkedHashSet<String>(
+				unknownByPosition.values());
+		if (!unknown.isEmpty())
+			return new ProBParseException("Cannot infer the type of "
+					+ String.join(", ", unknown)
+					+ " (add a typing predicate such as x \u2208 \u2124)");
+		if (other == null) // only problems without a location
+			other = tcr.getProblems().get(0);
+		final String snippet = snippet(other, text);
+		return new ProBParseException(snippet == null
+				|| snippet.equals(text.trim()) ? other.toString() : other
+				+ " in: " + snippet);
+	}
+
+	/** @return the part of the text the problem refers to, if known */
+	private static String snippet(final ASTProblem problem, final String text) {
+		final SourceLocation location = problem.getSourceLocation();
+		if (location == null || location.getStart() < 0
+				|| location.getEnd() >= text.length()
+				|| location.getStart() > location.getEnd())
+			return null;
+		return text.substring(location.getStart(), location.getEnd() + 1);
+	}
+
+	private static String freshName(final Expression expr,
+			final ITypeEnvironment typeEnvironment) {
+		final Set<String> used = new HashSet<String>();
+		for (FreeIdentifier id : expr.getFreeIdentifiers())
+			used.add(id.getName());
+		String name = RESULT_IDENTIFIER;
+		for (int i = 1; used.contains(name)
+				|| typeEnvironment.contains(name); i++)
+			name = RESULT_IDENTIFIER + i;
+		return name;
+	}
+
+	private static PrologTerm toPrologTerm(final Predicate predicate) {
+		final StructuredPrologOutput out = new StructuredPrologOutput();
+		predicate(out, predicate);
+		out.fullstop();
+		return out.getSentences().get(0);
+	}
+
+	private static void predicate(final IPrologTermOutput pto,
+			final Predicate predicate) {
+		final PPredicate apred = TranslationVisitor.translatePredicate(predicate);
+		apred.apply(new ASTProlog(pto, null));
 	}
 
 	private void toPrologTerm(final IPrologTermOutput pto,
@@ -105,19 +347,17 @@ public class EventBAnimatorPart implements LanguageDependendAnimationPart {
 		}
 	}
 
-	private void typeCheck(final FormulaFactory ff, final Formula<?> pp)
-			throws ProBParseException {
-		typeCheck(pp, getTypeEnvironment(ff));
+	private void typeCheck(final FormulaFactory ff, final Formula<?> pp,
+			final String text) throws ProBParseException {
+		typeCheck(pp, getTypeEnvironment(ff), text);
 	}
 
 	private void typeCheck(final Formula<?> pp,
-			final ITypeEnvironment typeEnvironment) throws ProBParseException {
+			final ITypeEnvironment typeEnvironment, final String text)
+			throws ProBParseException {
 		final ITypeCheckResult tcr = pp.typeCheck(typeEnvironment);
-		if (tcr.hasProblem()) {
-			final List<ASTProblem> problems = tcr.getProblems();
-			final ASTProblem problem = problems.iterator().next();
-			throw new ProBParseException(problem.toString());
-		}
+		if (tcr.hasProblem())
+			throw typeError(tcr, text);
 		final ITypeEnvironment inferred = tcr.getInferredEnvironment();
 		if (!inferred.isEmpty()) {
 			final Set<String> names = inferred.getNames();
@@ -216,7 +456,7 @@ public class EventBAnimatorPart implements LanguageDependendAnimationPart {
 		addEventParameters(event, ff, typeEnv, new ArrayList<String>());
 		final ISCMachineRoot machine = ((IMachineRoot) root).getSCMachineRoot();
 		addPostStateVariables(machine, ff, typeEnv, new ArrayList<String>());
-		typeCheck(predicate, typeEnv);
+		typeCheck(predicate, typeEnv, utf8String);
 		return predicate;
 	}
 

@@ -91,36 +91,51 @@ public class ExportNewCoreHandler extends AbstractHandler implements IHandler {
 		return result;
 	}
 
+	/**
+	 * Exports the model to a file chosen by the user; asks before overwriting
+	 * an existing file
+	 */
 	public static void exportToClassic(final String filename,
 			final IEventBRoot root) {
-		final boolean isSafeToWrite = isSafeToWrite(filename);
+		if (isSafeToWrite(filename)) {
+			writeClassicFile(filename, root);
+		}
+	}
 
-		if (isSafeToWrite) {
-			Writer fw = null;
-			try {
-				fw = new FileWriter(filename);
-				TranslatorFactory.translate(root, new PrintWriter(fw));
-				fw.append('\n');
-
-			} catch (TranslationFailedException e) {
-				e.notifyUserOnce();
-			} catch (IOException e) {
-				Logger.notifyUser("Unable to create file '" + filename + "'");
-			} finally {
-				if (fw != null) {
-					try {
-						fw.close();
-					} catch (IOException e) {
-					}
+	/**
+	 * Writes the model to the given file without asking, e.g. to a temporary
+	 * file created for ProB Tcl/Tk
+	 * 
+	 * @return true if the file was written
+	 */
+	public static boolean writeClassicFile(final String filename,
+			final IEventBRoot root) {
+		Writer fw = null;
+		try {
+			fw = new FileWriter(filename);
+			TranslatorFactory.translate(root, new PrintWriter(fw));
+			fw.append('\n');
+			return true;
+		} catch (TranslationFailedException e) {
+			e.notifyUserOnce();
+		} catch (IOException e) {
+			Logger.notifyUser("Unable to create file '" + filename + "'");
+		} finally {
+			if (fw != null) {
+				try {
+					fw.close();
+				} catch (IOException e) {
 				}
 			}
 		}
+		return false;
 	}
 
 	private static boolean isSafeToWrite(final String filename) {
 		if (new File(filename).exists()) {
-			final MessageDialog dialog = new MessageDialog(null, "File exists",
-					null, "The file exists. Do you want to overwrite it?",
+			final MessageDialog dialog = new MessageDialog(null,
+					"File exists", null, "The export file\n\n" + filename
+							+ "\n\nalready exists. Do you want to overwrite it?",
 					MessageDialog.QUESTION, new String[] { "Yes", "No" }, 0);
 			return dialog.open() == 0;
 		} else

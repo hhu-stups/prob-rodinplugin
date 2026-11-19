@@ -8,8 +8,10 @@ package de.prob.ui.operationview;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
 
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.jface.dialogs.TrayDialog;
@@ -41,9 +43,9 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Sash;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
-import org.eclipse.ui.plugin.AbstractUIPlugin;
 
 import de.prob.core.Animator;
 import de.prob.core.command.GetOperationNamesCommand;
@@ -63,14 +65,15 @@ import de.prob.ui.ProbUiPlugin;
  */
 public class OperationSelectionDialog extends TrayDialog {
 
-	private static final String IMG_CHECKED = "icons/checked.gif";
-	private static final String IMG_UNCHECKED = "icons/unchecked.gif";
 	private static final int MIN_ARGUMENT_LENGTH = 20;
 
 	private String shellTitle = "";
 	private final Animator animator;
 	private final List<String> arguments = new ArrayList<String>();
 	private List<Operation> enabledOperations = null;
+	// labels of the operations without parameters (non-deterministic
+	// choices), computed on first use
+	private Map<Operation, String> choiceLabels = null;
 
 	private final List<Boolean> hiddenColumns = new ArrayList<Boolean>();
 	private final List<Object> hiddenArguments = new ArrayList<Object>();
@@ -96,6 +99,10 @@ public class OperationSelectionDialog extends TrayDialog {
 	protected void okPressed() {
 		IStructuredSelection sel = (IStructuredSelection) tbvOps.getSelection();
 		OperationEntry entry = (OperationEntry) sel.getFirstElement();
+		if (entry == null) {
+			// nothing selected yet, keep the dialog open
+			return;
+		}
 		lastSelectedOperation = entry.getOperation();
 		super.okPressed();
 	}
@@ -225,7 +232,9 @@ public class OperationSelectionDialog extends TrayDialog {
 		if (list.get(0) != null) {
 			shellTitle = list.get(0).getName();
 		}
-		OperationSelectionDialog osd = new OperationSelectionDialog(new Shell());
+		OperationSelectionDialog osd = new OperationSelectionDialog(
+				PlatformUI.getWorkbench().getModalDialogShellProvider()
+						.getShell());
 		osd.setTitle(shellTitle);
 		osd.setEnabledOperations(list);
 		if (osd.open() == TitleAreaDialog.OK)
@@ -307,6 +316,7 @@ public class OperationSelectionDialog extends TrayDialog {
 	 */
 	private void setEnabledOperations(final List<Operation> al) {
 		enabledOperations = al;
+		choiceLabels = null;
 	}
 
 	/**
@@ -314,6 +324,34 @@ public class OperationSelectionDialog extends TrayDialog {
 	 * 
 	 * @return
 	 */
+	/**
+	 * Describes an operation without parameters by the variables it changes
+	 */
+	private String getChoiceLabel(final Operation op) {
+		if (choiceLabels == null) {
+			final List<Operation> ops = getEnabledOperations();
+			final Map<Operation, String> descriptions = NondeterministicChoices
+					.describe(animator, ops, 40, 150);
+			final List<Operation> choices = new ArrayList<Operation>();
+			final List<String> labels = new ArrayList<String>();
+			for (Operation o : ops) {
+				if (NondeterministicChoices.isWithoutParameters(o)) {
+					choices.add(o);
+					final String d = descriptions.get(o);
+					labels.add(d != null ? d : "Non-deterministic choice");
+				}
+			}
+			// truncated descriptions may coincide; number those
+			NondeterministicChoices.makeUnique(labels);
+			choiceLabels = new HashMap<Operation, String>();
+			for (int i = 0; i < choices.size(); i++) {
+				choiceLabels.put(choices.get(i), labels.get(i));
+			}
+		}
+		final String label = choiceLabels.get(op);
+		return label != null ? label : "Non-deterministic choice";
+	}
+
 	private List<Operation> getEnabledOperations() {
 		if (enabledOperations == null) {
 			enabledOperations = animator.getCurrentState()
@@ -515,8 +553,7 @@ public class OperationSelectionDialog extends TrayDialog {
 					else
 						return argument;
 				} else
-				    // TODO: obtain non-deterministically assigned variables and display them
-					return "Non-deterministic choice #" + entry.getPosition();
+					return getChoiceLabel(entry.getOperation());
 			}
 		}
 
@@ -578,13 +615,13 @@ public class OperationSelectionDialog extends TrayDialog {
 		@Override
 		public Image getColumnImage(final Object element, final int columnIndex) {
 			if (columnIndex == 0) {
+				// shared registry images; must not be disposed
 				if (hiddenArguments.contains(element))
-					return AbstractUIPlugin.imageDescriptorFromPlugin(
-							ProbUiPlugin.PLUGIN_ID, IMG_CHECKED).createImage();
+					return ProbUiPlugin.getDefault().getImageRegistry()
+							.get(ProbUiPlugin.IMG_CHECKED);
 				else
-					return AbstractUIPlugin.imageDescriptorFromPlugin(
-							ProbUiPlugin.PLUGIN_ID, IMG_UNCHECKED)
-							.createImage();
+					return ProbUiPlugin.getDefault().getImageRegistry()
+							.get(ProbUiPlugin.IMG_UNCHECKED);
 			} else
 				return null;
 

@@ -18,8 +18,6 @@ import org.eclipse.ui.commands.IElementUpdater;
 import org.eclipse.ui.menus.UIElement;
 import org.eclipse.ui.services.IServiceLocator;
 
-import de.prob.ui.stateview.StateViewPart;
-
 /**
  * @author plagge
  * 
@@ -35,6 +33,10 @@ public class ToggleShowParametersHandler extends AbstractHandler implements
 		if (state != null) {
 			final boolean newFilterValue = toggleState(state);
 			setShowParameters(newFilterValue);
+			// update the check mark of the toolbar button
+			final ICommandService service = (ICommandService) PlatformUI
+					.getWorkbench().getService(ICommandService.class);
+			service.refreshElements(COMMAND_ID, null);
 		} else
 			throw new ExecutionException("Command state " + STATE_ID
 					+ " not found");
@@ -56,16 +58,23 @@ public class ToggleShowParametersHandler extends AbstractHandler implements
 		if (view != null) {
 			view.setShowParameters(show);
 		} else
-			throw new ExecutionException("View " + StateViewPart.STATE_VIEW_ID
+			throw new ExecutionException("View " + HistoryView.VIEW_ID
 					+ " not found");
 	}
 
 	@Override
 	public void updateElement(UIElement element,
 			@SuppressWarnings("rawtypes") Map parameters) {
-		final State state = getCurrentState(element.getServiceLocator());
-		final Boolean filterSet = (Boolean) state.getValue();
-		element.setChecked(filterSet);
+		element.setChecked(isShowParameters(element.getServiceLocator()));
+	}
+
+	/**
+	 * @return the value of the toggle, so that a newly opened History view
+	 *         shows the parameters accordingly
+	 */
+	public static boolean isShowParameters(final IServiceLocator locator) {
+		final State state = getCurrentState(locator);
+		return state == null || !Boolean.FALSE.equals(state.getValue());
 	}
 
 	private static State getCurrentState(final IServiceLocator locator) {

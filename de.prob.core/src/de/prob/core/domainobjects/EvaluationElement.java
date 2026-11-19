@@ -5,6 +5,7 @@ import java.util.List;
 
 import de.prob.core.Animator;
 import de.prob.core.command.EvaluationExpandCommand;
+import de.prob.core.command.EvaluationFormulaTextCommand;
 import de.prob.core.command.EvaluationGetValuesCommand;
 import de.prob.exceptions.ProBException;
 import de.prob.prolog.term.PrologTerm;
@@ -16,6 +17,13 @@ public class EvaluationElement {
 	private final EvaluationElement parent;
 
 	private EvLazyInformation lazy;
+	/** see {@link #getFormula()}; null until asked */
+	private EvaluationFormulaTextCommand formula;
+	/**
+	 * false if probcli does not know evaluation_formula_text/3; null until a
+	 * formula has been asked for
+	 */
+	private static volatile Boolean formulaTextSupported;
 
 	public EvaluationElement(final Animator animator, final PrologTerm id,
 			final EvaluationElement parent) {
@@ -52,6 +60,41 @@ public class EvaluationElement {
 	public String getLabel() throws ProBException {
 		checkForLazyInformation();
 		return lazy.label;
+	}
+
+	/**
+	 * The formula of the entry as text, which can be parsed again (its label
+	 * may differ, e.g. the name of an event for its guard).
+	 * 
+	 * @return the formula's kind and text, or null if probcli cannot tell
+	 *         (an older probcli, or an error)
+	 */
+	public EvaluationFormulaTextCommand getFormula() {
+		if (formula != null)
+			return formula;
+		if (Boolean.FALSE.equals(formulaTextSupported))
+			return null;
+		try {
+			final EvaluationFormulaTextCommand cmd = Animator
+					.callQuietly(new Animator.ProBCall<EvaluationFormulaTextCommand>() {
+						@Override
+						public EvaluationFormulaTextCommand call()
+								throws ProBException {
+							final EvaluationFormulaTextCommand c = new EvaluationFormulaTextCommand(
+									id);
+							animator.execute(c);
+							return c;
+						}
+					});
+			formulaTextSupported = Boolean.TRUE;
+			formula = cmd;
+			return cmd;
+		} catch (ProBException e) {
+			// the query cannot fail for a known predicate
+			if (formulaTextSupported == null)
+				formulaTextSupported = Boolean.FALSE;
+			return null;
+		}
 	}
 
 	public EvaluationStateElement evaluateForState(final State state)

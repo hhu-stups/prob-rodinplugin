@@ -14,6 +14,7 @@ import org.eclipse.ui.services.ISourceProviderService;
 import de.prob.core.Animator;
 import de.prob.core.IAnimationListener;
 import de.prob.core.ILifecycleListener;
+import de.prob.core.domainobjects.HistoryItem;
 import de.prob.core.domainobjects.Operation;
 import de.prob.core.domainobjects.State;
 import de.prob.ui.services.HistoryActiveProvider;
@@ -65,17 +66,29 @@ public abstract class StateBasedViewPart extends ViewPart implements
 		this.parent = parent;
 		StaticListenerRegistry.registerListener((ILifecycleListener) this);
 		StaticListenerRegistry.registerListener((IAnimationListener) this);
-		final Animator animator = Animator.getAnimator();
-		if (animator.isMachineLoaded()) {
-			createStateControl();
-			final State state = animator.getCurrentState();
-			final Operation op = animator.getHistory().getCurrent()
-					.getOperation();
-			stateChanged(state, op);
-		} else {
+		if (!showCurrentState()) {
 			createNoStateMessage();
 			reset();
 		}
+	}
+
+	/**
+	 * Shows the current state of the animator, if any.
+	 * 
+	 * @return false if no machine is loaded or it has no state yet (an event
+	 *         follows when it has one)
+	 */
+	private boolean showCurrentState() {
+		final Animator animator = Animator.getAnimator();
+		// checked first: getHistory() would start probcli if none is running
+		if (!animator.isMachineLoaded())
+			return false;
+		final HistoryItem current = animator.getHistory().getCurrent();
+		if (current == null)
+			return false;
+		createStateControl();
+		stateChanged(current.getState(), current.getOperation());
+		return true;
 	}
 
 	private void createNoStateMessage() {
@@ -126,6 +139,9 @@ public abstract class StateBasedViewPart extends ViewPart implements
 		final Runnable runnable = new Runnable() {
 			@Override
 			public void run() {
+				// the view may have been closed in the meantime
+				if (isPartDisposed())
+					return;
 				createStateControl();
 				stateChanged(currentState, operation);
 			}
@@ -141,11 +157,21 @@ public abstract class StateBasedViewPart extends ViewPart implements
 		final Runnable runnable = new Runnable() {
 			@Override
 			public void run() {
+				if (isPartDisposed())
+					return;
 				createNoStateMessage();
 				stateReset();
 			}
 		};
 		Display.getDefault().asyncExec(runnable);
+	}
+
+	/**
+	 * @return true if the view's controls are gone (e.g. the view was closed
+	 *         after an update had been scheduled with asyncExec)
+	 */
+	protected boolean isPartDisposed() {
+		return parent == null || parent.isDisposed();
 	}
 
 	@Override

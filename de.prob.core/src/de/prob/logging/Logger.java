@@ -8,11 +8,13 @@ package de.prob.logging;
 
 import org.eclipse.core.runtime.ILogListener;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 
 import de.prob.cli.CliException;
 import de.prob.core.internal.Activator;
 import de.prob.exceptions.ProBAssertionFailed;
+import org.osgi.framework.Bundle;
 import de.prob.parser.BindingGenerator;
 
 /**
@@ -115,9 +117,89 @@ public final class Logger {
 		assertProB(assertion, false);
 	}
 
+	/**
+	 * The code of log entries that are not shown in a dialog (see
+	 * {@link #logWithoutDialog(int, String, Throwable)}).
+	 */
+	public static final int NO_DIALOG = 1;
+
+	/**
+	 * Writes a warning or error to the Error Log, without showing it to the
+	 * user in a dialog. For problems the caller handles or reports in another
+	 * way, e.g. in Rodin's proof tree, or that may occur very often.
+	 */
+	public static void logWithoutDialog(final int severity,
+			final String message, final Throwable exception) {
+		log(new Status(severity, Activator.PLUGIN_ID, NO_DIALOG, message,
+				exception));
+	}
+
 	public static void log(final int severity, final String message, final Throwable exception) {
 		final IStatus status = new Status(severity, Activator.PLUGIN_ID, message, exception);
 		log(status);
+	}
+
+	/** shows notices without interrupting the user, e.g. in a small popup */
+	public interface NonModalNotifier {
+		/**
+		 * @param message
+		 *            a short summary
+		 * @param details
+		 *            more information, e.g. a list of elements, or
+		 *            <code>null</code>
+		 */
+		void notify(String message, String details);
+
+		/**
+		 * Like {@link #notify(String, String)}, with a link below the
+		 * details' link that runs the action (in the UI thread) and closes
+		 * the notice.
+		 *
+		 * @param actionLabel
+		 *            e.g. "Compute Unsat Core", or <code>null</code> for none
+		 */
+		default void notify(final String message, final String details,
+				final String actionLabel, final Runnable action) {
+			notify(message, details);
+		}
+	}
+
+	private static volatile NonModalNotifier nonModalNotifier;
+
+	/** called by the UI plug-in, which shows the notices */
+	public static void setNonModalNotifier(final NonModalNotifier notifier) {
+		nonModalNotifier = notifier;
+	}
+
+	/**
+	 * Tells the user about a problem that needs no immediate action, without
+	 * a modal dialog: it is shown by the UI's notifier (if there is one) and
+	 * written to the log as information, so it opens no error dialog.
+	 */
+	public static void notifyUserNonModal(final String message,
+			final String details) {
+		info(details == null ? message : message + "\n" + details);
+		final NonModalNotifier notifier = nonModalNotifier;
+		if (notifier != null)
+			notifier.notify(message, details);
+	}
+
+	/**
+	 * Like {@link #notifyUserNonModal(String, String)}, with an action the
+	 * user can start from the notice, e.g. computing an unsat core.
+	 *
+	 * @param actionLabel
+	 *            the link's text, or <code>null</code> for no action
+	 * @param action
+	 *            run in the UI thread when the link is clicked
+	 */
+	public static void notifyUserNonModal(final String message,
+			final String details, final String actionLabel,
+			final Runnable action) {
+		info(details == null ? message : message + "\n" + details);
+		final NonModalNotifier notifier = nonModalNotifier;
+		if (notifier != null)
+			notifier.notify(message, details, actionLabel, action);
 	}
 
 	public static void info(final String message) {
@@ -131,6 +213,18 @@ public final class Logger {
 	}
 
 	private static void log(final IStatus status) {
-		Activator.getDefault().getLog().log(status);
+		final Activator plugin = Activator.getRunningInstance();
+		if (plugin != null) {
+			plugin.getLog().log(status);
+			return;
+		}
+		// the plug-in has been stopped (e.g. a job finishing during
+		// shutdown) or not started yet: log on behalf of its bundle
+		final Bundle bundle = Platform.getBundle(Activator.PLUGIN_ID);
+		if (bundle != null) {
+			Platform.getLog(bundle).log(status);
+		} else {
+			System.err.println(status);
+		}
 	}
 }

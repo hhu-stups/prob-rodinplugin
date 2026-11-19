@@ -11,8 +11,6 @@ import org.eclipse.core.databinding.beans.typed.BeanProperties;
 import org.eclipse.jface.databinding.swt.typed.WidgetProperties;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -21,6 +19,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
+import de.bmotionstudio.gef.editor.BMotionStudioSWTConstants;
 import de.bmotionstudio.gef.editor.model.BControl;
 import de.bmotionstudio.gef.editor.observer.Observer;
 import de.bmotionstudio.gef.editor.observer.ObserverWizard;
@@ -60,8 +59,7 @@ public class WizardObserverSimpleValueDisplay extends ObserverWizard {
 
 			txtPredicate = new Text(container, SWT.BORDER);
 			txtPredicate.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-			txtPredicate.setFont(new Font(Display.getDefault(), new FontData(
-					"Arial", 10, SWT.NONE)));
+			txtPredicate.setFont(BMotionStudioSWTConstants.fontArial10);
 
 			lb = new Label(container, SWT.NONE);
 			lb.setText("Expression:");
@@ -79,8 +77,7 @@ public class WizardObserverSimpleValueDisplay extends ObserverWizard {
 			txtReplacementString = new Text(container, SWT.BORDER);
 			txtReplacementString.setLayoutData(new GridData(
 					GridData.FILL_HORIZONTAL));
-			txtReplacementString.setFont(new Font(Display.getDefault(),
-					new FontData("Arial", 10, SWT.NONE)));
+			txtReplacementString.setFont(BMotionStudioSWTConstants.fontArial10);
 
 			lb = new Label(container, SWT.NONE);
 			lb.setLayoutData(new GridData(0,0,true,true,2,1));

@@ -1,0 +1,169 @@
+package de.prob.ui.explorer;
+
+import java.util.List;
+
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IResourceChangeEvent;
+import org.eclipse.core.resources.IResourceChangeListener;
+import org.eclipse.core.resources.IResourceDelta;
+import org.eclipse.core.resources.IResourceDeltaVisitor;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.jface.viewers.ITreeContentProvider;
+import org.eclipse.jface.viewers.StructuredViewer;
+import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Tree;
+import org.eventb.core.IEventBRoot;
+
+import de.prob.ui.historyview.SaveTraceHandler;
+
+/**
+ * Adds a "Traces" node with the saved traces (see {@link TraceFiles}) to each
+ * machine and context with traces in the Event-B Explorer. The explorer is
+ * refreshed when a trace file is added, changed or removed, when a replay
+ * status is stored, and when a model changes (its traces' status may become
+ * unknown, see {@link TraceStatus}).
+ */
+public class TracesContentProvider implements ITreeContentProvider,
+		IResourceChangeListener {
+
+	private static final Object[] NONE = new Object[0];
+
+	private StructuredViewer viewer;
+
+	private final Runnable statusListener = new Runnable() {
+		@Override
+		public void run() {
+			refreshLater();
+		}
+	};
+
+	public TracesContentProvider() {
+		ResourcesPlugin.getWorkspace().addResourceChangeListener(this,
+				IResourceChangeEvent.POST_CHANGE);
+		TraceStatus.addListener(statusListener);
+	}
+
+	@Override
+	public Object[] getChildren(final Object element) {
+		if (element instanceof IEventBRoot) {
+			final IEventBRoot root = (IEventBRoot) element;
+			return TraceFiles.of(root).isEmpty() ? NONE
+					: new Object[] { new TracesNode(root) };
+		}
+		if (element instanceof TracesNode) {
+			final TracesNode node = (TracesNode) element;
+			final List<IFile> files = TraceFiles.of(node.getRoot());
+			final Object[] children = new Object[files.size()];
+			for (int i = 0; i < children.length; i++)
+				children[i] = new TraceNode(node, files.get(i));
+			return children;
+		}
+		return NONE;
+	}
+
+	@Override
+	public Object getParent(final Object element) {
+		if (element instanceof TracesNode)
+			return ((TracesNode) element).getRoot();
+		if (element instanceof TraceNode)
+			return ((TraceNode) element).getParent();
+		return null;
+	}
+
+	@Override
+	public boolean hasChildren(final Object element) {
+		if (element instanceof IEventBRoot)
+			return !TraceFiles.of((IEventBRoot) element).isEmpty();
+		return element instanceof TracesNode;
+	}
+
+	@Override
+	public Object[] getElements(final Object input) {
+		return getChildren(input);
+	}
+
+	@Override
+	public void inputChanged(final Viewer viewer, final Object oldInput,
+			final Object newInput) {
+		this.viewer = viewer instanceof StructuredViewer ? (StructuredViewer) viewer
+				: null;
+		if (viewer != null && viewer.getControl() instanceof Tree)
+			TraceToolTip.install((Tree) viewer.getControl());
+	}
+
+	@Override
+	public void resourceChanged(final IResourceChangeEvent event) {
+		final IResourceDelta delta = event.getDelta();
+		if (delta != null && touchesTraces(delta))
+			refreshLater();
+	}
+
+	private void refreshLater() {
+		final StructuredViewer viewer = this.viewer;
+		if (viewer == null)
+			return;
+		final Control control = viewer.getControl();
+		if (control == null || control.isDisposed())
+			return;
+		control.getDisplay().asyncExec(new Runnable() {
+			@Override
+			public void run() {
+				if (!control.isDisposed())
+					viewer.refresh();
+			}
+		});
+	}
+
+	/**
+	 * whether a trace file in a model's folder or a machine or context was
+	 * changed
+	 */
+	private static boolean touchesTraces(final IResourceDelta delta) {
+		final boolean[] found = { false };
+		try {
+			delta.accept(new IResourceDeltaVisitor() {
+				@Override
+				public boolean visit(final IResourceDelta d) {
+					if (found[0])
+						return false;
+					final IResource resource = d.getResource();
+					if (resource.getName().endsWith(SaveTraceHandler.EXTENSION)
+							&& depth(resource) == 3 || isModel(d)) {
+						found[0] = true;
+						return false;
+					}
+					// only the workspace, projects and their (model) folders
+					return depth(resource) < 3;
+				}
+			});
+		} catch (CoreException e) {
+			return false;
+		}
+		return found[0];
+	}
+
+	/** @return 0 for the workspace, 1 for a project, 2 for its members, ... */
+	private static int depth(final IResource resource) {
+		return resource.getFullPath().segmentCount();
+	}
+
+	/** a changed machine or context file, directly in a project */
+	private static boolean isModel(final IResourceDelta d) {
+		final String name = d.getResource().getName();
+		return (name.endsWith(".bum") || name.endsWith(".buc"))
+				&& d.getResource().getParent() != null
+				&& d.getResource().getParent().getParent() != null
+				&& d.getResource().getParent().getParent().getParent() == null
+				&& (d.getKind() != IResourceDelta.CHANGED || (d.getFlags() & IResourceDelta.CONTENT) != 0);
+	}
+
+	@Override
+	public void dispose() {
+		TraceStatus.removeListener(statusListener);
+		ResourcesPlugin.getWorkspace().removeResourceChangeListener(this);
+		viewer = null;
+	}
+}

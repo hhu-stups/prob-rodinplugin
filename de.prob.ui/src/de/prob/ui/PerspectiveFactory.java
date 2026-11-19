@@ -8,6 +8,7 @@ package de.prob.ui;
 
 import org.eclipse.ui.IFolderLayout;
 import org.eclipse.ui.IPageLayout;
+import org.eclipse.ui.IPlaceholderFolderLayout;
 import org.eclipse.ui.IPerspectiveFactory;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
@@ -43,6 +44,15 @@ public class PerspectiveFactory implements IPerspectiveFactory {
 				0.6f, "right1");
 		right2.addView("de.prob.ui.HistoryView");
 		right2.addView("de.prob.ui.EventErrorView");
+
+		// the ProB Console, Graph and Table views open in the middle column,
+		// where the (hidden) editor area is, together in one folder; see also
+		// the perspectiveExtensions in plugin.xml for Rodin's perspectives
+		IPlaceholderFolderLayout middle = layout.createPlaceholderFolder(
+				"middle", IPageLayout.BOTTOM, 0.5f, editorArea);
+		middle.addPlaceholder("de.prob.ui.ConsoleView");
+		middle.addPlaceholder("de.prob.ui.GraphView");
+		middle.addPlaceholder("de.prob.ui.TableView");
 	}
 
 	public static void openPerspective() {
@@ -50,7 +60,6 @@ public class PerspectiveFactory implements IPerspectiveFactory {
 			IWorkbench workbench = PlatformUI.getWorkbench();
 			workbench.showPerspective(PROB_PERSPECTIVE,
 					workbench.getActiveWorkbenchWindow());
-			workbench.getActiveWorkbenchWindow().addPerspectiveListener(new PerspectiveListener());
 		} catch (WorkbenchException e) {
 			final String message = "Error opening ProB perspective.";
 			Logger.notifyUser(message, e);

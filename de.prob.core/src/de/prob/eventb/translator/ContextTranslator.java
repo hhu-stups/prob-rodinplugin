@@ -68,10 +68,10 @@ import de.be4.classicalb.core.parser.node.TIdentifierLiteral;
 import de.be4.classicalb.core.parser.node.TPragmaFreeText;
 import de.hhu.stups.sablecc.patch.SourcePosition;
 import de.prob.core.translator.TranslationFailedException;
+import de.prob.core.translator.TranslationLocation;
 import de.prob.eventb.translator.internal.EProofStatus;
 import de.prob.eventb.translator.internal.ProofObligation;
 import de.prob.eventb.translator.internal.SequentSource;
-import de.prob.logging.Logger;
 
 public final class ContextTranslator extends AbstractComponentTranslator {
 
@@ -133,7 +133,8 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 	private static TranslationFailedException createTranslationFailedException(final ISCContext context,
 			CoreException e) throws TranslationFailedException {
 		final String message = "A Rodin exception occured during translation process. Possible cause: building aborted or still in progress. Please wait until building has finished before starting ProB. If this does not help, perform a clean and start ProB after building has finished. Original Exception: ";
-		return new TranslationFailedException(context.getComponentName(), message + e.getLocalizedMessage());
+		return new TranslationFailedException(context.getComponentName(),
+				message + TranslationLocation.describe(e), e);
 	}
 
 	private static boolean assertConsistentModel(IInternalElement machine_root) throws RodinDBException {
@@ -166,9 +167,11 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 	}
 
 	private void translate() throws CoreException {
+		TranslationLocation.enter("context " + context.getComponentName());
 		translateContext();
 		collectProofInfo();
 		collectPragmas();
+		TranslationLocation.leave();
 	}
 
 	private void collectPragmas() throws RodinDBException {
@@ -187,9 +190,11 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 
 		try {
 			IPSRoot proofStatus = origin.getPSRoot();
+			if (!hasProofStatus(proofStatus, origin.getComponentName()))
+				return;
 			IPSStatus[] statuses = proofStatus.getStatuses();
 
-			for (IPSStatus status : statuses) {
+			nextStatus: for (IPSStatus status : statuses) {
 				final int confidence = status.getConfidence();
 				boolean broken = status.isBroken();
 
@@ -210,8 +215,10 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 
 					IRodinElement srcElement = source.getSource();
 					if (!srcElement.exists() || !(srcElement instanceof ILabeledElement)) {
+						// skip the whole PO, a status with incomplete sources
+						// could mark the wrong (or no) element as proven
 						bugs.add(status.getElementName());
-						break;
+						continue nextStatus;
 					}
 
 					ILabeledElement le = (ILabeledElement) srcElement;
@@ -225,11 +232,7 @@ public final class ContextTranslator extends AbstractComponentTranslator {
 			bugs.add(e.getLocalizedMessage());
 		}
 
-		if (!bugs.isEmpty()) {
-			String message = "Translation incomplete due to a an issue with the Rodin database (try Project -> Clean...). This does not affect correctness of the Animation/Model Checking but can decrease its performance. Skipped discharged information about: "
-					+ String.join(",", bugs);
-			Logger.notifyUser(message);
-		}
+		skippedProofInfo(origin.getComponentName(), bugs);
 
 	}
 

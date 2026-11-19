@@ -6,6 +6,8 @@
 
 package de.bmotionstudio.gef.editor.model;
 
+import java.util.Map;
+
 import org.eclipse.swt.graphics.RGB;
 
 import de.bmotionstudio.gef.editor.attribute.AbstractAttribute;
@@ -112,6 +114,17 @@ public class BConnection extends BControl {
 		this.source = newSource;
 		this.target = newTarget;
 		reconnect();
+	}
+
+	@Override
+	public BConnection clone(final Visualization targetVisualization,
+			final Map<BControl, BControl> clonedChildren)
+			throws CloneNotSupportedException {
+		BConnection clone = (BConnection) super.clone(targetVisualization,
+				clonedChildren);
+		// not attached to the source and target yet, see reconnect()
+		clone.isConnected = false;
+		return clone;
 	}
 
 	@Override

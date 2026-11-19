@@ -30,7 +30,8 @@ public class LtlCheckingFinishedListener extends JobChangeAdapter {
 		Job job = event.getJob();
 		if (job instanceof LtlCheckingJob) {
 			LtlCheckingJob ltlJob = (LtlCheckingJob) job;
-			if (!ltlJob.isAnErrorOccurred()) {
+			if (!ltlJob.isAnErrorOccurred()
+					&& ltlJob.getModelCheckingResult() != null) {
 				showResult(ltlJob.getModelCheckingResult());
 			}
 		} else {
@@ -43,7 +44,10 @@ public class LtlCheckingFinishedListener extends JobChangeAdapter {
 				modelCheckingResult);
 		final CounterExampleViewPart counterExampleView = CounterExampleViewPart
 				.showDefault();
-		counterExampleView.addCounterExample(counterExample);
+		// null if the view could not be opened (the user has been informed)
+		if (counterExampleView != null) {
+			counterExampleView.addCounterExample(counterExample);
+		}
 	}
 
 	private void showResult(final Result modelCheckingResult) {
@@ -56,7 +60,7 @@ public class LtlCheckingFinishedListener extends JobChangeAdapter {
 		switch (modelCheckingResult.getStatus()) {
 		case incomplete:
 			title = LtlStrings.ltlResultIncompleteTitle;
-			message = LtlStrings.ltlResultIncompleteTitle;
+			message = LtlStrings.ltlResultIncompleteMessage;
 			displayType = MessageDialog.WARNING;
 			break;
 		case ok:

@@ -12,6 +12,7 @@ import java.util.List;
 
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.PlatformUI;
 
 import de.be4.classicalb.core.parser.exceptions.BCompoundException;
 import de.prob.core.Animator;
@@ -79,11 +80,10 @@ public class CustomPreconditionInputDialog extends InputDialog {
 			    ExecuteOperationCommand.executeOperation(animator, customOp);
             }
 		} catch (ProBException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			e.notifyUserOnce();
 		} catch (BCompoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Logger.notifyUser("The additional predicate could not be parsed: "
+					+ e.getMessage(), e);
 		}
 
 		return null;
@@ -92,7 +92,8 @@ public class CustomPreconditionInputDialog extends InputDialog {
 	public static Operation getOperation(Operation op) {
 		
 		CustomPreconditionInputDialog osd = new CustomPreconditionInputDialog(
-				new Shell(), op, Animator.getAnimator());
+				PlatformUI.getWorkbench().getModalDialogShellProvider()
+						.getShell(), op, Animator.getAnimator());
 		if (osd.open() == InputDialog.OK)
 			return osd.getCustomOperation();
 		else

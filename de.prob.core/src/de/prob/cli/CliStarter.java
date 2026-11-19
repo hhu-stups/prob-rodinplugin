@@ -33,6 +33,9 @@ public final class CliStarter {
 	private OutputLoggerThread stdLogger;
 	private OutputLoggerThread errLogger;
 
+	// destroys probcli if Rodin exits without shutting down this instance
+	private Thread shutdownHook;
+
 	public CliStarter() throws CliException {
 		this(null);
 	}
@@ -53,8 +56,28 @@ public final class CliStarter {
 					+ e.getLocalizedMessage();
 			Logger.notifyUser(message, e);
 		} finally {
+			stopLoggers();
+			removeShutdownHook();
+		}
+	}
+
+	private void stopLoggers() {
+		if (stdLogger != null) {
 			stdLogger.shutdown();
+		}
+		if (errLogger != null) {
 			errLogger.shutdown();
+		}
+	}
+
+	private void removeShutdownHook() {
+		if (shutdownHook != null) {
+			try {
+				Runtime.getRuntime().removeShutdownHook(shutdownHook);
+			} catch (IllegalStateException e) {
+				// the JVM is already shutting down, the hook will run anyway
+			}
+			shutdownHook = null;
 		}
 	}
 
@@ -150,9 +173,13 @@ public final class CliStarter {
 
 		try {
 			extractCliInformation(input);
-		} catch (CliException e) {
+		} catch (CliException | RuntimeException e) {
 			// Check if the CLI exited while extracting the information.
 			final Optional<Integer> exitCode = getProcessExitCode(prologProcess);
+			// The caller never gets this instance, so it cannot shut down the
+			// CLI; do it here so that no probcli process is left running.
+			prologProcess.destroy();
+			stopLoggers();
 			if (exitCode.isPresent()) {
 				// CLI exited, report the exit code.
 				throw new CliException("ProB CLI exited with status " + exitCode.get() + " before socket connection could be opened", e, false);
@@ -166,12 +193,14 @@ public final class CliStarter {
 
 		final Process p = prologProcess;
 
-		Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+		// removed again in shutdown(), so that hooks don't accumulate
+		shutdownHook = new Thread(new Runnable() {
 			@Override
 			public void run() {
 				p.destroy();
 			}
-		}));
+		});
+		Runtime.getRuntime().addShutdownHook(shutdownHook);
 
 	}
 

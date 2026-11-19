@@ -16,7 +16,7 @@ import de.prob.core.domainobjects.ltl.CounterExampleProposition;
 import de.prob.core.domainobjects.ltl.CounterExampleUnaryOperator;
 import de.prob.core.domainobjects.ltl.CounterExampleValueType;
 
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
 public class LtlTestDescription {
 	private final CounterExample counterExample;
@@ -105,7 +105,7 @@ public class LtlTestDescription {
 			String expected) {
 		final List<CounterExampleValueType> values = prop.getValues();
 		List<CounterExampleValueType> expValues = createValues(expected);
-		Assert.assertEquals(name + ": values", expValues, values);
+		Assertions.assertEquals(expValues, values, name + ": values");
 	}
 
 	public void checkHighlights(String name, CounterExampleUnaryOperator op,
@@ -132,16 +132,14 @@ public class LtlTestDescription {
 					+ " highlights but only " + hl.size() + " registered in '"
 					+ highlights + "'");
 		}
-		Assert.assertEquals(name + ": number of highlights", size,
-				actual.size());
+		Assertions.assertEquals(size, actual.size(), name + ": number of highlights");
 		for (int i = 0; i < size; i++) {
 			Set<Integer> expectedH = new TreeSet<Integer>();
 			for (int e : hl.get(i)) {
 				expectedH.add(e);
 			}
 			Set<Integer> actualH = new TreeSet<Integer>(actual.get(i));
-			Assert.assertEquals(name + ": highlight pos " + i, expectedH,
-					actualH);
+			Assertions.assertEquals(expectedH, actualH, name + ": highlight pos " + i);
 		}
 	}
 }

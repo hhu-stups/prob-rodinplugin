@@ -7,8 +7,10 @@
 package de.prob.core;
 
 import java.io.File;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import de.prob.core.command.IComposableCommand;
 import de.prob.core.domainobjects.History;
@@ -19,6 +21,7 @@ import de.prob.core.internal.Activator;
 import de.prob.core.internal.AnimatorImpl;
 import de.prob.core.internal.ServerConnection;
 import de.prob.exceptions.ProBException;
+import de.prob.logging.Logger;
 
 import org.osgi.service.prefs.Preferences;
 
@@ -37,12 +40,20 @@ public final class Animator {
 
 	private static Animator animator = new Animator();
 	private static Animator auxanimator = null;
+	private static final Object AUX_LOCK = new Object();
+
+	// threads waiting in execute() for the animator lock
+	private final AtomicInteger waitingCommands = new AtomicInteger();
+	private static final long MAX_YIELD_MS = 5000;
 
 	private volatile boolean dirty;
 	private volatile boolean rodinProjectHasErrorsOrWarnings;
-	private final Map<Object, Object> dataStore = new HashMap<Object, Object>();
+	// own lock: must be usable while a (long) command holds the animator lock
+	private final Map<Object, Object> dataStore = Collections
+			.synchronizedMap(new HashMap<Object, Object>());
 
-	private AnimatorImpl implementation;
+	// volatile: read without the lock by isMachineLoaded()
+	private volatile AnimatorImpl implementation;
 
 	// ------------------ Container Lifecycle
 
@@ -62,10 +73,29 @@ public final class Animator {
 	}
 
 	public final static Animator getAuxAnimator() {
-		if (auxanimator == null) {
-			auxanimator = new Animator();
+		// may be called concurrently, e.g. by the auto prover and an
+		// interactive disprover call; each instance starts its own probcli
+		synchronized (AUX_LOCK) {
+			if (auxanimator == null) {
+				auxanimator = new Animator();
+			}
+			return auxanimator;
 		}
-		return auxanimator;
+	}
+
+	/**
+	 * Stops the probcli instance of the auxiliary animator, if one has been
+	 * started (e.g. when the plug-in is stopped)
+	 */
+	public final static void shutdownAuxAnimator() {
+		final Animator aux;
+		synchronized (AUX_LOCK) {
+			aux = auxanimator;
+		}
+		if (aux != null) {
+			aux.sendUserInterruptSignal();
+			aux.shutdown();
+		}
 	}
 
 
@@ -102,7 +132,8 @@ public final class Animator {
 
 	private final synchronized void killImplementation() {
 		if (implementation != null) {
-			final History history = animator.getHistory();
+			// use this animator's history (this may be the aux animator)
+			final History history = implementation.getHistoryImpl();
 			StaticListenerRegistry.unregisterComputationListener(history);
 			implementation.shutdownImplementation();
 			implementation = null;
@@ -169,33 +200,125 @@ public final class Animator {
 
 	// ------------------ Delegates
 
-	public final synchronized void execute(final IComposableCommand command)
+	public final void execute(final IComposableCommand command)
 			throws ProBException {
-		LimitedLogger.getLogger().log("execute command", command, null);
-		getImplementation().execute(command);
-		LimitedLogger.getLogger().log("command executed", command, null);
+		execute(command, QUIET.get());
+	}
+
+	/** whether the commands of a thread are executed quietly */
+	private static final ThreadLocal<Boolean> QUIET = ThreadLocal
+			.withInitial(() -> Boolean.FALSE);
+
+	/** a computation that executes ProB commands, see {@link #callQuietly} */
+	public interface ProBCall<T> {
+		T call() throws ProBException;
+	}
+
+	/**
+	 * Runs a computation whose ProB commands, also those executed by helper
+	 * methods, are executed quietly (see {@link #executeQuietly}): the user
+	 * is not notified, e.g. by a pop-up dialog, as the caller shows the
+	 * errors itself.
+	 */
+	public static <T> T callQuietly(final ProBCall<T> call)
+			throws ProBException {
+		final Boolean before = QUIET.get();
+		QUIET.set(Boolean.TRUE);
+		try {
+			return call.call();
+		} finally {
+			QUIET.set(before);
+		}
+	}
+
+	/**
+	 * Like {@link #execute(IComposableCommand)}, but does not notify the user
+	 * (e.g. by a pop-up dialog) if the command fails or ProB reports errors.
+	 * Instead, the thrown exception's message has ProB's error messages, for
+	 * a view to show them itself. Warnings of a successful command are only
+	 * logged.
+	 */
+	public final void executeQuietly(final IComposableCommand command)
+			throws ProBException {
+		execute(command, true);
+	}
+
+	private void execute(final IComposableCommand command, final boolean quiet)
+			throws ProBException {
+		waitingCommands.incrementAndGet();
+		boolean waiting = true;
+		try {
+			synchronized (this) {
+				waitingCommands.decrementAndGet();
+				waiting = false;
+				restartIfConnectionLost();
+				LimitedLogger.getLogger().log("execute command", command, null);
+				getImplementation().execute(command, quiet);
+				LimitedLogger.getLogger().log("command executed", command, null);
+			}
+		} finally {
+			if (waiting) {
+				waitingCommands.decrementAndGet();
+			}
+		}
+	}
+
+	/**
+	 * To be called between the steps of a long-running loop of commands (e.g.
+	 * model checking in chunks). Java monitors are not fair: without this, the
+	 * loop would take the lock again right away and a command of another
+	 * thread, e.g. the UI thread repainting a view, could wait until the whole
+	 * loop is finished. Meanwhile the UI, including the progress dialog with
+	 * its cancel button, would not be painted.
+	 * 
+	 * Must not be called while holding the animator lock.
+	 */
+	public void letWaitingCommandsRun() throws InterruptedException {
+		// the waiting threads decrement the counter when they got the lock
+		final long deadline = System.currentTimeMillis() + MAX_YIELD_MS;
+		while (waitingCommands.get() > 0
+				&& System.currentTimeMillis() < deadline) {
+			Thread.sleep(5);
+		}
 	}
 
 	/**
 	 * @return The model's current state
 	 */
-	public final synchronized State getCurrentState() {
-		return getImplementation().getCurrentStateImpl();
+	public final State getCurrentState() {
+		return currentImplementation().getCurrentStateImpl();
 	}
 
 	/**
 	 * @return The animation history, i.e. a trace from the root state to the
 	 *         current state
 	 */
-	public final synchronized History getHistory() {
-		return getImplementation().getHistoryImpl();
+	public final History getHistory() {
+		return currentImplementation().getHistoryImpl();
 	}
 
 	/**
 	 * @return true, iff there is an animation running
 	 */
-	public synchronized boolean isRunning() {
+	public boolean isRunning() {
 		return (implementation != null);
+	}
+
+	/**
+	 * If probcli crashed (or could not be started), start a new instance so
+	 * that the animator becomes usable again without restarting Rodin. The
+	 * loaded model is lost in that case, so the main animator announces a
+	 * reset to the UI.
+	 */
+	private synchronized void restartIfConnectionLost() {
+		if (implementation != null && implementation.isConnectionLost()) {
+			Logger.info("Connection to probcli lost, starting a new instance");
+			killImplementation();
+			createNewImplementation(null);
+			if (this == animator) {
+				announceReset();
+			}
+		}
 	}
 
 	private synchronized AnimatorImpl getImplementation() {
@@ -203,6 +326,18 @@ public final class Animator {
 			createNewImplementation(null);
 		}
 		return implementation;
+	}
+
+	/**
+	 * Like {@link #getImplementation()}, but does not wait for a running
+	 * command (which holds the lock, maybe for minutes during model checking)
+	 * if there is an implementation. Used by getters called from the UI
+	 * thread; the history and the implementation are thread-safe on their
+	 * own.
+	 */
+	private AnimatorImpl currentImplementation() {
+		final AnimatorImpl impl = implementation;
+		return impl != null ? impl : getImplementation();
 	}
 
 	// just for testing
@@ -266,15 +401,23 @@ public final class Animator {
 	}
 
 	public MachineDescription getMachineDescription() {
-		return getImplementation().getMachineDescription();
+		// called from the UI thread, must not wait for a running command
+		return currentImplementation().getMachineDescription();
 	}
 
+	/**
+	 * Does not start probcli and does not wait for a running command, so it
+	 * can be called from the UI thread.
+	 * 
+	 * @return true if a model has been loaded successfully
+	 */
 	public boolean isMachineLoaded() {
-		return getImplementation().isMachineLoaded();
+		final AnimatorImpl impl = implementation;
+		return impl != null && impl.isMachineLoaded();
 	}
 
 	public LanguageDependendAnimationPart getLanguageDependendPart() {
-		return getImplementation().getLangdep();
+		return currentImplementation().getLangdep();
 	}
 
 	public void setLanguageDependendPart(
@@ -290,7 +433,7 @@ public final class Animator {
 	 * @param key
 	 * @param data
 	 */
-	public synchronized void setData(final Object key, final Object data) {
+	public void setData(final Object key, final Object data) {
 		dataStore.put(key, data);
 	}
 
@@ -304,13 +447,14 @@ public final class Animator {
 	 * @param key
 	 * @return
 	 */
-	public synchronized Object getData(final Object key) {
+	public Object getData(final Object key) {
 		return dataStore.get(key);
 	}
 
 	// if synchronized this will produce a deadlock. Ignore findbugs here
 	public  void sendUserInterruptSignal() {
-		if (implementation != null) implementation.sendUserInterruptSignal();
+		final AnimatorImpl impl = implementation;
+		if (impl != null) impl.sendUserInterruptSignal();
 	}
 	
 

@@ -9,20 +9,30 @@ package de.bmotionstudio.gef.editor;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.WeakHashMap;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IFileEditorInput;
+import org.eclipse.ui.IPartListener2;
+import org.eclipse.ui.IPerspectiveDescriptor;
 import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchPartReference;
+import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.WorkbenchException;
@@ -33,6 +43,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.XStreamException;
 import com.thoughtworks.xstream.mapper.MapperWrapper;
 
 import de.bmotionstudio.gef.editor.internal.BMSConverter512;
@@ -42,6 +53,12 @@ import de.prob.logging.Logger;
 
 public class BMotionStudioEditor extends MultiPageEditorPart implements
 		ILifecycleListener {
+
+	public static final String ID = "de.bmotionstudio.gef.editor.BMotionStudioEditor";
+
+	public static final String PERSPECTIVE_RUN = "de.bmotionstudio.perspective.run";
+
+	public static final String PERSPECTIVE_EDIT = "de.bmotionstudio.perspective.edit";
 
 	private BMotionStudioEditorPage editPage;
 
@@ -70,10 +87,20 @@ public class BMotionStudioEditor extends MultiPageEditorPart implements
 
 	public void createRunPage(Visualization visualization, Animation animation) {
 		StaticListenerRegistry.registerListener(this);
-		this.animation = animation;
 
-		if (runPage != null)
-			runPage.dispose();
+		// a restart: stop the previous run, otherwise its animation keeps
+		// evaluating the observers of the old controls on every state change
+		// and its page stays open
+		if (this.animation != null && this.animation != animation) {
+			this.animation.unregister();
+			this.animation.getVisualization().setIsRunning(false);
+		}
+		this.animation = animation;
+		if (runPage != null) {
+			fireRunPageRemovedListener();
+			removeRunPageTab(runPage);
+			runPage = null;
+		}
 
 		runPage = new BMotionStudioRunPage(visualization);
 		try {
@@ -87,15 +114,32 @@ public class BMotionStudioEditor extends MultiPageEditorPart implements
 
 	public void removeRunPage() {
 		fireRunPageRemovedListener();
-		if (runPage != null) {
+		final BMotionStudioRunPage page = runPage;
+		runPage = null;
+		if (page != null) {
 			Display.getDefault().asyncExec(new Runnable() {
 				@Override
 				public void run() {
-					removePage(1);
+					removeRunPageTab(page);
 				}
 			});
 		}
 		unregister();
+	}
+
+	/**
+	 * Removes the tab of the given run page (which disposes it), if it is
+	 * still open; the index of the tab may have changed in the meantime
+	 */
+	private void removeRunPageTab(final BMotionStudioRunPage page) {
+		if (getContainer() == null || getContainer().isDisposed())
+			return; // editor closed
+		for (int i = 0; i < getPageCount(); i++) {
+			if (getEditor(i) == page) {
+				removePage(i);
+				return;
+			}
+		}
 	}
 
 	private void fireRunPageCreatedListener() {
@@ -113,7 +157,101 @@ public class BMotionStudioEditor extends MultiPageEditorPart implements
 	@Override
 	public void dispose() {
 		unregister();
+		disposed = true;
+		final IWorkbenchPage page = getSite() != null ? getSite().getPage()
+				: null;
 		super.dispose();
+		if (page != null)
+			closePerspectivesLater(page);
+	}
+
+	/** whether the editor was closed, see {@link #isOpen} */
+	private volatile boolean disposed;
+
+	/** the closed visualisations, see {@link #isOpen} */
+	private static final Map<IWorkbenchPartReference, Boolean> CLOSED = new WeakHashMap<IWorkbenchPartReference, Boolean>();
+
+	/** the pages whose closing of visualisations is listened to */
+	private static final Map<IWorkbenchPage, Boolean> LISTENED_PAGES = new WeakHashMap<IWorkbenchPage, Boolean>();
+
+	/**
+	 * Listens to the closing of visualisations in the page, besides
+	 * {@link #dispose}: e.g. "Close Others" on an editor tab only hides the
+	 * other editors, which may be disposed later.
+	 */
+	private static void listenToClosing(final IWorkbenchPage page) {
+		if (LISTENED_PAGES.put(page, Boolean.TRUE) != null)
+			return;
+		page.addPartListener(new IPartListener2() {
+			@Override
+			public void partClosed(final IWorkbenchPartReference partRef) {
+				if (ID.equals(partRef.getId())) {
+					CLOSED.put(partRef, Boolean.TRUE);
+					closePerspectivesLater(page);
+				}
+			}
+		});
+	}
+
+	/**
+	 * @return whether the editor reference is a visualisation that is still
+	 *         open: the page may still list closed ones for a while
+	 */
+	private static boolean isOpen(final IEditorReference editor) {
+		if (!ID.equals(editor.getId()) || CLOSED.containsKey(editor))
+			return false;
+		// null if not created yet, e.g. a visualisation restored at startup
+		// whose tab was not selected yet
+		final IEditorPart part = editor.getEditor(false);
+		return !(part instanceof BMotionStudioEditor
+				&& ((BMotionStudioEditor) part).disposed);
+	}
+
+	/**
+	 * Closes the BMS Edit and BMS Run perspectives, which removes their icons
+	 * from the perspective bar, once no visualisation is open in the page any
+	 * more. Not when the workbench closes, so that they are restored with
+	 * the visualisations at the next start.
+	 */
+	private static void closePerspectivesLater(final IWorkbenchPage page) {
+		final IWorkbench workbench = PlatformUI.getWorkbench();
+		if (workbench.isClosing())
+			return;
+		// after the editor was removed from the page, and only once when
+		// several visualisations are closed together
+		Display.getDefault().asyncExec(new Runnable() {
+			@Override
+			public void run() {
+				if (workbench.isClosing() || page.getWorkbenchWindow() == null
+						|| page.getWorkbenchWindow().getShell() == null
+						|| page.getWorkbenchWindow().getShell().isDisposed())
+					return;
+				for (IEditorReference editor : page.getEditorReferences())
+					if (isOpen(editor))
+						return; // a visualisation is still open
+				final IPerspectiveDescriptor active = page.getPerspective();
+				IPerspectiveDescriptor closeLast = null;
+				for (IPerspectiveDescriptor perspective : page
+						.getOpenPerspectives()) {
+					if (!isBMotionPerspective(perspective))
+						continue;
+					if (perspective.equals(active))
+						closeLast = perspective;
+					else
+						page.closePerspective(perspective, false, false);
+				}
+				// Eclipse then switches to the previously used perspective,
+				// unless there is none
+				if (closeLast != null && page.getOpenPerspectives().length > 1)
+					page.closePerspective(closeLast, false, false);
+			}
+		});
+	}
+
+	private static boolean isBMotionPerspective(
+			final IPerspectiveDescriptor perspective) {
+		return PERSPECTIVE_RUN.equals(perspective.getId())
+				|| PERSPECTIVE_EDIT.equals(perspective.getId());
 	}
 
 	public Visualization getVisualization() {
@@ -132,17 +270,22 @@ public class BMotionStudioEditor extends MultiPageEditorPart implements
 			throws PartInitException {
 
 		super.init(iSite, iInput);
+		listenToClosing(iSite.getPage());
 
 		IFile file = ((IFileEditorInput) iInput).getFile();
 
+		Object loaded;
 		try {
 
 			// -------------------------------------------------------
 
-			DocumentBuilderFactory dbFactory = DocumentBuilderFactory
-					.newInstance();
+			DocumentBuilderFactory dbFactory = BMotionEditorPlugin
+					.createSecureDocumentBuilderFactory();
 			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-			Document doc = dBuilder.parse(file.getContents());
+			Document doc;
+			try (InputStream in = file.getContents()) {
+				doc = dBuilder.parse(in);
+			}
 			NodeList nList = doc.getElementsByTagName("version");
 			if (nList.item(0) != null) {
 				Element versionElement = (Element) nList.item(0);
@@ -155,8 +298,6 @@ public class BMotionStudioEditor extends MultiPageEditorPart implements
 			}
 
 			// -------------------------------------------------------
-
-			InputStream inputStream = file.getContents();
 
 			XStream xstream = new XStream() {
 				@Override
@@ -177,20 +318,24 @@ public class BMotionStudioEditor extends MultiPageEditorPart implements
 
 			BMotionEditorPlugin.setAliases(xstream);
 
-			visualization = (Visualization) xstream.fromXML(inputStream);
-			visualization.setProjectFile(((IFileEditorInput) getEditorInput())
-					.getFile());
-			// initLanguage(visualization);
+			try (InputStream inputStream = file.getContents()) {
+				loaded = xstream.fromXML(inputStream);
+			}
 
-		} catch (SAXException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (CoreException e) {
-			e.printStackTrace();
-		} catch (ParserConfigurationException e) {
-			e.printStackTrace();
+		} catch (SAXException | IOException | CoreException
+				| ParserConfigurationException | TransformerException
+				| XStreamException e) {
+			throw new PartInitException("Could not open BMotion Studio file "
+					+ file.getFullPath() + ": " + e.getMessage(), e);
 		}
+
+		if (!(loaded instanceof Visualization)) {
+			throw new PartInitException("The file " + file.getFullPath()
+					+ " does not contain a BMotion Studio visualization.");
+		}
+		visualization = (Visualization) loaded;
+		visualization.setProjectFile(file);
+		// initLanguage(visualization);
 
 	}
 
@@ -219,18 +364,37 @@ public class BMotionStudioEditor extends MultiPageEditorPart implements
 
 	@Override
 	protected void pageChange(int newPageIndex) {
+		super.pageChange(newPageIndex);
 		String newPageString = getPageText(newPageIndex);
-		if (newPageString.equals("Run")) {
-			switchPerspective("de.bmotionstudio.perspective.run");
-		} else {
-			switchPerspective("de.bmotionstudio.perspective.edit");
-		}
+		final String perspective = newPageString.equals("Run")
+				? PERSPECTIVE_RUN : PERSPECTIVE_EDIT;
+		// Not immediately: pageChange is also called while the editor is
+		// created, e.g. when Rodin restores it at startup in the middle of
+		// creating the workbench window. Switching the perspective then left
+		// the views of the run perspective (State, History) empty.
+		Display.getDefault().asyncExec(new Runnable() {
+			@Override
+			public void run() {
+				final Composite container = getContainer();
+				if (container == null || container.isDisposed()
+						|| getActivePage() != newPageIndex)
+					return; // closed or another page selected meanwhile
+				switchPerspective(perspective);
+			}
+		});
 	}
 
 	private void switchPerspective(String id) {
 		IWorkbench workbench = PlatformUI.getWorkbench();
+		final IWorkbenchWindow window = workbench.getActiveWorkbenchWindow();
+		if (window == null)
+			return; // e.g. another shell is active
+		final IWorkbenchPage page = window.getActivePage();
+		if (page != null && page.getPerspective() != null
+				&& id.equals(page.getPerspective().getId()))
+			return;
 		try {
-			workbench.showPerspective(id, workbench.getActiveWorkbenchWindow());
+			workbench.showPerspective(id, window);
 		} catch (WorkbenchException e) {
 			Logger.notifyUser(
 					"An error occured while trying to switch the perspective.",
@@ -252,7 +416,10 @@ public class BMotionStudioEditor extends MultiPageEditorPart implements
 	}
 
 	private void unregister() {
-		getVisualization().setIsRunning(false);
+		// visualization is null if init failed
+		if (visualization != null) {
+			visualization.setIsRunning(false);
+		}
 		StaticListenerRegistry.unregisterListener(this);
 		if (animation != null) {
 			animation.unregister();

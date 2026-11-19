@@ -60,24 +60,20 @@ public class BMSConverter512 {
 
 	private IFile file;
 
-	public BMSConverter512(IFile file) {
+	/**
+	 * Converts <code>file</code> from the BMotion Studio 5.1.2 format to the
+	 * current format, overwriting it.
+	 * 
+	 * @throws TransformerException
+	 *             also if no XML transformer is available
+	 */
+	public BMSConverter512(IFile file) throws CoreException, IOException,
+			ParserConfigurationException, SAXException, TransformerException {
 		this.file = file;
 		try {
 			convert();
-		} catch (TransformerConfigurationException e) {
-			e.printStackTrace();
-		} catch (CoreException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (ParserConfigurationException e) {
-			e.printStackTrace();
-		} catch (SAXException e) {
-			e.printStackTrace();
-		} catch (TransformerException e) {
-			e.printStackTrace();
 		} catch (TransformerFactoryConfigurationError e) {
-			e.printStackTrace();
+			throw new TransformerException(e.getMessage(), e);
 		}
 	}
 
@@ -86,11 +82,12 @@ public class BMSConverter512 {
 			TransformerConfigurationException, TransformerException,
 			TransformerFactoryConfigurationError {
 
-		InputStream inputStream = file.getContents();
-
 		ByteArrayInputStream byteArrayInputStream = null;
 
-		String str = inputStreamToString(inputStream);
+		String str;
+		try (InputStream inputStream = file.getContents()) {
+			str = inputStreamToString(inputStream);
+		}
 
 		str = str.replace("de.bmotionstudio.gef.basic",
 				"de.bmotionstudio.gef.editor");
@@ -124,7 +121,8 @@ public class BMSConverter512 {
 
 		byteArrayInputStream = new ByteArrayInputStream(str.getBytes());
 
-		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+		DocumentBuilderFactory dbFactory = BMotionEditorPlugin
+				.createSecureDocumentBuilderFactory();
 		DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 		Document doc = dBuilder.parse(byteArrayInputStream);
 
@@ -265,12 +263,12 @@ public class BMSConverter512 {
 									.convertAnother(c, BMotionGuide.class));
 						} else if ("horizontalGuide".equals(reader
 								.getNodeName())) {
-							c.setVerticalGuide((BMotionGuide) context
+							c.setHorizontalGuide((BMotionGuide) context
 									.convertAnother(c, BMotionGuide.class));
 						} else if ("sourceConnections".equals(reader
 								.getNodeName())) {
-							c.setHorizontalGuide((BMotionGuide) context
-									.convertAnother(c, BMotionGuide.class));
+							c.setSourceConnections((List<BConnection>) context
+									.convertAnother(c, List.class));
 						} else if ("targetConnections".equals(reader
 								.getNodeName())) {
 							c.setTargetConnections((List<BConnection>) context

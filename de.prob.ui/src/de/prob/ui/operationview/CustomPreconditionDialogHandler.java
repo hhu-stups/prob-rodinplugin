@@ -16,8 +16,13 @@ public class CustomPreconditionDialogHandler extends AbstractHandler implements
 	@Override
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
 
-		List<Operation> s = OperationTableViewer.getInstance()
-				.getSelectedOperations();
+		final OperationTableViewer viewer = OperationTableViewer.getInstance();
+		if (viewer == null) {
+			// the Operations view is not open, e.g. run via Quick Access
+			Logger.notifyUser("Please select an event in the Operations view.");
+			return null;
+		}
+		List<Operation> s = viewer.getSelectedOperations();
 		List<Operation> filtered = new ArrayList<Operation>();
 		List<String> seenNames = new ArrayList<String>();
 

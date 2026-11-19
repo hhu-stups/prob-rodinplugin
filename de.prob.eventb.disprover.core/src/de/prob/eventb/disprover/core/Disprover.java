@@ -16,11 +16,11 @@ public class Disprover {
 	 * @return a new {@link DisproverReasoner} instance.
 	 */
 	public static IReasoner createDisproverReasoner() {
-		return new DisproverReasoner(1);
+		return new DisproverReasoner(1, true);
 	}
 
 	public static IReasoner createExtendedTimeoutDisproverReasoner(int factor) {
-		return new DisproverReasoner(factor);
+		return new DisproverReasoner(factor, true);
 	}
 
 }

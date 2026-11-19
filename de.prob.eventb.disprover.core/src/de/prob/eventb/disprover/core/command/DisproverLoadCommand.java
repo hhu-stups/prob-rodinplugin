@@ -23,7 +23,8 @@ public final class DisproverLoadCommand implements IComposableCommand {
 	}
 
 	@Override
-	public void writeCommand(final IPrologTermOutput pto) {
+	public void writeCommand(final IPrologTermOutput pto)
+			throws CommandException {
 		ASTProlog modelAst = new ASTProlog(pto, null);
 		boolean theoryIsUsed;
 
@@ -57,8 +58,10 @@ public final class DisproverLoadCommand implements IComposableCommand {
 			pto.printVariable("E");
 			pto.closeTerm();
 		} catch (TranslationFailedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			// don't send the incomplete query to ProB
+			throw new CommandException(
+					"Disprover: could not translate the model: "
+							+ e.getLocalizedMessage(), e);
 		}
 
 	}

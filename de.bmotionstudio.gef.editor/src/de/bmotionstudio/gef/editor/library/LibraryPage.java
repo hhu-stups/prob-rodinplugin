@@ -24,6 +24,7 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTException;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DragSourceAdapter;
 import org.eclipse.swt.dnd.DragSourceEvent;
@@ -109,12 +110,18 @@ public class LibraryPage extends Page {
 
 				if (previewImage != null) {
 					previewImage.dispose();
+					// a disposed image must not be painted, even if the next
+					// preview cannot be created
+					previewImage = null;
 				}
 
 				if (obj != null) {
-					previewImage = obj.getPreview(LibraryPage.this);
-				} else {
-					previewImage = null;
+					try {
+						previewImage = obj.getPreview(LibraryPage.this);
+					} catch (SWTException e) {
+						// e.g. a corrupt image file: "No preview..."
+						previewImage = null;
+					}
 				}
 
 				previewCanvas.redraw();

@@ -26,11 +26,18 @@ public final class ReplayTraceCommand {
 		animator.getHistory().reset();
 		ExploreStateCommand.exploreState(animator, ROOT);
 		SetStateCommand.setState(animator, ROOT);
+		int step = 0;
 		for (Iterator<String> it = trace.getStates().iterator(); it.hasNext();) {
 			final String nextState = it.next();
+			step++;
 			final State state = animator.getCurrentState();
-			final Operation op = getOperationByDstId(nextState,
-					state.getEnabledOperations());
+			final Operation op = state == null ? null : getOperationByDstId(
+					nextState, state.getEnabledOperations());
+			if (op == null) {
+				throw new CommandException("Could not replay the trace: at step "
+						+ step + " no enabled operation leads to state "
+						+ nextState + ".");
+			}
 			final boolean silent = it.hasNext();
 			ExecuteOperationCommand.executeOperation(animator, op, silent);
 		}
@@ -49,7 +56,7 @@ public final class ReplayTraceCommand {
 			final List<Operation> operations) {
 
 		for (Operation op : operations) {
-			if (op.getDestination().equals(dstId))
+			if (dstId.equals(op.getDestination()))
 				return op;
 		}
 

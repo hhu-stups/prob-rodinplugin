@@ -178,6 +178,7 @@ public final class Activator extends Plugin {
 			animator.sendUserInterruptSignal();
 			animator.shutdown();
 		}
+		Animator.shutdownAuxAnimator();
 
 		plugin = null;
 		super.stop(context);
@@ -196,6 +197,16 @@ public final class Activator extends Plugin {
 	 * 
 	 * @return the shared instance
 	 */
+	/**
+	 * @return the running plug-in or <code>null</code> if it is not started
+	 *         (e.g. after it has been stopped while a job still runs);
+	 *         unlike {@link #getDefault()}, this does not create an instance
+	 */
+	public static Activator getRunningInstance() {
+		final Activator p = plugin;
+		return p != null && p.getBundle() != null ? p : null;
+	}
+
 	public static Activator getDefault() {
 		if (plugin == null) {
 			new Activator();

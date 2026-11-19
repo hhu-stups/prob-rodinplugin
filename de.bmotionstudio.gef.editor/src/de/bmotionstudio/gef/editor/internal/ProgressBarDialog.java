@@ -15,8 +15,11 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
+import org.eclipse.core.runtime.IStatus;
+
 import de.bmotionstudio.gef.editor.BMotionStudioImage;
 import de.bmotionstudio.gef.editor.EditorImageRegistry;
+import de.prob.logging.Logger;
 
 
 public abstract class ProgressBarDialog extends Dialog {
@@ -184,6 +187,14 @@ public abstract class ProgressBarDialog extends Dialog {
 	protected void doAfter() {
 	}
 
+	/**
+	 * Called (on the worker thread) if a processing step throws an unexpected
+	 * exception. The dialog is closed afterwards, subclasses can override this
+	 * to inform the user.
+	 */
+	protected void processFailed(RuntimeException e) {
+	}
+
 	class ProcessThread extends Thread {
 		private int max = 0;
 		private volatile boolean shouldStop = false;
@@ -194,9 +205,42 @@ public abstract class ProgressBarDialog extends Dialog {
 
 		@Override
 		public void run() {
+			try {
+				runSteps();
+			} finally {
+				// Whatever happened, never leave the (modal, always on top)
+				// dialog open: only this thread closes it, so if it died
+				// with an exception, the workbench would stay blocked
+				if (!display.isDisposed()) {
+					display.asyncExec(new Runnable() {
+						@Override
+						public void run() {
+							if (!shell.isDisposed()) {
+								if (!shouldStop && isClosed) {
+									cleanUp();
+								}
+								shell.close();
+							}
+						}
+					});
+				}
+			}
+		}
+
+		private void runSteps() {
 			doBefore();
 			for (final int[] i = new int[] { 1 }; i[0] <= max; i[0]++) {
-				final String info = process(i[0]);
+				String processInfo;
+				try {
+					processInfo = process(i[0]);
+				} catch (RuntimeException e) {
+					Logger.log(IStatus.ERROR, "Error in " + shellTitle + ": "
+							+ e, e);
+					isClosed = true;
+					processFailed(e);
+					processInfo = "Error: " + e.getMessage();
+				}
+				final String info = processInfo;
 				if (display.isDisposed()) {
 					return;
 				}

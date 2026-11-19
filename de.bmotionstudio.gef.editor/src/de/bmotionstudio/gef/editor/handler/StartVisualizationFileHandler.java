@@ -71,6 +71,8 @@ public class StartVisualizationFileHandler extends AbstractHandler implements
 			if (ssel.size() == 1) {
 
 				f = getBmsFileFromSelection(ssel);
+				if (f == null)
+					return null;
 
 				IWorkbenchWindow window = PlatformUI.getWorkbench()
 						.getActiveWorkbenchWindow();
@@ -79,17 +81,24 @@ public class StartVisualizationFileHandler extends AbstractHandler implements
 				IEditorDescriptor desc = PlatformUI.getWorkbench()
 						.getEditorRegistry().getDefaultEditor(f.getName());
 
+				// not the editor of a previous start, which may be closed
+				activeEditor = null;
 				try {
 					IEditorPart part = page.openEditor(new FileEditorInput(f),
-							desc.getId());
+							desc != null ? desc.getId()
+									: BMotionStudioEditor.ID);
 					if (part instanceof BMotionStudioEditor) {
 						activeEditor = (BMotionStudioEditor) part;
-					} else {
-						// TODO: Return some useful error?!
-						return null;
 					}
 				} catch (PartInitException e) {
-					e.printStackTrace();
+					Logger.notifyUser("Error opening the BMotion Studio editor for "
+							+ f.getName() + ".", e);
+					return null;
+				}
+				if (activeEditor == null) {
+					Logger.notifyUser("The file " + f.getName()
+							+ " could not be opened in the BMotion Studio editor.");
+					return null;
 				}
 
 				// Get ProB Animator

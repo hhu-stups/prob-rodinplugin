@@ -68,7 +68,10 @@ public class SwitchCoordinates extends Observer {
 				int currentY = Integer.valueOf(control.getAttributeValue(
 						AttributeConstants.ATTRIBUTE_Y).toString());
 
-				if (currentX != parsedX || currentY != parsedY) {
+				// if x or y could not be evaluated, the control stays where
+				// it is instead of moving to 0
+				if (!obj.hasError()
+						&& (currentX != parsedX || currentY != parsedY)) {
 
 					// setCallBack(false);
 

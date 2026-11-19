@@ -231,10 +231,15 @@ public class CounterExampleTab {
 		try {
 			final PrinterData printerData = dialog.open();
 			if (printerData != null) {
-				final PrintGraphicalViewerOperation viewerOperation = new PrintGraphicalViewerOperation(
-						new Printer(printerData), graphicalViewer);
+				final Printer printer = new Printer(printerData);
+				try {
+					final PrintGraphicalViewerOperation viewerOperation = new PrintGraphicalViewerOperation(
+							printer, graphicalViewer);
 
-				viewerOperation.run(title);
+					viewerOperation.run(title);
+				} finally {
+					printer.dispose();
+				}
 			}
 		} catch (SWTException e) {
 			Logger.notifyUser("Failed to print the LTL counter example.", e);

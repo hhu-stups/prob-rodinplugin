@@ -18,6 +18,7 @@ import org.osgi.service.prefs.Preferences;
 import org.rodinp.core.RodinDBException;
 
 import de.prob.core.Animator;
+import de.prob.core.UnsatAxiomsNotice;
 import de.prob.core.LanguageDependendAnimationPart;
 import de.prob.core.command.internal.InternalLoadCommand;
 import de.prob.core.domainobjects.MachineDescription;
@@ -74,6 +75,7 @@ public final class LoadEventBModelCommand {
 		animator.resetDirty();
 		// animator.resetRodinProjectHasErrorsOrWarnings(); // set in StartAnimationHandler; reset here would override this
 		removeObsoletePreferences(animator);
+		UnsatAxiomsNotice.clearMarkers(); // of the model animated before
 
 		final LanguageDependendAnimationPart ldp = new EventBAnimatorPart(model);
 
@@ -88,6 +90,8 @@ public final class LoadEventBModelCommand {
 
 		try {
 			animator.execute(composed);
+			// e.g. of the ProB Graph view, not set by setPrefs
+			CommandPreferences.apply(animator);
 
 			final State commandResult = explore.getState();
 			animator.announceCurrentStateChanged(commandResult, Operation.NULL_OPERATION);
@@ -109,12 +113,27 @@ public final class LoadEventBModelCommand {
 							+ " Typically this means, that your axioms are too complicated for automatic solving. "
 							+ "You might create an animation refinement using the context menu to help ProB finding a solution.";
 				}
-				Logger.notifyUser(message);
+				// the animation can continue with the solutions found: a
+				// notice that does not block the user, the advice as details
+				final int end = message.indexOf(". ");
+				Logger.notifyUserNonModal(
+						end < 0 ? message : message.substring(0, end + 1),
+						end < 0 ? null : message.substring(end + 2));
 			}
 		} catch (CommandException ex) {
-			Logger.notifyUser("Event-B Model or Context could not be loaded due to an exception: " 
-			                  + ex.getMessage() + "\nTry cleaning the Rodin project (Project -> Clean).",
+			// ProB has (at least partially) dropped the previous model, so
+			// the views must not keep showing it as animated. Remember the
+			// new model, so that a restart tries to load it again.
+			animator.setMachineDescription(null);
+			animator.setLanguageDependendPart(ldp);
+			animator.announceReset();
+			final CommandException failure = new CommandException(
+					"Event-B Model or Context could not be loaded due to an exception: "
+							+ ex.getMessage()
+							+ "\nTry cleaning the Rodin project (Project -> Clean).",
 					ex);
+			Logger.notifyUser(failure.getMessage(), ex);
+			throw failure;
 		}
 
 	}
@@ -133,7 +152,9 @@ public final class LoadEventBModelCommand {
 			try {
 				boolean foundObsoletePreference = false;
 				for (String prefname : preferences.keys()) {
-					if (!probPrefNames.contains(prefname)) {
+					// read-only preferences were stored by older versions
+					if (!probPrefNames.contains(prefname)
+							|| ProBPreference.isReadOnly(prefname)) {
 						// preference does not exists anymore
 						preferences.remove(prefname);
 						foundObsoletePreference = true;

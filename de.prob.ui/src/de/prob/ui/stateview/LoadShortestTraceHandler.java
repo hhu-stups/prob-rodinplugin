@@ -18,7 +18,6 @@ import de.prob.exceptions.ProBException;
 public class LoadShortestTraceHandler extends AbstractHandler implements
 		IHandler {
 
-	private List<String> states;
 	private final Animator animator;
 
 	public LoadShortestTraceHandler() {
@@ -27,23 +26,36 @@ public class LoadShortestTraceHandler extends AbstractHandler implements
 
 	@Override
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
-		String stateId = animator.getCurrentState().getId();
+		loadShortestTraceTo(animator, animator.getCurrentState().getId());
+		return null;
+	}
 
+	/**
+	 * Makes the given state of the state space the current state, with the
+	 * shortest trace from the root as history (e.g. after a double-click in
+	 * the ProB Graph view)
+	 */
+	public static void loadShortestTraceTo(final Animator animator,
+			final String stateId) {
 		// set core state
 		try {
 			SetStateCommand.setState(animator, stateId);
 		} catch (ProBException e) {
 			// We cannot recover from this, but the user has been informed
-			return null;
+			return;
 		}
 
-		loadTrace();
+		final List<String> states = loadTrace(animator);
+		if (states == null) {
+			// We cannot recover from this, but the user has been informed
+			return;
+		}
 
 		try {
 			animator.getHistory().gotoPos(0);
 		} catch (ProBException e) {
 			// We cannot recover from this, but the user has been informed
-			return null;
+			return;
 		}
 		State state = animator.getCurrentState();
 
@@ -62,22 +74,21 @@ public class LoadShortestTraceHandler extends AbstractHandler implements
 		} catch (ProBException e) {
 			e.notifyUserOnce();
 		}
-		return null;
 	}
 
 	/**
-	 * load the trace to state <code>stateId</code> from <code>animator</code>
-	 * and set <code>states</code> and <code>operations</code>
+	 * load the trace to the current state from <code>animator</code>
+	 * 
+	 * @return the state ids of the trace or <code>null</code> if loading
+	 *         failed (the user has been informed)
 	 */
-	private void loadTrace() {
+	private static List<String> loadTrace(final Animator animator) {
 		try {
-			states = GetFullTraceCommand.getTrace(animator).getStates();
+			return GetFullTraceCommand.getTrace(animator).getStates();
 		} catch (ProBException e) {
-			e.notify();
-			// We cannot recover from this, but the user has been informed
-			return;
+			e.notifyUserOnce();
+			return null;
 		}
-
 	}
 
 	/**
@@ -89,7 +100,7 @@ public class LoadShortestTraceHandler extends AbstractHandler implements
 	 * @param operations
 	 * @return
 	 */
-	private Operation getOperationByDstId(final String dstId,
+	private static Operation getOperationByDstId(final String dstId,
 			final List<Operation> operations) {
 
 		for (Operation op : operations) {

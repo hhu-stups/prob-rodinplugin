@@ -37,8 +37,13 @@ public class ModelCheckingJob extends Job {
 		this.symmetryOption = symmetryOption;
 	}
 
+	/**
+	 * @return the last result or <code>null</code> if model checking failed
+	 *         before the first result (the user has been informed)
+	 */
 	public Result getModelCheckingResult() {
-		return modelCheckingResult.getResult();
+		return modelCheckingResult == null ? null : modelCheckingResult
+				.getResult();
 	}
 
 	@Override
@@ -50,6 +55,13 @@ public class ModelCheckingJob extends Job {
 		monitor.beginTask("Model Checking", 1000);
 		while (!abort) {
 			try {
+				// e.g. the UI thread may wait for the animator to repaint a view
+				animator.letWaitingCommandsRun();
+				if (monitor.isCanceled()) {
+					if (modelCheckingResult == null)
+						return Status.CANCEL_STATUS;
+					break; // show the result so far
+				}
 				modelCheckingResult = doSomeModelchecking();
 				options.remove("inspect_existing_nodes");
 
@@ -67,6 +79,9 @@ public class ModelCheckingJob extends Job {
 				}
 			} catch (ProBException e) {
 				return Status.CANCEL_STATUS; // Failed
+			} catch (InterruptedException e) {
+				Thread.currentThread().interrupt();
+				return Status.CANCEL_STATUS;
 			}
 			abort = getModelCheckingResult().isAbort() || monitor.isCanceled();
 		}

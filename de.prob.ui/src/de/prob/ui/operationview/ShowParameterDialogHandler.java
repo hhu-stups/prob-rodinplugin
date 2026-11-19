@@ -11,14 +11,24 @@ import de.prob.core.Animator;
 import de.prob.core.command.ExecuteOperationCommand;
 import de.prob.core.domainobjects.Operation;
 import de.prob.exceptions.ProBException;
+import de.prob.logging.Logger;
 
 public class ShowParameterDialogHandler extends AbstractHandler implements
 		IHandler {
 	@Override
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
 
-		List<Operation> s = OperationTableViewer.getInstance()
-				.getSelectedOperations();
+		final OperationTableViewer viewer = OperationTableViewer.getInstance();
+		if (viewer == null) {
+			// the Operations view is not open, e.g. run via Quick Access
+			Logger.notifyUser("Please select an event in the Operations view.");
+			return null;
+		}
+		List<Operation> s = viewer.getSelectedOperations();
+		if (s.isEmpty()) {
+			Logger.notifyUser("Please select an event in the Operations view.");
+			return null;
+		}
 
 		Operation op = OperationSelectionDialog.getOperation(s);
 		if (op == null)

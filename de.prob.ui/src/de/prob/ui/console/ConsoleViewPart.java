@@ -1,0 +1,1117 @@
+package de.prob.ui.console;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.bindings.keys.KeyStroke;
+import org.eclipse.jface.bindings.keys.ParseException;
+import org.eclipse.jface.dialogs.IDialogSettings;
+import org.eclipse.jface.fieldassist.ContentProposal;
+import org.eclipse.jface.fieldassist.ContentProposalAdapter;
+import org.eclipse.jface.fieldassist.IContentProposal;
+import org.eclipse.jface.fieldassist.IContentProposalProvider;
+import org.eclipse.jface.fieldassist.TextContentAdapter;
+import org.eclipse.jface.resource.FontDescriptor;
+import org.eclipse.jface.resource.FontRegistry;
+import org.eclipse.jface.resource.JFaceResources;
+import org.eclipse.jface.resource.LocalResourceManager;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.ScrolledComposite;
+import org.eclipse.swt.custom.StyleRange;
+import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontData;
+import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.ISharedImages;
+import org.eclipse.ui.IViewPart;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.part.ViewPart;
+import org.rodinp.keyboard.ui.RodinKeyboardUIPlugin;
+
+import de.prob.core.Animator;
+import de.prob.core.ILifecycleListener;
+import de.prob.core.PrologException;
+import de.prob.core.domainobjects.MachineDescription;
+import de.prob.exceptions.ProBException;
+import de.prob.ui.ProbUiPlugin;
+import de.prob.ui.StaticListenerRegistry;
+import de.prob.ui.console.ConsoleEvaluator.Kind;
+import de.prob.ui.console.ConsoleEvaluator.Result;
+import de.prob.ui.graph.GraphViewPart;
+import de.prob.ui.table.TableViewPart;
+import de.prob.unicode.UnicodeTranslator;
+
+/**
+ * A console to evaluate predicates and expressions in the current state of
+ * the animation. Enter evaluates the input, Shift+Enter starts a new line,
+ * Up/Down browse the previous inputs and Tab or Ctrl+Space complete the
+ * identifiers of the model and the keywords of Event-B.
+ */
+public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
+
+	public static final String VIEW_ID = "de.prob.ui.ConsoleView";
+
+	private static final String PROMPT = "> ";
+	// the font of the Rodin editors, which contains the mathematical symbols
+	private static final String RODIN_FONT_KEY = "org.rodinp.keyboard.ui.textFont";
+	private static final String MATH_FONT_NAME = "Brave Sans Mono";
+	// Rodin's symbols for <<-> <->> <<->> <+ are characters of the private
+	// use area that only Brave Sans Mono contains
+	private static final char FIRST_MATH_FONT_CHAR = '\uE100';
+	private static final char LAST_MATH_FONT_CHAR = '\uE103';
+	private static final String MATH_SYMBOLS_SETTING = "console.mathSymbols";
+	private static final String SOLVE_TIME_SETTING = "console.showSolveTime";
+	private static final String FONT_SIZE_SETTING = "console.fontSizeDelta";
+	private static final int MIN_FONT_SIZE = 6;
+	private static final int MAX_FONT_SIZE = 72;
+	// older output is removed, a StyledText becomes slow with huge contents
+	private static final int MAX_OUTPUT_LENGTH = 500000;
+	private static final int INPUT_ROWS = 3;
+
+	private final ConsoleEvaluator evaluator = new ConsoleEvaluator();
+	private final List<String> history = new ArrayList<String>();
+	// position in the history while browsing it with Up/Down
+	private int historyIndex = 0;
+	// the input being evaluated, null if none
+	private Job runningJob;
+
+	private StyledText output;
+	private Text input;
+	private ContentProposalAdapter proposalAdapter;
+	// translates ASCII into mathematical symbols while typing, as in the Rodin
+	// editors; null if the Rodin keyboard is not available
+	private ModifyListener mathSymbolsListener;
+	private boolean mathSymbolsEnabled;
+	// whether mathSymbolsListener is registered at the input
+	private boolean mathSymbolsListenerAdded;
+
+	@Override
+	public void createPartControl(final Composite viewParent) {
+		// detached later if the preference says so
+		de.prob.ui.DetachedViews.viewCreated(this);
+		// Eclipse does not let a view limit how small it is made, so when
+		// there is no room for the minimal output and the input the console
+		// scrolls instead of clipping the input
+		viewParent.setLayout(new FillLayout());
+		scroller = new ScrolledComposite(viewParent, SWT.V_SCROLL);
+		scroller.setExpandHorizontal(true);
+		scroller.setExpandVertical(true);
+		final Composite parent = new Composite(scroller, SWT.NONE);
+		content = parent;
+		scroller.setContent(parent);
+
+		final GridLayout layout = new GridLayout(2, false);
+		layout.marginWidth = 0;
+		layout.marginHeight = 0;
+		parent.setLayout(layout);
+
+		output = new StyledText(parent, SWT.MULTI | SWT.READ_ONLY
+				| SWT.V_SCROLL | SWT.H_SCROLL);
+		fonts = new LocalResourceManager(JFaceResources.getResources(), output);
+		outputData = new GridData(SWT.FILL, SWT.FILL, true, true, 2, 2);
+		output.setLayoutData(outputData);
+		output.setText("Evaluate formulas in current animation state.\n"
+				      + "Help: the ? button or :help\n");
+		output.setStyleRange(new StyleRange(0, output.getCharCount(),
+				getColor(SWT.COLOR_DARK_GRAY), null));
+
+		prompt = new Label(parent, SWT.NONE);
+		prompt.setText(PROMPT.trim());
+		prompt.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false,
+				false));
+
+		input = new Text(parent, SWT.MULTI | SWT.WRAP | SWT.V_SCROLL
+				| SWT.BORDER);
+		inputData = new GridData(SWT.FILL, SWT.CENTER, true, false);
+		input.setLayoutData(inputData);
+		final IDialogSettings settings = ProbUiPlugin.getDefault()
+				.getDialogSettings();
+		fontSizeDelta = settings.get(FONT_SIZE_SETTING) == null ? 0
+				: settings.getInt(FONT_SIZE_SETTING);
+		applyFontSize();
+		// before creating the proposal adapter, so that this listener sees
+		// whether its popup is open (Enter then selects a proposal)
+		input.addListener(SWT.KeyDown, new Listener() {
+			@Override
+			public void handleEvent(final Event e) {
+				if (proposalAdapter != null
+						&& proposalAdapter.isProposalPopupOpen())
+					return;
+				if (handleFontSizeKey(e))
+					return;
+				if (e.keyCode == SWT.CR || e.keyCode == SWT.KEYPAD_CR) {
+					// Shift+Enter inserts a line break
+					if ((e.stateMask & SWT.SHIFT) == 0) {
+						e.doit = false;
+						submit();
+					}
+				} else if (e.keyCode == SWT.TAB
+						&& (e.stateMask & SWT.MODIFIER_MASK) == 0) {
+					e.doit = false;
+					complete();
+				} else if (e.keyCode == SWT.ARROW_UP
+						&& input.getCaretLineNumber() == 0) {
+					// in a longer input, Up/Down move between its lines
+					e.doit = false;
+					browseHistory(-1);
+				} else if (e.keyCode == SWT.ARROW_DOWN
+						&& input.getCaretLineNumber() == input.getLineCount() - 1) {
+					e.doit = false;
+					browseHistory(1);
+				}
+			}
+		});
+		// Tab completes instead of moving the focus to the next control
+		input.addListener(SWT.Traverse, new Listener() {
+			@Override
+			public void handleEvent(final Event e) {
+				if (e.detail == SWT.TRAVERSE_TAB_NEXT
+						&& (e.stateMask & SWT.MODIFIER_MASK) == 0)
+					e.doit = false;
+			}
+		});
+		installContentProposals();
+		redirectFocusToInput(parent, prompt);
+
+		final Action clear = new Action("Clear Console") {
+			@Override
+			public void run() {
+				output.setText("");
+			}
+		};
+		clear.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages()
+				.getImageDescriptor(ISharedImages.IMG_ETOOL_CLEAR));
+		getViewSite().getActionBars().getToolBarManager().add(clear);
+		installMathSymbols();
+		installSolveTimeToggle();
+		installFontSizeButtons();
+
+		final Action help = new Action("Console Help") {
+			@Override
+			public void run() {
+				showHelp();
+				focusInput();
+			}
+		};
+		help.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages()
+				.getImageDescriptor(ISharedImages.IMG_LCL_LINKTO_HELP));
+		getViewSite().getActionBars().getToolBarManager().add(help);
+
+		StaticListenerRegistry.registerListener((ILifecycleListener) this);
+	}
+
+	/**
+	 * Clicking into the console, or typing while the output has the focus,
+	 * goes to the input line. Text in the output can still be selected and
+	 * copied.
+	 */
+	private void redirectFocusToInput(final Composite parent,
+			final Label prompt) {
+		final Listener focusInput = new Listener() {
+			@Override
+			public void handleEvent(final Event e) {
+				// not after selecting text with the mouse
+				if (e.widget != output || output.getSelectionCount() == 0)
+					focusInput();
+			}
+		};
+		output.addListener(SWT.MouseUp, focusInput);
+		prompt.addListener(SWT.MouseUp, focusInput);
+		parent.addListener(SWT.MouseUp, focusInput);
+
+		output.addListener(SWT.KeyDown, new Listener() {
+			@Override
+			public void handleEvent(final Event e) {
+				if (handleFontSizeKey(e))
+					return;
+				// keep shortcuts like Ctrl+C or Ctrl+A for the output
+				final boolean shortcut = (e.stateMask & (SWT.MOD1 | SWT.MOD3 | SWT.MOD4)) != 0;
+				if (!shortcut && e.character >= ' ' && e.character != SWT.DEL
+						&& input.isEnabled()) {
+					e.doit = false;
+					focusInput();
+					input.insert(String.valueOf(e.character));
+				}
+			}
+		});
+	}
+
+	private void focusInput() {
+		if (input.isEnabled()) {
+			input.setFocus();
+		}
+	}
+
+	/** Brave Sans Mono for the symbols only it contains, null if missing */
+	private Font mathFont;
+	private FontDescriptor mathFontDescriptor;
+	private FontDescriptor consoleFontDescriptor;
+	// the fonts in the size chosen with + and -, disposed with the output
+	private LocalResourceManager fonts;
+	// added to the size of the Rodin font
+	private int fontSizeDelta;
+	private Label prompt;
+	private GridData outputData;
+	private GridData inputData;
+	private ScrolledComposite scroller;
+	private Composite content;
+
+	private static Font getConsoleFont() {
+		ensureMathFontIsLoaded();
+		final FontRegistry fonts = JFaceResources.getFontRegistry();
+		return fonts.hasValueFor(RODIN_FONT_KEY) ? fonts.get(RODIN_FONT_KEY)
+				: JFaceResources.getTextFont();
+	}
+
+	/**
+	 * Rodin loads Brave Sans Mono from its keyboard plug-in only when it is
+	 * needed (e.g. by an Event-B editor)
+	 */
+	private static void ensureMathFontIsLoaded() {
+		try {
+			final RodinKeyboardUIPlugin keyboard = RodinKeyboardUIPlugin
+					.getDefault();
+			if (keyboard != null)
+				keyboard.ensureMathFontIsAvailable();
+		} catch (LinkageError e) {
+			// optional dependency, or a version without this method
+		}
+	}
+
+	/** toolbar buttons + and - for the size of the console font */
+	private void installFontSizeButtons() {
+		final Action larger = new Action("+") {
+			@Override
+			public void run() {
+				changeFontSize(1);
+			}
+		};
+		larger.setToolTipText("Increase Font Size (Ctrl+=)");
+		final Action smaller = new Action("\u2212") {
+			@Override
+			public void run() {
+				changeFontSize(-1);
+			}
+		};
+		smaller.setToolTipText("Decrease Font Size (Ctrl+-)");
+		getViewSite().getActionBars().getToolBarManager().add(larger);
+		getViewSite().getActionBars().getToolBarManager().add(smaller);
+	}
+
+	/**
+	 * Ctrl+= (or Ctrl++) and Ctrl+- change the font size; on macOS also with
+	 * Cmd, like zooming in Eclipse's editors
+	 * 
+	 * @return true if the key was handled
+	 */
+	private boolean handleFontSizeKey(final Event e) {
+		if ((e.stateMask & (SWT.CTRL | SWT.MOD1)) == 0
+				|| (e.stateMask & SWT.ALT) != 0)
+			return false;
+		final int change;
+		if (e.keyCode == '=' || e.keyCode == '+' || e.character == '+'
+				|| e.keyCode == SWT.KEYPAD_ADD)
+			change = 1;
+		else if (e.keyCode == '-' || e.keyCode == SWT.KEYPAD_SUBTRACT)
+			change = -1;
+		else
+			return false;
+		e.doit = false;
+		changeFontSize(change);
+		return true;
+	}
+
+	private void changeFontSize(final int change) {
+		final int base = getHeight(getConsoleFont());
+		final int height = Math.max(MIN_FONT_SIZE, Math.min(MAX_FONT_SIZE,
+				base + fontSizeDelta + change));
+		fontSizeDelta = height - base;
+		ProbUiPlugin.getDefault().getDialogSettings()
+				.put(FONT_SIZE_SETTING, fontSizeDelta);
+		applyFontSize();
+		focusInput();
+	}
+
+	private static int getHeight(final Font font) {
+		final FontData[] data = font.getFontData();
+		return data.length > 0 ? data[0].getHeight() : 10;
+	}
+
+	/**
+	 * Sets the fonts of the console: the Rodin font with the chosen size, and
+	 * Brave Sans Mono in the same size for the symbols only it contains (if
+	 * available). The sizes of the output and the input follow.
+	 */
+	private void applyFontSize() {
+		final Font base = getConsoleFont();
+		final int height = Math.max(MIN_FONT_SIZE,
+				Math.min(MAX_FONT_SIZE, getHeight(base) + fontSizeDelta));
+		final FontDescriptor oldConsole = consoleFontDescriptor;
+		final FontDescriptor oldMath = mathFontDescriptor;
+
+		consoleFontDescriptor = FontDescriptor.createFrom(base).setHeight(
+				height);
+		final Font consoleFont = fonts.create(consoleFontDescriptor);
+		output.setFont(consoleFont);
+		prompt.setFont(consoleFont);
+		input.setFont(consoleFont);
+		if (output.getDisplay().getFontList(MATH_FONT_NAME, true).length > 0) {
+			mathFontDescriptor = FontDescriptor.createFrom(MATH_FONT_NAME,
+					height, SWT.NORMAL);
+			mathFont = fonts.create(mathFontDescriptor);
+		} else {
+			mathFontDescriptor = null;
+			mathFont = null;
+		}
+		restyleMathSymbols();
+
+		// at least one line of output stays visible above the input; the
+		// preferred size of the console is its minimal size, the output
+		// still grows with the view
+		outputData.minimumHeight = output.getLineHeight();
+		outputData.heightHint = outputData.minimumHeight;
+		inputData.heightHint = INPUT_ROWS * input.getLineHeight();
+		content.layout(true, true);
+		scroller.setMinHeight(content.computeSize(SWT.DEFAULT, SWT.DEFAULT).y);
+
+		// only now: the output used them until restyleMathSymbols
+		if (oldConsole != null)
+			fonts.destroy(oldConsole);
+		if (oldMath != null)
+			fonts.destroy(oldMath);
+	}
+
+	/** the symbols already in the output get the current math font */
+	private void restyleMathSymbols() {
+		final String text = output.getText();
+		for (int i = 0; i < text.length(); i++) {
+			final char c = text.charAt(i);
+			if (c >= FIRST_MATH_FONT_CHAR && c <= LAST_MATH_FONT_CHAR) {
+				final StyleRange old = output.getStyleRangeAtOffset(i);
+				final StyleRange symbol = new StyleRange(i, 1,
+						old == null ? null : old.foreground, null);
+				symbol.font = mathFont;
+				output.setStyleRange(symbol);
+			}
+		}
+	}
+
+	/**
+	 * Adds the toolbar toggle for translating ASCII into mathematical symbols
+	 * while typing (e.g. ":" into the element-of symbol)
+	 */
+	/** toolbar toggle: show how long the constraint solver took */
+	private void installSolveTimeToggle() {
+		final IDialogSettings settings = ProbUiPlugin.getDefault()
+				.getDialogSettings();
+		final boolean enabled = settings.get(SOLVE_TIME_SETTING) == null
+				|| settings.getBoolean(SOLVE_TIME_SETTING);
+
+		final Action toggle = new Action("ms", IAction.AS_CHECK_BOX) {
+			@Override
+			public void run() {
+				evaluator.setShowSolveTime(isChecked());
+				settings.put(SOLVE_TIME_SETTING, isChecked());
+				focusInput();
+			}
+		};
+		toggle.setToolTipText("Show Solve Time (for formulas with free identifiers)");
+		toggle.setChecked(enabled);
+		evaluator.setShowSolveTime(enabled);
+		getViewSite().getActionBars().getToolBarManager().add(toggle);
+	}
+
+	/**
+	 * Translates ASCII to mathematical symbols while typing in a text field
+	 * of another view, if the console does so (the ∀ toggle) and Rodin's
+	 * keyboard is available. The field gets Rodin's math font, at its current
+	 * size.
+	 */
+	public static void installMathSymbols(final Text text) {
+		// Rodin's math font, at the size of the view's other text
+		final int height = text.getFont().getFontData()[0].getHeight();
+		final LocalResourceManager resources = new LocalResourceManager(
+				JFaceResources.getResources(), text);
+		text.setFont(resources.createFont(FontDescriptor.createFrom(
+				getConsoleFont()).setHeight(height)));
+
+		final IDialogSettings settings = ProbUiPlugin.getDefault()
+				.getDialogSettings();
+		if (settings.get(MATH_SYMBOLS_SETTING) != null
+				&& !settings.getBoolean(MATH_SYMBOLS_SETTING))
+			return;
+		try {
+			final RodinKeyboardUIPlugin keyboard = RodinKeyboardUIPlugin
+					.getDefault();
+			if (keyboard != null)
+				text.addModifyListener(keyboard.createRodinModifyListener());
+		} catch (LinkageError e) {
+			// no Rodin keyboard: no translation
+		}
+	}
+
+	/**
+	 * Completes the model's identifiers and Event-B keywords in a text field
+	 * of another view, as in the console: Tab inserts the common prefix of the
+	 * proposals or shows them, Ctrl+Space shows them.
+	 */
+	public static void installCompletion(final Text text) {
+		final ContentProposalAdapter adapter;
+		try {
+			adapter = new ContentProposalAdapter(text, new TextContentAdapter(),
+					new IdentifierProposals(),
+					KeyStroke.getInstance("Ctrl+Space"), null);
+		} catch (ParseException e) {
+			// cannot happen for a constant key stroke; no completion then
+			return;
+		}
+		adapter.setProposalAcceptanceStyle(ContentProposalAdapter.PROPOSAL_INSERT);
+		text.addListener(SWT.KeyDown, new Listener() {
+			@Override
+			public void handleEvent(final Event e) {
+				if (e.keyCode == SWT.TAB
+						&& (e.stateMask & SWT.MODIFIER_MASK) == 0
+						&& !adapter.isProposalPopupOpen()) {
+					e.doit = false;
+					final String prefix = commonPrefix(text.getText(),
+							text.getCaretPosition());
+					if (prefix == null)
+						return;
+					if (!prefix.isEmpty())
+						text.insert(prefix);
+					else
+						adapter.openProposalPopup();
+				}
+			}
+		});
+		// Tab completes instead of moving the focus to the next control
+		text.addListener(SWT.Traverse, new Listener() {
+			@Override
+			public void handleEvent(final Event e) {
+				if (e.detail == SWT.TRAVERSE_TAB_NEXT
+						&& (e.stateMask & SWT.MODIFIER_MASK) == 0)
+					e.doit = false;
+			}
+		});
+	}
+
+	/**
+	 * @return the text that all proposals at the position add (may be
+	 *         empty), or <code>null</code> if there are no proposals
+	 */
+	private static String commonPrefix(final String contents,
+			final int position) {
+		final IContentProposal[] proposals = new IdentifierProposals()
+				.getProposals(contents, position);
+		if (proposals.length == 0)
+			return null;
+		String common = proposals[0].getContent();
+		for (IContentProposal proposal : proposals) {
+			final String content = proposal.getContent();
+			int i = 0;
+			while (i < common.length() && i < content.length()
+					&& common.charAt(i) == content.charAt(i))
+				i++;
+			common = common.substring(0, i);
+		}
+		return common;
+	}
+
+	private void installMathSymbols() {
+		try {
+			final RodinKeyboardUIPlugin keyboard = RodinKeyboardUIPlugin
+					.getDefault();
+			if (keyboard == null)
+				return;
+			mathSymbolsListener = keyboard.createRodinModifyListener();
+		} catch (LinkageError e) {
+			// the Rodin keyboard is an optional dependency, or an old version
+			// without this method: no translation
+			return;
+		}
+		final IDialogSettings settings = ProbUiPlugin.getDefault()
+				.getDialogSettings();
+		final boolean enabled = settings.get(MATH_SYMBOLS_SETTING) == null
+				|| settings.getBoolean(MATH_SYMBOLS_SETTING);
+
+		final Action toggle = new Action("\u2200", IAction.AS_CHECK_BOX) {
+			@Override
+			public void run() {
+				setMathSymbols(isChecked());
+				settings.put(MATH_SYMBOLS_SETTING, isChecked());
+				focusInput();
+			}
+		};
+		toggle.setToolTipText("Type Mathematical Symbols (translate ASCII as in the Rodin editors)");
+		toggle.setChecked(enabled);
+		// Not in console commands like ":kodkod", ':' would become '\u2208'
+		// (their formulas are translated when they are parsed). Rodin's
+		// listener must not be wrapped: it removes and re-adds itself while
+		// translating, a wrapped one was then added once more on each change.
+		// So it is added and removed as needed by a listener that comes
+		// first, and is thus called before it.
+		input.addModifyListener(new ModifyListener() {
+			@Override
+			public void modifyText(final ModifyEvent e) {
+				updateMathSymbolsListener();
+			}
+		});
+		setMathSymbols(enabled);
+		getViewSite().getActionBars().getToolBarManager().add(toggle);
+	}
+
+	private void setMathSymbols(final boolean enabled) {
+		mathSymbolsEnabled = enabled;
+		updateMathSymbolsListener();
+	}
+
+	/** Rodin's listener is added iff enabled and the input is no command */
+	private void updateMathSymbolsListener() {
+		final boolean wanted = mathSymbolsEnabled
+				&& !isCommand(input.getText());
+		if (wanted && !mathSymbolsListenerAdded) {
+			input.addModifyListener(mathSymbolsListener);
+			mathSymbolsListenerAdded = true;
+		} else if (!wanted && mathSymbolsListenerAdded) {
+			input.removeModifyListener(mathSymbolsListener);
+			mathSymbolsListenerAdded = false;
+		}
+	}
+
+	/**
+	 * Tab completion: a unique identifier is completed directly, otherwise
+	 * the common prefix of the candidates is inserted and if there is none
+	 * the proposal popup opens.
+	 */
+	private void complete() {
+		final String common = commonPrefix(input.getText(),
+				input.getCaretPosition());
+		if (common == null)
+			return;
+		if (!common.isEmpty())
+			input.insert(common);
+		else if (proposalAdapter != null)
+			proposalAdapter.openProposalPopup();
+	}
+
+	private void installContentProposals() {
+		try {
+			proposalAdapter = new ContentProposalAdapter(input,
+					new TextContentAdapter(), new IdentifierProposals(),
+					KeyStroke.getInstance("Ctrl+Space"), null);
+			proposalAdapter
+					.setProposalAcceptanceStyle(ContentProposalAdapter.PROPOSAL_INSERT);
+		} catch (ParseException e) {
+			// cannot happen for a constant key stroke; no completion then
+		}
+	}
+
+	private void submit() {
+		final String text = input.getText();
+		if (text.trim().isEmpty() || runningJob != null)
+			return;
+		if (history.isEmpty() || !history.get(history.size() - 1).equals(text))
+			history.add(text);
+		historyIndex = history.size();
+		input.setText("");
+		if (isClearCommand(text.trim())) {
+			output.setText("");
+		} else if (isCloseCommand(text.trim())) {
+			// not while the key event of the input is being handled: closing
+			// disposes the input
+			final ConsoleViewPart view = this;
+			input.getDisplay().asyncExec(new Runnable() {
+				@Override
+				public void run() {
+					if (!input.isDisposed())
+						getSite().getPage().hideView(view);
+				}
+			});
+		} else if (viewArgument(text.trim(), "table") != null) {
+			append(PROMPT + echo(text) + "\n", null, SWT.BOLD);
+			showInView(TableViewPart.VIEW_ID, viewArgument(text.trim(), "table"));
+		} else if (viewArgument(text.trim(), "graph") != null) {
+			append(PROMPT + echo(text) + "\n", null, SWT.BOLD);
+			showInView(GraphViewPart.VIEW_ID, viewArgument(text.trim(), "graph"));
+		} else if (helpArgument(text.trim()) != null) {
+			append(PROMPT + text + "\n", null, SWT.BOLD);
+			final String command = helpArgument(text.trim());
+			if (command.isEmpty())
+				showHelp();
+			else
+				showHelp(command);
+		} else {
+			evaluate(text);
+		}
+	}
+
+	/** console commands start with ':', e.g. ":help" or ":kodkod PRED" */
+	private static boolean isCommand(final String text) {
+		return text.stripLeading().startsWith(":");
+	}
+
+	/** the input as shown in the output, with mathematical symbols */
+	private static String echo(final String text) {
+		if (!isCommand(text))
+			return UnicodeTranslator.toUnicode(text);
+		// keep the command, e.g. ":kodkod", ':' would become '\u2208'
+		final String command = text.stripLeading();
+		int end = 0;
+		while (end < command.length()
+				&& !Character.isWhitespace(command.charAt(end)))
+			end++;
+		return command.substring(0, end)
+				+ UnicodeTranslator.toUnicode(command.substring(end));
+	}
+
+	private static boolean isClearCommand(final String text) {
+		return text.equals(":clear") || text.equals("\u2208clear");
+	}
+
+	private static boolean isCloseCommand(final String text) {
+		return text.equals(":x") || text.equals("\u2208x");
+	}
+
+	/**
+	 * @return the expression of ":table EXPR" or ":graph EXPR" (for the given
+	 *         command name), "" if it is missing, null if the input is not
+	 *         this command
+	 */
+	private static String viewArgument(final String text, final String command) {
+		// with "Type Mathematical Symbols", ':' may have become '\u2208'
+		if (!text.startsWith(":") && !text.startsWith("\u2208"))
+			return null;
+		final String rest = text.substring(1);
+		if (!rest.startsWith(command))
+			return null;
+		final String argument = rest.substring(command.length());
+		if (!argument.isEmpty() && !Character.isWhitespace(argument.charAt(0)))
+			return null; // e.g. ":tables"
+		return argument.trim();
+	}
+
+	/**
+	 * ":table EXPR" and ":graph EXPR": shows the value of EXPR in the ProB
+	 * Table or Graph view, like "Show Value as Table/Graph" in the State
+	 * view. The view shows errors, e.g. a syntax error, itself.
+	 */
+	private void showInView(final String viewId, final String expression) {
+		final boolean table = viewId.equals(TableViewPart.VIEW_ID);
+		final String name = table ? "ProB Table" : "ProB Graph";
+		if (expression.isEmpty()) {
+			append("Usage: :" + (table ? "table" : "graph") + " EXPR\n",
+					getColor(SWT.COLOR_RED), SWT.NORMAL);
+			return;
+		}
+		if (!Animator.getAnimator().isMachineLoaded()) {
+			append("No model is being animated.\n",
+					getColor(SWT.COLOR_DARK_GRAY), SWT.NORMAL);
+			return;
+		}
+		try {
+			// shown, but the console keeps the focus for the next input
+			final IViewPart view = getSite().getPage().showView(viewId, null,
+					IWorkbenchPage.VIEW_VISIBLE);
+			if (view instanceof TableViewPart)
+				((TableViewPart) view).showExpressionTable(expression);
+			else if (view instanceof GraphViewPart)
+				((GraphViewPart) view).showFormulaGraph(
+						GraphViewPart.EXPRESSION_GRAPH, expression);
+			append("Shown in the " + name + " view.\n",
+					getColor(SWT.COLOR_DARK_GRAY), SWT.NORMAL);
+		} catch (PartInitException e) {
+			append("Could not open the " + name + " view: " + e.getMessage()
+					+ "\n", getColor(SWT.COLOR_RED), SWT.NORMAL);
+		}
+	}
+
+	/**
+	 * @return for ":help" or ":?" the command to explain, e.g. "type" for
+	 *         ":help type" or ":help :type", "" for all; null if the input
+	 *         is not a help command
+	 */
+	private static String helpArgument(final String text) {
+		// with "Type Mathematical Symbols", ':' may have become '\u2208'
+		if (!text.startsWith(":") && !text.startsWith("\u2208"))
+			return null;
+		final String rest = text.substring(1);
+		final String argument;
+		if (rest.startsWith("help"))
+			argument = rest.substring("help".length());
+		else if (rest.startsWith("?"))
+			argument = rest.substring(1);
+		else
+			return null;
+		if (!argument.isEmpty() && !Character.isWhitespace(argument.charAt(0)))
+			return null; // e.g. ":helper"
+		final String command = argument.trim();
+		return command.startsWith(":") || command.startsWith("\u2208") ? command
+				.substring(1) : command;
+	}
+
+	/**
+	 * The console commands for the help: name, usage and description (lines
+	 * separated by \n); the solver commands share the entry "SOLVER"
+	 */
+	private static String[][] commandHelp() {
+		return new String[][] {
+				{ "help", ":help [COMMAND]",
+						"show this help, or only the help for one command\n(e.g. :help type); :? is short for :help" },
+				{ "x", ":x", "close the console" },
+				{ "clear", ":clear", "remove the output (like the Clear button)" },
+				{ "type", ":type F",
+						"the type of the predicate or expression F, and the\ninferred types of its free identifiers" },
+				{ "state", ":state",
+						"the current state: values, status, enabled events" },
+				{ "states", ":states",
+						"statistics about the state space explored so far:\nnumber of states and transitions, states by kind\n(e.g. deadlocked, invariant violated), transitions per event" },
+				{ "table", ":table EXPR",
+						"show the value of the expression EXPR as a table in the\nProB Table view (like Show Value as Table in the State view)" },
+				{ "graph", ":graph EXPR",
+						"show the value of the expression EXPR as a graph in the\nProB Graph view (like Show Value as Graph in the State view)" },
+				{ "prefs", ":prefs [TEXT]",
+						"ProB's preferences (only those whose name contains\nTEXT), with the default value if it was changed" },
+				{ "version", ":version",
+						"the versions of ProB (probcli), of the plug-ins,\nof Rodin's Event-B core and of Java" },
+				{ "SOLVER", ":SOLVER PRED",
+						"solve PRED (or an expression) with another solver, also\nwithout free identifiers; SOLVER is one of\n"
+								+ ConsoleEvaluator.solverCommands()
+								+ "\n(not all solvers are available in every ProB build)" } };
+	}
+
+	/** @return the entry formatted like the other lines of the help */
+	private static String formatCommandHelp(final String[] entry) {
+		final String indent = "                   ";
+		final StringBuilder sb = new StringBuilder("  ").append(entry[1]);
+		while (sb.length() < indent.length())
+			sb.append(' ');
+		if (sb.length() > indent.length())
+			sb.append("\n").append(indent);
+		sb.append(entry[2].replace("\n", "\n" + indent)).append('\n');
+		return sb.toString();
+	}
+
+	private static String allCommandHelp() {
+		final StringBuilder sb = new StringBuilder();
+		for (String[] entry : commandHelp())
+			sb.append(formatCommandHelp(entry));
+		return sb.toString();
+	}
+
+	/** ":help COMMAND": the help for one command */
+	private void showHelp(final String command) {
+		final boolean solver = ConsoleEvaluator.isSolverName(command);
+		for (String[] entry : commandHelp()) {
+			if (entry[0].equals(command)
+					|| (solver && entry[0].equals("SOLVER"))) {
+				append(formatCommandHelp(entry),
+						getColor(SWT.COLOR_DARK_GRAY), SWT.NORMAL);
+				return;
+			}
+		}
+		final StringBuilder names = new StringBuilder();
+		for (String[] entry : commandHelp())
+			if (!entry[0].equals("SOLVER"))
+				names.append(" :").append(entry[0]);
+		append("No help for :" + command + ". Commands:" + names
+				+ " and the solvers " + ConsoleEvaluator.solverCommands()
+				+ "\n", getColor(SWT.COLOR_RED), SWT.NORMAL);
+	}
+
+	private void showHelp() {
+		final String help = "ProB Console\n"
+				+ "Evaluates predicates and expressions in the current state of the animation:\n"
+				+ "  a predicate gives TRUE or FALSE, an expression its value.\n"
+				+ "  Identifiers that are not part of the model are treated as existentially\n"
+				+ "  quantified: ProB's constraint solver searches values for them and shows\n"
+				+ "  them (e.g. x : 1..10 & x*x = 49). Their types must be inferable.\n"
+				+ "  All formulas are evaluated with the solver (except in states that are\n"
+				+ "  not initialised, if they use constants or variables).\n"
+				+ "  UNKNOWN means that the solver found no solution, but could not show\n"
+				+ "  that none exists (e.g. after a time-out).\n"
+				+ "\n"
+				+ "Keys\n"
+				+ "  Enter            evaluate the input\n"
+				+ "  Shift+Enter      start a new line in the input\n"
+				+ "  Up / Down        previous / next input (in the first / last line of the input,\n"
+				+ "                   otherwise they move between the lines of the input)\n"
+				+ "  Tab              complete identifiers of the model, Event-B keywords and\n"
+				+ "                   solver commands: a unique completion is inserted, otherwise\n"
+				+ "                   the common prefix, otherwise the list of proposals opens\n"
+				+ "  Ctrl+Space       open the list of proposals\n"
+				+ "  Ctrl+= / Ctrl+-  larger / smaller font (on macOS also with Cmd)\n"
+				+ "  Typing in the output area continues in the input; the output can be selected\n"
+				+ "  and copied. A long evaluation can be cancelled in the Progress view.\n"
+				+ "\n"
+				+ "Commands\n"
+				+ allCommandHelp()
+				+ "\n"
+				+ "Toolbar\n"
+				+ "  Clear            remove the output\n"
+				+ "  \u2200                translate ASCII into mathematical symbols while typing,\n"
+				+ "                   as in the Rodin editors (e.g. : becomes \u2208), except in\n"
+				+ "                   commands, i.e. inputs starting with :\n"
+				+ "  ms               show how long the solver took\n"
+				+ "  + / \u2212            larger / smaller font (also Ctrl+= / Ctrl+-)\n"
+				+ "  ?                show this help\n";
+		append(help, getColor(SWT.COLOR_DARK_GRAY), SWT.NORMAL);
+	}
+
+	private void browseHistory(final int direction) {
+		if (history.isEmpty())
+			return;
+		historyIndex = Math.max(0,
+				Math.min(history.size(), historyIndex + direction));
+		input.setText(historyIndex < history.size() ? history.get(historyIndex)
+				: "");
+		input.setSelection(input.getText().length());
+	}
+
+	private void evaluate(final String text) {
+		setContentDescription("Evaluating " + text + " ...");
+		input.setEnabled(false);
+		final Job job = new Job("Evaluating " + text) {
+			@Override
+			protected IStatus run(final IProgressMonitor monitor) {
+				Result result;
+				try {
+					// errors are shown in the console, not in dialogs
+					result = Animator.callQuietly(new Animator.ProBCall<Result>() {
+						@Override
+						public Result call() throws ProBException {
+							return evaluator.evaluate(text);
+						}
+					});
+				} catch (PrologException e) {
+					result = new Result(Kind.ERROR, monitor.isCanceled() ? "Cancelled."
+							: "ProB reported:\n" + e.getMessage());
+				} catch (ProBException e) {
+					result = new Result(Kind.ERROR, monitor.isCanceled() ? "Cancelled."
+							: e.getMessage());
+				} catch (RuntimeException e) {
+					// e.g. an unexpected answer of ProB
+					result = new Result(Kind.ERROR, e.toString());
+				}
+				showResult(this, text, result);
+				return Status.OK_STATUS;
+			}
+
+			@Override
+			protected void canceling() {
+				// ProB may need long for some formulas
+				Animator.getAnimator().sendUserInterruptSignal();
+			}
+		};
+		runningJob = job;
+		job.schedule();
+	}
+
+	private void showResult(final Job job, final String text,
+			final Result result) {
+		asyncExecIfAlive(new Runnable() {
+			@Override
+			public void run() {
+				if (runningJob == job)
+					runningJob = null;
+				setContentDescription("");
+				input.setEnabled(true);
+				input.setFocus();
+				append(PROMPT + echo(text) + "\n",
+						null, SWT.BOLD);
+				append(result.getText() + "\n", getResultColor(result
+						.getKind()), SWT.NORMAL);
+			}
+		});
+	}
+
+	private Color getResultColor(final Kind kind) {
+		switch (kind) {
+		case TRUE:
+			return getColor(SWT.COLOR_DARK_GREEN);
+		case FALSE:
+		case ERROR:
+			return getColor(SWT.COLOR_RED);
+		case NOT_AVAILABLE:
+			return getColor(SWT.COLOR_DARK_GRAY);
+		case UNKNOWN:
+			return getColor(SWT.COLOR_DARK_YELLOW);
+		default:
+			return null;
+		}
+	}
+
+	private Color getColor(final int systemColor) {
+		// system colors must not be disposed
+		return output.getDisplay().getSystemColor(systemColor);
+	}
+
+	private void append(final String text, final Color color, final int style) {
+		final int start = output.getCharCount();
+		output.append(text);
+		final StyleRange range = new StyleRange(start, text.length(), color,
+				null, style);
+		output.setStyleRange(range);
+		if (mathFont != null) {
+			for (int i = 0; i < text.length(); i++) {
+				final char c = text.charAt(i);
+				if (c >= FIRST_MATH_FONT_CHAR && c <= LAST_MATH_FONT_CHAR) {
+					final StyleRange symbol = new StyleRange(start + i, 1,
+							color, null);
+					symbol.font = mathFont;
+					output.setStyleRange(symbol);
+				}
+			}
+		}
+		if (output.getCharCount() > MAX_OUTPUT_LENGTH) {
+			output.replaceTextRange(0, output.getCharCount()
+					- MAX_OUTPUT_LENGTH, "");
+		}
+		output.setTopIndex(output.getLineCount() - 1);
+	}
+
+	private void asyncExecIfAlive(final Runnable runnable) {
+		final Display display = Display.getDefault();
+		if (display.isDisposed())
+			return;
+		display.asyncExec(new Runnable() {
+			@Override
+			public void run() {
+				if (output != null && !output.isDisposed())
+					runnable.run();
+			}
+		});
+	}
+
+	/**
+	 * A new model has been loaded (called from any thread)
+	 */
+	@Override
+	public void reset() {
+		evaluator.reset();
+		asyncExecIfAlive(new Runnable() {
+			@Override
+			public void run() {
+				append("--- New model loaded ---\n",
+						getColor(SWT.COLOR_DARK_GRAY), SWT.ITALIC);
+			}
+		});
+	}
+
+	@Override
+	public void setFocus() {
+		input.setFocus();
+	}
+
+	@Override
+	public void dispose() {
+		StaticListenerRegistry.unregisterListener((ILifecycleListener) this);
+		if (runningJob != null)
+			runningJob.cancel();
+		super.dispose();
+	}
+
+	/**
+	 * Proposes the identifiers of the model that start with the word before
+	 * the cursor
+	 */
+	private static final class IdentifierProposals implements
+			IContentProposalProvider {
+		// the keywords of Event-B's ASCII syntax
+		private static final List<String> KEYWORDS = Arrays.asList("BOOL",
+				"FALSE", "INT", "INTER", "NAT", "NAT1", "POW", "POW1", "TRUE",
+				"UNION", "bool", "card", "dom", "finite", "id", "inter", "max",
+				"min", "mod", "not", "oftype", "or", "partition", "pred",
+				"prj1", "prj2", "ran", "succ", "union");
+
+		@Override
+		public IContentProposal[] getProposals(final String contents,
+				final int position) {
+			int start = position;
+			while (start > 0
+					&& isIdentifierChar(contents.charAt(start - 1)))
+				start--;
+			final String prefix = contents.substring(start, position);
+
+			// a command at the start, e.g. ":kod" or ":he"; '\u2208' if ':' was
+			// translated (also after leading white space)
+			final String beforeWord = contents.substring(0, start);
+			final String marker = beforeWord.trim();
+			if (marker.equals(":") || marker.equals("\u2208")) {
+				final List<IContentProposal> commands = new ArrayList<IContentProposal>();
+				final List<String> names = new ArrayList<String>();
+				names.add(":help");
+				names.add(":x");
+				names.add(":clear");
+				names.add(":type");
+				names.add(":state");
+				names.add(":states");
+				names.add(":table");
+				names.add(":graph");
+				names.add(":prefs");
+				names.add(":version");
+				names.addAll(Arrays.asList(ConsoleEvaluator.solverCommands()
+						.split(", ")));
+				for (String command : names) {
+					final String name = command.substring(1);
+					// a solver command is followed by the predicate
+					final String space = name.equals("help")
+							|| name.equals("x") || name.equals("state")
+							|| name.equals("states")
+							|| name.equals("version")
+							|| name.equals("clear") ? ""
+							: " ";
+					if (name.startsWith(prefix))
+						commands.add(new ContentProposal(name.substring(prefix
+								.length()) + space, marker + name, null));
+				}
+				return commands.toArray(new IContentProposal[commands.size()]);
+			}
+			final Set<String> identifiers = new TreeSet<String>(KEYWORDS);
+			final Animator animator = Animator.getAnimator();
+			// getMachineDescription() would start probcli if none is running
+			if (animator.isMachineLoaded()) {
+				final MachineDescription md = animator
+						.getMachineDescription();
+				if (md != null)
+					identifiers.addAll(md.getIdentifiers());
+			}
+			final List<IContentProposal> proposals = new ArrayList<IContentProposal>();
+			for (String identifier : identifiers) {
+				if (identifier.startsWith(prefix)) {
+					// the prefix has already been typed
+					proposals.add(new ContentProposal(identifier
+							.substring(prefix.length()), identifier, null));
+				}
+			}
+			return proposals.toArray(new IContentProposal[proposals.size()]);
+		}
+
+		private static boolean isIdentifierChar(final char c) {
+			return Character.isLetterOrDigit(c) || c == '_';
+		}
+	}
+
+}

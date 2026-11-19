@@ -10,11 +10,13 @@ import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.draw2d.geometry.Rectangle;
 
 import de.bmotionstudio.gef.editor.attribute.AbstractAttribute;
+import de.bmotionstudio.gef.editor.attribute.BAttributeBackgroundColor;
 import de.bmotionstudio.gef.editor.attribute.BAttributeColumns;
 import de.bmotionstudio.gef.editor.attribute.BAttributeForegroundColor;
 import de.bmotionstudio.gef.editor.attribute.BAttributeHeight;
 import de.bmotionstudio.gef.editor.attribute.BAttributeRows;
 import de.bmotionstudio.gef.editor.attribute.BAttributeSize;
+import de.bmotionstudio.gef.editor.attribute.BAttributeTextColor;
 import de.bmotionstudio.gef.editor.attribute.BAttributeWidth;
 import de.bmotionstudio.gef.editor.command.CreateCommand;
 
@@ -75,6 +77,12 @@ public class BTable extends BControl {
 				ColorConstants.black.getRGB()));
 		initAttribute(new BAttributeColumns(1));
 		initAttribute(new BAttributeRows(1));
+
+		// Style of cells created for new rows (e.g. by the TableObserver);
+		// defaults keep the previous white/black look
+		initAttribute(new BAttributeBackgroundColor(
+				ColorConstants.white.getRGB()));
+		initAttribute(new BAttributeTextColor(ColorConstants.black.getRGB()));
 
 	}
 

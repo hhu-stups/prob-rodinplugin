@@ -12,13 +12,13 @@ import java.util.List;
 import java.util.Set;
 
 import de.prob.core.Animator;
+import de.prob.core.UnsatAxiomsNotice;
 import de.prob.core.domainobjects.Operation;
 import de.prob.core.domainobjects.State;
 import de.prob.core.domainobjects.StateError;
 import de.prob.core.domainobjects.Variable;
 import de.prob.core.internal.Activator;
 import de.prob.exceptions.ProBException;
-import de.prob.logging.Logger;
 import de.prob.parser.ISimplifiedROMap;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.PrologTerm;
@@ -90,14 +90,16 @@ public final class ExploreStateCommand implements IComposableCommand {
 		// only show error message on SETUP_CONSTANTS and
 		// PARTIALLY_SETUP_CONSTANTS
 		if (!constants_setup && unsatPropertiesExist) {
-			Logger.notifyUser("ProB could not find valid constants wich satisfy the properties.\n"
-					+ unsatPropsCommand.getUnsatPropertiesDescription());
+			// a non-modal notice, together with ProB's warnings about the
+			// axioms; the axioms concerned get problem markers
+			UnsatAxiomsNotice.report(unsatPropsCommand
+					.getUnsatPropertiesDescription());
 		} else if (!constants_setup && enabledOperations.isEmpty()
 				&& !timeoutOccured) {
-			Logger.notifyUser("ProB could not find valid constants. This might be caused by the animation settings (e.g., integer range or deferred set size) or by an inconsistency in the axioms.");
+			UnsatAxiomsNotice.reportNoConstants("ProB could not find valid constants. This might be caused by the animation settings (e.g., integer range or deferred set size) or by an inconsistency in the axioms.");
 		} else if (!initialised && enabledOperations.isEmpty()
 				&& !timeoutOccured) {
-			Logger.notifyUser("ProB could not find valid initial values for the variables. This might be caused by the animation settings (e.g., integer range or deferred set size) or by an inconsistency in the INITIALISATION.");
+			UnsatAxiomsNotice.reportNoInitialisation("ProB could not find valid initial values for the variables. This might be caused by the animation settings (e.g., integer range or deferred set size) or by an inconsistency in the INITIALISATION.");
 		}
 
 		Set<String> timeouts = new HashSet<String>(

@@ -12,8 +12,6 @@ import org.eclipse.jface.databinding.swt.typed.WidgetProperties;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -22,6 +20,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
+import de.bmotionstudio.gef.editor.BMotionStudioSWTConstants;
 import de.bmotionstudio.gef.editor.model.BControl;
 import de.bmotionstudio.gef.editor.observer.ColumnObserver;
 import de.bmotionstudio.gef.editor.observer.Observer;
@@ -57,8 +56,7 @@ public class WizardColumnObserver extends ObserverWizard {
 
 			txtPredicate = new Text(container, SWT.BORDER);
 			txtPredicate.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-			txtPredicate.setFont(new Font(Display.getDefault(), new FontData(
-					"Arial", 10, SWT.NONE)));
+			txtPredicate.setFont(BMotionStudioSWTConstants.fontArial10);
 
 			lb = new Label(container, SWT.NONE);
 			lb.setText("Expression:");
