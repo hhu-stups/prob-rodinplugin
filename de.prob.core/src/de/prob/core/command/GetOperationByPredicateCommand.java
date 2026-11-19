@@ -145,11 +145,12 @@ public final class GetOperationByPredicateCommand implements IComposableCommand 
 		final String errors = describeErrors(bindings.get(ERRORS_VARIABLE));
 		if (errors != null) {
 			// e.g. a type error in the predicate; without this check it would
-			// look as if no event satisfied the predicate. Only logged, the
-			// callers (e.g. BMotion observers) run this on every state change
+			// look as if no event satisfied the predicate. Only logged (no
+			// dialog): the callers (e.g. BMotion observers) run this on every
+			// state change, and handle the exception
 			final String message = "ProB could not use the predicate for event "
 					+ name + ":\n" + errors;
-			Logger.log(IStatus.WARNING, message, null);
+			Logger.logWithoutDialog(IStatus.WARNING, message, null);
 			throw new CommandException(message);
 		}
 

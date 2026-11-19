@@ -86,7 +86,9 @@ public class DisproverReasoner implements IReasoner {
 					factor, pm);
 			return createDisproverResult(ce, sequent, disproverInput);
 		} catch (RodinDBException e) {
-			Logger.log(IStatus.WARNING, e.getMessage(), e);
+			// no dialog: also when the auto-prover or a proof replay runs it,
+			// and Rodin shows the failure (with the message) in the proof tree
+			Logger.logWithoutDialog(IStatus.WARNING, e.getMessage(), e);
 			return ProverFactory.reasonerFailure(this, input, e.getMessage());
 		} catch (InterruptedException e) {
 			return ProverFactory.reasonerFailure(this, input, e.getMessage());

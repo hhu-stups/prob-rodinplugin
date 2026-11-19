@@ -117,6 +117,23 @@ public final class Logger {
 		assertProB(assertion, false);
 	}
 
+	/**
+	 * The code of log entries that are not shown in a dialog (see
+	 * {@link #logWithoutDialog(int, String, Throwable)}).
+	 */
+	public static final int NO_DIALOG = 1;
+
+	/**
+	 * Writes a warning or error to the Error Log, without showing it to the
+	 * user in a dialog. For problems the caller handles or reports in another
+	 * way, e.g. in Rodin's proof tree, or that may occur very often.
+	 */
+	public static void logWithoutDialog(final int severity,
+			final String message, final Throwable exception) {
+		log(new Status(severity, Activator.PLUGIN_ID, NO_DIALOG, message,
+				exception));
+	}
+
 	public static void log(final int severity, final String message, final Throwable exception) {
 		final IStatus status = new Status(severity, Activator.PLUGIN_ID, message, exception);
 		log(status);
