@@ -31,31 +31,11 @@ deploy:
     - if: $CI_PROJECT_PATH == "general/stups/prob_rodin_plugin" && ($CI_COMMIT_BRANCH == "develop" || $CI_COMMIT_TAG =~ /\d+\.\d+\..+/)
   image: alpine:3
   variables:
-    # The release branch of the script needs deployment/ and build.gradle
-    # from the repository, so it cannot skip the checkout (GIT_STRATEGY: none).
-    # A shallow fetch is enough.
-    GIT_STRATEGY: fetch
-    GIT_DEPTH: "1"
     lftp_setup: "set cmd:fail-exit true; set sftp:auto-confirm true; open --user ${DEPLOY_USERNAME} --env-password sftp://${DEPLOY_HOST}/${DEPLOY_REMOTE_BASEDIR}/rodin/prob1/"
   before_script:
     - apk update
     - apk add lftp openssh-client
   script:
-    - |
-      # protected CI/CD variables are empty in pipelines of unprotected
-      # branches and tags; lftp then only says "open: Not connected"
-      missing=""
-      for v in DEPLOY_USERNAME DEPLOY_PASSWORD DEPLOY_HOST DEPLOY_REMOTE_BASEDIR
-      do
-        eval "value=\${$v-}"
-        [ -n "$value" ] || missing="$missing $v"
-      done
-      if [ -n "$missing" ]
-      then
-        echo "ERROR: these CI/CD variables are not set:$missing"
-        echo "ERROR: if they are protected variables, protect this branch or tag (Settings > Repository > Protected branches/tags)."
-        exit 1
-      fi
     - |
       if [ -z "${CI_COMMIT_TAG-}" ]
       then
