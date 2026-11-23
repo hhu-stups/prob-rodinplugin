@@ -117,7 +117,7 @@ public class OperationSelectionDialog extends TrayDialog {
 		super.configureShell(newShell);
 		newShell.setSize(400, 500);
 		// newShell.setMinimumSize(250, 200);
-		newShell.setText("Select Operation: " + shellTitle);
+		newShell.setText("Select Event: " + shellTitle);
 	}
 
 	public void setTitle(final String title) {
