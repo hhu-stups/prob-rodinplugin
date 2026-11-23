@@ -111,10 +111,12 @@ public class ProBGeneralPreferences extends FieldEditorPreferencePage implements
 	protected void createFieldEditors() {
 		final Composite parent = getFieldEditorParent();
 		for (ProBPreference p : probPrefs) {
-			if (ProBPreference.isReadOnly(p.name))
-				continue;
 			final FieldEditor editor = createEditor(p, parent);
 			addField(editor);
+			// e.g. ProB's version: shown, but it cannot be changed (and is
+			// neither stored nor sent to probcli, see save())
+			if (ProBPreference.isReadOnly(p.name))
+				editor.setEnabled(false, parent);
 		}
 	}
 

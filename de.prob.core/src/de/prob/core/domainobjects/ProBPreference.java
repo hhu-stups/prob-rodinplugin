@@ -22,11 +22,15 @@ public final class ProBPreference {
 	public final String category;
 	public final String defaultValue;
 
-	// information about probcli itself; probcli rejects setting them
+	// information about probcli itself; probcli rejects setting them. ProB
+	// for Rodin uses the eclipse names (from list_eclipse_preferences, see
+	// eclipse_preference/2 in preferences.pl); the internal names are kept in
+	// case one has no eclipse name
 	private static final Set<String> READ_ONLY = Collections
 			.unmodifiableSet(new HashSet<String>(Arrays.asList(
-					"prob_version_info", "prob_revision_info",
-					"prob_lastchangedate_info")));
+					"PROB_VERSION_INFO", "PROB_REVISION_INFO",
+					"PROB_LASTCHANGED_INFO", "prob_version_info",
+					"prob_revision_info", "prob_lastchangedate_info")));
 
 	private final static int NAME = 1;
 	private final static int TYPE = 2;
