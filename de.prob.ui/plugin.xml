@@ -263,7 +263,7 @@
 </command>
       <command
             id="de.prob.ui.randomoperation"
-            name="Execute Random Events">
+            name="Animate Random Events">
          <commandParameter
                id="de.prob.ui.randomoperation.steps"
                name="Number of Steps"
@@ -1529,7 +1529,7 @@
    <command
          commandId="de.prob.ui.randomoperation"
          icon="icons/resume.gif"
-         label="Execute Random Operations"
+         label="Animate Random Events"
          style="pulldown">
    </command>
    <command
@@ -1600,7 +1600,7 @@
             locationURI="menu:de.prob.ui.randomoperation">
          <command
                commandId="de.prob.ui.randomoperation"
-               label="Execute 1 Step"
+               label="Animate 1 Step"
                style="push">
             <parameter
                   name="de.prob.ui.randomoperation.steps"
@@ -1609,7 +1609,7 @@
          </command>
          <command
                commandId="de.prob.ui.randomoperation"
-               label="Execute 5 Steps"
+               label="Animate 5 Steps"
                style="push">
             <parameter
                   name="de.prob.ui.randomoperation.steps"
@@ -1618,11 +1618,20 @@
          </command>
          <command
                commandId="de.prob.ui.randomoperation"
-               label="Execute 10 Steps"
+               label="Animate 10 Steps"
                style="push">
             <parameter
                   name="de.prob.ui.randomoperation.steps"
                   value="10">
+            </parameter>
+         </command>
+         <command
+               commandId="de.prob.ui.randomoperation"
+               label="Animate 50 Steps"
+               style="push">
+            <parameter
+                  name="de.prob.ui.randomoperation.steps"
+                  value="50">
             </parameter>
          </command>
          <command
