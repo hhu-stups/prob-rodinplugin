@@ -70,6 +70,10 @@ public final class StateFormulas extends PropertyTester {
 			return formulaOf(receiver) != null;
 		if ("isExpression".equals(property))
 			return expressionOf(receiver) != null;
+		if ("isUserFormula".equals(property))
+			return receiver instanceof StateTreeExpression
+					&& StateViewPart.isUserFormula(((StateTreeExpression) receiver)
+							.getStaticElement());
 		return false;
 	}
 }

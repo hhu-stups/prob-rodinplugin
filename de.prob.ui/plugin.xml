@@ -19,7 +19,7 @@
             class="de.prob.ui.stateview.StateFormulas"
             id="de.prob.ui.stateview.formulaTester"
             namespace="de.prob.ui.stateview"
-            properties="isFormula,isExpression"
+            properties="isFormula,isExpression,isUserFormula"
             type="java.lang.Object">
       </propertyTester>
    </extension>
@@ -293,6 +293,11 @@
       <command
             id="de.prob.ui.add_formula"
             name="Add new watched formula">
+      </command>
+      <command
+            description="Remove a formula added to the State view, also from the model's settings file"
+            id="de.prob.ui.stateview.removeFormula"
+            name="Remove Formula">
       </command>
       <command
             id="de.prob.ui.history.back"
@@ -613,6 +618,10 @@
          <class
                class="de.prob.ui.stateview.LoadShortestTraceHandler">
          </class>
+      </handler>
+      <handler
+            class="de.prob.ui.stateview.RemoveFormulaHandler"
+            commandId="de.prob.ui.stateview.removeFormula">
       </handler>
       <handler
             commandId="de.prob.ui.add_formula">
@@ -1424,6 +1433,30 @@
                commandId="de.prob.ui.command.showProjection"
                label="Project State Space onto Item"
                style="push">
+         </command>
+         <!-- only for formulas added with "Add new Formula" -->
+         <command
+               commandId="de.prob.ui.stateview.removeFormula"
+               label="Remove Formula"
+               style="push">
+            <visibleWhen
+                  checkEnabled="false">
+               <with
+                     variable="activeMenuSelection">
+                  <and>
+                     <count
+                           value="1">
+                     </count>
+                     <iterate
+                           operator="and">
+                        <test
+                              forcePluginActivation="true"
+                              property="de.prob.ui.stateview.isUserFormula">
+                        </test>
+                     </iterate>
+                  </and>
+               </with>
+            </visibleWhen>
          </command>
          <separator
                name="de.prob.ui.stateview.consoleSeparator"

@@ -60,6 +60,16 @@ public class StateTreeExpressionSection extends AbstractStateTreeElement {
 		this.children.add(child);
 	}
 
+	/** removes the entry of the element, e.g. a formula the user added */
+	public void removeChild(final EvaluationElement staticElement) {
+		for (int i = children.size() - 1; i >= 0; i--) {
+			final StateTreeElement child = children.get(i);
+			if (child instanceof StateTreeExpression
+					&& ((StateTreeExpression) child).getStaticElement() == staticElement)
+				children.remove(i);
+		}
+	}
+
 	@Override
 	public StateDependendElement getValue(final State state) {
 		return new StateDependendElement(state, null,

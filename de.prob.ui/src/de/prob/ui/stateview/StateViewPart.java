@@ -11,7 +11,9 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
@@ -51,12 +53,15 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
 import org.eventb.core.IEventBProject;
+import org.eclipse.core.runtime.CoreException;
 import org.eventb.core.IEventBRoot;
 
 import de.prob.core.Animator;
 import de.prob.core.LanguageDependendAnimationPart;
 import de.prob.core.LimitedLogger;
+import de.prob.core.command.CommandException;
 import de.prob.core.command.EvaluationGetTopLevelCommand;
+import de.prob.core.command.EvaluationInsertFormulaCommand;
 import de.prob.core.command.EvaluationGetValuesCommand;
 import de.prob.core.domainobjects.EvaluationElement;
 import de.prob.core.domainobjects.MachineDescription;
@@ -64,7 +69,10 @@ import de.prob.core.domainobjects.Operation;
 import de.prob.core.domainobjects.State;
 import de.prob.core.langdep.EventBAnimatorPart;
 import de.prob.exceptions.ProBException;
+import de.prob.exceptions.ProBException;
 import de.prob.logging.Logger;
+import de.prob.parserbase.ProBParseException;
+import de.prob.ui.settings.ModelSettings;
 import de.prob.ui.StateBasedViewPart;
 import de.prob.ui.dnd.StaticStateElementTransfer;
 import de.prob.ui.errorview.StateErrorView;
@@ -238,7 +246,12 @@ public class StateViewPart extends StateBasedViewPart {
 		if (shownState == null) {
 			try {
 				EvaluationElement[] tops = EvaluationGetTopLevelCommand.retrieveTopLevelElements();
-				topEvaluationElements = new ArrayList<EvaluationElement>(Arrays.asList(tops));
+				topEvaluationElements = new ArrayList<EvaluationElement>();
+				for (EvaluationElement top : tops)
+					// ProB keeps the formulas removed from the view
+					if (!REMOVED.contains(String.valueOf(top.getId())))
+						topEvaluationElements.add(top);
+				restoreSavedFormulas();
 			} catch (ProBException e) {
 				e.notifyUserOnce();
 				// mutable: user-defined formulas are added later
@@ -538,6 +551,142 @@ public class StateViewPart extends StateBasedViewPart {
 				return ((StateTreeVariable) element).isInMainSection();
 			else
 				return true;
+		}
+	}
+
+	/**
+	 * The formulas the user added (by the id of their element in ProB), as
+	 * entered: they are saved in the model's settings file (see
+	 * {@link ModelSettings}) and can be removed again.
+	 */
+	private static final Map<String, String> USER_FORMULAS = new ConcurrentHashMap<String, String>();
+	/** the ids of user formulas removed from the view (ProB keeps them) */
+	private static final Set<String> REMOVED = ConcurrentHashMap.newKeySet();
+	/** the model load the saved formulas were added to ProB for */
+	private MachineDescription restoredFor;
+
+	/** @return whether the element is a formula the user added */
+	public static boolean isUserFormula(final EvaluationElement element) {
+		return element != null && element.getId() != null
+				&& USER_FORMULAS.containsKey(element.getId().toString());
+	}
+
+	/**
+	 * Adds a formula the user entered and saves it in the model's settings
+	 * file, so that it is added again when the model is animated again.
+	 */
+	public void addUserFormula(final EvaluationElement element,
+			final String formula) {
+		USER_FORMULAS.put(element.getId().toString(), formula);
+		addUserDefinedExpression(element);
+		final IEventBRoot model = ModelSettings.animatedModel();
+		if (model == null)
+			return;
+		try {
+			ModelSettings.add(model, ModelSettings.Kind.STATE, formula, null);
+		} catch (CoreException e) {
+			Logger.notifyUserNonModal("The formula " + formula
+					+ " could not be saved for " + model.getComponentName()
+					+ ".", e.getMessage());
+		}
+	}
+
+	/**
+	 * Removes a formula the user added from the view and from the model's
+	 * settings file.
+	 */
+	public void removeUserFormula(final EvaluationElement element) {
+		final String id = element.getId().toString();
+		final String formula = USER_FORMULAS.remove(id);
+		if (formula == null)
+			return;
+		REMOVED.add(id);
+		if (expressionSection != null)
+			expressionSection.removeChild(element);
+		if (topEvaluationElements != null)
+			for (Iterator<EvaluationElement> it = topEvaluationElements
+					.iterator(); it.hasNext();)
+				if (id.equals(String.valueOf(it.next().getId())))
+					it.remove();
+		refreshTreeView();
+		final IEventBRoot model = ModelSettings.animatedModel();
+		if (model == null)
+			return;
+		try {
+			ModelSettings.remove(model, ModelSettings.Kind.STATE, formula, null);
+		} catch (CoreException e) {
+			Logger.notifyUserNonModal("The formula " + formula
+					+ " could not be removed from the settings of "
+					+ model.getComponentName() + ".", e.getMessage());
+		}
+	}
+
+	/**
+	 * Adds the formulas saved for the model to ProB, once per load of a
+	 * model (ProB forgets them when a model is loaded).
+	 */
+	private void restoreSavedFormulas() {
+		final MachineDescription md = Animator.getAnimator()
+				.getMachineDescription();
+		if (md == null || md == restoredFor)
+			return;
+		restoredFor = md;
+		USER_FORMULAS.clear();
+		REMOVED.clear();
+		final IEventBRoot model = ModelSettings.animatedModel();
+		if (model == null)
+			return;
+		final StringBuilder failed = new StringBuilder();
+		int failures = 0;
+		for (final ModelSettings.SavedFormula saved : ModelSettings.formulas(
+				model, ModelSettings.Kind.STATE)) {
+			try {
+				final EvaluationElement element = Animator
+						.callQuietly(new Animator.ProBCall<EvaluationElement>() {
+							@Override
+							public EvaluationElement call() throws ProBException {
+								return insert(saved.formula);
+							}
+						});
+				USER_FORMULAS.put(element.getId().toString(), saved.formula);
+				topEvaluationElements.add(element);
+			} catch (ProBException e) {
+				failures++;
+				failed.append(saved.formula).append(": ")
+						.append(e.getMessage()).append('\n');
+			}
+		}
+		if (failures > 0)
+			Logger.notifyUserNonModal(
+					(failures == 1 ? "A saved formula" : failures
+							+ " saved formulas")
+							+ " of "
+							+ model.getComponentName()
+							+ " could not be added to the State view, e.g. because the model has changed.",
+					failed
+							+ "\nRemove "
+							+ (failures == 1 ? "it" : "them")
+							+ " from "
+							+ ModelSettings.file(model).getFullPath()
+							+ ", or add the corrected formula again.");
+	}
+
+	/** inserts a formula, a predicate or else an expression, into ProB */
+	private static EvaluationElement insert(final String formula)
+			throws ProBException {
+		final Animator animator = Animator.getAnimator();
+		try {
+			return EvaluationInsertFormulaCommand.insertFormula(animator,
+					EvaluationInsertFormulaCommand.FormulaType.PREDICATE,
+					formula);
+		} catch (ProBParseException e) {
+			try {
+				return EvaluationInsertFormulaCommand.insertFormula(animator,
+						EvaluationInsertFormulaCommand.FormulaType.EXPRESSION,
+						formula);
+			} catch (ProBParseException e2) {
+				throw new CommandException("syntax error: " + e2.getMessage());
+			}
 		}
 	}
 

@@ -64,7 +64,7 @@ public class AddFormulaHandler extends AbstractHandler implements IHandler {
 							final StateViewPart view = (StateViewPart) activePage
 									.findView(StateViewPart.STATE_VIEW_ID);
 							if (view != null) {
-								view.addUserDefinedExpression(staticElement);
+								view.addUserFormula(staticElement, entered);
 							} else {
 								MessageDialog.openError(shell, "Error",
 										"Unable to access state view");

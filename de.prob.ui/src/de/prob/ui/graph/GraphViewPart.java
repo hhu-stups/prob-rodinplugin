@@ -76,6 +76,8 @@ import de.prob.prolog.term.PrologTerm;
 import de.prob.ui.CommandMenus;
 import de.prob.ui.StaticListenerRegistry;
 import de.prob.ui.console.ConsoleViewPart;
+import de.prob.ui.settings.ModelSettings;
+import de.prob.ui.settings.SavedFormulasMenu;
 import de.prob.ui.stateview.LoadShortestTraceHandler;
 
 /**
@@ -259,7 +261,7 @@ public class GraphViewPart extends ViewPart implements ILifecycleListener,
 	private void createFormulaField(final Composite parent) {
 		final Composite row = new Composite(parent, SWT.NONE);
 		row.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
-		final GridLayout layout = new GridLayout(2, false);
+		final GridLayout layout = new GridLayout(3, false);
 		layout.marginHeight = 2;
 		row.setLayout(layout);
 		final Label label = new Label(row, SWT.NONE);
@@ -284,6 +286,33 @@ public class GraphViewPart extends ViewPart implements ILifecycleListener,
 		});
 		ConsoleViewPart.installMathSymbols(formulaField);
 		ConsoleViewPart.installCompletion(formulaField);
+		new SavedFormulasMenu(row, ModelSettings.Kind.GRAPH, formulaField,
+				new SavedFormulasMenu.Host() {
+					@Override
+					public String currentCommand() {
+						return shown != null && shown.getFormulaArguments() > 0 ? shown
+								.getCommand() : DEFAULT_FORMULA_GRAPH;
+					}
+
+					@Override
+					public String commandName(final String command) {
+						final CommandInfo info = menus == null ? null : menus
+								.find(command);
+						return info == null ? command : info.getName();
+					}
+
+					@Override
+					public void show(final String formula, final String command) {
+						showFormulaGraph(command == null ? DEFAULT_FORMULA_GRAPH
+								: command, formula);
+					}
+
+					@Override
+					public void status(final String message) {
+						getViewSite().getActionBars().getStatusLineManager()
+								.setMessage(message);
+					}
+				});
 	}
 
 	private void createActions() {
@@ -638,6 +667,14 @@ public class GraphViewPart extends ViewPart implements ILifecycleListener,
 		final List<PrologTerm> formulas = new ArrayList<PrologTerm>();
 		String title = command.getName();
 		if (command.getFormulaArguments() > 0) {
+			final IEventBRoot model = ModelSettings.animatedModel();
+			if (formulaField.getText().trim().isEmpty() && model != null) {
+				// the formula last used for this graph
+				final String last = ModelSettings.lastFormula(model,
+						ModelSettings.Kind.GRAPH, command.getCommand());
+				if (last != null)
+					formulaField.setText(last);
+			}
 			final String text = formulaField.getText().trim();
 			if (text.isEmpty()) {
 				showMessage(command.getName()
@@ -653,6 +690,9 @@ public class GraphViewPart extends ViewPart implements ILifecycleListener,
 				formulaField.setFocus();
 				return;
 			}
+			if (model != null)
+				ModelSettings.setLastFormula(model, ModelSettings.Kind.GRAPH,
+						command.getCommand(), text);
 			title = title.replaceFirst("\\.\\.\\.$", "") + " for " + text;
 		}
 		if (runningJob != null)
