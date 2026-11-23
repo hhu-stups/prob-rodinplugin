@@ -6,11 +6,22 @@
 
 package de.prob.ui;
 
+import java.lang.reflect.InvocationTargetException;
+
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.ICoreRunnable;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.OperationCanceledException;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageRegistry;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 
+import de.prob.core.CheckedFiles;
 import de.prob.core.UnsatAxiomsNotice;
 import de.prob.logging.Logger;
 import de.prob.ui.eventb.ExplorerLabels;
@@ -69,6 +80,39 @@ public class ProbUiPlugin extends AbstractUIPlugin {
 		Logger.setNonModalNotifier(new NonModalNotification());
 		UnsatAxiomsNotice.setMarkersChangedListener(ExplorerLabels::refreshLater);
 		UnsatAxiomsNotice.setUnsatCoreAction(ProbUiPlugin::showUnsatCore);
+		CheckedFiles.setRunner(ProbUiPlugin::runWithProgress);
+	}
+
+	/**
+	 * Runs work that may wait for Rodin's builder: in the UI thread with
+	 * Eclipse's busy cursor and, if it takes long, a progress dialog that can
+	 * be cancelled (the UI stays responsive, e.g. for a build that needs it).
+	 */
+	private static void runWithProgress(final ICoreRunnable work)
+			throws CoreException, InterruptedException {
+		if (Display.getCurrent() == null || !PlatformUI.isWorkbenchRunning()) {
+			work.run(new NullProgressMonitor());
+			return;
+		}
+		try {
+			PlatformUI.getWorkbench().getProgressService()
+					.busyCursorWhile(monitor -> {
+						try {
+							work.run(monitor);
+						} catch (CoreException e) {
+							throw new InvocationTargetException(e);
+						} catch (OperationCanceledException e) {
+							throw new InterruptedException();
+						}
+					});
+		} catch (InvocationTargetException e) {
+			if (e.getCause() instanceof CoreException)
+				throw (CoreException) e.getCause();
+			if (e.getCause() instanceof RuntimeException)
+				throw (RuntimeException) e.getCause();
+			throw new CoreException(new Status(IStatus.ERROR, PLUGIN_ID,
+					String.valueOf(e.getCause()), e.getCause()));
+		}
 	}
 
 	/**

@@ -18,6 +18,7 @@ import org.osgi.service.prefs.Preferences;
 import org.rodinp.core.RodinDBException;
 
 import de.prob.core.Animator;
+import de.prob.core.CheckedFiles;
 import de.prob.core.UnsatAxiomsNotice;
 import de.prob.core.LanguageDependendAnimationPart;
 import de.prob.core.command.internal.InternalLoadCommand;
@@ -71,6 +72,8 @@ public final class LoadEventBModelCommand {
 	}
 
 	public static void load(final Animator animator, final IEventBRoot model) throws ProBException {
+		// e.g. a .bcm file not generated yet, because Rodin is still building
+		CheckedFiles.ensure(model);
 		boolean context = checkForContexts(model);
 		animator.resetDirty();
 		// animator.resetRodinProjectHasErrorsOrWarnings(); // set in StartAnimationHandler; reset here would override this

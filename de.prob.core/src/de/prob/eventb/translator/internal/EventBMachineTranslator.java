@@ -15,6 +15,7 @@ import org.eventb.core.ISCMachineRoot;
 import org.eventb.core.ast.FormulaFactory;
 import org.eventb.core.ast.ITypeEnvironment;
 import org.rodinp.core.IRodinFile;
+import org.rodinp.core.RodinDBException;
 
 import de.prob.core.translator.TranslationFailedException;
 import de.prob.eventb.translator.ContextTranslator;
@@ -68,6 +69,14 @@ public final class EventBMachineTranslator extends EventBTranslator {
 
 		try {
 			buildRefinementChain(machine, roots);
+		} catch (RodinDBException e) {
+			if (e.isDoesNotExist())
+				// usually found by CheckedFiles before; e.g. removed since
+				throw new TranslationFailedException(machine.getComponentName(),
+						"A statically checked file of the machine or of a machine it refines"
+								+ " does not exist; Rodin has not generated it: "
+								+ e.getMessage(), e);
+			throw new TranslationFailedException(e);
 		} catch (CoreException e) {
 			throw new TranslationFailedException(e);
 		}
