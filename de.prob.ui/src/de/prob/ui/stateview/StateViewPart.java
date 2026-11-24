@@ -31,21 +31,25 @@ import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.TreeViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DragSourceEvent;
 import org.eclipse.swt.dnd.DragSourceListener;
 import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -53,11 +57,11 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.TreeItem;
+import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.IWorkbenchPage;
@@ -85,6 +89,7 @@ import de.prob.core.langdep.EventBAnimatorPart;
 import de.prob.exceptions.ProBException;
 import de.prob.logging.Logger;
 import de.prob.parserbase.ProBParseException;
+import de.prob.ui.ProbUiPlugin;
 import de.prob.ui.StateBasedViewPart;
 import de.prob.ui.dnd.StaticStateElementTransfer;
 import de.prob.ui.errorview.StateErrorView;
@@ -308,6 +313,12 @@ public class StateViewPart extends StateBasedViewPart {
 		invProvider.setFonts(null, null, bold);
 		invariantViewer.setLabelProvider(invProvider);
 		invariantViewer.setContentProvider(new InvContentProvider());
+		invariantViewer.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseDoubleClick(final MouseEvent event) {
+				showInvariants();
+			}
+		});
 
 		// create the LabelViewer for state-based errors
 		stateErrorViewer = new LabelViewer(pageComposite, SWT.NONE);
@@ -461,6 +472,16 @@ public class StateViewPart extends StateBasedViewPart {
 		final Color warnFg = color("warning.fg", dark, new RGB(232, 207, 134), new RGB(110, 80, 20));
 		final Color errorBg = color("error.bg", dark, new RGB(78, 34, 36), new RGB(248, 222, 222));
 		final Color errorFg = color("error.fg", dark, new RGB(242, 165, 165), new RGB(160, 40, 40));
+		// icons as in Eclipse's Problems view, a check mark for OK
+		final ISharedImages shared = PlatformUI.getWorkbench().getSharedImages();
+		final Image error = shared.getImage(ISharedImages.IMG_OBJS_ERROR_TSK);
+		final Image warning = shared.getImage(ISharedImages.IMG_OBJS_WARN_TSK);
+		final Image ok = ProbUiPlugin.getDefault().getImageRegistry()
+				.get(ProbUiPlugin.IMG_STATUS_OK);
+		invariant.setImages(null, ok, error);
+		eventError.setImages(null, ok, error);
+		model.setImages(null, warning, error);
+		timeout.setImages(null, warning, error);
 		invariant.setBackgroundColors(background, okBg, errorBg);
 		invariant.setForegroundColors(foreground, okFg, errorFg);
 		eventError.setBackgroundColors(background, okBg, errorBg);
@@ -518,7 +539,7 @@ public class StateViewPart extends StateBasedViewPart {
 	/** a context menu for a label, filled when it is opened */
 	private static void addMenu(final LabelViewer viewer,
 			final java.util.function.Consumer<Menu> fill) {
-		final Label label = viewer.getLabel();
+		final CLabel label = viewer.getLabel();
 		final Menu menu = new Menu(label);
 		label.setMenu(menu);
 		menu.addListener(SWT.Show, event -> {
@@ -547,6 +568,8 @@ public class StateViewPart extends StateBasedViewPart {
 		menuItem(menu, violated ? "Show Violated Invariant as Graph"
 				: "Show Invariant as Graph", isInitialised(),
 				() -> showGraph(GraphViewPart.INVARIANT_GRAPH));
+		menuItem(menu, "Show Invariants in State View", true,
+				this::showInvariants);
 		menuItem(menu, "Show Details", currentState != null, () -> {
 			if (!isInitialised())
 				Logger.notifyUserNonModal("The machine is not initialised yet:"
@@ -639,6 +662,33 @@ public class StateViewPart extends StateBasedViewPart {
 	private static String shorten(final String text, final int max) {
 		final String line = text.replaceAll("\\s+", " ");
 		return line.length() <= max ? line : line.substring(0, max) + "\u2026";
+	}
+
+	/**
+	 * Expands the invariants in the State view's formula tree (in the
+	 * Formulas section) and scrolls to them.
+	 */
+	private void showInvariants() {
+		if (expressionSection == null || treeViewer == null
+				|| treeViewer.getTree().isDisposed())
+			return;
+		for (StaticStateElement child : expressionSection.getChildren())
+			if (child instanceof StateTreeExpression
+					&& ((StateTreeExpression) child).getStaticElement().getId()
+							.hasFunctor("inv", 0)) {
+				treeViewer.expandToLevel(expressionSection, 1);
+				treeViewer.expandToLevel(child, 1);
+				treeViewer.setSelection(new StructuredSelection(child), true);
+				// show the invariants below it as well
+				final TreeItem[] selected = treeViewer.getTree().getSelection();
+				if (selected.length == 1)
+					treeViewer.getTree().setTopItem(selected[0]);
+				treeViewer.getTree().setFocus();
+				return;
+			}
+		Logger.notifyUserNonModal(
+				"The State view has no invariants entry, e.g. because it was removed.",
+				null);
 	}
 
 	private void fillEventErrorMenu(final Menu menu) {

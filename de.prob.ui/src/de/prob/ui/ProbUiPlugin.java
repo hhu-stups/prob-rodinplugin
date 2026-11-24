@@ -45,6 +45,8 @@ public class ProbUiPlugin extends AbstractUIPlugin {
 	public static final String IMG_RELOAD = "IMG_RELOAD";
 	public static final String IMG_PREFERENCES = "IMG_PREFERENCES";
 	public static final String IMG_CHECKED = "IMG_CHECKED";
+	/** a green check mark, e.g. for "Invariants ok" in the State view */
+	public static final String IMG_STATUS_OK = "IMG_STATUS_OK";
 	public static final String IMG_UNCHECKED = "IMG_UNCHECKED";
 	public static final String IMG_MACHINE = "IMG_MACHINE";
 	public static final String IMG_CONTEXT = "IMG_CONTEXT";
@@ -203,6 +205,8 @@ public class ProbUiPlugin extends AbstractUIPlugin {
 				imageDescriptorFromPlugin(PLUGIN_ID, "icons/disabled.png"));
 		reg.put(IMG_TIMEOUT,
 				imageDescriptorFromPlugin(PLUGIN_ID, "icons/timeout.png"));
+		reg.put(IMG_STATUS_OK,
+				imageDescriptorFromPlugin(PLUGIN_ID, "icons/status_ok.png"));
 		reg.put(IMG_ENABLED,
 				imageDescriptorFromPlugin(PLUGIN_ID, "icons/enabled.png"));
 		reg.put(IMG_DOUBLECLICK,

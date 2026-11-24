@@ -16,13 +16,14 @@ import org.eclipse.jface.viewers.IContentProvider;
 import org.eclipse.jface.viewers.IFontProvider;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Label;
 
 /**
- * This LabelViewer controls the status of a simple SWT label.
+ * This LabelViewer controls the status of a simple SWT label (a
+ * {@link CLabel}, which can show an icon next to its text).
  * 
  * You can use {@link ILabelProvider} to control text and image,
  * {@link IFontProvider} for the font, {@link IColorProvider} for back- and
@@ -35,22 +36,17 @@ import org.eclipse.swt.widgets.Label;
  */
 public class LabelViewer extends ContentViewer {
 
-	private final Label label;
+	private final CLabel label;
 	private Object content;
 	private ISelection selection;
 
 	public LabelViewer(final Composite parent, final int style) {
 		super();
-		label = new Label(parent, style);
+		label = new CLabel(parent, style);
 		label.setText("");
 	}
 
-	public LabelViewer(final Label label) {
-		super();
-		this.label = label;
-	}
-
-	public Label getLabel() {
+	public CLabel getLabel() {
 		return label;
 	}
 
@@ -75,6 +71,7 @@ public class LabelViewer extends ContentViewer {
 			final ILabelProvider labelprovider = (ILabelProvider) provider;
 			final String text = labelprovider.getText(content);
 			label.setText(text == null ? "" : text);
+			label.setImage(labelprovider.getImage(content));
 		}
 		if (provider instanceof IFontProvider) {
 			final IFontProvider fontprovider = (IFontProvider) provider;
