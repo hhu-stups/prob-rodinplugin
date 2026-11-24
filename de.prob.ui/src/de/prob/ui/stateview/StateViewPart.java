@@ -26,6 +26,7 @@ import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.resource.ColorRegistry;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
@@ -45,6 +46,7 @@ import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -295,14 +297,7 @@ public class StateViewPart extends StateBasedViewPart {
 		final GridData signalLayout = new GridData();
 		signalLayout.horizontalAlignment = SWT.FILL;
 
-		// define some colors and fonts
-		final Display display = Display.getCurrent();
-		final Color gray = display.getSystemColor(SWT.COLOR_GRAY);
-		final Color orange = display.getSystemColor(SWT.COLOR_DARK_YELLOW);
-		final Color yellow = display.getSystemColor(SWT.COLOR_YELLOW);
-		final Color green = display.getSystemColor(SWT.COLOR_GREEN);
-		final Color red = display.getSystemColor(SWT.COLOR_RED);
-		final Font bold = JFaceResources.getFontRegistry().getBold(JFaceResources.BANNER_FONT);
+		final Font bold = JFaceResources.getFontRegistry().getBold(JFaceResources.DEFAULT_FONT);
 
 		// create the LabelViewer for the invariant
 		invariantViewer = new LabelViewer(pageComposite, SWT.NONE);
@@ -310,7 +305,6 @@ public class StateViewPart extends StateBasedViewPart {
 		invariantViewer.getLabel().setToolTipText(StateViewStrings.signalInvariantTooltip);
 		final BooleanLabelProvider invProvider = new BooleanLabelProvider();
 		invProvider.setTexts(null, StateViewStrings.signalInvariantGood, StateViewStrings.signalInvariantBad);
-		invProvider.setBackgroundColors(gray, green, red);
 		invProvider.setFonts(null, null, bold);
 		invariantViewer.setLabelProvider(invProvider);
 		invariantViewer.setContentProvider(new InvContentProvider());
@@ -328,8 +322,7 @@ public class StateViewPart extends StateBasedViewPart {
 			}
 		};
 		errorProvider.setTexts(null, StateViewStrings.signalEventerrorGood, StateViewStrings.signalEventerrorBad);
-		errorProvider.setBackgroundColors(gray, green, red);
-		errorProvider.setFonts(null, null, null);
+		errorProvider.setFonts(null, null, bold);
 		stateErrorViewer.setLabelProvider(errorProvider);
 		stateErrorViewer.setContentProvider(new StateErrorProvider());
 		stateErrorViewer.addMouseListener(new ErrorViewDoubleClick());
@@ -352,7 +345,6 @@ public class StateViewPart extends StateBasedViewPart {
 		};
 		// setTexts(final String inactive, final String ok, final String ko)
 		modelchangeProvider.setTexts(null, StateViewStrings.signalModelhasRodinErrors, StateViewStrings.signalModelmodifiedBad);
-		modelchangeProvider.setBackgroundColors(gray, yellow, red);
 		modelchangeProvider.setFonts(null, bold, bold);
 		modelchangeProvider.hideWhenInactive(false);
 		modelchangeViewer.setLabelProvider(modelchangeProvider);
@@ -365,7 +357,6 @@ public class StateViewPart extends StateBasedViewPart {
 
 		final BooleanLabelProvider timeoutProvider = new BooleanLabelProvider();
 		timeoutProvider.setTexts(null, StateViewStrings.signalTimeoutMaxReached, StateViewStrings.signalTimeoutBad);
-		timeoutProvider.setBackgroundColors(gray, orange, red);
 		timeoutProvider.setFonts(null, bold, bold);
 		timeoutProvider.hideWhenInactive(false);
 		timeoutViewer.setLabelProvider(timeoutProvider);
@@ -376,6 +367,19 @@ public class StateViewPart extends StateBasedViewPart {
 		for (LabelViewer viewer : new LabelViewer[] { invariantViewer,
 				stateErrorViewer, modelchangeViewer, timeoutViewer })
 			viewer.getLabel().setData(CSS_DISABLED, Boolean.TRUE);
+
+		// colours once Eclipse's theme has styled the view (dark or light)
+		setStatusColors(invProvider, errorProvider, modelchangeProvider,
+				timeoutProvider);
+		pageComposite.getDisplay().asyncExec(() -> {
+			if (pageComposite.isDisposed())
+				return;
+			setStatusColors(invProvider, errorProvider, modelchangeProvider,
+					timeoutProvider);
+			for (LabelViewer viewer : new LabelViewer[] { invariantViewer,
+					stateErrorViewer, modelchangeViewer, timeoutViewer })
+				viewer.refresh();
+		});
 
 		// right-click menus with details
 		addMenu(invariantViewer, this::fillInvariantMenu);
@@ -437,6 +441,53 @@ public class StateViewPart extends StateBasedViewPart {
 				}
 			}
 		});
+	}
+
+	/**
+	 * Subtle tinted backgrounds with a darker text of the same hue, instead
+	 * of saturated system colours; lighter text on darker tints for a dark
+	 * theme. Inactive labels get the view's colours (the labels are not
+	 * styled by the theme, see {@link #CSS_DISABLED}).
+	 */
+	private void setStatusColors(final BooleanLabelProvider invariant,
+			final BooleanLabelProvider eventError,
+			final BooleanLabelProvider model, final BooleanLabelProvider timeout) {
+		final Color background = pageComposite.getBackground();
+		final Color foreground = pageComposite.getForeground();
+		final boolean dark = isDark(background);
+		final Color okBg = color("ok.bg", dark, new RGB(30, 58, 36), new RGB(223, 240, 216));
+		final Color okFg = color("ok.fg", dark, new RGB(165, 214, 167), new RGB(43, 84, 44));
+		final Color warnBg = color("warning.bg", dark, new RGB(69, 57, 26), new RGB(252, 243, 207));
+		final Color warnFg = color("warning.fg", dark, new RGB(232, 207, 134), new RGB(110, 80, 20));
+		final Color errorBg = color("error.bg", dark, new RGB(78, 34, 36), new RGB(248, 222, 222));
+		final Color errorFg = color("error.fg", dark, new RGB(242, 165, 165), new RGB(160, 40, 40));
+		invariant.setBackgroundColors(background, okBg, errorBg);
+		invariant.setForegroundColors(foreground, okFg, errorFg);
+		eventError.setBackgroundColors(background, okBg, errorBg);
+		eventError.setForegroundColors(foreground, okFg, errorFg);
+		model.setBackgroundColors(background, warnBg, errorBg);
+		model.setForegroundColors(foreground, warnFg, errorFg);
+		timeout.setBackgroundColors(background, warnBg, errorBg);
+		timeout.setForegroundColors(foreground, warnFg, errorFg);
+	}
+
+	private static boolean isDark(final Color background) {
+		final RGB rgb = background.getRGB();
+		return 0.299 * rgb.red + 0.587 * rgb.green + 0.114 * rgb.blue < 128;
+	}
+
+	/**
+	 * a colour of the status labels for a dark or light theme, disposed by
+	 * JFace's colour registry
+	 */
+	private static Color color(final String name, final boolean dark,
+			final RGB forDark, final RGB forLight) {
+		final String key = "de.prob.ui.stateview.status." + name
+				+ (dark ? ".dark" : ".light");
+		final ColorRegistry registry = JFaceResources.getColorRegistry();
+		if (!registry.hasValueFor(key))
+			registry.put(key, dark ? forDark : forLight);
+		return registry.get(key);
 	}
 
 	/** @return e.g. "Event error in Inc: ..." or "3 event errors in Inc, Dec!" */
