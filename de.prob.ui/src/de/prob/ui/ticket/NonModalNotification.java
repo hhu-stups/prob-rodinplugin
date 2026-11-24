@@ -108,7 +108,10 @@ public final class NonModalNotification implements Logger.NonModalNotifier {
 			final GridData detailData = new GridData(SWT.FILL, SWT.FILL, true,
 					true, 2, 1);
 			detailData.widthHint = WIDTH;
-			detailData.heightHint = 120;
+			// tall enough for its lines (e.g. a list of problems), within limits
+			final int lineCount = details.split("\n", -1).length;
+			detailData.heightHint = Math.max(4, Math.min(lineCount, 25))
+					* detailText.getLineHeight() + 8;
 			detailData.exclude = true;
 			detailText.setLayoutData(detailData);
 			detailText.setVisible(false);

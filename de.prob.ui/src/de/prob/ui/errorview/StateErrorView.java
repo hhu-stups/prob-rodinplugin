@@ -6,6 +6,7 @@ package de.prob.ui.errorview;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.TreeViewerColumn;
 import org.eclipse.swt.SWT;
@@ -13,6 +14,7 @@ import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.TreeItem;
 
 import de.prob.core.Animator;
 import de.prob.core.domainobjects.Operation;
@@ -67,6 +69,21 @@ public class StateErrorView extends StateBasedViewPart {
 		errors.update(Animator.getAnimator().getMachineDescription(),
 				currentState);
 		errorTree.refresh();
+	}
+
+	/**
+	 * Expands all events and selects the first error, so that its description
+	 * is shown, e.g. for the State view's "Show Event Errors".
+	 */
+	public void showAll() {
+		errorTree.refresh();
+		errorTree.expandAll();
+		final TreeItem[] events = errorTree.getTree().getItems();
+		if (events.length > 0 && events[0].getItemCount() > 0) {
+			final Object first = events[0].getItem(0).getData();
+			if (first != null)
+				errorTree.setSelection(new StructuredSelection(first), true);
+		}
 	}
 
 	private class ErrorSelection implements ISelectionChangedListener {

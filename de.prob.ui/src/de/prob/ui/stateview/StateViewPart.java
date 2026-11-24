@@ -11,10 +11,17 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
@@ -44,16 +51,18 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.TreeItem;
+import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
 import org.eventb.core.IEventBProject;
-import org.eclipse.core.runtime.CoreException;
 import org.eventb.core.IEventBRoot;
 
 import de.prob.core.Animator;
@@ -61,21 +70,25 @@ import de.prob.core.LanguageDependendAnimationPart;
 import de.prob.core.LimitedLogger;
 import de.prob.core.command.CommandException;
 import de.prob.core.command.EvaluationGetTopLevelCommand;
-import de.prob.core.command.EvaluationInsertFormulaCommand;
+import de.prob.core.command.EvaluationGetValuesCommand.EvaluationResult;
 import de.prob.core.command.EvaluationGetValuesCommand;
+import de.prob.core.command.EvaluationInsertFormulaCommand;
 import de.prob.core.domainobjects.EvaluationElement;
+import de.prob.core.domainobjects.EvaluationStateElement;
 import de.prob.core.domainobjects.MachineDescription;
 import de.prob.core.domainobjects.Operation;
 import de.prob.core.domainobjects.State;
+import de.prob.core.domainobjects.StateError;
 import de.prob.core.langdep.EventBAnimatorPart;
-import de.prob.exceptions.ProBException;
 import de.prob.exceptions.ProBException;
 import de.prob.logging.Logger;
 import de.prob.parserbase.ProBParseException;
-import de.prob.ui.settings.ModelSettings;
 import de.prob.ui.StateBasedViewPart;
 import de.prob.ui.dnd.StaticStateElementTransfer;
 import de.prob.ui.errorview.StateErrorView;
+import de.prob.ui.eventb.ProjectProblems;
+import de.prob.ui.graph.GraphViewPart;
+import de.prob.ui.settings.ModelSettings;
 import de.prob.ui.stateview.statetree.StateTreeElement;
 import de.prob.ui.stateview.statetree.StateTreeExpression;
 import de.prob.ui.stateview.statetree.StateTreeExpressionSection;
@@ -90,12 +103,16 @@ import de.prob.ui.stateview.statetree.StaticStateElement;
  */
 public class StateViewPart extends StateBasedViewPart {
 	public static final String STATE_VIEW_ID = "de.prob.ui.StateView";
+	/** widget data excluding a widget from Eclipse's theme (CSS) styling */
+	private static final String CSS_DISABLED = "org.eclipse.e4.ui.css.disabled";
 
 	private static final ShowMultipleVarsFilter DUP_FILTER = new ShowMultipleVarsFilter();
 
 	private Composite pageComposite;
 
 	private TreeViewer treeViewer;
+	/** the state shown, for the texts and menus of the labels below */
+	private State currentState;
 	private LabelViewer invariantViewer;
 	private LabelViewer stateErrorViewer;
 	private LabelViewer timeoutViewer;
@@ -208,6 +225,7 @@ public class StateViewPart extends StateBasedViewPart {
 		loadEvaluationElements(shownState, activeState, lastState);
 		varLabelProvider.setStates(activeState, lastState);
 		treeViewer.refresh(true);
+		this.currentState = activeState;
 		invariantViewer.setInput(activeState);
 		stateErrorViewer.setInput(activeState);
 		timeoutViewer.setInput(activeState);
@@ -301,7 +319,14 @@ public class StateViewPart extends StateBasedViewPart {
 		stateErrorViewer = new LabelViewer(pageComposite, SWT.NONE);
 		stateErrorViewer.getLabel().setLayoutData(signalLayout);
 		stateErrorViewer.getLabel().setToolTipText(StateViewStrings.signalEventerrorTooltip);
-		final BooleanLabelProvider errorProvider = new BooleanLabelProvider();
+		final BooleanLabelProvider errorProvider = new BooleanLabelProvider() {
+			@Override
+			public String getText(final Object element) {
+				// e.g. "Event error in Inc: ..." instead of the fixed text
+				return Boolean.FALSE.equals(element) && currentState != null ? eventErrorSummary(currentState
+						.getStateBasedErrors()) : super.getText(element);
+			}
+		};
 		errorProvider.setTexts(null, StateViewStrings.signalEventerrorGood, StateViewStrings.signalEventerrorBad);
 		errorProvider.setBackgroundColors(gray, green, red);
 		errorProvider.setFonts(null, null, null);
@@ -315,7 +340,16 @@ public class StateViewPart extends StateBasedViewPart {
 		modelchangeViewer.getLabel().setToolTipText(StateViewStrings.signalModelmodifiedTooltip);
 		modelchangeViewer.addMouseListener(new ResetAnimationListener());
 
-		final BooleanLabelProvider modelchangeProvider = new BooleanLabelProvider();
+		final BooleanLabelProvider modelchangeProvider = new BooleanLabelProvider() {
+			@Override
+			public String getText(final Object element) {
+				final Animator animator = Animator.getAnimator();
+				// e.g. "Project has 2 errors!" instead of the fixed text
+				return Boolean.TRUE.equals(element) ? ProjectProblems.summary(
+						animator.getRodinProjectErrors(),
+						animator.getRodinProjectWarnings()) : super.getText(element);
+			}
+		};
 		// setTexts(final String inactive, final String ok, final String ko)
 		modelchangeProvider.setTexts(null, StateViewStrings.signalModelhasRodinErrors, StateViewStrings.signalModelmodifiedBad);
 		modelchangeProvider.setBackgroundColors(gray, yellow, red);
@@ -336,6 +370,18 @@ public class StateViewPart extends StateBasedViewPart {
 		timeoutProvider.hideWhenInactive(false);
 		timeoutViewer.setLabelProvider(timeoutProvider);
 		timeoutViewer.setContentProvider(new TimeoutContentProvider());
+
+		// Eclipse's theme (CSS) engine restyles a view's widgets e.g. when it
+		// is activated by a click, which would reset the labels' colours
+		for (LabelViewer viewer : new LabelViewer[] { invariantViewer,
+				stateErrorViewer, modelchangeViewer, timeoutViewer })
+			viewer.getLabel().setData(CSS_DISABLED, Boolean.TRUE);
+
+		// right-click menus with details
+		addMenu(invariantViewer, this::fillInvariantMenu);
+		addMenu(stateErrorViewer, this::fillEventErrorMenu);
+		addMenu(modelchangeViewer, this::fillModelMenu);
+		addMenu(timeoutViewer, this::fillTimeoutMenu);
 
 	}
 
@@ -391,6 +437,233 @@ public class StateViewPart extends StateBasedViewPart {
 				}
 			}
 		});
+	}
+
+	/** @return e.g. "Event error in Inc: ..." or "3 event errors in Inc, Dec!" */
+	static String eventErrorSummary(final Collection<StateError> errors) {
+		if (errors.size() == 1) {
+			final StateError error = errors.iterator().next();
+			String description = error.getShortDescription().replaceAll("\\s+", " ");
+			if (description.length() > 60)
+				description = description.substring(0, 60) + "\u2026";
+			return "Event error in " + error.getEvent() + ": " + description;
+		}
+		final Set<String> events = new LinkedHashSet<String>();
+		for (StateError error : errors)
+			events.add(error.getEvent());
+		final StringBuilder result = new StringBuilder();
+		result.append(errors.size()).append(" event errors in ");
+		int i = 0;
+		for (String event : events) {
+			if (i == 3) {
+				result.append(", \u2026");
+				break;
+			}
+			result.append(i++ == 0 ? "" : ", ").append(event);
+		}
+		return result.append('!').toString();
+	}
+
+	/** a context menu for a label, filled when it is opened */
+	private static void addMenu(final LabelViewer viewer,
+			final java.util.function.Consumer<Menu> fill) {
+		final Label label = viewer.getLabel();
+		final Menu menu = new Menu(label);
+		label.setMenu(menu);
+		menu.addListener(SWT.Show, event -> {
+			for (MenuItem item : menu.getItems())
+				item.dispose();
+			fill.accept(menu);
+		});
+	}
+
+	private static MenuItem menuItem(final Menu menu, final String text,
+			final boolean enabled, final Runnable action) {
+		final MenuItem item = new MenuItem(menu, SWT.PUSH);
+		item.setText(text);
+		item.setEnabled(enabled);
+		item.addListener(SWT.Selection, event -> action.run());
+		return item;
+	}
+
+	private boolean isInitialised() {
+		return currentState != null && currentState.isInitialized();
+	}
+
+	private void fillInvariantMenu(final Menu menu) {
+		final boolean violated = isInitialised()
+				&& !currentState.isInvariantPreserved();
+		menuItem(menu, violated ? "Show Violated Invariant as Graph"
+				: "Show Invariant as Graph", isInitialised(),
+				() -> showGraph(GraphViewPart.INVARIANT_GRAPH));
+		menuItem(menu, "Show Details", currentState != null, () -> {
+			if (!isInitialised())
+				Logger.notifyUserNonModal("The machine is not initialised yet:"
+						+ " the invariant is checked once it is.", null);
+			else if (violated)
+				showViolatedInvariants(currentState);
+			else
+				Logger.notifyUserNonModal("All invariants are true in the current state.", null);
+		});
+	}
+
+	/**
+	 * Notifies the user of the invariants that are false (or cannot be
+	 * evaluated) in the state; computed by ProB in the background.
+	 */
+	private static void showViolatedInvariants(final State state) {
+		final Job job = new Job("ProB: violated invariants") {
+			@Override
+			protected IStatus run(final IProgressMonitor monitor) {
+				final List<String> violated = new ArrayList<String>();
+				final List<String> failed = new ArrayList<String>();
+				String error = null;
+				try {
+					EvaluationElement invariant = null;
+					for (EvaluationElement top : EvaluationGetTopLevelCommand
+							.retrieveTopLevelElements())
+						// ProB's node for the invariant, its children the
+						// single invariants
+						if (top.getId().hasFunctor("inv", 0))
+							invariant = top;
+					if (invariant == null)
+						error = "ProB did not provide the invariants of the model.";
+					else
+						for (EvaluationStateElement child : new EvaluationStateElement(
+								invariant, state, null).getChildren()) {
+							final EvaluationResult result = child.getResult();
+							final String label = child.getElement().getLabel();
+							if (result == null)
+								continue;
+							if (result.hasError())
+								failed.add(label + "\n      " + result.getText());
+							else if (result.isPredicate()
+									&& !result.isPredicateTrue())
+								violated.add(label);
+						}
+				} catch (ProBException e) {
+					error = "ProB could not evaluate the invariants: "
+							+ e.getMessage();
+				}
+				final StringBuilder details = new StringBuilder();
+				if (!violated.isEmpty()) {
+					details.append("False (").append(violated.size())
+							.append("):\n");
+					for (String inv : violated)
+						details.append("  ").append(inv).append('\n');
+				}
+				if (!failed.isEmpty()) {
+					details.append(details.length() > 0 ? "\n" : "")
+							.append("Could not be evaluated (")
+							.append(failed.size()).append("):\n");
+					for (String inv : failed)
+						details.append("  ").append(inv).append('\n');
+				}
+				if (error != null)
+					details.append(error).append('\n');
+				details.append("\nRight-click the label and choose \"Show Violated Invariant as Graph\""
+						+ " to see which parts are false (red) in the Invariant Formula Tree.");
+				final String headline = violated.isEmpty() ? "The invariant is violated in the current state."
+						: violated.size() == 1 ? "1 invariant is false in the current state: "
+								+ shorten(violated.get(0), 80)
+								: violated.size() + " invariants are false in the current state.";
+				Logger.notifyUserNonModal(headline, details.toString(),
+						"Show Violated Invariant as Graph", () -> {
+							try {
+								final GraphViewPart view = (GraphViewPart) PlatformUI
+										.getWorkbench().getActiveWorkbenchWindow()
+										.getActivePage().showView(GraphViewPart.VIEW_ID);
+								view.showGraph(GraphViewPart.INVARIANT_GRAPH);
+							} catch (PartInitException e) {
+								Logger.notifyUser("Could not open the ProB Graph view", e);
+							}
+						});
+				return Status.OK_STATUS;
+			}
+		};
+		job.setSystem(true);
+		job.schedule();
+	}
+
+	private static String shorten(final String text, final int max) {
+		final String line = text.replaceAll("\\s+", " ");
+		return line.length() <= max ? line : line.substring(0, max) + "\u2026";
+	}
+
+	private void fillEventErrorMenu(final Menu menu) {
+		final boolean errors = currentState != null
+				&& currentState.hasStateBasedErrors();
+		menuItem(menu, "Show Event Errors", errors, this::showEventErrors);
+		menuItem(menu, "Show Error Source as Graph", errors,
+				() -> showGraph(GraphViewPart.LAST_ERROR_GRAPH));
+	}
+
+	private void fillModelMenu(final Menu menu) {
+		final Animator animator = Animator.getAnimator();
+		final ProjectProblems problems = animatedProjectProblems();
+		menuItem(menu, "Show Errors and Warnings", problems != null
+				&& animator.isRodinProjectHasErrorsOrWarnings(),
+				() -> problems.notifyUser());
+		menuItem(menu, "Show Problems View", true,
+				ProjectProblems::showProblemsView);
+		new MenuItem(menu, SWT.SEPARATOR);
+		menuItem(menu, "Reload Animation", animator.isMachineLoaded(),
+				() -> ResetAnimationListener.reload());
+	}
+
+	private void fillTimeoutMenu(final Menu menu) {
+		final State state = currentState;
+		menuItem(menu, "Show Details", state != null
+				&& (state.isTimeoutOccured() || state.isMaxOperationReached()), () -> {
+			final StringBuilder details = new StringBuilder();
+			if (state.isTimeoutOccured()) {
+				final Set<String> ops = state.getTimeoutOperations();
+				details.append(ops.isEmpty() ? "A timeout occurred when computing the enabled events."
+						: "A timeout occurred when computing the enabled events (the parameters"
+								+ " satisfying the guard) of: " + String.join(", ", ops) + ".");
+				details.append(" Not all enabled events may be shown. You can increase the timeout (TIME_OUT)"
+						+ " in the ProB preferences.");
+			}
+			if (state.isMaxOperationReached()) {
+				if (details.length() > 0)
+					details.append('\n');
+				details.append("The maximum number of enabled events (parameter combinations)"
+						+ " shown per event was reached, so not all of them may be shown."
+						+ " You can change it (MAX_OPERATIONS: Max Number of Enablings per Operation Computed)"
+						+ " in the ProB preferences.");
+			}
+			Logger.notifyUserNonModal(details.toString(), null);
+		});
+	}
+
+	private void showGraph(final String command) {
+		try {
+			final GraphViewPart view = (GraphViewPart) getSite().getPage()
+					.showView(GraphViewPart.VIEW_ID);
+			view.showGraph(command);
+		} catch (PartInitException e) {
+			Logger.notifyUser("Could not open the ProB Graph view", e);
+		}
+	}
+
+	private void showEventErrors() {
+		try {
+			final IViewPart view = getSite().getPage().showView(
+					StateErrorView.VIEWID);
+			if (view instanceof StateErrorView)
+				((StateErrorView) view).showAll();
+		} catch (PartInitException e) {
+			Logger.notifyUser(StateViewStrings.errorShowEventerrors, e);
+		}
+	}
+
+	/** @return the problems of the animated project, or null */
+	private static ProjectProblems animatedProjectProblems() {
+		final LanguageDependendAnimationPart ldp = Animator.getAnimator()
+				.getLanguageDependendPart();
+		return ldp instanceof EventBAnimatorPart ? ProjectProblems
+				.of(((EventBAnimatorPart) ldp).getRoot().getRodinProject()
+						.getProject()) : null;
 	}
 
 	private static class InvContentProvider extends SimpleContentProvider {
@@ -480,12 +753,28 @@ public class StateViewPart extends StateBasedViewPart {
 		return false;
 	}
 
+	/**
+	 * A double-click reloads the animation (e.g. after the model was
+	 * modified); a single click shows the errors and warnings of the project.
+	 */
 	private static class ResetAnimationListener implements MouseListener {
+		/** increased by a double-click, cancelling a pending single click */
+		private int clicks;
+
 		@Override
 		public void mouseDoubleClick(final MouseEvent event) {
+			clicks++;
+			reload();
+		}
+
+		static void reload() {
 			Animator animator = Animator.getAnimator();
 			LanguageDependendAnimationPart ldp = animator.getLanguageDependendPart();
 			if (ldp != null) {
+				if (ldp instanceof EventBAnimatorPart)
+					// the errors may have been fixed
+					ProjectProblems.of(((EventBAnimatorPart) ldp).getRoot()
+							.getRodinProject().getProject()).storeInAnimator();
 				try {
 					ldp.reload(animator);
 				} catch (ProBException e) {
@@ -499,7 +788,19 @@ public class StateViewPart extends StateBasedViewPart {
 		}
 
 		@Override
-		public void mouseUp(final MouseEvent arg0) {
+		public void mouseUp(final MouseEvent event) {
+			if (event.button != 1 || event.count != 1
+					|| !Animator.getAnimator().isRodinProjectHasErrorsOrWarnings())
+				return;
+			// wait whether it becomes a double-click (reload)
+			final int before = ++clicks;
+			event.display.timerExec(event.display.getDoubleClickTime(), () -> {
+				if (clicks != before)
+					return;
+				final ProjectProblems problems = animatedProjectProblems();
+				if (problems != null)
+					problems.notifyUser();
+			});
 		}
 
 	}
@@ -509,7 +810,9 @@ public class StateViewPart extends StateBasedViewPart {
 		public void mouseDoubleClick(final MouseEvent event) {
 			IWorkbenchPage wpage = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
 			try {
-				wpage.showView(StateErrorView.VIEWID);
+				final IViewPart view = wpage.showView(StateErrorView.VIEWID);
+				if (view instanceof StateErrorView)
+					((StateErrorView) view).showAll();
 			} catch (PartInitException e) {
 				Logger.notifyUser(StateViewStrings.errorShowEventerrors, e);
 			}

@@ -89,6 +89,20 @@ A new "Disprover" menu in the ProB Table view, and "Show Disprover Statistics" a
 - Like any table, it can be sorted by clicking a column and saved as `.csv` or `.txt`.
 - probcli also offers these statistics as the table command `disprover_statistics` (e.g. for ProB2-UI or `-csv`). It is not offered in the Table view's menus, since it is about the animation's probcli, not the disprover's.
 
+### Saved formulas for the Graph, Table and State views
+Formulas can be saved per machine or context, in a settings file next to its traces, e.g. `M1/M1.probsettings` for `M1.bum`. It is a JSON file that can be shared with the project, e.g. in git.
+- **Graph and Table views:** a "Saved" drop-down next to the formula field lists the formulas saved for the animated machine or context. Those of the shown graph or table come first, the others are grouped under the name of their graph or table. Choosing one fills in the field and shows its graph or table. The menu also has "Save Formula for ..." (the formula in the field, for the shown graph or table), "Remove Saved Formula" and "Open Settings File".
+- **Last formula:** each graph and table remembers the formula last used for it. It is filled in when the field is empty. This is stored in the workspace, not in the settings file.
+- **State view:** formulas added with "Add a new formula..." are saved as well, and added again when the machine or context is animated the next time. A new "Remove Formula" entry in the right-click menu of an added formula removes it, also from the settings file.
+- **Settings file:** other entries of the file are kept when ProB writes it, and a file with an error (e.g. invalid JSON) is never overwritten: the menu shows the error instead. Writing it does not make Rodin rebuild the project.
+
+### State view: status labels
+The coloured labels at the bottom of the State view are more precise and have right-click menus.
+- **Invariant:** "Show Violated Invariant as Graph" shows ProB's Invariant Formula Tree in the ProB Graph view, with the false parts in red. "Show Details" lists the invariants that are false in the current state, and those that could not be evaluated, with ProB's message.
+- **Event errors:** the label names the event and the error, e.g. "Event error in Inc: ...", or "3 event errors in Inc, Dec!". "Show Event Errors" (or a double-click) opens the Event Error view with all events expanded and the first error selected, so its description is shown. "Show Error Source as Graph" shows ProB's Last State Error Formula Tree.
+- **Project errors and warnings:** instead of "Project has errors or warnings!", the label gives the numbers, e.g. "Project has 2 errors and 1 warning!". Info markers no longer count. A click (or "Show Errors and Warnings") shows a notice with the errors and then the warnings, grouped by file, and a link to the Problems view. A double-click (or "Reload Animation") reloads the animation, as before, and updates the numbers.
+- **Timeout:** "Show Details" names the events for which a timeout occurred and the preference to change (TIME_OUT, or MAX_OPERATIONS when the maximum number of enablings was reached).
+
 ### State view: Show Full Value
 A new "Show Full Value ..." entry in the right-click menu shows the complete value of a variable or formula. Formula values are not cut off at 600 characters. The dialog can switch between the current and the previous state, and between plain and pretty-printed output.
 
@@ -145,7 +159,10 @@ A new option in the Double Click Behaviour menu. A double-click on an event pick
   - **BMotion Studio predicates:** "ProB could not use the predicate for event ..." (e.g. a type error in the predicate of an observer or scheduler event). It could appear on every animation step; the observer or scheduler event now simply does not fire.
   - **Disprover:** a Rodin database problem while the disprover reads a proof obligation, which could also appear while the auto-prover or a proof replay ran in the background. Rodin still shows the failure, with its message, in the proof tree.
 - **ProB Tcl/Tk and ProB2-UI:** starting them gives clearer messages, including the program's last output when it exits with an error.
-- **Preferences:** ProB's read-only version preferences are no longer stored or sent to probcli, which removes six error log entries on every model load.
+- **Preferences:** ProB's read-only preferences (its version, revision and last change date) are no longer stored or sent to probcli. This removes the "Preference is read-only" entries in the Error Log on every model load. The ProB preference page still shows them, greyed out.
+- **Missing statically checked files:** before a model is loaded, ProB checks that Rodin has generated the statically checked files it needs: the `.bcm` files of the machine and of the machines it refines, or the `.bcc` files of the context and of the contexts it extends. If one is missing, ProB waits for a running build (up to two minutes, with a progress dialog that can be cancelled) or builds the project. If files are still missing, a notice names them instead of an error such as "m3_sensors.bcm [in Bridge] does not exist". It also says whether Build Automatically is on and what ProB tried, and has a "Clean and Build Project" link.
+- **Operations view:** the entries of the drop-down menu are called "Animate 1/5/10 Steps" instead of "Execute ...", and there is a new entry "Animate 50 Steps". The button is called "Animate Random Operations".
+- **Parameter dialog:** the title of the dialog for choosing the parameters of an event says "Select Event" instead of "Select Operation".
 - **BMotion Studio perspectives:** the BMS Edit and BMS Run icons no longer stay in the perspective bar (top right) after use. Closing the last visualisation, including with "Close Others" or "Close All" on editor tabs, also closes these two perspectives. If one of them was shown, Eclipse switches back to the previously used perspective. They reappear when a visualisation is started, and are kept when Rodin is closed with a visualisation open.
 - **Where the ProB Console, Graph and Table views open:** they now open together, as tabs of one stack, in the middle below the editor area: in the ProB perspective (whose editor area is hidden, so they get the middle column between the Operations view and the State view) and in Rodin's Event-B and Proving perspectives. They can still be moved or detached as usual. An existing perspective layout is stored in the workspace: use Window › Perspective › Reset Perspective... once to get the new placement.
   - **Separate window:** a new preference page, Window › Preferences › ProB › Views, has the option "Open the ProB Console, Graph and Table views in a separate window" (off by default; stored by ProB for Rodin, not by ProB). When it is on, these views open detached, in one window of their own (a view opened while another of them is detached joins its window as a tab). Views that are already detached stay where they are; a view docked again into the main window is detached again the next time it is opened.
@@ -179,6 +196,7 @@ A new option in the Double Click Behaviour menu. A double-click on an event pick
   - Fixed the converter.
   - Loading and conversion failures now give clear error messages.
 - **UI:**
+  - the colours of the State view's labels (e.g. the red "Invariant violated!") no longer disappear when the view is clicked: Eclipse's theme restyled them when the view was activated
   - fixed operating-system handle leaks
   - fixed text decoding (UTF-8) in the connection to probcli
   - fixed missing separators when dragging from the State view

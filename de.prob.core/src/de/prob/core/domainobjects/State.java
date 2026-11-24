@@ -139,6 +139,11 @@ public final class State {
 		return !stateErrors.isEmpty();
 	}
 
+	/** @return the operations for which a timeout occurred in this state */
+	public Set<String> getTimeoutOperations() {
+		return Collections.unmodifiableSet(timeout);
+	}
+
 	public boolean isTimeoutOp(final String opName) {
 		return timeout.contains(opName);
 	}

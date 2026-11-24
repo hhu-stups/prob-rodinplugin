@@ -47,7 +47,8 @@ public final class Animator {
 	private static final long MAX_YIELD_MS = 5000;
 
 	private volatile boolean dirty;
-	private volatile boolean rodinProjectHasErrorsOrWarnings;
+	private volatile int rodinProjectErrors;
+	private volatile int rodinProjectWarnings;
 	// own lock: must be usable while a (long) command holds the animator lock
 	private final Map<Object, Object> dataStore = Collections
 			.synchronizedMap(new HashMap<Object, Object>());
@@ -380,20 +381,31 @@ public final class Animator {
 	
 	
 	/**
-	 * Puts the information that the associated Rodin project has errors or warnings.
+	 * Puts the information that the associated Rodin project has errors or
+	 * warnings (problem markers), shown in the State view.
 	 */
-	public void setRodinProjectHasErrorsOrWarnings() {
-		this.rodinProjectHasErrorsOrWarnings = true;
-		//System.out.println("** setRodinProjectHasErrorsOrWarnings() !!");
+	public void setRodinProjectProblems(final int errors, final int warnings) {
+		this.rodinProjectErrors = errors;
+		this.rodinProjectWarnings = warnings;
 	}
+
 	public void resetRodinProjectHasErrorsOrWarnings() {
-		this.rodinProjectHasErrorsOrWarnings = false;
+		setRodinProjectProblems(0, 0);
 	}
+
 	public boolean isRodinProjectHasErrorsOrWarnings() {
-		return rodinProjectHasErrorsOrWarnings;
+		return rodinProjectErrors > 0 || rodinProjectWarnings > 0;
 	}
-	
-	
+
+	/** @return the number of errors of the Rodin project */
+	public int getRodinProjectErrors() {
+		return rodinProjectErrors;
+	}
+
+	/** @return the number of warnings of the Rodin project */
+	public int getRodinProjectWarnings() {
+		return rodinProjectWarnings;
+	}
 
 	public void setMachineDescription(
 			final MachineDescription machineDescription) {

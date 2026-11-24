@@ -1,24 +1,18 @@
 package de.prob.ui.eventb;
 
-import java.util.ArrayList;
-import java.util.List;
 
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.IHandler;
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IMarker;
-import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Adapters;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
@@ -122,30 +116,18 @@ public class StartAnimationHandler extends AbstractHandler implements IHandler {
 	public static void startAnimation(final IEventBRoot rootElement)
 			throws ProBException {
 		final IFile resource = extractResource(rootElement);
-		ArrayList<String> errors = new ArrayList<String>();
-		boolean realError = checkErrorMarkers(resource, errors);
-		if (!errors.isEmpty()) {
-		    Animator.getAnimator().setRodinProjectHasErrorsOrWarnings();
-			String message = "Some components in your project contain "
-					+ (realError ? "errors" : "warnings")
-					+ "!\n This can lead to unexpected behavior (e.g. missing variables) when animating with ProB.\nDetails:\n";
-			StringBuffer stringBuffer = new StringBuffer(message);
-			for (String string : errors) {
-				stringBuffer.append(string);
-				stringBuffer.append('\n');
-			}
-			if (true) {
-			   // TO DO: use preference whether to pop-up such errors or simply log them
-			   // Unfortunately the GetPreferencesCommand gets ProBPreference object which do not contain the current value
-			   // we could also change the label in StateViewPart.java, e.g. modelchangeProvider or add a new label
-			   Logger.info(stringBuffer.toString());
-			   LimitedLogger.getLogger().log(stringBuffer.toString(),rootElement.getElementName(), null);
-			} else if (realError)
-				Logger.notifyUser(stringBuffer.toString());
-			else
-				Logger.log(IStatus.WARNING, stringBuffer.toString(), null);
-		} else {
-		     Animator.getAnimator().resetRodinProjectHasErrorsOrWarnings();
+		// shown in the State view, details when clicking on it
+		final ProjectProblems problems = ProjectProblems.of(resource
+				.getProject());
+		problems.storeInAnimator();
+		if (!problems.isEmpty()) {
+			final String message = "Some components in your project contain "
+					+ (problems.errors > 0 ? "errors" : "warnings")
+					+ "!\n This can lead to unexpected behavior (e.g. missing variables) when animating with ProB.\nDetails:\n"
+					+ problems.details(Integer.MAX_VALUE);
+			Logger.info(message);
+			LimitedLogger.getLogger().log(message,
+					rootElement.getElementName(), null);
 		}
 
 		LimitedLogger.getLogger().log("user started animation",
@@ -154,28 +136,6 @@ public class StartAnimationHandler extends AbstractHandler implements IHandler {
 		PerspectiveFactory.openPerspective();
 
 		LoadEventBModelCommand.load(Animator.getAnimator(), rootElement);
-	}
-
-	private static boolean checkErrorMarkers(final IFile resource, List<String> errors) {
-		boolean result = false;
-		IProject project = resource.getProject();
-		try {
-			IMarker[] markers = project.findMarkers(
-					"org.eclipse.core.resources.problemmarker", true,
-					IResource.DEPTH_INFINITE);
-			for (IMarker iMarker : markers) {
-				errors.add(iMarker.getResource().getName()
-						+ ": "
-						+ iMarker
-								.getAttribute(IMarker.MESSAGE, "unknown Error"));
-				result = result
-						|| iMarker.getAttribute(IMarker.SEVERITY,
-								IMarker.SEVERITY_INFO) == IMarker.SEVERITY_ERROR;
-			}
-
-		} catch (CoreException e1) {
-		}
-		return result;
 	}
 
 	private IEventBRoot getRootElement() {

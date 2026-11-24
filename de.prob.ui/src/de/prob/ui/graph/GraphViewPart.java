@@ -156,6 +156,10 @@ public class GraphViewPart extends ViewPart implements ILifecycleListener,
 	public static final String EXPRESSION_GRAPH = "expr_as_graph";
 	/** ProB's command for the state space projected onto an expression */
 	public static final String EXPRESSION_PROJECTION = "transition_diagram";
+	/** ProB's command for the invariant as a formula tree */
+	public static final String INVARIANT_GRAPH = "invariant";
+	/** ProB's command for the source of the last state error as a formula tree */
+	public static final String LAST_ERROR_GRAPH = "last_error";
 
 	// shown when Enter is pressed and the current graph needs no formula
 	private static final String DEFAULT_FORMULA_GRAPH = EXPRESSION_PROJECTION;
@@ -643,6 +647,20 @@ public class GraphViewPart extends ViewPart implements ILifecycleListener,
 		else
 			// the view was just opened and is still getting the graphs
 			loadCommands(command);
+	}
+
+	/**
+	 * Shows a graph that needs no formula, e.g. the invariant as a formula
+	 * tree; the graphs are listed again for the current state first, as
+	 * their availability depends on it.
+	 * 
+	 * @param command
+	 *            ProB's command, e.g. {@link #INVARIANT_GRAPH}
+	 */
+	public void showGraph(final String command) {
+		if (menus == null)
+			return; // no browser
+		loadCommands(command);
 	}
 
 	/** computes a graph in the background and shows it */
