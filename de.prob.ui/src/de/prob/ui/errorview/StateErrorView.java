@@ -14,6 +14,7 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.TreeViewerColumn;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
+import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Text;
@@ -50,8 +51,15 @@ public class StateErrorView extends StateBasedViewPart {
 		text = new Text(sashForm, SWT.MULTI | SWT.READ_ONLY | SWT.V_SCROLL
 				| SWT.H_SCROLL | SWT.BORDER);
 		text.setText("");
-		// a fixed-width font, so that values formatted by ProB stay aligned
-		text.setFont(JFaceResources.getTextFont());
+		// a fixed-width font, so that values formatted by ProB stay aligned,
+		// with the size of the other text of the views (the editors' text
+		// font is often larger)
+		final int height = JFaceResources.getDefaultFont().getFontData()[0]
+				.getHeight();
+		final Font font = JFaceResources.getTextFontDescriptor()
+				.setHeight(height).createFont(text.getDisplay());
+		text.setFont(font);
+		text.addListener(SWT.Dispose, e -> font.dispose());
 		sashForm.setWeights(new int[] { 2, 3 });
 
 		errorTree.addSelectionChangedListener(new ErrorSelection());

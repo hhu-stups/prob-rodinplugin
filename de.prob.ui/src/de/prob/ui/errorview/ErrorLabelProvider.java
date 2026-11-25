@@ -6,6 +6,8 @@ package de.prob.ui.errorview;
 import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.ui.ISharedImages;
+import org.eclipse.ui.PlatformUI;
 
 import de.prob.ui.errorview.ShownErrors.ErrorEvent;
 import de.prob.ui.errorview.ShownErrors.ShownStateError;
@@ -18,6 +20,12 @@ public class ErrorLabelProvider extends BaseLabelProvider implements
 		ITableLabelProvider {
 	@Override
 	public Image getColumnImage(Object object, int column) {
+		// Eclipse's error icon for the events and their errors, as in the
+		// Problems view
+		if (column == 0
+				&& (object instanceof ShownStateError || object instanceof ErrorEvent))
+			return PlatformUI.getWorkbench().getSharedImages()
+					.getImage(ISharedImages.IMG_OBJS_ERROR_TSK);
 		return null;
 	}
 
