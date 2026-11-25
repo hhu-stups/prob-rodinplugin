@@ -3,10 +3,13 @@
  */
 package de.prob.ui.errorview;
 
+import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.ITreeViewerListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.jface.viewers.TreeExpansionEvent;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.TreeViewerColumn;
 import org.eclipse.swt.SWT;
@@ -14,6 +17,8 @@ import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.Tree;
+import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
 
 import de.prob.core.Animator;
@@ -35,13 +40,19 @@ public class StateErrorView extends StateBasedViewPart {
 
 	@Override
 	public Control createStatePartControl(final Composite parent) {
-		SashForm sashForm = new SashForm(parent, SWT.HORIZONTAL | SWT.SMOOTH | SWT.NO_TRIM); //  can we use things likw SWT.NOTRIM
+		// the errors above, the description of the selected one below
+		SashForm sashForm = new SashForm(parent, SWT.VERTICAL | SWT.SMOOTH);
 
 		createErrorTree(sashForm);
 
-		text = new Text(sashForm, SWT.MULTI | SWT.V_SCROLL);
+		// no wrapping, so that long lines (e.g. values) keep their layout;
+		// scroll bars when the description is too long or too wide
+		text = new Text(sashForm, SWT.MULTI | SWT.READ_ONLY | SWT.V_SCROLL
+				| SWT.H_SCROLL | SWT.BORDER);
 		text.setText("");
-		text.setEditable(false);
+		// a fixed-width font, so that values formatted by ProB stay aligned
+		text.setFont(JFaceResources.getTextFont());
+		sashForm.setWeights(new int[] { 2, 3 });
 
 		errorTree.addSelectionChangedListener(new ErrorSelection());
 
@@ -62,6 +73,30 @@ public class StateErrorView extends StateBasedViewPart {
 		errorTree.setContentProvider(new ErrorContentProvider());
 		errorTree.setLabelProvider(new ErrorLabelProvider());
 		errorTree.setInput(errors);
+		// the column fills the tree, or is wider (with a scroll bar) so that
+		// no short description is cut off
+		errorTree.getTree().addListener(SWT.Resize, e -> fitColumn());
+		errorTree.addTreeListener(new ITreeViewerListener() {
+			@Override
+			public void treeExpanded(final TreeExpansionEvent event) {
+				errorTree.getTree().getDisplay().asyncExec(() -> fitColumn());
+			}
+
+			@Override
+			public void treeCollapsed(final TreeExpansionEvent event) {
+			}
+		});
+	}
+
+	private void fitColumn() {
+		final Tree tree = errorTree.getTree();
+		if (tree.isDisposed() || tree.getColumnCount() == 0)
+			return;
+		final TreeColumn column = tree.getColumn(0);
+		column.pack();
+		final int available = tree.getClientArea().width;
+		if (column.getWidth() < available)
+			column.setWidth(available);
 	}
 
 	@Override
@@ -69,6 +104,7 @@ public class StateErrorView extends StateBasedViewPart {
 		errors.update(Animator.getAnimator().getMachineDescription(),
 				currentState);
 		errorTree.refresh();
+		fitColumn();
 	}
 
 	/**
@@ -78,6 +114,7 @@ public class StateErrorView extends StateBasedViewPart {
 	public void showAll() {
 		errorTree.refresh();
 		errorTree.expandAll();
+		fitColumn();
 		final TreeItem[] events = errorTree.getTree().getItems();
 		if (events.length > 0 && events[0].getItemCount() > 0) {
 			final Object first = events[0].getItem(0).getData();
