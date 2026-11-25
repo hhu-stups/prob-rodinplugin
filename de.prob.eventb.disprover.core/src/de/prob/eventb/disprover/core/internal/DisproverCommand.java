@@ -9,7 +9,6 @@ import java.util.Set;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eventb.core.IEventBProject;
 import org.eventb.core.ast.Predicate;
@@ -19,6 +18,7 @@ import org.osgi.service.prefs.Preferences;
 import de.be4.classicalb.core.parser.analysis.prolog.ASTProlog;
 import de.be4.classicalb.core.parser.node.AEventBContextParseUnit;
 import de.prob.core.Animator;
+import de.prob.core.PrologException;
 import de.prob.core.ProBCommandJob;
 import de.prob.core.command.ClearMachineCommand;
 import de.prob.core.command.CommandException;
@@ -168,7 +168,10 @@ public class DisproverCommand implements IComposableCommand {
 		final String jobName = (wdProver ? "Running ProB WD Prover"
 				: "Running ProB Disprover")
 				+ (proofObligation == null ? "" : " on " + proofObligation);
-		final Job job = new ProBCommandJob(jobName, animator, composed) {
+		// quiet: no dialogs, also not for each proof obligation the
+		// auto-prover tries; ProB's errors become the reasoner's result
+		final ProBCommandJob job = new ProBCommandJob(jobName, animator,
+				composed, true) {
 			@Override
 			protected IStatus run(final IProgressMonitor monitor) {
 				// asks probcli once whether it has the statistics; an older
@@ -204,8 +207,28 @@ public class DisproverCommand implements IComposableCommand {
 			// e.g. after the deadline of a previous call was exceeded
 			throw new InterruptedException("ProB: interrupted");
 		}
-		return disprove.getResult();
+		return withErrors(disprove.getResult(), job.getFailure());
+	}
 
+	/**
+	 * @return the result, unless ProB reported errors or the command failed:
+	 *         then a result with ProB's messages (see
+	 *         {@link ICounterExample#getErrors()}). A proof is not trusted if
+	 *         there were errors (e.g. ProB may have replaced an operator it does
+	 *         not support); a counter-example is kept.
+	 */
+	private static ICounterExample withErrors(final ICounterExample result,
+			final ProBException failure) {
+		if (failure == null)
+			return result;
+		final boolean onlyWarnings = failure instanceof PrologException
+				&& ((PrologException) failure).isOnlyWarnings();
+		if (result != null
+				&& (onlyWarnings || result.counterExampleFound()))
+			return result;
+		final String message = failure.getMessage();
+		return CounterExample.error(message == null
+				|| message.trim().isEmpty() ? "ProB's query failed." : message);
 	}
 
 	/**
@@ -421,6 +444,11 @@ public class DisproverCommand implements IComposableCommand {
 
 		counterExample = null;
 
+		if ("type_error".equals(term.getFunctor())) {
+			// ProB's messages say why (they replace this text)
+			counterExample = CounterExample
+					.error("ProB could not type-check the proof obligation.");
+		}
 		if ("time_out".equals(term.getFunctor())) {
 			counterExample = new CounterExample(false, true, false);
 		}

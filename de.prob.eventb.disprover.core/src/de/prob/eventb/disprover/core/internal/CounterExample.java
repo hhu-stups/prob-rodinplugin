@@ -20,6 +20,7 @@ class CounterExample implements ICounterExample {
 	private boolean doubleCheckFailed = false;
 	private boolean selectedHypotheses = false;
 	private String reason = "";
+	private String errors = null;
 
 	CounterExample(final boolean counterExampleFound,
 			final boolean timeoutOccured, final boolean selectedHypotheses) {
@@ -32,6 +33,23 @@ class CounterExample implements ICounterExample {
 			final boolean timeoutOccured, String reason) {
 		this(counterExampleFound, timeoutOccured, false);
 		this.reason = reason;
+	}
+
+	/**
+	 * @return the result if ProB could not check the proof obligation
+	 * @param errors
+	 *            ProB's messages, see {@link #getErrors()}
+	 */
+	static CounterExample error(final String errors) {
+		final CounterExample result = new CounterExample(false, false,
+				"errors reported by ProB");
+		result.errors = errors;
+		return result;
+	}
+
+	@Override
+	public String getErrors() {
+		return errors;
 	}
 
 	@Override

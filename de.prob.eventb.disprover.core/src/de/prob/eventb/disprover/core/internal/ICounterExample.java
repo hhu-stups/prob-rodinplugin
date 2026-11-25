@@ -26,4 +26,11 @@ public interface ICounterExample {
 	 */
 	public de.prob.prolog.term.PrologTerm getBindings();
 
+	/**
+	 * @return ProB's error messages, one per line, if it could not check the
+	 *         proof obligation (e.g. an operator of a theory it does not
+	 *         support); <code>null</code> otherwise
+	 */
+	public String getErrors();
+
 }

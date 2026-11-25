@@ -21,6 +21,11 @@ public class PrologException extends ProBException {
 		this.onlyWarnings = onlyWarnings;
 	}
 
+	/** @return whether ProB only reported warnings, no errors */
+	public boolean isOnlyWarnings() {
+		return onlyWarnings;
+	}
+
 	@Override
 	public final void notifyUserOnce() {
 		if (!handled) {

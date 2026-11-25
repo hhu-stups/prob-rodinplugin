@@ -153,12 +153,51 @@ public class DisproverReasoner implements IReasoner {
 		// counterExample is null if the ProB command failed;
 		// createDisproverResult turns that into a reasoner failure
 		Logger.info("Disprover: Result: " + counterExample);
+		if (counterExample != null && counterExample.getErrors() != null)
+			reportErrors(counterExample.getErrors(), origin, interactive);
 		if (interactive && counterExample != null
 				&& counterExample.counterExampleFound())
 			notifyCounterExample(sequent, counterExample, evbProject, context,
 					selectedHypotheses);
 
 		return counterExample;
+	}
+
+	/**
+	 * Logs ProB's errors and, if the user started the disprover, shows them in
+	 * a notice that does not block them (the reasoner's failure in the Proof
+	 * Control view only has their first lines). No dialog: the auto-prover
+	 * may run the disprover on many proof obligations.
+	 */
+	private static void reportErrors(final String errors,
+			final IPOSequent po, final boolean interactive) {
+		final String where = po == null ? "" : " for "
+				+ proofObligationName(po);
+		Logger.info("ProB could not check the proof obligation" + where
+				+ ":\n" + errors);
+		if (interactive)
+			Logger.notifyUserNonModal("ProB could not check the proof obligation"
+					+ where + ", see ProB's messages.", errors);
+	}
+
+	/**
+	 * @return the first lines of ProB's messages, for the reasoner's failure:
+	 *         without empty lines and the lines with the position, shortened
+	 */
+	static String summarise(final String errors) {
+		final StringBuilder result = new StringBuilder();
+		for (String line : errors.split("\n")) {
+			line = line.trim();
+			if (line.isEmpty() || line.startsWith("###"))
+				continue;
+			if (result.length() > 0)
+				result.append(" | ");
+			result.append(line);
+		}
+		final int max = 300;
+		if (result.length() > max)
+			return result.substring(0, max) + "... (see the Error Log)";
+		return result.toString();
 	}
 
 	/**
@@ -285,6 +324,12 @@ public class DisproverReasoner implements IReasoner {
 		if (counterExample == null) {
 			return ProverFactory.reasonerFailure(this, input,
 					prover + ": Error occurred.");
+		}
+
+		if (counterExample.getErrors() != null) {
+			return ProverFactory.reasonerFailure(this, input, prover
+					+ ": Could not check the proof obligation: "
+					+ summarise(counterExample.getErrors()));
 		}
 
 		if (counterExample.timeoutOccured()) {
