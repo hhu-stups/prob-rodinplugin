@@ -209,6 +209,7 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 		clear.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages()
 				.getImageDescriptor(ISharedImages.IMG_ETOOL_CLEAR));
 		getViewSite().getActionBars().getToolBarManager().add(clear);
+		installCancelButton();
 		installMathSymbols();
 		installSolveTimeToggle();
 		installFontSizeButtons();
@@ -303,6 +304,47 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 		} catch (LinkageError e) {
 			// optional dependency, or a version without this method
 		}
+	}
+
+	// cancels the running evaluation or command; enabled while one runs
+	private Action cancel;
+
+	/**
+	 * The Cancel button, enabled while an input is evaluated: it cancels the
+	 * job, which interrupts ProB (e.g. a long constraint solving) and stops
+	 * ":animate N" before its next step. Escape in the output does the same.
+	 */
+	private void installCancelButton() {
+		cancel = new Action("Cancel") {
+			@Override
+			public void run() {
+				cancelRunningJob();
+			}
+		};
+		cancel.setToolTipText("Cancel the Evaluation (Esc)");
+		cancel.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages()
+				.getImageDescriptor(ISharedImages.IMG_ELCL_STOP));
+		cancel.setDisabledImageDescriptor(PlatformUI.getWorkbench()
+				.getSharedImages()
+				.getImageDescriptor(ISharedImages.IMG_ELCL_STOP_DISABLED));
+		cancel.setEnabled(false);
+		getViewSite().getActionBars().getToolBarManager().add(cancel);
+		// the input is disabled while evaluating: Escape in the output
+		output.addListener(SWT.KeyDown, e -> {
+			if (e.keyCode == SWT.ESC && runningJob != null) {
+				e.doit = false;
+				cancelRunningJob();
+			}
+		});
+	}
+
+	private void cancelRunningJob() {
+		final Job job = runningJob;
+		if (job == null)
+			return;
+		setContentDescription("Cancelling ...");
+		cancel.setEnabled(false);
+		job.cancel();
 	}
 
 	/** toolbar buttons + and - for the size of the console font */
@@ -871,6 +913,7 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 				+ "                   solver commands: a unique completion is inserted, otherwise\n"
 				+ "                   the common prefix, otherwise the list of proposals opens\n"
 				+ "  Ctrl+Space       open the list of proposals\n"
+				+ "  Esc              cancel the running evaluation (like the Cancel button)\n"
 				+ "  Ctrl+= / Ctrl+-  larger / smaller font (on macOS also with Cmd)\n"
 				+ "  Typing in the output area continues in the input; the output can be selected\n"
 				+ "  and copied. A long evaluation can be cancelled in the Progress view.\n"
@@ -936,6 +979,10 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 			}
 		};
 		runningJob = job;
+		if (cancel != null)
+			cancel.setEnabled(true);
+		// the output keeps the focus for Escape (the input is disabled)
+		output.setFocus();
 		job.schedule();
 	}
 
@@ -944,8 +991,11 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 		asyncExecIfAlive(new Runnable() {
 			@Override
 			public void run() {
-				if (runningJob == job)
+				if (runningJob == job) {
 					runningJob = null;
+					if (cancel != null)
+						cancel.setEnabled(false);
+				}
 				setContentDescription("");
 				input.setEnabled(true);
 				input.setFocus();

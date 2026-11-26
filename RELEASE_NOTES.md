@@ -10,7 +10,7 @@ A new view for evaluating formulas in the current state of the animation. Open i
 - **Commands:**
   - `:type F`: the type of a formula and of its free identifiers
   - `:state`: the current state's values, status and enabled events
-  - `:animate [N]`: executes N random enabled events (1 by default), like "Animate N Steps" in the Operations view, and says how many were executed, the last one and the reached state. It stops early in a deadlock or when the invariant is violated (shown in yellow or red), and can be cancelled in the Progress view. The other views are updated as for the Operations view.
+  - `:animate [N]`: executes N random enabled events (1 by default), like "Animate N Steps" in the Operations view, and says how many were executed, the last one and the reached state. It stops early in a deadlock or when the invariant is violated (shown in yellow or red), and can be cancelled with the console's Cancel button. The other views are updated as for the Operations view.
   - `:states`: statistics about the state space explored so far, e.g. after model checking: the number of states and transitions, the states by kind (e.g. open, live, deadlocked, invariant violated), the transitions per event, and the events not executed yet. It needs a running animation, but no current state.
   - `:table EXPR` / `:graph EXPR`: show the value of EXPR in the ProB Table or ProB Graph view, like "Show Value as Table/Graph" in the State view. The view is opened if necessary, and the console keeps the focus.
   - `:prefs [TEXT]`: ProB's preferences, with their defaults if changed
@@ -22,6 +22,7 @@ A new view for evaluating formulas in the current state of the animation. Open i
   - Tab or Ctrl+Space completes model identifiers, Event-B keywords and console commands.
 - **Mathematical symbols:** the ∀ toggle translates ASCII to symbols while typing, as in the Rodin editors (except in `:` commands). The console uses Rodin's math font, so `<<->`, `<->>`, `<<->>` and `<+` display correctly.
 - **Display:**
+  - **Cancel:** the Cancel button in the console's toolbar (the red stop icon), or Esc, cancels a running evaluation or command: it interrupts ProB, e.g. a long constraint solving, and stops `:animate N` before its next step. It is only enabled while something runs.
   - The ms toggle shows solving times.
   - The + / − buttons, or Ctrl+= / Ctrl+-, change the font size.
   - Type errors name the identifiers whose type can't be inferred.
