@@ -10,6 +10,7 @@ import java.util.List;
 
 import de.prob.cli.CliException;
 import de.prob.core.command.CommandException;
+import de.prob.eventb.translator.TheoryMappingLinks;
 import de.prob.logging.Logger;
 
 public class ProblemHandler {
@@ -86,8 +87,15 @@ public class ProblemHandler {
 		if (onlyWarnings) {
 			// the command succeeded: a notice that does not block the user,
 			// with the warnings as its details
-			Logger.notifyUserNonModal(warningsSummary(errors),
-					String.join("\n", errors));
+			final String details = String.join("\n", errors);
+			// e.g. for theory operators without a mapping
+			final Runnable createMappings = TheoryMappingLinks
+					.creatorFor(details);
+			if (createMappings == null)
+				Logger.notifyUserNonModal(warningsSummary(errors), details);
+			else
+				Logger.notifyUserNonModal(warningsSummary(errors), details,
+						TheoryMappingLinks.LABEL, createMappings);
 			return;
 		}
 		Logger.notifyUser(message);

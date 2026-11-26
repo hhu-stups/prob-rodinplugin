@@ -384,6 +384,11 @@
             name="Replay All Traces">
       </command>
       <command
+            description="Create or extend the ProB theory mapping files (.ptm) of the theories used by the project selected in the Event-B Explorer"
+            id="de.prob.ui.theorymapping.create"
+            name="Create ProB Theory Mapping Files">
+      </command>
+      <command
             description="Show the details of the trace selected in the Event-B Explorer"
             id="de.prob.ui.explorer.showTraceDetails"
             name="Show Trace Details">
@@ -808,6 +813,10 @@
                </and>
             </with>
          </enabledWhen>
+      </handler>
+      <handler
+            class="de.prob.ui.theorymapping.CreateTheoryMappingFilesHandler"
+            commandId="de.prob.ui.theorymapping.create">
       </handler>
       <handler
             class="de.prob.ui.explorer.ReplayAllTracesHandler"
@@ -1921,6 +1930,53 @@
                </with>
             </visibleWhen>
          </menu>
+         <command
+               commandId="de.prob.ui.theorymapping.create"
+               icon="icons/prob.png"
+               label="Create ProB Theory Mapping Files"
+               style="push">
+            <visibleWhen>
+               <with
+                     variable="selection">
+                  <and>
+                     <count
+                           value="1">
+                     </count>
+                     <iterate>
+                        <or>
+                           <instanceof
+                                 value="org.eclipse.core.resources.IProject">
+                           </instanceof>
+                           <instanceof
+                                 value="org.rodinp.core.IRodinProject">
+                           </instanceof>
+                           <instanceof
+                                 value="org.eventb.core.IMachineRoot">
+                           </instanceof>
+                           <instanceof
+                                 value="org.eventb.core.IContextRoot">
+                           </instanceof>
+                           <instanceof
+                                 value="org.eventb.theory.core.ITheoryRoot">
+                           </instanceof>
+                           <instanceof
+                                 value="org.eventb.theory.core.IDeployedTheoryRoot">
+                           </instanceof>
+                           <and>
+                              <instanceof
+                                    value="org.eclipse.core.resources.IFile">
+                              </instanceof>
+                              <test
+                                    property="org.eclipse.core.resources.extension"
+                                    value="ptm">
+                              </test>
+                           </and>
+                        </or>
+                     </iterate>
+                  </and>
+               </with>
+            </visibleWhen>
+         </command>
          <separator
                name="de.prob.ui.separator1"
                visible="true">
@@ -2156,6 +2212,91 @@
          </actionProvider>
       </navigatorContent>
    </extension>
+   <!-- the theory mapping files (.ptm) of a project, after its machines,
+        contexts and theories in Rodin's Event-B Explorer -->
+   <extension
+         point="org.eclipse.ui.navigator.navigatorContent">
+      <navigatorContent
+            activeByDefault="true"
+            contentProvider="de.prob.ui.theorymapping.MappingFilesContentProvider"
+            id="de.prob.ui.explorer.theoryMappingFiles"
+            labelProvider="de.prob.ui.theorymapping.MappingFilesLabelProvider"
+            name="ProB Theory Mapping Files"
+            priority="lowest">
+         <!-- the project's other children are trigger points only so that
+              the sorter below applies when they are compared with a .ptm
+              file; they get no children here -->
+         <triggerPoints>
+            <or>
+               <instanceof
+                     value="org.rodinp.core.IRodinProject">
+               </instanceof>
+               <instanceof
+                     value="org.eclipse.core.resources.IProject">
+               </instanceof>
+               <instanceof
+                     value="org.eventb.core.IMachineRoot">
+               </instanceof>
+               <instanceof
+                     value="org.eventb.core.IContextRoot">
+               </instanceof>
+               <instanceof
+                     value="org.eventb.theory.core.ITheoryRoot">
+               </instanceof>
+               <and>
+                  <instanceof
+                        value="org.eclipse.core.resources.IFile">
+                  </instanceof>
+                  <test
+                        property="org.eclipse.core.resources.extension"
+                        value="ptm">
+                  </test>
+               </and>
+            </or>
+         </triggerPoints>
+         <possibleChildren>
+            <and>
+                  <instanceof
+                        value="org.eclipse.core.resources.IFile">
+                  </instanceof>
+                  <test
+                        property="org.eclipse.core.resources.extension"
+                        value="ptm">
+                  </test>
+               </and>
+         </possibleChildren>
+         <commonSorter
+               class="de.prob.ui.theorymapping.MappingFilesLastSorter"
+               id="de.prob.ui.explorer.theoryMappingFilesLastSorter">
+            <parentExpression>
+               <or>
+                  <instanceof
+                        value="org.rodinp.core.IRodinProject">
+                  </instanceof>
+                  <instanceof
+                        value="org.eclipse.core.resources.IProject">
+                  </instanceof>
+               </or>
+            </parentExpression>
+         </commonSorter>
+         <!-- a double-click opens the file in the text editor -->
+         <actionProvider
+               class="de.prob.ui.theorymapping.MappingFilesActionProvider"
+               id="de.prob.ui.explorer.theoryMappingFileActions">
+            <enablement>
+               <and>
+                  <instanceof
+                        value="org.eclipse.core.resources.IFile">
+                  </instanceof>
+                  <test
+                        property="org.eclipse.core.resources.extension"
+                        value="ptm">
+                  </test>
+               </and>
+            </enablement>
+         </actionProvider>
+      </navigatorContent>
+   </extension>
    <extension
          point="org.eclipse.ui.navigator.viewer">
       <viewerContentBinding
@@ -2163,6 +2304,9 @@
          <includes>
             <contentExtension
                   pattern="de.prob.ui.explorer.traces">
+            </contentExtension>
+            <contentExtension
+                  pattern="de.prob.ui.explorer.theoryMappingFiles">
             </contentExtension>
          </includes>
       </viewerContentBinding>

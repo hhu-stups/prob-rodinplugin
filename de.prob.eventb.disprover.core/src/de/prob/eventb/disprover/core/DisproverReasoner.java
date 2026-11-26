@@ -11,6 +11,7 @@ import de.prob.core.Animator;
 import de.prob.eventb.disprover.core.internal.DisproverCommand;
 import de.prob.eventb.disprover.core.internal.ICounterExample;
 import de.prob.eventb.disprover.core.translation.DisproverContextCreator;
+import de.prob.eventb.translator.TheoryMappingLinks;
 import de.prob.eventb.translator.internal.TranslationVisitor;
 import de.prob.logging.Logger;
 import de.prob.prolog.output.PrologTermStringOutput;
@@ -175,9 +176,17 @@ public class DisproverReasoner implements IReasoner {
 				+ proofObligationName(po);
 		Logger.info("ProB could not check the proof obligation" + where
 				+ ":\n" + errors);
-		if (interactive)
-			Logger.notifyUserNonModal("ProB could not check the proof obligation"
-					+ where + ", see ProB's messages.", errors);
+		if (!interactive)
+			return;
+		final String message = "ProB could not check the proof obligation"
+				+ where + ", see ProB's messages.";
+		// e.g. for theory operators without a mapping
+		final Runnable createMappings = TheoryMappingLinks.creatorFor(errors);
+		if (createMappings == null)
+			Logger.notifyUserNonModal(message, errors);
+		else
+			Logger.notifyUserNonModal(message, errors,
+					TheoryMappingLinks.LABEL, createMappings);
 	}
 
 	/**
