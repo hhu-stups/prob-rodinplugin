@@ -1962,15 +1962,9 @@
                            <instanceof
                                  value="org.eventb.theory.core.IDeployedTheoryRoot">
                            </instanceof>
-                           <and>
-                              <instanceof
-                                    value="org.eclipse.core.resources.IFile">
-                              </instanceof>
-                              <test
-                                    property="org.eclipse.core.resources.extension"
-                                    value="ptm">
-                              </test>
-                           </and>
+                           <instanceof
+                                 value="de.prob.ui.theorymapping.MappingFileNode">
+                           </instanceof>
                         </or>
                      </iterate>
                   </and>
@@ -2271,27 +2265,15 @@
                <instanceof
                      value="org.eventb.theory.core.ITheoryRoot">
                </instanceof>
-               <and>
-                  <instanceof
-                        value="org.eclipse.core.resources.IFile">
-                  </instanceof>
-                  <test
-                        property="org.eclipse.core.resources.extension"
-                        value="ptm">
-                  </test>
-               </and>
+               <instanceof
+                     value="de.prob.ui.theorymapping.MappingFileNode">
+               </instanceof>
             </or>
          </triggerPoints>
          <possibleChildren>
-            <and>
-                  <instanceof
-                        value="org.eclipse.core.resources.IFile">
-                  </instanceof>
-                  <test
-                        property="org.eclipse.core.resources.extension"
-                        value="ptm">
-                  </test>
-               </and>
+            <instanceof
+                     value="de.prob.ui.theorymapping.MappingFileNode">
+               </instanceof>
          </possibleChildren>
          <commonSorter
                class="de.prob.ui.theorymapping.MappingFilesLastSorter"
@@ -2312,15 +2294,9 @@
                class="de.prob.ui.theorymapping.MappingFilesActionProvider"
                id="de.prob.ui.explorer.theoryMappingFileActions">
             <enablement>
-               <and>
-                  <instanceof
-                        value="org.eclipse.core.resources.IFile">
-                  </instanceof>
-                  <test
-                        property="org.eclipse.core.resources.extension"
-                        value="ptm">
-                  </test>
-               </and>
+               <instanceof
+                     value="de.prob.ui.theorymapping.MappingFileNode">
+               </instanceof>
             </enablement>
          </actionProvider>
       </navigatorContent>

@@ -41,6 +41,8 @@ public class CreateTheoryMappingFilesHandler extends AbstractHandler {
 	private static IProject project(final Object element) {
 		if (element instanceof IProject)
 			return (IProject) element;
+		if (element instanceof MappingFileNode)
+			return ((MappingFileNode) element).getFile().getProject();
 		if (element instanceof IRodinElement)
 			return ((IRodinElement) element).getRodinProject().getProject();
 		final IResource resource = Adapters.adapt(element, IResource.class);

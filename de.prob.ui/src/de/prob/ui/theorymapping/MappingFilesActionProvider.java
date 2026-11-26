@@ -73,8 +73,7 @@ public class MappingFilesActionProvider extends CommonActionProvider {
 			return null;
 		final Object element = ((IStructuredSelection) selection)
 				.getFirstElement();
-		return element instanceof IFile
-				&& MappingFilesContentProvider.isMappingFile((IFile) element) ? (IFile) element
-				: null;
+		return element instanceof MappingFileNode ? ((MappingFileNode) element)
+				.getFile() : null;
 	}
 }

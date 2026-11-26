@@ -6,7 +6,6 @@
 
 package de.prob.ui.theorymapping;
 
-import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerSorter;
 
@@ -20,11 +19,12 @@ public class MappingFilesLastSorter extends ViewerSorter {
 
 	@Override
 	public int compare(final Viewer viewer, final Object e1, final Object e2) {
-		final boolean file1 = e1 instanceof IFile;
-		final boolean file2 = e2 instanceof IFile;
+		final boolean file1 = e1 instanceof MappingFileNode;
+		final boolean file2 = e2 instanceof MappingFileNode;
 		if (file1 && file2)
-			return ((IFile) e1).getName().compareToIgnoreCase(
-					((IFile) e2).getName());
+			return ((MappingFileNode) e1).getFile().getName()
+					.compareToIgnoreCase(
+							((MappingFileNode) e2).getFile().getName());
 		if (file1 == file2)
 			return 0;
 		return file1 ? 1 : -1;

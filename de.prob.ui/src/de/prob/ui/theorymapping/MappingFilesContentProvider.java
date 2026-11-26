@@ -27,7 +27,8 @@ import org.rodinp.core.IRodinProject;
 import de.prob.eventb.translator.TheoryMappingFiles;
 
 /**
- * Shows the theory mapping files (.ptm) of a project in the Event-B Explorer,
+ * Shows the theory mapping files (.ptm) of a project in the Event-B Explorer
+ * (as {@link MappingFileNode}s),
  * after its machines, contexts and theories: ProB reads <code>T.ptm</code> in
  * the project of a theory <code>T</code> (see {@link TheoryMappingFiles}). The
  * explorer is refreshed when such a file is added or removed.
@@ -77,13 +78,19 @@ public class MappingFilesContentProvider implements ITreeContentProvider,
 	@Override
 	public Object[] getChildren(final Object element) {
 		final IProject project = project(element);
-		return project == null ? NONE : files(project).toArray();
+		if (project == null)
+			return NONE;
+		final List<IFile> files = files(project);
+		final Object[] nodes = new Object[files.size()];
+		for (int i = 0; i < nodes.length; i++)
+			nodes[i] = new MappingFileNode(files.get(i));
+		return nodes;
 	}
 
 	@Override
 	public Object getParent(final Object element) {
-		if (element instanceof IFile && isMappingFile((IFile) element))
-			return ((IFile) element).getProject();
+		if (element instanceof MappingFileNode)
+			return ((MappingFileNode) element).getFile().getProject();
 		return null;
 	}
 

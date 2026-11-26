@@ -22,20 +22,21 @@ public class MappingFilesLabelProvider extends LabelProvider implements
 
 	@Override
 	public String getText(final Object element) {
-		return element instanceof IFile ? ((IFile) element).getName() : null;
+		return element instanceof MappingFileNode ? ((MappingFileNode) element)
+				.getFile().getName() : null;
 	}
 
 	@Override
 	public Image getImage(final Object element) {
-		return element instanceof IFile ? PlatformUI.getWorkbench()
+		return element instanceof MappingFileNode ? PlatformUI.getWorkbench()
 				.getSharedImages().getImage(ISharedImages.IMG_OBJ_FILE) : null;
 	}
 
 	@Override
 	public String getDescription(final Object element) {
-		if (!(element instanceof IFile))
+		if (!(element instanceof MappingFileNode))
 			return null;
-		final IFile file = (IFile) element;
+		final IFile file = ((MappingFileNode) element).getFile();
 		return "ProB theory mapping file for the theory "
 				+ file.getFullPath().removeFileExtension().lastSegment()
 				+ ": maps its axiomatic operators to constructs of ProB";
