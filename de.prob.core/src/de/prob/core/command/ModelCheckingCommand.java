@@ -17,6 +17,8 @@ import de.prob.prolog.term.*;
 public final class ModelCheckingCommand implements IComposableCommand {
 	private final int time;
 	private final List<String> options;
+	/** the most states to check in this call; null for ProB's default */
+	private final Integer maxStates;
 	private ModelCheckingResult<Result> result;
 
 	public static enum Result {
@@ -36,8 +38,54 @@ public final class ModelCheckingCommand implements IComposableCommand {
 	}
 
 	ModelCheckingCommand(final int time, final List<String> options) {
+		this(null, time, options);
+	}
+
+	private ModelCheckingCommand(final Integer maxStates, final int time,
+			final List<String> options) {
+		this.maxStates = maxStates;
 		this.time = time;
 		this.options = options;
+	}
+
+	/**
+	 * Like {@link #modelcheck(Animator, int, List)}, but checks at most
+	 * maxStates states in this call (<code>do_modelchecking/5</code>).
+	 */
+	public static ModelCheckingResult<Result> modelcheck(final Animator a,
+			final int maxStates, final int time, final List<String> options)
+			throws ProBException {
+		ModelCheckingCommand command = new ModelCheckingCommand(maxStates,
+				time, options);
+		a.execute(command);
+		return command.getResult();
+	}
+
+	/**
+	 * ProB's constant in <code>not_yet_finished(N)</code>, see
+	 * build_modelcheck_return/2 in prob2_interface.pl
+	 */
+	private static final int NOT_YET_FINISHED_BASE = 100000;
+
+	/**
+	 * @return how many states a call with maxStates checked that returned
+	 *         not_yet_finished: all of them if it reached the limit,
+	 *         otherwise (at the time limit) as told by ProB; maxStates if
+	 *         ProB's answer cannot be read
+	 */
+	public static int statesCheckedInCall(
+			final ModelCheckingResult<Result> result, final int maxStates) {
+		try {
+			final int n = ((AIntegerPrologTerm) result.getArgument(0))
+					.intValueExact();
+			// not_yet_finished(100000): the limit was reached
+			if (n == NOT_YET_FINISHED_BASE)
+				return maxStates;
+			final int checked = NOT_YET_FINISHED_BASE - n;
+			return checked > 0 && checked <= maxStates ? checked : maxStates;
+		} catch (RuntimeException e) {
+			return maxStates;
+		}
 	}
 
 	public static ModelCheckingResult<Result> modelcheck(final Animator a,
@@ -69,7 +117,10 @@ public final class ModelCheckingCommand implements IComposableCommand {
 
 	@Override
 	public void writeCommand(final IPrologTermOutput pto) {
-		pto.openTerm("do_modelchecking").printNumber(time).openList();
+		pto.openTerm("do_modelchecking");
+		if (maxStates != null)
+			pto.printNumber(maxStates);
+		pto.printNumber(time).openList();
 		for (String o : options) {
 			pto.printAtom(o);
 		}

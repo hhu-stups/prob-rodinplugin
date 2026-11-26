@@ -29,6 +29,11 @@ import de.prob.core.command.EvaluationGetValuesCommand;
 import de.prob.core.command.EvaluationGetValuesCommand.EvaluationResult;
 import de.prob.core.command.EvaluationInsertFormulaCommand;
 import de.prob.core.command.ExecuteRandomStepsCommand;
+import de.prob.core.command.GetTraceCommand;
+import de.prob.core.command.ModelCheckingCommand;
+import de.prob.core.command.ModelCheckingResult;
+import de.prob.core.command.ModelCheckingSearchOption;
+import de.prob.core.command.ReplayTraceCommand;
 import de.prob.core.command.ExecuteRandomStepsCommand.Outcome;
 import de.prob.core.domainobjects.EvaluationElement;
 import de.prob.core.domainobjects.Operation;
@@ -159,6 +164,11 @@ public class ConsoleEvaluator implements ILifecycleListener {
 			return describeType(animator, typeArgument);
 		if (commandArgument(formula, "states") != null)
 			return describeStateSpace(animator);
+		String mcArgument = commandArgument(formula, "mc");
+		if (mcArgument == null)
+			mcArgument = commandArgument(formula, "model-check");
+		if (mcArgument != null)
+			return modelCheck(animator, mcArgument, monitor);
 		final String prefsArgument = commandArgument(formula, "prefs");
 		if (prefsArgument != null)
 			return describePreferences(animator, prefsArgument);
@@ -246,6 +256,177 @@ public class ConsoleEvaluator implements ILifecycleListener {
 		if (!argument.isEmpty() && !Character.isWhitespace(argument.charAt(0)))
 			return null; // another command, e.g. ":types"
 		return argument.trim();
+	}
+
+	/** the time ProB model checks before it answers, as in ModelCheckingJob */
+	private static final int MC_CHUNK_MS = 500;
+	/** ProB's maximum per call without a limit (see do_modelchecking/4) */
+	private static final int MC_DEFAULT_MAX = 100000;
+
+	/**
+	 * ":mc [N]" or ":model-check [N]": model checks the model, with the
+	 * options last chosen in the model checking dialog, until the state space
+	 * is explored, an error is found, it is cancelled, or (if N is given) N
+	 * states were checked in this run; it continues where the last model
+	 * checking stopped. A state with an error becomes the current state.
+	 */
+	private static Result modelCheck(final Animator animator,
+			final String argument, final IProgressMonitor monitor)
+			throws ProBException {
+		Integer max = null;
+		if (!argument.isEmpty()) {
+			try {
+				max = Integer.valueOf(argument);
+			} catch (NumberFormatException e) {
+				max = 0;
+			}
+			if (max < 1)
+				return new Result(Kind.ERROR,
+						"Usage: :mc [N] (or :model-check [N]), with a maximum number of states N > 0");
+		}
+		final List<String> options = new ArrayList<String>();
+		for (ModelCheckingSearchOption option : ModelCheckingSearchOption
+				.values())
+			if (option.isEnabledByDefault())
+				options.add(option.name());
+		ModelCheckingResult<ModelCheckingCommand.Result> result = null;
+		int checked = 0;
+		boolean cancelled = false;
+		final long start = System.currentTimeMillis();
+		while (true) {
+			if (monitor != null && monitor.isCanceled()) {
+				cancelled = true;
+				break;
+			}
+			try {
+				// e.g. the UI thread may wait for the animator
+				animator.letWaitingCommandsRun();
+			} catch (InterruptedException e) {
+				Thread.currentThread().interrupt();
+				cancelled = true;
+				break;
+			}
+			final int limit = max == null ? MC_DEFAULT_MAX : max - checked;
+			try {
+				result = max == null ? ModelCheckingCommand.modelcheck(
+						animator, MC_CHUNK_MS, options) : ModelCheckingCommand
+						.modelcheck(animator, limit, MC_CHUNK_MS, options);
+			} catch (ProBException e) {
+				if (monitor != null && monitor.isCanceled()) {
+					cancelled = true; // ProB was interrupted
+					break;
+				}
+				throw e;
+			}
+			// only for the first call, as in ModelCheckingJob
+			options.remove(ModelCheckingSearchOption.inspect_existing_nodes
+					.name());
+			if (monitor != null)
+				monitor.subTask("States: " + result.getNumStates()
+						+ " (processed " + result.getProcessedTotal() + ")");
+			if (result.getResult().isAbort())
+				break;
+			if (max != null) {
+				checked += ModelCheckingCommand.statesCheckedInCall(result,
+						limit);
+				if (checked >= max)
+					break;
+			}
+		}
+		return describeModelChecking(animator, result, max, cancelled,
+				System.currentTimeMillis() - start);
+	}
+
+	private static Result describeModelChecking(final Animator animator,
+			final ModelCheckingResult<ModelCheckingCommand.Result> result,
+			final Integer max, final boolean cancelled, final long millis)
+			throws ProBException {
+		if (result == null)
+			return new Result(Kind.UNKNOWN, "Model checking cancelled.");
+		final StringBuilder sb = new StringBuilder();
+		Kind kind;
+		boolean errorState = false;
+		switch (result.getResult()) {
+		case ok:
+			sb.append("No error found: all states were checked.");
+			kind = Kind.TRUE;
+			break;
+		case ok_not_all_nodes_considered:
+			sb.append("No error found, but not all transitions were computed for some states (e.g. because of MAX_OPERATIONS or a time-out).");
+			kind = Kind.UNKNOWN;
+			break;
+		case full_coverage:
+			sb.append("No error found: all events are covered (model checking stops then, as chosen in the model checking dialog).");
+			kind = Kind.TRUE;
+			break;
+		case not_yet_finished:
+			sb.append(cancelled ? "Cancelled. " : "")
+					.append(max != null && !cancelled ? "Checked " + max
+							+ " states. " : "")
+					.append("No error found so far, but the state space is not fully explored; :mc continues.");
+			kind = Kind.UNKNOWN;
+			break;
+		case deadlock:
+			sb.append("Deadlock found!");
+			kind = Kind.FALSE;
+			errorState = true;
+			break;
+		case invariant_violation:
+			sb.append("Invariant violation found!");
+			kind = Kind.FALSE;
+			errorState = true;
+			break;
+		case assertion_violation:
+			sb.append("Theorem violation found!");
+			kind = Kind.FALSE;
+			errorState = true;
+			break;
+		case state_error:
+			sb.append("State error found (e.g. an event error)!");
+			kind = Kind.FALSE;
+			errorState = true;
+			break;
+		case well_definedness_error:
+			sb.append("Well-definedness error found!");
+			kind = Kind.FALSE;
+			errorState = true;
+			break;
+		default:
+			sb.append("Model checking stopped with an error.");
+			kind = Kind.FALSE;
+			errorState = true;
+		}
+		sb.append("\nState space: ").append(result.getNumStates())
+				.append(" states, ").append(result.getNumTransitions())
+				.append(" transitions, ").append(result.getProcessedTotal())
+				.append(" processed");
+		sb.append(" (").append(millis < 10000 ? millis + " ms" : millis / 1000
+				+ " s").append(")");
+		if (errorState) {
+			final List<String> trace = GetTraceCommand.getTrace(animator);
+			// the error state becomes the current state, as after the dialog
+			ReplayTraceCommand.replay(animator);
+			sb.append("\nThe state with the error is now the current state");
+			if (trace != null && !trace.isEmpty())
+				sb.append(", reached by ").append(trace.size())
+						.append(trace.size() == 1 ? " step: " : " steps: ")
+						.append(shortTrace(trace));
+			else
+				sb.append('.');
+		}
+		return new Result(kind, sb.toString());
+	}
+
+	/** @return the steps, or the first and last ones of a long trace */
+	private static String shortTrace(final List<String> trace) {
+		final int max = 12;
+		if (trace.size() <= max)
+			return UnicodeTranslator.toUnicode(String.join(", ", trace));
+		return UnicodeTranslator.toUnicode(String.join(", ",
+				trace.subList(0, 4))
+				+ ", ... , "
+				+ String.join(", ", trace.subList(trace.size() - 6,
+						trace.size())));
 	}
 
 	/**
@@ -506,7 +687,7 @@ public class ConsoleEvaluator implements ILifecycleListener {
 		final String solver = SOLVERS.get(name.toLowerCase(Locale.ROOT));
 		if (solver == null)
 			return new Result(Kind.ERROR, "Unknown command :" + name
-					+ ", available: :help, :x, :clear, :type, :state, :animate, :table, :graph, :states, :prefs, :version, "
+					+ ", available: :help, :x, :clear, :type, :state, :animate, :mc, :table, :graph, :states, :prefs, :version, "
 					+ solverCommands());
 		final String formula = command.substring(end).trim();
 		if (formula.isEmpty())

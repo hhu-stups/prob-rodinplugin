@@ -698,11 +698,11 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 				}
 			});
 		} else if (viewArgument(text.trim(), "table") != null) {
-			evaluatedForModel = true;
+			evaluatedForModel |= !viewArgument(text.trim(), "table").isEmpty();
 			append(PROMPT + echo(text) + "\n", null, SWT.BOLD);
 			showInView(TableViewPart.VIEW_ID, viewArgument(text.trim(), "table"));
 		} else if (viewArgument(text.trim(), "graph") != null) {
-			evaluatedForModel = true;
+			evaluatedForModel |= !viewArgument(text.trim(), "graph").isEmpty();
 			append(PROMPT + echo(text) + "\n", null, SWT.BOLD);
 			showInView(GraphViewPart.VIEW_ID, viewArgument(text.trim(), "graph"));
 		} else if (helpArgument(text.trim()) != null) {
@@ -765,14 +765,24 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 	/**
 	 * ":table EXPR" and ":graph EXPR": shows the value of EXPR in the ProB
 	 * Table or Graph view, like "Show Value as Table/Graph" in the State
-	 * view. The view shows errors, e.g. a syntax error, itself.
+	 * view. The view shows errors, e.g. a syntax error, itself. Without EXPR,
+	 * the view is only opened (e.g. to choose one of its tables or graphs).
 	 */
 	private void showInView(final String viewId, final String expression) {
 		final boolean table = viewId.equals(TableViewPart.VIEW_ID);
 		final String name = table ? "ProB Table" : "ProB Graph";
 		if (expression.isEmpty()) {
-			append("Usage: :" + (table ? "table" : "graph") + " EXPR\n",
-					getColor(SWT.COLOR_RED), SWT.NORMAL);
+			try {
+				// brought to the front; the console keeps the focus
+				getSite().getPage().showView(viewId, null,
+						IWorkbenchPage.VIEW_VISIBLE);
+				append("Opened the " + name + " view.\n",
+						getColor(SWT.COLOR_DARK_GRAY), SWT.NORMAL);
+			} catch (PartInitException e) {
+				append("Could not open the " + name + " view: "
+						+ e.getMessage() + "\n", getColor(SWT.COLOR_RED),
+						SWT.NORMAL);
+			}
 			return;
 		}
 		if (!Animator.getAnimator().isMachineLoaded()) {
@@ -837,12 +847,14 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 						"the current state: values, status, enabled events" },
 				{ "animate", ":animate [N]",
 						"execute N random enabled events (1 by default), like\nAnimate N Steps in the Operations view; stops in a\ndeadlock or when the invariant is violated" },
+				{ "mc", ":mc [N]",
+						"model check: with the options last chosen in the model\nchecking dialog, until the state space is explored, an\nerror is found or (if given) N states were checked; it\ncontinues where the last model checking stopped. A state\nwith an error becomes the current state. Also :model-check" },
 				{ "states", ":states",
 						"statistics about the state space explored so far:\nnumber of states and transitions, states by kind\n(e.g. deadlocked, invariant violated), transitions per event" },
-				{ "table", ":table EXPR",
-						"show the value of the expression EXPR as a table in the\nProB Table view (like Show Value as Table in the State view)" },
-				{ "graph", ":graph EXPR",
-						"show the value of the expression EXPR as a graph in the\nProB Graph view (like Show Value as Graph in the State view)" },
+				{ "table", ":table [EXPR]",
+						"show the value of the expression EXPR as a table in the\nProB Table view (like Show Value as Table in the State view);\nwithout EXPR, just open the ProB Table view" },
+				{ "graph", ":graph [EXPR]",
+						"show the value of the expression EXPR as a graph in the\nProB Graph view (like Show Value as Graph in the State view);\nwithout EXPR, just open the ProB Graph view" },
 				{ "prefs", ":prefs [TEXT]",
 						"ProB's preferences (only those whose name contains\nTEXT), with the default value if it was changed" },
 				{ "version", ":version",
@@ -1133,6 +1145,8 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 				names.add(":type");
 				names.add(":state");
 				names.add(":animate");
+				names.add(":mc");
+				names.add(":model-check");
 				names.add(":states");
 				names.add(":table");
 				names.add(":graph");
