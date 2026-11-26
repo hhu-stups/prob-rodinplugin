@@ -7,15 +7,21 @@
 package de.prob.ui.theorymapping;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.viewers.DecorationOverlayIcon;
+import org.eclipse.jface.viewers.IDecoration;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.navigator.IDescriptionProvider;
 
+import de.prob.ui.ProbUiPlugin;
+
 /**
  * Labels of the theory mapping files (.ptm) in the Event-B Explorer: the
- * file's name with a file icon; the status line says what the file is for.
+ * file's name, with the file icon and the small ProB logo at its bottom right;
+ * the status line says what the file is for.
  */
 public class MappingFilesLabelProvider extends LabelProvider implements
 		IDescriptionProvider {
@@ -26,10 +32,34 @@ public class MappingFilesLabelProvider extends LabelProvider implements
 				.getFile().getName() : null;
 	}
 
+	/** the file icon with the small ProB logo; created when first needed */
+	private Image image;
+
 	@Override
 	public Image getImage(final Object element) {
-		return element instanceof MappingFileNode ? PlatformUI.getWorkbench()
-				.getSharedImages().getImage(ISharedImages.IMG_OBJ_FILE) : null;
+		if (!(element instanceof MappingFileNode))
+			return null;
+		if (image == null) {
+			final Image file = PlatformUI.getWorkbench().getSharedImages()
+					.getImage(ISharedImages.IMG_OBJ_FILE);
+			// 8x8, and 16x16 (@2x) for high-resolution screens
+			final ImageDescriptor logo = ProbUiPlugin
+					.imageDescriptorFromPlugin(ProbUiPlugin.PLUGIN_ID,
+							"icons/ovr_prob.png");
+			image = logo == null ? file : new DecorationOverlayIcon(file,
+					logo, IDecoration.BOTTOM_RIGHT).createImage();
+		}
+		return image;
+	}
+
+	@Override
+	public void dispose() {
+		final Image shared = PlatformUI.getWorkbench().getSharedImages()
+				.getImage(ISharedImages.IMG_OBJ_FILE);
+		if (image != null && image != shared)
+			image.dispose();
+		image = null;
+		super.dispose();
 	}
 
 	@Override
