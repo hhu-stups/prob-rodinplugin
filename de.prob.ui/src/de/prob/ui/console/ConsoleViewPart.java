@@ -878,6 +878,10 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 						"the current state: values, status, enabled events" },
 				{ "animate", ":animate [N]",
 						"execute N random enabled events (1 by default), like\nAnimate N Steps in the Operations view; stops in a\ndeadlock or when the invariant is violated" },
+				{ "back", ":back [N]",
+						"go N steps (1 by default) back in the animation\nhistory, like the Back button" },
+				{ "forward", ":forward [N]",
+						"go N steps (1 by default) forward again in the\nanimation history, like the Forward button" },
 				{ "mc", ":mc [N]",
 						"model check: with the options last chosen in the model\nchecking dialog, until the state space is explored, an\nerror is found or (if given) N states were checked; it\ncontinues where the last model checking stopped. A state\nwith an error becomes the current state. Also :model-check" },
 				{ "reload", ":reload",
@@ -1200,6 +1204,8 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 				names.add(":type");
 				names.add(":state");
 				names.add(":animate");
+				names.add(":back");
+				names.add(":forward");
 				names.add(":mc");
 				names.add(":reload");
 				names.add(":model-check");

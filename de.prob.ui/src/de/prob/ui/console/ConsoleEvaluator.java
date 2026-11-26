@@ -36,6 +36,8 @@ import de.prob.core.command.ModelCheckingSearchOption;
 import de.prob.core.command.ReplayTraceCommand;
 import de.prob.core.command.ExecuteRandomStepsCommand.Outcome;
 import de.prob.core.domainobjects.EvaluationElement;
+import de.prob.core.domainobjects.History;
+import de.prob.core.domainobjects.HistoryItem;
 import de.prob.core.domainobjects.Operation;
 import de.prob.core.domainobjects.ProBPreference;
 import de.prob.core.domainobjects.State;
@@ -183,6 +185,12 @@ public class ConsoleEvaluator implements ILifecycleListener {
 		final String animateArgument = commandArgument(formula, "animate");
 		if (animateArgument != null)
 			return animate(animator, animateArgument, monitor);
+		final String backArgument = commandArgument(formula, "back");
+		if (backArgument != null)
+			return moveInHistory(animator, backArgument, -1);
+		final String forwardArgument = commandArgument(formula, "forward");
+		if (forwardArgument != null)
+			return moveInHistory(animator, forwardArgument, 1);
 		if (isSolverCommand(formula))
 			return solveWith(animator, state, formula);
 
@@ -497,6 +505,71 @@ public class ConsoleEvaluator implements ILifecycleListener {
 	}
 
 	/**
+	 * ":back [N]" / ":forward [N]": N steps (1 by default) back or forward in
+	 * the animation history, like the Back and Forward buttons; as far as
+	 * possible if there are fewer steps
+	 */
+	private static Result moveInHistory(final Animator animator,
+			final String argument, final int direction) throws ProBException {
+		final String command = direction < 0 ? "back" : "forward";
+		int count = 1;
+		if (!argument.isEmpty()) {
+			try {
+				count = Integer.parseInt(argument);
+			} catch (NumberFormatException e) {
+				count = 0;
+			}
+			if (count < 1)
+				return new Result(Kind.ERROR, "Usage: :" + command
+						+ " [N], with a number of steps N > 0");
+		}
+		final History history = animator.getHistory();
+		if (history == null || history.isEmpty())
+			return new Result(Kind.NOT_AVAILABLE, "The history is empty.");
+		final int from = history.getCurrentPosition();
+		final int to = direction < 0 ? Math.max(0, from - count) : Math.min(
+				history.size() - 1, from + count);
+		if (to == from)
+			return new Result(Kind.UNKNOWN, direction < 0 ? "Already at the start of the history."
+					: "Already at the end of the history: there is no step to go forward to.");
+		// the events of the steps undone or redone, oldest first; the
+		// operation of an item leads from its state to the next one
+		final List<String> events = new ArrayList<String>();
+		for (int i = Math.min(from, to); i < Math.max(from, to); i++) {
+			final HistoryItem item = history.getHistoryItem(i - from);
+			final Operation op = item == null ? null : item.getOperation();
+			events.add(op == null ? "?" : UnicodeTranslator.toUnicode(op
+					.getName()));
+		}
+		history.gotoPos(to);
+		final int steps = Math.abs(to - from);
+		final StringBuilder sb = new StringBuilder(direction < 0 ? "Went back "
+				: "Went forward ").append(steps).append(
+				steps == 1 ? " step" : " steps");
+		if (steps < count)
+			sb.append(" of ").append(count).append(
+					direction < 0 ? " (the start of the history)"
+							: " (the end of the history)");
+		sb.append(direction < 0 ? ", undoing: " : ", redoing: ").append(
+				shortList(events));
+		final State reached = animator.getCurrentState();
+		if (reached != null)
+			sb.append("\nNow in state ").append(reached.getId());
+		sb.append(" (position ").append(to).append(" of ")
+				.append(history.size() - 1).append(" in the history)");
+		return new Result(Kind.VALUE, sb.toString());
+	}
+
+	/** the names, with "..." in the middle if there are many */
+	private static String shortList(final List<String> names) {
+		if (names.size() <= 10)
+			return String.join(", ", names);
+		return String.join(", ", names.subList(0, 4)) + ", ... , "
+				+ String.join(", ", names.subList(names.size() - 6,
+						names.size()));
+	}
+
+	/**
 	 * ":state": the current state as known to the plug-in, without asking
 	 * ProB
 	 */
@@ -707,7 +780,7 @@ public class ConsoleEvaluator implements ILifecycleListener {
 		final String solver = SOLVERS.get(name.toLowerCase(Locale.ROOT));
 		if (solver == null)
 			return new Result(Kind.ERROR, "Unknown command :" + name
-					+ ", available: :help, :x, :clear, :type, :state, :animate, :mc, :reload, :table, :graph, :states, :prefs, :version, "
+					+ ", available: :help, :x, :clear, :type, :state, :animate, :back, :forward, :mc, :reload, :table, :graph, :states, :prefs, :version, "
 					+ solverCommands());
 		final String formula = command.substring(end).trim();
 		if (formula.isEmpty())
