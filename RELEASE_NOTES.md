@@ -10,6 +10,7 @@ A new view for evaluating formulas in the current state of the animation. Open i
 - **Commands:**
   - `:type F`: the type of a formula and of its free identifiers
   - `:state`: the current state's values, status and enabled events
+  - `:animate [N]`: executes N random enabled events (1 by default), like "Animate N Steps" in the Operations view, and says how many were executed, the last one and the reached state. It stops early in a deadlock or when the invariant is violated (shown in yellow or red), and can be cancelled in the Progress view. The other views are updated as for the Operations view.
   - `:states`: statistics about the state space explored so far, e.g. after model checking: the number of states and transitions, the states by kind (e.g. open, live, deadlocked, invariant violated), the transitions per event, and the events not executed yet. It needs a running animation, but no current state.
   - `:table EXPR` / `:graph EXPR`: show the value of EXPR in the ProB Table or ProB Graph view, like "Show Value as Table/Graph" in the State view. The view is opened if necessary, and the console keeps the focus.
   - `:prefs [TEXT]`: ProB's preferences, with their defaults if changed
@@ -25,6 +26,7 @@ A new view for evaluating formulas in the current state of the animation. Open i
   - The + / − buttons, or Ctrl+= / Ctrl+-, change the font size.
   - Type errors name the identifiers whose type can't be inferred.
 - **Errors** are shown in the console, in red, instead of in a dialog, including the error messages ProB reports while evaluating.
+- **New model:** when another model is loaded, "--- New model loaded ---" marks the results above it as belonging to the previous model. It is only shown if something was evaluated since the previous model was loaded (or the output was cleared), so loading several models in a row does not fill the console with these lines.
 
 ### ProB Graph
 A new view that shows the graphs ProB can compute. Open it from the State view's right-click menu ("Open ProB Graph") or via Window › Show View › ProB › ProB Graph.

@@ -12,6 +12,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Platform;
 import org.osgi.framework.Bundle;
 
@@ -27,6 +28,8 @@ import de.prob.core.command.GetVersionCommand;
 import de.prob.core.command.EvaluationGetValuesCommand;
 import de.prob.core.command.EvaluationGetValuesCommand.EvaluationResult;
 import de.prob.core.command.EvaluationInsertFormulaCommand;
+import de.prob.core.command.ExecuteRandomStepsCommand;
+import de.prob.core.command.ExecuteRandomStepsCommand.Outcome;
 import de.prob.core.domainobjects.EvaluationElement;
 import de.prob.core.domainobjects.Operation;
 import de.prob.core.domainobjects.ProBPreference;
@@ -135,6 +138,16 @@ public class ConsoleEvaluator implements ILifecycleListener {
 	}
 
 	public Result evaluate(final String input) throws ProBException {
+		return evaluate(input, null);
+	}
+
+	/**
+	 * @param monitor
+	 *            the job's, e.g. to stop ":animate N" when it is cancelled;
+	 *            may be null
+	 */
+	public Result evaluate(final String input, final IProgressMonitor monitor)
+			throws ProBException {
 		final String formula = input.trim();
 		final Animator animator = Animator.getAnimator();
 		if (commandArgument(formula, "version") != null)
@@ -154,6 +167,9 @@ public class ConsoleEvaluator implements ILifecycleListener {
 			return new Result(Kind.NOT_AVAILABLE, "There is no current state.");
 		if (commandArgument(formula, "state") != null)
 			return describeState(state);
+		final String animateArgument = commandArgument(formula, "animate");
+		if (animateArgument != null)
+			return animate(animator, animateArgument, monitor);
 		if (isSolverCommand(formula))
 			return solveWith(animator, state, formula);
 
@@ -230,6 +246,53 @@ public class ConsoleEvaluator implements ILifecycleListener {
 		if (!argument.isEmpty() && !Character.isWhitespace(argument.charAt(0)))
 			return null; // another command, e.g. ":types"
 		return argument.trim();
+	}
+
+	/**
+	 * ":animate [N]": executes N random enabled events (1 by default), like
+	 * "Animate N Steps" in the Operations view; stops in a deadlock or when
+	 * the invariant is violated
+	 */
+	private static Result animate(final Animator animator,
+			final String argument, final IProgressMonitor monitor)
+			throws ProBException {
+		int count = 1;
+		if (!argument.isEmpty()) {
+			try {
+				count = Integer.parseInt(argument);
+			} catch (NumberFormatException e) {
+				count = 0;
+			}
+			if (count < 1)
+				return new Result(Kind.ERROR,
+						"Usage: :animate [N], with a number of steps N > 0");
+		}
+		final Outcome outcome = ExecuteRandomStepsCommand.execute(animator,
+				count, monitor);
+		final StringBuilder sb = new StringBuilder("Executed ")
+				.append(outcome.steps).append(
+						outcome.steps == 1 ? " random step" : " random steps");
+		if (outcome.steps < count)
+			sb.append(" of ").append(count);
+		if (outcome.last != null)
+			sb.append(", the last one: ").append(
+					UnicodeTranslator.toUnicode(outcome.last.toString()));
+		final State reached = animator.getCurrentState();
+		if (reached != null)
+			sb.append("\nNow in state ").append(reached.getId());
+		switch (outcome.stop) {
+		case DEADLOCK:
+			sb.append("\nStopped: deadlock, no event is enabled.");
+			return new Result(Kind.UNKNOWN, sb.toString());
+		case INVARIANT_VIOLATED:
+			sb.append("\nStopped: the invariant is violated.");
+			return new Result(Kind.FALSE, sb.toString());
+		case CANCELLED:
+			sb.append("\nCancelled.");
+			return new Result(Kind.UNKNOWN, sb.toString());
+		default:
+			return new Result(Kind.VALUE, sb.toString());
+		}
 	}
 
 	/**
@@ -443,7 +506,7 @@ public class ConsoleEvaluator implements ILifecycleListener {
 		final String solver = SOLVERS.get(name.toLowerCase(Locale.ROOT));
 		if (solver == null)
 			return new Result(Kind.ERROR, "Unknown command :" + name
-					+ ", available: :help, :x, :clear, :type, :state, :table, :graph, :states, :prefs, :version, "
+					+ ", available: :help, :x, :clear, :type, :state, :animate, :table, :graph, :states, :prefs, :version, "
 					+ solverCommands());
 		final String formula = command.substring(end).trim();
 		if (formula.isEmpty())

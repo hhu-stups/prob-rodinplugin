@@ -97,6 +97,10 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 	private int historyIndex = 0;
 	// the input being evaluated, null if none
 	private Job runningJob;
+	// whether the output has results for the current model, i.e. something
+	// was evaluated since the model was loaded (or the output cleared); only
+	// then is a new model marked in the output (UI thread only)
+	private boolean evaluatedForModel = false;
 
 	private StyledText output;
 	private Text input;
@@ -639,6 +643,7 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 		input.setText("");
 		if (isClearCommand(text.trim())) {
 			output.setText("");
+			evaluatedForModel = false;
 		} else if (isCloseCommand(text.trim())) {
 			// not while the key event of the input is being handled: closing
 			// disposes the input
@@ -651,9 +656,11 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 				}
 			});
 		} else if (viewArgument(text.trim(), "table") != null) {
+			evaluatedForModel = true;
 			append(PROMPT + echo(text) + "\n", null, SWT.BOLD);
 			showInView(TableViewPart.VIEW_ID, viewArgument(text.trim(), "table"));
 		} else if (viewArgument(text.trim(), "graph") != null) {
+			evaluatedForModel = true;
 			append(PROMPT + echo(text) + "\n", null, SWT.BOLD);
 			showInView(GraphViewPart.VIEW_ID, viewArgument(text.trim(), "graph"));
 		} else if (helpArgument(text.trim()) != null) {
@@ -786,6 +793,8 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 						"the type of the predicate or expression F, and the\ninferred types of its free identifiers" },
 				{ "state", ":state",
 						"the current state: values, status, enabled events" },
+				{ "animate", ":animate [N]",
+						"execute N random enabled events (1 by default), like\nAnimate N Steps in the Operations view; stops in a\ndeadlock or when the invariant is violated" },
 				{ "states", ":states",
 						"statistics about the state space explored so far:\nnumber of states and transitions, states by kind\n(e.g. deadlocked, invariant violated), transitions per event" },
 				{ "table", ":table EXPR",
@@ -891,6 +900,7 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 	}
 
 	private void evaluate(final String text) {
+		evaluatedForModel = true;
 		setContentDescription("Evaluating " + text + " ...");
 		input.setEnabled(false);
 		final Job job = new Job("Evaluating " + text) {
@@ -902,7 +912,7 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 					result = Animator.callQuietly(new Animator.ProBCall<Result>() {
 						@Override
 						public Result call() throws ProBException {
-							return evaluator.evaluate(text);
+							return evaluator.evaluate(text, monitor);
 						}
 					});
 				} catch (PrologException e) {
@@ -1006,7 +1016,9 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 	}
 
 	/**
-	 * A new model has been loaded (called from any thread)
+	 * A new model has been loaded (called from any thread): marked in the
+	 * output only if it has results for the previous model, which no longer
+	 * apply
 	 */
 	@Override
 	public void reset() {
@@ -1014,6 +1026,9 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 		asyncExecIfAlive(new Runnable() {
 			@Override
 			public void run() {
+				if (!evaluatedForModel)
+					return;
+				evaluatedForModel = false;
 				append("--- New model loaded ---\n",
 						getColor(SWT.COLOR_DARK_GRAY), SWT.ITALIC);
 			}
@@ -1067,6 +1082,7 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 				names.add(":clear");
 				names.add(":type");
 				names.add(":state");
+				names.add(":animate");
 				names.add(":states");
 				names.add(":table");
 				names.add(":graph");
