@@ -858,6 +858,28 @@ public class StateViewPart extends StateBasedViewPart {
 	 * A double-click reloads the animation (e.g. after the model was
 	 * modified); a single click shows the errors and warnings of the project.
 	 */
+	/**
+	 * Loads the animated model again (e.g. after it was changed), like a
+	 * double-click on the State view's model label; the project's errors and
+	 * warnings are counted again first, as they may have been fixed. Can be
+	 * called from any thread.
+	 * 
+	 * @return false if no model is animated
+	 */
+	public static boolean reloadModel() throws ProBException {
+		final Animator animator = Animator.getAnimator();
+		final LanguageDependendAnimationPart ldp = animator
+				.getLanguageDependendPart();
+		if (ldp == null)
+			return false;
+		if (ldp instanceof EventBAnimatorPart)
+			// the errors may have been fixed
+			ProjectProblems.of(((EventBAnimatorPart) ldp).getRoot()
+					.getRodinProject().getProject()).storeInAnimator();
+		ldp.reload(animator);
+		return true;
+	}
+
 	private static class ResetAnimationListener implements MouseListener {
 		/** increased by a double-click, cancelling a pending single click */
 		private int clicks;
@@ -869,18 +891,10 @@ public class StateViewPart extends StateBasedViewPart {
 		}
 
 		static void reload() {
-			Animator animator = Animator.getAnimator();
-			LanguageDependendAnimationPart ldp = animator.getLanguageDependendPart();
-			if (ldp != null) {
-				if (ldp instanceof EventBAnimatorPart)
-					// the errors may have been fixed
-					ProjectProblems.of(((EventBAnimatorPart) ldp).getRoot()
-							.getRodinProject().getProject()).storeInAnimator();
-				try {
-					ldp.reload(animator);
-				} catch (ProBException e) {
-					e.notifyUserOnce();
-				}
+			try {
+				reloadModel();
+			} catch (ProBException e) {
+				e.notifyUserOnce();
 			}
 		}
 

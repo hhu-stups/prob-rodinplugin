@@ -624,8 +624,11 @@ public class GraphViewPart extends ViewPart implements ILifecycleListener,
 		job.schedule();
 	}
 
-	/** gets the graphs again, as they depend on the state, and the graph */
-	private void refresh() {
+	/**
+	 * Gets the graphs again, as they depend on the state, and the graph (the
+	 * Refresh button; also for the console's ":graph")
+	 */
+	public void refresh() {
 		if (browser == null || browser.isDisposed())
 			return;
 		loadCommands(shown == null ? null : shown.getCommand());

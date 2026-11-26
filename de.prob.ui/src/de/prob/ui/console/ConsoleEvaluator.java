@@ -46,6 +46,7 @@ import de.prob.exceptions.ProBException;
 import de.prob.parserbase.ProBParseException;
 import de.prob.parserbase.ProBParserBaseAdapter;
 import de.prob.prolog.term.PrologTerm;
+import de.prob.ui.stateview.StateViewPart;
 import de.prob.unicode.UnicodeTranslator;
 
 /**
@@ -157,6 +158,8 @@ public class ConsoleEvaluator implements ILifecycleListener {
 		final Animator animator = Animator.getAnimator();
 		if (commandArgument(formula, "version") != null)
 			return describeVersion(animator);
+		if (commandArgument(formula, "reload") != null)
+			return reload(animator);
 		if (!animator.isMachineLoaded())
 			return new Result(Kind.NOT_AVAILABLE, "No model is being animated.");
 		final String typeArgument = commandArgument(formula, "type");
@@ -256,6 +259,23 @@ public class ConsoleEvaluator implements ILifecycleListener {
 		if (!argument.isEmpty() && !Character.isWhitespace(argument.charAt(0)))
 			return null; // another command, e.g. ":types"
 		return argument.trim();
+	}
+
+	/**
+	 * ":reload": loads the animated model again, like a double-click on the
+	 * State view's model label
+	 */
+	private static Result reload(final Animator animator)
+			throws ProBException {
+		final LanguageDependendAnimationPart ldp = animator
+				.getLanguageDependendPart();
+		final String name = ldp instanceof EventBAnimatorPart ? ((EventBAnimatorPart) ldp)
+				.getRoot().getComponentName() : "the model";
+		if (!StateViewPart.reloadModel())
+			return new Result(Kind.NOT_AVAILABLE,
+					"No model is being animated.");
+		return new Result(Kind.VALUE, "--- Reloaded " + name
+				+ ": the results above are for the previous version ---");
 	}
 
 	/** the time ProB model checks before it answers, as in ModelCheckingJob */
@@ -687,7 +707,7 @@ public class ConsoleEvaluator implements ILifecycleListener {
 		final String solver = SOLVERS.get(name.toLowerCase(Locale.ROOT));
 		if (solver == null)
 			return new Result(Kind.ERROR, "Unknown command :" + name
-					+ ", available: :help, :x, :clear, :type, :state, :animate, :mc, :table, :graph, :states, :prefs, :version, "
+					+ ", available: :help, :x, :clear, :type, :state, :animate, :mc, :reload, :table, :graph, :states, :prefs, :version, "
 					+ solverCommands());
 		final String formula = command.substring(end).trim();
 		if (formula.isEmpty())

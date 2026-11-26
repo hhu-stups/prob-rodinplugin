@@ -736,6 +736,10 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 				+ UnicodeTranslator.toUnicode(command.substring(end));
 	}
 
+	private static boolean isReloadCommand(final String text) {
+		return text.equals(":reload") || text.equals("\u2208reload");
+	}
+
 	private static boolean isClearCommand(final String text) {
 		return text.equals(":clear") || text.equals("\u2208clear");
 	}
@@ -766,18 +770,25 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 	 * ":table EXPR" and ":graph EXPR": shows the value of EXPR in the ProB
 	 * Table or Graph view, like "Show Value as Table/Graph" in the State
 	 * view. The view shows errors, e.g. a syntax error, itself. Without EXPR,
-	 * the view is only opened (e.g. to choose one of its tables or graphs).
+	 * the view is opened, or refreshed (like its Refresh button) if it was
+	 * open, e.g. after animating.
 	 */
 	private void showInView(final String viewId, final String expression) {
 		final boolean table = viewId.equals(TableViewPart.VIEW_ID);
 		final String name = table ? "ProB Table" : "ProB Graph";
 		if (expression.isEmpty()) {
 			try {
-				// brought to the front; the console keeps the focus
-				getSite().getPage().showView(viewId, null,
-						IWorkbenchPage.VIEW_VISIBLE);
-				append("Opened the " + name + " view.\n",
-						getColor(SWT.COLOR_DARK_GRAY), SWT.NORMAL);
+				// a view that was open is refreshed; a new one computes its
+				// table or graph anyway
+				final boolean wasOpen = getSite().getPage().findView(viewId) != null;
+				final IViewPart view = bringToFront(viewId);
+				if (wasOpen && view instanceof TableViewPart)
+					((TableViewPart) view).refresh();
+				else if (wasOpen && view instanceof GraphViewPart)
+					((GraphViewPart) view).refresh();
+				append((wasOpen ? "Refreshed the " : "Opened the ") + name
+						+ " view.\n", getColor(SWT.COLOR_DARK_GRAY),
+						SWT.NORMAL);
 			} catch (PartInitException e) {
 				append("Could not open the " + name + " view: "
 						+ e.getMessage() + "\n", getColor(SWT.COLOR_RED),
@@ -791,9 +802,7 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 			return;
 		}
 		try {
-			// shown, but the console keeps the focus for the next input
-			final IViewPart view = getSite().getPage().showView(viewId, null,
-					IWorkbenchPage.VIEW_VISIBLE);
+			final IViewPart view = bringToFront(viewId);
 			if (view instanceof TableViewPart)
 				((TableViewPart) view).showExpressionTable(expression);
 			else if (view instanceof GraphViewPart)
@@ -805,6 +814,23 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 			append("Could not open the " + name + " view: " + e.getMessage()
 					+ "\n", getColor(SWT.COLOR_RED), SWT.NORMAL);
 		}
+	}
+
+	/**
+	 * Opens the view or brings it to the front. If it is in another stack
+	 * than the console, the console keeps the focus for the next input. If
+	 * it is a tab of the console's stack (e.g. in the ProB perspective's
+	 * layout), Eclipse would only create it behind the console: it is then
+	 * activated, i.e. shown instead of the console.
+	 */
+	private IViewPart bringToFront(final String viewId)
+			throws PartInitException {
+		final IWorkbenchPage page = getSite().getPage();
+		IViewPart view = page.showView(viewId, null,
+				IWorkbenchPage.VIEW_VISIBLE);
+		if (view != null && !page.isPartVisible(view))
+			view = page.showView(viewId, null, IWorkbenchPage.VIEW_ACTIVATE);
+		return view;
 	}
 
 	/**
@@ -849,12 +875,14 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 						"execute N random enabled events (1 by default), like\nAnimate N Steps in the Operations view; stops in a\ndeadlock or when the invariant is violated" },
 				{ "mc", ":mc [N]",
 						"model check: with the options last chosen in the model\nchecking dialog, until the state space is explored, an\nerror is found or (if given) N states were checked; it\ncontinues where the last model checking stopped. A state\nwith an error becomes the current state. Also :model-check" },
+				{ "reload", ":reload",
+						"load the animated model again (e.g. after it was\nchanged), like a double-click on the State view's model label" },
 				{ "states", ":states",
 						"statistics about the state space explored so far:\nnumber of states and transitions, states by kind\n(e.g. deadlocked, invariant violated), transitions per event" },
 				{ "table", ":table [EXPR]",
-						"show the value of the expression EXPR as a table in the\nProB Table view (like Show Value as Table in the State view);\nwithout EXPR, just open the ProB Table view" },
+						"show the value of the expression EXPR as a table in the\nProB Table view (like Show Value as Table in the State view);\nwithout EXPR, open the ProB Table view or refresh it" },
 				{ "graph", ":graph [EXPR]",
-						"show the value of the expression EXPR as a graph in the\nProB Graph view (like Show Value as Graph in the State view);\nwithout EXPR, just open the ProB Graph view" },
+						"show the value of the expression EXPR as a graph in the\nProB Graph view (like Show Value as Graph in the State view);\nwithout EXPR, open the ProB Graph view or refresh it" },
 				{ "prefs", ":prefs [TEXT]",
 						"ProB's preferences (only those whose name contains\nTEXT), with the default value if it was changed" },
 				{ "version", ":version",
@@ -955,7 +983,9 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 	}
 
 	private void evaluate(final String text) {
-		evaluatedForModel = true;
+		// ":reload" says itself that a new model was loaded; the line for a
+		// new model is shown again only after the next evaluation
+		evaluatedForModel = !isReloadCommand(text.trim());
 		setContentDescription("Evaluating " + text + " ...");
 		input.setEnabled(false);
 		final Job job = new Job("Evaluating " + text) {
@@ -1146,6 +1176,7 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 				names.add(":state");
 				names.add(":animate");
 				names.add(":mc");
+				names.add(":reload");
 				names.add(":model-check");
 				names.add(":states");
 				names.add(":table");
@@ -1161,6 +1192,7 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 							|| name.equals("x") || name.equals("state")
 							|| name.equals("states")
 							|| name.equals("version")
+							|| name.equals("reload")
 							|| name.equals("clear") ? ""
 							: " ";
 					if (name.startsWith(prefix))

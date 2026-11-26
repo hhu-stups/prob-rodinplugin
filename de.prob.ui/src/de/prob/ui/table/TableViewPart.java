@@ -504,8 +504,11 @@ public class TableViewPart extends ViewPart implements ILifecycleListener,
 		job.schedule();
 	}
 
-	/** gets the tables again, as they depend on the state, and the table */
-	private void refresh() {
+	/**
+	 * Gets the tables again, as they depend on the state, and the table (the
+	 * Refresh button; also for the console's ":table")
+	 */
+	public void refresh() {
 		if (shownCustom != null)
 			showCustomTable(shownCustom);
 		else
