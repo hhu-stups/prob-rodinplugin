@@ -26,6 +26,7 @@ import de.prob.core.UnsatAxiomsNotice;
 import de.prob.logging.Logger;
 import de.prob.ui.eventb.ExplorerLabels;
 import de.prob.ui.theorymapping.CreateTheoryMappingFiles;
+import de.prob.ui.theorymapping.MappingFileValidator;
 import de.prob.ui.ticket.NonModalNotification;
 import de.prob.ui.ticket.ProBLogListener;
 
@@ -85,6 +86,7 @@ public class ProbUiPlugin extends AbstractUIPlugin {
 		UnsatAxiomsNotice.setUnsatCoreAction(ProbUiPlugin::showUnsatCore);
 		CheckedFiles.setRunner(ProbUiPlugin::runWithProgress);
 		CreateTheoryMappingFiles.register();
+		MappingFileValidator.register();
 	}
 
 	/**

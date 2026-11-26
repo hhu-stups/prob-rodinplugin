@@ -30,6 +30,7 @@ import org.eventb.theory.core.IAvailableTheoryProject;
 import org.eventb.theory.core.IDeployedTheoryRoot;
 import org.eventb.theory.core.ISCAxiomaticDefinitionsBlock;
 import org.eventb.theory.core.ISCAxiomaticOperatorDefinition;
+import org.eventb.theory.core.ISCNewOperatorDefinition;
 import org.eventb.theory.core.ISCOperatorArgument;
 import org.eventb.theory.core.ITheoryPathRoot;
 import org.rodinp.core.IRodinProject;
@@ -77,18 +78,35 @@ public final class TheoryMappingFiles {
 		}
 	}
 
-	/** a deployed theory with axiomatic operators or types */
+	/** a deployed theory */
 	public static final class Theory {
 		/** the theory's project, where ProB looks for the .ptm file */
 		public final IProject project;
 		public final String name;
+		/** its axiomatic operators and types */
 		public final List<AxiomaticOperator> operators;
+		/**
+		 * the number of arguments of its operators with a direct or recursive
+		 * definition, by name: a .ptm file may also map them
+		 */
+		public final Map<String, Integer> definedOperators;
 
 		Theory(final IProject project, final String name,
-				final List<AxiomaticOperator> operators) {
+				final List<AxiomaticOperator> operators,
+				final Map<String, Integer> definedOperators) {
 			this.project = project;
 			this.name = name;
 			this.operators = Collections.unmodifiableList(operators);
+			this.definedOperators = Collections
+					.unmodifiableMap(definedOperators);
+		}
+
+		/** @return the axiomatic operator or type, or null */
+		public AxiomaticOperator axiomaticOperator(final String opName) {
+			for (AxiomaticOperator op : operators)
+				if (op.name.equals(opName))
+					return op;
+			return null;
 		}
 
 		/** @return the theory's mapping file, which may not exist */
@@ -132,12 +150,41 @@ public final class TheoryMappingFiles {
 					add(deployed, at.getDeployedTheory());
 		final List<Theory> result = new ArrayList<Theory>();
 		for (IDeployedTheoryRoot theory : deployed.values()) {
-			final List<AxiomaticOperator> operators = axiomaticOperators(theory);
-			if (!operators.isEmpty())
-				result.add(new Theory(theory.getRodinProject().getProject(),
-						theory.getComponentName(), operators));
+			final Theory t = toTheory(theory);
+			if (!t.operators.isEmpty())
+				result.add(t);
 		}
 		return result;
+	}
+
+	/**
+	 * @return the theory deployed in the project whose mapping file this is
+	 *         (<code>T.ptm</code> for the theory <code>T</code>), or null if
+	 *         there is none
+	 */
+	public static Theory theoryOf(final IFile mappingFile)
+			throws CoreException {
+		final IRodinProject rodinProject = RodinCore.valueOf(mappingFile
+				.getProject());
+		if (rodinProject == null || !rodinProject.exists())
+			return null;
+		final String name = mappingFile.getFullPath().removeFileExtension()
+				.lastSegment();
+		for (IDeployedTheoryRoot theory : rodinProject
+				.getRootElementsOfType(IDeployedTheoryRoot.ELEMENT_TYPE))
+			if (theory.exists() && name.equals(theory.getComponentName()))
+				return toTheory(theory);
+		return null;
+	}
+
+	private static Theory toTheory(final IDeployedTheoryRoot theory)
+			throws CoreException {
+		final Map<String, Integer> defined = new LinkedHashMap<String, Integer>();
+		for (ISCNewOperatorDefinition opdef : theory
+				.getSCNewOperatorDefinitions())
+			defined.put(opdef.getLabel(), opdef.getOperatorArguments().length);
+		return new Theory(theory.getRodinProject().getProject(),
+				theory.getComponentName(), axiomaticOperators(theory), defined);
 	}
 
 	private static void add(final Map<String, IDeployedTheoryRoot> deployed,

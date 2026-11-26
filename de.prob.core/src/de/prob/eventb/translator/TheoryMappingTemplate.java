@@ -139,6 +139,28 @@ public final class TheoryMappingTemplate {
 		return s.append(')').toString();
 	}
 
+	/**
+	 * @return the tag ProB uses for the operator without a .ptm line, if its
+	 *         arguments fit; null if there is none (or probcli cannot tell)
+	 */
+	public Default defaultFor(final AxiomaticOperator op) {
+		return choose(op, defaultsFor(op));
+	}
+
+	/** @return the tag, or null if probcli does not know it (or cannot tell) */
+	public Target target(final String tag) {
+		if (targets != null)
+			for (Target t : targets)
+				if (t.tag.equals(tag))
+					return t;
+		return null;
+	}
+
+	/** @return whether probcli told the tags */
+	public boolean knowsTargets() {
+		return targets != null;
+	}
+
 	private List<Default> defaultsFor(final AxiomaticOperator op) {
 		final List<Default> result = new ArrayList<Default>();
 		if (defaults != null)
@@ -167,14 +189,6 @@ public final class TheoryMappingTemplate {
 				return false;
 		}
 		return true;
-	}
-
-	private Target target(final String tag) {
-		if (targets != null)
-			for (Target t : targets)
-				if (t.tag.equals(tag))
-					return t;
-		return null;
 	}
 
 	private static String arguments(final int arity) {

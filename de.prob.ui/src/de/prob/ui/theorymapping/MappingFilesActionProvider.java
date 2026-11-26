@@ -23,11 +23,11 @@ import de.prob.logging.Logger;
 
 /**
  * Makes the Event-B Explorer's "open" action, run by a double-click (or
- * Enter), open the selected theory mapping file (.ptm) in the text editor
+ * Enter), open the selected theory mapping file (.ptm) in its editor
  */
 public class MappingFilesActionProvider extends CommonActionProvider {
 
-	private static final String TEXT_EDITOR = "org.eclipse.ui.DefaultTextEditor";
+	private static final String TEXT_EDITOR = MappingFileEditor.ID;
 
 	private ICommonActionExtensionSite site;
 	private Action open;

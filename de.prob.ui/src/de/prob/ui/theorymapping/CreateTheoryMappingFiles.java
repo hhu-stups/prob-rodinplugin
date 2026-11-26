@@ -29,15 +29,10 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
 
-import de.prob.core.Animator;
-import de.prob.core.command.GetTheoryMappingTargetsCommand;
-import de.prob.core.command.GetTheoryMappingTargetsCommand.Default;
-import de.prob.core.command.GetTheoryMappingTargetsCommand.Target;
 import de.prob.eventb.translator.TheoryMappingFiles;
 import de.prob.eventb.translator.TheoryMappingFiles.Theory;
 import de.prob.eventb.translator.TheoryMappingLinks;
 import de.prob.eventb.translator.TheoryMappingTemplate;
-import de.prob.exceptions.ProBException;
 import de.prob.logging.Logger;
 
 /**
@@ -50,7 +45,7 @@ import de.prob.logging.Logger;
  */
 public final class CreateTheoryMappingFiles {
 
-	private static final String TEXT_EDITOR = "org.eclipse.ui.DefaultTextEditor";
+	private static final String TEXT_EDITOR = MappingFileEditor.ID;
 
 	private CreateTheoryMappingFiles() {
 	}
@@ -161,19 +156,7 @@ public final class CreateTheoryMappingFiles {
 
 	/** @return the template with probcli's tags, if it can list them */
 	private static TheoryMappingTemplate template() {
-		final GetTheoryMappingTargetsCommand command = new GetTheoryMappingTargetsCommand();
-		List<Target> targets = null;
-		List<Default> defaults = null;
-		try {
-			Animator.getAnimator().executeQuietly(command);
-			targets = command.getTargets();
-			defaults = command.getDefaults();
-		} catch (ProBException e) {
-			// an older probcli without get_theory_mapping_targets/2
-			Logger.info("probcli cannot list the tags of theory mapping files: "
-					+ e.getMessage());
-		}
-		return new TheoryMappingTemplate(targets, defaults);
+		return MappingFileValidator.tags();
 	}
 
 	private static ByteArrayInputStream bytes(final String text,

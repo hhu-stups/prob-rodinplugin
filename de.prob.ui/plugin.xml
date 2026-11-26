@@ -2212,6 +2212,34 @@
          </actionProvider>
       </navigatorContent>
    </extension>
+   <!-- the editor of theory mapping files (.ptm), with syntax colouring;
+        their problems are shown as markers of this type -->
+   <extension
+         point="org.eclipse.ui.editors">
+      <editor
+            class="de.prob.ui.theorymapping.MappingFileEditor"
+            contributorClass="org.eclipse.ui.editors.text.TextEditorActionContributor"
+            default="true"
+            extensions="ptm"
+            icon="icons/prob.png"
+            id="de.prob.ui.theoryMappingEditor"
+            name="ProB Theory Mapping Editor">
+      </editor>
+   </extension>
+   <extension
+         id="theoryMappingProblem"
+         name="ProB Theory Mapping Problem"
+         point="org.eclipse.core.resources.markers">
+      <super
+            type="org.eclipse.core.resources.problemmarker">
+      </super>
+      <super
+            type="org.eclipse.core.resources.textmarker">
+      </super>
+      <persistent
+            value="true">
+      </persistent>
+   </extension>
    <!-- the theory mapping files (.ptm) of a project, after its machines,
         contexts and theories in Rodin's Event-B Explorer -->
    <extension
