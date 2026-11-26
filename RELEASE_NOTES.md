@@ -20,7 +20,7 @@ A new view for evaluating formulas in the current state of the animation. Open i
   - `:clear` clears the output, and `:x` closes the console
   - `:help [COMMAND]` or the ? button shows the help
 - **Editing:**
-  - Enter evaluates and Shift+Enter starts a new line. Up/Down browse the input history.
+  - Enter evaluates and Shift+Enter starts a new line. Up/Down browse the input history: only the inputs that start with the text typed so far, e.g. type `:graph` and press Up for the previous `:graph` commands (repetitions are skipped). Down after the newest one brings back the typed text.
   - Tab or Ctrl+Space completes model identifiers, Event-B keywords and console commands.
 - **Mathematical symbols:** the ∀ toggle translates ASCII to symbols while typing, as in the Rodin editors (except in `:` commands). The console uses Rodin's math font, so `<<->`, `<->>`, `<<->>` and `<+` display correctly.
 - **Display:**

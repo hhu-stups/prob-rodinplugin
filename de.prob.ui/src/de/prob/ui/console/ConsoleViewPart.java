@@ -67,7 +67,7 @@ import de.prob.unicode.UnicodeTranslator;
 /**
  * A console to evaluate predicates and expressions in the current state of
  * the animation. Enter evaluates the input, Shift+Enter starts a new line,
- * Up/Down browse the previous inputs and Tab or Ctrl+Space complete the
+ * Up/Down browse the previous inputs (those starting with what was typed) and Tab or Ctrl+Space complete the
  * identifiers of the model and the keywords of Event-B.
  */
 public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
@@ -95,6 +95,10 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 	private final List<String> history = new ArrayList<String>();
 	// position in the history while browsing it with Up/Down
 	private int historyIndex = 0;
+	// while browsing the history: what was typed before (only the inputs
+	// starting with it are shown) and the input last shown; null otherwise
+	private String historyPrefix;
+	private String historyShown;
 	// the input being evaluated, null if none
 	private Job runningJob;
 	// whether the output has results for the current model, i.e. something
@@ -682,6 +686,7 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 		if (history.isEmpty() || !history.get(history.size() - 1).equals(text))
 			history.add(text);
 		historyIndex = history.size();
+		historyPrefix = null;
 		input.setText("");
 		if (isClearCommand(text.trim())) {
 			output.setText("");
@@ -948,7 +953,9 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 				+ "  Enter            evaluate the input\n"
 				+ "  Shift+Enter      start a new line in the input\n"
 				+ "  Up / Down        previous / next input (in the first / last line of the input,\n"
-				+ "                   otherwise they move between the lines of the input)\n"
+				+ "                   otherwise they move between the lines of the input); only\n"
+				+ "                   inputs starting with the text typed before are shown,\n"
+				+ "                   e.g. type :graph and press Up for the previous :graph\n"
 				+ "  Tab              complete identifiers of the model, Event-B keywords and\n"
 				+ "                   solver commands: a unique completion is inserted, otherwise\n"
 				+ "                   the common prefix, otherwise the list of proposals opens\n"
@@ -972,14 +979,32 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 		append(help, getColor(SWT.COLOR_DARK_GRAY), SWT.NORMAL);
 	}
 
+	/**
+	 * shows the previous (-1) or next (1) input of the history that starts with
+	 * the text typed before browsing (all inputs if nothing was typed),
+	 * skipping repetitions; after the newest one, the typed text is shown
+	 * again
+	 */
 	private void browseHistory(final int direction) {
-		if (history.isEmpty())
-			return;
-		historyIndex = Math.max(0,
-				Math.min(history.size(), historyIndex + direction));
-		input.setText(historyIndex < history.size() ? history.get(historyIndex)
-				: "");
-		input.setSelection(input.getText().length());
+		final String current = input.getText();
+		if (historyPrefix == null || !current.equals(historyShown)) {
+			// the input was typed or edited: start browsing with it
+			historyPrefix = current;
+			historyIndex = history.size();
+		}
+		int i = historyIndex;
+		do
+			i += direction;
+		while (i >= 0 && i < history.size()
+				&& (!history.get(i).startsWith(historyPrefix) || history.get(i)
+						.equals(current)));
+		if (i < 0)
+			return; // no older match: stay on the current one
+		historyIndex = Math.min(i, history.size());
+		historyShown = historyIndex < history.size() ? history
+				.get(historyIndex) : historyPrefix;
+		input.setText(historyShown);
+		input.setSelection(historyShown.length());
 	}
 
 	private void evaluate(final String text) {
