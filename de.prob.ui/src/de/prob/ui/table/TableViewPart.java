@@ -545,6 +545,17 @@ public class TableViewPart extends ViewPart implements ILifecycleListener,
 			loadCommands(commandName);
 	}
 
+	/**
+	 * Shows one of ProB's tables for an expression, e.g. for the console's
+	 * <code>:table "NAME" EXPR</code>; with an empty expression, the one in
+	 * the expression field (or last used) is taken if the table needs one
+	 */
+	public void showTable(final String commandName, final String expression) {
+		if (!expression.isEmpty())
+			expressionField.setText(expression);
+		showTable(commandName);
+	}
+
 	/** computes a table in the background and shows it */
 	private void showTable(final CommandInfo command) {
 		setShownCustom(null);

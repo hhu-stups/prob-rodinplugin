@@ -2,6 +2,7 @@ package de.prob.ui.console;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -55,6 +56,7 @@ import de.prob.core.Animator;
 import de.prob.core.ILifecycleListener;
 import de.prob.core.PrologException;
 import de.prob.core.domainobjects.MachineDescription;
+import de.prob.core.command.GetCommandsCommand.CommandInfo;
 import de.prob.exceptions.ProBException;
 import de.prob.ui.ProbUiPlugin;
 import de.prob.ui.StaticListenerRegistry;
@@ -627,6 +629,8 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 			@Override
 			public void modifyText(final ModifyEvent e) {
 				updateMathSymbolsListener();
+				// the names of ProB's graphs and tables for the completion
+				ViewCommands.prefetchFor(input.getText());
 			}
 		});
 		setMathSymbols(enabled);
@@ -806,6 +810,20 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 					getColor(SWT.COLOR_DARK_GRAY), SWT.NORMAL);
 			return;
 		}
+		if (expression.startsWith("\"")) {
+			final int end = expression.indexOf('"', 1);
+			if (end < 0) {
+				append("Usage: :" + (table ? "table" : "graph")
+						+ " \"NAME\" [FORMULA], with the name of one of ProB's "
+						+ (table ? "tables" : "graphs")
+						+ " in quotes (Tab completes it)\n",
+						getColor(SWT.COLOR_RED), SWT.NORMAL);
+				return;
+			}
+			showCommandInView(table, expression.substring(1, end).trim(),
+					expression.substring(end + 1).trim());
+			return;
+		}
 		try {
 			final IViewPart view = bringToFront(viewId);
 			if (view instanceof TableViewPart)
@@ -819,6 +837,93 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 			append("Could not open the " + name + " view: " + e.getMessage()
 					+ "\n", getColor(SWT.COLOR_RED), SWT.NORMAL);
 		}
+	}
+
+	/**
+	 * ":table "NAME" [FORMULA]" and ":graph "NAME" [FORMULA]": shows one of
+	 * ProB's tables or graphs (a command of its meta interface, e.g.
+	 * state_space), like choosing it in the view's menus. The name is checked
+	 * first, in the background, against those ProB has for the current state.
+	 */
+	private void showCommandInView(final boolean table, final String name,
+			final String formula) {
+		final String kind = table ? "table" : "graph";
+		final String viewName = table ? "ProB Table" : "ProB Graph";
+		final Job job = new Job("ProB Console: " + kind + " " + name) {
+			@Override
+			protected IStatus run(final IProgressMonitor monitor) {
+				List<CommandInfo> commands;
+				String error = null;
+				try {
+					commands = ViewCommands.load(ViewCommands.category(table));
+				} catch (ProBException e) {
+					commands = Collections.emptyList();
+					error = e.getMessage();
+				}
+				final List<CommandInfo> loaded = commands;
+				final String loadError = error;
+				asyncExecIfAlive(new Runnable() {
+					@Override
+					public void run() {
+						if (loadError != null) {
+							append("ProB could not list its " + kind + "s: "
+									+ loadError + "\n",
+									getColor(SWT.COLOR_RED), SWT.NORMAL);
+							return;
+						}
+						final CommandInfo command = ViewCommands.find(loaded,
+								name);
+						if (command == null) {
+							append("ProB has no " + kind + " \"" + name
+									+ "\". Available: "
+									+ String.join(", ", ViewCommands
+											.availableNames(loaded)) + "\n",
+									getColor(SWT.COLOR_RED), SWT.NORMAL);
+							return;
+						}
+						if (!command.isAvailable()) {
+							append(command.getName() + " is not available: "
+									+ command.getUnavailableReason() + "\n",
+									getColor(SWT.COLOR_RED), SWT.NORMAL);
+							return;
+						}
+						if (!formula.isEmpty()
+								&& command.getFormulaArguments() == 0) {
+							append(command.getName()
+									+ " takes no formula: use :" + kind
+									+ " \"" + command.getCommand() + "\"\n",
+									getColor(SWT.COLOR_RED), SWT.NORMAL);
+							return;
+						}
+						try {
+							final IViewPart view = bringToFront(table ? TableViewPart.VIEW_ID
+									: GraphViewPart.VIEW_ID);
+							if (view instanceof TableViewPart)
+								((TableViewPart) view).showTable(
+										command.getCommand(), formula);
+							else if (view instanceof GraphViewPart) {
+								if (formula.isEmpty())
+									((GraphViewPart) view).showGraph(command
+											.getCommand());
+								else
+									((GraphViewPart) view).showFormulaGraph(
+											command.getCommand(), formula);
+							}
+							append("Showing " + command.getName() + " in the "
+									+ viewName + " view.\n",
+									getColor(SWT.COLOR_DARK_GRAY), SWT.NORMAL);
+						} catch (PartInitException e) {
+							append("Could not open the " + viewName
+									+ " view: " + e.getMessage() + "\n",
+									getColor(SWT.COLOR_RED), SWT.NORMAL);
+						}
+					}
+				});
+				return Status.OK_STATUS;
+			}
+		};
+		job.setSystem(true);
+		job.schedule();
 	}
 
 	/**
@@ -889,9 +994,9 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 				{ "states", ":states",
 						"statistics about the state space explored so far:\nnumber of states and transitions, states by kind\n(e.g. deadlocked, invariant violated), transitions per event" },
 				{ "table", ":table [EXPR]",
-						"show the value of the expression EXPR as a table in the\nProB Table view (like Show Value as Table in the State view);\nwithout EXPR, open the ProB Table view or refresh it" },
+						"show the value of the expression EXPR as a table in the\nProB Table view (like Show Value as Table in the State view);\nwithout EXPR, open the ProB Table view or refresh it.\n:table \"NAME\" [FORMULA] shows one of ProB's tables, e.g.\n:table \"machine_statistics\" (type :table \" and Tab for the names)" },
 				{ "graph", ":graph [EXPR]",
-						"show the value of the expression EXPR as a graph in the\nProB Graph view (like Show Value as Graph in the State view);\nwithout EXPR, open the ProB Graph view or refresh it" },
+						"show the value of the expression EXPR as a graph in the\nProB Graph view (like Show Value as Graph in the State view);\nwithout EXPR, open the ProB Graph view or refresh it.\n:graph \"NAME\" [FORMULA] shows one of ProB's graphs, e.g.\n:graph \"state_space\" (type :graph \" and Tab for the names)" },
 				{ "prefs", ":prefs [TEXT]",
 						"ProB's preferences (only those whose name contains\nTEXT), with the default value if it was changed" },
 				{ "version", ":version",
@@ -1144,6 +1249,7 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 	@Override
 	public void reset() {
 		evaluator.reset();
+		ViewCommands.clear();
 		asyncExecIfAlive(new Runnable() {
 			@Override
 			public void run() {
@@ -1190,6 +1296,12 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 					&& isIdentifierChar(contents.charAt(start - 1)))
 				start--;
 			final String prefix = contents.substring(start, position);
+
+			// the name of one of ProB's graphs or tables: :graph "NAME"
+			final IContentProposal[] viewCommands = ViewCommands.proposals(
+					contents.substring(0, start), prefix);
+			if (viewCommands != null)
+				return viewCommands;
 
 			// a command at the start, e.g. ":kod" or ":he"; '\u2208' if ':' was
 			// translated (also after leading white space)
