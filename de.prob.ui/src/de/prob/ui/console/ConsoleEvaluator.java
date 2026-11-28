@@ -177,6 +177,12 @@ public class ConsoleEvaluator implements ILifecycleListener {
 		final String prefsArgument = commandArgument(formula, "prefs");
 		if (prefsArgument != null)
 			return describePreferences(animator, prefsArgument);
+		final String ltlArgument = commandArgument(formula, "ltl");
+		if (ltlArgument != null)
+			return ConsoleChecks.ltl(animator, ltlArgument, monitor);
+		final String cbcArgument = commandArgument(formula, "cbc");
+		if (cbcArgument != null)
+			return ConsoleChecks.cbc(animator, cbcArgument);
 		final State state = animator.getCurrentState();
 		if (state == null)
 			return new Result(Kind.NOT_AVAILABLE, "There is no current state.");
@@ -780,7 +786,7 @@ public class ConsoleEvaluator implements ILifecycleListener {
 		final String solver = SOLVERS.get(name.toLowerCase(Locale.ROOT));
 		if (solver == null)
 			return new Result(Kind.ERROR, "Unknown command :" + name
-					+ ", available: :help, :x, :clear, :type, :state, :animate, :back, :forward, :mc, :reload, :table, :graph, :states, :prefs, :version, "
+					+ ", available: :help, :x, :clear, :type, :state, :animate, :back, :forward, :mc, :ltl, :cbc, :reload, :table, :graph, :states, :prefs, :version, "
 					+ solverCommands());
 		final String formula = command.substring(end).trim();
 		if (formula.isEmpty())

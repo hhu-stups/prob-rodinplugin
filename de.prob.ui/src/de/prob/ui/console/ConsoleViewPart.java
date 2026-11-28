@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -989,6 +990,10 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 						"go N steps (1 by default) forward again in the\nanimation history, like the Forward button" },
 				{ "mc", ":mc [N]",
 						"model check: with the options last chosen in the model\nchecking dialog, until the state space is explored, an\nerror is found or (if given) N states were checked; it\ncontinues where the last model checking stopped. A state\nwith an error becomes the current state. Also :model-check" },
+				{ "ltl", ":ltl FORMULA",
+						"LTL model checking of FORMULA from the initial states,\nlike LTL Model Checking in the ProB menu (e.g.\n:ltl G {x>0}); a counter-example is shown in the LTL\nCounter-Example view" },
+				{ "cbc", ":cbc CHECK",
+						"constraint based checking, like the Constraint Based\nChecking menu; a counter-example becomes the current state.\nCHECK is one of:\n" + ConsoleChecks.describeChecks() },
 				{ "reload", ":reload",
 						"load the animated model again (e.g. after it was\nchanged), like a double-click on the State view's model label" },
 				{ "states", ":states",
@@ -1282,6 +1287,10 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 	private static final class IdentifierProposals implements
 			IContentProposalProvider {
 		// the keywords of Event-B's ASCII syntax
+		/** ":cbc " and the beginning of the check */
+		private static final java.util.regex.Pattern CBC_CHECK = java.util.regex.Pattern
+				.compile("^\\s*[:\u2208]cbc\\s+([a-z-]*)$");
+
 		private static final List<String> KEYWORDS = Arrays.asList("BOOL",
 				"FALSE", "INT", "INTER", "NAT", "NAT1", "POW", "POW1", "TRUE",
 				"UNION", "bool", "card", "dom", "finite", "id", "inter", "max",
@@ -1296,6 +1305,21 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 					&& isIdentifierChar(contents.charAt(start - 1)))
 				start--;
 			final String prefix = contents.substring(start, position);
+
+			// the check of ":cbc CHECK", e.g. "context-theorems"
+			final java.util.regex.Matcher cbc = CBC_CHECK.matcher(contents
+					.substring(0, position));
+			if (cbc.find()) {
+				final List<IContentProposal> checks = new ArrayList<IContentProposal>();
+				for (Map.Entry<String, String> e : ConsoleChecks.CBC_CHECKS
+						.entrySet())
+					if (e.getKey().startsWith(cbc.group(1)))
+						checks.add(new ContentProposal(e.getKey().substring(
+								cbc.group(1).length())
+								+ (e.getValue().startsWith("[") ? " " : ""),
+								e.getKey(), e.getValue()));
+				return checks.toArray(new IContentProposal[checks.size()]);
+			}
 
 			// the name of one of ProB's graphs or tables: :graph "NAME"
 			final IContentProposal[] viewCommands = ViewCommands.proposals(
@@ -1319,6 +1343,8 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 				names.add(":back");
 				names.add(":forward");
 				names.add(":mc");
+				names.add(":ltl");
+				names.add(":cbc");
 				names.add(":reload");
 				names.add(":model-check");
 				names.add(":states");
