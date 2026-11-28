@@ -217,6 +217,42 @@ public class EventBAnimatorPart implements LanguageDependendAnimationPart {
 	}
 
 	/**
+	 * The types of the model's identifiers used in a predicate or expression,
+	 * e.g. to explain a type error: "cur : S, x : ℤ". The text only needs to
+	 * parse, not to type check.
+	 *
+	 * @return the identifiers with their types, in the order they occur; ""
+	 *         if the text does not parse or uses none
+	 */
+	public String describeIdentifierTypes(final String text) {
+		final String formula = UnicodeTranslator.toUnicode(text);
+		final FormulaFactory ff = root.getFormulaFactory();
+		IParseResult result = ff.parsePredicate(formula, null);
+		Formula<?> parsed = result.hasProblem() ? null : result
+				.getParsedPredicate();
+		if (parsed == null) {
+			result = ff.parseExpression(formula, null);
+			parsed = result.hasProblem() ? null : result.getParsedExpression();
+		}
+		if (parsed == null)
+			return "";
+		final ITypeEnvironment typeEnv;
+		try {
+			typeEnv = getTypeEnvironment(ff);
+		} catch (ProBParseException e) {
+			return "";
+		}
+		final Set<String> seen = new HashSet<String>();
+		final List<String> types = new ArrayList<String>();
+		for (FreeIdentifier id : parsed.getSyntacticallyFreeIdentifiers()) {
+			final String name = id.getName();
+			if (seen.add(name) && typeEnv.contains(name))
+				types.add(name + " : " + typeEnv.getType(name));
+		}
+		return String.join(", ", types);
+	}
+
+	/**
 	 * Describes the type of a predicate or expression (parsed as in
 	 * {@link #parseOpenFormula(String)}): "predicate" or the type of the
 	 * expression, followed by the inferred types of the identifiers that do
