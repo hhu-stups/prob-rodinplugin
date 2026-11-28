@@ -991,7 +991,7 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 				{ "mc", ":mc [N]",
 						"model check: with the options last chosen in the model\nchecking dialog, until the state space is explored, an\nerror is found or (if given) N states were checked; it\ncontinues where the last model checking stopped. A state\nwith an error becomes the current state. Also :model-check" },
 				{ "ltl", ":ltl FORMULA",
-						"LTL model checking of FORMULA from the initial states,\nlike LTL Model Checking in the ProB menu (e.g.\n:ltl G {x>0}); a counter-example is shown in the LTL\nCounter-Example view" },
+						"LTL model checking of FORMULA from the initial states,\nlike LTL Model Checking in the ProB menu (e.g.\n:ltl G {x>0}); a counter-example is shown in the LTL\nCounter-Example view. The formula is saved for the model,\nshared with the LTL dialog; :ltl alone lists the saved\nformulas, Tab after :ltl inserts one" },
 				{ "cbc", ":cbc CHECK",
 						"constraint based checking, like the Constraint Based\nChecking menu; a counter-example becomes the current state.\nCHECK is one of:\n" + ConsoleChecks.describeChecks() },
 				{ "reload", ":reload",
@@ -1287,6 +1287,10 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 	private static final class IdentifierProposals implements
 			IContentProposalProvider {
 		// the keywords of Event-B's ASCII syntax
+		/** ":ltl " without a formula yet */
+		private static final java.util.regex.Pattern LTL_START = java.util.regex.Pattern
+				.compile("^\\s*[:\u2208]ltl\\s+$");
+
 		/** ":cbc " and the beginning of the check */
 		private static final java.util.regex.Pattern CBC_CHECK = java.util.regex.Pattern
 				.compile("^\\s*[:\u2208]cbc\\s+([a-z-]*)$");
@@ -1305,6 +1309,16 @@ public class ConsoleViewPart extends ViewPart implements ILifecycleListener {
 					&& isIdentifierChar(contents.charAt(start - 1)))
 				start--;
 			final String prefix = contents.substring(start, position);
+
+			// a saved LTL formula after ":ltl "
+			if (LTL_START.matcher(contents.substring(0, position)).find()) {
+				final List<IContentProposal> saved = new ArrayList<IContentProposal>();
+				for (String f : ConsoleChecks.savedLtlFormulas())
+					saved.add(new ContentProposal(f, f,
+							"a saved LTL formula of this model"));
+				if (!saved.isEmpty())
+					return saved.toArray(new IContentProposal[saved.size()]);
+			}
 
 			// the check of ":cbc CHECK", e.g. "context-theorems"
 			final java.util.regex.Matcher cbc = CBC_CHECK.matcher(contents

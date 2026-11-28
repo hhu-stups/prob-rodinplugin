@@ -37,15 +37,17 @@ import de.prob.ui.explorer.TraceFiles;
  * The settings of a machine or context, in a JSON file in the model's folder
  * of its project, next to its traces: e.g. <code>M1/M1.probsettings</code>
  * for <code>M1.bum</code>. They are shared with the project (e.g. in git).
- * For now they are the formulas saved in the ProB Graph and Table views and
- * the formulas added to the State view:
+ * For now they are the formulas saved in the ProB Graph and Table views,
+ * the formulas added to the State view and the LTL formulas checked (in the
+ * LTL Model Checking dialog or with the console's :ltl):
  *
  * <pre>
  * {
  *   "metadata": { "fileType": "ProB for Rodin Settings", "formatVersion": 1, "model": "M1" },
  *   "graphFormulas": [ { "formula": "card(active)", "command": "expr_as_graph" } ],
  *   "tableFormulas": [ { "formula": "owner", "command": "expr_as_table" } ],
- *   "stateFormulas": [ { "formula": "card(active) > 1" } ]
+ *   "stateFormulas": [ { "formula": "card(active) > 1" } ],
+ *   "ltlFormulas": [ { "formula": "G {card(active) <= 3}" } ]
  * }
  * </pre>
  *
@@ -57,7 +59,9 @@ public final class ModelSettings {
 
 	/** the kinds of formulas, i.e. where they are used */
 	public enum Kind {
-		GRAPH("graphFormulas"), TABLE("tableFormulas"), STATE("stateFormulas");
+		GRAPH("graphFormulas"), TABLE("tableFormulas"), STATE("stateFormulas"),
+		/** LTL formulas of the console's :ltl and the LTL Model Checking dialog */
+		LTL("ltlFormulas");
 
 		final String key;
 

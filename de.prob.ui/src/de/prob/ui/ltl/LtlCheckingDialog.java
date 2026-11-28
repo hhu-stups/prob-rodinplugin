@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.jobs.JobChangeAdapter;
 import org.eclipse.core.runtime.preferences.ConfigurationScope;
@@ -51,6 +52,7 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
+import org.eventb.core.IEventBRoot;
 
 import de.be4.ltl.core.parser.LtlParseException;
 import de.be4.ltl.core.parser.LtlParser;
@@ -61,6 +63,7 @@ import de.prob.core.command.SymmetryReductionOption;
 import de.prob.logging.Logger;
 import de.prob.prolog.term.PrologTerm;
 import de.prob.ui.DialogHelpers;
+import de.prob.ui.settings.ModelSettings;
 
 public final class LtlCheckingDialog extends TrayDialog {
 	private static final String CONFIGURATION_ID = "de.prob.ui.ltl.CounterExampleViewPart";
@@ -251,8 +254,50 @@ public final class LtlCheckingDialog extends TrayDialog {
 		}
 	}
 
+	/**
+	 * Saves a checked formula in the model's settings file
+	 * ({@link ModelSettings}), shared with the console's :ltl; without an
+	 * Event-B model (or if the file cannot be written) in the workspace's
+	 * configuration, as before, with the other formulas of the list.
+	 */
+	private void saveFormula(final String formula, final String[] allFormulas) {
+		final IEventBRoot model = ModelSettings.animatedModel();
+		if (model != null) {
+			try {
+				ModelSettings.add(model, ModelSettings.Kind.LTL, formula, null);
+				return;
+			} catch (CoreException e) {
+				Logger.info("Could not save the LTL formula in "
+						+ ModelSettings.file(model).getFullPath() + ": "
+						+ e.getMessage());
+			}
+		}
+		saveFormulas(new TreeSet<String>(Arrays.asList(allFormulas)));
+	}
+
+	/**
+	 * @return the LTL formulas saved for the animated model, the most recent
+	 *         first, followed by those saved in the workspace's configuration
+	 *         (by earlier versions, for all models)
+	 */
+	private List<String> getFormulas() {
+		final List<String> result = new ArrayList<String>();
+		final IEventBRoot model = ModelSettings.animatedModel();
+		if (model != null) {
+			final List<ModelSettings.SavedFormula> saved = ModelSettings
+					.formulas(model, ModelSettings.Kind.LTL);
+			for (int i = saved.size() - 1; i >= 0; i--)
+				if (!result.contains(saved.get(i).formula))
+					result.add(saved.get(i).formula);
+		}
+		for (String formula : getConfigurationFormulas())
+			if (!result.contains(formula))
+				result.add(formula);
+		return result;
+	}
+
 	@SuppressWarnings("unchecked")
-	private Set<String> getFormulas() {
+	private Set<String> getConfigurationFormulas() {
 		IEclipsePreferences configNode = ConfigurationScope.INSTANCE
 				.getNode(CONFIGURATION_ID);
 
@@ -295,8 +340,9 @@ public final class LtlCheckingDialog extends TrayDialog {
 		try {
 			parsedFormula = parser.generatePrologTerm(formula, "root");
 		} catch (LtlParseException e) { // see Task#163
-			MessageDialog.openError(getShell(), "Syntax error",
-					e.getLocalizedMessage());
+			MessageDialog.openError(getShell(), "Error in the LTL Formula",
+					LtlErrors.describe(animator, formula, e, false)
+							+ "\n\nFormula: " + formula);
 		}
 
 		return parsedFormula;
@@ -332,8 +378,7 @@ public final class LtlCheckingDialog extends TrayDialog {
 					if (!formulaItems.contains(formula))
 						formulas.add(formula);
 
-					saveFormulas(new TreeSet<String>(Arrays.asList(formulas
-							.getItems())));
+					saveFormula(formula, formulas.getItems());
 				}
 			} catch (CommandException exception) {
 				// the only thing we can do is to abort
@@ -385,6 +430,7 @@ public final class LtlCheckingDialog extends TrayDialog {
 							}
 
 							if (!fileFormulas.contains(formula)) {
+								saveFormula(formula, formulas.getItems());
 								fileFormulas.add(formula);
 								parsedFormulas.add(parsedFormula);
 							}
@@ -392,9 +438,6 @@ public final class LtlCheckingDialog extends TrayDialog {
 							break;
 						}
 					}
-
-					saveFormulas(new TreeSet<String>(Arrays.asList(formulas
-							.getItems())));
 
 					JobChangeAdapter checkingListener = new LtlMultiCheckingFinishedListener(
 							shell, fileFormulas);
